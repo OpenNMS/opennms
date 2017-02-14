@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.menu;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -37,17 +38,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.google.common.collect.Lists;
 import com.vaadin.ui.MenuBar;
 
-public class MenuManagerTest {
+public class OperationManagerTest {
     @Test
     public void submenuAlphabeticalOrderTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("File", Lists.newArrayList("new", "additions"));
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation1?group=new", ""));
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation3", ""));
@@ -56,7 +60,7 @@ public class MenuManagerTest {
 
         cmdManager.onBind(createTestOperation(), createProperties("File|New", "NewOperation", ""));
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -75,7 +79,7 @@ public class MenuManagerTest {
 
     @Test
     public void groupingSeparatorTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Default", Lists.newArrayList("new", "help", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Device", "Operation1?group=additions", ""));
@@ -86,7 +90,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Device", "NewOperation?group=additions", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -102,7 +106,7 @@ public class MenuManagerTest {
 
     @Test
     public void layoutEditMenuGroupingTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Edit", Lists.newArrayList("new", "layout", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Circle Layout?group=layout", ""));
@@ -113,7 +117,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Spring Layout?group=layout", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -131,7 +135,7 @@ public class MenuManagerTest {
 
     @Test
     public void layoutEditMenuGroupingNoGroupTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("Edit", Lists.newArrayList("new", "middle", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Circle Layout?group=layout", ""));
@@ -142,7 +146,7 @@ public class MenuManagerTest {
         cmdManager.onBind(createTestOperation(), createProperties("Edit", "Spring Layout?group=layout", ""));
 
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -159,7 +163,7 @@ public class MenuManagerTest {
 
     @Test
     public void submenuGroupOrderAlphabeticallyTest() {
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.addOrUpdateGroupOrder("File", Lists.newArrayList("new", "help", "additions"));
 
         cmdManager.onBind(createTestOperation(), createProperties("File", "Operation1", ""));
@@ -169,7 +173,7 @@ public class MenuManagerTest {
 
         cmdManager.onBind(createTestOperation(), createProperties("File|New", "NewOperation", ""));
 
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = getMenuBar(cmdManager);
 
         List<MenuBar.MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -201,7 +205,7 @@ public class MenuManagerTest {
         expected.put("Help", Lists.newArrayList("start", "main", "tools", "updates", "end", "additions"));
         expected.put("Default", Lists.newArrayList("start", "main", "end", "additions"));
 
-        MenuManager cmdManager = new MenuManager();
+        OperationManager cmdManager = new OperationManager();
         cmdManager.updateMenuConfig(props);
         Map<String, List<String>> actual = cmdManager.getMenuOrderConfig();
 
@@ -243,5 +247,18 @@ public class MenuManagerTest {
                 return null;
             }
         };
+    }
+    
+    private static TopologyMenuBar getMenuBar(OperationManager operationManager) {
+        // Mock all the things
+        GraphContainer graphContainerMock = Mockito.mock(GraphContainer.class);
+        SelectionManager selectionManagerMock = Mockito.mock(SelectionManager.class);
+        Mockito.when(graphContainerMock.getSelectionManager()).thenReturn(selectionManagerMock);
+        Mockito.when(selectionManagerMock.getSelectedVertexRefs()).thenReturn(new ArrayList<>());
+
+        // Create menu bar
+        TopologyMenuBar topologyMenuBar = new TopologyMenuBar();
+        topologyMenuBar.updateMenu(graphContainerMock, null, operationManager);
+        return topologyMenuBar;
     }
 }

@@ -60,7 +60,7 @@ public class NodeCacheImpl implements NodeCache {
     private volatile NodeDao nodeDao;
     private volatile TransactionOperations transactionOperations;
 
-    private LoadingCache<Long, Map> cache=null;
+    private LoadingCache<Long, Map<String,String>> cache = null;
 
     public NodeCacheImpl() {}
 
@@ -75,9 +75,9 @@ public class NodeCacheImpl implements NodeCache {
                 cacheBuilder.maximumSize(MAX_SIZE);
             }
 
-            cache=cacheBuilder.build(new CacheLoader<Long, Map>() {
+            cache=cacheBuilder.build(new CacheLoader<Long, Map<String,String>>() {
                                              @Override
-                                             public Map load(Long key) throws Exception {
+                                             public Map<String,String> load(Long key) throws Exception {
                                                  return getNodeAndCategoryInfo(key);
                                              }
                                          }
@@ -85,7 +85,7 @@ public class NodeCacheImpl implements NodeCache {
         }
     }
 
-    public Map getEntry(Long key) {
+    public Map<String,String> getEntry(Long key) {
         return cache.getUnchecked(key);
     }
 
@@ -94,8 +94,8 @@ public class NodeCacheImpl implements NodeCache {
         cache.refresh(key);
     }
 
-    private Map getNodeAndCategoryInfo(Long nodeId) {
-        final Map result=new HashMap();
+    private Map<String,String> getNodeAndCategoryInfo(Long nodeId) {
+        final Map<String,String> result=new HashMap<>();
 
         // safety check
         if(nodeId!=null) {
@@ -122,7 +122,7 @@ public class NodeCacheImpl implements NodeCache {
      * @param body the map
      * @param node the node object
      */
-    private void populateBodyWithNodeInfo(Map body, OnmsNode node) {
+    private static void populateBodyWithNodeInfo(Map<String,String> body, OnmsNode node) {
         body.put("nodelabel", node.getLabel());
         body.put("nodesysname", node.getSysName());
         body.put("nodesyslocation", node.getSysLocation());
@@ -130,7 +130,7 @@ public class NodeCacheImpl implements NodeCache {
         body.put("foreignid", node.getForeignId());
         body.put("operatingsystem", node.getOperatingSystem());
         StringBuilder categories=new StringBuilder();
-        for (Iterator i=node.getCategories().iterator();i.hasNext();) {
+        for (Iterator<OnmsCategory> i=node.getCategories().iterator();i.hasNext();) {
             categories.append(((OnmsCategory)i.next()).getName());
             if(i.hasNext()) {
                 categories.append(",");

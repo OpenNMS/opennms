@@ -19,10 +19,11 @@ Use `etc/examples/jetty.xml` as a starting point.
 * *Drools 6.4.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.4.0.Final`.
 If you have custom Drools rules, they may need to be revised.
 The compiler used in `6.4.0.Final` is stricter than the compiler in previous versions.
-* *Separate opennms-webapp-remoting Package*: The webapp that supports the Remote Poller has been separated from the main OpenNMS webapp. This will make installations
-much smaller for users that do not use the Remote Poller. If you use the Remote Poller, you will need to install the `opennms-webapp-remoting` package.
+* *Separate opennms-webapp-remoting Package*: The webapp that supports the Remote Poller has been separated from the main OpenNMS webapp.
+This will make installations much smaller for users that do not use the Remote Poller.
+If you use the Remote Poller, you will need to install the `opennms-webapp-remoting` package.
 * *OpenNMS Minion can run on a JRE*: The OpenNMS Minion packages no longer require a JDK package and can run on the plain JRE.
-* *User roles moved from magic-users.xml into users.xml*: The users.xml file now contains a list of roles for each user alongside the rest of the user attributes.
+* *User roles moved from magic-users.properties into users.xml*: The users.xml file now contains a list of roles for each user alongside the rest of the user attributes.
 * *JICMP 2.0 Upgrade*: Our Java ICMP library has been upgraded to version 2.0. You will need to upgrade to this version before upgrading to OpenNMS Horizon 19.
 
 === New Features
@@ -41,6 +42,9 @@ much smaller for users that do not use the Remote Poller. If you use the Remote 
 * *Monitoring Location Events*: Events will be sent when Monitoring Locations are added, updated, or deleted.
 * *Exponential propogation*: There is a new exponential propogation function available for Business Services.
 * *External JMS broker*: It is possible to configure OpenNMS to use an external JMS broker if desired.
+* *ICMP traffic class and don't-fragment support*: It is possible to configure OpenNMS to set DSCP traffic class and "don't fragment" bits when polling ICMP.
+* *Geographical Maps*: Geographical maps are now included by default in the center of the Web UI front page.
+* *Web UI improvements*: Location information has been added to many places in the UI, and a number of pages have been enhanced including the BSM editor and topology UI.
 
 === New Data Collection Definitions
 * *HTTP*:
@@ -63,8 +67,7 @@ much smaller for users that do not use the Remote Poller. If you use the Remote 
 === Internal Improvements
 * We replaced all of the GWT components in the web UI with AngularJS components. This reduces the complexity of the UI code and will make it easier for developers with Javascript experience to maintain and contribute to the UI.
 * All Javascript dependencies for the web UI are now managed by Bower and Gulp.
-// Not sure if this is done yet:
-// * Jasper reports are now precompiled.
+* Jasper reports are now automatically recompiled if changed.
 * The JIRA ticketer has been improved.
 * The default database connection pool has been switched from c3p0 to HikariCP (http://brettwooldridge.github.io/HikariCP/) to increase performance.
-* Our ICMP libraries are now capable of being run by non-root users.
+* Our ICMP libraries are now capable of being run by non-root users (although OpenNMS is not yet configured to support this).

@@ -134,7 +134,7 @@ public class CollectionSetBuilder {
         return new AbstractCollectionResource(agent) {
             @Override
             public String getResourceTypeName() {
-                return "*";
+                return resource.getTypeName();
             }
 
             @Override

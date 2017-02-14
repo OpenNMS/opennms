@@ -31,14 +31,20 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
+<%
+    String strategy = System.getProperty("org.opennms.geomap.defaultStrategy", "Alarms");
+    String severity = System.getProperty("org.opennms.geomap.defaultSeverity", "Normal");
+%>
+
 <div class="panel panel-default fix-subpixel">
     <div class="panel-heading">
-        <h3 class="panel-title">Service Availability</h3>
+        <h3 class="panel-title">Regional Status</h3>
     </div>
     <div>
         <jsp:include page="includes/map.jsp">
             <jsp:param name="hideControlsOnStartup" value="true"/>
-            <jsp:param name="severity" value="Warning"/>
+            <jsp:param name="strategy" value="<%= strategy %>"/>
+            <jsp:param name="severity" value="<%= severity %>"/>
         </jsp:include>
     </div>
 </div>

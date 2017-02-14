@@ -111,13 +111,13 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	}
 
         public void setTrafficClass(int tc) throws IOException {
-            m_v4.getPingSocket().setTrafficClass(tc);
-            m_v6.getPingSocket().setTrafficClass(tc);
+            if (m_v4 != null) m_v4.getPingSocket().setTrafficClass(tc);
+            if (m_v6 != null) m_v6.getPingSocket().setTrafficClass(tc);
         }
 
         public void setAllowFragmentation(boolean allow) throws IOException {
-            m_v4.getPingSocket().allowFragmentation(allow);
-            m_v6.getPingSocket().allowFragmentation(allow);
+            if (m_v4 != null) m_v4.getPingSocket().allowFragmentation(allow);
+            if (m_v6 != null) m_v6.getPingSocket().allowFragmentation(allow);
         }
 
 }
