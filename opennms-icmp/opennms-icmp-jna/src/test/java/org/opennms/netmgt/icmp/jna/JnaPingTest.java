@@ -28,24 +28,34 @@
 
 package org.opennms.netmgt.icmp.jna;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.jna.JnaPinger;
+import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * 
- * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  */
-public class JnaPingTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({}) 
+public class JnaPingTest {
 
     static private JnaPinger s_jnaPinger = new JnaPinger();
 
@@ -54,40 +64,8 @@ public class JnaPingTest extends TestCase {
     private InetAddress m_ipv6goodHost = null;
     private InetAddress m_ipv6badHost = null;
 
-    /**
-     * Don't run this test unless the runPingTests property
-     * is set to "true".
-     */
-    @Override
-    protected void runTest() throws Throwable {
-        if (!isRunTest()) {
-            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
-            return;
-        }
-            
-        try {
-            System.err.println("------------------- begin "+getName()+" ---------------------");
-            super.runTest();
-        } finally {
-            System.err.println("------------------- end "+getName()+" -----------------------");
-        }
-    }
-
-    private boolean isRunTest() {
-        return Boolean.parseBoolean(System.getProperty(getRunTestProperty()));
-    }
-
-    private String getRunTestProperty() {
-        return "runPingTests";
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        if (!isRunTest()) {
-            return;
-        }
-
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         m_goodHost = InetAddress.getLocalHost();
         // 192.0.2.0/24 is reserved for documentation purposes
         m_badHost  = InetAddress.getByName("192.0.2.123");
@@ -106,10 +84,14 @@ public class JnaPingTest extends TestCase {
         assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingIPv4() throws Exception {
         singlePingGood(m_goodHost);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingIPv6() throws Exception {
         singlePingGood(m_ipv6goodHost);
     }
@@ -182,10 +164,14 @@ public class JnaPingTest extends TestCase {
         
     };
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testPingCallbackTimeoutIPv4() throws Exception {
         pingCallbackTimeout(m_badHost);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testPingCallbackTimeoutIPv6() throws Exception {
         pingCallbackTimeout(m_ipv6badHost);
     }
@@ -204,24 +190,31 @@ public class JnaPingTest extends TestCase {
         assertNotNull(cb.getAddress());
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingFailureIPv4() throws Exception {
         assertNull(s_jnaPinger.ping(m_badHost));
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testSinglePingFailureIPv6() throws Exception {
         assertNull(s_jnaPinger.ping(m_ipv6badHost));
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingIPv4() throws Exception {
         parallelPingGood(m_goodHost);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingIPv6() throws Exception {
         parallelPingGood(m_ipv6goodHost);
     }
 
-    private void parallelPingGood(InetAddress addr) throws Exception,
-            InterruptedException {
+    private void parallelPingGood(InetAddress addr) throws Exception, InterruptedException {
         List<Number> items = s_jnaPinger.parallelPing(addr, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
@@ -232,10 +225,14 @@ public class JnaPingTest extends TestCase {
         }
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingFailureIPv4() throws Exception {
         parallelPingFailure(m_badHost);
     }
 
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void testParallelPingFailureIPv6() throws Exception {
         parallelPingFailure(m_ipv6badHost);
     }
