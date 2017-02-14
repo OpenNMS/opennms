@@ -1,3 +1,14 @@
+opennms (19.0.0-1) stable; urgency=high
+
+  * New stable release.  This is the first in the 19 series, with a ton of bug
+    fixes and new features, most notably support for all major OpenNMS polling
+    and collection features in the Minion.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/19.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 13 Feb 2017 12:00:00 -0500
+
 opennms (18.0.4-1) stable; urgency=high
 
   * New stable release.  This release contains a number of bug fixes and
