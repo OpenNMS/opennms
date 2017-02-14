@@ -33,18 +33,12 @@ import java.io.IOException;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-/*
-* This class manages the connection to the remote jmx server.  The Jsr160ConnectionFactory
-* class creates the connection and the close method closes it.
-* 
-* @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
-* @author <A HREF="http://www.opennms.org/">OpenNMS </A>
-*/
 /**
- * <p>MX4JConnectionWrapper class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * This class manages the connection to the remote jmx server.  The Jsr160ConnectionFactory
+ * class creates the connection and the close method closes it.
+ * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class MX4JConnectionWrapper implements ConnectionWrapper{
   

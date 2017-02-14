@@ -80,7 +80,7 @@ public abstract class Jsr160ConnectionFactory {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
         
-        final String hostAddress = InetAddressUtils.str(address);
+        final String hostAddress = InetAddressUtils.toUrlIpAddress(address);
         LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, hostAddress, port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
@@ -231,10 +231,10 @@ public abstract class Jsr160ConnectionFactory {
             // Create an JMXMP connector client and
             // connect it to the JMXMP connector server
             //
-            url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
         } else {
             // Fallback, building a URL for RMI
-            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port + urlPath);
         }
         return url;
     }    
