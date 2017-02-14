@@ -650,7 +650,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     // Verifies that the ping operation is available. See NMS-9019
     @Test
-    public void verifyPingOperation() {
+    public void verifyPingOperation() throws InterruptedException {
         // Create Dummy Node
         final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
@@ -670,6 +670,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         // Find Node and try select ping from context menu
         topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         topologyUiPage.clearFocus();
+        Thread.sleep(35000); // wait 30 seconds, before the topology service allows a refresh
         topologyUiPage.refreshNow();
         topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
         PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").ping();
