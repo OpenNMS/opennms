@@ -41,9 +41,6 @@ import java.util.Set;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class IsolatingClassLoader extends URLClassLoader {
     
@@ -51,7 +48,7 @@ public class IsolatingClassLoader extends URLClassLoader {
     private String[] m_isolatedPrefixes;
     
     /** Set of class names that identifies classes to isolate. **/
-    private Set<String> m_isolatedClassNames = new HashSet<String>();
+    private final Set<String> m_isolatedClassNames = new HashSet<String>();
     
     /**
      * <p>Constructor for IsolatingClassLoader.</p>
@@ -98,18 +95,18 @@ public class IsolatingClassLoader extends URLClassLoader {
         
         final Set<String> prefixes = new HashSet<String>();
         
-        for (int i=0; i<isolated.length; i++) {
-            final int index = isolated[i].indexOf('*');
+        for (String element : isolated) {
+            final int index = element.indexOf('*');
             
             if (index >= 0) {
-                prefixes.add(isolated[i].substring(0, index));
+                prefixes.add(element.substring(0, index));
             }
             else {
-                m_isolatedClassNames.add(isolated[i]);
+                m_isolatedClassNames.add(element);
             }
         }
         
-        m_isolatedPrefixes = (String[])prefixes.toArray(new String[0]);
+        m_isolatedPrefixes = prefixes.toArray(new String[0]);
         
         if (augmentClassPath) {
             final ClassLoader callerClassLoader = Thread.currentThread().getContextClassLoader();
@@ -117,8 +114,8 @@ public class IsolatingClassLoader extends URLClassLoader {
             if (callerClassLoader instanceof URLClassLoader) {
                 final URL[] newURLs = ((URLClassLoader)callerClassLoader).getURLs();
                 
-                for (int i=0; i<newURLs.length; i++) {
-                    addURL(newURLs[i]);
+                for (URL newURL : newURLs) {
+                    addURL(newURL);
                 }
             }
             else {
@@ -139,9 +136,9 @@ public class IsolatingClassLoader extends URLClassLoader {
         boolean isolated = m_isolatedClassNames.contains(name);
         
         if (!isolated) {
-            for (int i=0; i<m_isolatedPrefixes.length; i++) {
+            for (String prefix : m_isolatedPrefixes) {
                 
-                if (name.startsWith(m_isolatedPrefixes[i])) {
+                if (name.startsWith(prefix)) {
                     isolated = true;
                     break;
                 }
@@ -167,7 +164,7 @@ public class IsolatingClassLoader extends URLClassLoader {
     }
     
     public static class InvalidContextClassLoaderException extends Exception {
-        
+
         /**
          * 
          */
@@ -179,4 +176,3 @@ public class IsolatingClassLoader extends URLClassLoader {
         }
     }
 }
-

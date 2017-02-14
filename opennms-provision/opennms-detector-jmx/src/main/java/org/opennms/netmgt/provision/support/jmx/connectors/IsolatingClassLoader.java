@@ -33,16 +33,16 @@ import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
  * An extension of the URLClassLoader that ensures it loads specified
  * packages rather letting the parent do it. The result is that classes
  * loaded from these packages are isolated from other classloaders.
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class IsolatingClassLoader extends URLClassLoader {
-    
-    // private String m_name;
     
     /** Array of prefixes that identifies packages or classes to isolate. **/
     private String[] m_isolatedPrefixes;
@@ -93,8 +93,6 @@ public class IsolatingClassLoader extends URLClassLoader {
     
     private void init(String name, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
         
-        // m_name = name;
-        
         final Set<String> prefixes = new HashSet<String>();
         
         for (String element : isolated) {
@@ -138,9 +136,9 @@ public class IsolatingClassLoader extends URLClassLoader {
         boolean isolated = m_isolatedClassNames.contains(name);
         
         if (!isolated) {
-            for (String prefixe : m_isolatedPrefixes) {
+            for (String prefix : m_isolatedPrefixes) {
                 
-                if (name.startsWith(prefixe)) {
+                if (name.startsWith(prefix)) {
                     isolated = true;
                     break;
                 }
@@ -178,4 +176,3 @@ public class IsolatingClassLoader extends URLClassLoader {
         }
     }
 }
-

@@ -28,16 +28,6 @@
 
 package org.opennms.protocols.jmx.connectors;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import javax.net.ssl.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
@@ -45,6 +35,22 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>JMXSecureConnectionFactory class.</p>
@@ -81,10 +87,10 @@ public abstract class JMXSecureConnectionFactory {
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
                 //
-                url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(address), port, urlPath);
             } else {
                 // Fallback, building a URL for RMI
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
             LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());
