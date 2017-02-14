@@ -110,6 +110,20 @@ public class IpInterfaceScanTest {
         runTest("11.0.2.100", ipMatch, false);
     }
 
+    @Test
+    public void checkIPv6() {
+        runTest("2600:5800:f2a2::1cef:6376:349f:5f6d", "2600:*:*:*:*:*:*:*", true);
+        runTest("2600:5800:f2a2::1cef:6376:349f:5f6d", "*:5555:*:*:*:*:*:*", false);
+
+
+    }
+
+    @Test
+    public void checkIPVersionMixing() {
+        runTest("127.0.0.1", "127.0.0.1 || 0:0:0:0:0:0:0:1", true);
+        runTest("::1", "127.0.0.1 || 0:0:0:0:0:0:0:1", true);
+    }
+
     /**
      * Run test.
      *
