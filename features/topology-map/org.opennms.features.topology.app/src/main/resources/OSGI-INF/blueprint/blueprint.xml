@@ -139,17 +139,18 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
 
+    <!-- ServiceLocator -->
+    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.service.BundleContextServiceLocator" >
+        <argument ref="blueprintBundleContext" />
+    </bean>
+
     <!-- Topology Service -->
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
         <argument value="${topologyServiceCacheTimeout}"/>
-        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="serviceLocator" ref="bundleContextServiceLocator"/>
     </bean>
-
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
-    <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyService"/>
-    </reference-list>
-    
+
     <bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />
 
     <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">

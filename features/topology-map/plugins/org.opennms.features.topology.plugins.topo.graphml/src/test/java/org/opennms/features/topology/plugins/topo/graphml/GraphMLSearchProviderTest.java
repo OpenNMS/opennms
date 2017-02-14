@@ -41,11 +41,10 @@ import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.gwt.client.SearchSuggestion;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.osgi.OnmsServiceManager;
-
-import com.google.common.collect.Maps;
 
 public class GraphMLSearchProviderTest {
 
@@ -75,7 +74,7 @@ public class GraphMLSearchProviderTest {
         Assert.assertEquals(2, searchProviders.size());
 
         DefaultTopologyService defaultTopologyService = new DefaultTopologyService();
-        defaultTopologyService.onBind(metaTopologyProvider, Maps.newHashMap());
+        defaultTopologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
         VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(defaultTopologyService);
         graphContainer.setMetaTopologyId(metaTopologyProvider.getId());

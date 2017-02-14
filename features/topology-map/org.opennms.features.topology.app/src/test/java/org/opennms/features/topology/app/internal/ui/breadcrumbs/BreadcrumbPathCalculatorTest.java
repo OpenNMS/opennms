@@ -19,6 +19,7 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -100,7 +101,7 @@ public class BreadcrumbPathCalculatorTest {
             }
         };
         DefaultTopologyService topologyService = new DefaultTopologyService();
-        topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
+        topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
         DefaultTopologyServiceClient client = new DefaultTopologyServiceClient(topologyService);
         client.setMetaTopologyId(metaTopologyProvider.getId());
         client.setNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());

@@ -36,10 +36,9 @@ import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
 
 public abstract class AbstractLayoutTest {
 
@@ -74,7 +73,7 @@ public abstract class AbstractLayoutTest {
 
         final DefaultTopologyService topologyService = new DefaultTopologyService();
         final MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(getGraphProvider());
-        topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
+        topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
 
         final VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
         graphContainer.setTopologyService(topologyService);

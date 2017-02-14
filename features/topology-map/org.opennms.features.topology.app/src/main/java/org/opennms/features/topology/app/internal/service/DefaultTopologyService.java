@@ -28,12 +28,9 @@
 
 package org.opennms.features.topology.app.internal.service;
 
-import static org.opennms.features.topology.app.internal.service.BundleContextUtils.findSingleService;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,7 +50,6 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +57,6 @@ import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
 
 /**
  * @author mvrueden
@@ -111,11 +106,9 @@ public class DefaultTopologyService implements TopologyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultTopologyService.class);
 
-    private final List<MetaTopologyProvider> providers = Lists.newArrayList();
-
     private final LoadingCache<GraphProviderKey, GraphProvider> graphProviderCache;
 
-    private BundleContext bundleContext;
+    private ServiceLocator serviceLocator;
 
     public DefaultTopologyService() {
         this(30);
@@ -170,12 +163,12 @@ public class DefaultTopologyService implements TopologyService {
         final DefaultGraph graph = new DefaultGraph(displayVertices, displayEdges);
 
         // Calculate status
-        final StatusProvider vertexStatusProvider = bundleContext != null ? findVertexStatusProvider(graphProvider) : null;
-        final EdgeStatusProvider edgeStatusProvider = bundleContext != null ? findEdgeStatusProvider(graphProvider) : null;
-        if (vertexStatusProvider != null && vertexStatusProvider.contributesTo(graphProvider.getNamespace())) {
+        final StatusProvider vertexStatusProvider = serviceLocator != null ? findVertexStatusProvider(graphProvider) : null;
+        final EdgeStatusProvider edgeStatusProvider = serviceLocator != null ? findEdgeStatusProvider(graphProvider) : null;
+        if (vertexStatusProvider != null) {
             graph.setVertexStatus(vertexStatusProvider.getStatusForVertices(graphProvider, new ArrayList<>(displayVertices), criteria));
         }
-        if(edgeStatusProvider != null && edgeStatusProvider.contributesTo(graphProvider.getNamespace())) {
+        if(edgeStatusProvider != null) {
             graph.setEdgeStatus(edgeStatusProvider.getStatusForEdges(graphProvider, new ArrayList<>(graph.getDisplayEdges()), criteria));
         }
         return graph;
@@ -200,44 +193,29 @@ public class DefaultTopologyService implements TopologyService {
 
         final GraphProvider graphProvider = getGraphProvider(metaTopologyId, namespace);
         final String preferredLayout = graphProvider.getDefaults().getPreferredLayout();
-        final LayoutAlgorithm preferredLayoutAlgorithm = bundleContext != null ? findLayoutAlgorithm(preferredLayout) : DEFAULT_LAYOUT_ALGORITHM;
+        final LayoutAlgorithm preferredLayoutAlgorithm = serviceLocator != null ? findLayoutAlgorithm(preferredLayout) : DEFAULT_LAYOUT_ALGORITHM;
 
         return preferredLayoutAlgorithm;
     }
 
     @Override
     public MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId) {
-        Optional<MetaTopologyProvider> metaTopologyProviderOptional = providers.stream().filter(metaTopologyProvider -> metaTopologyId.equals(metaTopologyProvider.getId())).findFirst();
+        Optional<MetaTopologyProvider> metaTopologyProviderOptional = serviceLocator.findServices(MetaTopologyProvider.class, null)
+                .stream()
+                .filter(metaTopologyProvider -> metaTopologyId.equals(metaTopologyProvider.getId()))
+                .findFirst();
         MetaTopologyProvider metaTopologyProvider = metaTopologyProviderOptional.orElseThrow(() -> new NoSuchElementException("No MetaTopologyProvider with id '" + metaTopologyId + "' found."));
         return metaTopologyProvider;
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = Objects.requireNonNull(bundleContext);
-    }
-
-    public synchronized void onBind(MetaTopologyProvider provider, Map<?, ?> metaData) {
-        try {
-            LOG.debug("Adding meta topology provider: " + provider);
-            providers.add(provider);
-        } catch (Throwable e) {
-            LOG.warn("Exception during onGraphProviderBind()", e);
-        }
-    }
-
-    public synchronized void onUnbind(MetaTopologyProvider provider, Map<?, ?> metaData) {
-        try {
-            LOG.debug("Adding meta topology provider: " + provider);
-            providers.remove(provider);
-        } catch (Throwable e) {
-            LOG.warn("Exception during onGraphProviderBind()", e);
-        }
+    public void setServiceLocator(ServiceLocator serviceLocator) {
+        this.serviceLocator = Objects.requireNonNull(serviceLocator);
     }
 
     private LayoutAlgorithm findLayoutAlgorithm(String preferredLayout) {
         if (preferredLayout != null) {
             // LayoutOperations are exposed as CheckedOperations
-            CheckedOperation operation = findSingleService(bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
+            CheckedOperation operation = serviceLocator.findSingleService(CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
             if (operation instanceof LayoutOperation) { // Cast it to LayoutOperation if possible
                 return ((LayoutOperation) operation).getLayoutAlgorithm();
             }
@@ -247,8 +225,7 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     private StatusProvider findVertexStatusProvider(GraphProvider graphProvider) {
-        StatusProvider vertexStatusProvider = findSingleService(
-                bundleContext,
+        StatusProvider vertexStatusProvider = serviceLocator.findSingleService(
                 StatusProvider.class,
                 statusProvider -> statusProvider.contributesTo(graphProvider.getNamespace()),
                 null);
@@ -256,8 +233,7 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     private EdgeStatusProvider findEdgeStatusProvider(GraphProvider graphProvider) {
-        EdgeStatusProvider edgeStatusProvider = findSingleService(
-                bundleContext,
+        EdgeStatusProvider edgeStatusProvider = serviceLocator.findSingleService(
                 EdgeStatusProvider.class,
                 statusProvider -> statusProvider.contributesTo(graphProvider.getNamespace()),
                 null);

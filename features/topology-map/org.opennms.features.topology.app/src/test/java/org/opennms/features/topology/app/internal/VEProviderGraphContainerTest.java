@@ -65,8 +65,7 @@ import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
-
-import com.google.common.collect.Maps;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 
 public class VEProviderGraphContainerTest {
 
@@ -173,7 +172,7 @@ public class VEProviderGraphContainerTest {
 
 		MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
 		DefaultTopologyService topologyService = new DefaultTopologyService();
-		topologyService.onBind(metaTopologyProvider, Maps.newHashMap());
+		topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
 
         VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
 		graphContainer.setSemanticZoomLevel(0);
@@ -205,7 +204,7 @@ public class VEProviderGraphContainerTest {
 
         DefaultTopologyService topologyService = new DefaultTopologyService();
         SimpleMetaTopologyProvider simpleMetaTopologyProvider = new SimpleMetaTopologyProvider(vertexHopGraphProvider);
-        topologyService.onBind(simpleMetaTopologyProvider, Maps.newHashMap());
+		topologyService.setServiceLocator(new SimpleServiceLocator(simpleMetaTopologyProvider));
 
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
 		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();

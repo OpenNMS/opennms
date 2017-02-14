@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,21 +40,19 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BundleContextUtils {
+public class BundleContextServiceLocator implements ServiceLocator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BundleContextUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BundleContextServiceLocator.class);
 
-    /**
-     * Finds a service registered with the OSGI Service Registry of type <code>clazz</code>.
-     * If a <code>bundleContextFilter</code> is provided, it is used to query for the service, e.g. "(operation.label=My Label*)".
-     * In addition each clazz of type T found in the OSGI Service Registry must afterwards pass the provided <code>postFilter</code>.
-     *
-     * If multiple services are found, only the first one is returned.
-     *
-     * @return A object of type <code>clazz</code> or null.
-     */
-    public static <T> T findSingleService(BundleContext bundleContext, Class<T> clazz, Predicate<T> postFilter, String bundleContextFilter) {
-        List<T> providers = findServices(bundleContext, clazz, bundleContextFilter);
+    private final BundleContext bundleContext;
+
+    public BundleContextServiceLocator(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    @Override
+    public <T> T findSingleService(Class<T> clazz, Predicate<T> postFilter, String bundleContextFilter) {
+        List<T> providers = findServices(clazz, bundleContextFilter);
         Stream<T> stream = providers.stream();
         if (postFilter != null) { // filter may be null
             stream = stream.filter(postFilter);
@@ -69,13 +67,8 @@ public class BundleContextUtils {
         return null;
     }
 
-    /**
-     * Find services of class <code>clazz</code> registered in the OSGI Service Registry.
-     * The optional filter criteria <code>query</code> is used.
-     *
-     * @return All found services registered in the OSGI Service Registry of type <code>clazz</code>.
-     */
-    public static <T> List<T> findServices(BundleContext bundleContext, Class<T> clazz, String query) {
+    @Override
+    public <T> List<T> findServices(Class<T> clazz, String query) {
         List<T> serviceList = new ArrayList<>();
         LOG.debug("Finding Service of type {} and additional filter criteria {} ...", clazz, query);
         try {
