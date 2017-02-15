@@ -15,7 +15,7 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
+    <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="key" value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
         </cm:default-properties>
