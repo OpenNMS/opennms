@@ -89,4 +89,8 @@ public interface QueryManager {
 
     void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status);
 
+    void updateServiceLastGood(int nodeId, String ipAddr, String serviceName, Date updateTime);
+
+    void updateServiceLastFail(int nodeId, String ipAddr, String serviceName, Date updateTime);
+
 }

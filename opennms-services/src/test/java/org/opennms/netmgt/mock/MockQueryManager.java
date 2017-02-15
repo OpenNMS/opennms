@@ -171,4 +171,18 @@ public class MockQueryManager implements QueryManager {
 		
 	}
 
+	@Override
+	public void updateServiceLastGood(int nodeId, String ipAddr,
+			String serviceName, Date updateTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateServiceLastFail(int nodeId, String ipAddr,
+			String serviceName, Date updateTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
