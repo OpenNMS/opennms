@@ -191,7 +191,7 @@ public class PingWindow extends Window {
         // Set back to default, when closing
         addCloseListener((CloseListener) e -> {
             cancel(pingFuture);
-            getUI().setPollInterval(initialPollInterval);
+            UI.getCurrent().setPollInterval(initialPollInterval);
         });
     }
 
