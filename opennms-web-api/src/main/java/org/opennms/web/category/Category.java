@@ -31,7 +31,6 @@ package org.opennms.web.category;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -405,46 +404,32 @@ public class Category {
         }
     }
 
-    /**
-     * Returns an enumeration of the Castor-generated Node objects tied to this
-     * category.
-     *
-     * <p>
-     * Note, LJK Dec 5,2001: I'm not really happy about exposing the Castor
-     * objects this way. We do it all over the place, but I've already started
-     * hiding them in this particular case (the rtceui.xsd objects). I'm not
-     * very pleased with this half approach. I'd rather hide them completely or
-     * not at all, but I don't want to introduce a new pass-through object.
-     * </p>
-     *
-     * @return a {@link java.util.Enumeration} object.
-     */
-    public Enumeration<Node> enumerateNode() {
-        return m_rtcCategory.enumerateNode();
-    }
-
     @XmlElementWrapper(name="nodes")
     @XmlElement(name="node")
     public List<Long> getNodeIds() {
         final List<Long> nodeIds = new ArrayList<>();
         if (m_rtcCategory != null) {
-            for (final Node node : m_rtcCategory.getNodeCollection()) {
+            for (final Node node : m_rtcCategory.getNode()) {
                 nodeIds.add(node.getNodeid());
             }
         }
         return nodeIds;
     }
 
+    public List<Node> getNode() {
+        return m_rtcCategory.getNode();
+    }
+
     public NodeList getNodes() {
         if (m_rtcCategory != null) {
-            return NodeList.forNodes(m_rtcCategory.getNodeCollection());
+            return NodeList.forNodes(m_rtcCategory.getNode());
         }
         return new NodeList();
     }
 
     public AvailabilityNode getNode(final Long nodeId) {
         if (m_rtcCategory != null) {
-            for (final Node node : m_rtcCategory.getNodeCollection()) {
+            for (final Node node : m_rtcCategory.getNode()) {
                 if (node.getNodeid() == nodeId) {
                     return new AvailabilityNode(node);
                 }
@@ -468,11 +453,7 @@ public class Category {
         long count = 0;
         long downCount = 0;
 
-        Enumeration<Node> nodeEnum = category.enumerateNode();
-
-        while (nodeEnum.hasMoreElements()) {
-            org.opennms.netmgt.xml.rtc.Node node = nodeEnum.nextElement();
-
+        for (Node node : category.getNode()) {
             count += node.getNodesvccount();
             downCount += node.getNodesvcdowncount();
         }
