@@ -31,7 +31,6 @@ package org.opennms.features.topology.app.internal.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -130,7 +129,7 @@ public class DefaultTopologyService implements TopologyService {
                     public GraphProvider load(GraphProviderKey key) throws Exception {
                         final MetaTopologyProvider metaTopologyProvider = getMetaTopologyProvider(key.getMetaTopologyId());
                         final GraphProvider graphProvider = Optional.ofNullable(metaTopologyProvider.getGraphProviderBy(key.getNamespace()))
-                                                                .orElseThrow(() -> new NoSuchElementException("No GraphProvider with namespace '" + key.getNamespace() + "' found."));
+                                                                .orElseThrow(() -> new NoSuchGraphProviderException(key.getMetaTopologyId(), key.getNamespace()));
                         graphProvider.refresh();
                         return graphProvider;
                     }
@@ -199,12 +198,12 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     @Override
-    public MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId) {
+    public MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId) throws NoSuchProviderException {
         Optional<MetaTopologyProvider> metaTopologyProviderOptional = serviceLocator.findServices(MetaTopologyProvider.class, null)
                 .stream()
                 .filter(metaTopologyProvider -> metaTopologyId.equals(metaTopologyProvider.getId()))
                 .findFirst();
-        MetaTopologyProvider metaTopologyProvider = metaTopologyProviderOptional.orElseThrow(() -> new NoSuchElementException("No MetaTopologyProvider with id '" + metaTopologyId + "' found."));
+        MetaTopologyProvider metaTopologyProvider = metaTopologyProviderOptional.orElseThrow(() -> new NoSuchMetaTopologyProvider(metaTopologyId));
         return metaTopologyProvider;
     }
 

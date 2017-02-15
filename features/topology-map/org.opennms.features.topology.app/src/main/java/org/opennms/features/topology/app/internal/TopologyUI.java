@@ -75,12 +75,12 @@ import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.menu.OperationManager;
 import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
+import org.opennms.features.topology.app.internal.menu.OperationManager;
 import org.opennms.features.topology.app.internal.menu.TopologyContextMenu;
 import org.opennms.features.topology.app.internal.menu.TopologyMenuBar;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
+import org.opennms.features.topology.app.internal.service.NoSuchProviderException;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.support.LayoutManager;
@@ -93,6 +93,7 @@ import org.opennms.features.topology.app.internal.ui.ToolbarPanel;
 import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
 import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbComponent;
 import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -667,12 +668,46 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     private void setupErrorHandler() {
         setErrorHandler(new DefaultErrorHandler() {
-
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
-                Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
-                LOG.warn("An Exception Occurred: in the TopologyUI", event.getThrowable());
+                Throwable t = findNoSuchProviderException(event.getThrowable());
+                if (t instanceof NoSuchProviderException) {
+                    final NoSuchProviderException exception = (NoSuchProviderException) t;
+                    LOG.warn("Access to a graph/meta topology provider was made, which does not exist anymore: The error message was: {} Don't worry, I know what to do.", exception.getMessage());
+                    new ConfirmationDialog()
+                            .withCaption("Selected topology no longer available")
+                            .withCancelButton(false)
+                            .withDescription(() -> {
+                                CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
+                                if (defaultTopologySelectorOperation != null) {
+                                    return "Clicking okay will switch to the default topology provider.";
+                                } else {
+                                    return "Please log out and log in again to resolve the issue.";
+                                }
+                            })
+                            .withOkAction(window -> {
+                                // If possible, select the default topology. Otherwise there is nothing we can do
+                                CheckedOperation defaultTopologySelectorOperation = getDefaultTopologySelectorOperation(m_bundlecontext);
+                                if (defaultTopologySelectorOperation != null) {
+                                    defaultTopologySelectorOperation.execute(Lists.newArrayList(), new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR));
+                                } else {
+                                    // Invalidate the ui state, which enforces the user to reload the ui
+                                    // (hopefully she logged out as we suggested, otherwise an error is shown)
+                                    UI.getCurrent().close();
+                                }
+                            })
+                            .open();
+                } else {
+                    Notification.show("An Unexpected Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
+                    LOG.warn("An Unexpected Exception Occurred: in the TopologyUI", event.getThrowable());
+                }
+            }
 
+            private Throwable findNoSuchProviderException(Throwable t) {
+                while (t != null && !(t instanceof NoSuchProviderException)) {
+                    t = t.getCause();
+                }
+                return t;
             }
         });
     }
