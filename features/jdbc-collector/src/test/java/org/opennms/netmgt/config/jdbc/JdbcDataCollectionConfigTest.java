@@ -59,7 +59,7 @@ public class JdbcDataCollectionConfigTest {
     private FileAnticipator fa;
     
     private JdbcDataCollectionConfig jdcc;
-    
+
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
         
