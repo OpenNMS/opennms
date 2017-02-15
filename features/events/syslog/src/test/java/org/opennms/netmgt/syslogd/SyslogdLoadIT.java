@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -40,6 +41,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -238,6 +241,13 @@ public class SyslogdLoadIT implements InitializingBean {
     @Transactional
     public void testSyslogReceiverCamelNetty() throws Exception {
         startSyslogdCamelNetty();
+        // Wait for the Camel context to start
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return ((SyslogReceiverCamelNettyImpl)m_syslogd.getSyslogReceiver()).isStarted();
+            }
+        });
         doTestSyslogReceiver();
     }
 
