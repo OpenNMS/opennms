@@ -243,9 +243,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         s_log.debug("redoLayout()");
-        // Rebuild the graph vertices and edges if necessary
-        if (isDirty() || isCriteriaDirty()) {
-            getGraph();
+        getGraph();
+        if(m_layoutAlgorithm != null) {
+            m_layoutAlgorithm.updateLayout(m_graph);
             fireGraphChanged();
         }
     }
@@ -333,16 +333,24 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
     }
 
+    private void rebuildGraph() {
+        Graph oldGraph = m_graph;
+        m_graph = getTopologyServiceClient().getGraph(getCriteria(), getSemanticZoomLevel());
+        unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
+        removeVerticesWhichAreNotVisible(m_graph.getDisplayVertices());
+
+        // We must restore the old layout, otherwise the layout is in a weird state
+        if (oldGraph != null) {
+            m_graph.setLayout(oldGraph.getLayout());
+            m_graph.getLayout().updateLocations(new ArrayList<>(m_graph.getDisplayVertices()));
+        }
+    }
+
     @Override
     public Graph getGraph() {
         synchronized(m_containerDirty) {
             if ((isDirty() || isCriteriaDirty()) && getTopologyServiceClient().getNamespace() != null) {
-                m_graph = m_topologyService.getGraph(getTopologyServiceClient().getMetaTopologyId(), getTopologyServiceClient().getNamespace(), getCriteria(), getSemanticZoomLevel());
-                unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
-                removeVerticesWhichAreNotVisible(m_graph.getDisplayVertices());
-                if(m_layoutAlgorithm != null) {
-                    m_layoutAlgorithm.updateLayout(m_graph);
-                }
+                rebuildGraph();
                 setDirty(false);
                 resetCriteriaDirty();
             }

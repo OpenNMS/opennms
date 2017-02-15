@@ -70,6 +70,7 @@ public class DefaultGraph implements Graph {
         return m_layout;
     }
 
+    @Override
     public void setLayout(Layout layout) {
         m_layout = layout;
     }

@@ -43,7 +43,9 @@ public interface Graph {
 	 * @return The layout which defines x and y positions of the graphs vertices.
      */
 	Layout getLayout();
-	
+
+	void setLayout(Layout layout);
+
 	Collection<Vertex> getDisplayVertices();
 	
 	Collection<Edge> getDisplayEdges();

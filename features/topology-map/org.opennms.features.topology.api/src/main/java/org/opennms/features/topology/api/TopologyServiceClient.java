@@ -75,4 +75,6 @@ public interface TopologyServiceClient extends SelectionAware {
     String getMetaTopologyId();
 
     void setNamespace(String namespace);
+
+    Graph getGraph(Criteria[] criteria, int semanticZoomLevel);
 }

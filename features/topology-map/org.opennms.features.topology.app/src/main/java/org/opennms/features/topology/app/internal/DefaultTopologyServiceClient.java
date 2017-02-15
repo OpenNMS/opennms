@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
@@ -155,5 +156,10 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
     @Override
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    @Override
+    public Graph getGraph(Criteria[] criteria, int semanticZoomLevel) {
+        return topologyService.getGraph(getMetaTopologyId(), getNamespace(), criteria, semanticZoomLevel);
     }
 }

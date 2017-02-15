@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Layout;
@@ -74,8 +75,17 @@ public class DefaultLayout implements Layout {
 		}
 		return getLocation(v);
 	}
-	
-    @Override
+
+	@Override
+	public void updateLocations(Collection<VertexRef> displayVertices) {
+		final Map<VertexRef, Point> collect = m_locations.entrySet().stream()
+				.filter(eachEntry -> displayVertices.contains(eachEntry.getKey()))
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+		m_locations.clear();
+		m_locations.putAll(collect);
+	}
+
+	@Override
     public BoundingBox getBounds() {
         if(m_locations.size() > 0) {
             return computeBoundingBox(m_locations.keySet());
