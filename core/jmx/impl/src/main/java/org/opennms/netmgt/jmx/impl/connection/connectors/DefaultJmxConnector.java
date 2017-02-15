@@ -91,10 +91,10 @@ class DefaultJmxConnector implements JmxServerConnector {
             JMXServiceURL url = null;
             
             if(remoteJMX.equalsIgnoreCase("true")){
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.str(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);	
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
             }
             else{
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
             }
              	
             LOG.debug("JMX: {} - {}", factory, url);
