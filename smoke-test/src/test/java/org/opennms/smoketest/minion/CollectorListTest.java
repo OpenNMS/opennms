@@ -64,16 +64,18 @@ public class CollectorListTest {
 
     private static TestEnvironment m_testEnvironment;
 
-    /**
-     * Only a subset of the collectors are available on Minion.
-     */
-    private ImmutableSet<String> expectedMinionCollectors = ImmutableSet.<String> builder().add(
+    private ImmutableSet<String> commonCollectors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.collectd.HttpCollector",
             "org.opennms.netmgt.collectd.JdbcCollector",
             "org.opennms.netmgt.collectd.JBossCollector",
             "org.opennms.netmgt.collectd.Jsr160Collector",
             "org.opennms.netmgt.collectd.JMXSecureCollector",
             "org.opennms.netmgt.collectd.MX4JCollector")
+            .build();
+
+    private ImmutableSet<String> expectedMinionCollectors = ImmutableSet.<String> builder().add(
+            "org.opennms.protocols.nsclient.collector.NSClientCollector")
+            .addAll(commonCollectors)
             .build();
 
     private ImmutableSet<String> expectedOpenNMSCollectors = ImmutableSet.<String> builder().add(
@@ -83,7 +85,7 @@ public class CollectorListTest {
             "org.opennms.netmgt.collectd.WsManCollector",
             "org.opennms.protocols.xml.collector.XmlCollector",
             "org.opennms.netmgt.collectd.SnmpCollector")
-            .addAll(expectedMinionCollectors)
+            .addAll(commonCollectors)
             .build();
 
     @ClassRule

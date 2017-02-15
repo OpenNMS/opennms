@@ -108,6 +108,7 @@
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.client-rpc/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.collectors/${project.version}</bundle>
       <bundle>mvn:org.opennms.features/org.opennms.features.jdbc-collector/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
