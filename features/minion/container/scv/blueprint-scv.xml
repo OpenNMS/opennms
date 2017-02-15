@@ -17,7 +17,7 @@
 
     <!-- Used for sytem properties -->
     <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" />
-    <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
+    <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="key" value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
         </cm:default-properties>
