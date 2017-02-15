@@ -36,8 +36,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.RTCConfigFactory;
@@ -429,12 +427,6 @@ public final class RTCManager extends AbstractServiceDaemon {
             rFactory = RTCConfigFactory.getInstance();
 
         } catch (IOException ex) {
-            log().error("Failed to load rtc configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            log().error("Failed to load rtc configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
             log().error("Failed to load rtc configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
