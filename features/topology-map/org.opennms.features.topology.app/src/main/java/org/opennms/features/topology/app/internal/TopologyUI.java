@@ -606,7 +606,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         m_selectionManager.addSelectionListener(this);
         m_graphContainer.addChangeListener(this);
         m_graphContainer.getMapViewManager().addListener(this);
-        m_operationManager.addMenuItemUpdateListener(this);
         m_menuBar.addMenuItemUpdateListener(this);
         m_contextMenu.addMenuItemUpdateListener(this);
 
@@ -620,7 +619,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         final InfoPanelItemManager infoPanelItemManager = new InfoPanelItemManager();
         m_selectionManager.addSelectionListener(infoPanelItemManager);
-        m_operationManager.addMenuItemUpdateListener(infoPanelItemManager);
         m_menuBar.addMenuItemUpdateListener(infoPanelItemManager);
         m_contextMenu.addMenuItemUpdateListener(infoPanelItemManager);
         m_graphContainer.addChangeListener(infoPanelItemManager);
@@ -1169,7 +1167,6 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     @Override
     public void detach() {
-        m_operationManager.removeMenuItemUpdateListener(this);
         super.detach();
     }
 
