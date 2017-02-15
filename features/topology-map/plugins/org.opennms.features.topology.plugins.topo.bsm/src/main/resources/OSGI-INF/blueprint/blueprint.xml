@@ -13,6 +13,7 @@
     <bean id="bsmTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="BSM Topology Provider"/>
         <property name="description" value="This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."/>
+        <property name="hierarchical" value="true" />
     </bean>
 
     <!-- Topology Provider -->
