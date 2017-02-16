@@ -1,3 +1,24 @@
+opennms (17.1.1-2) stable; urgency=low
+
+  * New stable release.  This release is identical to 17.1.1-1 but adds support
+    for postgresql 9.5 and 9.6 as a dependency.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 27 Apr 2016 10:28:50 -0500
+
+opennms (17.1.1-1) stable; urgency=medium
+
+  * New stable release.  This release contains a number of bug fixes and a few
+    other changes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 10 Mar 2016 10:00:00 -0500
+
+opennms (17.1.0-1) stable; urgency=medium
+
+  * New stable release.  This release contains a number of important bug fixes and
+    a few new features.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 18 Feb 2016 10:44:36 -0500
+
 opennms (17.0.0-1) stable; urgency=medium
 
   * New stable series.  This release contains a large number of bug fixes and

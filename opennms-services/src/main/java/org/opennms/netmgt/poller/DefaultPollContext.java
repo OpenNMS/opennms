@@ -481,4 +481,16 @@ public class DefaultPollContext implements PollContext, EventListener {
         return nodeLabel;
     }
 
+	@Override
+	public void updateLastGood(PollableService psvc) {
+		getQueryManager().updateServiceLastGood(psvc.getNodeId(),
+				psvc.getIpAddr(), psvc.getSvcName(), new Date());
+	}
+
+	@Override
+	public void updateLastFail(PollableService psvc) {
+		getQueryManager().updateServiceLastFail(psvc.getNodeId(),
+				psvc.getIpAddr(), psvc.getSvcName(), new Date());
+	}
+
 }

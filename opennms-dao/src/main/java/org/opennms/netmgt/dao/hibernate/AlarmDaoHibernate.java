@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
@@ -37,10 +41,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -189,8 +189,8 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left outer join ipinterface using (nodeid) " +
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                                "left outer join alarms on (alarms.nodeid = node.nodeid) " +
-                                "where nodeType <> 'D' and alarms.alarmtype in (1,3) " +
+                                "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
+                                "where nodeType <> 'D' " +
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
                                 "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
                         .setResultTransformer(new ResultTransformer() {
