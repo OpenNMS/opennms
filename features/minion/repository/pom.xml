@@ -229,6 +229,10 @@
             <artifactId>org.opennms.features.poller.monitors.core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.jdbc-collector</artifactId>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
