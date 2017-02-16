@@ -86,11 +86,8 @@
 
     // put the nodes in a tree map to sort by name
     TreeMap<String,Node> nodeMap = new TreeMap<String,Node>();
-    Enumeration<Node> nodeEnum = category.enumerateNode();
-    
-    while (nodeEnum.hasMoreElements()) {
-        Node node = nodeEnum.nextElement();
-        int nodeId = (int)node.getNodeid();
+    for (Node node : category.getNode()) {
+        int nodeId = (int)(node.getNodeid());
         String nodeLabel =
 		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
         // nodeMap.put( nodeLabel, node );

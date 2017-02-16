@@ -28,13 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.expect;
-
-import java.util.Collections;
-
 import junit.framework.TestCase;
-
-import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
@@ -47,6 +41,10 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
+
+import java.util.Collections;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -261,6 +259,69 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
 
         m_mocks.replayAll();
         attributeVisitor.visit(attribute);
+        m_mocks.verifyAll();
+    }
+
+    public void testVisitTwice() throws Exception {
+        final RrdStatisticAttributeVisitor attributeVisitor1 = new RrdStatisticAttributeVisitor();
+        attributeVisitor1.setFetchStrategy(m_fetchStrategy);
+        attributeVisitor1.setConsolidationFunction("AVERAGE");
+        attributeVisitor1.setStartTime(m_startTime);
+        attributeVisitor1.setEndTime(m_endTime);
+        attributeVisitor1.setStatisticVisitor(m_statisticVisitor);
+        attributeVisitor1.afterPropertiesSet();
+
+        final RrdStatisticAttributeVisitor attributeVisitor2 = new RrdStatisticAttributeVisitor();
+        attributeVisitor2.setFetchStrategy(m_fetchStrategy);
+        attributeVisitor2.setConsolidationFunction("AVERAGE");
+        attributeVisitor2.setStartTime(m_startTime);
+        attributeVisitor2.setEndTime(m_endTime);
+        attributeVisitor2.setStatisticVisitor(m_statisticVisitor);
+        attributeVisitor2.afterPropertiesSet();
+
+        MockResourceType resourceType = new MockResourceType();
+        resourceType.setName("interfaceSnmp");
+
+        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
+        attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
+
+        Source source = new Source();
+        source.setLabel("result");
+        source.setResourceId(attribute.getResource().getId());
+        source.setAttribute(attribute.getName());
+        source.setAggregation(attributeVisitor1.getConsolidationFunction().toUpperCase());
+
+        expect(m_fetchStrategy.fetch(m_startTime,
+                                     m_endTime,
+                                     1,
+                                     0,
+                                     null,
+                                     null,
+                                     Collections.singletonList(source),
+                                     false))
+                .andReturn(new FetchResults(new long[]{m_startTime},
+                                            Collections.singletonMap("result", new double[]{1.0}),
+                                            m_endTime - m_startTime,
+                                            Collections.emptyMap()));
+        m_statisticVisitor.visit(attribute, 1.0);
+
+        expect(m_fetchStrategy.fetch(m_startTime,
+                                     m_endTime,
+                                     1,
+                                     0,
+                                     null,
+                                     null,
+                                     Collections.singletonList(source),
+                                     false))
+                .andReturn(new FetchResults(new long[]{m_startTime},
+                                            Collections.singletonMap("result", new double[]{2.0}),
+                                            m_endTime - m_startTime,
+                                            Collections.emptyMap()));
+        m_statisticVisitor.visit(attribute, 2.0);
+
+        m_mocks.replayAll();
+        attributeVisitor1.visit(attribute);
+        attributeVisitor2.visit(attribute);
         m_mocks.verifyAll();
     }
 }
