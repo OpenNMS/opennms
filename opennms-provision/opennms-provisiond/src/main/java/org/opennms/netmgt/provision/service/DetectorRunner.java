@@ -29,14 +29,13 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
-import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginParameter;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +43,12 @@ class DetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRunner.class);
 
     private final ProvisionService m_service;
-    private final PluginConfig m_detectorConfig;
+    private final OnmsPluginConfig m_detectorConfig;
     private final Integer m_nodeId;
     private final InetAddress m_address;
     private final OnmsMonitoringLocation m_location;
 
-    public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address,
-            OnmsMonitoringLocation location) {
+    public DetectorRunner(ProvisionService service, OnmsPluginConfig detectorConfig, Integer nodeId, InetAddress address, OnmsMonitoringLocation location) {
         m_service = service;
         m_detectorConfig = detectorConfig;
         m_nodeId = nodeId;
@@ -67,8 +65,7 @@ class DetectorRunner implements Async<Boolean> {
             // Launch the detector
             m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
                     .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
-                    .withAttributes(m_detectorConfig.getParameters().stream()
-                            .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
+                    .withAttributes(new HashMap<>(m_detectorConfig.getParameters()))
                     .execute()
                     // After completion, run the callback
                     .whenComplete((res, ex) -> {

@@ -2,21 +2,23 @@ package org.opennms.netmgt.provision.persist.requisition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toPersistenceModel;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
+import javax.xml.bind.JAXB;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +28,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/testForeignSourceContext.xml"
 })
 @JUnitConfigurationEnvironment
+@Transactional
 public class RequisitionImplementationTest implements InitializingBean, ApplicationContextAware {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationTest.class);
 
@@ -41,20 +45,11 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     @After
     public void cleanUp() throws Exception {
         if (m_repositories != null) {
-            resetDirectories();
             for (final ForeignSourceRepository fsr : m_repositories.values()) {
-                fsr.flush();
-                fsr.clear();
+                fsr.getRequisitions().forEach(r -> fsr.delete(r));
             }
         }
         LOG.info("Test context prepared.");
-    }
-
-    private void resetDirectories() throws IOException {
-        FileUtils.deleteDirectory(new File("target/opennms-home/etc/imports"));
-        FileUtils.forceMkdir(new File("target/opennms-home/etc/imports/pending"));
-        FileUtils.deleteDirectory(new File("target/opennms-home/etc/foreign-sources"));
-        FileUtils.forceMkdir(new File("target/opennms-home/etc/foreign-sources/pending"));
     }
 
     interface RepositoryTest<T> {
@@ -67,7 +62,6 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
             final ForeignSourceRepository fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
             fsr.resetDefaultForeignSource();
-            fsr.flush();
             try {
                 rt.test(fsr);
             } catch (final Throwable t) {
@@ -90,12 +84,15 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testCreateSimpleRequisition() {
         runTest(
                 fsr -> {
-                    Requisition req = fsr.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
-                    fsr.save(req);
-                    fsr.flush();
-                    req = fsr.getRequisition("imported:");
-                    assertNotNull(req);
-                    assertEquals(2, req.getNodeCount());
+                    try {
+                        OnmsRequisition req = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
+                        fsr.save(req);
+                        req = fsr.getRequisition("imported:");
+                        assertNotNull(req);
+                        assertEquals(2, req.getNodes().size());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 },
                 null
                 );
@@ -105,10 +102,9 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testCreateSimpleForeignSource() {
         runTest(
                 fsr -> {
-                    ForeignSource fs = fsr.getForeignSource("blah");
+                    OnmsForeignSource fs = fsr.getForeignSource("blah");
                     fs.setDefault(false);
                     fsr.save(fs);
-                    fsr.flush();
                     fs = fsr.getForeignSource("blah");
                     assertNotNull(fs);
                     assertNotNull(fs.getScanInterval());
@@ -121,11 +117,10 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testRequisitionWithSpace() {
         runTest(
                 fsr -> {
-                    final Requisition req = new Requisition("foo bar");
-                    req.setDate(new Date(0));
+                    final OnmsRequisition req = new OnmsRequisition("foo bar");
+                    req.setLastUpdate(new Date(0));
                     fsr.save(req);
-                    fsr.flush();
-                    final Requisition saved = fsr.getRequisition("foo bar");
+                    final OnmsRequisition saved = fsr.getRequisition("foo bar");
                     assertNotNull(saved);
                     assertEquals(req, saved);
                 },
@@ -137,7 +132,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testRequisitionWithSlash() {
         runTest(
                 fsr -> {
-                    final Requisition req = new Requisition("foo/bar");
+                    final OnmsRequisition req = new OnmsRequisition("foo/bar");
                     req.setForeignSource("foo/bar");
                     fsr.save(req);
                 },
@@ -149,11 +144,10 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testForeignSourceWithSpace() {
         runTest(
                 fsr -> {
-                    final ForeignSource fs = fsr.getForeignSource("foo bar");
+                    final OnmsForeignSource fs = fsr.getForeignSource("foo bar");
                     fs.setDefault(false);
                     fsr.save(fs);
-                    fsr.flush();
-                    final ForeignSource saved = fsr.getForeignSource("foo bar");
+                    final OnmsForeignSource saved = fsr.getForeignSource("foo bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
                 },
@@ -165,11 +159,10 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testForeignSourceWithSlash() {
         runTest(
                 fsr -> {
-                    final ForeignSource fs = fsr.getForeignSource("foo/bar");
+                    final OnmsForeignSource fs = fsr.getForeignSource("foo/bar");
                     fs.setDefault(false);
                     fsr.save(fs);
-                    fsr.flush();
-                    final ForeignSource saved = fsr.getForeignSource("foo/bar");
+                    final OnmsForeignSource saved = fsr.getForeignSource("foo/bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
                 },

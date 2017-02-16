@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.springframework.util.Assert;
 
 /**
@@ -44,13 +42,15 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  *
  */
-public class MockForeignSourceRepository extends AbstractForeignSourceRepository {
-    private final Map<String,Requisition> m_requisitions = new HashMap<String,Requisition>();
-    private final Map<String,ForeignSource> m_foreignSources = new HashMap<String,ForeignSource>();
+// TODO MVR implement
+public class MockForeignSourceRepository implements ForeignSourceRepository {
+    private final Map<String,OnmsRequisition> m_requisitions = new HashMap<>();
+    private final Map<String,OnmsForeignSource> m_foreignSources = new HashMap<>();
+
 
     @Override
     public Set<String> getActiveForeignSourceNames() {
-    	final Set<String> fsNames = new TreeSet<String>();
+    	final Set<String> fsNames = new TreeSet<>();
         fsNames.addAll(m_requisitions.keySet());
         fsNames.addAll(m_foreignSources.keySet());
         return fsNames;
@@ -60,28 +60,24 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     public int getForeignSourceCount() {
         return m_foreignSources.size();
     }
-    
+
     @Override
-    public Set<ForeignSource> getForeignSources() {
-        return new TreeSet<ForeignSource>(m_foreignSources.values());
+    public Set<OnmsForeignSource> getForeignSources() {
+        return new TreeSet<>(m_foreignSources.values());
     }
 
     @Override
-    public ForeignSource getForeignSource(final String foreignSourceName) {
+    public OnmsForeignSource getForeignSource(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
-        final ForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
+        final OnmsForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
         if (foreignSource == null) {
-        	if (foreignSourceName == "default") {
-        		return super.getDefaultForeignSource();
-        	} else {
-        		return getDefaultForeignSource();
-        	}
+            return getDefaultForeignSource();
         }
         return foreignSource;
     }
 
     @Override
-    public void save(final ForeignSource foreignSource) {
+    public void save(final OnmsForeignSource foreignSource) {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
 
@@ -91,76 +87,77 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     }
 
     @Override
-    public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void delete(final OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_foreignSources.remove(foreignSource.getName());
     }
 
     @Override
-    public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
-        return new TreeSet<Requisition>(m_requisitions.values());
+    public Set<OnmsRequisition> getRequisitions() throws ForeignSourceRepositoryException {
+        return new TreeSet<>(m_requisitions.values());
     }
 
     @Override
-    public Requisition getRequisition(final String foreignSourceName) {
+    public OnmsRequisition getRequisition(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
         return m_requisitions.get(foreignSourceName);
     }
 
     @Override
-    public Requisition getRequisition(final ForeignSource foreignSource) {
-        Assert.notNull(foreignSource);
-        Assert.notNull(foreignSource.getName());
-        return getRequisition(foreignSource.getName());
-    }
-
-    @Override
-    public void save(final Requisition requisition) {
+    public void save(final OnmsRequisition requisition) {
         Assert.notNull(requisition);
         Assert.notNull(requisition.getForeignSource());
-        
+
         validate(requisition);
 
         m_requisitions.put(requisition.getForeignSource(), requisition);
     }
 
     @Override
-    public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
+    public void delete(final OnmsRequisition requisition) throws ForeignSourceRepositoryException {
         m_requisitions.remove(requisition.getForeignSource());
     }
 
     @Override
-    public Date getRequisitionDate(final String foreignSource) {
-        final Requisition requisition = m_requisitions.get(foreignSource);
-        return requisition == null? null : requisition.getDate();
+    public void validate(OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
+
     }
 
     @Override
-    public URL getRequisitionURL(final String foreignSource) {
-        throw new UnsupportedOperationException("no URL in the mock repository");
+    public void validate(OnmsRequisition requisition) throws ForeignSourceRepositoryException {
+
     }
 
     @Override
-    public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
-    	final ForeignSource fs = getForeignSource("default");
+    public void triggerImport(ImportRequest web) {
+        // TODO MVR send event
+    }
+
+    @Override
+    public OnmsForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
+    	final OnmsForeignSource fs = getForeignSource("default");
     	if (fs == null) {
-    		return super.getDefaultForeignSource();
+    	    // TODO MVR map... this is duplicated code, we may re-use this anyways ...
+//            fs = JAXB.unmarshal(ForeignSource.class, new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml"));
+//            fs.setDefault(true);
+            return fs;
     	}
     	return fs;
     }
 
     @Override
-    public void putDefaultForeignSource(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public void putDefaultForeignSource(final OnmsForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("foreign source was null");
         }
         foreignSource.setDefault(true);
         foreignSource.setName("default");
-        
+
         save(foreignSource);
     }
 
     @Override
-    public void flush() throws ForeignSourceRepositoryException {
-        // Unnecessary, there is no caching/delayed writes in MockForeignSourceRepository
+    public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
+        m_foreignSources.remove("default");
     }
+
 }

@@ -32,34 +32,15 @@ import org.opennms.netmgt.provision.service.ProvisionService;
 
 public class UpdateOperation extends SaveOrUpdateOperation {
     
-    /**
-     * <p>Constructor for UpdateOperation.</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param location a {@link java.lang.String} object.
-     * @param building a {@link java.lang.String} object.
-     * @param city a {@link java.lang.String} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param rescanExisting a {@link java.lang.String} object
-     */
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
         super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting);
     }
 
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
 	@Override
 	public String toString() {
        return "UPDATE: Node: "+(getNode().getId() == null ? "[no ID]" : getNode().getId())+": "+getNode().getLabel();
     }
 
-	/** {@inheritDoc} */
 	@Override
     protected void doPersist() {
         getProvisionService().updateNode(getNode(), getRescanExisting());

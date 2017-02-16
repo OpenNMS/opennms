@@ -28,73 +28,28 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.Assert;
 
 /**
  * A factory for creating ForeignSourceRepository objects.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO MVR simplify this pending vs deployed, und generell wird das nicht mehr benötigt ...
 public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepositoryFactory, InitializingBean {
 
     /** The Constant REPOSITORY_IMPLEMENTATION. */
     public static final String REPOSITORY_IMPLEMENTATION = "org.opennms.provisiond.repositoryImplementation";
 
     /** The Constant DEFAULT_IMPLEMENTATION. */
-    public static final String DEFAULT_IMPLEMENTATION = "file";
+    public static final String DEFAULT_IMPLEMENTATION = "database";
 
-    /** The file based pending repository. */
     @Autowired
-    @Qualifier("filePending")
-    private ForeignSourceRepository m_filePendingRepository;
-
-    /** The file based deployed repository. */
-    @Autowired
-    @Qualifier("fileDeployed")
-    private ForeignSourceRepository m_fileDeployedRepository;
-
-    /** The fast file based file pending repository. */
-    @Autowired
-    @Qualifier("fastFilePending")
-    private ForeignSourceRepository m_fastFilePendingRepository;
-
-    /** The fast file based file deployed repository. */
-    @Autowired
-    @Qualifier("fastFileDeployed")
-    private ForeignSourceRepository m_fastFileDeployedRepository;
-
-    /** The fused repository. */
-    @Autowired
-    @Qualifier("fused")
-    private ForeignSourceRepository m_fusedRepository;
-
-    /** The fast fused repository. */
-    @Autowired
-    @Qualifier("fastFused")
-    private ForeignSourceRepository m_fastFusedRepository;
-
-    /** The caching repository. */
-    @Autowired
-    @Qualifier("caching")
-    private ForeignSourceRepository m_cachingRepository;
-
-    /** The fast caching repository. */
-    @Autowired
-    @Qualifier("fastCaching")
-    private ForeignSourceRepository m_fastCachingRepository;
-
-    /** The queueing repository. */
-    @Autowired
-    @Qualifier("queueing")
-    private ForeignSourceRepository m_queueingRepository;
-
-    /** The fast queueing repository. */
-    @Autowired
-    @Qualifier("fastQueueing")
-    private ForeignSourceRepository m_fastQueueingRepository;
+    @Qualifier("database")
+    private ForeignSourceRepository m_databaseRepository;
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory#getPendingRepository()
@@ -103,22 +58,16 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
     public ForeignSourceRepository getPendingRepository() {
         switch (getRepositoryStrategy()) {
         case fastQueueing:
-            return m_fastQueueingRepository;
         case queueing:
-            return m_queueingRepository;
         case fastCaching:
-            return m_fastCachingRepository;
         case caching:
-            return m_cachingRepository;
         case fastFused:
-            return m_fastFusedRepository;
         case fused:
-            return m_fusedRepository;
         case fastFile:
-            return m_fastFilePendingRepository;
         case file:
+            LoggerFactory.getLogger(getClass()).warn("The configured repository strategy '{}' is no longer supported. FAlling back to default: {}", getRepositoryStrategy(), DEFAULT_IMPLEMENTATION);
         default:
-            return m_filePendingRepository;
+            return m_databaseRepository;
         }
     }
 
@@ -127,25 +76,7 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
      */
     @Override
     public ForeignSourceRepository getDeployedRepository() {
-        switch (getRepositoryStrategy()) {
-        case fastQueueing:
-            return m_fastQueueingRepository;
-        case queueing:
-            return m_queueingRepository;
-        case fastCaching:
-            return m_fastCachingRepository;
-        case caching:
-            return m_cachingRepository;
-        case fastFused:
-            return m_fastFusedRepository;
-        case fused:
-            return m_fusedRepository;
-        case fastFile:
-            return m_fastFileDeployedRepository;
-        case file:
-        default:
-            return m_fileDeployedRepository;
-        }
+        return getPendingRepository();
     }
 
     /* (non-Javadoc)
@@ -153,6 +84,7 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
      */
     @Override
     public FactoryStrategy getRepositoryStrategy() {
+        // TODO MVR rausrupfen
         return FactoryStrategy.valueOf(System.getProperty(REPOSITORY_IMPLEMENTATION, DEFAULT_IMPLEMENTATION));
     }
 
@@ -162,27 +94,12 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
     @Override
     public synchronized void setRepositoryStrategy(FactoryStrategy strategy) {
         if (strategy != null) {
-            getDeployedRepository().flush();
-            getPendingRepository().flush();
             System.setProperty(REPOSITORY_IMPLEMENTATION, strategy.toString());
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_fastQueueingRepository);
-        Assert.notNull(m_queueingRepository);
-        Assert.notNull(m_fastCachingRepository);
-        Assert.notNull(m_cachingRepository);
-        Assert.notNull(m_fastFusedRepository);
-        Assert.notNull(m_fusedRepository);
-        Assert.notNull(m_fastFileDeployedRepository);
-        Assert.notNull(m_fastFilePendingRepository);
-        Assert.notNull(m_fileDeployedRepository);
-        Assert.notNull(m_filePendingRepository);
     }
 
 }

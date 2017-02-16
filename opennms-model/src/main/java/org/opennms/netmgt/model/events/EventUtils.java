@@ -197,7 +197,7 @@ public abstract class EventUtils {
      *            the source of the event
      * @param nodeId
      *            the nodeId of the node the interface resides in
-     * @param ipAddr
+     * @param addr
      *            the ipAdddr of the event
      * @return an Event represent an interfaceDeleted event for the given
      *         interface
@@ -220,7 +220,7 @@ public abstract class EventUtils {
      *            the source of the event
      * @param nodeId
      *            the nodeId that the service resides on
-     * @param ipAddr
+     * @param addr
      *            the interface that the service resides on
      * @param service
      *            the name of the service that was deleted
@@ -350,7 +350,7 @@ public abstract class EventUtils {
      * @param rescanExisting a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, String rescanExisting) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, boolean rescanExisting) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
@@ -358,9 +358,7 @@ public abstract class EventUtils {
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
         }
-        if (rescanExisting != null) {
-            bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
-        }
+        bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
         return bldr.getEvent();
     }
 
@@ -590,7 +588,7 @@ public abstract class EventUtils {
      *
      * @param e
      *            the event
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.core.utils.InsufficientInformationException
      *             if an interface is not available
      */
     static public void checkInterface(Event e) throws InsufficientInformationException {
@@ -621,7 +619,7 @@ public abstract class EventUtils {
      *
      * @param e
      *            the event
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.core.utils.InsufficientInformationException
      *             if a node id is not available
      */
     static public void checkNodeId(Event e) throws InsufficientInformationException {
@@ -637,7 +635,7 @@ public abstract class EventUtils {
      *
      * @param e
      *            the event to check
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.core.utils.InsufficientInformationException
      *             if the event does not have a service
      */
     public static void checkService(Event e) throws InsufficientInformationException {
@@ -752,7 +750,7 @@ public abstract class EventUtils {
      *
      * @param e
      *            the event the parameter must reside on
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.core.utils.InsufficientInformationException
      *             if the paramter is not set on the event or if its value has
      *             no content
      * @param parmName a {@link java.lang.String} object.

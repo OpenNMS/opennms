@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.provision.persist.requisition;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,8 +45,8 @@ public class RequisitionAssetCollection extends JaxbListWrapper<RequisitionAsset
     private static final long serialVersionUID = 1L;
 
     public RequisitionAssetCollection() { super(); }
-    public RequisitionAssetCollection(final Collection<? extends RequisitionAsset> assets) {
-        super(assets);
+    public RequisitionAssetCollection(Map<String, String> assets) {
+        super(assets.entrySet().stream().map(e -> new RequisitionAsset(e.getKey(), e.getValue())).collect(Collectors.toList()));
     }
 
     @XmlElement(name="asset")

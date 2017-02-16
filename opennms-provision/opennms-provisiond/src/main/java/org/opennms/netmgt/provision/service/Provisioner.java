@@ -30,9 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.File;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +49,7 @@ import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
+import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -60,19 +59,16 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.provision.persist.ImportRequest;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
-import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
-import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
-import org.opennms.netmgt.provision.service.operations.RequisitionImport;
+import org.opennms.netmgt.provision.service.operations.RequisitionImportContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 import com.google.common.collect.Maps;
 
@@ -101,8 +97,6 @@ public class Provisioner implements SpringServiceDaemon {
     private volatile EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
-    private volatile TimeTrackingMonitor m_stats;
-    
     @Autowired
     private ProvisioningAdapterManager m_manager;
 
@@ -110,6 +104,9 @@ public class Provisioner implements SpringServiceDaemon {
     private MonitoringSystemDao monitoringSystemDao;
     
     private ImportScheduler m_importSchedule;
+
+    @Autowired
+    private OnmsRequisitionDao requisitionDao;
 
     /**
      * <p>setProvisionService</p>
@@ -256,70 +253,31 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
-    /**
-     * <p>doNodeScan</p>
-     *
-     * @param nodeId a int.
-     * @throws java.lang.InterruptedException if any.
-     * @throws java.util.concurrent.ExecutionException if any.
-     */
     public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
     }
-    
-    /**
-     * <p>createNodeScan</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
-     * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
-     */
+
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
         LOG.info("createNodeScan called");
         return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
-    /**
-     * <p>createNewSuspectScan</p>
-     *
-     * @param ipAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
-     */
     public NewSuspectScan createNewSuspectScan(InetAddress ipAddress, String foreignSource, String location) {
         LOG.info("createNewSuspectScan called with IP: "+ipAddress+ "and foreignSource"+foreignSource == null ? "null" : foreignSource);
         return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource, location);
     }
 
-    /**
-     * <p>createForceRescanScan</p>
-     *
-     * @param ipAddress a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
-     */
     public ForceRescanScan createForceRescanScan(Integer nodeId) {
         LOG.info("createForceRescanScan called with nodeId: "+nodeId);
         return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
     //Helper functions for the schedule
-    /**
-     * <p>addToScheduleQueue</p>
-     *
-     * @param schedule a {@link org.opennms.netmgt.provision.service.NodeScanSchedule} object.
-     */
     protected void addToScheduleQueue(NodeScanSchedule schedule) {
         ScheduledFuture<?> future = scheduleNodeScan(schedule);
         LOG.warn("addToScheduleQueue future = {}", future);
         m_scheduledNodes.put(schedule.getNodeId(), future);
     }
     
-
-    /**
-     * <p>updateNodeScheduleInQueue</p>
-     *
-     * @param schedule a {@link org.opennms.netmgt.provision.service.NodeScanSchedule} object.
-     */
     protected void updateNodeScheduleInQueue(NodeScanSchedule schedule) {
         ScheduledFuture<?> scheduledFuture = getScheduledFutureForNode(schedule.getNodeId());
         
@@ -336,46 +294,24 @@ public class Provisioner implements SpringServiceDaemon {
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
 
-    /**
-     * <p>getScheduledFutureForNode</p>
-     *
-     * @param nodeId a int.
-     * @return a {@link java.util.concurrent.ScheduledFuture} object.
-     */
     public ScheduledFuture<?> getScheduledFutureForNode(int nodeId) {
     	return m_scheduledNodes.get(nodeId);
     }
     
-    /**
-     * <p>removeNodeFromScheduleQueue</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     */
     protected void removeNodeFromScheduleQueue(Integer nodeId) {
         ScheduledFuture<?> scheduledFuture = m_scheduledNodes.remove(nodeId);
         
         if(scheduledFuture != null && !scheduledFuture.isDone()) {
             scheduledFuture.cancel(true);
         }
-        
     }
     
-    /**
-     * <p>removeFromScheduleQueue</p>
-     *
-     * @param nodeIds a {@link java.util.List} object.
-     */
     protected void removeFromScheduleQueue(List<Integer> nodeIds) {
         for(Integer nodeId : nodeIds) {
             removeNodeFromScheduleQueue(nodeId);
         }
     }
     
-    /**
-     * <p>checkNodeListForRemovals</p>
-     *
-     * @param schedules a {@link java.util.List} object.
-     */
     protected void checkNodeListForRemovals(List<NodeScanSchedule> schedules) {
         Set<Integer> keySet = m_scheduledNodes.keySet();
         List<Integer> markedForDelete = new ArrayList<Integer>(); 
@@ -398,73 +334,38 @@ public class Provisioner implements SpringServiceDaemon {
     }
    
 
-    /**
-     * <p>getScheduleLength</p>
-     *
-     * @return a int.
-     */
     public int getScheduleLength() {
         return m_scheduledNodes.size();
     }
     //^ Helper functions for the schedule
-    
-    /**
-     * <p>importModelFromResource</p>
-     *
-     * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
-     * @throws java.lang.Exception if any.
-     */
+
     protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
-    	importModelFromResource(resource, rescanExisting, new NoOpProvisionMonitor());
+        doImport(new ImportRequest(NAME).withUrl(resource.getURL().toString()).withRescanExisting(rescanExisting));
     }
 
-    /**
-     * <p>importModelFromResource</p>
-     *
-     * @param resource a {@link org.springframework.core.io.Resource} object.
-     * @param rescanExisting TODO
-     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
-     * @throws java.lang.Exception if any.
-     */
-    protected void importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
+    protected void importModelFromResource(final ImportRequest importRequest) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
-        doImport.setAttribute("resource", resource);
-        doImport.setAttribute("rescanExisting", rescanExisting);
+        RequisitionImportContext context = new RequisitionImportContext();
+        context.setImportRequest(importRequest);
+        context.setRescanExisting(importRequest.getRescanExisting());
+        doImport.setAttribute("context", context);
+        doImport.setAttribute("rescanExisting", importRequest.getRescanExisting());
         doImport.trigger();
         doImport.waitFor();
-        final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
+        final RequisitionImportContext ri = doImport.findAttributeByType(RequisitionImportContext.class);
         if (ri.isAborted()) {
-            throw new ModelImportException("Import failed for resource " + resource.toString(), ri.getError());
+            throw new ModelImportException("Could not perform requested import: " + importRequest, ri.getError());
         }
     }
 
-    /**
-     * <p>setEventForwarder</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
-    /**
-     * <p>getEventForwarder</p>
-     *
-     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
-    /**
-     * <p>doImport</p>
-     */
-    public void doImport() {
-        Event e = null;
-        doImport(e);
-    }
-    
     /**
      * Begins importing from resource specified in model-importer.properties file or
      * in event parameter: url.  Import Resources are managed with a "key" called
@@ -475,73 +376,30 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
     public void doImport(final Event event) {
-        final String url = getEventUrl(event);
-        final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
-
-        if (url != null) {
-            doImport(url, rescanExistingOnImport);
-        } else {
-            final String msg = "reloadImport event requires 'url' parameter";
-            LOG.error("doImport: {}", msg);
-            send(importFailedEvent(msg, url, rescanExistingOnImport));
-        }
-        
+        ImportRequest properties = new ImportRequest(event, System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"));
+        doImport(properties);
     }
 
-    /**
-     * <p>doImport</p>
-     *
-     * @param url a {@link java.lang.String} object.
-     */
-    public void doImport(final String url, final String rescanExisting) {
-        
-        try {
-            
-            LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
-
-            final Resource resource;
-
-            final URL u = new URL(url);
-            if ("file".equals(u.getProtocol())) {
-                final File file = new File(u.toURI());
-                LOG.debug("doImport: file = {}", file);
-                if (file.exists()) {
-                    resource = new FileSystemResource(file);
-                } else {
-                    final String filename = file.getName();
-                    if (filename.contains("%20")) {
-                        resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
-                    } else {
-                        resource = new UrlResource(url);
-                    }
-                }
-            } else {
-                resource = new UrlResource(url);
+    public void doImport(final ImportRequest importRequest) {
+        if (importRequest.isValid()) {
+            try {
+                LOG.info("doImport: importing: {}", importRequest);
+                send(importStartedEvent(importRequest));
+                importModelFromResource(importRequest);
+                LOG.info("Finished Importing: {}");
+                send(importSuccessEvent(importRequest));
+            } catch (final Throwable t) {
+                final String msg = "Exception importing "+importRequest.getUrl();
+                LOG.error("Exception importing: {}", importRequest);
+                send(importFailedEvent((msg+": "+t.getMessage()), importRequest));
             }
-
-            m_stats = new TimeTrackingMonitor();
-            
-            send(importStartedEvent(resource, rescanExisting));
-    
-            importModelFromResource(resource, rescanExisting, m_stats);
-    
-            LOG.info("Finished Importing: {}", m_stats);
-    
-            send(importSuccessEvent(m_stats, url, rescanExisting));
-    
-        } catch (final Throwable t) {
-            final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting));
+        } else {
+            final String msg = "reloadImport event requires 'importResource' or 'importForeignSource' parameter";
+            LOG.error("doImport: {}", msg);
+            send(importFailedEvent(msg, importRequest));
         }
     }
 
-
-    /**
-     * <p>handleNodeAddedEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAddedEvent(Event e) {
         NodeScanSchedule scheduleForNode = null;
@@ -561,11 +419,6 @@ public class Provisioner implements SpringServiceDaemon {
 
     }
     
-    /**
-     * <p>handleForceRescan</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
         final Integer nodeId = new Integer(e.getNodeid().intValue());
@@ -677,22 +530,12 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
 
-    /**
-     * <p>handleNodeDeletedEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
         removeNodeFromScheduleQueue(e.getNodeid().intValue());
         
     }
     
-    /**
-     * <p>handleReloadConfigEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
         
@@ -744,11 +587,6 @@ public class Provisioner implements SpringServiceDaemon {
         return isTarget;
     }
 
-    /**
-     * <p>handleAddInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
     public void handleAddInterface(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -765,11 +603,6 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
     }
 
-    /**
-     * <p>handleAddNode</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
     public void handleAddNode(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -781,10 +614,6 @@ public class Provisioner implements SpringServiceDaemon {
         }
     }
 
-    /**
-     * @param ipAddr
-     * @param nodeLabel
-     */
     private void doAddNode(String ipAddr, String nodeLabel) {
 
         OnmsNode node = new OnmsNode();
@@ -798,11 +627,6 @@ public class Provisioner implements SpringServiceDaemon {
 
     }
 
-    /**
-     * <p>handleChangeService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
     public void handleChangeService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -819,11 +643,6 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
     }
 
-    /**
-     * <p>handleDeleteInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void handleDeleteInterface(Event event) {
         try {
@@ -837,11 +656,6 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteInterface((int)nodeId, ipAddr);
     }
 
-    /**
-     * <p>handleDeleteNode</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
     public void handleDeleteNode(Event event) {
         try {
@@ -855,11 +669,6 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteNode((int)nodeId);
     }
 
-    /**
-     * <p>handleDeleteService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) {
         try {
@@ -873,11 +682,6 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteService((int)nodeId, addr, service);
     }
 
-    /**
-     * <p>handleUpdateServer</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
     public void handleUpdateServer(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -896,11 +700,6 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
     }
 
-    /**
-     * <p>handleUpdateService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
     @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
     public void handleUpdateService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -919,67 +718,25 @@ public class Provisioner implements SpringServiceDaemon {
         // FIXME: Handle Rackspace UPDATE_SERVICE event
         throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
     }
-
-    private String getEventUrl(Event event) {
-        return EventUtils.getParm(event, EventConstants.PARM_URL);
-    }
-
-    private String getEventRescanExistingOnImport(final Event event) {
-        final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
-        
-        if (rescanExisting == null) {
-            final String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
-            return enabled;
-        }
-        
-        return rescanExisting;
-    }
     
-    /**
-     * <p>getStats</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
-
-    private Event importSuccessEvent(final TimeTrackingMonitor stats, final String url, final String rescanExisting) {
-    
-        return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
-            .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
-            .getEvent();
+    private Event importSuccessEvent(final ImportRequest importRequest) {
+        return importRequest.addEventParameters(new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )).getEvent();
     }
 
     private void send(final Event event) {
         m_eventForwarder.sendNow(event);
     }
 
-    private Event importFailedEvent(final String msg, final String url, final String rescanExisting) {
-    
-        return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
-            .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
-            .getEvent();
+    private Event importFailedEvent(final String msg, final ImportRequest importRequest) {
+        return importRequest.addEventParameters(
+                new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
+                    .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
+            ).getEvent();
     }
 
-    private Event importStartedEvent(final Resource resource, final String rescanExisting) {
-    
-        return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
-            .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
+    private Event importStartedEvent(final ImportRequest importRequest) {
+        return importRequest.addEventParameters(new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME ))
             .getEvent();
-    }
-
-    /**
-     * <p>getEventForeignSource</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String getEventForeignSource(final Event event) {
-        return EventUtils.getParm(event, EventConstants.PARM_FOREIGN_SOURCE);
     }
 
     public void waitFor() {

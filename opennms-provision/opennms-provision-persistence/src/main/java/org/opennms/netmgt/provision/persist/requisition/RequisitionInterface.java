@@ -39,6 +39,7 @@ package org.opennms.netmgt.provision.persist.requisition;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,6 +53,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
 import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
 
 

@@ -44,7 +44,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -55,27 +54,29 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
-    private ForeignSourceCollection fsw;
-    private AbstractForeignSourceRepository fsr;
+    private List<OnmsForeignSource> fsw = new ArrayList<>();
+    private MockForeignSourceRepository fsr;
     private Marshaller m;
     private JAXBContext c;
-    private ForeignSource fs;
+    private OnmsForeignSource fs;
     private FileAnticipator fa;
 
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
-        
+
         public TestOutputResolver(File schemaFile) {
             m_schemaFile = schemaFile;
         }
-        
+
         @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
@@ -89,42 +90,40 @@ public class PersistenceSerializationTest {
         fa = new FileAnticipator();
 
         fsr = new MockForeignSourceRepository();
-        fsr.save(new ForeignSource("cheese"));
-        fsr.flush();
+        fsr.save(new OnmsForeignSource("cheese"));
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
-        XMLGregorianCalendar cal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00");
-        fs.setDateStamp(cal);
+        fs.setDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00").toGregorianCalendar().getTime());
 
-        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
-        final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
+        List<DetectorPluginConfig> detectors = new ArrayList<>();
+        final DetectorPluginConfig detector = new DetectorPluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
         detector.addParameter("sharpness", "mild");
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        List<PluginConfig> policies = new ArrayList<PluginConfig>();
-        PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
+        List<PolicyPluginConfig> policies = new ArrayList<>();
+        PolicyPluginConfig policy = new PolicyPluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
         policies.add(policy);
-        policy = new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
+        policy = new PolicyPluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
         policies.add(policy);
-        policy = new PluginConfig("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
+        policy = new PolicyPluginConfig("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
         policy.addParameter("ipaddress", "~^10\\..*$");
         policies.add(policy);
-        policy = new PluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        policy = new PolicyPluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
         policy.addParameter("ifdescr", "~^(?i:LEC).*$");
         policies.add(policy);
         fs.setPolicies(policies);
 
-        fsw = new ForeignSourceCollection();
-        fsw.getForeignSources().addAll(fsr.getForeignSources());
+        fsw.clear();
+        fsw.addAll(fsr.getForeignSources());
         c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
         m = c.createMarshaller();
-        
+
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setNormalize(true);
@@ -143,7 +142,7 @@ public class PersistenceSerializationTest {
             fa.deleteExpected();
         }
     }
-    
+
     @Test
     public void generateXML() throws Exception {
         // Marshal the test object to an XML string

@@ -69,7 +69,7 @@
     </bean>
 
     <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-        <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+        <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
         <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     </bean>
 

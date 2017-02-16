@@ -36,11 +36,11 @@ import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -118,13 +118,13 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     /** {@inheritDoc} */
     @Override
-    public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
+    public <T> T getPluginInstance(Class<T> pluginClass, OnmsPluginConfig pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {
             return null;
         }
         
-        Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
+        Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameters());
 
 
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);

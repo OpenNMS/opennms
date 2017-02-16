@@ -1030,9 +1030,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     @XmlTransient
     @ElementCollection
-    @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKeyColumn(name="attribute")
-    @Column(name="attributeValue", nullable=false)
+    @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmid"))
+    @MapKeyColumn(name="attributename")
+    @Column(name="attributevalue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;
     }

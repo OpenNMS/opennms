@@ -37,53 +37,26 @@ public abstract class ImportOperation {
     
     private final ProvisionService m_provisionService;
     
-    /**
-     * <p>Constructor for ImportOperation.</p>
-     *
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
     public ImportOperation(ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
 
-
-    /**
-     * <p>scan</p>
-     */
     public abstract void scan();
 
-    /**
-     * <p>getProvisionService</p>
-     *
-     * @return the provisionService
-     */
     protected ProvisionService getProvisionService() {
         return m_provisionService;
     }
 
-    /**
-     * <p>doPersist</p>
-     */
     protected abstract void doPersist();
 
-
-    /**
-     * <p>persist</p>
-     */
     public void persist() {
     
-        final ImportOperation oper = this;
-    
-        LOG.info("Persist: {}", oper);
-    
+        LOG.info("Persist: {}", this);
         doPersist();
-    	
-    
         LOG.info("Clear cache: {}", this);
     
         // clear the cache to we don't use up all the memory
     	getProvisionService().clearCache();
     }
-
 
 }

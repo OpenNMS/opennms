@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,46 +35,47 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// TODO MVR rip out
 public class DefaultForeignSourceRepositoryFactoryTest extends ForeignSourceRepositoryTestCase {
 
     /** The m_foreign source repository factory. */
     @Autowired
     private ForeignSourceRepositoryFactory m_foreignSourceRepositoryFactory;
 
-    /**
-     * Test factory.
-     */
-    @Test
-    public void testFactory() {
-        // Testing default implementation
-
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FilesystemForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FilesystemForeignSourceRepository);
-
-        // Testing custom implementation
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastFile);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FasterFilesystemForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FasterFilesystemForeignSourceRepository);
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fused);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FusedForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FusedForeignSourceRepository);
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.caching);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof CachingForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof CachingForeignSourceRepository);
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastCaching);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof CachingForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof CachingForeignSourceRepository);
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.queueing);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof QueueingForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof QueueingForeignSourceRepository);
-
-        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastQueueing);
-        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof QueueingForeignSourceRepository);
-        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof QueueingForeignSourceRepository);
-    }
+//    /**
+//     * Test factory.
+//     */
+//    @Test
+//    public void testFactory() {
+//        // Testing default implementation
+//
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FilesystemForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FilesystemForeignSourceRepository);
+//
+//        // Testing custom implementation
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastFile);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FasterFilesystemForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FasterFilesystemForeignSourceRepository);
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fused);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof FusedForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof FusedForeignSourceRepository);
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.caching);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof CachingForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof CachingForeignSourceRepository);
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastCaching);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof CachingForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof CachingForeignSourceRepository);
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.queueing);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof QueueingForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof QueueingForeignSourceRepository);
+//
+//        m_foreignSourceRepositoryFactory.setRepositoryStrategy(FactoryStrategy.fastQueueing);
+//        assertTrue(m_foreignSourceRepositoryFactory.getDeployedRepository() instanceof QueueingForeignSourceRepository);
+//        assertTrue(m_foreignSourceRepositoryFactory.getPendingRepository() instanceof QueueingForeignSourceRepository);
+//    }
 }

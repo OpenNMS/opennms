@@ -125,14 +125,14 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
     <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+    <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
     <property name="pollerConfig" ref="pollerConfig"/>
   </bean>
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-      <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+      <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
       <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
   </bean>
   <!-- Graphing -->

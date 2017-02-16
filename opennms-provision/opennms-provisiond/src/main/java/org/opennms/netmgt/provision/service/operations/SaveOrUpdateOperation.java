@@ -54,9 +54,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private OnmsIpInterface m_currentInterface;
     
     private ScanManager m_scanManager;
-    private String m_rescanExisting = Boolean.TRUE.toString();
+    private boolean m_rescanExisting = Boolean.TRUE;
 
-    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
+    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
         super(provisionService);
 
         m_node = new OnmsNode(new OnmsMonitoringLocation(location, location), nodeLabel);
@@ -70,24 +70,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_rescanExisting = rescanExisting;
     }
 
-	/**
-	 * <p>getScanManager</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
-	 */
 	public ScanManager getScanManager() {
 	    return m_scanManager;
 	}
 
-	/**
-	 * <p>foundInterface</p>
-	 *
-	 * @param ipAddr a {@link java.lang.String} object.
-	 * @param descr a {@link java.lang.Object} object.
-	 * @param primaryType a {@link InterfaceSnmpPrimaryType} object.
-	 * @param managed a boolean.
-	 * @param status a int.
-	 */
 	public void foundInterface(String ipAddr, Object descr, final PrimaryType primaryType, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr.trim())) {
@@ -119,28 +105,17 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.addIpInterface(m_currentInterface);
     }
 	
-    /**
-     * <p>scan</p>
-     */
     @Override
     public void scan() {
     	updateSnmpData();
     }
 	
-    /**
-     * <p>updateSnmpData</p>
-     */
     protected void updateSnmpData() {
         if (m_scanManager != null) {
             m_scanManager.updateSnmpData(m_node);
         }
 	}
 
-    /**
-     * <p>foundMonitoredService</p>
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     */
     public void foundMonitoredService(String serviceName) {
         // current interface may be null if it has no ipaddr
         if (m_currentInterface != null) {
@@ -149,38 +124,22 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
             service.setStatus("A"); // DbIfServiceEntry.STATUS_ACTIVE
             m_currentInterface.getMonitoredServices().add(service);
         }
-    
     }
 
-    /**
-     * <p>foundCategory</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
     public void foundCategory(String name) {
         OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
         m_node.getCategories().add(category);
     }
 
-    /**
-     * <p>getNode</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
-     */
     protected OnmsNode getNode() {
         return m_node;
     }
 
-    protected String getRescanExisting() {
+    // TODO MVR wieder String einführen?!
+    protected boolean getRescanExisting() {
         return m_rescanExisting;
     }
 
-    /**
-     * <p>foundAsset</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     */
     public void foundAsset(final String name, final String value) {
         final BeanWrapper w = PropertyAccessorFactory.forBeanPropertyAccess(m_node.getAssetRecord());
         try {

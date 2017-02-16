@@ -81,6 +81,13 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
@@ -88,22 +95,13 @@ import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
-import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.persist.OnmsNodeBuilder;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,12 +164,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private EventForwarder m_eventForwarder;
 
     @Autowired
-    @Qualifier("fastFused")
+    @Qualifier("database")
     private ForeignSourceRepository m_foreignSourceRepository;
-
-    @Autowired
-    @Qualifier("fastFilePending")
-    private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Autowired
     private PluginRegistry m_pluginRegistry;
@@ -196,7 +190,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
+        // TODO MVR this is gone now...
+//        RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
         m_hostnameResolver = new DefaultHostnameResolver(m_locationAwareDnsLookuClient);
     }
 
@@ -238,7 +233,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void updateNode(final OnmsNode node, String rescanExisting) {
+    public void updateNode(final OnmsNode node, boolean rescanExisting) {
         updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
@@ -765,24 +760,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
 
-    /** {@inheritDoc} */
     @Transactional
     @Override
     public OnmsNode getRequisitionedNode(final String foreignSource, final String foreignId) throws ForeignSourceRepositoryException {
-        OnmsNodeRequisition nodeReq = null;
-        try {
-            nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
-        } catch (ForeignSourceRepositoryException e) {
-            // just fall through, nodeReq will be null
-        }
-        if (nodeReq == null) {
-            LOG.warn("nodeReq for node {}:{} cannot be null!", foreignSource, foreignId);
-            return null;
-        }
-        final OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
+        final OnmsRequisitionNode requisitionNode = m_foreignSourceRepository.getRequisition(foreignSource).getNode(foreignId);
+        final OnmsNode node = new OnmsNodeBuilder().buildNode(requisitionNode);
 
         // fill in real database categories
-        final HashSet<OnmsCategory> dbCategories = new HashSet<OnmsCategory>();
+        final HashSet<OnmsCategory> dbCategories = new HashSet<>();
         for(final OnmsCategory category : node.getCategories()) {
             dbCategories.add(createCategoryIfNecessary(category.getName()));
         }
@@ -795,7 +780,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return node;
     }
 
-    /** {@inheritDoc} */
     @Transactional
     @Override
     public OnmsServiceType createServiceTypeIfNecessary(final String serviceName) {
@@ -1009,9 +993,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
         final String effectiveForeignSource = actualForeignSource == null ? "default" : actualForeignSource;
         try {
-            final ForeignSource fs = m_foreignSourceRepository.getForeignSource(effectiveForeignSource);
+            final OnmsForeignSource fs = m_foreignSourceRepository.getForeignSource(effectiveForeignSource);
 
-            final Duration scanInterval = fs.getScanInterval();
+            final Duration scanInterval = Duration.millis(fs.getScanInterval());
 
             if (scanInterval.getMillis() <= 0) {
                 LOG.debug("Node ({}/{}/{}) scan interval is zero, skipping schedule.", node.getId(), node.getForeignSource(), node.getForeignId());
@@ -1034,38 +1018,15 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void setForeignSourceRepository(final ForeignSourceRepository foreignSourceRepository) {
         m_foreignSourceRepository = foreignSourceRepository;
     }
 
-    /**
-     * <p>getForeignSourceRepository</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
-     */
     public ForeignSourceRepository getForeignSourceRepository() {
         return m_foreignSourceRepository;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.service.ProvisionService#loadRequisition(java.lang.String, org.springframework.core.io.Resource)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public Requisition loadRequisition(final Resource resource) {
-        final Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
-        r.updateLastImported();
-        m_foreignSourceRepository.save(r);
-        m_foreignSourceRepository.flush();
-        return r;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
-     */
-    /** {@inheritDoc} */
     @Transactional
     @Override
     public OnmsNode updateNodeAttributes(final OnmsNode node) {
@@ -1088,10 +1049,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 if (foreignSource == null) {
                     // this is a newSuspect-scanned node, so there are no requisitioned categories
                 } else {
-                    final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
-                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                        categories.add(cat.getName());
-                    }
+                    categories.addAll(m_foreignSourceRepository.getRequisition(foreignSource).getNode(dbNode.getForeignId()).getCategories());
                 }
 
                 // this will add any newly-requisitioned categories, as well as ones added by policies
@@ -1218,8 +1176,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
-    public List<PluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
-        final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
+    public List<DetectorPluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
+        final OnmsForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
         return foreignSource.getDetectors();
     }
@@ -1252,16 +1210,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @return a {@link java.util.List} object.
      */
     public <T> List<T> getPluginsForForeignSource(final Class<T> pluginClass, final String foreignSourceName) {
-        final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
+        final OnmsForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
 
-        final List<PluginConfig> configs = foreignSource.getPolicies();
+        final List<PolicyPluginConfig> configs = foreignSource.getPolicies();
         if (configs == null) {
             return Collections.emptyList(); 
         }
 
         final List<T> plugins = new ArrayList<T>(configs.size());
-        for(final PluginConfig config : configs) {
+        for(final OnmsPluginConfig config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
                 LOG.trace("Configured plugin is not appropropriate for policy class {}: {}", pluginClass, config);
@@ -1413,7 +1371,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if (node != null) {
             if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, effectiveLocationName, effectiveForeignSource);
+                createUpdateRequisition(ipAddress, node, effectiveLocationName, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because
@@ -1425,41 +1383,39 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
-    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
-        LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
+    private boolean createUpdateRequisition(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
+        LOG.debug("Creating/Updating requisition {} for newSuspect {}...", m_foreignSource, addrString);
         try {
-            Requisition r = null;
+            OnmsRequisition r = null;
             if (m_foreignSource != null) {
                 r = m_foreignSourceRepository.getRequisition(m_foreignSource);
                 if (r == null) {
-                    r = new Requisition(m_foreignSource);
+                    r = new OnmsRequisition(m_foreignSource);
                 }
             }
 
-            r.updateDateStamp();
-            RequisitionNode rn = new RequisitionNode();
+            r.updateLastUpdated();
+            OnmsRequisitionNode rn = new OnmsRequisitionNode();
 
-            RequisitionInterface iface = new RequisitionInterface();
-            iface.setDescr("disc-if");
-            iface.setIpAddr(addrString);
+            OnmsRequisitionInterface iface = new OnmsRequisitionInterface();
+            iface.setDescription("disc-if");
+            iface.setIpAddress(addrString);
             iface.setManaged(true);
             iface.setSnmpPrimary(PrimaryType.PRIMARY);
             iface.setStatus(Integer.valueOf(1));
-            RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
-            ric.add(iface);
-            rn.setInterfaces(ric.getObjects());
+
+            rn.addInterface(iface);
             rn.setBuilding(m_foreignSource);
             rn.setForeignId(node.getForeignId());
             rn.setNodeLabel(node.getLabel());
             rn.setLocation(locationName);
-            r.putNode(rn);
+            r.addNode(rn);
             m_foreignSourceRepository.save(r);
-            m_foreignSourceRepository.flush();
         } catch (ForeignSourceRepositoryException e) {
-            LOG.error("Couldn't create/update requistion for newSuspect "+addrString, e);
+            LOG.error("Couldn't create/update requisition for newSuspect "+addrString, e);
             return false;
         }
-        LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);
+        LOG.debug("Created/Updated requisition {} for newSuspect {}.", m_foreignSource, addrString);
         return true;
     }
 

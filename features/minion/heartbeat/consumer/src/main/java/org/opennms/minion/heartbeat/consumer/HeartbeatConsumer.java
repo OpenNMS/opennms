@@ -28,7 +28,10 @@
 
 package org.opennms.minion.heartbeat.consumer;
 
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -43,12 +46,13 @@ import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.provision.persist.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,10 +61,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
@@ -78,7 +79,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private MessageConsumerManager messageConsumerManager;
 
     @Autowired
-    @Qualifier("deployed")
+    @Qualifier("deployed") // TODO MVR replace all @Qualifier("deployed") with @Qualifier("database") or use @Qualifier("deployed") instead (-:
     private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Autowired
@@ -166,28 +167,27 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         // Remove the node from the previous requisition, if location has changed
         if (!Objects.equals(prevForeignSource, nextForeignSource)) {
-            final Requisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
+            final OnmsRequisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
             if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
-                prevRequisition.deleteNode(minion.getId());
-                prevRequisition.updateDateStamp();
+                prevRequisition.removeNode(minion.getId());
+                prevRequisition.updateLastUpdated();
 
                 deployedForeignSourceRepository.save(prevRequisition);
-                deployedForeignSourceRepository.flush();
 
                 alteredForeignSources.add(prevForeignSource);
             }
         }
 
-        Requisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
+        OnmsRequisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
         if (nextRequisition == null) {
-            nextRequisition = new Requisition(nextForeignSource);
-            nextRequisition.updateDateStamp();
+            nextRequisition = new OnmsRequisition(nextForeignSource);
+            nextRequisition.updateLastUpdated();
 
             // We have to save the requisition before we can alter the according foreign source definition
             deployedForeignSourceRepository.save(nextRequisition);
 
             // Remove all policies and detectors from the foreign source
-            final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
+            final OnmsForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
             foreignSource.setDetectors(Collections.emptyList());
             foreignSource.setPolicies(Collections.emptyList());
             deployedForeignSourceRepository.save(foreignSource);
@@ -195,40 +195,33 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             alteredForeignSources.add(nextForeignSource);
         }
 
-        RequisitionNode requisitionNode = nextRequisition.getNode(minion.getId());
+        OnmsRequisitionNode requisitionNode = nextRequisition.getNode(minion.getId());
         if (requisitionNode == null) {
-            final RequisitionMonitoredService requisitionMonitoredService = new RequisitionMonitoredService();
+            final OnmsRequisitionMonitoredService requisitionMonitoredService = new OnmsRequisitionMonitoredService();
             requisitionMonitoredService.setServiceName("Minion-Heartbeat");
 
-            final RequisitionInterface requisitionInterface = new RequisitionInterface();
-            requisitionInterface.setIpAddr("127.0.0.1");
-            requisitionInterface.putMonitoredService(requisitionMonitoredService);
+            final OnmsRequisitionInterface requisitionInterface = new OnmsRequisitionInterface();
+            requisitionInterface.setIpAddress("127.0.0.1");
+            requisitionInterface.addMonitoredService(requisitionMonitoredService);
 
-            requisitionNode = new RequisitionNode();
+            requisitionNode = new OnmsRequisitionNode();
             requisitionNode.setNodeLabel(minion.getId());
             requisitionNode.setForeignId(minion.getLabel() != null
                                          ? minion.getLabel()
                                          : minion.getId());
             requisitionNode.setLocation(minion.getLocation());
-            requisitionNode.putInterface(requisitionInterface);
+            requisitionNode.addInterface(requisitionInterface);
 
-            nextRequisition.putNode(requisitionNode);
-            nextRequisition.setDate(new Date());
+            nextRequisition.addNode(requisitionNode);
+            nextRequisition.setLastUpdate(new Date());
             deployedForeignSourceRepository.save(nextRequisition);
-            deployedForeignSourceRepository.flush();
 
             alteredForeignSources.add(nextForeignSource);
         }
 
         for (final String alteredForeignSource : alteredForeignSources) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
-            eventBuilder.addParam(EventConstants.PARM_URL, String.valueOf(deployedForeignSourceRepository.getRequisitionURL(alteredForeignSource)));
-
-            try {
-                eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group " + alteredForeignSource, e);
-            }
+            deployedForeignSourceRepository.triggerImport(
+                    new ImportRequest("Web").withForeignSource(alteredForeignSource));
         }
     }
 

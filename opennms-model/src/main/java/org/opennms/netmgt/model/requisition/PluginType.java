@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.model.requisition;
 
-import java.util.ArrayList;
-import java.util.List;
+public enum PluginType {
 
-import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
-import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
-import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+    Policy {
+        @Override
+        public OnmsPluginConfig newInstance() {
+            return new PolicyPluginConfig();
+        }
 
-public class CategoryAssociationVisitor extends AbstractRequisitionVisitor implements RequisitionVisitor {
-    private List<String> m_categories = new ArrayList<>();
+        @Override
+        public boolean isInstance(OnmsPluginConfig f) {
+            return f instanceof PolicyPluginConfig;
+        }
+    },
+    Detector {
+        @Override
+        public OnmsPluginConfig newInstance() {
+            return new DetectorPluginConfig();
+        }
 
-    @Override
-    public void visitNodeCategory(final OnmsNodeCategoryRequisition catReq) {
-        m_categories.add(catReq.getName());
-    }
+        @Override
+        public boolean isInstance(OnmsPluginConfig f) {
+            return f instanceof DetectorPluginConfig;
+        }
+    };
 
-    public List<String> getCategories() {
-        return m_categories;
-    }
+    public abstract OnmsPluginConfig newInstance();
+
+    public abstract boolean isInstance(OnmsPluginConfig f);
 }

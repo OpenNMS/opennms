@@ -551,4 +551,14 @@
   <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
+
+  <bean id="requisitionDao" class="org.opennms.netmgt.dao.hibernate.OnmsRequistionDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsRequisitionDao" ref="requisitionDao" />
+
+  <bean id="foreignSourceDao" class="org.opennms.netmgt.dao.hibernate.OnmsForeignSourceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ForeignSourceDao" ref="foreignSourceDao" />
 </beans>

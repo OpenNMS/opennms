@@ -46,23 +46,18 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.common.base.Throwables;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.MultivaluedHashMap;
 
 /**
  * Changes the label of a node, throws an event signaling that change, and then
@@ -125,18 +120,16 @@ public class NodeLabelChangeServlet extends HttpServlet {
             final String newNodeLabel = newLabel.getLabel();
             boolean managedByProvisiond = node.getForeignSource() != null && node.getForeignId() != null;
             if (managedByProvisiond) {
-                WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-                final TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
-                final RequisitionAccessService requisitionService = beanFactory.getBean(RequisitionAccessService.class);
-                transactionTemplate.execute(new TransactionCallback<RequisitionNode>() {
-                    @Override
-                    public RequisitionNode doInTransaction(TransactionStatus status) {
-                        MultivaluedMap<String, String> params = new MultivaluedHashMap<String, String>();
-                        params.putSingle("node-label", newNodeLabel);
-                        requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
-                        return requisitionService.getNode(node.getForeignSource(), node.getForeignId());
-                    }
-                });
+                // TODO MVR make this work, but this does not make sense at all ...
+//                WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+//                final TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
+//                final RequisitionAccessService requisitionService = beanFactory.getBean(RequisitionAccessService.class);
+//                transactionTemplate.execute(status -> {
+//                    MultivaluedMap<String, String> params = new MultivaluedHashMap<String, String>();
+//                    params.putSingle("node-label", newNodeLabel);
+//                    requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
+//                    return requisitionService.getNode(node.getForeignSource(), node.getForeignId());
+//                });
             }
 
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);

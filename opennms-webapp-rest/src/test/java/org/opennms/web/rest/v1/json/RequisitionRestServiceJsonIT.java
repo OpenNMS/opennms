@@ -38,6 +38,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -75,9 +76,15 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
     @Autowired
     MockEventIpcManager m_eventProxy;
 
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        cleanUpRequisitions();
+    }
+
     @Test
     public void testRequisition() throws Exception {
-        cleanUpImports();
+        cleanUpRequisitions();
 
         createRequisition();
         String url = "/requisitions";

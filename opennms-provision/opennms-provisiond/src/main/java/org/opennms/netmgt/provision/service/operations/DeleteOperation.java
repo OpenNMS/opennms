@@ -34,38 +34,21 @@ public class DeleteOperation extends ImportOperation {
     
     private Integer m_nodeId;
     
-    /**
-     * <p>Constructor for DeleteOperation.</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
-    public DeleteOperation(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService) {
+    public DeleteOperation(int nodeId, ProvisionService provisionService) {
         super(provisionService);
         m_nodeId = nodeId;
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String toString() {
     	return "DELETE: Node "+m_nodeId;
     }
 
-	/**
-	 * <p>scan</p>
-	 */
 	@Override
 	public void scan() {
 		// no additional data to gather
 	}
 
-	/** {@inheritDoc} */
 	@Override
     protected void doPersist() {
         getProvisionService().deleteNode(m_nodeId);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.model.requisition;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
+@Entity
+@DiscriminatorValue(value="policy")
+public class PolicyPluginConfig extends OnmsPluginConfig {
 
-public class TestVisitor extends AbstractRequisitionVisitor {
-    
-    private final List<OnmsNodeRequisition> m_nodeReqs = new ArrayList<OnmsNodeRequisition>();
+    public PolicyPluginConfig() {
 
-    @Override
-    public void completeNode(OnmsNodeRequisition nodeReq) {
-        m_nodeReqs.add(nodeReq);
     }
 
-    public List<OnmsNodeRequisition> getNodeReqs() {
-        return m_nodeReqs;
+    public PolicyPluginConfig(PolicyPluginConfig pc) {
+        super(pc);
+    }
+
+    public PolicyPluginConfig(String name, String pluginClass) {
+        super(name, pluginClass);
+    }
+
+    @Override
+    public PluginType getType() {
+        return PluginType.Policy;
     }
 }

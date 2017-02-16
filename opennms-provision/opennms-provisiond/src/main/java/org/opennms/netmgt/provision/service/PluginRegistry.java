@@ -30,39 +30,13 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 
-/*
- * PluginRegistry
- * @author brozow
- */
-/**
- * <p>PluginRegistry interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public interface PluginRegistry {
 
-    /**
-     * <p>getAllPlugins</p>
-     *
-     * @param pluginClass a {@link java.lang.Class} object.
-     * @param <T> a T object.
-     * @return a {@link java.util.Collection} object.
-     */
-    public abstract <T> Collection<T> getAllPlugins(Class<T> pluginClass);
+    <T> Collection<T> getAllPlugins(Class<T> pluginClass);
 
-    /**
-     * <p>getPluginInstance</p>
-     *
-     * @param pluginClass a {@link java.lang.Class} object.
-     * @param pluginConfig a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
-     * @param <T> a T object.
-     * @return a T object.
-     */
-    public abstract <T> T getPluginInstance(Class<T> pluginClass,
-            PluginConfig pluginConfig);
+    <T> T getPluginInstance(Class<T> pluginClass, OnmsPluginConfig pluginConfig);
     
 
 }

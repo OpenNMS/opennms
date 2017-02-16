@@ -39,7 +39,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class EditProvisioningGroupController {
         private String m_action;
 
         @Valid
-        private Requisition m_formData;
+        private OnmsRequisition m_formData;
 
         @NotNull
         private String m_currentNode;
@@ -93,10 +93,10 @@ public class EditProvisioningGroupController {
         public void setGroupName(String groupName) {
             m_groupName = groupName;
         }
-        public Requisition getFormData() {
+        public OnmsRequisition getFormData() {
             return m_formData;
         }
-        public void setFormData(final Requisition importData) {
+        public void setFormData(final OnmsRequisition importData) {
             m_formData = importData;
         }
         public String getFormPath() {
@@ -189,7 +189,7 @@ public class EditProvisioningGroupController {
     }
 
     private void doCancel(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.getProvisioningGroup(treeCmd.getGroupName());
+        OnmsRequisition formData = m_provisioningService.getProvisioningGroup(treeCmd.getGroupName());
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode("");
     }
@@ -199,18 +199,18 @@ public class EditProvisioningGroupController {
     }
 
     private void doDelete(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
+        OnmsRequisition formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
         treeCmd.setFormData(formData);
     }
 
     private void doAddCategory(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
+        OnmsRequisition formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".category[0]");
     }
 
     private void doAddAssetField(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
+        OnmsRequisition formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".asset[0]");
     }
@@ -222,8 +222,8 @@ public class EditProvisioningGroupController {
     private void doSave(TreeCommand treeCmd, BindingResult errors) {
         try {
             LOG.debug("treeCmd = {}", treeCmd);
-            treeCmd.getFormData().validate();
-            final Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
+//            treeCmd.getFormData().validate(); // TODO MVR implement me
+            final OnmsRequisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
             treeCmd.setFormData(formData);
             treeCmd.setCurrentNode("");
         } catch (final Throwable t) {
@@ -232,13 +232,13 @@ public class EditProvisioningGroupController {
     }
 
     private void doAddService(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
+        OnmsRequisition formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".monitoredService[0]");
     }
 
     private void doAddInterface(TreeCommand treeCmd) {
-        Requisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "");
+        OnmsRequisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "");
         treeCmd.setFormData(formData);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".interface[0]");
     }
@@ -251,7 +251,7 @@ public class EditProvisioningGroupController {
     /**
      * Attach the current requisition to the model during each request.
      * 
-     * @param foreignSourceName
+     * @param groupName
      * @return
      */
     @ModelAttribute(COMMAND_NAME)
@@ -262,7 +262,7 @@ public class EditProvisioningGroupController {
         }
 
         TreeCommand formCommand = new TreeCommand();
-        Requisition formData = m_provisioningService.getProvisioningGroup(groupName);
+        OnmsRequisition formData = m_provisioningService.getProvisioningGroup(groupName);
         // If we're trying to edit a requisition that doesn't yet exist, create it
         if (formData == null) {
             formData = m_provisioningService.createProvisioningGroup(groupName);

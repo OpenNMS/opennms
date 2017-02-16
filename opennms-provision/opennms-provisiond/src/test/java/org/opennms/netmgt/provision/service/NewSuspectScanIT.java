@@ -66,13 +66,15 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +140,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
-    private ForeignSource m_foreignSource;
+    private OnmsForeignSource m_foreignSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -167,10 +169,10 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
             m_distPollerDao.save(distPoller);
         }
 
-        m_foreignSource = new ForeignSource();
+        m_foreignSource = new OnmsForeignSource();
         m_foreignSource.setName("imported:");
-        m_foreignSource.setScanInterval(Duration.standardDays(1));
-        final PluginConfig detector = new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+        m_foreignSource.setScanInterval(Duration.standardDays(1).getMillis());
+        final DetectorPluginConfig detector = new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
         detector.addParameter("timeout", "1000");
         detector.addParameter("retries", "0");
         m_foreignSource.addDetector(detector);
@@ -359,11 +361,11 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
         // HZN-960: Verify that the location name was properly set on the node in the requisition
-        final Requisition requisition = m_foreignSourceRepository.getRequisition(foreignSource);
-        final List<RequisitionNode> requisitionNodes = requisition.getNodes();
+        final OnmsRequisition requisition = m_foreignSourceRepository.getRequisition(foreignSource);
+        final List<OnmsRequisitionNode> requisitionNodes = requisition.getNodes();
         assertEquals(1, requisitionNodes.size());
 
-        final RequisitionNode requisitionNode = requisitionNodes.get(0);
+        final OnmsRequisitionNode requisitionNode = requisitionNodes.get(0);
         assertEquals(locationName, requisitionNode.getLocation());
     }
 

@@ -31,7 +31,6 @@ package org.opennms.web.rest.v1;
 import java.text.ParseException;
 import java.util.List;
 
-import javax.annotation.PreDestroy;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -41,7 +40,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -73,16 +71,6 @@ public class RequisitionNamesRestService extends OnmsRestService {
         @XmlElement(name="foreign-source")
         public List<String> getNames() {
             return getObjects();
-        }
-    }
-
-    /**
-     * Tear down.
-     */
-    @PreDestroy
-    protected void tearDown() {
-        if (m_accessService != null) {
-            m_accessService.flushAll();
         }
     }
 

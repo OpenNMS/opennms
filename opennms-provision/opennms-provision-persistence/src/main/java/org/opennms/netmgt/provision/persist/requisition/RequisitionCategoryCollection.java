@@ -40,17 +40,17 @@ import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="categories")
 @JsonRootName("categories")
-public class RequisitionCategoryCollection extends JaxbListWrapper<RequisitionCategory> {
+public class RequisitionCategoryCollection extends JaxbListWrapper<String> {
     private static final long serialVersionUID = 1L;
 
     public RequisitionCategoryCollection() { super(); }
-    public RequisitionCategoryCollection(final Collection<? extends RequisitionCategory> categories) {
+    public RequisitionCategoryCollection(final Collection<? extends String> categories) {
         super(categories);
     }
 
     @XmlElement(name="category")
     @JsonProperty("category")
-    public List<RequisitionCategory> getObjects() {
+    public List<String> getObjects() {
         return super.getObjects();
     }
 }

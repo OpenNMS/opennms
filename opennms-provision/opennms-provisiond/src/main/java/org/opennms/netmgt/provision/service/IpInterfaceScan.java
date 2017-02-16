@@ -47,7 +47,8 @@ import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,15 +67,6 @@ public class IpInterfaceScan implements RunInBatch {
     private final String m_foreignSource;
     private final OnmsMonitoringLocation m_location;
 
-    /**
-     * <p>Constructor for IpInterfaceScan.</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param address a {@link java.net.InetAddress} object.
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
     public IpInterfaceScan(final Integer nodeId, final InetAddress address, final String foreignSource, final OnmsMonitoringLocation location, final ProvisionService provisionService) {
         m_nodeId = nodeId;
         m_address = address;
@@ -83,20 +75,10 @@ public class IpInterfaceScan implements RunInBatch {
         m_provisionService = provisionService;
     }
 
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getForeignSource() {
         return m_foreignSource;
     }
 
-    /**
-     * <p>getNodeId</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer getNodeId() {
         return m_nodeId;
     }
@@ -105,29 +87,14 @@ public class IpInterfaceScan implements RunInBatch {
         return m_location;
     }
 
-    /**
-     * <p>getAddress</p>
-     *
-     * @return a {@link java.net.InetAddress} object.
-     */
     public InetAddress getAddress() {
         return m_address;
     }
 
-    /**
-     * <p>getProvisionService</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
     public ProvisionService getProvisionService() {
         return m_provisionService;
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -138,14 +105,7 @@ public class IpInterfaceScan implements RunInBatch {
                 .toString();
     }
 
-    /**
-     * <p>servicePersister</p>
-     * 
-     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.core.tasks.Callback} object.
-     */
-    public static Callback<Boolean> servicePersister(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address) {
+    public static Callback<Boolean> servicePersister(final BatchTask currentPhase, final ProvisionService service, final OnmsPluginConfig detectorConfig, final int nodeId, final InetAddress address) {
         return new Callback<Boolean>() {
             @Override
             public void accept(final Boolean serviceDetected) {
@@ -190,26 +150,25 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
-    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location) {
+    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final OnmsPluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location) {
         return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
     }
 
-    /** {@inheritDoc} */
     @Override
     public void run(final BatchTask currentPhase) {
         // This call returns a collection of new ServiceDetector instances
-        final Collection<PluginConfig> detectorConfigs = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+        final Collection<DetectorPluginConfig> detectorConfigs = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
         LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectorConfigs.size());
 
-        for (final PluginConfig detectorConfig : detectorConfigs) {
+        for (final OnmsPluginConfig detectorConfig : detectorConfigs) {
             if (shouldDetect(detectorConfig, getAddress())) {
                 currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation()));
             }
         }
     }
 
-    protected static boolean shouldDetect(final PluginConfig detectorConfig, final InetAddress address) {
+    protected static boolean shouldDetect(final OnmsPluginConfig detectorConfig, final InetAddress address) {
         String ipMatch = detectorConfig.getParameter("ipMatch");
         if (ipMatch  == null || ipMatch.trim().isEmpty()) return true; // Execute the detector if the ipMatch is not provided.
         // Regular Expression Matching

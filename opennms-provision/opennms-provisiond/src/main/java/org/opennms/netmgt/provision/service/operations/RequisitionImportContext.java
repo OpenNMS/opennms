@@ -28,32 +28,31 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import javax.xml.bind.ValidationException;
-
+import org.opennms.netmgt.provision.persist.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
-public class RequisitionImport {
-    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImport.class);
-    private Requisition m_requisition;
+public class RequisitionImportContext {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImportContext.class);
     private Throwable m_throwable;
+    private boolean rescanExisting;
+    private ImportRequest importRequest;
+    private String foreignSource;
 
-    public Requisition getRequisition() {
-        return m_requisition;
+    public void setImportRequest(ImportRequest importRequest) {
+        this.importRequest = importRequest;
     }
 
-    public void setRequisition(final Requisition requisition) {
-        m_requisition = requisition;
-        try {
-            requisition.validate();
-        } catch (final ValidationException e) {
-            if (m_throwable == null) {
-                m_throwable = e;
-            } else {
-                LOG.debug("Requisition {} did not validate, but we'll ignore the exception because we've previously aborted with: {}", requisition, m_throwable, e);
-            }
-        }
+    public ImportRequest getImportRequest() {
+        return importRequest;
+    }
+
+    public String getForeignSource() {
+        return foreignSource;
+    }
+
+    public void setForeignSource(String foreignSource) {
+        this.foreignSource = foreignSource;
     }
 
     public Throwable getError() {
@@ -64,7 +63,7 @@ public class RequisitionImport {
         if (m_throwable == null) {
             m_throwable = t;
         } else {
-            LOG.warn("Requisition {} has already been aborted, but we received another abort message.  Ignoring.", m_requisition, t);
+            LOG.warn("Requisition {} has already been aborted, but we received another abort message.  Ignoring.", foreignSource, t);
         }
     }
 
@@ -73,4 +72,12 @@ public class RequisitionImport {
         return false;
     }
 
+    public void setRescanExisting(String rescanExisting) {
+        // TODO MVR verify that this was changed correctly
+        this.rescanExisting = rescanExisting == null || Boolean.valueOf(rescanExisting) || rescanExisting.equalsIgnoreCase("dbonly");
+    }
+
+    public boolean isRescanExisting() {
+        return rescanExisting;
+    }
 }

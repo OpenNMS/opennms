@@ -33,8 +33,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import javax.xml.bind.JAXB;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -43,6 +47,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -67,24 +72,24 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+// TODO MVR write tests -> dao level? add node twice, add ip interface twice, add service twice, add category twice
 public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     MockEventIpcManager m_eventProxy;
 
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        cleanUpRequisitions();
+    }
+
     @Test
     public void testRequisition() throws Exception {
-        cleanUpImports();
-
         createRequisition();
         String url = "/requisitions";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Management interface"));
-
-        url = "/requisitions/test";
-
-        sendRequest(DELETE, url, 202);
-        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -397,7 +402,6 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "</node>" +
             "</model-import>";
 
-        
         sendPost("/requisitions", req, 202, "/requisitions/test");
     }
 }

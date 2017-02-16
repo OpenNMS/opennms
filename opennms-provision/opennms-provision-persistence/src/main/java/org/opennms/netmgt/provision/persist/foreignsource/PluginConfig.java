@@ -294,4 +294,5 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
             .append(m_pluginClass, other.m_pluginClass)
             .toComparison();
     }
+
 }

@@ -32,59 +32,64 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.DefaultForeignSourceService;
-import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
+public class DefaultForeignSourceServiceIT {
 
-public class DefaultForeignSourceServiceTest {
-    private FilesystemForeignSourceRepository m_deployed;
-    private FilesystemForeignSourceRepository m_pending;
+    @Autowired
+    @Qualifier("database")
+    private ForeignSourceRepository repository;
+
     private ForeignSourceService m_service;
 
     @Before
     public void setUp() {
-        FileUtils.deleteQuietly(new File("target/foreign-sources"));
-        FileUtils.deleteQuietly(new File("target/imports"));
-
-        m_deployed  = new FilesystemForeignSourceRepository();
-        m_deployed.setForeignSourcePath("target/foreign-sources/deployed");
-        m_deployed.setRequisitionPath("target/imports/deployed");
-
-        m_pending = new FilesystemForeignSourceRepository();
-        m_pending.setForeignSourcePath("target/foreign-sources");
-        m_pending.setRequisitionPath("target/imports");
-        
         m_service = new DefaultForeignSourceService();
-        m_service.setDeployedForeignSourceRepository(m_deployed);
-        m_service.setPendingForeignSourceRepository(m_pending);
+        m_service.setDeployedForeignSourceRepository(repository);
     }
 
     @Test
     public void integrationTest() throws Exception {
-        assertTrue(m_deployed.getForeignSources().isEmpty());
-        assertTrue(m_pending.getForeignSources().isEmpty());
+        assertTrue(repository.getForeignSources().isEmpty());
 
         assertEquals(0, m_service.getAllForeignSources().size());
 
         // create a new foreign source
-        ForeignSource fs = m_service.getForeignSource("test");
+        OnmsForeignSource fs = m_service.getForeignSource("test");
 
         // test doesn't exist, so it should tell us that it's based on the default foreign source
         assertTrue(fs.isDefault());
 
         // modify it and save
-        fs.setDetectors(new ArrayList<PluginConfig>());
+        fs.setDetectors(new ArrayList<>());
         m_service.saveForeignSource("test", fs);
-        
+
         // now it shouln't be marked as default, since we've saved a modified version
         fs = m_service.getForeignSource("test");
         assertFalse(fs.isDefault());

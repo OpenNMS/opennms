@@ -47,9 +47,9 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,9 +93,9 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     public void setUp() {
         MockLogAppender.setupLogging();
         final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
-        final ForeignSource fs = new ForeignSource();
+        final OnmsForeignSource fs = new OnmsForeignSource();
         fs.setName("default");
-        fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
     }
@@ -113,24 +113,24 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
-        
+
         eventRecieved.await();
-        
+
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation());
         runScan(scan);
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
+
     }
-    
+
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
         final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
         waitForEverything();
     }
-    
+
     private NodeDao getNodeDao() {
         return m_nodeDao;
     }

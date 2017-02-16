@@ -37,9 +37,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.joda.time.Duration;
 import org.opennms.core.spring.PropertyPath;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +78,14 @@ public class EditForeignSourceController {
         private String m_action;
 
         @NotNull @Valid
-        private ForeignSource m_formData;
+        private OnmsForeignSource m_formData;
 
         @NotNull
         private String m_currentNode;
 
         @NotEmpty
         private String m_foreignSourceName = "hardcoded";
-        
+
         public String getAction() {
             return m_action;
         }
@@ -98,10 +98,10 @@ public class EditForeignSourceController {
         public void setForeignSourceName(String foreignSourceName) {
             m_foreignSourceName = foreignSourceName;
         }
-        public ForeignSource getFormData() {
+        public OnmsForeignSource getFormData() {
             return m_formData;
         }
-        public void setFormData(ForeignSource importData) {
+        public void setFormData(OnmsForeignSource importData) {
             m_formData = importData;
         }
         public static String getDefaultFormPath() {
@@ -125,7 +125,7 @@ public class EditForeignSourceController {
         public void setDataPath(String path) {
             m_formPath = COMMAND_NAME + ".formData." + path;
         }
-        
+
         @Override
         public String toString() {
             return new ToStringBuilder(this)
@@ -189,28 +189,28 @@ public class EditForeignSourceController {
     }
 
     private void doAddDetector(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.addDetectorToForeignSource(treeCmd.getForeignSourceName(), "New Detector");
+        OnmsForeignSource fs = m_foreignSourceService.addDetectorToForeignSource(treeCmd.getForeignSourceName(), "New Detector");
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".detectors["+ (fs.getDetectors().size()-1) +"]");
     }
 
     private void doAddPolicy(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.addPolicyToForeignSource(treeCmd.getForeignSourceName(), "New Policy");
+        OnmsForeignSource fs = m_foreignSourceService.addPolicyToForeignSource(treeCmd.getForeignSourceName(), "New Policy");
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".policies["+ (fs.getPolicies().size()-1) +"]");
     }
 
     private void doAddParameter(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        OnmsForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
         PropertyPath path = new PropertyPath(treeCmd.getDataPath());
         PluginConfig obj = (PluginConfig)path.getValue(fs);
         int numParameters = (obj.getParameters().size() - 1);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".parameters[" + numParameters + "]");
     }
-    
+
     private void doSave(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
+        OnmsForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode("");
     }
@@ -220,19 +220,19 @@ public class EditForeignSourceController {
     }
 
     private void doCancel(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
+        OnmsForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode("");
     }
 
     private void doDelete(TreeCommand treeCmd) {
-        ForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        OnmsForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
     }
 
     /**
      * Attach the current foreignSource to the model during each request.
-     * 
+     *
      * @param foreignSourceName
      * @return
      */
@@ -242,7 +242,7 @@ public class EditForeignSourceController {
         if (foreignSourceName == null) {
             throw new IllegalArgumentException("foreignSourceName required");
         }
-        ForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
+        OnmsForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
         formCommand.setFormData(fs);
         return formCommand;
     }

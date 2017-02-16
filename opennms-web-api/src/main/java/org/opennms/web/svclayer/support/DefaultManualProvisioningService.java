@@ -48,25 +48,19 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.web.api.Util;
+import org.opennms.netmgt.provision.persist.ImportRequest;
 import org.opennms.web.svclayer.ManualProvisioningService;
-import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -75,12 +69,13 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
+@Transactional
+@Deprecated
 public class DefaultManualProvisioningService implements ManualProvisioningService {
 
     private static final List<String> ASSETS_BLACKLIST = new ArrayList<String>();
 
     private ForeignSourceRepository m_deployedForeignSourceRepository;
-    private ForeignSourceRepository m_pendingForeignSourceRepository;
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
@@ -96,19 +91,6 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         ASSETS_BLACKLIST.add("geolocation");
         ASSETS_BLACKLIST.add("node");
     }
-
-    /**
-     * <p>Constructor for DefaultManualProvisioningService.</p>
-     */
-    public DefaultManualProvisioningService() {
-        
-    }
-    
-    /**
-     * <p>setDeployedForeignSourceRepository</p>
-     *
-     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
-     */
     public void setDeployedForeignSourceRepository(final ForeignSourceRepository repository) {
         m_writeLock.lock();
         try {
@@ -117,26 +99,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_writeLock.unlock();
         }
     }
-    
-    /**
-     * <p>setPendingForeignSourceRepository</p>
-     *
-     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
-     */
-    public void setPendingForeignSourceRepository(final ForeignSourceRepository repository) {
-        m_writeLock.lock();
-        try {
-            m_pendingForeignSourceRepository = repository;
-        } finally {
-            m_writeLock.unlock();
-        }
-    }
-    
-    /**
-     * <p>setNodeDao</p>
-     *
-     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
-     */
+
     public void setNodeDao(final NodeDao nodeDao) {
         m_writeLock.lock();
         try {
@@ -145,12 +108,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_writeLock.unlock();
         }
     }
-    
-    /**
-     * <p>setCategoryDao</p>
-     *
-     * @param categoryDao a {@link org.opennms.netmgt.dao.api.CategoryDao} object.
-     */
+
     public void setCategoryDao(final CategoryDao categoryDao) {
         m_writeLock.lock();
         try {
@@ -159,205 +117,150 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_writeLock.unlock();
         }
     }
-    
-    /**
-     * <p>setServiceTypeDao</p>
-     *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
-     */
+
     public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
-    /**
-     * <p>setPollerConfig</p>
-     *
-     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
-     */
     public void setPollerConfig(final PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
+    public OnmsRequisition addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
         m_writeLock.lock();
         try {
-            final Requisition group = getProvisioningGroup(groupName);
-            
-            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
-            
-            // final int catCount = node.getCategoryCount();
-            final RequisitionCategory category = new RequisitionCategory();
-            category.setName(categoryName);
-            node.putCategory(category);
-            // Assert.isTrue(node.getCategoryCount() == (catCount + 1), "Category was not added correctly");
-    
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
-        } finally {
-            m_writeLock.unlock();
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public Requisition addAssetFieldToNode(final String groupName, final String pathToNode, final String assetName, final String assetValue) {
-        m_writeLock.lock();
-        try {
-            final Requisition group = getProvisioningGroup(groupName);
-            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
-    
-            // final int assetCount = node.getAssetCount();
-            final RequisitionAsset asset = new RequisitionAsset();
-            asset.setName(assetName);
-            asset.setValue(assetValue);
-            node.putAsset(asset);
-            // Assert.isTrue(node.getCategoryCount() == (assetCount + 1), "Asset was not added correctly");
-    
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
+            node.addCategory(categoryName);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition addInterfaceToNode(final String groupName, final String pathToNode, final String ipAddr) {
+    public OnmsRequisition addAssetFieldToNode(final String groupName, final String pathToNode, final String assetName, final String assetValue) {
         m_writeLock.lock();
         try {
-            final Requisition group = getProvisioningGroup(groupName);
+            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
+            node.addAsset(assetName, assetValue);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
+        } finally {
+            m_writeLock.unlock();
+        }
+    }
+
+    @Override
+    public OnmsRequisition addInterfaceToNode(final String groupName, final String pathToNode, final String ipAddr) {
+        m_writeLock.lock();
+        try {
+            final OnmsRequisition group = getProvisioningGroup(groupName);
             Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
-            final RequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNode.class);
+            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
             Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
 
             PrimaryType snmpPrimary = PrimaryType.PRIMARY;
-            if (node.getInterfaceCount() > 0) {
+            if (node.getInterfaces().size() > 0) {
                 snmpPrimary = PrimaryType.SECONDARY;
             }
-    
-            // final int ifaceCount = node.getInterfaceCount();
-            final RequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
-            node.putInterface(iface);
-            // Assert.isTrue(node.getInterfaceCount() == (ifaceCount + 1), "Interface was not added correctly");
-    
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+
+            final OnmsRequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
+            node.addInterface(iface);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    private RequisitionInterface createInterface(final String ipAddr, final PrimaryType snmpPrimary) {
-        final RequisitionInterface iface = new RequisitionInterface();
-        iface.setIpAddr(ipAddr);
+    private OnmsRequisitionInterface createInterface(final String ipAddr, final PrimaryType snmpPrimary) {
+        final OnmsRequisitionInterface iface = new OnmsRequisitionInterface();
+        iface.setIpAddress(ipAddr);
         iface.setStatus(1);
         iface.setSnmpPrimary(snmpPrimary);
         return iface;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition addNewNodeToGroup(final String groupName, final String nodeLabel) {
+    public OnmsRequisition addNewNodeToGroup(final String groupName, final String nodeLabel) {
         m_writeLock.lock();
-        
+
         try {
-            final Requisition group = getProvisioningGroup(groupName);
-    
-            final RequisitionNode node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
+            final OnmsRequisition group = getProvisioningGroup(groupName);
+
+            final OnmsRequisitionNode node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
             node.setBuilding(groupName);
-            group.insertNode(node);
-            
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+            group.addNode(node);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    private RequisitionNode createNode(final String nodeLabel, final String foreignId) {
-        final RequisitionNode node = new RequisitionNode();
+    private OnmsRequisitionNode createNode(final String nodeLabel, final String foreignId) {
+        final OnmsRequisitionNode node = new OnmsRequisitionNode();
         node.setNodeLabel(nodeLabel);
         node.setForeignId(foreignId);
         return node;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition addServiceToInterface(final String groupName, final String pathToInterface, final String serviceName) {
+    public OnmsRequisition addServiceToInterface(final String groupName, final String pathToInterface, final String serviceName) {
         m_writeLock.lock();
-        
+
         try {
-            final Requisition group = getProvisioningGroup(groupName);
-            
-            final RequisitionInterface iface = PropertyUtils.getPathValue(group, pathToInterface, RequisitionInterface.class);
-            
-            final RequisitionMonitoredService monSvc = createService(serviceName);
-            iface.insertMonitoredService(monSvc);
-    
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+            final OnmsRequisition group = getProvisioningGroup(groupName);
+
+            final OnmsRequisitionInterface iface = PropertyUtils.getPathValue(group, pathToInterface, OnmsRequisitionInterface.class);
+
+            final OnmsRequisitionMonitoredService monSvc = createService(serviceName);
+            iface.addMonitoredService(monSvc);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition getProvisioningGroup(final String name) {
+    public OnmsRequisition getProvisioningGroup(final String name) {
         m_readLock.lock();
         try {
-            m_pendingForeignSourceRepository.flush();
-            final Requisition pending  = m_pendingForeignSourceRepository.getRequisition(name);
-
-            if (pending == null) {
-                m_deployedForeignSourceRepository.flush();
-                return m_deployedForeignSourceRepository.getRequisition(name);
-            }
-
-            return pending;
+            return m_deployedForeignSourceRepository.getRequisition(name);
         } finally {
             m_readLock.unlock();
         }
     }
-    
-    /** {@inheritDoc} */
+
     @Override
-    public Requisition saveProvisioningGroup(final String groupName, final Requisition group) {
+    public OnmsRequisition saveProvisioningGroup(final String groupName, final OnmsRequisition group) {
         m_writeLock.lock();
         try {
             trimWhitespace(group);
             group.setForeignSource(groupName);
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /**
-     * <p>getProvisioningGroupNames</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     @Override
     public Collection<String> getProvisioningGroupNames() {
         m_readLock.lock();
         try {
-            m_deployedForeignSourceRepository.flush();
-            final Set<String> names = new TreeSet<String>();
-            for (final Requisition r : m_deployedForeignSourceRepository.getRequisitions()) {
-                names.add(r.getForeignSource());
-            }
-            m_pendingForeignSourceRepository.flush();
-            for (final Requisition r : m_pendingForeignSourceRepository.getRequisitions()) {
+            final Set<String> names = new TreeSet<>();
+            for (final OnmsRequisition r : m_deployedForeignSourceRepository.getRequisitions()) {
                 names.add(r.getForeignSource());
             }
             return names;
@@ -365,76 +268,54 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_readLock.unlock();
         }
     }
-    
-    /** {@inheritDoc} */
+
     @Override
-    public Requisition createProvisioningGroup(final String name) {
+    public OnmsRequisition createProvisioningGroup(final String name) {
         m_writeLock.lock();
         try {
-            final Requisition group = new Requisition();
+            final OnmsRequisition group = new OnmsRequisition();
             group.setForeignSource(name);
-    
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(name);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(name);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    private RequisitionMonitoredService createService(final String serviceName) {
-        final RequisitionMonitoredService svc = new RequisitionMonitoredService();
+    private OnmsRequisitionMonitoredService createService(final String serviceName) {
+        final OnmsRequisitionMonitoredService svc = new OnmsRequisitionMonitoredService();
         svc.setServiceName(serviceName);
         return svc;
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public void importProvisioningGroup(final String requisitionName) {
         m_writeLock.lock();
-        
         try {
-            final Requisition requisition = getProvisioningGroup(requisitionName);
-            saveProvisioningGroup(requisitionName, requisition);
-            
-            // then we send an event to the importer
-            final EventProxy proxy = Util.createEventProxy();
-    
-            m_pendingForeignSourceRepository.flush();
-            final String url = m_pendingForeignSourceRepository.getRequisitionURL(requisitionName).toString();
-            Assert.notNull(url, "Could not find url for group "+requisitionName+".  Does it exists?");
-            
-            final EventBuilder bldr = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, "Web");
-            bldr.addParam(EventConstants.PARM_URL, url);
-            
-            try {
-                proxy.send(bldr.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event to import group "+requisitionName, e);
-            }
+            m_deployedForeignSourceRepository.triggerImport(new ImportRequest("Web").withForeignSource(requisitionName));
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Requisition deletePath(final String groupName, final String pathToDelete) {
+    public OnmsRequisition deletePath(final String groupName, final String pathToDelete) {
         m_writeLock.lock();
-        
+
         try {
-            final Requisition group = getProvisioningGroup(groupName);
-    
+            final OnmsRequisition group = getProvisioningGroup(groupName);
+
             final PropertyPath path = new PropertyPath(pathToDelete);
-            
+
             final Object objToDelete = path.getValue(group);
             final Object parentObject = path.getParent() == null ? group : path.getParent().getValue(group);
-            
+
             final String propName = path.getPropertyName();
             final String methodSuffix = Character.toUpperCase(propName.charAt(0))+propName.substring(1);
             final String methodName = "delete"+methodSuffix;
-    
+
             try {
                 MethodUtils.invokeMethod(parentObject, methodName, new Object[] { objToDelete });
             } catch (final NoSuchMethodException e) {
@@ -444,112 +325,83 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             } catch (final InvocationTargetException e) {
                 throw new IllegalArgumentException("an execption occurred deleting "+pathToDelete, e);
             }
-            
-            m_pendingForeignSourceRepository.save(group);
-            m_pendingForeignSourceRepository.flush();
-            return m_pendingForeignSourceRepository.getRequisition(groupName);
+
+            m_deployedForeignSourceRepository.save(group);
+            return m_deployedForeignSourceRepository.getRequisition(groupName);
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /**
-     * <p>getAllGroups</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     @Override
-    public Collection<Requisition> getAllGroups() {
+    public Collection<OnmsRequisition> getAllGroups() {
         m_readLock.lock();
-        
+
         try {
-            final Collection<Requisition> groups = new LinkedList<Requisition>();
-    
+            final Collection<OnmsRequisition> groups = new LinkedList<>();
+
             for(final String groupName : getProvisioningGroupNames()) {
                 groups.add(getProvisioningGroup(groupName));
             }
-            
+
             return groups;
         } finally {
             m_readLock.unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void deleteProvisioningGroup(final String groupName) {
         m_writeLock.lock();
-        
+
         try {
-            final Requisition r = getProvisioningGroup(groupName);
+            final OnmsRequisition r = getProvisioningGroup(groupName);
             if (r != null) {
                 m_deployedForeignSourceRepository.delete(r);
-                m_deployedForeignSourceRepository.flush();
-                m_pendingForeignSourceRepository.delete(r);
-                m_pendingForeignSourceRepository.flush();
             }
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void deleteAllNodes(final String groupName) {
         m_writeLock.lock();
-        
+
         try {
-            m_deployedForeignSourceRepository.flush();
-            Requisition group = m_deployedForeignSourceRepository.getRequisition(groupName);
+            OnmsRequisition group = m_deployedForeignSourceRepository.getRequisition(groupName);
             if (group != null) {
-                group.setNodes(new ArrayList<RequisitionNode>());
+                group.setNodes(new ArrayList<>());
                 m_deployedForeignSourceRepository.save(group);
-            }
-    
-            m_pendingForeignSourceRepository.flush();
-            group = m_pendingForeignSourceRepository.getRequisition(groupName);
-            if (group != null) {
-                group.setNodes(new ArrayList<RequisitionNode>());
-                m_pendingForeignSourceRepository.save(group);
             }
         } finally {
             m_writeLock.unlock();
         }
     }
 
-    /**
-     * <p>getGroupDbNodeCounts</p>
-     *
-     * @return a java$util$Map object.
-     */
     @Override
     public Map<String, Integer> getGroupDbNodeCounts() {
         m_readLock.lock();
-        
+
         try {
-            final Map<String, Integer> counts = new HashMap<String, Integer>();
-            
+            final Map<String, Integer> counts = new HashMap<>();
+
             for(final String groupName : getProvisioningGroupNames()) {
                 counts.put(groupName, m_nodeDao.getNodeCountForForeignSource(groupName));
             }
-            
+
             return counts;
         } finally {
             m_readLock.unlock();
         }
     }
 
-    /**
-     * <p>getNodeCategoryNames</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     @Override
     public Collection<String> getNodeCategoryNames() {
         m_readLock.lock();
-        
+
         try {
-            final Collection<String> names = new LinkedList<String>();
+            final Collection<String> names = new LinkedList<>();
             for (final OnmsCategory category : m_categoryDao.findAll()) {
                 names.add(category.getName());
             }
@@ -558,25 +410,14 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_readLock.unlock();
         }
     }
-    
-    /**
-     * <p>getServiceTypeNames</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
+
     @Override
     public Collection<String> getServiceTypeNames(String groupName) {
-        final SortedSet<String> serviceNames = new TreeSet<String>();
-
         m_readLock.lock();
         try {
-            m_pendingForeignSourceRepository.flush();
-            final ForeignSource pendingForeignSource = m_pendingForeignSourceRepository.getForeignSource(groupName);
+            final SortedSet<String> serviceNames = new TreeSet<>();
+            final OnmsForeignSource pendingForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
             serviceNames.addAll(pendingForeignSource.getDetectorNames());
-
-            m_deployedForeignSourceRepository.flush();
-            final ForeignSource deployedForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
-            serviceNames.addAll(deployedForeignSource.getDetectorNames());
 
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
                 serviceNames.add(type.getName());
@@ -593,15 +434,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
-    /**
-     * <p>getAssetFieldNames</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     @Override
     public Collection<String> getAssetFieldNames() {
         m_readLock.lock();
-        
+
         try {
             final Collection<String> assets = PropertyUtils.getProperties(new OnmsAssetRecord());
             assets.removeIf(a -> ASSETS_BLACKLIST.contains(a));
@@ -610,14 +446,12 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             m_readLock.unlock();
         }
     }
-    
+
     /**
-     * <p>trimWhitespace</p>
-     * 
      * Removes leading and trailing whitespace from fields that should not have any
      */
-    private void trimWhitespace(Requisition req) {
-        for (RequisitionNode node : req.getNodes()) {
+    private void trimWhitespace(OnmsRequisition req) {
+        for (OnmsRequisitionNode node : req.getNodes()) {
             if (node.getForeignId() != null) {
                 node.setForeignId(node.getForeignId().trim());
             }
@@ -627,9 +461,9 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             if (node.getParentForeignId() != null) {
                 node.setParentForeignId(node.getParentForeignId().trim());
             }
-            for (RequisitionInterface intf : node.getInterfaces()) {
-                if (intf.getIpAddr() != null) {
-                    intf.setIpAddr(intf.getIpAddr().trim());
+            for (OnmsRequisitionInterface intf : node.getInterfaces()) {
+                if (intf.getIpAddress() != null) {
+                    intf.setIpAddress(intf.getIpAddress().trim());
                 }
             }
         }

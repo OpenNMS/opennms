@@ -11,6 +11,7 @@
   <context:annotation-config/>
 
   <bean id="selectedPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+    <!-- TODO MVR rip out -->
   	<qualifier value="pending" />
   </bean>
 

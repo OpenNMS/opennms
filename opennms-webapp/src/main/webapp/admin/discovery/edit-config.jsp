@@ -35,7 +35,6 @@
   org.opennms.web.api.Util,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
-  org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,
   org.opennms.netmgt.model.monitoringLocations.*,
   org.springframework.web.context.WebApplicationContext,
@@ -44,6 +43,7 @@
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet"
 %>
+<%@ page import="org.opennms.netmgt.model.requisition.OnmsRequisition" %>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -150,7 +150,7 @@ for (OnmsMonitoringLocation location : locationDao.findAll()) {
 // Map of primary key to label (which in this case are the same too)
 RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
 Map<String,String> foreignsources = new TreeMap<String,String>();
-for (Requisition requisition : reqAccessService.getRequisitions()) {
+for (OnmsRequisition requisition : reqAccessService.getRequisitions()) {
   foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
 }
 

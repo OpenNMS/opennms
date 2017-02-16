@@ -33,9 +33,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -170,18 +170,18 @@ public class ProvisioningGroupsController {
     @RequestMapping(method=RequestMethod.GET)
     public void referenceData(ModelMap map) {
 
-        Set<String>               names          = new TreeSet<String>();
-        Map<String,Requisition>   groups         = new TreeMap<String,Requisition>();
-        Map<String,ForeignSource> foreignSources = new TreeMap<String,ForeignSource>();
+        Set<String>               names          = new TreeSet<>();
+        Map<String,OnmsRequisition>   groups         = new TreeMap<>();
+        Map<String,OnmsForeignSource> foreignSources = new TreeMap<>();
 
-        for (Requisition mi : m_provisioningService.getAllGroups()) {
+        for (OnmsRequisition mi : m_provisioningService.getAllGroups()) {
             if(mi != null){
                 names.add(mi.getForeignSource());
                 groups.put(mi.getForeignSource(), mi);
             }
         }
 
-        for (ForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
+        for (OnmsForeignSource fs : m_foreignSourceService.getAllForeignSources()) {
             if (!fs.isDefault()) {
                 names.add(fs.getName());
                 foreignSources.put(fs.getName(), fs);

@@ -29,20 +29,20 @@
 package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toPersistenceModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXB;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.InvalidPropertyException;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.ClassPathResource;
 
 public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
@@ -54,38 +54,35 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
     public void setUp() {
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_defaultForeignSourceName = "imported:";
-        m_foreignSourceRepository.clear();
-        m_foreignSourceRepository.flush();
-    }
-    
-    private Requisition createRequisition() throws Exception {
-        return m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
     }
 
-    private ForeignSource createForeignSource(String foreignSource) throws Exception {
-        ForeignSource fs = new ForeignSource(foreignSource);
-        fs.addDetector(new PluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
-        fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
+    private OnmsRequisition createRequisition() throws Exception {
+        OnmsRequisition requisition = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
+        m_foreignSourceRepository.save(requisition);
+        return requisition;
+    }
+
+    private OnmsForeignSource createForeignSource(String foreignSource) throws Exception {
+        OnmsForeignSource fs = new OnmsForeignSource(foreignSource);
+        fs.addDetector(new DetectorPluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
+        fs.addPolicy(new PolicyPluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
-        m_foreignSourceRepository.flush();
         return fs;
     }
 
     @Test
     public void testRequisition() throws Exception {
         createRequisition();
-        Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
-        TestVisitor v = new TestVisitor();
-        r.visit(v);
-        assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
-        assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
+        OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        assertEquals("number of nodes visited", 2, r.getNodes().size());
+        assertEquals("node name matches", "apknd", r.getNodes().get(0).getNodeLabel());
     }
 
     @Test
     public void testForeignSource() throws Exception {
         createRequisition();
-        ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        List<ForeignSource> foreignSources = new ArrayList<ForeignSource>(m_foreignSourceRepository.getForeignSources());
+        OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
+        List<OnmsForeignSource> foreignSources = new ArrayList<>(m_foreignSourceRepository.getForeignSources());
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", m_defaultForeignSourceName, foreignSources.get(0).getName());
         assertEquals("get() returns the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName));
@@ -96,35 +93,21 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
      * since our REST implementation uses bean access to update the values.
      */
     @Test
+    // TODO MVR remove this
     public void testBeanWrapperAccess() throws Exception {
         createRequisition();
-        Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
-        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(r);
-        assertEquals("AC", wrapper.getPropertyValue("node[0].category[0].name"));
-        assertEquals("UK", wrapper.getPropertyValue("node[0].category[1].name"));
-        assertEquals("low", wrapper.getPropertyValue("node[0].category[2].name"));
-        
-        try {
-            wrapper.getPropertyValue("node[1].category[0].name");
-            fail("Did not catch expected InvalidPropertyException exception");
-        } catch (InvalidPropertyException e) {
-            // Expected failure
-        }
-        
-        assertEquals(0, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
-        
-        wrapper.setPropertyValue("node[1].categories[0]", new RequisitionCategory("Hello world"));
-        wrapper.setPropertyValue("node[1].categories[1]", new RequisitionCategory("Hello again"));
-        
-        assertEquals(2, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
-    }
+        OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        List<String> categories = new ArrayList<>(r.getNodes().get(0).getCategories());
+        assertEquals("AC", categories.get(0));
+        assertEquals("UK", categories.get(1));
+        assertEquals("low", categories.get(2));
+        assertEquals(0, r.getNodes().get(1).getCategories().size());
 
-    @Test
-    public void testGetRequisition() throws Exception {
-        Requisition requisition = createRequisition();
-        ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        assertRequisitionsMatch("foreign sources must match", m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName), m_foreignSourceRepository.getRequisition(foreignSource));
-        assertRequisitionsMatch("foreign source is expected one", requisition, m_foreignSourceRepository.getRequisition(foreignSource));
+        // TODO MVR ..
+//        wrapper.setPropertyValue("node[1].categories[0]", new RequisitionCategory("Hello world"));
+//        wrapper.setPropertyValue("node[1].categories[1]", new RequisitionCategory("Hello again"));
+//
+//        assertEquals(2, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
     }
 
 }

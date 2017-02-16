@@ -2463,3 +2463,118 @@ CREATE TABLE topo_layout_vertex_positions (
 	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
 	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );
+
+--##################################################################
+--# Foreign Source tables
+--##################################################################
+
+-- ForeignSource table
+CREATE TABLE foreignsource (
+  name text NOT NULL,
+  date timestamp NOT NULL,
+	isdefault boolean,
+	scaninterval integer,
+	CONSTRAINT foreignsource_pkey PRIMARY KEY (name)
+);
+
+-- Relation table ForeignSource -> Plugins
+CREATE TABLE foreignsource_plugins (
+	id integer NOT NULL,
+  name text NOT NULL,
+	type text NOT NULL,
+	class text NOT NULL,
+	foreignsource text NOT NULL,
+	CONSTRAINT foreignsource_plugins_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_foreignsource_foreignsource_plugins FOREIGN KEY (foreignsource)
+	REFERENCES foreignsource (name) ON DELETE CASCADE
+);
+
+-- Relation table Plugins -> Parameters
+CREATE TABLE foreignsource_plugin_parameters (
+	key text NOT NULL,
+	value text NOT NULL,
+	plugin_id integer NOT NULL,
+	CONSTRAINT foreignsource_plugin_parameters_pkey PRIMARY KEY (key, plugin_id),
+	CONSTRAINT fk_foreignsource_plugins_foreignsource_plugin_parameters FOREIGN KEY (plugin_id)
+	REFERENCES foreignsource_plugins (id) ON DELETE CASCADE
+);
+
+--##################################################################
+--# Requisition tables
+--##################################################################
+
+CREATE TABLE requisition (
+  name text NOT NULL,
+  lastimport timestamp with time zone,
+  date timestamp with time zone,
+  CONSTRAINT requisition_pkey PRIMARY KEY (name)
+);
+
+CREATE TABLE requisition_nodes (
+  id integer NOT NULL,
+  foreignid text NOT NULL,
+  foreignsource text NOT NULL,
+  location text,
+  nodelabel text,
+  parent_foreignid text,
+  parent_foreignsource text,
+  parent_nodelabel text,
+  CONSTRAINT requisition_nodes_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_nodes_requisition FOREIGN KEY (foreignsource)
+  REFERENCES requisition (name) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_assets (
+  key text NOT NULL,
+  value text NOT NULL,
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_assets_pkey PRIMARY KEY (node_id, key),
+  CONSTRAINT fk_requisition_node_assets_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_categories (
+  name text NOT NULL,
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_categories_pkey PRIMARY KEY (node_id,name),
+  CONSTRAINT fk_requisition_node_categories_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_interfaces (
+  id integer NOT NULL,
+  description text,
+  ipaddress text NOT NULL,
+  status integer,
+  managed boolean,
+  issnmpprimary character(1),
+  node_id integer NOT NULL,
+  CONSTRAINT requisition_node_interfaces_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_node_interfaces_requisition_nodes FOREIGN KEY (node_id)
+  REFERENCES requisition_nodes (id) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_interface_categories (
+  name text NOT NULL,
+  interface_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_categories_pkey PRIMARY KEY (interface_id, name),
+  CONSTRAINT fk_requisition_node_interface_categories_requisition_node_inter FOREIGN KEY (interface_id)
+  REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_interface_services (
+  id integer NOT NULL,
+  name text NOT NULL,
+  interface_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_services_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_requisition_node_interface_services_requisition_node_interfa FOREIGN KEY (interface_id)
+  REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
+);
+
+CREATE TABLE requisition_node_interface_service_categories (
+  name text NOT NULL,
+  service_id integer NOT NULL,
+  CONSTRAINT requisition_node_interface_service_categories_pkey PRIMARY KEY (service_id, name),
+  CONSTRAINT fk_requisition_node_interface_service_categories_requisition_no FOREIGN KEY (service_id)
+  REFERENCES requisition_node_interface_services (id) ON DELETE CASCADE
+);

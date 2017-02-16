@@ -41,5 +41,6 @@ public enum FactoryStrategy {
     fastFused,
     fused,
     fastFile,
-    file
+    file,
+    database
 }
