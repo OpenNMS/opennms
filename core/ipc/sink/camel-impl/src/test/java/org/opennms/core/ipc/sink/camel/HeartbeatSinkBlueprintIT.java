@@ -113,11 +113,6 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
-    }
-
     @Test(timeout=60000)
     public void canProduceAndConsumerMessages() throws Exception {
         HeartbeatModule module = new HeartbeatModule();

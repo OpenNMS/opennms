@@ -140,11 +140,6 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
-    }
-
     @Before
     public void setUp() throws Exception {
         super.setUp();

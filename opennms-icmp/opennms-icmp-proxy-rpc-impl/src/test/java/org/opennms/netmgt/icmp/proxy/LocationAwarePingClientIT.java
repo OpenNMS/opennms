@@ -111,11 +111,6 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
         return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
-    }
-
     @Before
     public void setUp() throws Exception {
         super.setUp();

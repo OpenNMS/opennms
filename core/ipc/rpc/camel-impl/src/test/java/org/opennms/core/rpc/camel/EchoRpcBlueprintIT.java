@@ -98,11 +98,6 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
         return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
-    }
-
     @Test(timeout=60000)
     public void canExecuteRpcViaCurrentLocation() throws Exception {
         // Execute a request via the current location
