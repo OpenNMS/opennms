@@ -122,6 +122,12 @@ public class IpInterfaceScanTest {
     public void checkIPVersionMixing() {
         runTest("127.0.0.1", "127.0.0.1 || 0:0:0:0:0:0:0:1", true);
         runTest("::1", "127.0.0.1 || 0:0:0:0:0:0:0:1", true);
+        // An IP address can't belong to both classes!
+        runTest("127.0.0.1", "127.0.0.1 && 0:0:0:0:0:0:0:1", false);
+        runTest("::1", "127.0.0.1 && 0:0:0:0:0:0:0:1", false);
+        // Type mismatches
+        runTest("::1", "127.0.0.1", false);
+        runTest("127.0.0.1", "0:0:0:0:0:0:0:1", false);
     }
 
     /**
