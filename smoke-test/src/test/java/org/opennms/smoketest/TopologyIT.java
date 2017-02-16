@@ -322,6 +322,12 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                     throw e;
                 }
             }
+            // Wait to give the menu a chance to update
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
             return this;
         }
 
