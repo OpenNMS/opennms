@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
+    private boolean hierarchical;
     protected String name = "Undefined";
     protected String description = "No description available";
 
@@ -50,11 +51,20 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
         return description;
     }
 
+    @Override
+    public boolean isHierarchical() {
+        return hierarchical;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setHierarchical(boolean hierarchical) {
+        this.hierarchical = hierarchical;
     }
 }

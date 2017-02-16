@@ -116,7 +116,7 @@ public abstract class JBossConnectionFactory {
 
                     //"org.jboss.naming.NamingContextFactory"
                     props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
-                    props.put(Context.PROVIDER_URL, "jnp://" + InetAddressUtils.str(address) + ":" + port);
+                    props.put(Context.PROVIDER_URL, "jnp://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port);
                     props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
                     props.put("jnp.sotimeout", timeout);
 
@@ -144,7 +144,7 @@ public abstract class JBossConnectionFactory {
 
                     Hashtable<String, String> props = new Hashtable<String, String>();
                     props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
-                    props.put(Context.PROVIDER_URL, "http://" + InetAddressUtils.str(address) + ":" + port + "/invoker/JNDIFactory");
+                    props.put(Context.PROVIDER_URL, "http://" + InetAddressUtils.toUrlIpAddress(address) + ":" + port + "/invoker/JNDIFactory");
                     props.put("jnp.sotimeout", timeout);
 
                     ctx = new InitialContext(props);

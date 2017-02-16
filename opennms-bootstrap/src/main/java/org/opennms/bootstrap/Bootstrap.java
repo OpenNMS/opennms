@@ -39,6 +39,8 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.server.RMISocketFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,13 +63,14 @@ public abstract class Bootstrap {
      */
     private static final boolean DEBUG = Boolean.getBoolean("opennms.bootstrap.debug");
 
+    protected static final Path VERSION_PROPERTIES = Paths.get("jetty-webapps", "opennms", "WEB-INF", "version.properties");
     protected static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
     protected static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
     protected static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
     protected static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
     protected static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     protected static final String OPENNMS_HOME_PROPERTY = "opennms.home";
-    
+
     /**
      * Matches any file that is a directory.
      */
@@ -220,6 +223,7 @@ public abstract class Bootstrap {
     protected static List<File> getPropertiesFiles(File opennmsHome) {
         final File etc = new File(opennmsHome, "etc");
         final List<File> propertiesFiles = new ArrayList<>();
+        propertiesFiles.add(VERSION_PROPERTIES.toFile());
         propertiesFiles.add(new File(etc, BOOT_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, RRD_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, LIBRARY_PROPERTIES_NAME));

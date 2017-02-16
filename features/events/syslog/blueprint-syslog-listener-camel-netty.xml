@@ -13,7 +13,7 @@
 ">
 
 	<cm:property-placeholder id="syslogProperties"
-		persistent-id="org.opennms.netmgt.syslog" update-strategy="none">
+		persistent-id="org.opennms.netmgt.syslog" update-strategy="reload">
 		<cm:default-properties>
 			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
 			<cm:property name="syslog.listen.port" value="1514" />
