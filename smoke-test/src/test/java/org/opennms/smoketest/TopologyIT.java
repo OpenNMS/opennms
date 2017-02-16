@@ -311,23 +311,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             for (String label : labels) {
                 try {
                     // we should wait, otherwise the menu has not yet updated
-                    Thread.sleep(2000);
+                    waitForTransition();
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
-                } catch (InterruptedException e) {
-                    throw Throwables.propagate(e);
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception while clicking on menu item {}", label, e);
                     throw e;
                 }
             }
             // Wait to give the menu a chance to update
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
+            waitForTransition();
             return this;
         }
 
