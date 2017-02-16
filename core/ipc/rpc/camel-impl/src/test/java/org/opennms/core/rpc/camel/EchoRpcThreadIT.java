@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RpcModule;
@@ -82,8 +82,8 @@ public class EchoRpcThreadIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     @Qualifier("queuingservice")
