@@ -32,11 +32,8 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
-import java.lang.reflect.UndeclaredThrowableException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,15 +64,9 @@ public class PipedMarshaller {
         @Override
         public void run() {
             try {
-                Marshaller.marshal(m_obj, m_out);
+                JaxbUtils.marshal(m_obj, m_out);
                 m_out.flush();
                 m_out.close();
-            } catch (MarshalException e) {
-                LOG.error("Failed to convert category to xml", e);
-                throw new UndeclaredThrowableException(e);
-            } catch (ValidationException e) {
-                LOG.error("Failed to convert category to xml", e);
-                throw new UndeclaredThrowableException(e);
             } catch (IOException e) {
                 LOG.warn("Failed to convert category to xml", e);
                 // don't rethrow, it just bubbles up into output.log and confuses people, the error still shows in rtc.log
