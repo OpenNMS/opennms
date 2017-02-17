@@ -73,7 +73,6 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     private final Map<CollectionAttributeType, Number> m_declarations;
     private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
-    private long m_collectionTime;
 
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
@@ -115,16 +114,6 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
      */
     public RrdRepository getRepository() {
         return m_repository;
-    }
-
-    /**
-     * <p>setCollectionTime</p>
-     *
-     * @param collectionTime Long representing the event time for this
-     * persister.
-     */
-    public void setCollectionTime(long collectionTime) {
-        m_collectionTime = collectionTime;
     }
 
     private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
@@ -222,9 +211,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
                 createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
-                long rrdTime = Boolean.getBoolean("org.opennms.netmgt.collection.persistence.rrd.useCollectionStartTime")
-                    ? m_collectionTime : m_timeKeeper.getCurrentTime();
-                updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, rrdTime, getValues());
+                updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
             }
         } catch (FileNotFoundException e) {
             LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);

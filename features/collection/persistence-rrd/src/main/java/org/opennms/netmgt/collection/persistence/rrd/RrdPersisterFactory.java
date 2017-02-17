@@ -15,37 +15,22 @@ public class RrdPersisterFactory implements PersisterFactory {
     private ResourceStorageDao m_resourceStorageDao;
 
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        return createPersister(params, repository, 0, false, false, false);
+        return createPersister(params, repository, false, false, false);
     }
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository,
             boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
-        return createPersister(params, repository, 0, dontPersistCounters,
-            forceStoreByGroup, dontReorderAttributes);
-    }
-
-    @Override
-    public Persister createPersister(ServiceParameters params, RrdRepository repository, long collectionTime,
-            boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
         if (ResourceTypeUtils.isStoreByGroup() || forceStoreByGroup) {
-            return createGroupPersister(params, repository, collectionTime, dontPersistCounters, dontReorderAttributes);
+            return createGroupPersister(params, repository, dontPersistCounters, dontReorderAttributes);
         } else {
-            return createOneToOnePersister(params, repository, collectionTime, dontPersistCounters, dontReorderAttributes);
+            return createOneToOnePersister(params, repository, dontPersistCounters, dontReorderAttributes);
         }
     }
 
     public Persister createGroupPersister(ServiceParameters params, RrdRepository repository,
             boolean dontPersistCounters, boolean dontReorderAttributes) {
-        return createGroupPersister(params, repository, 0, dontPersistCounters,
-            dontReorderAttributes);
-    }
-
-    public Persister createGroupPersister(ServiceParameters params, RrdRepository repository,
-            long collectionTime, boolean dontPersistCounters,
-            boolean dontReorderAttributes) {
         GroupPersister persister = new GroupPersister(params, repository, m_rrdStrategy, m_resourceStorageDao);
-        persister.setCollectionTime(collectionTime);
         persister.setIgnorePersist(dontPersistCounters);
         persister.setDontReorderAttributes(dontReorderAttributes);
         return persister;
@@ -53,15 +38,7 @@ public class RrdPersisterFactory implements PersisterFactory {
 
     public Persister createOneToOnePersister(ServiceParameters params, RrdRepository repository,
             boolean dontPersistCounters, boolean dontReorderAttributes) {
-        return createOneToOnePersister(params, repository, 0,
-            dontPersistCounters, dontReorderAttributes);
-    }
-
-    public Persister createOneToOnePersister(ServiceParameters params, RrdRepository repository,
-            long collectionTime, boolean dontPersistCounters,
-            boolean dontReorderAttributes) {
         OneToOnePersister persister = new OneToOnePersister(params, repository, m_rrdStrategy, m_resourceStorageDao);
-        persister.setCollectionTime(collectionTime);
         persister.setIgnorePersist(dontPersistCounters);
         persister.setDontReorderAttributes(dontReorderAttributes);
         return persister;
