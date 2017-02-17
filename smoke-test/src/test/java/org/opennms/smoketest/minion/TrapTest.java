@@ -78,10 +78,10 @@ public class TrapTest {
         try {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().all();
             builder.withOpenNMSEnvironment()
-            .addFile(SyslogTest.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
-            .addFile(SyslogTest.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
-            .addFile(SyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
-            .addFile(SyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml");
+            .addFile(AbstractSyslogTest.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
+            .addFile(AbstractSyslogTest.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
+            .addFile(AbstractSyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
+            .addFile(AbstractSyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             minionSystem = builder.build();
             return minionSystem;

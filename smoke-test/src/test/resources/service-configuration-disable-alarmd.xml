@@ -274,7 +274,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
+  <service enabled="true">
     <name>OpenNMS:Name=Syslogd</name>
     <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
     <invoke at="start" pass="0" method="init"/>

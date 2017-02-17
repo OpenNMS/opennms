@@ -505,7 +505,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
         // Set socket option SO_REUSEADDR so that we can bind to the port even if it
         // has recently been closed by passing 'true' as the second argument here.
-        final TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(udpAddress, true);
+        final DefaultUdpTransportMapping transport = new DefaultUdpTransportMapping(udpAddress, true);
+        // Increase the receive buffer for the socket
+        LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
+        transport.setReceiveBufferSize(Integer.MAX_VALUE);
+        LOG.debug("Actual receive buffer size is {}", transport.getReceiveBufferSize());
+
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
         snmp.addCommandResponder(trapNotifier);
