@@ -1,5 +1,5 @@
 [[releasenotes-19]]
-== OpenNMS 19
+== What's New in OpenNMS Horizon 19
 
 === System Requirements
 
