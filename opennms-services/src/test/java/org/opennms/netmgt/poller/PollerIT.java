@@ -1578,6 +1578,39 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         verifyAnticipated(2000, true);
     }
 
+    /**
+     * Test for NMS-9112
+     */
+    @Test
+    public void testNoInvalidPollsAfterNodeCategoryMembershipChanged() throws InterruptedException {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+
+        MockNode node = m_network.getNode(1);
+
+        // Start the poller
+        startDaemons();
+
+        // Send a uei.opennms.org/nodes/nodeCategoryMembershipChanged
+        // This will remove, add or reschedule services for the node as necessary
+        EventBuilder eventBuilder = MockEventUtil.createEventBuilder("Test", EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+        eventBuilder.setNodeid(node.getNodeId());
+        Event nodeCatMemChangedEvent = eventBuilder.getEvent();
+        m_eventMgr.sendEventToListeners(nodeCatMemChangedEvent);
+
+        // Delete the node and send a nodeDeleted event
+        m_network.removeElement(node);
+        Event deleteEvent = node.createDeleteEvent();
+        m_eventMgr.sendEventToListeners(deleteEvent);
+
+        // Wait a little long than a polling cycle
+        sleep(3000);
+        m_network.resetInvalidPollCount();
+
+        // Sleep some more and verify that no invalid polls have occurred
+        sleep(3000);
+        assertEquals("Received a poll for an element that doesn't exist", 0, m_network.getInvalidPollCount());
+    }
+
     //
     // Utility methods
     //
