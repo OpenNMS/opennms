@@ -34,7 +34,6 @@ import java.util.Properties;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Ignore;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,7 +94,7 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "blueprint-empty-camel-context.xml";
     }
 
     @Test(timeout=60000)
@@ -108,7 +107,6 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
     }
 
     @Test(timeout=60000)
-    @Ignore("flapping with NPE at org.springframework.jms.support.JmsAccessor.createSession(JmsAccessor.java:197)")
     public void canExecuteRpcViaRemoteLocation() throws Exception {
         // Execute a request via a remote location
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
