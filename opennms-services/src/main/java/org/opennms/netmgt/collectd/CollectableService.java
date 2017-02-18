@@ -351,7 +351,7 @@ final class CollectableService implements ReadyRunnable {
          */
         if (!m_spec.scheduledOutage(m_agent)) {
             try {
-                doCollection(m_lastScheduledCollectionTime);
+                doCollection();
                 updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
             } catch (CollectionTimedOut e) {
                 LOG.info(e.getMessage());
@@ -415,7 +415,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Perform data collection.
      */
-	private void doCollection(long time) throws CollectionException {
+	private void doCollection() throws CollectionException {
 		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
@@ -425,7 +425,7 @@ final class CollectableService implements ReadyRunnable {
                         try {
                             CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
                             if (Boolean.getBoolean("org.opennms.netmgt.collectd.useCollectionStartTime")) {
-                                final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(time));
+                                final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
                                 // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper
                                 persister = wrapResourcesWithTimekeeper(persister, timeKeeper);
                             }
