@@ -376,7 +376,7 @@ final class CollectableService implements ReadyRunnable {
 	long diff = 0;
         if (strictInterval) {
             diff = System.currentTimeMillis() - m_lastScheduledCollectionTime;
-            diff = Math.max(diff, m_spec.getInterval());
+            diff = Math.min(diff, m_spec.getInterval());
         }
     	// Reschedule the service
         m_scheduler.schedule(m_spec.getInterval() - diff, getReadyRunnable());
@@ -655,7 +655,7 @@ final class CollectableService implements ReadyRunnable {
 	return this;
     }
 
-    private static CollectionSetVisitor wrapResourcesWithTimekeeper(CollectionSetVisitor visitor, TimeKeeper timeKeeper) {
+    public static CollectionSetVisitor wrapResourcesWithTimekeeper(CollectionSetVisitor visitor, TimeKeeper timeKeeper) {
         // Wrap the given visitor and intercept the calls to visit the resources
         final CollectionSetVisitor wrappedVisitor = new CollectionSetVisitorWrapper(visitor) {
             private CollectionResource wrappedResource;
