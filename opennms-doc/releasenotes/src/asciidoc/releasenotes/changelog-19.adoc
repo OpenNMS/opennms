@@ -1,3 +1,20 @@
+[[release-19-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-19.0.1]]
+==== Release 19.0.1
+
+Release 19.0.1 is the latest stable release of OpenNMS.
+
+For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
+
+The codename for 19.0.1 is _TBD_.
+
+===== Upgrade Notes
+
+If you are using the _OpenNMS-JVM_ service to monitor JMX metrics on the OpenNMS JVM, the metrics for ActiveMQ connections and enqueue/dequeue counts were not collected correctly by OpenNMS 19.0.0. If you are upgrading from OpenNMS 19.0.0, you will need to delete the _TtlConCnt_, _TtlConCnt_, _TtlDeqCnt_, and _TtlMsgCnt_ RRD or JRB files for affected nodes to reset the collections. If you are using _storeByGroup_, you will need to delete the entire _opennms-jvm_ RRD or JRB file for the affected nodes.
+
+
 [[releasenotes-changelog-19.0.0]]
 ==== Release 19.0.0
 
@@ -5,9 +22,6 @@ Release 19.0.0 is the latest stable release of OpenNMS.  It contains a large num
 For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
 
 The codename for 19.0.0 is _link:https://en.wikipedia.org/wiki/Ice_hockey[Ice Hockey]_.
-
-[releasenotes-changelog-19.0.0]
-==== Release 19.0.0
 
 ===== Bug
 
