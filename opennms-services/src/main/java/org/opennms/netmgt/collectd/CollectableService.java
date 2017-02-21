@@ -329,7 +329,7 @@ final class CollectableService implements ReadyRunnable {
     }
 
     private void doRun() {
-	boolean strictInterval = Boolean.getBoolean("org.opennms.netmgt.collectd.strictInterval");
+        boolean strictInterval = Boolean.getBoolean("org.opennms.netmgt.collectd.strictInterval");
 
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
@@ -340,10 +340,11 @@ final class CollectableService implements ReadyRunnable {
         // Update last scheduled poll time; if we are not doing strict interval,
         // it is the current time; if we are, it is the previous time plus the
         // interval
-	if (m_lastScheduledCollectionTime == 0 || !strictInterval)
+        if (m_lastScheduledCollectionTime == 0 || !strictInterval) {
             m_lastScheduledCollectionTime = System.currentTimeMillis();
-	else
-	    m_lastScheduledCollectionTime += m_spec.getInterval();
+        } else {
+            m_lastScheduledCollectionTime += m_spec.getInterval();
+        }
 
         /*
          * Check scheduled outages to see if any apply indicating
@@ -370,10 +371,10 @@ final class CollectableService implements ReadyRunnable {
                 updateStatus(ServiceCollector.COLLECTION_FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
             }
         }
-        
-	// If we are doing strict interval, determine how long the collection
+
+        // If we are doing strict interval, determine how long the collection
         // has taken, so we can cut that off of the service interval
-	long diff = 0;
+        long diff = 0;
         if (strictInterval) {
             diff = System.currentTimeMillis() - m_lastScheduledCollectionTime;
             diff = Math.min(diff, m_spec.getInterval());
@@ -652,7 +653,7 @@ final class CollectableService implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.scheduler.ReadyRunnable} object.
      */
     public ReadyRunnable getReadyRunnable() {
-	return this;
+        return this;
     }
 
     public static CollectionSetVisitor wrapResourcesWithTimekeeper(CollectionSetVisitor visitor, TimeKeeper timeKeeper) {
@@ -705,7 +706,7 @@ final class CollectableService implements ReadyRunnable {
                         return wrappedResource;
                     }
                 };
-		visitor.visitGroup(wrappedGroup);
+                visitor.visitGroup(wrappedGroup);
             }
 
             @Override
