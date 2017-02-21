@@ -43,26 +43,26 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
-import org.opennms.netmgt.config.datacollection.MibObject;
+import org.opennms.netmgt.collection.support.builder.AttributeType;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * JUnit TestCase for wrapping resources with a custom timekeeper.
- *
+ * Validates that we can successfully wrap collection sets with a custom time-keeper,
+ * allowing us to override the timestamp of the attributes within the collection set.
  */
 public class WrapResourcesWithTimekeeperTest {
     private FileAnticipator m_fileAnticipator;
@@ -113,28 +113,17 @@ public class WrapResourcesWithTimekeeperTest {
         persisterFactory.setRrdStrategy(m_rrdStrategy);
         ServiceParameters params = new ServiceParameters(new HashMap<String, Object>());
 
-        // Create collection
-        MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection((SnmpCollectionAgent)agent, params, dataCollectionConfig);
-        SnmpCollectionSet result = snmpCollection.createCollectionSet((SnmpCollectionAgent)agent);
-        // Add OID to node resource
-        MibObject mibObject = new MibObject();
-        mibObject.setOid(".1.1.1.1");
-        mibObject.setAlias("myCounter");
-        mibObject.setType("counter");
-        mibObject.setInstance("0");
-        mibObject.setMaxval(null);
-        mibObject.setMinval(null);
-        SnmpCollectionResource resource = result.getNodeInfo();
-        ResourceType resourceType = resource.getResourceType();
-        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
-        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
+        // Create a collection set
+        NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+            .withNumericAttribute(nodeResource, "mibGroup", "myCounter", 1000, AttributeType.COUNTER)
+            .build();
 
         // Visit set with wrapped persister
-        CollectionSetVisitor persister = persisterFactory.createPersister(params, repository, result.ignorePersist(), false, false);
+        CollectionSetVisitor persister = persisterFactory.createPersister(params, repository, false, false, false);
         final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(1234000));
         persister = CollectableService.wrapResourcesWithTimekeeper(persister, timeKeeper);
-        result.visit(persister);
+        collectionSet.visit(persister);
 
         // Verify the last update time matches the timekeeper time (in seconds)
         RrdDb rrdDb = new RrdDb(jrbFile);
