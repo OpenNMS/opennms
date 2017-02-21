@@ -58,7 +58,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -185,7 +184,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 	}
 
 	@Test
-	@Transactional
 	public void test() throws SQLException, UnknownHostException {
 		final Connection conn = m_db.getConnection();
 
