@@ -13,6 +13,7 @@
             <props>
                 <!-- General configuration -->
                 <prop key="org.opennms.rrd.strategyClass">org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</prop>
+                <prop key="org.opennms.rrd.userrd">true</prop>
                 <prop key="org.opennms.rrd.usequeue">true</prop>
                 <prop key="org.opennms.rrd.usetcp">false</prop>
                 <prop key="org.opennms.rrd.fileExtension" />
@@ -56,14 +57,16 @@
         <property name="port" value="${org.opennms.rrd.tcp.port}" />
     </bean>
 
+    <bean id="queuingTcpRrdStrategy" class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
+        <constructor-arg ref="tcpRrdStrategy" />
+        <constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
+    </bean>
+
     <bean id="tcpAndBasicRrdStrategy" class="org.opennms.netmgt.rrd.MultiOutputRrdStrategy" lazy-init="true">
         <property name="delegates">
             <list>
                 <ref bean="basicRrdStrategy" />
-                <bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
-                    <constructor-arg ref="tcpRrdStrategy" />
-                    <constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
-                </bean>
+                <ref bean="queuingTcpRrdStrategy" />
             </list>
         </property>
         <!-- Use JRobinRrdStrategy for all graphing calls -->
@@ -76,10 +79,7 @@
         <property name="delegates">
             <list>
                 <ref bean="queuingRrdStrategy" />
-                <bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
-                    <constructor-arg ref="tcpRrdStrategy" />
-                    <constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
-                </bean>
+                <ref bean="queuingTcpRrdStrategy" />
             </list>
         </property>
         <!-- Use JRobinRrdStrategy for all graphing calls -->
