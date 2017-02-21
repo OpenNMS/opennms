@@ -18,6 +18,7 @@
             <props>
                 <!-- General configuration -->
                 <prop key="org.opennms.rrd.strategyClass">#{ T(org.opennms.core.utils.TimeSeries).DEFAULT_RRD_STRATEGY_CLASS }</prop>
+                <prop key="org.opennms.rrd.userrd">true</prop>
                 <prop key="org.opennms.rrd.usequeue">true</prop>
                 <prop key="org.opennms.rrd.usetcp">false</prop>
                 <prop key="org.opennms.rrd.fileExtension" />
@@ -64,6 +65,10 @@
 
     <bean id="rrdFileExtension" class="java.lang.String">
         <constructor-arg type="java.lang.String" value="${org.opennms.rrd.fileExtension}" />
+    </bean>
+
+    <bean id="useRrd" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.userrd}" />
     </bean>
 
     <bean id="useQueue" class="java.lang.Boolean">
