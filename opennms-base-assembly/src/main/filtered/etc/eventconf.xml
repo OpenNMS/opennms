@@ -25,6 +25,7 @@
   <event-file>events/opennms.internal.events.xml</event-file>
   <event-file>events/opennms.linkd.events.xml</event-file>
   <event-file>events/opennms.mib.events.xml</event-file>
+  <event-file>events/opennms.ncs-component.events.xml</event-file>
   <event-file>events/opennms.pollerd.events.xml</event-file>
   <event-file>events/opennms.provisioning.events.xml</event-file>
   <event-file>events/opennms.minion.events.xml</event-file>
@@ -196,7 +197,6 @@
   <event-file>events/MRV.events.xml</event-file>
   <event-file>events/MSDP.events.xml</event-file>
   <event-file>events/Mylex.events.xml</event-file>
-  <event-file>events/ncs-component.events.xml</event-file>
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
