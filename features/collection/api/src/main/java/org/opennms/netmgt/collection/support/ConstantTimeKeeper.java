@@ -51,7 +51,7 @@ public class ConstantTimeKeeper implements TimeKeeper {
     public ConstantTimeKeeper(final Date date) {
         m_date = date;
     }
-    
+
     /* (non-Javadoc)
      * @see org.opennms.core.utils.TimeKeeper#getCurrentTime()
      */
