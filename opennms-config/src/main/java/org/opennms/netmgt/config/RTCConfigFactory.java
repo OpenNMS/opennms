@@ -32,12 +32,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -139,15 +138,15 @@ public final class RTCConfigFactory implements InitializingBean {
      *
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public RTCConfigFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
-        m_config = marshal(stream);
+    public RTCConfigFactory(InputStream stream) throws IOException {
+        m_config = unmarshal(stream);
     }
 
-    private RTCConfiguration marshal(InputStream stream) throws MarshalException, ValidationException {
-        return CastorUtils.unmarshal(RTCConfiguration.class, stream);
+    private static RTCConfiguration unmarshal(InputStream stream) throws IOException {
+        try (InputStreamReader isr = new InputStreamReader(stream)) {
+            return JaxbUtils.unmarshal(RTCConfiguration.class, isr);
+        }
     }
 
     /**
@@ -155,23 +154,17 @@ public final class RTCConfigFactory implements InitializingBean {
      * instance of this factory.
      *
      * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
+     *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void afterPropertiesSet() throws IOException, MarshalException, ValidationException {
+    public void afterPropertiesSet() throws IOException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RTC_CONFIG_FILE_NAME);
 
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            m_config = marshal(stream);
+            m_config = unmarshal(stream);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);

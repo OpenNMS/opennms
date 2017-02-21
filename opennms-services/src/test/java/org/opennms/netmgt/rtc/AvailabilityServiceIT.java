@@ -105,13 +105,13 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
         EasyMock.replay(rtcCat);
 
         final EuiLevel euiLevel = m_availabilityService.getEuiLevel(rtcCat);
-        assertEquals(1, euiLevel.getCategoryCount());
+        assertEquals(1, euiLevel.getCategory().size());
 
-        final Category category = euiLevel.getCategory(0);
+        final Category category = euiLevel.getCategory().get(0);
         assertEquals(100.0, category.getCatvalue(), 0.001);
-        assertEquals(1, category.getNodeCount());
+        assertEquals(1, category.getNode().size());
 
-        final Node node = category.getNode(0);
+        final Node node = category.getNode().get(0);
         assertEquals(100.0, node.getNodevalue(), 0.001);
         assertEquals(0, node.getNodesvccount());
         assertEquals(0, node.getNodesvcdowncount());
@@ -131,15 +131,15 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
         // Verify the availability when no outages are present
         EuiLevel euiLevel = m_availabilityService.getEuiLevel(rtcCat);
-        assertEquals(1, euiLevel.getCategoryCount());
+        assertEquals(1, euiLevel.getCategory().size());
 
-        Category category = euiLevel.getCategory(0);
+        Category category = euiLevel.getCategory().get(0);
         assertEquals(100.0, category.getCatvalue(), 0.001);
-        assertEquals(2, category.getNodeCount());
+        assertEquals(2, category.getNode().size());
 
         // Assumes the nodes are sorted
-        assertEquals(4, category.getNode(0).getNodesvccount());
-        assertEquals(2, category.getNode(1).getNodesvccount());
+        assertEquals(4, category.getNode().get(0).getNodesvccount());
+        assertEquals(2, category.getNode().get(1).getNodesvccount());
 
         // Create an outage that is both open and closed within the window
         final Date now = new Date();
@@ -157,13 +157,13 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
         // Verify the availability when outages are present
         euiLevel = m_availabilityService.getEuiLevel(rtcCat);
-        assertEquals(1, euiLevel.getCategoryCount());
+        assertEquals(1, euiLevel.getCategory().size());
 
-        category = euiLevel.getCategory(0);
+        category = euiLevel.getCategory().get(0);
         // This number should only need to be adjusted if the duration of the outage
         // or the number of services in the category changes
         assertEquals(RTCUtils.getOutagePercentage(1800000, 86400000, 6), category.getCatvalue(), 0.0001);
-        assertEquals(2, category.getNodeCount());
+        assertEquals(2, category.getNode().size());
     }
 
     private OnmsMonitoredService toMonitoredService(MockService svc) {

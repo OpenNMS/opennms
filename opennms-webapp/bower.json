@@ -83,6 +83,14 @@
         "jquery-ui.js",
         "themes/base/**"
       ]
+    },
+    "leaflet": {
+      "main": [
+        "dist/images/**",
+        "dist/leaflet-src.js",
+        "dist/leaflet-src.map",
+        "dist/leaflet.css"
+      ]
     }
   },
   "resolutions": {

@@ -134,7 +134,7 @@
         }
 
         addOnLoadEvent(function() {
-            require(['jquery', 'jquery-ui/jquery-ui', '../js/jquery.ui.treemap'], function( $ ) {
+            require(['jquery', 'jquery-ui-treemap'], function( $ ) {
                 var mouseclickHandler = function (e, data) {
                     var nodes = data.nodes;
                     var ids = data.ids;

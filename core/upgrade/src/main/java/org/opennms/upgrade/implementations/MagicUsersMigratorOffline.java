@@ -64,6 +64,8 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
 
     /** The magic users file. */
     private File magicUsersFile;
+    private File magicUsersFileRPM;
+    private File magicUsersFileDEB;
 
     /** The users file. */
     private File usersFile;
@@ -76,7 +78,9 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
     public MagicUsersMigratorOffline() throws OnmsUpgradeException {
         super();
         try {
-            magicUsersFile = ConfigFileConstants.getConfigFileByName("magic-users.properties");
+            magicUsersFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + "magic-users.properties");
+            magicUsersFileRPM = new File(magicUsersFile.getAbsolutePath() + ".rpmsave");
+            magicUsersFileDEB = new File(magicUsersFile.getAbsolutePath() + ".dpkg-remove");
             usersFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
         } catch (Exception e) {
         }
@@ -114,10 +118,12 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
         if (!canRun()) return;
 
         try {
-            File[] files = { magicUsersFile, usersFile };
+            File[] files = { magicUsersFile, magicUsersFileRPM, magicUsersFileDEB, usersFile };
             for (File file : files) {
-                log("Backing up %s\n", file);
-                zipFile(file);
+                if (file.exists()) {
+                    log("Backing up %s\n", file);
+                    zipFile(file);
+                }
             }
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't backup files because " + e.getMessage());
@@ -136,6 +142,14 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
             log("Removing original config file %s\n", magicUsersFile);
             FileUtils.deleteQuietly(magicUsersFile);
         }
+        if (magicUsersFileRPM.exists()) {
+            log("Removing config file (RPM version) %s\n", magicUsersFileRPM);
+            FileUtils.deleteQuietly(magicUsersFileRPM);
+        }
+        if (magicUsersFileDEB.exists()) {
+            log("Removing config file (DEB version) %s\n", magicUsersFileDEB);
+            FileUtils.deleteQuietly(magicUsersFileDEB);
+        }
     }
 
     /* (non-Javadoc)
@@ -145,12 +159,14 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
     public void rollback() throws OnmsUpgradeException {
         if (!canRun()) return;
 
-        File[] files = { magicUsersFile, usersFile };
+        File[] files = { magicUsersFile, magicUsersFileRPM, magicUsersFileDEB, usersFile };
         for (File file : files) {
-            log("Restoring backup %s\n", file);
             File zip = new File(file.getAbsolutePath() + ZIP_EXT);
-            FileUtils.deleteQuietly(file);
-            unzipFile(zip, zip.getParentFile());
+            if (zip.exists()) {
+                log("Restoring backup %s\n", zip);
+                FileUtils.deleteQuietly(file);
+                unzipFile(zip, zip.getParentFile());
+            }
         }
     }
 
@@ -210,7 +226,15 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
 
             // Parse magic-users.properties
             Properties properties = new Properties();
-            properties.load(new FileInputStream(magicUsersFile));
+            if (magicUsersFile.exists()) {
+                properties.load(new FileInputStream(magicUsersFile));
+            } else if (magicUsersFileRPM.exists()) {
+                properties.load(new FileInputStream(magicUsersFileRPM));
+            } else if (magicUsersFileDEB.exists()) {
+                properties.load(new FileInputStream(magicUsersFileDEB));
+            } else {
+                throw new IllegalArgumentException("Can't find magic-users.properties, or any RPM/DEB backup of it");
+            }
 
             // Look up for custom users and their passwords
             String[] configuredUsers = BundleLists.parseBundleList(properties.getProperty("users"));
@@ -314,6 +338,9 @@ public class MagicUsersMigratorOffline extends AbstractOnmsUpgrade {
      * @return true, if successful
      */
     private boolean canRun() {
-        return magicUsersFile != null && magicUsersFile.exists();
+        boolean defaultOk = magicUsersFile != null && magicUsersFile.exists();
+        boolean rpmOk = magicUsersFileRPM != null && magicUsersFileRPM.exists();
+        boolean debOk =magicUsersFileDEB != null && magicUsersFileDEB.exists();
+        return defaultOk || rpmOk || debOk;
     }
 }

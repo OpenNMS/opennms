@@ -12,7 +12,7 @@
 ">
 
     <cm:property-placeholder id="ipcProperties"
-        persistent-id="org.opennms.core.ipc" update-strategy="none">
+        persistent-id="org.opennms.core.ipc" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="body.debug" value="-1" />
         </cm:default-properties>
