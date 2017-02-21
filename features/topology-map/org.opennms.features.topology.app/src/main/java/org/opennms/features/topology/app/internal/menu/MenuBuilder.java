@@ -193,10 +193,6 @@ public class MenuBuilder {
 		}
 	}
 
-	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, Runnable... hooks) {
-		return build(targets, operationContext, hooks == null ? Collections.emptyList() : Arrays.asList(hooks));
-	}
-
 	/**
 	 * Converts the current menu configuration to Vaadin's {@link MenuBar} representation.
 	 *
@@ -205,20 +201,27 @@ public class MenuBuilder {
 	 * @param hooks Optional hooks to be executed after a menu item's command has been executed.
 	 * @return The converted {@link MenuBar}
 	 */
-	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, List<Runnable> hooks) {
+	public MenuBar build(List<VertexRef> targets, OperationContext operationContext, Runnable... hooks) {
+		MenuBar menuBar = new MenuBar();
+		apply(menuBar, targets, operationContext, hooks);
+		return menuBar;
+	}
+
+	public void apply(MenuBar rootMenu, List<VertexRef> targets, OperationContext operationContext, Runnable... hooks) {
+		final List<Runnable> hookList = hooks == null ? Collections.emptyList() : Arrays.asList(hooks);
+
+		// Determine the order of the items in the menu
 		determineAndApplyOrder();
 
-		// Build root menu
-		MenuBar menuBar = new MenuBar();
+		// Start building menubar
 		List<MenuItem> rootItems = new ArrayList<>(m_menuBar);
 		Collections.sort(rootItems);
 		for (MenuItem eachRootElement : rootItems) {
-			MenuBar.MenuItem menuItem = addItem(() -> menuBar.addItem(removeLabelProperties(eachRootElement.getLabel()), null), eachRootElement, targets, operationContext, hooks);
+			MenuBar.MenuItem menuItem = addItem(() -> rootMenu.addItem(removeLabelProperties(eachRootElement.getLabel()), null), eachRootElement, targets, operationContext, hookList);
 
 			// Add children
-			addItems(menuItem, eachRootElement, targets, operationContext, hooks);
+			addItems(menuItem, eachRootElement, targets, operationContext, hookList);
 		}
-		return menuBar;
 	}
 
 	private void addItems(MenuBar.MenuItem currentMenuItem, MenuItem currentParent, List<VertexRef> targets, OperationContext operationContext, List<Runnable> hooks) {

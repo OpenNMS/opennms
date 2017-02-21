@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>19.0.0-SNAPSHOT</version>
+  <version>20.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1244,7 +1244,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>19.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>20.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1318,7 +1318,6 @@
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <camelVersion>2.14.1</camelVersion>
-    <elasticsearchVersion>1.0.0_4</elasticsearchVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
@@ -1759,6 +1758,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.collection</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.db</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
@@ -1929,7 +1934,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.collectors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.test-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

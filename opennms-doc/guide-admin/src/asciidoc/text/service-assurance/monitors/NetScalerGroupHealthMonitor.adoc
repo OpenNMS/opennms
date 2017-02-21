@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== NetScalerGroupHealthMonitor
 
 This monitor is designed for _Citrix(R) NetScaler(R)_ loadbalancing checks.
@@ -7,11 +10,11 @@ The required data is gathered via SNMP from the _NetScaler(R)_.
 The status of the servers is determined by the _NetScaler(R)_.
 The provided service it self is not part of the check.
 The basis of this monitor is the _SnmpMonitorStrategy_.
-A valid SNMP configuration in {opennms-product-name} for the _NetScaler(R)_ is required.
+A valid SNMP configuration in _{opennms-product-name}_ for the _NetScaler(R)_ is required.
 
 NOTE: A _NetScaler(R)_ can manage several groups of servers per application.
-This monitor just covers one group at a time.
-If there are multiple groups to check, define one monitor per group.
+      This monitor just covers one group at a time.
+      If there are multiple groups to check, define one monitor per group.
 
 CAUTION: This monitor is not checking the loadbalanced service it self.
 
@@ -32,6 +35,8 @@ CAUTION: This monitor is not checking the loadbalanced service it self.
 | `group-name`  | The name of the server group to check                                        | required | `-`
 | `group-health`| The percentage of active servers vs total server of the group as an integer  | optional | `60`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

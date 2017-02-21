@@ -38,8 +38,8 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -78,7 +78,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Last known/current status
      */
-    private volatile int m_status;
+    private volatile CollectionStatus m_status;
 
     /**
      * The last time the collector was scheduled for collection.
@@ -147,14 +147,12 @@ final class CollectableService implements ReadyRunnable {
         m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
-        m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+        m_status = CollectionStatus.SUCCEEDED;
 
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
-        
-        m_spec.initialize(m_agent);
-        
+
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
@@ -335,22 +333,22 @@ final class CollectableService implements ReadyRunnable {
         if (!m_spec.scheduledOutage(m_agent)) {
             try {
                 doCollection();
-                updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
+                updateStatus(CollectionStatus.SUCCEEDED, null);
             } catch (CollectionTimedOut e) {
                 LOG.info(e.getMessage());
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
             } catch (CollectionWarning e) {
                 LOG.warn(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
             } catch (CollectionUnknown e) {
                 LOG.warn(e.getMessage(), e);
                 // Omit any status updates
             } catch (CollectionException e) {
                 LOG.error(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
             } catch (Throwable e) {
                 LOG.error(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
+                updateStatus(CollectionStatus.FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
             }
         }
         
@@ -358,9 +356,9 @@ final class CollectableService implements ReadyRunnable {
         m_scheduler.schedule(m_spec.getInterval(), getReadyRunnable());
     }
 
-    private void updateStatus(int status, CollectionException e) {
+    private void updateStatus(CollectionStatus status, CollectionException e) {
         // Any change in status?
-        if (status != m_status) {
+        if (!status.equals(m_status)) {
             // Generate data collection transition events
             LOG.debug("run: change in collection status, generating event.");
             
@@ -371,11 +369,11 @@ final class CollectableService implements ReadyRunnable {
 
             // Send the appropriate event
             switch (status) {
-            case ServiceCollector.COLLECTION_SUCCEEDED:
+            case SUCCEEDED:
                 sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, null);
                 break;
 
-            case ServiceCollector.COLLECTION_FAILED:
+            case FAILED:
                 sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI, reason);
                 break;
 
@@ -417,8 +415,8 @@ final class CollectableService implements ReadyRunnable {
                                 result.visit(m_thresholdVisitor);
                             }
                         }
-                       
-                        if (result.getStatus() != ServiceCollector.COLLECTION_SUCCEEDED) {
+
+                        if (!CollectionStatus.SUCCEEDED.equals(result.getStatus())) {
                             throw new CollectionFailed(result.getStatus());
                         }
                     }
@@ -588,10 +586,8 @@ final class CollectableService implements ReadyRunnable {
     }
     
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
-        m_spec.release(m_agent);
         m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
-        m_spec.initialize(m_agent);
     }
 
     /**

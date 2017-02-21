@@ -140,10 +140,14 @@ include::text/performance-data-collection/collection-packages.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
 include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+include::text/performance-data-collection/collectors/http.adoc[]
+include::text/performance-data-collection/collectors/jdbc.adoc[]
 
-[[ga-performance-mgmt-stress-testing]]
-=== Stress Testing
-include::text/performance-data-collection/stress-testing.adoc[]
+[[ga-performance-mgmt-shell]]
+=== Shell Commands
+include::text/performance-data-collection/shell/introduction.adoc[]
+include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/stress-testing.adoc[]
 
 [[ga-events]]
 == Events

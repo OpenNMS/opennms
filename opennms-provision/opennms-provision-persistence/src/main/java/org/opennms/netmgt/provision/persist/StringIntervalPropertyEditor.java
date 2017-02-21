@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,18 +34,16 @@ import java.beans.PropertyEditorSupport;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 
-/**
- * <p>StringIntervalPropertyEditor class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class StringIntervalPropertyEditor extends PropertyEditorSupport implements PropertyEditor {
     
     /** {@inheritDoc} */
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
-        setValue(StringIntervalAdapter.DEFAULT_PERIOD_FORMATTER.parsePeriod(text).toStandardDuration());
+    public void setAsText(final String text) throws IllegalArgumentException {
+        if ("0".equals(text)) {
+            setValue(Duration.ZERO);
+        } else {
+            setValue(StringIntervalAdapter.DEFAULT_PERIOD_FORMATTER.parsePeriod(text).toStandardDuration());
+        }
     }
 
     /**
@@ -55,7 +53,11 @@ public class StringIntervalPropertyEditor extends PropertyEditorSupport implemen
      */
     @Override
     public String getAsText() {
-        Period p = ((Duration)getValue()).toPeriod().normalizedStandard();
+        final Duration value = (Duration)getValue();
+        if (value.equals(Duration.ZERO)) {
+            return "0";
+        }
+        Period p = value.toPeriod().normalizedStandard();
         return StringIntervalAdapter.DEFAULT_PERIOD_FORMATTER.print(p);
     } 
 }

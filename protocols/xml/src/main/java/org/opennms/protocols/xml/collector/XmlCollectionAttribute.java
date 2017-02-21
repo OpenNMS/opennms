@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      */
     private Number parseNumber(String number) throws Exception {
         Double d = Double.parseDouble(number); // This covers negative and scientific notation numbers.
-        if (getAttributeType().getType().toLowerCase().startsWith("counter")) {
+        if (AttributeType.COUNTER.equals(getType())) {
             return d.longValue(); // Counter values must be integers
         }
         return d;

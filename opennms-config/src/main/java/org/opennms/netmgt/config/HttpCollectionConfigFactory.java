@@ -202,6 +202,12 @@ public class HttpCollectionConfigFactory {
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpCollection} object.
      */
     public HttpCollection getHttpCollection(String collectionName) {
+        try {
+            updateFromFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         List<HttpCollection> collections = m_config.getHttpCollection();
         HttpCollection collection = null;
         for (HttpCollection coll : collections) {

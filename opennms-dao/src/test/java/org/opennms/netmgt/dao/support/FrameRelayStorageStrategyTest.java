@@ -35,6 +35,7 @@ import org.junit.Assert;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -55,11 +56,11 @@ public class FrameRelayStorageStrategyTest {
         strategy.setStorageStrategyService(service);
         
         // Test InterfaceName
-        String parentResource = "1";
-        Assert.assertEquals("Se0_0", strategy.getInterfaceName(parentResource, "1"));
+        ResourcePath parentResource = ResourcePath.get("1");
+        Assert.assertEquals("Se0_0", strategy.getInterfaceName(parentResource.getName(), "1"));
 
         // Test InterfaceName (invalid source interface index);
-        Assert.assertEquals("2", strategy.getInterfaceName(parentResource, "2"));
+        Assert.assertEquals("2", strategy.getInterfaceName(parentResource.getName(), "2"));
 
         // Test Resource Name
         MockCollectionResource resource = new MockCollectionResource(parentResource, "1.100", "frCircuitIfIndex");
@@ -71,7 +72,7 @@ public class FrameRelayStorageStrategyTest {
         Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals(Paths.get("1", "frCircuitIfIndex", "Se0_0.100"), strategy.getRelativePathForAttribute(parentResource, resourceName));
+        Assert.assertEquals(ResourcePath.get("1", "frCircuitIfIndex", "Se0_0.100"), strategy.getRelativePathForAttribute(parentResource, resourceName));
         
         EasyMock.verify(service);
     }

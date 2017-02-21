@@ -124,7 +124,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            final String hostAddress = InetAddressUtils.str(ipAddress);
+            final String hostAddress = InetAddressUtils.toUrlIpAddress(ipAddress);
             try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
@@ -154,7 +154,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            final String hostAddress = InetAddressUtils.str(ipAddress);
+            final String hostAddress = InetAddressUtils.toUrlIpAddress(ipAddress);
             try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();

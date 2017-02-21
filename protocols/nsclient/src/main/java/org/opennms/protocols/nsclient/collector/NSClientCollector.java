@@ -38,14 +38,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
@@ -72,8 +74,8 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class NSClientCollector implements ServiceCollector {
-	
+public class NSClientCollector extends AbstractLegacyServiceCollector {
+
 	private static final Logger LOG = LoggerFactory.getLogger(NSClientCollector.class);
 
 
@@ -102,7 +104,7 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public String getType() {
+        public AttributeType getType() {
             return m_attribute.getType();
         }
 
@@ -168,7 +170,7 @@ public class NSClientCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
-        int status = ServiceCollector.COLLECTION_FAILED;
+        CollectionStatus status = CollectionStatus.FAILED;
         final ServiceParameters serviceParams = new ServiceParameters(parameters);
         String collectionName = serviceParams.getCollectionName();
 
@@ -229,7 +231,7 @@ public class NSClientCollector implements ServiceCollector {
                             } else {
                                 NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
                                 collectionResource.setAttributeValue(attribType, result.getResponse());
-                                status = ServiceCollector.COLLECTION_SUCCEEDED;
+                                status = CollectionStatus.SUCCEEDED;
                             }
                         }
                     }

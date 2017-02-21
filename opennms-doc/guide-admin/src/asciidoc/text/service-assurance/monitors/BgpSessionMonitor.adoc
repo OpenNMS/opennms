@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== BgpSessionMonitor
 
 This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.
@@ -42,9 +45,9 @@ To define the mapping I used the description from http://www.freesoft.org/CIE/RF
 |===
 | Parameter   | Description                                                             | Required | Default value
 | `bgpPeerIp` | IP address of the far end BGP peer session                              | required | `-`
-| `retry`     | Amount of attempts to get the BGP peer state with SNMP                  | required | `-`
-| `timeout`   | Time to wait for the SNMP agents response before trying a next attempt. | required | `-`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

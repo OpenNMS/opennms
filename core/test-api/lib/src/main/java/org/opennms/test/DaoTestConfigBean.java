@@ -66,7 +66,7 @@ public class DaoTestConfigBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         if (System.getProperty("org.opennms.netmgt.icmp.pingerClass") == null) {
-            System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.best.JnaPinger");
+            System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
         if (System.getProperty("activemq.data") == null) {
             System.setProperty("activemq.data", "target/test/activemq");

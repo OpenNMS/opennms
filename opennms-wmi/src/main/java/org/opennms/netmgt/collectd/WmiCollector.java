@@ -46,10 +46,11 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiResourceType;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -83,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public class WmiCollector implements ServiceCollector {
+public class WmiCollector extends AbstractLegacyServiceCollector {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiCollector.class);
 
@@ -185,7 +186,7 @@ public class WmiCollector implements ServiceCollector {
                 }
             }
         }
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
         return collectionSet;
     }
     
