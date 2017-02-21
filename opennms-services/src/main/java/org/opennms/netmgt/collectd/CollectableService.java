@@ -79,7 +79,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 final class CollectableService implements ReadyRunnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
-    
+
+    protected static final String STRICT_INTERVAL_SYS_PROP = "org.opennms.netmgt.collectd.strictInterval";
+
+    protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
+
+    private final boolean m_usingStrictInterval = Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
+
     /**
      * Interface's parent node identifier
      */
@@ -329,8 +335,6 @@ final class CollectableService implements ReadyRunnable {
     }
 
     private void doRun() {
-        boolean strictInterval = Boolean.getBoolean("org.opennms.netmgt.collectd.strictInterval");
-
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
             LOG.debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for {}", this);
@@ -340,7 +344,7 @@ final class CollectableService implements ReadyRunnable {
         // Update last scheduled poll time; if we are not doing strict interval,
         // it is the current time; if we are, it is the previous time plus the
         // interval
-        if (m_lastScheduledCollectionTime == 0 || !strictInterval) {
+        if (m_lastScheduledCollectionTime == 0 || !m_usingStrictInterval) {
             m_lastScheduledCollectionTime = System.currentTimeMillis();
         } else {
             m_lastScheduledCollectionTime += m_spec.getInterval();
@@ -375,7 +379,7 @@ final class CollectableService implements ReadyRunnable {
         // If we are doing strict interval, determine how long the collection
         // has taken, so we can cut that off of the service interval
         long diff = 0;
-        if (strictInterval) {
+        if (m_usingStrictInterval) {
             diff = System.currentTimeMillis() - m_lastScheduledCollectionTime;
             diff = Math.min(diff, m_spec.getInterval());
         }
@@ -425,7 +429,7 @@ final class CollectableService implements ReadyRunnable {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
                             CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
-                            if (Boolean.getBoolean("org.opennms.netmgt.collectd.useCollectionStartTime")) {
+                            if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
                                 final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
                                 // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper
                                 persister = wrapResourcesWithTimekeeper(persister, timeKeeper);
