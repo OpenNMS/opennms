@@ -12,7 +12,7 @@ The codename for 19.0.1 is _TBD_.
 
 ===== Upgrade Notes
 
-If you are using the _OpenNMS-JVM_ service to monitor JMX metrics on the OpenNMS JVM, the metrics for ActiveMQ connections and enqueue/dequeue counts were not collected correctly by OpenNMS 19.0.0. If you are upgrading from OpenNMS 19.0.0, you will need to delete the _TtlConCnt_, _TtlConCnt_, _TtlDeqCnt_, and _TtlMsgCnt_ RRD or JRB files for affected nodes to reset the collections. If you are using _storeByGroup_, you will need to delete the entire _opennms-jvm_ RRD or JRB file for the affected nodes.
+If you are using the _OpenNMS-JVM_ service to monitor JMX metrics on the OpenNMS JVM, the metrics for ActiveMQ connections and enqueue/dequeue counts were not collected correctly by OpenNMS 19.0.0. If you are upgrading from OpenNMS 19.0.0, you will need to delete the _TtlConCnt_, _TtlConCnt_, _TtlDeqCnt_, and _TtlMsgCnt_ RRD or JRB files for affected nodes to reset the collections. If you are using _storeByGroup_, you will need to delete the _org_apache_activemq_type_Broker_brokerName_localhost_ RRD or JRB file for the affected nodes.
 
 
 [[releasenotes-changelog-19.0.0]]
