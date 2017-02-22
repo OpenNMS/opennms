@@ -20,6 +20,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
     <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
     <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
+    <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="operationManager"/>
@@ -150,6 +151,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <property name="serviceLocator" ref="bundleContextServiceLocator"/>
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
+
+    <!-- Listener to invalidate the Topology Service Cache -->
+    <bean id="topologyEventListener"
+          class="org.opennms.features.topology.app.internal.service.TopologyServiceEventListener"
+          init-method="init" destroy-method="destroy">
+        <argument ref="topologyService"/>
+        <argument ref="eventIpcManager"/>
+    </bean>
 
     <bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />
 

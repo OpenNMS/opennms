@@ -30,17 +30,24 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXB;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
@@ -650,7 +657,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     // Verifies that the ping operation is available. See NMS-9019
     @Test
-    public void verifyPingOperation() throws InterruptedException {
+    public void verifyPingOperation() throws InterruptedException, IOException {
         // Create Dummy Node
         final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
@@ -667,10 +674,19 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
 
+        // Send an event to force reload of topology
+        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+        builder.setTime(new Date());
+        builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JAXB.marshal(builder.getEvent(), outputStream);
+            sendPost("/rest/events", new String(outputStream.toByteArray()));
+        }
+        Thread.sleep(5000); // Wait to allow the event to be processed
+
         // Find Node and try select ping from context menu
         topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         topologyUiPage.clearFocus();
-        Thread.sleep(35000); // wait 30 seconds, before the topology service allows a refresh
         topologyUiPage.refreshNow();
         topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
         PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").ping();

@@ -211,6 +211,23 @@ public class DefaultTopologyService implements TopologyService {
         this.serviceLocator = Objects.requireNonNull(serviceLocator);
     }
 
+    public void invalidate(String namespace) {
+        // Tt the moment the namespace of each topology must be unique overall meta topology providers, even if they
+        // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
+        // This is at the moment not the case, therefore we iterate over all meta topology providers and invalidate
+        // The cache if the meta topology provider has a graph with the given namespace. In the future this should
+        // Be handled differently.
+        serviceLocator.findServices(MetaTopologyProvider.class, null).stream()
+            .filter(metaTopologyProvider -> metaTopologyProvider.getGraphProviderBy(namespace) != null)
+            .forEach(metaTopologyProvider ->  {
+                graphProviderCache.invalidate(new GraphProviderKey(metaTopologyProvider.getId(), namespace));
+            });
+    }
+
+    public void invalidateAll() {
+        graphProviderCache.invalidateAll();
+    }
+
     private LayoutAlgorithm findLayoutAlgorithm(String preferredLayout) {
         if (preferredLayout != null) {
             // LayoutOperations are exposed as CheckedOperations
