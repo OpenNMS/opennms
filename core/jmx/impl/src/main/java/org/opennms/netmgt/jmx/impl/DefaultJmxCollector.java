@@ -50,7 +50,6 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -58,7 +57,6 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.config.jmx.MBeanServer;
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxCollector;
 import org.opennms.netmgt.jmx.JmxCollectorConfig;
 import org.opennms.netmgt.jmx.JmxSampleProcessor;
@@ -81,21 +79,11 @@ public class DefaultJmxCollector implements JmxCollector {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected JmxConfigDao m_jmxConfigDao = null;
-
     @Override
-    public void collect(JmxCollectorConfig config, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException {
-        if (m_jmxConfigDao == null) {
-            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
-        }
-
+    public void collect(JmxCollectorConfig config, MBeanServer mBeanServer, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException {
         Map<String, String> mergedStringMap = new HashMap<>(config.getServiceProperties());
-
-        if (mergedStringMap.containsKey("port")) {
-            MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(config.getAgentAddress(), mergedStringMap.get("port"));
-            if (mBeanServer != null) {
-                mergedStringMap.putAll(mBeanServer.getParameterMap());
-            }
+        if (mBeanServer != null) {
+            mergedStringMap.putAll(mBeanServer.getParameterMap());
         }
 
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
@@ -294,12 +282,4 @@ public class DefaultJmxCollector implements JmxCollector {
         return Collections.unmodifiableSet(objectNames);
     }
 
-    /**
-     * Method for setting the config dao to use. Required for the tests to work properly.
-     *
-     * @param jmxConfigDao the dao instance
-     */
-    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
-        this.m_jmxConfigDao = jmxConfigDao;
-    }
 }
