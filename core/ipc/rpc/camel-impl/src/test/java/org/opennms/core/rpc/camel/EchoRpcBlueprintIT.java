@@ -34,8 +34,7 @@ import java.util.Properties;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RpcModule;
@@ -67,8 +66,8 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     @Qualifier("queuingservice")
@@ -95,12 +94,7 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
-    }
-
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
+        return "blueprint-empty-camel-context.xml";
     }
 
     @Test(timeout=60000)
@@ -113,7 +107,6 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
     }
 
     @Test(timeout=60000)
-    @Ignore("flapping with NPE at org.springframework.jms.support.JmsAccessor.createSession(JmsAccessor.java:197)")
     public void canExecuteRpcViaRemoteLocation() throws Exception {
         // Execute a request via a remote location
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());

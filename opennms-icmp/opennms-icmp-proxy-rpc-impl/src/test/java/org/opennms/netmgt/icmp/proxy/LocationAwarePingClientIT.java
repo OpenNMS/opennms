@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
@@ -75,9 +74,6 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
     private OnmsDistPoller identity;
 
     @Autowired
-    private PingProxyRpcModule pingProxyRpcModule;
-
-    @Autowired
     @Qualifier("queuingservice")
     private Component queuingservice;
 
@@ -103,17 +99,11 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<>(pingProxyRpcModule, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
-    }
-
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
     }
 
     @Before
