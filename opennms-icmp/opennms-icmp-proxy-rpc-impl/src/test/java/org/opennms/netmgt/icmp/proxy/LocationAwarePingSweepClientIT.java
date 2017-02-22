@@ -41,10 +41,8 @@ import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
@@ -56,9 +54,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
-@Ignore("flapping")
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
@@ -74,9 +72,6 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
 
     @Autowired
     private OnmsDistPoller identity;
-
-    @Autowired
-    private PingSweepRpcModule pingSweepRpcModule;
 
     @Autowired
     @Qualifier("queuingservice")
@@ -103,17 +98,11 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<>(pingSweepRpcModule, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
         return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
-    }
-
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
     }
 
     @Before
