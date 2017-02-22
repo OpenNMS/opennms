@@ -6,6 +6,7 @@ minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy
 minion-provisiond-detectors
+minion-provisiond-requisitions
 minion-poller
 minion-collection
 minion-icmp-proxy
