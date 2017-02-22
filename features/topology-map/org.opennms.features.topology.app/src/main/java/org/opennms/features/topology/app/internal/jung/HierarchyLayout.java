@@ -96,7 +96,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
         return roots;
     }
 
-    protected void buildTree() {
+    private void buildTree() {
         // we index the levels
         graph.getVertices().forEach(v -> {
             if (v instanceof LevelAware) {
@@ -120,7 +120,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
         }
     }
 
-    protected void buildTree(V v, int x) {
+    private void buildTree(V v, int x) {
         if (!alreadyDone.contains(v)) {
             alreadyDone.add(v);
 

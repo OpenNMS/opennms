@@ -16,7 +16,6 @@ The _Topology Map_ supports the following properties, which can be influenced by
 | `autoRefresh.interval`                    | `Integer`    | `60`                | Defines the auto refresh interval in seconds.
 | `hiddenCategoryPrefix`                    | `String`     | _empty String_      | A String which allows hiding categories. For example a value of `server` will hide all categories starting with `server`.
                                                                                    Be aware, that this setting is case-sensistive, so `Servers` will be shown.
-| `resolveCoordinatesFromAddressString`     |  `Boolean`   | `true`              | If enabled Geoinformation of a node assigned to a vertex is resolved.
                                                                                    The resolution is only enabled if no longitude/latitude information is available.
 |===
 

@@ -9,11 +9,38 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<bean id="httpCollector" class="org.opennms.netmgt.collectd.HttpCollector" />
-	<service ref="httpCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
-      <service-properties>
-	     <entry key="type" value="org.opennms.netmgt.collectd.HttpCollector" />
-      </service-properties>
-    </service>
+  <bean id="httpCollector" class="org.opennms.netmgt.collectd.HttpCollector" />
+  <service ref="httpCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.netmgt.collectd.HttpCollector" />
+    </service-properties>
+  </service>
 
+  <bean id="jbossCollector" class="org.opennms.netmgt.collectd.JBossCollector" />
+  <service ref="jbossCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.netmgt.collectd.JBossCollector" />
+    </service-properties>
+  </service>
+
+  <bean id="jmxSecureCollector" class="org.opennms.netmgt.collectd.JMXSecureCollector" />
+  <service ref="jmxSecureCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.netmgt.collectd.JMXSecureCollector" />
+    </service-properties>
+  </service>
+
+  <bean id="jsr160Collector" class="org.opennms.netmgt.collectd.Jsr160Collector" />
+  <service ref="jsr160Collector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.netmgt.collectd.Jsr160Collector" />
+    </service-properties>
+  </service>
+
+  <bean id="mx4jCollector" class="org.opennms.netmgt.collectd.MX4JCollector" />
+  <service ref="mx4jCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.netmgt.collectd.MX4JCollector" />
+    </service-properties>
+  </service>
 </blueprint>

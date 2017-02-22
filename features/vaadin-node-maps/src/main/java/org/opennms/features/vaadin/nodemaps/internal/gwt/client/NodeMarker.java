@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
+ * it under the terms of the GNU Affero General License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,21 +31,19 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.geocoder.Coordinates;
-
 public interface NodeMarker {
-    public Integer getNodeId();
-    public String getForeignSource();
-    public String getForeignId();
-    public String getNodeLabel();
-    public String getDescription();
-    public String getIpAddress();
-    public Integer getSeverity();
-    public String getSeverityLabel();
-    public Integer getUnackedCount();
-    public String getMaintContract();
-    public List<String> getCategoryList();
-    public Coordinates getCoordinates();
+    Integer getNodeId();
+    String getForeignSource();
+    String getForeignId();
+    String getNodeLabel();
+    String getDescription();
+    String getIpAddress();
+    Integer getSeverity();
+    String getSeverityLabel();
+    Integer getUnackedCount();
+    String getMaintContract();
+    List<String> getCategoryList();
+    Coordinates getCoordinates();
 
-    public Map<String, String> getProperties();
+    Map<String, String> getProperties();
 }

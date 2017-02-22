@@ -118,12 +118,12 @@ public class LegacyEuiLevelMapper {
                 levelNode.setNodesvcdowncount(m_dataMgr.getServiceDownCount(nodeID, rtcCat));
 
                 // add the node
-                levelCat.addNode(levelNode);
+                levelCat.getNode().add(levelNode);
             }
         }
 
         // add category
-        level.addCategory(levelCat);
+        level.getCategory().add(levelCat);
 
         return level;
     }

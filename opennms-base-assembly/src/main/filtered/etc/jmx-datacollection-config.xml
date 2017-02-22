@@ -300,12 +300,12 @@
                 <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
             <mbean name="org.apache.activemq" objectname="org.apache.activemq:type=Broker,brokerName=localhost">
-                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="gauge"/>
-                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="gauge"/>
-                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="gauge"/>
+                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="counter"/>
+                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="counter"/>
+                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="counter"/>
                 <attrib name="TotalConsumerCount" alias="TtlConsumerCnt" type="gauge"/>
                 <attrib name="TotalProducerCount" alias="TtlProdCnt" type="gauge"/>
-                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="gauge"/>
+                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="counter"/>
                 <attrib name="AverageMessageSize" alias="AvgMsgSize" type="gauge"/>
                 <attrib name="MaxMessageSize" alias="MaxMsgSize" type="gauge"/>
                 <attrib name="MinMessageSize" alias="MinMsgSize" type="gauge"/>

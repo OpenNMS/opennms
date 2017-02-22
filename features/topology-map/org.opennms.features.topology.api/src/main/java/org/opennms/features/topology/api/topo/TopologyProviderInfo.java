@@ -31,4 +31,11 @@ package org.opennms.features.topology.api.topo;
 public interface TopologyProviderInfo {
     String getName();
     String getDescription();
+
+    /**
+     * Defines if the current topology is hierarchical.
+     *
+     * @return true if hierarchical, false otherwise.
+     */
+    boolean isHierarchical();
 }

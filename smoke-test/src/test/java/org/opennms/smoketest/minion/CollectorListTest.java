@@ -68,15 +68,15 @@ public class CollectorListTest {
      * Only a subset of the collectors are available on Minion.
      */
     private ImmutableSet<String> expectedMinionCollectors = ImmutableSet.<String> builder().add(
-            "org.opennms.netmgt.collectd.HttpCollector")
+            "org.opennms.netmgt.collectd.HttpCollector",
+            "org.opennms.netmgt.collectd.JdbcCollector",
+            "org.opennms.netmgt.collectd.JBossCollector",
+            "org.opennms.netmgt.collectd.Jsr160Collector",
+            "org.opennms.netmgt.collectd.JMXSecureCollector",
+            "org.opennms.netmgt.collectd.MX4JCollector")
             .build();
 
     private ImmutableSet<String> expectedOpenNMSCollectors = ImmutableSet.<String> builder().add(
-            "org.opennms.netmgt.collectd.JBossCollector",
-            "org.opennms.netmgt.collectd.JdbcCollector",
-            "org.opennms.netmgt.collectd.Jsr160Collector",
-            "org.opennms.netmgt.collectd.JMXSecureCollector",
-            "org.opennms.netmgt.collectd.MX4JCollector",
             "org.opennms.netmgt.collectd.VmwareCimCollector",
             "org.opennms.netmgt.collectd.VmwareCollector",
             "org.opennms.netmgt.collectd.WmiCollector",

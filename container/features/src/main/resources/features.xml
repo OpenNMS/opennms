@@ -215,6 +215,12 @@
       <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
     </feature>
 
+    <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
+      <feature>commons-collections</feature>
+
+      <bundle>mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
+    </feature>
+
     <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
       <feature>commons-beanutils</feature>
 
@@ -752,8 +758,10 @@
     </feature>
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
-      <feature>opennms-provisioning-api</feature>
       <feature>commons-lang</feature>
+      <feature>commons-beanutils</feature>
+      <bundle>wrap:mvn:javax.validation/validation-api/1.0.0.GA</bundle>
+      <feature>opennms-provisioning-api</feature>
       <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
 

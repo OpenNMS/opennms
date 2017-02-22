@@ -1,3 +1,38 @@
+[[release-19-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-19.0.1]]
+==== Release 19.0.1
+
+Release 19.0.1 is the latest stable release of OpenNMS.  It contains a number of important fixes for folks who have hit upgrade issues, and a few other small bug fixes.
+For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
+
+The codename for 19.0.1 is _link:https://en.wikipedia.org/wiki/Ferret-legging[Ferret-Legging]_.
+
+===== Upgrade Notes
+
+If you are using the _OpenNMS-JVM_ service to monitor JMX metrics on the OpenNMS JVM, the metrics for ActiveMQ connections and enqueue/dequeue counts were not collected correctly by OpenNMS 19.0.0. If you are upgrading from OpenNMS 19.0.0, you will need to delete the _TtlConCnt_, _TtlConCnt_, _TtlDeqCnt_, and _TtlMsgCnt_ RRD or JRB files for affected nodes to reset the collections. If you are using _storeByGroup_, you will need to delete the _org_apache_activemq_type_Broker_brokerName_localhost_ RRD or JRB file for the affected nodes.
+
+===== Bug
+
+* SNMP4J logging is not enabled on Minion (Issue http://issues.opennms.org/browse/NMS-8505[NMS-8505])
+* Show Business Service in Topology Map generates exception (Issue http://issues.opennms.org/browse/NMS-8703[NMS-8703])
+* NPE in IpInterfaceScan when processing IPLike rule with IPv6 address (Issue http://issues.opennms.org/browse/NMS-8934[NMS-8934])
+* ACLs broken for Topology view (Issue http://issues.opennms.org/browse/NMS-9066[NMS-9066])
+* Jsr160ConnectionFactory doesn't work with IPv6 address (Issue http://issues.opennms.org/browse/NMS-9071[NMS-9071])
+* Migrate RTC related objects to JAXB instead of Castor (Issue http://issues.opennms.org/browse/NMS-9100[NMS-9100])
+* after an update /opt/opennms/bin/install -dis is failing on duplicate key value violates unique constraint "monitoringlocations_pkey" (Issue http://issues.opennms.org/browse/NMS-9102[NMS-9102])
+* Display version is blank in 19.0.0 (Issue http://issues.opennms.org/browse/NMS-9103[NMS-9103])
+* The upgrade task for magic.users doesn't work on RPM based upgrades (Issue http://issues.opennms.org/browse/NMS-9109[NMS-9109])
+* Pollerd continues to monitor deleted nodes (Issue http://issues.opennms.org/browse/NMS-9112[NMS-9112])
+* Minion throw's NullpointerException while flushing one or more aggregates in 'Trap' module. (Issue http://issues.opennms.org/browse/NMS-9114[NMS-9114])
+* Broken Link in Release Notes (Issue http://issues.opennms.org/browse/NMS-9119[NMS-9119])
+* Bundle error in output.log on startup (Issue http://issues.opennms.org/browse/NMS-9123[NMS-9123])
+
+===== Enhancement
+
+* Expand SNMP4J trap socket receive buffer (Issue http://issues.opennms.org/browse/NMS-9111[NMS-9111])
+
 [[releasenotes-changelog-19.0.0]]
 ==== Release 19.0.0
 
@@ -5,9 +40,6 @@ Release 19.0.0 is the latest stable release of OpenNMS.  It contains a large num
 For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
 
 The codename for 19.0.0 is _link:https://en.wikipedia.org/wiki/Ice_hockey[Ice Hockey]_.
-
-[releasenotes-changelog-19.0.0]
-==== Release 19.0.0
 
 ===== Bug
 

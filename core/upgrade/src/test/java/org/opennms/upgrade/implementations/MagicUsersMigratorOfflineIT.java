@@ -87,6 +87,62 @@ public class MagicUsersMigratorOfflineIT {
         Assert.assertFalse(new File("target/home/etc/magic-users.properties").exists());
         Assert.assertTrue(new File("target/home/etc/magic-users.properties.zip").exists());
         Assert.assertTrue(new File("target/home/etc/magic-users.properties.zip").isFile());
+
+        validateMigration();
+    }
+
+    /**
+     * Test missing configuration file.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMissingConfigFile() throws Exception {
+        FileUtils.deleteQuietly(new File("target/home/etc/magic-users.properties"));
+        MagicUsersMigratorOffline migrator = new MagicUsersMigratorOffline();
+        migrator.execute();
+    }
+
+    /**
+     * Test RPM upgrade
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testRpmUpgade() throws Exception {
+        FileUtils.moveFile(new File("target/home/etc/magic-users.properties"), new File("target/home/etc/magic-users.properties.rpmsave"));
+
+        MagicUsersMigratorOffline migrator = new MagicUsersMigratorOffline();
+        migrator.preExecute();
+        migrator.execute();
+        migrator.postExecute();
+
+        validateMigration();
+    }
+
+    /**
+     * Test Debian upgrade
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testDebianUpgade() throws Exception {
+        FileUtils.moveFile(new File("target/home/etc/magic-users.properties"), new File("target/home/etc/magic-users.properties.dpkg-remove"));
+
+        MagicUsersMigratorOffline migrator = new MagicUsersMigratorOffline();
+        migrator.preExecute();
+        migrator.execute();
+        migrator.postExecute();
+
+        validateMigration();
+    }
+
+    /**
+     * Validate the Migration by checking the updated users.xml
+     *
+     * @throws Exception the exception
+     */
+    private void validateMigration() throws Exception {
         Userinfo userInfo = CastorUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("target/home/etc/users.xml")));
 
         final User rtc = getUser(userInfo, "rtc");
@@ -119,18 +175,6 @@ public class MagicUsersMigratorOfflineIT {
         Assert.assertEquals(2, manager.getRoleCount());
         Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_USER));
         Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_READONLY));
-    }
-
-    /**
-     * Test missing configuration file.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testMissingConfigFile() throws Exception {
-        FileUtils.deleteQuietly(new File("target/home/etc/magic-users.properties"));
-        MagicUsersMigratorOffline migrator = new MagicUsersMigratorOffline();
-        migrator.execute();
     }
 
     /**

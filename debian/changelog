@@ -1,3 +1,13 @@
+opennms (19.0.1-1) stable; urgency=high
+
+  * New stable release.  This release contains a number of important fixes for
+    folks who have hit upgrade issues, and a few other small bug fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/19.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 21 Feb 2017 11:53:00 -0500
+
 opennms (19.0.0-1) stable; urgency=high
 
   * New stable release.  This is the first in the 19 series, with a ton of bug
