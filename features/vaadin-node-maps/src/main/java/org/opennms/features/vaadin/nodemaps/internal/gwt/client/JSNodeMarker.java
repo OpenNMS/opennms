@@ -37,7 +37,6 @@ import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
-import org.opennms.features.geocoder.Coordinates;
 
 import com.google.gwt.core.client.JsArrayString;
 
@@ -236,7 +235,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
     }
 
     public static LatLng coordinatesToLatLng(final Coordinates coordinates) {
-        return new LatLng(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble());
+        return new LatLng(coordinates.latitude, coordinates.longitude);
     }
 
 }

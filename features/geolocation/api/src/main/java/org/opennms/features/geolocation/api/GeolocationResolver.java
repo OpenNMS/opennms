@@ -53,4 +53,12 @@ public interface GeolocationResolver {
      * @return A Map (nodeId -> Coordinates) for all nodes which id matches the keys of the map and have an address defined and
      */
     Map<Integer, Coordinates> resolve(Map<Integer, String> nodeIdAddressMap);
+
+    /**
+     * Resolves the given addressString.
+     *
+     * @param addressString The address to resolve to coordinates.
+     * @return The resolved coordinates.
+     */
+    Coordinates resolve(String addressString);
 }

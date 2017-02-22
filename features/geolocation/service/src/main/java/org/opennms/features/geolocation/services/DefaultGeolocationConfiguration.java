@@ -34,8 +34,9 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.geolocation.api.GeolocationConfiguration;
 
-import com.google.gwt.thirdparty.guava.common.base.Preconditions;
-import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 
 /**
  * The default configuration is stored in opennms.properties.
