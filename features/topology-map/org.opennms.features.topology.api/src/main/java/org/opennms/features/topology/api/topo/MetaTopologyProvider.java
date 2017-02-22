@@ -45,17 +45,6 @@ public interface MetaTopologyProvider {
     BreadcrumbStrategy getBreadcrumbStrategy();
 
     /**
-     * Reloads the {@link MetaTopologyProvider}.
-     * It may be required to only reload necessary parts of the whole (Meta) Topology.
-     * Therefore the provided namespace should indicate this.
-     * The implementor however may decide to ignore the given namespace.
-     * Refer to implementors documentation.
-     *
-     * @param namespace The namespace to reload if supported, or reload the {@link MetaTopologyProvider}. May be null.
-     */
-    void reload(String namespace);
-
-    /**
      * Each {@link MetaTopologyProvider} must have a unique id.
      *
      * @return the unique id.

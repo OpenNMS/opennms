@@ -137,11 +137,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
     }
 
     @Override
-    public void reload(String namespace) {
-        reload(); // The GraphMLTopologyProvider cannot be reloaded partially, so we always reload everything
-    }
-
-    @Override
     public GraphProvider getDefaultGraphProvider() {
         return Iterables.getFirst(graphsByNamespace.values(), null);
     }

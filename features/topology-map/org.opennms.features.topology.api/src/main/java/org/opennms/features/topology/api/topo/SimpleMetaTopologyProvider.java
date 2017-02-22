@@ -89,12 +89,6 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
         return BreadcrumbStrategy.NONE;
     }
 
-    @Override
-    public void reload(String namespace) {
-        // not differentiable, always reload the underlying GraphProvider
-        graphProvider.refresh();
-    }
-
     public void setPreferredLayout(String preferredLayout) {
         this.preferredLayout = preferredLayout;
     }

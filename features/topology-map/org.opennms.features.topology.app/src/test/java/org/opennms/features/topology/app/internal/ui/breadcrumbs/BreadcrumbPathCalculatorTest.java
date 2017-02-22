@@ -89,13 +89,6 @@ public class BreadcrumbPathCalculatorTest {
             }
 
             @Override
-            public void reload(String namespace) {
-                layer1.refresh();
-                layer2.refresh();
-                layer3.refresh();
-            }
-
-            @Override
             public String getId() {
                 return getGraphProviders().stream().map(g -> g.getNamespace()).collect(Collectors.joining(":"));
             }
