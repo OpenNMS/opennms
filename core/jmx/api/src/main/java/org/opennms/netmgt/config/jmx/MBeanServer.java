@@ -27,8 +27,12 @@
  *******************************************************************************/
 package org.opennms.netmgt.config.jmx;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +43,8 @@ import java.util.Map;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
+@XmlRootElement(name = "mbean-server")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class MBeanServer {
     private String m_ipAddress;
     private int m_port;

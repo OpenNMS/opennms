@@ -111,7 +111,7 @@ public class OutageStatusCalculatorIT {
         final OnmsNode node = databasePopulator.getNode1();
         final OnmsMonitoredService icmpService = node.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService snmpService = node.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServiceByServiceType("SNMP");
-        final GeolocationQuery query = new GeolocationQueryBuilder().withResolveMissingCoordinatesFromAddressString(false).build();
+        final GeolocationQuery query = new GeolocationQueryBuilder().build();
         final StatusCalculator statusCalculator = new OutageStatusCalculator(genericPersistenceAccessor);
         final Set<Integer> nodeIds = Sets.newHashSet(node.getId());
 

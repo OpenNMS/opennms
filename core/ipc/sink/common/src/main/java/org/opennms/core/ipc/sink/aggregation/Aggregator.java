@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.sink.aggregation;
 
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -154,7 +154,15 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
     @Override
     public void run() {
         final List<T> messagesReadyForDispatch = new LinkedList<>();
-        final Set<Object> keys = buckets.keySet();
+        // Grab a copy of all the current bucket keys
+        final Set<Object> keys = new HashSet<>(buckets.keySet());
+        // NMS-9114: As we iterate over the keys to add them to set above,
+        // it's possible that one of the buckets was removed
+        // in which case the key set may contain a null key
+        // so we remove it here for good measure, otherwise
+        // the call to bulkGet bellow will fail with an NPE
+        keys.remove(null);
+
         // Lock all the buckets
         final Iterable<Lock> locks = lockStripes.bulkGet(keys);
         try {
@@ -162,13 +170,14 @@ public class Aggregator<S, T> implements AutoCloseable, Runnable {
             // Determine which buckets are ready to be dispatched
             // and remove these from the map
             final long cutOff = System.currentTimeMillis() - completionIntervalMs;
-            final Iterator<Object> iter = keys.iterator();
-            while (iter.hasNext()) {
-                final Object key = iter.next();
+            for (final Object key : keys) {
                 final Bucket bucket = buckets.get(key);
+                // The bucket may have been removed between the time we retrieved
+                // the keys, and the time we obtained the lock, so we make sure
+                // it's non-null before accessing it's properties
                 if (bucket != null && bucket.getFirstTimeMillis() != null && bucket.getFirstTimeMillis() <= cutOff) {
                     messagesReadyForDispatch.add(bucket.getValue());
-                    iter.remove();
+                    buckets.remove(key);
                 }
             }
         } finally {

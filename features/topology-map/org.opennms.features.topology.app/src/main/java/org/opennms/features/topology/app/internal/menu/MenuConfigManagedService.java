@@ -38,14 +38,14 @@ import org.osgi.service.cm.ManagedService;
  */
 public class MenuConfigManagedService implements ManagedService {
     
-    private MenuManager m_menuManager;
+    private OperationManager m_operationManager;
 
-    public void setMenuManager(MenuManager menuManager) {
-        m_menuManager = menuManager;
+    public void setOperationManager(OperationManager operationManager) {
+        m_operationManager = operationManager;
     }
     
     @Override
     public void updated(Dictionary<String,?> properties) throws ConfigurationException {
-        m_menuManager.updateMenuConfig(properties);
+        m_operationManager.updateMenuConfig(properties);
     }
 }

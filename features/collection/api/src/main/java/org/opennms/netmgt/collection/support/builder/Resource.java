@@ -38,6 +38,13 @@ public interface Resource {
     public Resource getParent();
 
     /**
+     * Returns the type name associated with the resource. Used for thresholding.
+     *
+     * @return type name
+     */
+    public String getTypeName();
+
+    /**
      * Returns a unique name for the instance of this resource.
      * Used by the {@link org.opennms.netmgt.collection.support.IndexStorageStrategy}
      *

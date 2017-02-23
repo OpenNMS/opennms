@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.aggregation;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -42,6 +43,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
@@ -50,6 +53,9 @@ import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.opennms.core.test.MockLogAppender;
+
+import com.google.common.util.concurrent.RateLimiter;
 
 public class AggregationTest {
 
@@ -66,6 +72,16 @@ public class AggregationTest {
             dispatchedMessages.add(message);
         }
     };
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
+
+    @After
+    public void tearDown() {
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
 
     @Test
     public void noAggregateUsingIdentityFunction() throws Exception {
@@ -122,6 +138,47 @@ public class AggregationTest {
             await().atMost(4 * COMPLETION_INTERVAL_MS, MILLISECONDS)
                 .pollDelay(50, MILLISECONDS)
                 .until(() -> dispatchedMessages, hasSize(1));
+        }
+    }
+
+    /**
+     * NMS-9114: Test concurrency with the timer thread.
+     */
+    @Test
+    public void aggregateWithAggressiveFlushInterval() throws Exception {
+        final int DISPATCHES_PER_SECOND = 5000;
+        final int DISPATCHES_PER_ITERATION = 1000;
+
+        SinkModuleWithAggregateAndAggressiveInterval aggregatingSinkModule = new SinkModuleWithAggregateAndAggressiveInterval();
+        try(SyncDispatcher<UDPPacket> dispatcher = capturingMessageDispatcherFactory.createSyncDispatcher(aggregatingSinkModule)) {
+            // Create a thread that will perform a rate-limited dispatch until interrupted
+            final Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final RateLimiter rateLimiter = RateLimiter.create(DISPATCHES_PER_SECOND);
+                    while(true) {
+                        rateLimiter.acquire(DISPATCHES_PER_ITERATION);
+                        for (int i = 0; i < DISPATCHES_PER_ITERATION; i++) {
+                            UDPPacket packet = new UDPPacket(localhost, ByteBuffer.wrap(new byte[]{(byte)42}));
+                            dispatcher.send(packet);
+                        }
+                        if (Thread.interrupted()) {
+                            return;
+                        }
+                    }
+                }
+            });
+            t.start();
+
+            await().atMost(10, SECONDS)
+                .pollDelay(1, SECONDS)
+                .until(() -> dispatchedMessages, hasSize(greaterThan(5 * DISPATCHES_PER_SECOND)));
+            t.interrupt();
+
+            // We successfully dispatched many messages.
+            // The MockLogAppender in this tests tearDown() function will
+            // validate that no errors or warning (i.e. NPEs) we logged
+            // during this time
         }
     }
 
@@ -256,6 +313,40 @@ public class AggregationTest {
                 @Override
                 public int getCompletionIntervalMs() {
                     return COMPLETION_INTERVAL_MS;
+                }
+
+                @Override
+                public Object key(UDPPacket message) {
+                    // Key by the source address
+                    return message.getSource();
+                }
+
+                @Override
+                public UDPPacketLog aggregate(UDPPacketLog oldPacketLog, UDPPacket newPacket) {
+                    if (oldPacketLog == null) {
+                        return new UDPPacketLog(newPacket);
+                    } else {
+                        oldPacketLog.getPackets().add(newPacket);
+                        return oldPacketLog;
+                    }
+                }
+            };
+        }
+    }
+
+    private static class SinkModuleWithAggregateAndAggressiveInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
+        @Override
+        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+                @Override
+                public int getCompletionSize() {
+                    return 1;
+                }
+
+                @Override
+                public int getCompletionIntervalMs() {
+                    // Run the timer thread frequently
+                    return 1;
                 }
 
                 @Override

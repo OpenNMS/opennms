@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 
+@Ignore("These tests rely on the Jira system to be configured correctly (see jira.properties in src/test/resources/opennms-home/etc/jira.properties)")
 public class JiraTicketerPluginTest {
 
     JiraTicketerPlugin m_ticketer;
@@ -67,7 +68,7 @@ public class JiraTicketerPluginTest {
     }
 
     @Test
-    @Ignore("This rely on the JIRA system configured in src/test/resources/opennms-home/etc/jira.properties")
+    @Ignore
     public void canSaveGetAndUpdate() throws Exception {
         String ticketId = save();
         get(ticketId);

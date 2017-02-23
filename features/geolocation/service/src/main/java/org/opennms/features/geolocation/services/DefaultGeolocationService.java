@@ -30,9 +30,7 @@ package org.opennms.features.geolocation.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,8 +57,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 public class DefaultGeolocationService implements GeolocationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultGeolocationService.class);
@@ -86,31 +82,6 @@ public class DefaultGeolocationService implements GeolocationService {
                 .filter(n -> geoLocation(n) != null && geoLocation(n).getLongitude() != null && geoLocation(n).getLatitude() != null)
                 .map(node -> convert(node))
                 .collect(Collectors.toList());
-
-        // Resolve geolocations which do not have a longitude/latitude, but address
-        if (query.isResolveCoordinatesFromAddressString()) {
-            Map<Integer, String> nodesWithoutCoordinates = nodes.stream()
-                    .filter(n -> geoLocation(n) != null && geoLocation(n).getLatitude() == null || geoLocation(n).getLongitude() == null)
-                    .filter(n -> !Strings.isNullOrEmpty(geoLocation(n).asAddressString()))
-                    .collect(Collectors.toMap(n -> n.getId(), n -> geoLocation(n).asAddressString()));
-            if (!nodesWithoutCoordinates.isEmpty()) {
-                final Map<Integer, Coordinates> newCoordinates = resolver.resolve(nodesWithoutCoordinates);
-                newCoordinates.entrySet().stream()
-                        .map(e -> {
-                            Optional<OnmsNode> first = nodes.stream()
-                                    .filter(n -> n.getId().equals(e.getKey()))
-                                    .findFirst();
-                            if (first.isPresent()) {
-                                GeolocationInfo info = convert(first.get());
-                                info.setCoordinates(e.getValue());
-                                return info;
-                            }
-                            return null;
-                        })
-                        .filter(info -> info != null)
-                        .forEach(info -> nodesWithCoordinates.add(info));
-            }
-        }
 
         if (query.getStatusCalculationStrategy() != null) {
             applyStatus(query, nodesWithCoordinates);

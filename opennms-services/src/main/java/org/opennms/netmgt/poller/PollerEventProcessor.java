@@ -758,6 +758,7 @@ final class PollerEventProcessor implements EventListener {
         for (final Service databaseService : databaseServices) {
             if (polledServices.contains(databaseService)) {
                 LOG.debug("{} is being skipped. Already scheduled.", databaseService);
+                continue;
             }
 
             LOG.debug("{} is being scheduled (or rescheduled) for polling.", databaseService);

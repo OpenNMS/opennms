@@ -36,6 +36,12 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -130,6 +136,8 @@ public class EventToIndex implements AutoCloseable {
 	public static final String MEMO_AUTHOR_PARAM="author";
 	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
 
+	public static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+
 	private boolean logEventDescription=false;
 
 	private boolean logAllEvents=false;
@@ -150,7 +158,25 @@ public class EventToIndex implements AutoCloseable {
 
 	private RestClientFactory restClientFactory = null;
 
-	IndexNameFunction indexNameFunction = new IndexNameFunction();
+	private int threads = DEFAULT_NUMBER_OF_THREADS;
+
+	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+		threads,
+		threads,
+		0L, TimeUnit.MILLISECONDS,
+		new SynchronousQueue<>(true),
+		new ThreadFactory() {
+			final AtomicInteger index = new AtomicInteger();
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, EventToIndex.class.getSimpleName() + "-Thread-" + String.valueOf(index.incrementAndGet()));
+			}
+		},
+		// Throttle incoming tasks by running them on the caller thread
+		new ThreadPoolExecutor.CallerRunsPolicy()
+	);
+
+	private IndexNameFunction indexNameFunction = new IndexNameFunction();
 
 	public IndexNameFunction getIndexNameFunction() {
 		return indexNameFunction;
@@ -174,6 +200,21 @@ public class EventToIndex implements AutoCloseable {
 
 	public void setLogAllEvents(boolean logAllEvents) {
 		this.logAllEvents = logAllEvents;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		if (threads > 0) {
+			this.threads = threads;
+			// Resize the executor pool
+			executor.setCorePoolSize(threads);
+			executor.setMaximumPoolSize(threads);
+		} else {
+			setThreads(DEFAULT_NUMBER_OF_THREADS);
+		}
 	}
 
 	public NodeCache getNodeCache() {
@@ -261,15 +302,33 @@ public class EventToIndex implements AutoCloseable {
 				jestClient = null;
 			}
 		}
+
+		// Shutdown the thread pool
+		executor.shutdown();
 	}
 
 	/**
 	 * @param events
 	 */
 	public void forwardEvents(final List<Event> events) {
+		CompletableFuture.completedFuture(events)
+			// Convert the events to ES actions
+			.thenApplyAsync(this::convertEventsToEsActions, executor)
+			// Log any uncaught exceptions
+			.exceptionally(e -> {
+				LOG.error("Unexpected exception during task execution: " + e.getMessage(), e);
+				return null;
+			})
+			// Send the events to Elasticsearch
+			.thenAcceptAsync(this::sendEvents, executor)
+			// Log any uncaught exceptions
+			.exceptionally(e -> {
+				LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+				return null;
+			});
+	}
 
-		final List<BulkableAction<DocumentResult>> actions = convertEventsToEsActions(events);
-
+	private void sendEvents(final List<BulkableAction<DocumentResult>> actions) {
 		if (actions != null && actions.size() > 0) {
 			// Split the actions up by index
 			for (Map.Entry<String,List<BulkableAction<DocumentResult>>> entry : actions.stream().collect(Collectors.groupingBy(BulkableAction::getIndex)).entrySet()) {
@@ -297,7 +356,7 @@ public class EventToIndex implements AutoCloseable {
 						BulkResult result = getJestClient().execute(bulk);
 
 						// If the bulk command fails completely...
-						if (result.getResponseCode() != 200) {
+						if (!result.isSucceeded()) {
 							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 
 							// Try and issue the bulk actions individually as a fallback
@@ -331,7 +390,7 @@ public class EventToIndex implements AutoCloseable {
 						}
 
 						// If the bulk command fails completely...
-						if (result.getResponseCode() != 200) {
+						if (!result.isSucceeded()) {
 							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 
 							// Try and issue the bulk actions individually as a fallback
@@ -403,7 +462,7 @@ public class EventToIndex implements AutoCloseable {
 			result = client.execute(action);
 		}
 
-		if(result.getResponseCode() != 200){
+		if(!result.isSucceeded()){
 			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		} else if(LOG.isDebugEnabled()) {
 			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
@@ -843,7 +902,7 @@ public class EventToIndex implements AutoCloseable {
 	private static void createIndex(JestClient client, String name, String type) throws IOException {
 		// create new index
 		CreateIndex createIndex = new CreateIndex.Builder(name).build();
-		JestResult result = client.execute(createIndex);
+		JestResult result = new OnmsJestResult(client.execute(createIndex));
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("created new alarm index: {} type: {}" +
 					"\n   received search result: {}" +

@@ -8,10 +8,9 @@
 
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
-	<reference id="assetDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
 	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 	<reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
-	<reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+	<reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
 	<reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 
@@ -171,19 +170,16 @@
 		<argument ref="geolocationConfiguration" />
 	</bean>
 
-	<bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype">
+	<bean id="nodeMapComponent" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent" scope="prototype">
 		<property name="nodeDao" ref="nodeDao" />
-		<property name="assetRecordDao" ref="assetDao" />
-		<property name="alarmDao" ref="alarmDao" />
-		<property name="geocoderService" ref="geocoderService" />
-		<property name="transactionOperations" ref="transactionTemplate" />
+		<property name="geolocationService" ref="geolocationService" />
 		<property name="groupByState" value="${groupByState}" />
 		<property name="configuration" ref="configuration" />
 	</bean>
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
 		<property name="headerProvider" ref="onmsHeaderProvider" />
-		<property name="mapWidgetComponent" ref="mapWidget" />
+		<property name="nodeMapComponent" ref="nodeMapComponent" />
 		<property name="alarmTable" ref="alarmTable" />
 		<property name="nodeTable" ref="nodeTable" />
 		<property name="configuration" ref="configuration" />
@@ -216,7 +212,7 @@
 	</service>
 
 	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink">
-		<property name="geoAssetProvider" ref="mapWidget" />
+		<property name="geoAssetProvider" ref="nodeMapComponent" />
 	</bean>
 
 	<service id="nodeMapsQueryLinkService" interface="org.opennms.features.topology.api.Operation" ref="nodeMapsQueryLink">
@@ -227,5 +223,5 @@
 		</service-properties>
 	</service>
 
-	<service id="geoAssetProvider" interface="org.opennms.features.vaadin.nodemaps.internal.GeoAssetProvider" ref="mapWidget" />
+	<service id="geoAssetProvider" interface="org.opennms.features.vaadin.nodemaps.internal.GeoAssetProvider" ref="nodeMapComponent" />
 </blueprint>

@@ -11,7 +11,7 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
+	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="reload">
 		<cm:default-properties>
 			<cm:property name="trapd.listen.interface" value="127.0.0.1" /> <!-- the interface the TrapListener listens for traps -->
 			<cm:property name="trapd.listen.port" value="1162" /> <!-- the port the TrapListener listens for traps -->
