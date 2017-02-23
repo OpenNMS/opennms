@@ -1,3 +1,162 @@
+opennms (19.0.1-1) stable; urgency=high
+
+  * New stable release.  This release contains a number of important fixes for
+    folks who have hit upgrade issues, and a few other small bug fixes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/19.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 21 Feb 2017 11:53:00 -0500
+
+opennms (19.0.0-1) stable; urgency=high
+
+  * New stable release.  This is the first in the 19 series, with a ton of bug
+    fixes and new features, most notably support for all major OpenNMS polling
+    and collection features in the Minion.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/19.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 13 Feb 2017 12:00:00 -0500
+
+opennms (18.0.4-1) stable; urgency=high
+
+  * New stable release.  This release contains a number of bug fixes and
+    enhancements, including a fix for a deadlock that can be triggered by using
+    the topology UI and a rather large performance fix for startup if you are
+    using BSM.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 05 Jan 2017 15:09:00 -0500
+
+opennms (18.0.3-1) stable; urgency=high
+
+  * New stable release.  This release contains a few bug fixes and a enhancements,
+    and a fix for a discovery/provisioning regression that can cause duplicate nodes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 05 Jan 2017 15:09:00 -0500
+
+opennms (18.0.2-1) stable; urgency=high
+
+  * New stable release.  This release contains a few bug fixes and enhancements.
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 20 Sep 2016 12:29:50 -0500
+
+opennms (18.0.1-2) stable; urgency=medium
+
+  * Fix a bash-ism in the install script.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 28 Jul 2016 12:27:20 -0500
+
+opennms (18.0.1-1) stable; urgency=low
+
+  * New stable release.  This release contains a large number of bug fixes and
+    a few enhancements.  For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Jul 2016 10:26:44 -0500
+
+opennms (18.0.0-1) stable; urgency=low
+
+  * New stable release.  This release contains a large number of bug fixes and
+    new features.  For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/18.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 09 May 2016 11:15:59 -0500
+
+opennms (17.1.1-3) stable; urgency=low
+
+  * New stable release.  This release is identical to 17.1.1-2 but adds support
+    for iplike-pgsql95 and iplike-pgsql96.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 02 May 2016 13:48:57 -0500
+
+opennms (17.1.1-2) stable; urgency=low
+
+  * New stable release.  This release is identical to 17.1.1-1 but adds support
+    for postgresql 9.5 and 9.6 as a dependency.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 27 Apr 2016 10:28:50 -0500
+
+opennms (17.1.1-1) stable; urgency=medium
+
+  * New stable release.  This release contains a number of bug fixes and a few
+    other changes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 10 Mar 2016 10:00:00 -0500
+
+opennms (17.1.0-1) stable; urgency=medium
+
+  * New stable release.  This release contains a number of important bug fixes and
+    a few new features.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 18 Feb 2016 10:44:36 -0500
+
+opennms (17.0.0-1) stable; urgency=medium
+
+  * New stable series.  This release contains a large number of bug fixes and
+    new features.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 1 Dec 2015 15:12:00 -0500
+
+opennms (16.0.4-1) stable; urgency=high
+
+  * New upstream release.  This release contains a number of bug fixes over 16.0.3,
+    as well as changes to the default RMI configuration to mitigate remote attacks.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Nov 2015 11:50:00 -0500
+
+opennms (16.0.3-1) stable; urgency=medium
+
+  * New upstream release.  This release contains a number of bug fixes over 16.0.2.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 20 Aug 2015 11:36:00 -0500
+
+opennms (16.0.2-1) stable; urgency=low
+
+  * New upstream release.  This is a repack of 16.0.1 with a small bug fix.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 17 Jun 2015 16:38:00 -0500
+
+opennms (16.0.1-1) stable; urgency=low
+
+  * New upstream release.  This release contains a few enhancements and bug fixes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 17 Jun 2015 12:30:00 -0500
+
+opennms (16.0.0-1) stable; urgency=medium
+
+  * New upstream release.  This release contains bugfixes and updates since 15.0.2.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 May 2015 11:02:00 -0500
+
+opennms (15.0.2-1) stable; urgency=medium
+
+  * New upstream release.  This release contains a large number of bugfixes
+    over 15.0.1.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 20 Apr 2015 11:01:00 -0500
+
+opennms (15.0.1-1) stable; urgency=medium
+
+  * New upstream release.  This release primarily contains bugfixes over 15.0.0.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 11 Feb 2015 15:55:00 -0500
+
+opennms (15.0.0-1) stable; urgency=low
+
+  * New upstream release.  This release contains a web UI framework update, as well
+    as many smaller bugfixes and enhancements.  Major stable release 15.0.0.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 28 Jan 2015 13:52:00 -0500
+
 opennms (14.0.3-1) stable; urgency=high
 
   * New upstream release.  This release contains a few bugfixes as well as a

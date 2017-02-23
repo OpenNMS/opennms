@@ -28,13 +28,9 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.io.File;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class XmlMultiInstanceCollectionResource.
@@ -42,9 +38,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
-
-    /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(XmlMultiInstanceCollectionResource.class);
 
     /** The collection resource instance. */
     private final String m_instance;
@@ -76,16 +69,9 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
         return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
     }
 
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getResourceDir(org.opennms.netmgt.model.RrdRepository)
-     */
     @Override
-    public File getResourceDir(RrdRepository repository) {
-        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
-        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
-        LOG.debug("getResourceDir: {}", resourceDir);
-        return resourceDir;
+    public ResourcePath getPath() {
+        return m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
     }
 
     /* (non-Javadoc)

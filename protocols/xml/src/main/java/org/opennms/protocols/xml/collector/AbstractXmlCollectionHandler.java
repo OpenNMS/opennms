@@ -42,7 +42,6 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,17 +66,19 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.xml.config.Content;
@@ -116,8 +117,15 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
 
-    /** The XML resource type Map. */
-    private Map<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
+    private ResourceStorageDao m_resourceStorageDao;
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
@@ -181,7 +189,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
         XmlCollectionSet collectionSet = new XmlCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
+        collectionSet.setStatus(CollectionStatus.UNKNOWN);
         DateTime startTime = new DateTime();
         try {
             LOG.debug("collect: looping sources for collection {}", collection.getName());
@@ -194,13 +202,13 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 fillCollectionSet(urlStr, request, agent, collectionSet, source);
                 LOG.debug("collect: finished source url '{}' collection with {} resources", urlStr, collectionSet.getCollectionResources().size());
             }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+            collectionSet.setStatus(CollectionStatus.SUCCEEDED);
             return collectionSet;
         } catch (Exception e) {
-            collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
+            collectionSet.setStatus(CollectionStatus.FAILED);
             throw new CollectionException(e.getMessage(), e);
         } finally {
-            String status = collectionSet.getStatus() == ServiceCollector.COLLECTION_SUCCEEDED ? "finished" : "failed";
+            String status = CollectionStatus.SUCCEEDED.equals(collectionSet) ? "finished" : "failed";
             DateTime endTime = new DateTime();
             LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
         }
@@ -566,21 +574,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the XML resource type
      */
     protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        if (!m_resourceTypeList.containsKey(resourceType)) {
-            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
-            if (rt == null) {
-                LOG.debug("getXmlResourceType: using default XML resource type strategy.");
-                rt = new ResourceType();
-                rt.setName(resourceType);
-                rt.setStorageStrategy(new StorageStrategy());
-                rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
-                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-            }
-            XmlResourceType type = new XmlResourceType(agent, rt);
-            m_resourceTypeList.put(resourceType, type);
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getXmlResourceType: using default XML resource type strategy.");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
         }
-        return m_resourceTypeList.get(resourceType);
+        return new XmlResourceType(agent, rt);
     }
 
 }

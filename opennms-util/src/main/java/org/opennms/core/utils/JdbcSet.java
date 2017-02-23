@@ -73,7 +73,6 @@ public class JdbcSet<E> extends AbstractSet<E> {
 
         private E m_last;
         
-        @SuppressWarnings("unchecked")
         public JdbcSetIterator(Iterator<E> entriesIter, Iterator<E> addedIter) {
             super(entriesIter, addedIter);
         }

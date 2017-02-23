@@ -44,12 +44,12 @@ public class PersistenceSelectorStrategyTest extends XmlTestNoCastor<Persistence
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         final PersistenceSelectorStrategy strategy = new PersistenceSelectorStrategy();
-        strategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        strategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         strategy.addParameter(new Parameter("foo", "bar"));
 
         return Arrays.asList(new Object[][] { {
                 strategy,
-                "<persistenceSelectorStrategy class=\"org.opennms.netmgt.collectd.PersistAllSelectorStrategy\"><parameter key=\"foo\" value=\"bar\" /></persistenceSelectorStrategy>",
+                "<persistenceSelectorStrategy class=\"org.opennms.netmgt.collection.support.PersistAllSelectorStrategy\"><parameter key=\"foo\" value=\"bar\" /></persistenceSelectorStrategy>",
                 "target/classes/xsds/datacollection-config.xsd" } });
     }
 

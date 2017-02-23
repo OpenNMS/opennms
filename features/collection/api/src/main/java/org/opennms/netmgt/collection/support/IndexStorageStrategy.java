@@ -28,33 +28,22 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.io.File;
 import java.util.List;
-
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
-import org.opennms.netmgt.config.datacollection.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.ResourcePath;
 
 public class IndexStorageStrategy implements StorageStrategy {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(IndexStorageStrategy.class);
-    
+
     private String m_resourceTypeName;
     protected StorageStrategyService m_storageStrategyService;
 
     /** {@inheritDoc} */
     @Override
-    public final String getRelativePathForAttribute(String resourceParent, String instance) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(resourceParent);
-        buffer.append(File.separator);
-        buffer.append(m_resourceTypeName);
-        buffer.append(File.separator);
-        buffer.append(instance);
-        return buffer.toString();
+    public final ResourcePath getRelativePathForAttribute(ResourcePath resourceParent, String instance) {
+        return ResourcePath.get(resourceParent, m_resourceTypeName, instance);
     }
 
     /** {@inheritDoc} */

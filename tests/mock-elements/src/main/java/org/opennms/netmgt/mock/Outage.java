@@ -48,7 +48,7 @@ public class Outage {
     }
     
     public Outage(MockService svc) {
-        this(svc.getNodeId(), svc.getIpAddr(), svc.getId());
+        this(svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
 
     public void setLostEvent(int eventId, Timestamp eventTime) {
@@ -64,7 +64,7 @@ public class Outage {
     public boolean isForService(MockService svc) {
         return m_nodeId == svc.getNodeId() &&
             m_ipAddr.equals(svc.getIpAddr()) &&
-            m_serviceId == svc.getId();
+            m_serviceId == svc.getSvcId();
     }
     
     @Override

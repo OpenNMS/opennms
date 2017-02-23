@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://xmlns.opennms.org/xsd/northbound-alarms" targetNamespace="http://xmlns.opennms.org/xsd/northbound-alarms" elementFormDefault="qualified">
+
+   <xsd:complexType name="northboundAlarm">
+      <xsd:sequence>
+         <xsd:element name="uei" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="node-id" type="xsd:int" minOccurs="0"/>
+         <xsd:element name="node-label" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="node-sysobjectid" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="node-foreignsource" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="node-foreignid" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="ack-time" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="ack-user" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="alarm-type" type="ns0:alarmType" minOccurs="0"/>
+         <xsd:element name="app-dn" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="clear-key" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="count" type="xsd:int" minOccurs="0"/>
+         <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="first-occurrence" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="ip-address" type="xsd:anySimpleType" minOccurs="0"/>
+         <xsd:element name="last-occurrence" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="log-messsage" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="object-instance" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="object-type" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="operator-instructions" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="oss-key" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="oss-state" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="alarm-key" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="service" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="severity" type="ns0:onmsSeverity" minOccurs="0"/>
+         <xsd:element name="suppressed" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="suppressed-until" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="suppressed-by" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="ticket-id" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="ticket-state" type="ns0:troubleTicketState" minOccurs="0"/>
+         <xsd:element name="x733-type" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="x733-cause" type="xsd:int"/>
+         <xsd:element name="parameters" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="parameter" type="ns0:onmsEventParameter" minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="preserved" type="xsd:boolean" default="false"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int"/>
+   </xsd:complexType>
+
+   <xsd:element name="northbound-alarm" type="ns0:northboundAlarm"/>
+
+   <xsd:simpleType name="alarmType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="PROBLEM"/>
+         <xsd:enumeration value="RESOLUTION"/>
+         <xsd:enumeration value="NOTIFICATION"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+   <xsd:simpleType name="onmsSeverity">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="INDETERMINATE"/>
+         <xsd:enumeration value="CLEARED"/>
+         <xsd:enumeration value="NORMAL"/>
+         <xsd:enumeration value="WARNING"/>
+         <xsd:enumeration value="MINOR"/>
+         <xsd:enumeration value="MAJOR"/>
+         <xsd:enumeration value="CRITICAL"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+   <xsd:simpleType name="troubleTicketState">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="OPEN"/>
+         <xsd:enumeration value="CREATE_PENDING"/>
+         <xsd:enumeration value="CREATE_FAILED"/>
+         <xsd:enumeration value="UPDATE_PENDING"/>
+         <xsd:enumeration value="UPDATE_FAILED"/>
+         <xsd:enumeration value="CLOSED"/>
+         <xsd:enumeration value="CLOSE_PENDING"/>
+         <xsd:enumeration value="CLOSE_FAILED"/>
+         <xsd:enumeration value="RESOLVED"/>
+         <xsd:enumeration value="RESOLVE_PENDING"/>
+         <xsd:enumeration value="RESOLVE_FAILED"/>
+         <xsd:enumeration value="CANCELLED"/>
+         <xsd:enumeration value="CANCEL_PENDING"/>
+         <xsd:enumeration value="CANCEL_FAILED"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+
+   <xsd:complexType name="onmsEventParameter">
+      <xsd:sequence/>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+      <xsd:attribute name="type" type="xsd:string"/>
+   </xsd:complexType>
+
+</xsd:schema>

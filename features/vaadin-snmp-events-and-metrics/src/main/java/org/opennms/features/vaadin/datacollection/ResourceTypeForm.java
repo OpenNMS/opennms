@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.datacollection;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
@@ -130,7 +130,7 @@ public class ResourceTypeForm extends CustomComponent {
         rt.setLabel("New Resource Type");
         rt.setResourceLabel("{index}");
         PersistenceSelectorStrategy persistence = new PersistenceSelectorStrategy();
-        persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
+        persistence.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"); // To avoid requires opennms-services
         rt.setPersistenceSelectorStrategy(persistence);
         StorageStrategy storage = new StorageStrategy();
         storage.setClazz(IndexStorageStrategy.class.getName());

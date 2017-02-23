@@ -83,5 +83,14 @@ public class BridgeElementDaoHibernate extends AbstractDaoHibernate<BridgeElemen
 		}
 	}
 
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (BridgeElement rec : find("from BridgeElement rec where rec.node.id = ? ",
+                                    nodeId)) {
+            delete(rec);
+        }
+
+    }
+	
 
 }

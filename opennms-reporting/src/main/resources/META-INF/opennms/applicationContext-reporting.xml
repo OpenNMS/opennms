@@ -72,10 +72,10 @@
 		class="org.opennms.report.configuration.ConfigurationReportRunner">
 		<property name="configurationReportCalculator" ref="configurationReportCalculator" />
 		<property name="htmlReportRenderer">
-			<ref local="htmlConfigurationReportRenderer" />
+			<ref bean="htmlConfigurationReportRenderer" />
 		</property>		
 		<property name="nullReportRenderer">
-			<ref local="nullConfigurationReportRenderer" />
+			<ref bean="nullConfigurationReportRenderer" />
 		</property>		
 	</bean>
 
@@ -96,10 +96,10 @@
 		class="org.opennms.report.inventory.InventoryReportRunner">
 		<property name="inventoryReportCalculator" ref="inventoryReportCalculator" />
 		<property name="htmlReportRenderer">
-			<ref local="htmlInventoryReportRenderer" />
+			<ref bean="htmlInventoryReportRenderer" />
 		</property>		
 		<property name="nullReportRenderer">
-			<ref local="nullInventoryReportRenderer" />
+			<ref bean="nullInventoryReportRenderer" />
 		</property>		
 	</bean>
 

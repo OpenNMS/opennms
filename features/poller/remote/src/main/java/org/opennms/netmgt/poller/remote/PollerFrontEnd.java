@@ -33,8 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-
 /**
  * <p>PollerFrontEnd interface.</p>
  *
@@ -42,35 +40,38 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
  * @version $Id: $
  */
 public interface PollerFrontEnd {
-    
-    /**
-     * <p>getMonitoringLocations</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
-    
+
+    public static enum PollerFrontEndStates {
+        exitNecessary,
+        started,
+        registered,
+        paused,
+        disconnected
+    }
+
+    public void checkConfig();
+
     /**
      * <p>getPolledServices</p>
      *
      * @return a {@link java.util.Collection} object.
      */
     Collection<PolledService> getPolledServices();
-    
+
     /**
      * Is the poller currently registered with the server.
      *
      * @return true if and only if the server has been registered
      */
     boolean isRegistered();
-    
+
     /**
      * Return the monitor name of the poller or null if none exist
      *
      * @return a {@link java.lang.String} object.
      */
     String getMonitorName();
-    
+
     /**
      * Register the poller if it has not been registered before.
      *
@@ -87,33 +88,53 @@ public interface PollerFrontEnd {
      * @param initialPollTime the time to set its initialPollTime to
      */
     void setInitialPollTime(Integer polledServiceId, Date initialPollTime);
-    
+
     /**
      * Poll the service with id polledServiceId and report the results to the server
      *
      * @param polledServiceId The serviceid of the polledService that needs to be polled
      */
     void pollService(Integer polledServiceId);
-    
+
     /**
      * Returns whether or not the poller has been started
      *
      * @return a boolean.
      */
     boolean isStarted();
-    
+
+    /**
+     * Returns whether or not the poller has been paused
+     *
+     * @return a boolean.
+     */
+    boolean isPaused();
+
+    /**
+     * Returns whether or not the poller has been disconnected
+     *
+     * @return a boolean.
+     */
+    boolean isDisconnected();
+
     /**
      * Returns whether some error occurred and an exit is necessary
      *
      * @return a boolean.
      */
     boolean isExitNecessary();
-    
+
+    /**
+     * Initialize the poller front end.  This will include reading the 
+     * configuration and then starting up the front end.
+     */
+    void initialize();
+
     /**
      * Stop polling.  This should be called before the system exits.
      */
     void stop();
-    
+
     /**
      * Returns the state of polling in this monitor.
      *
@@ -136,7 +157,7 @@ public interface PollerFrontEnd {
      * @param l a {@link org.opennms.netmgt.poller.remote.ConfigurationChangedListener} object.
      */
     void addConfigurationChangedListener(ConfigurationChangedListener l);
-    
+
     /**
      * Remove a config change listener
      *
@@ -169,6 +190,5 @@ public interface PollerFrontEnd {
      * @param l a {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedListener} object.
      */
     void removeServicePollStateChangedListener(ServicePollStateChangedListener l);
-	
 
 }

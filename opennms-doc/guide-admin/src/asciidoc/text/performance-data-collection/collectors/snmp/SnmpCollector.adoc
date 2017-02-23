@@ -1,0 +1,63 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../../images
+
+==== SnmpCollector
+
+The _SnmpCollector_ is used to collect performance data through the _SNMP protocol_.
+Access to the _SNMP Agent_ is configured through the _SNMP configuration_ in the _Web User Interface_.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.SnmpCollector`
+| Package             | core
+| Supported on Minion | `Yes` (via the SNMP proxy)
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the SnmpCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                    | Required | Default value
+| `collection`           | The name of the _SNMP Collection_ to use.                                      | required | `default`
+| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds.         | optional | `true`
+| `timeout`              | Timeout in milliseconds to wait for SNMP responses.                            | optional | _SNMP_ configuration
+|===
+
+===== SNMP Collection Configuration
+
+_SNMP Collection_ are defined in the `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml` files.
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<datacollection-config rrd-repository="/var/lib/opennms/rrd/snmp/"><1>
+    <snmp-collection name="default"<2>
+                     snmpStorageFlag="select"><3>
+        <rrd step="300"><4>
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <include-collection dataCollectionGroup="MIB2"/><5>
+        <include-collection dataCollectionGroup="3Com"/>
+        ...
+        <include-collection dataCollectionGroup="VMware-Cim"/>
+    </snmp-collection>
+</datacollection-config>
+----
+<1> Directory where to persist _RRD_ files on the file system, ignored if _NewTS_ is used as time series storage.
+<2> Name of the _SNMP_ data collection referenced in the _Collection Package_ in `collectd-configuration.xml`.
+<3> Configure SNMP MIB-II interface metric collection behavior: _all_ means collect metrics from all interfaces, _primary_ only from interface provisioned as  _primary_ interface, _select_ only from manualy selected interfaces from the _Web UI_.
+<4> _RRD_ archive configuration for this set of performance metrics, ignored when _NewTS_ is used as time series storage.
+<5> Include device or application specific performance metric _OIDS_ to collect.
+
+[[ga-performance-management-collectors-snmp-datacollection-configuration]]
+.Configuration overview for SNMP data collection
+image::performance-management/collectors/01_snmp-datacollection-configuration.png[]

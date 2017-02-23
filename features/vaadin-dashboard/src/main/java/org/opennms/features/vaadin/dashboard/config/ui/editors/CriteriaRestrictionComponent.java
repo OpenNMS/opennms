@@ -48,7 +48,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
     /**
      * the list of components
      */
-    private final List<AbstractField> m_componentList = new ArrayList<AbstractField>();
+    private final List<AbstractField<?>> m_componentList = new ArrayList<AbstractField<?>>();
     /**
      * left layout
      */
@@ -199,7 +199,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
 
         boolean first = true;
 
-        for (AbstractField abstractField : m_componentList) {
+        for (AbstractField<?> abstractField : m_componentList) {
             if (!first) {
                 criteria += ",";
             }

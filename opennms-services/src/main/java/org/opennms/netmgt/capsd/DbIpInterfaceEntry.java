@@ -43,7 +43,7 @@ import java.util.List;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

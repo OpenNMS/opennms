@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -116,6 +116,7 @@
           </execution>
         </executions>
         <configuration>
+          <skip>${skipSignJar}</skip>
           <archive>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</archive>
           <verbose>true</verbose>
         </configuration>

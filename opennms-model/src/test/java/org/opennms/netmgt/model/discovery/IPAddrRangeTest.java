@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
@@ -45,13 +46,19 @@ public class IPAddrRangeTest extends TestCase {
 
     private final IPAddress addr2 = new IPAddress("192.168.1.3");
     private final IPAddress addr3 = new IPAddress("192.168.1.5");
+    private final IPAddress v6low = new IPAddress("ffdd:0000:0000:0000:0000:0000:0000:0000");
+    private final IPAddress v6high = new IPAddress("ffff:0000:0000:0000:0000:0000:0000:0000");
 
     private final IPAddrRange singleton;
+    private final IPAddrRange v6singleton;
     private final IPAddrRange small;
+    private final IPAddrRange v6large;
 
     public IPAddrRangeTest() throws UnknownHostException {
         small = new IPAddrRange(addr2.toString(), addr3.toString());
         singleton = new IPAddrRange(addr2.toString(), addr2.toString());
+        v6large = new IPAddrRange(v6low.toString(), v6high.toString());
+        v6singleton = new IPAddrRange(v6low.toString(), v6low.toString());
     }
 
     public void testIterator() {
@@ -73,4 +80,13 @@ public class IPAddrRangeTest extends TestCase {
         assertFalse(it.hasNext());
     }
 
+    public void testGetSizeOfIpAddrRange() {
+        assertEquals(BigInteger.valueOf(3), small.size()); 
+        assertEquals(BigInteger.ONE, singleton.size());
+    }
+
+    public void testSizeLargerThanIntegerMaxValue() {
+        assertEquals(new BigInteger("220000000000000000000000000000", 16).add(BigInteger.ONE), v6large.size()); 
+        assertEquals(BigInteger.ONE, v6singleton.size());
+    }
 }

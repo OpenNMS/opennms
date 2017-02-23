@@ -48,31 +48,33 @@ import org.springframework.core.io.ClassPathResource;
 public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
 
-    private ForeignSourceRepository m_repository;
+    private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before
     public void setUp() {
-        m_repository = new MockForeignSourceRepository();
+        m_foreignSourceRepository = new MockForeignSourceRepository();
         m_defaultForeignSourceName = "imported:";
+        m_foreignSourceRepository.clear();
+        m_foreignSourceRepository.flush();
     }
     
     private Requisition createRequisition() throws Exception {
-        return m_repository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
+        return m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
     }
 
     private ForeignSource createForeignSource(String foreignSource) throws Exception {
         ForeignSource fs = new ForeignSource(foreignSource);
         fs.addDetector(new PluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
-        m_repository.save(fs);
-        m_repository.flush();
+        m_foreignSourceRepository.save(fs);
+        m_foreignSourceRepository.flush();
         return fs;
     }
 
     @Test
     public void testRequisition() throws Exception {
         createRequisition();
-        Requisition r = m_repository.getRequisition(m_defaultForeignSourceName);
+        Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         TestVisitor v = new TestVisitor();
         r.visit(v);
         assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
@@ -83,10 +85,10 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
     public void testForeignSource() throws Exception {
         createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        List<ForeignSource> foreignSources = new ArrayList<ForeignSource>(m_repository.getForeignSources());
+        List<ForeignSource> foreignSources = new ArrayList<ForeignSource>(m_foreignSourceRepository.getForeignSources());
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", m_defaultForeignSourceName, foreignSources.get(0).getName());
-        assertEquals("get() returns the foreign source", foreignSource, m_repository.getForeignSource(m_defaultForeignSourceName));
+        assertEquals("get() returns the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName));
     }
 
     /**
@@ -96,7 +98,7 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
     @Test
     public void testBeanWrapperAccess() throws Exception {
         createRequisition();
-        Requisition r = m_repository.getRequisition(m_defaultForeignSourceName);
+        Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(r);
         assertEquals("AC", wrapper.getPropertyValue("node[0].category[0].name"));
         assertEquals("UK", wrapper.getPropertyValue("node[0].category[1].name"));
@@ -121,8 +123,8 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
     public void testGetRequisition() throws Exception {
         Requisition requisition = createRequisition();
         ForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        assertRequisitionsMatch("foreign sources must match", m_repository.getRequisition(m_defaultForeignSourceName), m_repository.getRequisition(foreignSource));
-        assertRequisitionsMatch("foreign source is expected one", requisition, m_repository.getRequisition(foreignSource));
+        assertRequisitionsMatch("foreign sources must match", m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName), m_foreignSourceRepository.getRequisition(foreignSource));
+        assertRequisitionsMatch("foreign source is expected one", requisition, m_foreignSourceRepository.getRequisition(foreignSource));
     }
 
 }

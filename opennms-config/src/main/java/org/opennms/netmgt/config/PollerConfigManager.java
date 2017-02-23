@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +69,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
+
+    private static final ServiceMonitorRegistry s_serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
+
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
@@ -318,22 +321,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     
         return bRet;
-    }
-
-    /**
-     * This method returns the boolean flag xmlrpc to indicate if notification
-     * to external xmlrpc server is needed.
-     *
-     * @return true if need to notify an external xmlrpc server
-     */
-    @Override
-    public boolean shouldNotifyXmlrpc() {
-        try {
-            getReadLock().lock();
-            return Boolean.valueOf(m_config.getXmlrpc());
-        } finally {
-            getReadLock().unlock();
-        }
     }
 
     /**
@@ -980,7 +967,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         
         for (final ServiceMonitorLocator locator : locators) {
             try {
-                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
+                m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor(s_serviceMonitorRegistry));
             } catch (Throwable t) {
                 LOG.warn("start: Failed to create monitor {} for service {}", locator.getServiceLocatorKey(), locator.getServiceName(), t);
             }
@@ -1029,7 +1016,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
                 } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to load monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName(), e);
+                    LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
@@ -1067,7 +1054,10 @@ abstract public class PollerConfigManager implements PollerConfig {
         return mc;
     }
 
-
+    @Override
+    public ServiceMonitorRegistry getServiceMonitorRegistry() {
+        return s_serviceMonitorRegistry;
+    }
 
     /**
      * <p>getNextOutageIdSql</p>
@@ -1084,20 +1074,4 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-	/**
-	 * <p>releaseAllServiceMonitors</p>
-	 */
-    @Override
-	public void releaseAllServiceMonitors() {
-	    try {
-	        getWriteLock().lock();
-    		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
-    	    while (iter.hasNext()) {
-    	        ServiceMonitor sm = iter.next();
-    	        sm.release();
-    	    }
-	    } finally {
-	        getWriteLock().unlock();
-	    }
-	}
 }

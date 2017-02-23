@@ -28,28 +28,71 @@
 
 package org.opennms.features.topology.plugins.topo;
 
-import org.opennms.features.topology.api.support.AbstractHistoryManager;
-import org.opennms.features.topology.api.support.SavedHistory;
-import org.osgi.framework.BundleContext;
-import org.slf4j.LoggerFactory;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.*;
-import java.util.Properties;
 
-public class BundleContextHistoryManager extends AbstractHistoryManager {
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HistoryManager;
+import org.opennms.features.topology.api.HistoryOperation;
+import org.opennms.features.topology.api.support.SavedHistory;
+import org.osgi.framework.BundleContext;
+import org.slf4j.LoggerFactory;
+
+public class BundleContextHistoryManager implements HistoryManager {
+
+	public static final String DATA_FILE_NAME = BundleContextHistoryManager.class.getName() + ".properties";
 
 	private final BundleContext m_bundleContext;
-	public static final String DATA_FILE_NAME = BundleContextHistoryManager.class.getName() + ".properties";
+
+	private final List<HistoryOperation> m_operations = new CopyOnWriteArrayList<>();
 
 	public BundleContextHistoryManager(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
 	}
 
+	public synchronized void onBind(HistoryOperation operation) {
+		try {
+			m_operations.add(operation);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+		}
+	}
+
+	public synchronized void onUnbind(HistoryOperation operation) {
+		try {
+			m_operations.remove(operation);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+		}
+	}
+
 	@Override
+	public void applyHistory(String fragment, GraphContainer container) {
+		SavedHistory hist = getHistoryByFragment(fragment);
+		if (hist != null) {
+			hist.apply(container, m_operations);
+		}
+	}
+
+	@Override
+	public String saveOrUpdateHistory(String userId, GraphContainer graphContainer) {
+		SavedHistory history = new SavedHistory(graphContainer, m_operations);
+		saveHistory(userId, history);
+		return history.getFragment();
+	}
+
 	protected synchronized void saveHistory(String userId, SavedHistory hist) {
 		Properties props = loadProperties(m_bundleContext);
 		String historyXml = toXML(hist);
@@ -62,10 +105,10 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
 	}
 
 	@Override
-	protected synchronized SavedHistory getHistory(String userId, String fragmentId) {
-        if(fragmentId != null){
+	public synchronized SavedHistory getHistoryByFragment(String fragment) {
+        if(fragment != null){
             Properties props = loadProperties(m_bundleContext);
-            String xml = props.getProperty(fragmentId);
+            String xml = props.getProperty(fragment);
             if (xml == null || "".equals(xml)) {
                 // There is no stored history for this fragment ID
                 return null;
@@ -73,15 +116,28 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
                 return JAXB.unmarshal(new StringReader(xml), SavedHistory.class);
             }
         }
-
         return null;
 	}
 
 	@Override
-	public synchronized String getHistoryHash(String userId) {
+	public synchronized SavedHistory getHistoryByUserId(String userId) {
+		String fragment = getHistoryFragment(userId);
+		if (fragment != null) {
+			return getHistoryByFragment(fragment);
+		}
+		return null;
+	}
+
+	@Override
+	public synchronized String getHistoryFragment(String userId) {
 		return loadProperties(m_bundleContext).getProperty(userId);
 	}
-	
+
+	@Override
+	public synchronized void deleteHistory() {
+		m_bundleContext.getDataFile(DATA_FILE_NAME).delete();
+	}
+
 	/**
 	 * Removes the saved history entry for userId.
 	 * It also removes the history-Entry for the historyHash originally used by the user.

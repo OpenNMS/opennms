@@ -49,13 +49,13 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  * @author <a href="mailto:david.schlenk@spanlink.com">David Schlenk</a>
  */
-public class XmlCollectorNamespaceTest extends AbstractXmlCollectorTest {
+public class XmlCollectorNamespaceTest extends XmlCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
-    public String getXmlConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/namespace-datacollection-config.xml";
     }
 
@@ -63,7 +63,7 @@ public class XmlCollectorNamespaceTest extends AbstractXmlCollectorTest {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
-    public String getXmlSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/namespace.xml";
     }
 
@@ -100,9 +100,9 @@ public class XmlCollectorNamespaceTest extends AbstractXmlCollectorTest {
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         // Files expected: one JRB for each zone: global, zone1 and zone2 (3 in total)
         executeCollectorTest(parameters, 1);
-        Assert.assertTrue(new File("target/snmp/1/namespace-stats.jrb").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/namespace-stats.jrb").exists());
         // Checking data from Global Zone.
-        File file = new File("target/snmp/1/namespace-stats.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/namespace-stats.jrb");
         String[] dsnames = new String[] { "requests", "responses", "errors", "warnings", "hats", "pants" };
         Double[] dsvalues = new Double[] { 13.0, 12.0, 1.0, 2.0, 3.0, 4.0 };
         validateJrb(file, dsnames, dsvalues);      

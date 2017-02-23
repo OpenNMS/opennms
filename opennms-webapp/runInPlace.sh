@@ -29,7 +29,7 @@ function runInPlace() {
         OFFLINE_ARGS="-o"
     fi
 	if $DEBUG; then
-			MAVEN_OPTS="${MAVEN_OPTS} -XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g -XX:ReservedCodeCacheSize=512m"
+			MAVEN_OPTS="${MAVEN_OPTS} -XX:PermSize=512m -XX:MaxMetaspaceSize=1g -Xmx1g -XX:ReservedCodeCacheSize=512m"
 			MAVEN_OPTS="${MAVEN_OPTS} -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=n"
 			export MAVEN_OPTS;
 	fi

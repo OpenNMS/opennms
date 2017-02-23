@@ -49,17 +49,18 @@ public class MockCategoryDao extends AbstractMockDao<OnmsCategory, Integer> impl
     }
 
     @Override
-    public void save(final OnmsCategory cat) {
-        if (cat == null) return;
+    public Integer save(final OnmsCategory cat) {
+        if (cat == null) return null;
         final String categoryName = cat.getName();
-        if (categoryName == null) return;
+        if (categoryName == null) return null;
         final OnmsCategory existingCategory = findByName(categoryName);
         if (existingCategory == null) {
-            super.save(cat);
+            return super.save(cat);
         } else {
             cat.setId(existingCategory.getId());
             cat.setDescription(existingCategory.getDescription());
             cat.setAuthorizedGroups(existingCategory.getAuthorizedGroups());
+            return cat.getId();
         }
     }
 

@@ -106,20 +106,6 @@
 	</rollback>
 </changeSet>
 
-<changeSet runOnChange="false" author="rangerrick" id="vulnnxtid">
-	<preConditions onFail="MARK_RAN">
-		<sqlCheck expectedResult="0">
-			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
-			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'vulnnxtid'
-		</sqlCheck>
-	</preConditions> 
-	<createSequence sequenceName="vulnnxtid" />
-	
-	<rollback>
-	  <dropSequence sequenceName="vulnnxtid" />
-	</rollback>
-</changeSet>
-
 <changeSet runOnChange="false" author="rangerrick" id="catnxtid">
 	<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">
@@ -173,20 +159,6 @@
 	
 	<rollback>
 	  <dropSequence sequenceName="pollresultnxtid" />
-	</rollback>
-</changeSet>
-
-<changeSet runOnChange="false" author="rangerrick" id="mapnxtid">
-	<preConditions onFail="MARK_RAN">
-		<sqlCheck expectedResult="0">
-			SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
-			WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'mapnxtid'
-		</sqlCheck>
-	</preConditions> 
-	<createSequence sequenceName="mapnxtid" />
-	
-	<rollback>
-	  <dropSequence sequenceName="mapnxtid" />
 	</rollback>
 </changeSet>
 

@@ -46,15 +46,13 @@ import org.slf4j.LoggerFactory;
  */
 public class ProviderManager {
 	
-	public static interface ProviderListener {
+	public interface ProviderListener {
 
-		void edgeProviderAdded(EdgeProvider oldProvider,
-				EdgeProvider newProvider);
+		void edgeProviderAdded(EdgeProvider oldProvider, EdgeProvider newProvider);
 
 		void edgeProviderRemoved(EdgeProvider removedProvider);
 
-		void vertexProviderAdded(VertexProvider oldProvider,
-				VertexProvider newProvider);
+		void vertexProviderAdded(VertexProvider oldProvider, VertexProvider newProvider);
 
 		void vertexProviderRemoved(VertexProvider removedProvider);
 		
@@ -65,12 +63,12 @@ public class ProviderManager {
 	private final Map<String, VertexProvider> m_vertexProviders = new HashMap<String, VertexProvider>();
 	private final Map<String, EdgeProvider> m_edgeProviders = new HashMap<String, EdgeProvider>();
 	private final Set<ProviderListener> m_listeners = new CopyOnWriteArraySet<ProviderListener>();
-	
-	public Collection<VertexProvider> getVertexListeners() {
+
+	public Collection<VertexProvider> getVertexProviders() {
 		return Collections.unmodifiableCollection(m_vertexProviders.values());
 	}
 	
-	public Collection<EdgeProvider> getEdgeListeners() {
+	public Collection<EdgeProvider> getEdgeProviders() {
 		return Collections.unmodifiableCollection(m_edgeProviders.values());
 	}
 	
@@ -78,10 +76,9 @@ public class ProviderManager {
 		s_log.info("ProviderManager onEdgeProviderBind({})", newProvider);
 		try {
 			EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getEdgeNamespace(), newProvider);
-
 			fireEdgeProviderAdded(oldProvider, newProvider);
 		} catch (Throwable e) {
-			LoggerFactory.getLogger(this.getClass()).warn("Exception during onEdgeProviderBind()", e);
+			s_log.warn("Exception during onEdgeProviderBind()", e);
 		}
 	}
 
@@ -90,10 +87,9 @@ public class ProviderManager {
 		if (edgeProvider == null) return;
 		try {
 			EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getEdgeNamespace());
-
 			fireEdgeProviderRemoved(removedProvider);
 		} catch (Throwable e) {
-			LoggerFactory.getLogger(this.getClass()).warn("Exception during onEdgeProviderUnbind()", e);
+			s_log.warn("Exception during onEdgeProviderUnbind()", e);
 		}
 	}
 
@@ -101,10 +97,9 @@ public class ProviderManager {
 		s_log.info("ProviderManager onVertexProviderBind({})", newProvider);
 		try {
 			VertexProvider oldProvider = m_vertexProviders.put(newProvider.getVertexNamespace(), newProvider);
-
 			fireVertexProviderAdded(oldProvider, newProvider);
 		} catch (Throwable e) {
-			LoggerFactory.getLogger(this.getClass()).warn("Exception during onVertexProviderBind()", e);
+			s_log.warn("Exception during onVertexProviderBind()", e);
 		}
 	}
 
@@ -113,10 +108,9 @@ public class ProviderManager {
 		if (vertexProvider == null) return;
 		try {
 			VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getVertexNamespace());
-
 			fireVertexProviderRemoved(removedProvider);
 		} catch (Throwable e) {
-			LoggerFactory.getLogger(this.getClass()).warn("Exception during onVertexProviderUnbind()", e);
+			s_log.warn("Exception during onVertexProviderUnbind()", e);
 		}
 	}
     

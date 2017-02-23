@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,18 +46,18 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -68,12 +68,15 @@ public class FindTopLevelResourcesTest {
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
+    private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
     private FileAnticipator m_fileAnticipator;
 
     private FilterDao m_filterDao;
+
+    private String m_rrdFileExtension;
 
     @Before
     public void setUp() throws Exception {
@@ -82,12 +85,18 @@ public class FindTopLevelResourcesTest {
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
 
         expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
+
+        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
+
+        m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
+        m_resourceStorageDao.setRrdStrategy(rrdStrategy);
 
         m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
@@ -98,15 +107,14 @@ public class FindTopLevelResourcesTest {
         m_resourceDao.setNodeDao(m_nodeDao);
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
-        m_resourceDao.setRrdDirectory(m_fileAnticipator.getTempDir());
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
-
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
+        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
     }
 
     @After
     public void tearDown() {
         m_fileAnticipator.tearDown();
+        setStoreByForeignSource(false);
     }
 
     private void setStoreByForeignSource(boolean storeByForeignSource) {
@@ -138,12 +146,12 @@ public class FindTopLevelResourcesTest {
         OnmsNode n2 = createNode(2, "node2", null, null, "10.0.0.2"); // Node on the DB with No RRD Data
         nodes.add(n2);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(2);
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
-        expect(m_nodeDao.get(n1.getId())).andReturn(n1).times(2); // TODO ResponseTimeResourceType is the responsible for this.
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -151,15 +159,15 @@ public class FindTopLevelResourcesTest {
 
         // RRD Directory for n1
         File nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan node
         File orphanDir = m_fileAnticipator.tempDir(snmpDir, "100");
-        m_fileAnticipator.tempFile(orphanDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(orphanDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -205,19 +213,13 @@ public class FindTopLevelResourcesTest {
         OnmsNode n3 = createNode(3, "node3", foreignSource, "node3", "10.0.0.3"); // Node on the DB with No RRD Data or Response Time
         nodes.add(n3);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(3);
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
-        expect(m_nodeDao.get(n1.getId())).andReturn(n1).times(2); // TODO ResponseTimeResourceType is the responsible for this.
-        expect(m_nodeDao.get(n2.getId())).andReturn(n2).times(1); // TODO ResponseTimeResourceType is the responsible for this.
-        if (storeByForeignSource) {
-            expect(m_nodeDao.findByForeignId(n1.getForeignSource(), n1.getForeignId())).andReturn(n1).times(1);            
-            expect(m_nodeDao.findByForeignId(n2.getForeignSource(), n2.getForeignId())).andReturn(n2).times(1);            
-        } else {
-            expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
-            expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
-        }
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n3.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -232,7 +234,7 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for n2
         if (storeByForeignSource) {
@@ -240,7 +242,7 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan node
         if (storeByForeignSource) {
@@ -248,11 +250,11 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, "100");
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         walkin(m_fileAnticipator.getTempDir());
         m_easyMockUtils.replayAll();
@@ -267,23 +269,14 @@ public class FindTopLevelResourcesTest {
         List<OnmsResource> children = resources.get(0).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(2, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
-        } else {
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children.get(1).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode1].responseTime[10.0.0.1]", children.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode1].nodeSnmp[]", children.get(1).getId());
 
         // Node 2
         children = resources.get(1).getChildResources();
         Collections.sort(children);
         Assert.assertEquals(1, children.size());
-        if (storeByForeignSource) {
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
-        } else {
-            Assert.assertEquals("node[2].nodeSnmp[]", children.get(0).getId());
-        }
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children.get(0).getId());
 
         m_easyMockUtils.verifyAll();
     }
@@ -320,18 +313,14 @@ public class FindTopLevelResourcesTest {
         OnmsNode n4 = createNode(4, "node4", foreignSource, "node4", "10.0.0.4"); // Requisitioned node on the DB with RRD Data
         nodes.add(n4);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).times(3);
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
-        if (storeByForeignSource) {
-            expect(m_nodeDao.findByForeignId(n2.getForeignSource(), n2.getForeignId())).andReturn(n2).times(1);
-        } else {
-            expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
-        }
-        expect(m_nodeDao.get(n1.getId())).andReturn(n1).times(2); // TODO ResponseTimeResourceType is the responsible for this.
-        expect(m_nodeDao.get(n2.getId())).andReturn(n2).times(2); // TODO ResponseTimeResourceType is the responsible for this.
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n3.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n4.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -341,7 +330,7 @@ public class FindTopLevelResourcesTest {
 
         // RRD Directory for n1
         File node1Dir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
-        m_fileAnticipator.tempFile(node1Dir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(node1Dir, "data" + m_rrdFileExtension);
 
         // RRD Directory for n2
         File node2Dir = null;
@@ -350,10 +339,10 @@ public class FindTopLevelResourcesTest {
         } else {
             node2Dir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
         }
-        m_fileAnticipator.tempFile(node2Dir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(node2Dir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan discovered node
-        m_fileAnticipator.tempFile(m_fileAnticipator.tempDir(snmpDir, "100"), "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(m_fileAnticipator.tempDir(snmpDir, "100"), "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan requisitioned node
         File orphanDir = null;
@@ -362,15 +351,15 @@ public class FindTopLevelResourcesTest {
         } else {
             orphanDir = m_fileAnticipator.tempDir(snmpDir, "101");
         }
-        m_fileAnticipator.tempFile(orphanDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(orphanDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ip1Dir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ip1Dir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ip1Dir, "icmp" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n2
         File ip2Dir = m_fileAnticipator.tempDir(responseDir, n2.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ip2Dir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ip2Dir, "icmp" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -380,38 +369,20 @@ public class FindTopLevelResourcesTest {
         Collections.sort(resources);
         Assert.assertEquals(2, resources.size());
 
-        if (storeByForeignSource) {
-            OnmsResource r1 = resources.get(0); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("nodeSource[Junit%3Anode2]", r1.getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("nodeSource[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
+        OnmsResource r1 = resources.get(0); // parent resource for the discovered node
+        Assert.assertEquals("node[1]", r1.getId());
+        List<OnmsResource> children2 = r1.getChildResources();
+        Collections.sort(children2);
+        Assert.assertEquals(2, children2.size());
+        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
+        Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
 
-            OnmsResource r2 = resources.get(1); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-
-        } else {
-            OnmsResource r1 = resources.get(1); // parent resource for the provisioned node 
-            List<OnmsResource> children1 = r1.getChildResources();
-            Collections.sort(children1);
-            Assert.assertEquals("node[2]", r1.getId());
-            Assert.assertEquals("node[2].responseTime[10.0.0.2]", children1.get(0).getId());
-            Assert.assertEquals("node[2].nodeSnmp[]", children1.get(1).getId());
-
-            OnmsResource r2 = resources.get(0); // parent resource for the discovered node
-            Assert.assertEquals("node[1]", r2.getId());
-            List<OnmsResource> children2 = r2.getChildResources();
-            Collections.sort(children2);
-            Assert.assertEquals(2, children2.size());
-            Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId());
-            Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId());
-        }
+        OnmsResource r2 = resources.get(1); // parent resource for the provisioned node 
+        List<OnmsResource> children1 = r2.getChildResources();
+        Collections.sort(children1);
+        Assert.assertEquals("node[Junit%3Anode2]", r2.getId());
+        Assert.assertEquals("node[Junit%3Anode2].responseTime[10.0.0.2]", children1.get(0).getId());
+        Assert.assertEquals("node[Junit%3Anode2].nodeSnmp[]", children1.get(1).getId());
 
         m_easyMockUtils.verifyAll();
     }

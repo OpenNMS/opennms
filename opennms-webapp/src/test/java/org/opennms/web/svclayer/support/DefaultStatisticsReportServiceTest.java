@@ -45,8 +45,9 @@ import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.web.command.StatisticsReportCommand;
-import org.opennms.web.svclayer.support.StatisticsReportModel.Datum;
+import org.opennms.web.svclayer.model.StatisticsReportCommand;
+import org.opennms.web.svclayer.model.StatisticsReportModel;
+import org.opennms.web.svclayer.model.StatisticsReportModel.Datum;
 import org.springframework.validation.BindException;
 
 /**

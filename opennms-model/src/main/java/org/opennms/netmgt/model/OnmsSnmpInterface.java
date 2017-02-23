@@ -507,6 +507,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="nodeId")
     //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
+    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -522,7 +523,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     @Transient
     @XmlTransient
-    @JsonIgnore
     public Integer getNodeId() {
         if (m_node != null) {
             return m_node.getId();
@@ -571,6 +571,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
     //@XmlIDREF
     @XmlJavaTypeAdapter(SnmpInterfaceIdAdapter.class)
+    @JsonIgnore
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -604,6 +605,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     @Transient
     @XmlTransient
+    @JsonIgnore
     public OnmsIpInterface getPrimaryIpInterface() {
         return getNode().getPrimaryInterface();
     }
@@ -656,6 +658,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         } else if (getIfDescr() != null) {
             label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
         } else {
+            // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
             LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }

@@ -51,7 +51,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
@@ -64,25 +63,17 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
-import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
-import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.codahale.metrics.MetricRegistry;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -91,37 +82,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private OperationContext m_operationContext;
-
-    @Autowired
     private EnhancedLinkdTopologyProvider m_topologyProvider;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
     private String m_originalFilename;
 
-    @Autowired
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-
-    @Autowired
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
-
-    @Autowired
-    private CdpLinkDao m_cdpLinkDao;
-
-    @Autowired
-    private IsIsLinkDao m_isisLinkDao;
 
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
 
-        EasyMock.expect(m_bridgeBridgeLinkDao.findAll()).andReturn(new ArrayList<BridgeBridgeLink>()).anyTimes();
-        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
-        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
-        EasyMock.expect(m_cdpLinkDao.findLinksForTopology()).andReturn(new ArrayList<CdpTopologyLink>()).anyTimes();
-        EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
-        EasyMock.replay(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao);
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
@@ -143,14 +114,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
+        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
 
     }
 
@@ -163,10 +134,11 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testAddGroup() {
-        Vertex parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
+        Vertex parentId = m_topologyProvider.addGroup("Linkd Group", "linkd:group");
         Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void test() throws Exception {
         new File("target/test-classes/test.xml").delete();
@@ -187,8 +159,8 @@ public class EnhancedLinkdTopologyProviderTest {
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
         // Search by VertexRef
-        @SuppressWarnings("deprecation") VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-        @SuppressWarnings("deprecation") VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
@@ -302,7 +274,7 @@ public class EnhancedLinkdTopologyProviderTest {
     public void loadSavedGraphWithOnlyGroups() throws Exception {
         m_topologyProvider.setConfigurationFile("target/test-classes/saved-linkd-graph.xml");
 
-        // Temporarily replace the DataLinkInterfaceDao with a mock empty impl
+        // Temporarily replace the Dao with a mock empty impl
         LldpLinkDao dao = m_topologyProvider.getLldpLinkDao();
         LldpLinkDao mockDao = EasyMock.createMock(LldpLinkDao.class);
         EasyMock.expect(mockDao.findAll()).andReturn(new ArrayList<LldpLink>()).anyTimes();
@@ -496,13 +468,8 @@ public class EnhancedLinkdTopologyProviderTest {
      */
     @Test
     public void testAssignChildrenToParentsCorrectly() throws MalformedURLException, JAXBException {
-        LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider();
+        EnhancedLinkdTopologyProvider topologyProvider = new EnhancedLinkdTopologyProvider(new MetricRegistry());
 
-        DataLinkInterfaceDao datalinkIfDaoMock = EasyMock.createNiceMock(DataLinkInterfaceDao.class);
-        EasyMock.expect(datalinkIfDaoMock.findAll()).andReturn(new ArrayList<DataLinkInterface>()).anyTimes();
-        EasyMock.replay(datalinkIfDaoMock);
-
-        topologyProvider.setDataLinkInterfaceDao(datalinkIfDaoMock);
         topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
         topologyProvider.setIpInterfaceDao(m_databasePopulator.getIpInterfaceDao());
         topologyProvider.setSnmpInterfaceDao(m_databasePopulator.getSnmpInterfaceDao());
@@ -569,7 +536,6 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @After
     public void tearDown() {
-        EasyMock.reset(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao);
 
         m_databasePopulator.tearDown();
         if(m_topologyProvider != null) {

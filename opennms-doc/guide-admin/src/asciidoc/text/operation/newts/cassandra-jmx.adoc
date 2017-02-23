@@ -1,0 +1,207 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+==== Cassandra Monitoring
+
+This section describes some of the metrics _{opennms-product-name}_ collects from a _Cassandra_ cluster.
+
+TIP: JMX must be enabled on the _Cassandra_ nodes and made accessible from __{opennms-product-name}_ in order to collect these metrics.
+     See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication] for details.
+
+TIP: The data collection is bound to the agent IP interface with the service name _JMX-Cassandra_.
+     The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
+
+===== Client Connections
+
+The number of active client connections from `org.apache.cassandra.metrics.Client` are collected:
+
+[options="header, autowidth"]
+|===
+| Name                     | Description
+| `connectedNativeClients` | Metrics for connected native clients
+| `connectedThriftClients` | Metrics for connected thrift clients
+|===
+
+===== Compaction Bytes
+
+The following compaction manager metrics from `org.apache.cassandra.metrics.Compaction` are collected:
+
+[options="header, autowidth"]
+|===
+| Name             | Description
+| `BytesCompacted` | Number of bytes compacted since node started
+|===
+
+===== Compaction Tasks
+
+The following compaction manager metrics from `org.apache.cassandra.metrics.Compaction` are collected:
+
+[options="header, autowidth"]
+|===
+| Name             | Description
+| `CompletedTasks` | Estimated number of completed compaction tasks
+| `PendingTasks`   | Estimated number of pending compaction tasks
+|===
+
+===== Storage Load
+
+The following storage load metrics from `org.apache.cassandra.metrics.Storage` are collected:
+
+[options="header, autowidth"]
+|===
+| Name   | Description
+| `Load` | Total disk space (in bytes) used by this node
+|===
+
+===== Storage Exceptions
+
+The following storage exception metrics from `org.apache.cassandra.metrics.Storage` are collected:
+
+[options="header, autowidth"]
+|===
+| Name         | Description
+| `Exceptions` | Number of unhandled exceptions since start of this _Cassandra_ instance
+|===
+
+===== Dropped Messages
+
+Measurement of messages that were _DROPPABLE_.
+These ran after a given timeout set per message type so was thrown away.
+In _JMX_ these are accessible via `org.apache.cassandra.metrics.DroppedMessage`.
+The number of dropped messages in the different message queues are good indicators whether a cluster can handle its load.
+
+[options="header, autowidth"]
+|===
+| Name               | Stage                  | Description
+| `Mutation`         | _MutationStage_        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| `Counter_Mutation` | _MutationStage_        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| `Read_Repair`      | _MutationStage_        | Times out after write_request_timeout_in_ms.
+| `Read`             | _ReadStage_            | Times out after read_request_timeout_in_ms.
+                                                No point in servicing reads after that point since it would of returned error to client.
+| `Range_Slice`      | _ReadStage_            | Times out after range_request_timeout_in_ms.
+| `Request_Response` | _RequestResponseStage_ | Times out after request_timeout_in_ms.
+                                                Response was completed and sent back but not before the timeout
+|===
+
+===== Thread pools
+
+_Apache Cassandra_ is based on a so called _Staged Event Driven Architecture_ (SEDA).
+This seperates different operations in stages and these stages are loosely coupled using a messaging service.
+Each of these components use queues and thread pools to group and execute their tasks.
+The documentation for _Cassandra_ Thread pool monitoring is originated from link:http://www.pythian.com/blog/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
+
+.Collected metrics for Thread Pools
+[options="header, autowidth"]
+|===
+| Name                    | Description
+| `ActiveTasks`           | Tasks that are currently running
+| `CompletedTasks`        | Tasks that have been completed
+| `CurrentlyBlockedTasks` | Tasks that have been blocked due to a full queue
+| `PendingTasks`          | Tasks queued for execution
+|===
+
+====== Memtable FlushWriter
+
+Sort and write _memtables_ to disk from `org.apache.cassandra.metrics.ThreadPools`.
+A vast majority of time this backing up is from over running disk capability.
+The sorting can cause issues as well however.
+In the case of sorting being a problem, it is usually accompanied with high load but a small amount of actual flushes (seen in cfstats).
+Can be from huge rows with large column names, i.e. something inserting many large values into a _CQL_ collection.
+If overrunning disk capabilities, it is recommended to add nodes or tune the configuration.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Memtable Post Flusher
+
+Operations after flushing the _memtable_.
+Discard commit log files that have had all data in them in _sstables_.
+Flushing non-cf backed secondary indexes.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Anti Entropy Stage
+
+Repairing consistency.
+Handle repair messages like merkle tree transfer (from Validation compaction) and streaming.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Gossip Stage
+
+Post 2.0.3 there should no longer be issue with pending tasks.
+Instead monitor logs for a message:
+
+[source]
+----
+Gossip stage has {} pending tasks; skipping status check ...
+----
+
+Before that change, in particular older versions of 1.2, with a lot of nodes (100+) while using vnodes can cause a lot of CPU intensive work that caused the stage to get behind.
+Been known to of been caused with out of sync schemas.
+Check _NTP_ working correctly and attempt `nodetool resetlocalschema` or the more drastic deleting of system column family folder.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Migration Stage
+
+Making schema changes
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== MiscStage
+
+Snapshotting, replicating data after node remove completed.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Mutation Stage
+
+Performing a local including:
+
+* insert/updates
+* Schema merges
+* commit log replays
+* hints in progress
+
+Similar to ReadStage, an increase in pending tasks here can be caused by disk issues, over loading a system, or poor tuning. If messages are backed up in this stage, you can add nodes, tune hardware and configuration, or update the data model and use case.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Read Stage
+
+Performing a local read.
+Also includes deserializing data from row cache.
+If there are pending values this can cause increased read latency.
+This can spike due to disk problems, poor tuning, or over loading your cluster.
+In many cases (not disk failure) this is resolved by adding nodes or tuning the system.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Request Response Stage
+
+When a response to a request is received this is the stage used to execute any callbacks that were created with the original request.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+====== Read Repair Stage
+
+Performing read repairs.
+Chance of them occurring is configurable per column family with `read_repair_chance`.
+More likely to back up if using `CL.ONE` (and to lesser possibly other `non-CL.ALL` queries) for reads and using multiple data centers.
+It will then be kicked off asynchronously outside of the queries feedback loop.
+Note that this is not very likely to be a problem since does not happen on all queries and is fast providing good connectivity between replicas.
+The repair being droppable also means that after `write_request_timeout_in_ms` it will be thrown away which further mitigates this.
+If pending grows attempt to lower the rate for high read `CFs`.
+
+TIP: Alerts: pending > 15 || blocked > 0
+
+===== JVM Metrics
+
+Some key metrics from the running Java virtual machine are also collected:
+
+java.lang:type=Memory::
+  The memory system of the Java virtual machine. This includes heap and non-heap memory
+java.lang:type=GarbageCollector,name=ConcurrentMarkSweep::
+  Metrics for the garbage collection process of the Java virtual machine
+
+TIP: If you use _Apache Cassandra_ for running _Newts_ you can also enable additional metrics for the _Newts_ keyspace.

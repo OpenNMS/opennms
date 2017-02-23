@@ -59,6 +59,14 @@ public class Package implements Serializable {
     private String m_name;
 
     /**
+     * Indicates weather this Package is a remote package.
+     * If remote = <code>true</code> it is a remote package.
+     * Remote packages are ignored by Colelctd.
+     */
+    @XmlAttribute(name="remote")
+    private boolean m_remote;
+
+    /**
      * A rule which addresses belonging to this package must pass. This
      * package is applied only to addresses that pass this filter.
      */
@@ -482,6 +490,7 @@ public class Package implements Serializable {
         result = prime * result + ((m_storFlagOverride == null) ? 0 : m_storFlagOverride.hashCode());
         result = prime * result + ((m_storeByIfAlias == null) ? 0 : m_storeByIfAlias.hashCode());
         result = prime * result + ((m_storeByNodeID == null) ? 0 : m_storeByNodeID.hashCode());
+        result = prime * result + Boolean.valueOf(m_remote).hashCode();
         return result;
     }
 
@@ -588,14 +597,26 @@ public class Package implements Serializable {
         } else if (!m_storeByNodeID.equals(other.m_storeByNodeID)) {
             return false;
         }
+        if (m_remote != other.m_remote) {
+            return false;
+        }
         return true;
+    }
+
+    public boolean isRemote() {
+        return m_remote;
+    }
+
+    public void setRemote(boolean remote) {
+        m_remote = remote;
     }
 
     @Override
     public String toString() {
         return "Package [name=" + m_name + ", filter=" + m_filter + ", specifics=" + m_specifics + ", includeRanges=" + m_includeRanges + ", excludeRanges=" + m_excludeRanges
                 + ", includeUrls=" + m_includeUrls + ", storeByIfAlias=" + m_storeByIfAlias + ", storeByNodeID=" + m_storeByNodeID + ", ifAliasDomain=" + m_ifAliasDomain
-                + ", storFlagOverride=" + m_storFlagOverride + ", ifAliasComment=" + m_ifAliasComment + ", services=" + m_services + ", outageCalendar=" + m_outageCalendar + "]";
+                + ", storFlagOverride=" + m_storFlagOverride + ", ifAliasComment=" + m_ifAliasComment + ", services=" + m_services + ", outageCalendar=" + m_outageCalendar
+                + ", remote=" + m_remote + "]";
     }
 
 }

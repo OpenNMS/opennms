@@ -31,9 +31,9 @@ package org.opennms.web.controller;
 import java.util.List;
 
 import org.opennms.web.api.Authentication;
-import org.opennms.web.command.ManageReportScheduleCommand;
 import org.opennms.web.svclayer.SchedulerService;
-import org.opennms.web.svclayer.support.TriggerDescription;
+import org.opennms.web.svclayer.model.ManageReportScheduleCommand;
+import org.opennms.web.svclayer.model.TriggerDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;

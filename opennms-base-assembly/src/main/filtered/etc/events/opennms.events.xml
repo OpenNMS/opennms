@@ -2,7 +2,7 @@
 <events>
   <event>
     <uei>MATCH-ANY-UEI</uei>
-    <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+    <event-label>OpenNMS-defined event: MATCH-ANY-UEI</event-label>
     <descr>
                         &lt;p&gt;This UEI will never be generated, but exists
                         so that notifications can match any UEI for a
@@ -15,6 +15,31 @@
                 </logmsg>
     <severity>Indeterminate</severity>
   </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/outageCreated</uei>
+    <event-label>OpenNMS-defined node event: outageCreated</event-label>
+    <descr>
+      &lt;p&gt;A %service% outage was created on interface
+      %interface%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/outageResolved</uei>
+    <event-label>OpenNMS-defined node event: outageResolved</event-label>
+    <descr>
+      &lt;p&gt;The %service% service outage on interface %interface% 
+      has been restored.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      The %service% outage on interface %interface% has been
+      resolved.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>  
   <event>
     <uei>uei.opennms.org/internal/capsd/discPause</uei>
     <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
@@ -287,22 +312,6 @@
     <logmsg dest="logndisplay">
                         Reschedule polling to services on a specified interface(%parm[ipaddr]%).                
                 </logmsg>
-    <severity>Normal</severity>
-  </event>
-  <event>
-    <uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
-    <event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
-    <descr>
-      &lt;p&gt;This event will be produced by capsd to carry the process status
-                        information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
-                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
-                        status, %parm[status]%.&lt;/p&gt;
-    </descr>
-    <logmsg dest="logndisplay">
-      &lt;p&gt;A request has been made to xmlrpcd to report status for 
-      %parm[srcUei]%.&lt;/p&gt;
-    </logmsg>
     <severity>Normal</severity>
   </event>
   <event>
@@ -905,13 +914,15 @@
                         &lt;p&gt;This event is generated when node outage processing
                         determines that the critical path IP address/service for
                         this node is not responding..&lt;/p&gt;
+                        &lt;p&gt;More information on the affected node(s) can be found at
+                        the &lt;a href="opennms/pathOutage/index.jsp"&gt;Path Outages&lt;/a&gt; page.&lt;/p&gt;
                 </descr>
     <logmsg dest="logndisplay">
                         %parm[nodelabel]% path outage. Critical path =
                         %parm[criticalPathIp]% %parm[criticalPathServiceName]%
                 </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[criticalPathIp]%:%parm[criticalPathServiceName]%" alarm-type="3" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
@@ -1317,19 +1328,6 @@
     <severity>Warning</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
-    <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
-    <descr>
-        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
-        was determined to require an escalation of its severity.&lt;/p&gt;
-      </descr>
-    <logmsg dest="logndisplay">
-        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
-        for node:%nodelabel%; interface:%interface%; service:%service%; was escalated.&lt;/p&gt;
-      </logmsg>
-    <severity>Minor</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/nodes/assetInfoChanged</uei>
     <event-label>OpenNMS-defined node event: assetInfoChanged</event-label>
     <descr>
@@ -1346,10 +1344,10 @@
     <uei>uei.opennms.org/services/passiveServiceStatus</uei>
     <event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
     <descr>
-      &lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+      &lt;p&gt;Status information for service %parm[passiveServiceName]% has been updated.&lt;/p&gt;
     </descr>
     <logmsg dest="logndisplay">
-      &lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+      &lt;p&gt;Status information for service %parm[passiveServiceName]% has been updated.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
     <!--    
@@ -1370,7 +1368,7 @@
   <!-- Remote Poller Events -->
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller detected a node lost service</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller detected a node lost service</event-label>
     <descr>
       &lt;p&gt;A %service% outage was identified on interface
     %interface% from remote poller %parm[locationMonitorId]% from location: %parm[location]%.
@@ -1385,7 +1383,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller detected a node regained service</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller detected a node regained service</event-label>
     <descr>
       &lt;p&gt;The %service% service on interface %interface% was
     previously down as viewed by remote poller
@@ -1403,7 +1401,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has registered</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has registered</event-label>
     <descr>
       This event is sent by the remote poller server side API when
       a remote poller is created. 
@@ -1415,7 +1413,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has started polling</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has started polling</event-label>
     <descr>
       This event is sent when a registered remote poller begins
       monitoring services defined in its configuration.
@@ -1427,7 +1425,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorPaused</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has been paused</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has been paused</event-label>
     <descr>
       This event is sent when a registered remote poller is configured with
       a polling package containing no services to poll. (experimental)
@@ -1443,7 +1441,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has been shutdown.</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has been shutdown.</event-label>
     <descr>
       This event is sent when a registered remote poller is
       shutdown by the remote system.
@@ -1455,7 +1453,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorDisconnected</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has disconnected</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has disconnected</event-label>
     <descr>
       This event is sent when a registered remote location fails to report
       status and check for configuration changes at the required interval.
@@ -1468,7 +1466,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
-    <event-label>OpenNMS defined remote poller event: A disconnected remote poller has reconnected</event-label>
+    <event-label>OpenNMS-defined remote poller event: A disconnected remote poller has reconnected</event-label>
     <descr>
       This event is sent when a disconnected remote poller reconnects
       and reports status changes and checks for configuration changes.
@@ -1481,7 +1479,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's configuration has been changed</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller's configuration has been changed</event-label>
     <descr>
       This event is sent when a remote poller's configuration has been
       changed and was detected by the monitor.
@@ -1493,7 +1491,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller's connection IP address has changed</event-label>
     <descr>
       This event is sent when a remote poller's connection IP address has changed.
     </descr>
@@ -1504,8 +1502,40 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/remote/successfulScanReport</uei>
+    <event-label>OpenNMS-defined remote poller event: Scan report completed successfully</event-label>
+    <descr>
+      &lt;p&gt;A remote poller has submitted a successful scan report:&lt;/p&gt;
+      &lt;ul&gt;
+      &lt;p&gt;&lt;b&gt;Report ID:&lt;/b&gt; &lt;a href="scanreports/index.jsp?_s=id%%3D%%3D%parm[scanReportId]%"&gt;%parm[scanReportId]%&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;b&gt;Location:&lt;/b&gt; %parm[scanReportLocation]%&lt;/p&gt;
+      &lt;/ul&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A remote poller has submitted a scan report for a successful scan for location %parm[scanReportLocation]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/unsuccessfulScanReport</uei>
+    <event-label>OpenNMS-defined remote poller event: Scan report did not complete successfully</event-label>
+    <descr>
+      &lt;p&gt;A remote poller has submitted an unsuccessful scan report:&lt;/p&gt;
+      &lt;ul&gt;
+      &lt;li&gt;&lt;b&gt;Report ID:&lt;/b&gt; &lt;a href="scanreports/index.jsp?_s=id==%parm[scanReportId]%"&gt;%parm[scanReportId]%&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;b&gt;Location:&lt;/b&gt; %parm[scanReportLocation]%&lt;/li&gt;
+      &lt;/ul&gt;
+      %parm[scanReportFailureMessage]%
+    </descr>
+    <logmsg dest="logndisplay">
+      A remote poller has submitted a scan report for an unsuccessful scan for location %parm[scanReportLocation]%.
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+
+  <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
-    <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
+    <event-label>OpenNMS-defined correlator event: A widespread outage has been detected</event-label>
     <descr>
       This event is sent when a widespread outage is detected.  Typically used in correlation rules
       that detected a threshold # of monitors have detected the same outage.
@@ -1518,7 +1548,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
-    <event-label>OpenNMS defined correlator event: A widespread outage has been resolved</event-label>
+    <event-label>OpenNMS-defined correlator event: A widespread outage has been resolved</event-label>
     <descr>
       This event is sent when a widespread outage has been cleared.  Typically used in correlation rules
       that have detected that a wide spread outage has been cleared.
@@ -1531,7 +1561,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/correlation/serviceFlapping</uei>
-    <event-label>OpenNMS defined correlator event: A service has been detected to be in a flapping state</event-label>
+    <event-label>OpenNMS-defined correlator event: A service has been detected to be in a flapping state</event-label>
     <descr>
       This event is sent when a correlation rule has detected that a service is flapping.
     </descr>
@@ -1587,7 +1617,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/create</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to create a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to create a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for creating a new trouble ticket.
@@ -1599,7 +1629,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/update</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to update a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to update a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for updating an existing trouble ticket.
@@ -1611,7 +1641,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/close</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to close a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to close a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for closing an existing trouble ticket.
@@ -1623,7 +1653,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/cancel</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to cancel a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to cancel a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for canceling an existing trouble ticket.
@@ -1635,7 +1665,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/communicationError</uei>
-    <event-label>OpenNMS defined trouble ticket event: A communication error occurred</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A communication error occurred</event-label>
     <descr>
       This event is generated when OpenNMS is unable to retrive, save or update a ticket
       via the Trouble Ticket API.
@@ -1648,7 +1678,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/internal/promoteQueueData</uei>
-    <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
+    <event-label>OpenNMS-defined event: A request has been made promote data from the RRD Queue</event-label>
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
@@ -1659,7 +1689,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
-    <event-label>OpenNMS defined event: An event received from Hyperic has been translated</event-label>
+    <event-label>OpenNMS-defined event: An event received from Hyperic has been translated</event-label>
     <descr>
       This is a translated Hyperic Alert to associate with OpenNMS entity..&lt;p&gt;
 
@@ -1861,14 +1891,14 @@
     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
     <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+    <logmsg dest="donotpersist">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
     <severity>Normal</severity>
   </event>
   <event>
     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
     <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+    <logmsg dest="donotpersist">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
     <severity>Normal</severity>
   </event>
   <event>
@@ -1949,5 +1979,127 @@
       &lt;p&gt;Check the logs for more details.&lt;/p&gt;</descr>
     <logmsg dest="logndisplay">The KSC Report %parm[reportTitle]% has been updated.</logmsg>
     <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmCreated</uei>
+    <event-label>OpenNMS-defined internal event: alarmCreated</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was created.&lt;/p&gt;</descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was created.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmEscalated</uei>
+    <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was determined to require an escalation of its severity.&lt;/p&gt;</descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was escalated.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmCleared</uei>
+    <event-label>OpenNMS-defined internal event: alarmCleared</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was cleared.&lt;/p&gt;</descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was cleared.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmUncleared</uei>
+    <event-label>OpenNMS-defined internal event: alarmUncleared</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was un-cleared.&lt;/p&gt;</descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was un-cleared</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmUpdatedWithReducedEvent</uei>
+    <event-label>OpenNMS-defined internal event: alarmUpdatedWithReducedEvent</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was updated.&lt;/p&gt;</descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was updated by a reduced event.</logmsg>
+    <severity>Normal</severity>
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/bsm/serviceOperationalStatusChanged</uei>
+    <event-label>Business Service Monitoring: Service Operational Status Changed</event-label>
+    <descr>
+        &lt;p&gt;The operational status for business service '%parm[businessServiceName]%', with id=%parm[businessServiceId]%, changed from %parm[prevSeverityLabel]% to %parm[newSeverityLabel]%. args(%parm[##]%): %parm[all]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">The operational status for business service '%parm[businessServiceName]%' changed from %parm[prevSeverityLabel]% to %parm[newSeverityLabel]%.</logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/bsm/serviceProblem</uei>
+    <event-label>Business Service Monitoring: Service Problem</event-label>
+    <descr>
+        &lt;p&gt;There are currently one or more problems affecting business service '%parm[businessServiceName]%'. args(%parm[##]%): %parm[all]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">One or more problems are affecting business service '%parm[businessServiceName]%'.</logmsg>
+    <severity>Indeterminate</severity>
+    <alarm-data reduction-key="%uei%:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+    </alarm-data>
+  </event>
+  <event>
+    <uei>uei.opennms.org/bsm/serviceProblemResolved</uei>
+    <event-label>Business Service Monitoring: Service Problem Resolved</event-label>
+    <descr>
+        &lt;p&gt;The problem affecting business service '%parm[businessServiceName]%' has been resolved. args(%parm[##]%): %parm[all]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">The problems affecting business service '%parm[businessServiceName]%' have been resolved.</logmsg>
+    <severity>Indeterminate</severity>
+    <alarm-data reduction-key="uei.opennms.org/bsm/serviceProblem:%parm[businessServiceId]%" alarm-type="1" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+    </alarm-data>
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/alarms/trigger</uei>
+    <event-label>Alarm: Generic Trigger</event-label>
+    <descr>A problem has been triggered.</descr>
+    <logmsg dest='logndisplay'>A problem has been triggered on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="1" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+    </alarm-data>
+  </event>
+  <event>
+    <uei>uei.opennms.org/alarms/clear</uei>
+    <event-label>Alarm: Generic Clear</event-label>
+    <descr>A problem has been cleared.</descr>
+    <logmsg dest='logndisplay'>A problem has been cleared on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+    <severity>Cleared</severity>
+    <alarm-data reduction-key="uei.opennms.org/alarms/trigger:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="2" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+    </alarm-data>
+  </event>
+  
+   <event>
+    <uei>uei.opennms.org/internal/monitoringSystemAdded</uei>
+    <event-label>Monitoring system Added</event-label>
+    <descr> A new monitoring system has been added </descr>
+    <logmsg dest="logndisplay">A new monitoring system of type '%parm[monitoringSystemType]%' has been added with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%'. </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/monitoringSystemLocationChanged</uei>
+    <event-label>Monitoring system Location Changed</event-label>
+    <descr> Monitoring system location changed</descr>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' has changed its location from '%parm[monitoringSystemPreviousLocation]%'  to  '%parm[monitoringSystemLocation]%'. </logmsg>
+    <severity>Normal</severity>
+  </event>
+    <event>
+    <uei>uei.opennms.org/internal/monitoringSystemDeleted</uei>
+    <event-label>Monitoring system Deleted</event-label>
+    <descr> Monitoring system Deleted</descr>
+    <logmsg dest="logndisplay"> Monitoring system of type '%parm[monitoringSystemType]%' with ID '%parm[monitoringSystemId]%' at location '%parm[monitoringSystemLocation]%' has been deleted. </logmsg>
+    <severity>Normal</severity>
   </event>
 </events>

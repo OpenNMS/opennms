@@ -37,10 +37,19 @@ import java.util.Set;
 
 import org.joda.time.Duration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations="classpath:org/opennms/netmgt/provision/persist/emptyContext.xml")
 public class FasterFilesystemForeignSourceRepositoryTest {
 
     @Test
@@ -118,7 +127,26 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         assertEquals("node1", node.getNodeLabel());
     }
 
-    private FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
+    @Test
+    @JUnitHttpServer(port=9162)
+    public void testImportHttpSource() throws Exception {
+
+        FileSystemBuilder bldr = new FileSystemBuilder("target", "testGetForeignSource");
+
+        File fsDir = bldr.dir("foreignSource").file("test.xml", fs("test")).file("noreq.xml", fs("noreq")).pop();
+        File reqDir = bldr.dir("requisitions").file("test.xml", req("test")).file("pending.xml", req("pending")).pop();
+
+        FasterFilesystemForeignSourceRepository repo = repo(fsDir, reqDir);
+
+        Resource resource = new UrlResource("http://localhost:9162/requisition-test.xml");
+        Requisition req = repo.importResourceRequisition(resource);
+        assertNotNull(req);
+        System.err.println(JaxbUtils.marshal(req));
+        assertNotNull(req.getNode("4243"));
+        assertNotNull(req.getNode("4244"));
+    }
+
+    private static FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
         FasterFilesystemForeignSourceRepository repo = new FasterFilesystemForeignSourceRepository();
         repo.setForeignSourcePath(foreignSourceDir.getAbsolutePath());
         repo.setRequisitionPath(requisitionDir.getAbsolutePath());
@@ -126,13 +154,13 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return repo;
     }
 
-    private <T> Set<T> set(T... items) {
-        Set<T> set = new HashSet<T>();
+    private static Set<String> set(String... items) {
+        Set<String> set = new HashSet<String>();
         Collections.addAll(set, items);
         return set;
     }
 
-    private String fs(String name) {
+    private static String fs(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<foreign-source date-stamp=\"2012-12-17T13:59:04.299-05:00\" name=\"_TEMPLATE_\" xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\">\n" + 
                 "    <scan-interval>1d</scan-interval>\n" + 
@@ -146,7 +174,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return template.replaceAll("_TEMPLATE_", name);
     }
 
-    private String req(String name) {
+    private static String req(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<model-import last-import=\"2012-12-17T14:00:08.997-05:00\" foreign-source=\"_TEMPLATE_\" date-stamp=\"2012-12-17T14:00:08.757-05:00\" xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\">\n" + 
                 "    <node node-label=\"node1\" foreign-id=\"1234\" building=\"_TEMPLATE_\">\n" + 

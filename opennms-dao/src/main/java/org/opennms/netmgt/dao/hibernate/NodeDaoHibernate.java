@@ -28,25 +28,36 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -88,7 +99,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return list == null || list.isEmpty() ? null : list.get(0);
     }
 
+    @Override
+    public String getLocationForId(Integer id) {
+        List<OnmsMonitoringLocation> list = findObjects(OnmsMonitoringLocation.class, "select n.location from OnmsNode as n where n.id = ?", id);
+        return list == null || list.isEmpty() ? null : list.get(0).getLocationName();
+    }
+
     /** {@inheritDoc} */
+    @Override
     public Map<Integer, String> getAllLabelsById() {
         Map<Integer, String> labelsByNodeId = new HashMap<Integer, String>();
         List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.id, n.label from OnmsNode as n");
@@ -100,8 +118,33 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @Override
-    public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
-        return find("from OnmsNode where distPoller = ?", distPoller);
+    public Map<String, Set<String>> getForeignIdsPerForeignSourceMap() {
+        Map<String, Set<String>> map = new TreeMap<String,Set<String>>();
+        List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.foreignSource, n.foreignId from OnmsNode as n");
+        for (Object row[] : rows) {
+            final String foreignSource = (String) row[0];
+            final String foreignId = (String) row[1];
+            if (foreignSource != null && foreignId != null) {
+                if (!map.containsKey(foreignSource)) {
+                    map.put(foreignSource, new TreeSet<String>());
+                }
+                map.get(foreignSource).add(foreignId);
+            }
+        }
+        return map;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        Set<String> set = new TreeSet<String>();
+        List<String> rows = findObjects(String.class, "select n.foreignId from OnmsNode as n where n.foreignSource = ?", foreignSource);
+        for (String foreignId : rows) {
+            if (foreignId != null) {
+                set.add(foreignId);
+            }
+        }
+        return set;
     }
 
     /** {@inheritDoc} */
@@ -194,7 +237,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where c.name in ("+categoryListToNameList(categories)+")"
-                + "and n.type != 'D'");
+                + "and n.type != '" + NodeType.DELETED.value()+ "'");
     }
 
     /** {@inheritDoc} */
@@ -218,7 +261,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                         + "left join fetch monSvc.currentOutages "
                         + "where c1 in (:rowCategories) "
                         + "and c2 in (:colCategories) "
-                        + "and n.type != 'D'")
+                        + "and n.type != '" + NodeType.DELETED.value()+ "'")
                         .setParameterList("rowCategories", rowCategories)
                         .setParameterList("colCategories", columnCategories)
                         .list();
@@ -284,7 +327,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                         " left outer join ipinterface ip using (nodeid)" +
                         " left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id)" +
                         " left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null)" +
-                        " where nodeType <> 'D'" +
+                        " where nodeType <> '" + NodeType.DELETED.value()+ "'" +
                         " and cn1.categoryid in (:rowCategories)" +
                         " and cn2.categoryid in (:columnCategories)"
                         )
@@ -322,7 +365,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -378,6 +421,25 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return find("from OnmsNode n where n.foreignSource is not null");
     }
 
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
+        final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class)
+        .setAliases(Arrays.asList(new Alias[] {
+                new Alias("ipInterfaces","ipInterfaces", JoinType.LEFT_JOIN),
+                new Alias("ipInterfaces.monitoredServices","monitoredServices", JoinType.LEFT_JOIN),
+                new Alias("monitoredServices.serviceType","serviceType", JoinType.LEFT_JOIN)
+        }))
+        .addRestriction(new EqRestriction("ipInterfaces.ipAddress", ipAddress))
+        //TODO: Replace D with a constant
+        .addRestriction(new NeRestriction("ipInterfaces.isManaged", "D"))
+        .addRestriction(new EqRestriction("serviceType.name", serviceName))
+        .setOrders(Arrays.asList(new Order[] {
+                Order.desc("id")
+        }));
+
+        return findMatching(criteria);
+    }
+
     /** {@inheritDoc} */
     @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
@@ -407,20 +469,32 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      */
     @Override
     public Collection<Integer> getNodeIds() {
-        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
+        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != '" + NodeType.DELETED.value()+ "'");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
+        Map<String, Long> numberOfNodesBySysOid = new HashMap<String, Long>();
+        for (Object[] pair : pairs) {
+            numberOfNodesBySysOid.put((String)pair[0], (Long)pair[1]);
+        }
+        return Collections.unmodifiableMap(numberOfNodesBySysOid);
     }
 
     @Override
     public Integer getNextNodeId (Integer nodeId) {
         Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != 'D' order by n.id asc limit 1", nodeId).get(0);
+        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != ? order by n.id asc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
 
     @Override
     public Integer getPreviousNodeId (Integer nodeId) {
         Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);
+        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
 }

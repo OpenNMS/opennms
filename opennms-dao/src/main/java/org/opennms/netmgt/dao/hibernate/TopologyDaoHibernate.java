@@ -40,31 +40,18 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 public class TopologyDaoHibernate extends HibernateDaoSupport implements TopologyDao {
     @Override
     public OnmsNode getDefaultFocusPoint() {
-        // first try getting the node with the most links
-        final String query1 = "select dli.nodeParentId from DataLinkInterface as dli group by dli.nodeParentId order by count(*) desc";
 
-        // if there is no node with a link, try getting the node which has the most ifspeed
+        // getting the node which has the most ifspeed
         final String query2 = "select node.id from OnmsSnmpInterface as snmp join snmp.node as node group by node order by sum(snmp.ifSpeed) desc";
 
         // is there already a node?
         OnmsNode focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-            @Override
             public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
-                Integer nodeParentId = (Integer)session.createQuery(query1).setMaxResults(1).uniqueResult();
-                return getNode(nodeParentId, session);
+                Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
+                return getNode(nodeId, session);
             }
         });
 
-        // no node found, try next query
-        if (focusNode == null) {
-            focusNode = getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-                @Override
-                public OnmsNode doInHibernate(Session session) throws HibernateException, SQLException {
-                    Integer nodeId = (Integer)session.createQuery(query2).setMaxResults(1).uniqueResult();
-                    return getNode(nodeId, session);
-                }
-            });
-        }
         return focusNode;
     }
 

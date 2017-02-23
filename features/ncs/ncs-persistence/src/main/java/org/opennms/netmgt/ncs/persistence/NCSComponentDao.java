@@ -71,9 +71,9 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 	}
 	
 	@Override
-	public void save(final NCSComponent entity) throws DataAccessException {
+	public Long save(final NCSComponent entity) throws DataAccessException {
 		validateEntity(entity);
-		super.save(entity);
+		return super.save(entity);
 	}
 
 	@Override

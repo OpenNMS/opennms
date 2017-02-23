@@ -1,0 +1,21 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-notifications-introduction]]
+=== Introduction
+
+_{opennms-product-name}_ uses notifications to make users aware of an event.
+Common notification methods are email and paging, but notification mechanisms also exist for:
+
+* Arbitrary HTTP GET and POST operations
+* Arbitrary external commands
+* Asterisk call origination
+* IRCcat Internet Relay Chat bot
+* SNMP Traps
+* Slack, Mattermost, and other API-compatible team chat platforms
+* Twitter, GNU Social, and other API-compatible microblog services
+* User-provided scripts in any JSR-223 compatible language
+* XMPP
+
+The notification daemon _Notifd_ creates and sends notifications according to configured rules when selected events occur in _{opennms-product-name}_.

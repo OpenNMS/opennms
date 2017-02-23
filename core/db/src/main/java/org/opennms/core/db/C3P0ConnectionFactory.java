@@ -155,12 +155,11 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
 	@Override
 	public void setMinPool(final int minPool) {
-		LOG.debug("Because of a bug in C3P0, minPool should equal maxPool. Ignoring.");
+		m_pool.setMinPoolSize(minPool);
 	}
 
 	@Override
 	public void setMaxPool(final int maxPool) {
-		m_pool.setMinPoolSize(maxPool);
 		m_pool.setMaxPoolSize(maxPool);
 	}
 

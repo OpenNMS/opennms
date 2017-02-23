@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Core</name>
+  <name>OpenNMS :: Core</name>
   <build>
     <plugins>
       <plugin>
@@ -17,7 +17,7 @@
           <descriptors>
             <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>
@@ -34,13 +34,17 @@
     <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
+    <module>ipc</module>
+    <module>jmx</module>
     <module>lib</module>
     <module>logging-api</module>
+    <module>profiler</module>
     <module>runtime</module>
     <module>schema</module>
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
+    <module>spring-web</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>

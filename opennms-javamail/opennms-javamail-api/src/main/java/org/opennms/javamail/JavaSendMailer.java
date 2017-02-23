@@ -48,38 +48,40 @@ import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 /**
- * Use this class for sending emailz.
- *
- * Crude extension of JavaMailer
- * TODO: Improve class hierarchy.
- *
- * TODO: Needs testing
+ * Use this class for sending e-mails.
+ * <p>Crude extension of JavaMailer</p>
+ * <p>TODO: Improve class hierarchy</p>
+ * <p>TODO: Needs testing</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class JavaSendMailer extends JavaMailer2 {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(JavaSendMailer.class);
 
-    
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(JavaSendMailer.class);
+
+    /** The properties. */
     private Properties m_properties;
-    
+
+    /** The sendmail configuration. */
     private SendmailConfig m_config;
-    private MimeMailMessage m_message;
+
+    /** The MIME message. */
+    private MimeMessage m_message;
+
+    /** The session. */
     private Session m_session;
-    
+
     /**
-     * Constructs everything required to call send()
+     * Instantiates a new java send mailer.
+     * <p>Constructs everything required to call send().</p>
      *
-     * @param config
-     *     SendmailConfig
-     * @param useJmProps
-     *     A boolean representing the handling of the deprecated javamail-configuration.properties file.
-     * @throws org.opennms.javamail.JavaMailerException if any.
+     * @param config the sendmail configuration
+     * @param useJmProps a boolean representing the handling of the deprecated javamail-configuration.properties file.
+     * @throws JavaMailerException the java mailer exception
      */
     public JavaSendMailer(SendmailConfig config, boolean useJmProps) throws JavaMailerException {
         m_config = config;
@@ -89,7 +91,7 @@ public class JavaSendMailer extends JavaMailer2 {
             if (m_config.isDebug()) {
                 m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream()));
             }
-            m_session.setDebug(m_config.getDebug());
+            m_session.setDebug(m_config.isDebug());
 
         } catch (IOException e) {
             throw new JavaMailerException("IO problem creating session", e);
@@ -97,39 +99,44 @@ public class JavaSendMailer extends JavaMailer2 {
     }
 
     /**
-     * Using this constructor implies overriding sendmail configuration with properties
-     * from the deprecated javamail-configuration.properties file.
+     * Instantiates a new java send mailer.
+     * <p>Using this constructor implies overriding sendmail configuration with properties
+     * from the deprecated javamail-configuration.properties file.</p>
      *
-     * @param config a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
-     * @throws org.opennms.javamail.JavaMailerException if any.
+     * @param config the sendmail configuration
+     * @throws JavaMailerException the java mailer exception
      */
     public JavaSendMailer(SendmailConfig config) throws JavaMailerException {
         this(config, true);
     }
-    
+
     /**
-     * <p>buildMimeMessage</p>
+     * Builds the mime message.
      *
-     * @param msg a {@link org.opennms.netmgt.config.javamail.SendmailMessage} object.
-     * @return a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     * @param msg the sendmail message
+     * @return the mime message
      */
-    public MimeMailMessage buildMimeMessage(SendmailMessage msg) {
+    public MimeMessage buildMimeMessage(SendmailMessage msg) {
         //no need to set the same object again
         if (m_config.getSendmailMessage() != msg) {
             m_config.setSendmailMessage(msg);
         }
-        MimeMailMessage mimeMsg = new MimeMailMessage(new MimeMessage(m_session));
-        mimeMsg.setFrom(m_config.getSendmailMessage().getFrom());
-        mimeMsg.setTo(m_config.getSendmailMessage().getTo());
-        mimeMsg.setSubject(m_config.getSendmailMessage().getSubject());
+        MimeMessage mimeMsg = new MimeMessage(m_session);
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, m_config.getSendmailProtocol().getCharSet());
+            helper.setFrom(m_config.getSendmailMessage().getFrom());
+            helper.setTo(m_config.getSendmailMessage().getTo());
+            helper.setSubject(m_config.getSendmailMessage().getSubject());
+        } catch (MessagingException e) {
+            LOG.warn("found a problem building message: {}", e.getMessage());
+        }
         return mimeMsg;
     }
-    
-    
+
     /**
-     * Helper method to create an Authenticator based on Password Authentication
+     * Creates the authenticator.
      *
-     * @return a {@link javax.mail.Authenticator} object.
+     * @return the authenticator
      */
     public Authenticator createAuthenticator() {
         Authenticator auth;
@@ -146,15 +153,28 @@ public class JavaSendMailer extends JavaMailer2 {
         return auth;
     }
 
+    /**
+     * Creates the props.
+     *
+     * @param useJmProps a boolean representing the handling of the deprecated javamail-configuration.properties file.
+     * @return the properties
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private Properties createProps(boolean useJmProps) throws IOException {
-        
+
         Properties props = generatePropsFromConfig(m_config.getJavamailPropertyCollection());
         configureProperties(props, useJmProps);
-        
+
         //get rid of this
         return Session.getDefaultInstance(new Properties()).getProperties();
     }
 
+    /**
+     * Generate props from configuration.
+     *
+     * @param javamailPropertyCollection the javamail property collection
+     * @return the properties
+     */
     private Properties generatePropsFromConfig(List<JavamailProperty> javamailPropertyCollection) {
         Properties props = new Properties();
         for (JavamailProperty property : javamailPropertyCollection) {
@@ -164,34 +184,35 @@ public class JavaSendMailer extends JavaMailer2 {
     }
 
     /**
-     * This method uses a properties file reader to pull in opennms styled javamail properties and sets
+     * Configure properties.
+     * <p>This method uses a properties file reader to pull in opennms styled javamail properties and sets
      * the actual javamail properties.  This is here to preserve the backwards compatibility but configuration
-     * will probably change soon.
-     * 
-     * FIXME definitely will change soon, will be deprecated
-     * 
-     * @throws IOException
-     */    
+     * will probably change soon.</p>
+     * <p>FIXME definitely will change soon, will be deprecated.</p>
+     *
+     * @param sendmailConfigDefinedProps the sendmail configuration defined properties
+     * @param useJmProps a boolean representing the handling of the deprecated javamail-configuration.properties file.
+     */
     private void configureProperties(Properties sendmailConfigDefinedProps, boolean useJmProps) {
-        
+
         //this loads the properties from the old style javamail-configuration.properties
         //TODO: deprecate this
         Properties props = null;
         try {
             props = JavaMailerConfig.getProperties();
-            
+
             /* These strange properties from javamail-configuration.properties need to be translated into actual javax.mail properties
              * FIXME: The precedence of the properties file vs. the SendmailConfiguration should probably be addressed here
              * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
              */
             if (useJmProps) {
-                m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.getDebug()));
+                m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.isDebug()));
                 m_config.getSendmailHost().setHost(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailHost", m_config.getSendmailHost().getHost()));
-                m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.getUseJmta()));
+                m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.isUseJmta()));
                 m_config.getSendmailProtocol().setMailer(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailer", m_config.getSendmailProtocol().getMailer()));
                 m_config.getSendmailProtocol().setTransport(PropertiesUtils.getProperty(props, "org.opennms.core.utils.transport", m_config.getSendmailProtocol().getTransport()));
                 m_config.getSendmailMessage().setFrom(PropertiesUtils.getProperty(props, "org.opennms.core.utils.fromAddress", m_config.getSendmailMessage().getFrom()));
-                m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.getUseAuthentication()));
+                m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.isUseAuthentication()));
                 m_config.getUserAuth().setUserName(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticateUser", m_config.getUserAuth().getUserName()));
                 m_config.getUserAuth().setPassword(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticatePassword", m_config.getUserAuth().getPassword()));
                 m_config.getSendmailProtocol().setMessageContentType(PropertiesUtils.getProperty(props, "org.opennms.core.utils.messageContentType", m_config.getSendmailProtocol().getMessageContentType()));
@@ -205,14 +226,14 @@ public class JavaSendMailer extends JavaMailer2 {
         } catch (IOException e) {
             LOG.info("configureProperties: could not load javamail.properties, continuing for is no longer required", e);
         }
-        
+
         //this sets any javamail properties that were set in the SendmailConfig object
         if (props == null) {
             props = new Properties();
         }
-        
+
         props.putAll(sendmailConfigDefinedProps);
-        
+
         if (!props.containsKey("mail.smtp.auth")) {
             props.setProperty("mail.smtp.auth", String.valueOf(m_config.isUseAuthentication()));
         }
@@ -236,24 +257,39 @@ public class JavaSendMailer extends JavaMailer2 {
                 props.setProperty("mail.smtps.socketFactory.port", String.valueOf(m_config.getSendmailHost().getPort()));
             }
         }
-        
+
         if (!props.containsKey("mail.smtp.quitwait")) {
             props.setProperty("mail.smtp.quitwait", String.valueOf(m_config.getSendmailProtocol().isQuitWait()));
         }
-        
+
     }
-    
+
     /**
-     * <p>send</p>
+     * Send.
      *
-     * @throws org.opennms.javamail.JavaMailerException if any.
+     * @throws JavaMailerException the java mailer exception
      */
     public void send() throws JavaMailerException {
-        m_message.setText(m_config.getSendmailMessage().getBody());
+        try {
+            if ("text/plain".equals(m_config.getSendmailProtocol().getMessageContentType().toLowerCase())) {
+                m_message.setText(m_config.getSendmailMessage().getBody());
+            } else {
+                m_message.setContent(m_config.getSendmailMessage().getBody(), m_config.getSendmailProtocol().getMessageContentType());
+            }
+        } catch (MessagingException e) {
+            LOG.error("Java Mailer messaging exception: {}", e, e);
+            throw new JavaMailerException("Java Mailer messaging exception: " + e, e);
+        }
         send(m_message);
     }
-    
-    private void send(MimeMailMessage message) throws JavaMailerException {
+
+    /**
+     * Send.
+     *
+     * @param message the message
+     * @throws JavaMailerException the java mailer exception
+     */
+    public void send(MimeMessage message) throws JavaMailerException {
         Transport t = null;
         try {
             SendmailProtocol protoConfig = m_config.getSendmailProtocol();
@@ -268,13 +304,13 @@ public class JavaSendMailer extends JavaMailer2 {
                 LOG.debug("transport is 'mta', not trying to connect()");
             } else if (m_config.isUseAuthentication()) {
                 LOG.debug("authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
             } else {
                 LOG.debug("not authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), null, null);
+                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), null, null);
             }
 
-            t.sendMessage(message.getMimeMessage(), message.getMimeMessage().getAllRecipients());
+            t.sendMessage(message, message.getAllRecipients());
             listener.assertAllMessagesDelivered();
         } catch (NoSuchProviderException e) {
             LOG.error("Couldn't get a transport: {}", e, e);
@@ -293,57 +329,60 @@ public class JavaSendMailer extends JavaMailer2 {
         }
     }
 
-
-
     /**
-     * <p>setConfig</p>
+     * Sets the sendmail configuration.
      *
-     * @param config a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
+     * @param config the new sendmail configuration
      */
     public void setConfig(SendmailConfig config) {
         m_config = config;
     }
 
+
     /**
-     * <p>getConfig</p>
+     * Gets the sendmail configuration.
      *
-     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
+     * @return the sendmail configuration
      */
     public SendmailConfig getConfig() {
         return m_config;
     }
 
+
     /**
-     * <p>setMessage</p>
+     * Sets the message.
      *
-     * @param message a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     * @param message the new message
      */
-    public void setMessage(MimeMailMessage message) {
+    public void setMessage(MimeMessage message) {
         m_message = message;
     }
 
+
     /**
-     * <p>getMessage</p>
+     * Gets the message.
      *
-     * @return a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     * @return the message
      */
-    public MimeMailMessage getMessage() {
+    public MimeMessage getMessage() {
         return m_message;
     }
 
+
     /**
-     * <p>setProperties</p>
+     * Sets the properties.
      *
-     * @param properties a {@link java.util.Properties} object.
+     * @param properties the new properties
      */
     public void setProperties(Properties properties) {
         m_properties = properties;
     }
 
+
     /**
-     * <p>getProperties</p>
+     * Gets the properties.
      *
-     * @return a {@link java.util.Properties} object.
+     * @return the properties
      */
     public Properties getProperties() {
         return m_properties;

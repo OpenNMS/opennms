@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,24 +40,21 @@ import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -64,19 +62,16 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
@@ -112,13 +107,13 @@ import org.springframework.transaction.support.TransactionOperations;
  */
 public class DatabasePopulator {
 	
-	public static interface Extension<T extends OnmsDao> {
+	public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();
 		void onPopulate(DatabasePopulator populator, T dao);
 		void onShutdown(DatabasePopulator populator, T dao);
 	}
 	
-	public static class DaoSupport<T extends OnmsDao> {
+	public static class DaoSupport<T extends OnmsDao<?,?>> {
 		private final Class<T> daoClass;
 		private final T daoObject;
 		
@@ -128,7 +123,7 @@ public class DatabasePopulator {
 		}
 		
 		public Class<T> getDaoClass() {
-			return this.daoClass;
+			return (Class<T>)this.daoClass;
 		}
 		
 		public T getDao() {
@@ -151,10 +146,8 @@ public class DatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
-    private OnmsMapDao m_onmsMapDao;
-    private OnmsMapElementDao m_onmsMapElementDao;
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
     
@@ -166,12 +159,13 @@ public class DatabasePopulator {
     private OnmsNode m_node6;
     
     private boolean m_populateInSeparateTransaction = true;
+    private boolean m_resetInSeperateTransaction = true;
     private final List<Extension> extensions = new ArrayList<Extension>();
     
-    private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
+    private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
     
-    public <T extends OnmsDao> T lookupDao(Class<? super OnmsDao> daoClass) {
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    public <T extends OnmsDao<?,?>> T lookupDao(Class<? super OnmsDao<?,?>> daoClass) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return (T)daoRegistry.get(eachDaoClass);
     		}
@@ -179,10 +173,10 @@ public class DatabasePopulator {
     	return null;
     }
 
-    public void registerDao(Class<? super OnmsDao> daoClass, OnmsDao dao) {
+    public void registerDao(Class<? super OnmsDao<?,?>> daoClass, OnmsDao<?,?> dao) {
     	if (dao == null || daoClass == null) return;
     	// check if not already added
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return; // a super class for this is already added (ignore)
     		}
@@ -204,6 +198,10 @@ public class DatabasePopulator {
         m_populateInSeparateTransaction = pop;
     }
 
+    public void setResetInSeperateTransaction(boolean resetInSeperateTransaction) {
+        m_resetInSeperateTransaction = resetInSeperateTransaction;
+    }
+
     public void populateDatabase() {
         if (m_populateInSeparateTransaction) {
             m_transOperation.execute(new TransactionCallbackWithoutResult() {
@@ -218,10 +216,20 @@ public class DatabasePopulator {
     }
 
     public void resetDatabase() {
-        LOG.debug("==== DatabasePopulator Reset ====");
-        for (final DataLinkInterface iface : m_dataLinkInterfaceDao.findAll()) {
-            m_dataLinkInterfaceDao.delete(iface);
+        if (m_resetInSeperateTransaction) {
+            m_transOperation.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
+                    doResetDatabase();
+                }
+            });
+        } else {
+            doResetDatabase();
         }
+    }
+
+    private void doResetDatabase() {
+        LOG.debug("==== DatabasePopulator Reset ====");
         for (final OnmsOutage outage : m_outageDao.findAll()) {
             m_outageDao.delete(outage);
         }
@@ -237,10 +245,18 @@ public class DatabasePopulator {
         for (final OnmsEvent event : m_eventDao.findAll()) {
             m_eventDao.delete(event);
         }
-        for (final OnmsSnmpInterface iface : m_snmpInterfaceDao.findAll()) {
-            m_snmpInterfaceDao.delete(iface);
+
+        for (final OnmsSnmpInterface snmpIface : m_snmpInterfaceDao.findAll()) {
+            for (OnmsIpInterface eachIf : snmpIface.getIpInterfaces()) {
+                eachIf.setSnmpInterface(null);
+                snmpIface.getNode().getIpInterfaces().remove(eachIf);
+            }
+            snmpIface.getNode().getSnmpInterfaces().remove(snmpIface);
+            m_snmpInterfaceDao.delete(snmpIface);
         }
         for (final OnmsIpInterface iface : m_ipInterfaceDao.findAll()) {
+            iface.setSnmpInterface(null);
+            iface.getNode().getIpInterfaces().remove(iface);
             m_ipInterfaceDao.delete(iface);
         }
         for (final OnmsNode node : m_nodeDao.findAll()) {
@@ -249,11 +265,20 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        for (final OnmsMonitoringLocation location : m_monitoringLocationDao.findAll()) {
+            // Don't delete the default localhost monitoring location
+            if (!MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location.getLocationName())) {
+                m_monitoringLocationDao.delete(location);
+            }
+        }
+        for (final OnmsCategory category : m_categoryDao.findAll()) {
+            m_categoryDao.delete(category);
+        }
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
     			DaoSupport daoSupport = eachExtension.getDaoSupport();
-    			OnmsDao dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
+    			OnmsDao<?,?> dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
 
     			eachExtension.onShutdown(this, dao);
     			if (dao != null) {
@@ -262,7 +287,6 @@ public class DatabasePopulator {
     	}
     	LOG.debug("= DatabasePopulatorExtension Reset Finished =");
         
-        m_dataLinkInterfaceDao.flush();
         m_outageDao.flush();
         m_userNotificationDao.flush();
         m_notificationDao.flush();
@@ -279,9 +303,8 @@ public class DatabasePopulator {
     private void doPopulateDatabase() {
         LOG.debug("==== DatabasePopulator Starting ====");
 
-        final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
-        
+        final NetworkBuilder builder = new NetworkBuilder();
+
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
         getNodeDao().flush();
@@ -311,7 +334,9 @@ public class DatabasePopulator {
         getNodeDao().flush();
         setNode6(node6);
         
-        final OnmsEvent event = buildEvent(distPoller);
+        final OnmsEvent event = buildEvent(builder.getDistPoller());
+        event.setEventCreateTime(new Date(1436881548292L));
+        event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -328,11 +353,11 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         
@@ -340,57 +365,31 @@ public class DatabasePopulator {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
-        final OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
-        map.setBackground("fake_background.jpg");
-        map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map.setType(OnmsMap.USER_GENERATED_MAP);
-        map.setMapGroup("admin");
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        
-        final OnmsMapElement mapElement = new OnmsMapElement(map, 1,
-                OnmsMapElement.NODE_TYPE,
-                "Test Node",
-                OnmsMapElement.defaultNodeIcon,
-                0,
-                10);
-        getOnmsMapElementDao().save(mapElement);
-        getOnmsMapElementDao().flush();
-        
-        final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli);
-        getDataLinkInterfaceDao().flush();
-        
-        final DataLinkInterface dli2 = new DataLinkInterface(node1, 2, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli2);
-        getDataLinkInterfaceDao().flush();
-        
-        final DataLinkInterface dli3 = new DataLinkInterface(node2, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli3);
-        getDataLinkInterfaceDao().flush();
-        
         final OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        ack.setAckTime(new Date());
+        ack.setAckTime(new Date(1437073152156L));
         ack.setAckType(AckType.UNSPECIFIED);
         ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("admin");
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final OnmsMonitoringLocationDefinition def = new OnmsMonitoringLocationDefinition();
-        def.setName("RDU");
-        def.setArea("East Coast");
-        def.setPollingPackageName("example1");
+        final OnmsMonitoringLocation def = new OnmsMonitoringLocation();
+        def.setLocationName("RDU");
+        def.setMonitoringArea("East Coast");
+        def.setPollingPackageNames(Collections.singletonList("example1"));
+        def.setCollectionPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
-        def.setCoordinates("35.715751,-79.16262");
+        def.setLatitude(35.715751f);
+        def.setLongitude(-79.16262f);
         def.setPriority(1L);
-        m_locationMonitorDao.saveMonitoringLocationDefinition(def);
+        def.setTags(Collections.singletonList("blah"));
+        m_monitoringLocationDao.save(def);
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
         	DaoSupport daoSupport = eachExtension.getDaoSupport();
-        	OnmsDao dao = daoSupport != null ? daoSupport.getDao() : null;
-        	Class<? super OnmsDao> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
+        	OnmsDao<?,?> dao = daoSupport != null ? daoSupport.getDao() : null;
+        	Class<? super OnmsDao<?,?>> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
         	registerDao(daoClass, dao);
 
         	dao = lookupDao(daoClass);
@@ -438,6 +437,7 @@ public class DatabasePopulator {
             .setIfDescr("ATM0")
             .setIfAlias("Initial ifAlias value")
             .setIfType(37)
+            .setPhysAddr("34E45604BB69")
             .addIpInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P");
         //getNodeDao().save(builder.getCurrentNode());
         //getNodeDao().flush();
@@ -449,6 +449,7 @@ public class DatabasePopulator {
             .setIfSpeed(10000000)
             .setIfName("eth0")
             .setIfType(6)
+            .setPhysAddr("C9D2DFC7CB68")
             .addIpInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S");
         builder.addService(getService("ICMP"));
         builder.addService(getService("HTTP"));
@@ -456,12 +457,14 @@ public class DatabasePopulator {
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
+            .setPhysAddr("EE8CE7F4BE99")
             .addIpInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         builder.addSnmpInterface(4)
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
+            .setPhysAddr("4AF39F080908")
             .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         return builder.getCurrentNode();
@@ -480,7 +483,6 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        builder.addAtInterface(getNode1(), "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         return builder.getCurrentNode();
     }
 
@@ -546,13 +548,20 @@ public class DatabasePopulator {
     public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
+        event.setEventCreateTime(new Date(1437061537126L));
+        event.setEventDescr("This is the description of a test event.");
         event.setEventDisplay("Y");
+        event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
+        event.setEventLog("Y");
+        event.setEventLogMsg("Test Event Log Message");
+        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventSeverity(1);
+        event.setEventSource("test");
+        event.setEventTime(new Date(1437061537105L));
+        event.setEventUei("uei.opennms.org/test");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event.setNode(m_node1);
+        event.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return event;
     }
 
@@ -581,8 +590,10 @@ public class DatabasePopulator {
     }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
+        // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
+
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_node1);
@@ -593,18 +604,9 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setEventParms(event.getEventParms());
+        alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
-    }
-
-    public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
-    	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
-            getDistPollerDao().save(newDp);
-            getDistPollerDao().flush();
-            return newDp;
-        }
-        return distPoller;
     }
 
     public AlarmDao getAlarmDao() {
@@ -784,6 +786,14 @@ public class DatabasePopulator {
         m_node6 = node6;
     }
 
+    public MonitoringLocationDao getMonitoringLocationDao() {
+        return m_monitoringLocationDao;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
+    }
+
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
@@ -792,30 +802,6 @@ public class DatabasePopulator {
         m_locationMonitorDao = locationMonitorDao;
     }
 
-    public OnmsMapDao getOnmsMapDao() {
-        return m_onmsMapDao;
-    }
-
-    public void setOnmsMapDao(final OnmsMapDao onmsMapDao) {
-        this.m_onmsMapDao = onmsMapDao;
-    }
-
-    public OnmsMapElementDao getOnmsMapElementDao() {
-        return m_onmsMapElementDao;
-    }
-
-    public void setOnmsMapElementDao(final OnmsMapElementDao onmsMapElementDao) {
-        this.m_onmsMapElementDao = onmsMapElementDao;
-    }
-
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-    
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_acknowledgmentDao;
     }

@@ -34,7 +34,7 @@ import java.net.URL;
 /**
  * Class containing the information for the HTTP POST operations - this gets
  * constructed when each time a subscribe event is received and is basically
- * immutable(except for error count)
+ * immutable (except for error count).
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  */
@@ -42,22 +42,22 @@ public class HttpPostInfo {
     /**
      * The URL to post to
      */
-    private URL m_url;
+    private final URL m_url;
 
     /**
      * The category name related to this URL
      */
-    private String m_catlabel;
+    private final String m_catlabel;
 
     /**
      * The user name
      */
-    private String m_user;
+    private final String m_user;
 
     /**
      * The password
      */
-    private String m_passwd;
+    private final String m_passwd;
 
     /**
      * Number of post errors

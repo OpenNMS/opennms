@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://xmlns.opennms.org/xsd/config/wsman-datacollection" targetNamespace="http://xmlns.opennms.org/xsd/config/wsman-datacollection" elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the wsman-datacollection configuration file</documentation>
+  </annotation>
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parameters</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>Step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="wsman-datacollection-config">
+    <complexType>
+      <sequence>
+        <element ref="ns:collection" maxOccurs="unbounded"/>
+        <element ref="ns:group" maxOccurs="unbounded"/>
+        <element ref="ns:system-definition" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="rrdRepository" type="string"/>
+    </complexType>
+  </element>
+  <element name="collection">
+    <annotation>
+      <documentation>A grouping of related RRD parameters and system definitions</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:rrd"/>
+        <element name="include-all-system-definitions" maxOccurs="1">
+          <complexType/>
+        </element>
+        <element name="include-system-definition" type="string" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+  <element name="system-definition">
+    <annotation>
+      <documentation>A system selection criteria and object groups</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="rule" type="string" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+              <documentation>A SPEL expression. If multiple expressions are present, their results are joined.</documentation>
+            </annotation>
+        </element>
+        <element name="include-group" type="string" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+              <documentation>Name of group to include in collection group.</documentation>
+            </annotation>
+        </element>
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name of this system definition, used to reference the system definition in collection packages.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="group">
+    <annotation>
+      <documentation>A grouping of related WS-Man attributes</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:attrib" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name of this group, used to reference the group in system definitions.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="resource-uri" type="string" use="required">
+        <annotation>
+          <documentation>
+						WS-Man Resource URI i.e. http://schemas.dmtf.org/wbem/wscim/1/*
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="dialect" type="string" use="optional" default="http://schemas.dmtf.org/wbem/cql/1/dsp0202.pdf">
+        <annotation>
+          <documentation>
+                        Dialect used by the filter. Only used when the filter attribute is set.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="filter" type="string" use="optional">
+        <annotation>
+          <documentation>
+                        Filter query.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="resource-type" type="string" use="required">
+        <annotation>
+          <documentation>
+						Specifies the name of the resource type that pertains to the attributes
+						in this group. For scalar attributes (those occurring once per node,
+						such as available system memory) this should be "node".  For
+						multi-instanced attributes, this should be the name of a custom
+						resource type declared in datacollection-config.xml.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="attrib">
+    <annotation>
+      <documentation>An Attribute Object</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="alias" type="string" use="required"/>
+      <attribute name="type" use="required">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="([Cc](ounter|OUNTER)|[Gg](auge|AUGE)|[Ss](tring|TRING))"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="index-of" type="string"/>
+      <attribute name="filter" type="string"/>
+    </complexType>
+  </element>
+</schema>

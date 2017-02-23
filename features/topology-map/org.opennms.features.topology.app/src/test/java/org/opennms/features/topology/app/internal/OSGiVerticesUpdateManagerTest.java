@@ -28,9 +28,15 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Property;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +44,22 @@ import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
@@ -52,8 +67,7 @@ import org.opennms.osgi.VaadinApplicationContext;
 import org.opennms.osgi.VaadinApplicationContextCreator;
 import org.osgi.framework.BundleContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.vaadin.data.Property;
 
 public class OSGiVerticesUpdateManagerTest {
 
@@ -65,7 +79,7 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Dictionary<String,Object> additionalProperties) {
            
         }
 
@@ -75,7 +89,7 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+        public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Hashtable<String,Object> additionalProperties) {
             return null; 
         }
 
@@ -237,7 +251,7 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private SelectionContext createContextWithVertRefIds(int... vertIds) {
-        SelectionContext context = new DefaultSelectionManager();
+        SelectionContext context = new DefaultSelectionManager(createGraph());
         List<VertexRef> vertices = createVertexRefsWithIds(vertIds);
 
         context.setSelectedVertexRefs(vertices);
@@ -391,8 +405,13 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public Set<EdgeStatusProvider> getEdgeStatusProviders() {
-            return Collections.EMPTY_SET;
+        public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+
+        }
+
+        @Override
+        public EdgeStatusProvider getEdgeStatusProvider() {
+            return null;
         }
 
         @Override
@@ -401,8 +420,13 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public void setSessionId(String sessionId) {
-           
+        public VaadinApplicationContext getApplicationContext() {
+            return null;
+        }
+
+        @Override
+        public void setApplicationContext(VaadinApplicationContext applicationContext) {
+
         }
 
         @Override
@@ -445,8 +469,47 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public void fireGraphChanged() {
-            // TODO Auto-generated method stub
-            
+
+        }
+
+        @Override
+        public <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType) {
+            return null;
+        }
+
+        @Override
+        public <T extends Criteria> T findSingleCriteria(Class<T> criteriaType) {
+            return null;
+        }
+
+        @Override
+        public IconManager getIconManager() {
+            return null;
+        }
+
+        @Override
+        public void setIconManager(IconManager iconManager) {
+
+        }
+
+        @Override
+        public MetaTopologyProvider getMetaTopologyProvider() {
+            return null;
+        }
+
+        @Override
+        public void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider) {
+            // pass
+        }
+
+        @Override
+        public void selectTopologyProvider(GraphProvider topologyProvider, Callback... callbacks) {
+
+        }
+
+        @Override
+        public void saveLayout() {
+
         }
     }
 }

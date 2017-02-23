@@ -40,9 +40,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -79,6 +79,7 @@ public class SnmpEventInfo {
     private String m_contextName = null;
     private String m_enterpriseId = null;
     private String m_proxyHost = null;
+    private String m_location = null;
     
     private static int computeIntValue(String parmContent) throws IllegalArgumentException {
         int val = 0;
@@ -123,7 +124,10 @@ public class SnmpEventInfo {
                     setFirstIPAddress(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
                     setLastIPAddress(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING) || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
+                } else if (parmName.equals(EventConstants.PARM_SNMP_LOCATION)) {
+                    setLocation(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)
+                        || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
                     setReadCommunityString(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING)) {
                 	setWriteCommunityString(parmContent);
@@ -456,6 +460,14 @@ public class SnmpEventInfo {
     	m_proxyHost = proxyHost;
     }
     
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
     /**
      * <p>getRange</p>
      *
@@ -517,6 +529,7 @@ public class SnmpEventInfo {
 	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
 	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
 	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
+	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
 	    
 	    return bldr.getEvent();
     }
@@ -537,7 +550,8 @@ public class SnmpEventInfo {
     	if (getMaxVarsPerPdu() != 0) definition.setMaxVarsPerPdu(Integer.valueOf(getMaxVarsPerPdu()));
     	if (getMaxRequestSize() != 0) definition.setMaxRequestSize(Integer.valueOf(getMaxRequestSize()));
     	if (StringUtils.isNotEmpty(getProxyHost())) definition.setProxyHost(getProxyHost());
-    	
+        if (StringUtils.isNotEmpty(getLocation())) definition.setLocation(getLocation());
+
         // version dependend parameters
         if (getVersion() != null && getVersion().equals("v3")) {
         	if (StringUtils.isNotEmpty(getAuthPassphrase())) definition.setAuthPassphrase(getAuthPassphrase());

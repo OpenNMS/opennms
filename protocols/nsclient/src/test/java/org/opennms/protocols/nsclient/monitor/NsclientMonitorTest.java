@@ -28,17 +28,15 @@
 
 package org.opennms.protocols.nsclient.monitor;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.protocols.nsclient.AbstractNsclientTest;
-import org.opennms.protocols.nsclient.monitor.NsclientMonitor;
 
 /**
  * <p>JUnit Test Class for NsclientMonitor.</p>
@@ -71,64 +69,7 @@ public class NsclientMonitorTest extends AbstractNsclientTest {
     }
 
     private MonitoredService createMonitoredService() {
-        final InetAddress address = getServer().getInetAddress();
-        MonitoredService svc = new MonitoredService() {
-
-            @Override
-            public String getSvcUrl() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public String getSvcName() {
-                return "NSClient";
-            }
-
-            @Override
-            public String getIpAddr() {
-                return address.getHostAddress();
-            }
-
-            @Override
-            public int getNodeId() {
-                return 1;
-            }
-
-            @Override
-            public String getNodeLabel() {
-                return "winsrv";
-            }
-
-            @Override
-            public NetworkInterface<InetAddress> getNetInterface() {
-                return new NetworkInterface<InetAddress>() {
-                    @Override
-                    public int getType() {
-                        return NetworkInterface.TYPE_INET;
-                    }
-                    @Override
-                    public InetAddress getAddress() {
-                        return address;
-                    }
-                    @Override
-                    public <V> V getAttribute(String property) {
-                        return null;
-                    }
-                    @Override
-                    public Object setAttribute(String property, Object value) {
-                        return null;
-                    }
-                };
-            }
-
-            @Override
-            public InetAddress getAddress() {
-                return address;
-            }
-
-        };
-        return svc;
+        return new MockMonitoredService(1, "winsrv", getServer().getInetAddress(), "NSClient");
     }
 
 }

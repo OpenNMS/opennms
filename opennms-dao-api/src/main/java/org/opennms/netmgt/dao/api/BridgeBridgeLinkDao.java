@@ -57,4 +57,9 @@ public interface BridgeBridgeLinkDao extends OnmsDao<BridgeBridgeLink, Integer> 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
     void deleteByDesignatedNodeIdOlderThen(Integer nodeiId, Date now);
+    
+    void deleteByNodeId(Integer nodeiId);
+
+    void deleteByDesignatedNodeId(Integer nodeiId);
+
 }

@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.support;
 
 import java.util.*;
 
+import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -56,7 +57,7 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 
         public CategoryVertex(String namespace, String id, String label) {
 			super(namespace, id, label);
-			setIconKey("group");
+			setIconKey(Constants.GROUP_ICON_KEY);
 		}
 
 		@Override
@@ -74,42 +75,16 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
         }
     }
 
-	public CategoryHopCriteria(String categoryName) {
+    protected CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
 		super(categoryName);
 		m_categoryName = categoryName;
 		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
-	}
-
-    public CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
-        this(categoryName);
-        setNodeDao(nodeDao);
-        setCategoryDao(categoryDao);
+		m_nodeDao = Objects.requireNonNull(nodeDao);
+		m_categoryDao = Objects.requireNonNull(categoryDao);
         m_collapsedVertex.setChildren(getVertices());
+		setId(m_categoryDao.findByName(m_categoryName).getId().toString());
     }
 
-	public CategoryDao getCategoryDao() {
-		return m_categoryDao;
-	}
-
-	public void setCategoryDao(CategoryDao categoryDao) {
-		this.m_categoryDao = categoryDao;
-        if(getId().endsWith("")){
-            setId(m_categoryDao.findByName(m_categoryName).getId().toString());
-        }
-	}
-
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		this.m_nodeDao = nodeDao;
-	}
-
-	/**
-	 * TODO: This return value doesn't matter since we just delegate
-	 * to the m_delegate provider.
-	 */
 	@Override
 	public String getNamespace() {
 		return "category";

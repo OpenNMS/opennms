@@ -136,7 +136,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         public boolean execute() {
             if(m_locations.isEmpty()) {
                 return false;
-            }else {
+            } else {
                 LocationInfo location = m_locations.remove();
                 updateLocation(location);
                 m_updated++;

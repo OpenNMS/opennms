@@ -40,12 +40,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.CitrixDetector;
+import org.opennms.netmgt.provision.detector.simple.CitrixDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -56,9 +54,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class CitrixDetectorTest implements ApplicationContextAware {
-
-    private ApplicationContext m_applicationContext;
+public class CitrixDetectorTest {
+    
+    @Autowired
+    private CitrixDetectorFactory m_detectorFactory;
+    
     private CitrixDetector m_detector;
     private SimpleServer m_server;
 
@@ -66,7 +66,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_detector = getDetector(CitrixDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setTimeout(500);
 
         m_server = getServer();
@@ -118,20 +118,5 @@ public class CitrixDetectorTest implements ApplicationContextAware {
                 setBanner("ICAICAICAICA");
             }
         };
-    }
-
-    private CitrixDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (CitrixDetector)bean;
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
     }
 }

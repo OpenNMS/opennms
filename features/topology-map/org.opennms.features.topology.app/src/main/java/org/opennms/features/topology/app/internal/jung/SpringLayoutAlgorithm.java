@@ -33,6 +33,7 @@ import java.util.Collection;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -77,7 +78,7 @@ public class SpringLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		for(VertexRef v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, new Point(layout.getX(v), layout.getY(v)));
 		}
 	}
 }

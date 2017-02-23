@@ -33,7 +33,7 @@ import java.io.StringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -43,7 +43,7 @@ import org.springframework.dao.DataAccessException;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @see org.opennms.netmgt.model.events.Constants#VALUE_TRUNCATE_INDICATOR
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#VALUE_TRUNCATE_INDICATOR
  */
 public abstract class Correlation {
     private static final Logger LOG = LoggerFactory.getLogger(Correlation.class);
@@ -71,7 +71,7 @@ public abstract class Correlation {
             StringBuffer buf = new StringBuffer(outstr);
 
             buf.setLength(sz - 4);
-            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+            buf.append(EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR);
 
             return buf.toString();
         } else {

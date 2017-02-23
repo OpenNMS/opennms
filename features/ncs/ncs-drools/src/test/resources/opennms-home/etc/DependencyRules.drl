@@ -1,0 +1,269 @@
+package org.opennms.netmgt.correlation.ncs.external;
+
+import function org.opennms.core.utils.InetAddressUtils.addr;
+import function org.opennms.core.utils.InetAddressUtils.str;
+
+import java.util.Date;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.correlation.ncs.*;
+import org.opennms.netmgt.model.ncs.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.drools.core.spi.KnowledgeHelper;
+import org.opennms.netmgt.model.events.EventUtils;
+
+global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global org.opennms.netmgt.correlation.ncs.NCSCorrelationService correlationService;
+
+
+rule "load dependencies"
+	salience 10000
+	when
+		Impacted( $c : target )
+	then
+		Component c = $c;
+		List<NCSComponent> list = correlationService.findComponentsThatDependOn( c.getId() );
+		for ( NCSComponent ncsParent : list ) {
+			Component parent = new Component( ncsParent );
+			if ( parent.getDependenciesRequired() != NCSComponent.DependencyRequirements.ANY ) {
+				println( "Parent component '" + parent.getName() + "' depends on " + c.getName() );
+				insert( new DependsOn( parent, c ) );
+			}
+			else {
+				List<NCSComponent> ncsChildren = correlationService.findSubComponents( parent.getId() );
+				List<Component> children = new ArrayList<Component>( ncsChildren.size() );
+				for ( NCSComponent ncsChild : ncsChildren ) {
+					Component child = new Component( ncsChild );
+					children.add( child );
+				}
+				insert( new DependsOnAny( parent, children ) );
+				println( "Inserted DependsOnAny for " + parent );			
+			}
+			
+		}
+end
+
+//TODO: Do we need a rule to unload deps as well?
+
+rule "pseudo-wire component down"
+	salience 100
+when
+	$e : Event( uei matches ".*jnxVpnPwDown" )
+	
+then
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndEventParameters($e, "jnxVpnPwVpnType", "jnxVpnPwVpnName");
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		insert( new EventComponent( c, $e ) );
+	}
+end
+
+rule "component impacted"
+	salience 100
+	when
+		EventComponent( $c : component, $e : event )
+		not Impacted ( target == $c )
+	then
+		println( "Component '" + $c.getName() + "' is down!" );
+		insert( new Impacted( $c, $e ) );
+		sendImpactedComponentEvent( engine, $c, $e );
+end
+
+		
+
+
+rule "pseudo-wire component up"
+	salience 100
+when
+	$downEvent : Event( uei matches ".*jnxVpnPwDown", $downNodeId : nodeid, $downParms : parmCollection )
+	Parm( parmName == "jnxVpnPwVpnType", $downVpnPwTypeValue: value.content ) from $downParms
+	Parm( parmName == "jnxVpnPwVpnName", $downVpnPwNameValue: value.content ) from $downParms
+	$upEvent : Event( uei matches ".*jnxVpnPwUp", nodeid == $downNodeId, $upParms : parmCollection )
+	Parm( parmName == "jnxVpnPwVpnType", value.content == $downVpnPwTypeValue ) from $upParms
+	Parm( parmName == "jnxVpnPwVpnName", value.content == $downVpnPwNameValue ) from $upParms
+	$eventComponent: EventComponent ( $c : component, event == $downEvent )
+	$impacted : Impacted( target == $c, cause == $downEvent )
+then
+	retract( $downEvent );
+	retract( $upEvent );
+	retract( $eventComponent );
+	insert( new Resolved( $downEvent, $upEvent ) );
+	println( "Resolved down event " + $downEvent );
+	println( "component up with " + $downVpnPwTypeValue + "_" + $downVpnPwNameValue );
+end
+
+
+rule "mpls lsp path component down"
+	salience 100
+when
+	$e : Event( uei matches ".*mplsLspPathDown" )
+then
+	List<NCSComponent> list = correlationService.findComponentsByNodeIdAndEventParameters($e, "mplsLspName");
+	for ( NCSComponent ncs : list ) {
+		Component c = new Component( ncs );
+		println( "Component '" + c.getName() + "' is down!" );
+		insert( new Impacted( c, $e ) );
+		insert( new EventComponent( c, $e ) );
+		sendImpactedComponentEvent( engine, c, $e );
+	}
+end
+
+rule "mpls lsp path component up"
+	salience 100
+when
+	$downEvent : Event( uei matches ".*mplsLspPathDown", $downNodeId : nodeid, $downParms : parmCollection )
+	Parm( parmName == "mplsLspName", $downValue: value.content ) from $downParms
+	$upEvent : Event( uei matches ".*mplsLspPathUp", nodeid == $downNodeId, $upParms : parmCollection )
+	Parm( parmName == "mplsLspName", value.content == $downValue ) from $upParms
+	$eventComponent: EventComponent ( $c : component, event == $downEvent )
+	$impacted : Impacted( target == $c, cause == $downEvent )
+then
+	retract( $downEvent );
+	retract( $upEvent );
+	retract( $eventComponent );
+	insert( new Resolved( $downEvent, $upEvent ) ); //TODO: Looks strange
+	println( "Resolved mpls down event " + $downEvent );
+	println( "mpls component up with " + $downValue );	
+end
+
+
+rule "resolved component"
+	salience 1000
+when
+	$i : Impacted( $c : target, $cause : cause )
+	$r : Resolved( cause == $cause )
+then
+	println( " Resolving Impact " + $c.getName() + " " + $i );
+	retract( $i ); 
+	sendResolvedComponentEvent(engine, $c, $cause);
+end
+
+
+rule "resolved parent component with depends on any"
+	salience 400
+when
+	$i : Impacted( $c : target, $cause : cause)
+	$d : DependsOnAny( component == $c, $children : subComponents )
+	not ( forall ( $sc: Component() from $children Impacted( target == $sc ) ) )
+then
+	println( " Resolving Impact with depends on any " + $c.getName() + " " + $i );
+	retract( $i ); 
+	retract( $d );
+	sendResolvedComponentEvent(engine, $c, $cause);
+end
+
+//TODO: Work in progress, not sure we can do that...
+/*
+rule "resolved parent component with depends on"
+	salience 400
+when
+	$i : Impacted( $c : target, $cause : cause)
+	$d : DependsOn( a == $c, $b : b )
+	not ( Impacted( target == $b ) )
+then
+	println( " Resolving Impact with depends on  " + $b.getName() + " " + $i );
+	retract( $i ); 
+	retract( $d );
+	sendResolvedComponentEvent(engine, $b, $cause);
+end
+*/
+
+
+
+
+
+rule "impact parent with DependsOnAny"
+	salience 400
+	when
+		$d : DependsOnAny( $a : component, $children : subComponents )
+		not Impacted( target == $a )
+		forall ( $sc: Component() from $children Impacted( target == $sc ) )
+		$e : Event()
+		$sc: Component() from $children.get(0)
+		Impacted( target == $sc, cause == $e )
+	then
+		println( "Component " + $a.getName() + "impacted with DependsOnAny rule with cause " + $e.getUei()  + " with id " + $e.getDbid() );
+		insert( new Impacted( $a, $e ) );
+		sendImpactedComponentEvent( engine, $a, $e );		
+end
+
+
+
+
+rule "impacted parent with DependsOn"
+	salience 400
+when
+	$i : Impacted( $b : target, $e : cause )
+	DependsOn( $a : a, b == $b )
+then
+	println( "Component " + $a.getName() + " depends on impacted component " + $b.getName() + " with cause " + $e.getUei()  + " with id " + $e.getDbid() );
+	insert( new Impacted( $a, $e ) );
+	sendImpactedComponentEvent( engine, $a, $e );
+end	
+
+
+/*
+rule "resolved service"
+	salience 400
+when
+	$s : Service()
+	$i : Impacted( target == $s, $cause : cause )
+	$r : Resolved( cause == $cause )
+then
+	println( " Resolving Impact " + $i );
+	retract( $i ); 
+	sendResolvedServiceEvent(engine, $s, $cause);
+end
+*/
+
+/*
+rule "clean up resolutions"
+when
+	$r : Resolved( $c : cause )
+	not( Impacted( cause == $c ) )
+then
+	println( "Cleanup up resolve " + $r );
+	retract( $r );
+end
+*/
+
+function void println(Object msg)
+{
+	System.err.println(new Date() + " : " + msg);
+}
+
+
+function void sendImpactedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e )
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentImpacted", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e)
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentResolved", "Component Correlator" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+

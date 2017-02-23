@@ -34,14 +34,15 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -53,6 +54,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
+@DirtiesContext
 public abstract class CorrelationRulesTestCase {
 
     @Autowired
@@ -78,7 +80,7 @@ public abstract class CorrelationRulesTestCase {
     protected void verify(DroolsCorrelationEngine engine) {
     	getAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
         if (m_anticipatedMemorySize != null) {
-            assertEquals("Unexpected number of objects in working memory: "+engine.getMemoryObjects(), m_anticipatedMemorySize.intValue(), engine.getMemorySize());
+            assertEquals("Unexpected number of objects in working memory: "+engine.getKieSessionObjects(), m_anticipatedMemorySize.intValue(), engine.getKieSessionObjects().size());
         }
     }
 
@@ -88,6 +90,10 @@ public abstract class CorrelationRulesTestCase {
 
     protected void anticipate(Event event) {
         getAnticipator().anticipateEvent(event);
+    }
+
+    protected Event createNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
+    	return createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, nodeId, ipAddr, svcName, locationMonitor);
     }
 
     protected Event createRemoteNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {

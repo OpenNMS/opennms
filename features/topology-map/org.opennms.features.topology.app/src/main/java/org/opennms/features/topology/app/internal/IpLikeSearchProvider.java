@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -227,14 +226,12 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Sear
     
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-    	// TODO Auto-generated method stub
     	LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
     	super.onCenterSearchResult(searchResult, graphContainer);
     }
     
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	// TODO Auto-generated method stub
     	LOG.debug("SearchProvider->onFocusSearchResult: called with search result: '{}'", searchResult);
     	super.onFocusSearchResult(searchResult, operationContext);
 

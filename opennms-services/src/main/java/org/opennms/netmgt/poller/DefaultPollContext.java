@@ -32,24 +32,28 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
+import org.opennms.core.rpc.api.RequestRejectedException;
+import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.dao.api.CriticalPath;
+import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,15 +88,16 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
+    private volatile LocationAwarePingClient m_locationAwarePingClient;
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
-    private final List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<PendingPollEvent>();
 
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -101,7 +106,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
@@ -180,6 +185,14 @@ public class DefaultPollContext implements PollContext, EventListener {
         m_queryManager = queryManager;
     }
 
+    public LocationAwarePingClient getLocationAwarePingClient() {
+        return m_locationAwarePingClient;
+    }
+
+    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
+        m_locationAwarePingClient = locationAwarePingClient;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
@@ -230,9 +243,8 @@ public class DefaultPollContext implements PollContext, EventListener {
             m_listenerAdded = true;
         }
         PendingPollEvent pollEvent = new PendingPollEvent(event);
-        synchronized (m_pendingPollEvents) {
-            m_pendingPollEvents.add(pollEvent);
-        }
+        m_pendingPollEvents.add(pollEvent);
+
         //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
         getEventManager().sendNow(event);
         return pollEvent;
@@ -258,19 +270,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
                 && this.getPollerConfig().isPathOutageEnabled()) {
-            String[] criticalPath = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(nodeId);
-            
-            if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
-                if (!this.testCriticalPath(criticalPath)) {
+            final CriticalPath criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
+            if (criticalPath != null && criticalPath.getIpAddress() != null) {
+                if (!testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
-                    
-                    // add eventReason, criticalPathIp, criticalPathService
-                    // parms
-                    
                     bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, EventConstants.PARM_VALUE_PATHOUTAGE);
-                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, criticalPath[0]);
-                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath[1]);
-                    
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, InetAddrUtils.str(criticalPath.getIpAddress()));
+                    bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath.getServiceName());
                 } else {
                     LOG.debug("Critical path test passed for node {}", nodeId);
                 }
@@ -299,23 +305,22 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
-        LOG.debug("openOutage: Opening outage for: {} with event:{}", svc, svcLostEvent);
-        final int nodeId = svc.getNodeId();
-        final String ipAddr = svc.getIpAddr();
-        final String svcName = svc.getSvcName();
+        // Open the outage immediately
+        final Integer outageId = getQueryManager().openOutagePendingLostEventId(svc.getNodeId(),
+                svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
+
+        // Defer updating the outage with the event id until we receive back
+        // from the event bus
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                LOG.debug("run: Opening outage with query manager: {} with event:{}", svc, svcLostEvent);
-
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
+                    getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
                 } else {
-                    LOG.warn("run: Failed to determine an eventId for service outage for: {} with event: {}", svc, svcLostEvent);
+                    LOG.warn("run: Failed to determine an eventId for service lost for: {} with event: {}", svc, svcLostEvent);
                 }
             }
-
         };
         if (svcLostEvent instanceof PendingPollEvent) {
             ((PendingPollEvent)svcLostEvent).addPending(r);
@@ -323,7 +328,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-        
+        LOG.debug("openOutage: sending outageCreated event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
+        sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcLostEvent.getDate(), null));
     }
 
     /* (non-Javadoc)
@@ -332,15 +338,25 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
-        final int nodeId = svc.getNodeId();
-        final String ipAddr = svc.getIpAddr();
-        final String svcName = svc.getSvcName();
+        // Resolve the outage immediately
+        final Integer outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
+                svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
+
+        // There may be no outage for this particular service. This can happen when interfaces
+        // are reparented or when a node gains a new service while down.
+        if (outageId == null) {
+            LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
+            return;
+        }
+
+        // Defer updating the outage with the event id until we receive back
+        // from the event bus
         final Runnable r = new Runnable() {
             @Override
             public void run() {
                 final int eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
+                    getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
                 }
@@ -352,12 +368,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        getQueryManager().reparentOutages(ipAddr, oldNodeId, newNodeId);
+        LOG.debug("resolveOutage: sending outageResolved event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
+        sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcRegainEvent.getDate(), null));
     }
 
     /* (non-Javadoc)
@@ -378,61 +390,105 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(final Event e) {
-        LOG.debug("onEvent: Waiting to process event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        synchronized (m_pendingPollEvents) {
-            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", e, e.getUei(), e.getDbid(), m_pendingPollEvents.size());
-            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
-                final PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: comparing events to poll event: {}", pollEvent);
-                if (e.equals(pollEvent.getEvent())) {
-                    LOG.trace("onEvent: completing pollevent: {}", pollEvent);
-                    pollEvent.complete(e);
+    public void onEvent(final Event event) {
+        if (LOG.isDebugEnabled()) {
+            // CAUTION: m_pendingPollEvents.size() is not a constant-time operation
+            LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", event, event.getUei(), event.getDbid(), m_pendingPollEvents.size());
+        }
+
+        for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
+            LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
+            // TODO: This equals comparison is more like a '==' operation because
+            // I think that both events would have to be identical instances to
+            // have the same event ID. This will probably cause problems if we
+            // cluster event processing and the event instances are ever not 
+            // identical.
+            if (event.equals(pollEvent.getEvent())) {
+                LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
+                // Thread-safe and idempotent
+                pollEvent.complete(event);
+                // TODO: Can we break here? I think there should only be one 
+                // instance of any given event in m_pendingPollEvents
+                // break;
+            }
+        }
+
+        for (final Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext();) {
+            final PendingPollEvent pollEvent = it.next();
+            LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
+            if (!pollEvent.isPending()) {
+                try {
+                    // Thread-safe and idempotent
+                    processPending(pollEvent);
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception while processing pollEvent: " + pollEvent, e);
                 }
-            }
-            
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
-                PendingPollEvent pollEvent = it.next();
-                LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
-                if (pollEvent.isPending()) continue;
-                
-                LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
-                pollEvent.processPending();
+                // TODO: Should we remove the task before processing it? This would
+                // reduce the chances that two threads could process the same event
+                // simultaneously, although since the call is now thread-safe and
+                // idempotent, that's not really a problem.
                 it.remove();
-                LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
+                continue;
             }
+
+            // If the event was not completed and it is still pending, then don't do anything to it
         }
-        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", e, e.getUei(), e.getDbid());
-        
+        LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
     }
 
-    boolean testCriticalPath(String[] criticalPath) {
-        // TODO: Generalize the service
-        InetAddress addr = null;
-        boolean result = true;
-    
-        LOG.debug("Test critical path IP {}", criticalPath[0]);
-        addr = InetAddressUtils.addr(criticalPath[0]);
-        if (addr == null) {
-            LOG.error("failed to convert string address to InetAddress {}", criticalPath[0]);
-            return true;
-        }
-        IcmpPlugin p = new IcmpPlugin();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(
-                "retry",
-                Long.valueOf(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
-        map.put(
-                "timeout",
-                Long.valueOf(
-                         OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
-
-        result = p.isProtocolSupported(addr, map);
-        return result;
+    private static void processPending(final PendingPollEvent pollEvent) {
+        LOG.trace("onEvent: pollEvent is no longer pending, processing pollEvent: {}", pollEvent);
+        // Thread-safe and idempotent
+        pollEvent.processPending();
+        LOG.trace("onEvent: processing of pollEvent completed: {}", pollEvent);
     }
 
-    String getNodeLabel(int nodeId) {
+    private boolean testCriticalPath(CriticalPath criticalPath) {
+        if (!"ICMP".equalsIgnoreCase(criticalPath.getServiceName())) {
+            LOG.warn("Critical paths using services other than ICMP are not currently supported."
+                    + " ICMP will be used for testing {}.", criticalPath);
+        }
+
+        final InetAddress ipAddress = criticalPath.getIpAddress();
+        final int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
+        final int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+
+        boolean available = false;
+        try {
+            final PingSummary pingSummary = m_locationAwarePingClient.ping(ipAddress)
+                    .withLocation(criticalPath.getLocationName())
+                    .withTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .withRetries(retries)
+                    .execute()
+                    .get();
+
+            // We consider the path to be available if any of the requests were successful
+            available = pingSummary.getSequences().stream()
+                            .filter(s -> s.isSuccess())
+                            .count() > 0;
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted while testing {}. Marking the path as available.", criticalPath);
+            available = true;
+        } catch (Throwable e) {
+            final Throwable cause = e.getCause();
+            if (cause != null && cause instanceof RequestTimedOutException) {
+                LOG.warn("No response was received when remotely testing {}."
+                        + " Marking the path as available.", criticalPath);
+                available = true;
+            } else if (cause != null && cause instanceof RequestRejectedException) {
+                LOG.warn("Request was rejected when attemtping to test the remote path {}."
+                        + " Marking the path as available.", criticalPath);
+                available = true;
+            }
+            LOG.warn("An unknown error occured while testing the critical path: {}."
+                    + " Marking the path as unavailable.", criticalPath, e);
+            available = false;
+        }
+        LOG.debug("testCriticalPath: checking {}@{}, available ? {}", criticalPath.getServiceName(), ipAddress, available);
+        return available;
+    }
+
+    private String getNodeLabel(int nodeId) {
         String nodeLabel = null;
         try {
             nodeLabel = getQueryManager().getNodeLabel(nodeId);

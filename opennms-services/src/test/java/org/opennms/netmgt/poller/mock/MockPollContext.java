@@ -37,13 +37,12 @@ import java.util.List;
 
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -119,7 +118,6 @@ public class MockPollContext implements PollContext, EventListener {
     @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
-        e.setCreationTime(date);
         e.setTime(date);
         return e.getEvent();
     }
@@ -139,7 +137,7 @@ public class MockPollContext implements PollContext, EventListener {
     
     private void writeOutage(PollableService pSvc, PollEvent svcLostEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcLostEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcLostEvent.getDate().getTime());
         MockUtil.println("Opening Outage for "+mSvc);
         m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
@@ -160,20 +158,16 @@ public class MockPollContext implements PollContext, EventListener {
     
     public void closeOutage(PollableService pSvc, PollEvent svcRegainEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcRegainEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcRegainEvent.getDate().getTime());
         MockUtil.println("Resolving Outage for "+mSvc);
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
-    
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", newNodeId, oldNodeId, ipAddr);
-    }
-    
+
     @Override
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
+
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }

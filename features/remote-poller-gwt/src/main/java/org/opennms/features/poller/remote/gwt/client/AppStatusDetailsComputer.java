@@ -88,7 +88,7 @@ public class AppStatusDetailsComputer {
             return StatusDetails.unknown("No location monitors are currently reporting.");
         }
     
-        final Set<Integer> monitorIds = new HashSet<Integer>();
+        final Set<String> monitorIds = new HashSet<String>();
         final Set<GWTMonitoredService> servicesWithOutages = new HashSet<GWTMonitoredService>();
         final Set<GWTMonitoredService> servicesDown = new HashSet<GWTMonitoredService>();
     
@@ -103,12 +103,12 @@ public class AppStatusDetailsComputer {
             return StatusDetails.unknown("No location monitors are currently reporting.");
         }
     
-        Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
-        for (final Entry<Integer, Map<Integer, List<GWTServiceOutage>>> entry : outages.entrySet()) {
+        Map<Integer, Map<String, List<GWTServiceOutage>>> outages = getOutages();
+        for (final Entry<Integer, Map<String, List<GWTServiceOutage>>> entry : outages.entrySet()) {
             final Integer serviceId = entry.getKey();
             final List<GWTServiceOutage> locationOutages = new ArrayList<GWTServiceOutage>();
-            for (final Entry<Integer,List<GWTServiceOutage>> locationOutageEntry : entry.getValue().entrySet()) {
-                final Integer monitorId = locationOutageEntry.getKey();
+            for (final Entry<String, List<GWTServiceOutage>> locationOutageEntry : entry.getValue().entrySet()) {
+                final String monitorId = locationOutageEntry.getKey();
                 for (final GWTServiceOutage outage : locationOutageEntry.getValue()) {
                     locationOutages.add(outage);
                 }
@@ -213,18 +213,18 @@ public class AppStatusDetailsComputer {
         return m_statuses;
     }
 
-    private Map<Integer, Map<Integer, List<GWTServiceOutage>>> getOutages() {
+    private Map<Integer, Map<String, List<GWTServiceOutage>>> getOutages() {
         // service id -> location id -> outages
-        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = new HashMap<Integer, Map<Integer, List<GWTServiceOutage>>>();
+        final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = new HashMap<Integer, Map<String, List<GWTServiceOutage>>>();
         if (m_statuses == null) {
             return outages;
         }
         
         for (final GWTLocationSpecificStatus status : m_statuses) {
             final Integer serviceId = status.getMonitoredService().getId();
-            final Integer monitorId = status.getLocationMonitor().getId();
+            final String monitorId = status.getLocationMonitor().getId();
             GWTServiceOutage lastOutage = null;
-            Map<Integer, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
+            Map<String, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
             if (serviceOutages != null) {
                 List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
                 if (monitorOutages != null && monitorOutages.size() > 0) {
@@ -253,7 +253,7 @@ public class AppStatusDetailsComputer {
                     lastOutage.setFrom(status.getPollResult().getTimestamp());
         
                     if (serviceOutages == null) {
-                        serviceOutages = new HashMap<Integer, List<GWTServiceOutage>>();
+                        serviceOutages = new HashMap<String, List<GWTServiceOutage>>();
                         outages.put(serviceId, serviceOutages);
                     }
                     List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
@@ -266,8 +266,8 @@ public class AppStatusDetailsComputer {
             }
         }
         
-        for (final Entry<Integer, Map<Integer, List<GWTServiceOutage>>> entry : outages.entrySet()) {
-            for (final Entry<Integer,List<GWTServiceOutage>> serviceOutageEntry : entry.getValue().entrySet()) {
+        for (final Entry<Integer, Map<String, List<GWTServiceOutage>>> entry : outages.entrySet()) {
+            for (final Entry<String,List<GWTServiceOutage>> serviceOutageEntry : entry.getValue().entrySet()) {
                 for (final GWTServiceOutage outage : serviceOutageEntry.getValue()) {
                     if (outage.getFrom() == null) {
                         outage.setFrom(getStartTime());

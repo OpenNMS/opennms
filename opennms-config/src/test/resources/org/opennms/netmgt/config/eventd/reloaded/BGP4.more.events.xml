@@ -1,0 +1,150 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of auto generated data from MIB: BGP4-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.2.1.15.7</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>http://uei.opennms.org/standards/rfc1657/traps/bgpEstablished</uei>
+ <event-label>BGP4-MIB defined trap event: bgpEstablished</event-label>
+ <descr>&lt;p&gt;The BGP Established event is generated when
+the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+<logmsg dest='logndisplay'>&lt;p&gt;bgpEstablished trap received bgpPeerLastError=%parm[#1]% bgpPeerState=%parm[#2]%&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.2.1.15.7</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition</uei>
+ <event-label>BGP4-MIB defined trap event: bgpBackwardTransition</event-label>
+ <descr>&lt;p&gt;The BGPBackwardTransition Event is generated
+when the BGP FSM moves from a higher numbered
+state to a lower numbered state.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+<logmsg dest='logndisplay'>&lt;p&gt;bgpBackwardTransition trap received bgpPeerLastError=%parm[#1]% bgpPeerState=%parm[#2]%&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: BGP4-MIB -->
+<!-- Start of auto generated data from MIB: RFC1269-MIB -->
+<event>
+    <mask>
+        <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.15</mevalue>
+        </maskelement>
+        <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+        </maskelement>
+        <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+        </maskelement>
+    </mask>
+    <uei>uei.opennms.org/standard/rfc1269/traps/bgpEstablished</uei>
+    <event-label>RFC1269-MIB defined trap event: bgpEstablished</event-label>
+    <descr>
+&lt;p&gt;The BGP Established event is generated when
+the BGP FSM enters the ESTABLISHED state. &lt;/p&gt;&lt;table&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        idle(1)
+        connect(2)
+        active(3)
+        opensent(4)
+        openconfirm(5)
+        established(6)
+    &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            bgpEstablished trap received 
+            bgpPeerRemoteAddr=%parm[#1]% 
+            bgpPeerLastError=%parm[#2]% 
+            bgpPeerState=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+    <severity>Normal</severity>
+<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc1269/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[#1]%" />
+</event>
+<event>
+    <mask>
+        <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.15</mevalue>
+        </maskelement>
+        <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+        </maskelement>
+        <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+        </maskelement>
+    </mask>
+    <uei>uei.opennms.org/standard/rfc1269/traps/bgpBackwardTransition</uei>
+    <event-label>RFC1269-MIB defined trap event: bgpBackwardTransition</event-label>
+    <descr>
+&lt;p&gt;The BGPBackwardTransition Event is generated
+when the BGP FSM moves from a higher numbered
+state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+    bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+    %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+        idle(1)
+        connect(2)
+        active(3)
+        opensent(4)
+        openconfirm(5)
+        established(6)
+    &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+    </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            bgpBackwardTransition trap received 
+            bgpPeerRemoteAddr=%parm[#1]% 
+            bgpPeerLastError=%parm[#2]% 
+            bgpPeerState=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+</event>
+<!-- End of auto generated data from MIB: RFC1269-MIB -->
+</events>

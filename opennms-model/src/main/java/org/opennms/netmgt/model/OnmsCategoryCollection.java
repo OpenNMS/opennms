@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name = "categories")
+@JsonRootName("categories")
 public class OnmsCategoryCollection extends JaxbListWrapper<OnmsCategory> {
     private static final long serialVersionUID = 1L;
 
@@ -46,9 +49,11 @@ public class OnmsCategoryCollection extends JaxbListWrapper<OnmsCategory> {
     }
 
     @XmlElement(name="category")
+    @JsonProperty("category")
     public List<OnmsCategory> getObjects() {
         return super.getObjects();
     }
+
     public List<? extends OnmsCategory> getCategories() {
         return getObjects();
     }

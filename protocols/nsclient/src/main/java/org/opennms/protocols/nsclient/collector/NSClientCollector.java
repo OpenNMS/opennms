@@ -37,26 +37,26 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
-import org.opennms.netmgt.config.nsclient.Attrib;
-import org.opennms.netmgt.config.nsclient.NsclientCollection;
-import org.opennms.netmgt.config.nsclient.Wpm;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.config.datacollction.nsclient.Attrib;
+import org.opennms.netmgt.config.datacollction.nsclient.NsclientCollection;
+import org.opennms.netmgt.config.datacollction.nsclient.Wpm;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
@@ -74,8 +74,8 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class NSClientCollector implements ServiceCollector {
-	
+public class NSClientCollector extends AbstractLegacyServiceCollector {
+
 	private static final Logger LOG = LoggerFactory.getLogger(NSClientCollector.class);
 
 
@@ -104,7 +104,7 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public String getType() {
+        public AttributeType getType() {
             return m_attribute.getType();
         }
 
@@ -120,13 +120,17 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
-            return m_value;
+        public Double getNumericValue() {
+            try {
+                return Double.parseDouble(m_value);
+            } catch (NumberFormatException|NullPointerException e) {
+                return null;
+            }
         }
 
         @Override
         public String getStringValue() {
-            return m_value; //Should this be null instead?
+            return m_value;
         }
 
         @Override
@@ -166,7 +170,7 @@ public class NSClientCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
-        int status = ServiceCollector.COLLECTION_FAILED;
+        CollectionStatus status = CollectionStatus.FAILED;
         final ServiceParameters serviceParams = new ServiceParameters(parameters);
         String collectionName = serviceParams.getCollectionName();
 
@@ -174,10 +178,10 @@ public class NSClientCollector implements ServiceCollector {
         // check scheduled nodes to see if that group should be collected
         NsclientCollection collection = NSClientDataCollectionConfigFactory.getInstance().getNSClientCollection(collectionName);
         NSClientAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
-        
+
         NSClientCollectionResource collectionResource = new NSClientCollectionResource(agent);
         SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
-        
+
         for (Wpm wpm : collection.getWpms().getWpm()) {
             //All NSClient Perfmon counters are per node
             AttributeGroupType attribGroupType=new AttributeGroupType(wpm.getName(), AttributeGroupType.IF_TYPE_ALL);
@@ -227,7 +231,7 @@ public class NSClientCollector implements ServiceCollector {
                             } else {
                                 NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
                                 collectionResource.setAttributeValue(attribType, result.getResponse());
-                                status = ServiceCollector.COLLECTION_SUCCEEDED;
+                                status = CollectionStatus.SUCCEEDED;
                             }
                         }
                     }
@@ -257,12 +261,6 @@ public class NSClientCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing NSClientPeerFactory");
         try {
             NSClientPeerFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
             LOG.error("initialize: Error reading configuration", e);
             throw new UndeclaredThrowableException(e);
@@ -273,12 +271,6 @@ public class NSClientCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing collector: {}", NSClientCollector.class);
         try {
             NSClientDataCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);

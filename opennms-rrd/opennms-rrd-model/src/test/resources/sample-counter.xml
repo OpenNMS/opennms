@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rrd SYSTEM "http://oss.oetiker.ch/rrdtool/rrdtool.dtd">
+<!-- Round Robin Database Dump -->
+<rrd>
+	<version>0003</version>
+	<step>300</step> <!-- Seconds -->
+	<lastupdate>1441751700</lastupdate> <!-- 2015-09-08 18:35:00 EDT -->
+
+	<ds>
+		<name> v1 </name>
+		<type> COUNTER </type>
+		<minimal_heartbeat>600</minimal_heartbeat>
+		<min>NaN</min>
+		<max>NaN</max>
+
+		<!-- PDP Status -->
+		<last_ds>23700</last_ds>
+		<value>0.0000000000e+00</value>
+		<unknown_sec> 0 </unknown_sec>
+	</ds>
+
+	<ds>
+		<name> v2 </name>
+		<type> GAUGE </type>
+		<minimal_heartbeat>600</minimal_heartbeat>
+		<min>NaN</min>
+		<max>NaN</max>
+
+		<!-- PDP Status -->
+		<last_ds>13</last_ds>
+		<value>0.0000000000e+00</value>
+		<unknown_sec> 0 </unknown_sec>
+	</ds>
+
+	<!-- Round Robin Archives -->
+	<rra>
+		<cf>AVERAGE</cf>
+		<pdp_per_row>1</pdp_per_row> <!-- 300 seconds -->
+
+		<params>
+		<xff>5.0000000000e-01</xff>
+		</params>
+		<cdp_prep>
+			<ds>
+			<primary_value>1.2000000000e+01</primary_value>
+			<secondary_value>NaN</secondary_value>
+			<value>NaN</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+			<ds>
+			<primary_value>1.3000000000e+01</primary_value>
+			<secondary_value>NaN</secondary_value>
+			<value>NaN</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+		</cdp_prep>
+		<database>
+			<!-- 2015-09-08 17:40:00 EDT / 1441748400 --> <row><v>1.0000000000e+00</v><v>2.0000000000e+00</v></row>
+			<!-- 2015-09-08 17:45:00 EDT / 1441748700 --> <row><v>2.0000000000e+00</v><v>3.0000000000e+00</v></row>
+			<!-- 2015-09-08 17:50:00 EDT / 1441749000 --> <row><v>3.0000000000e+00</v><v>4.0000000000e+00</v></row>
+			<!-- 2015-09-08 17:55:00 EDT / 1441749300 --> <row><v>4.0000000000e+00</v><v>5.0000000000e+00</v></row>
+			<!-- 2015-09-08 18:00:00 EDT / 1441749600 --> <row><v>5.0000000000e+00</v><v>6.0000000000e+00</v></row>
+			<!-- 2015-09-08 18:05:00 EDT / 1441749900 --> <row><v>6.0000000000e+00</v><v>7.0000000000e+00</v></row>
+			<!-- 2015-09-08 18:10:00 EDT / 1441750200 --> <row><v>7.0000000000e+00</v><v>8.0000000000e+00</v></row>
+			<!-- 2015-09-08 18:15:00 EDT / 1441750500 --> <row><v>8.0000000000e+00</v><v>9.0000000000e+00</v></row>
+			<!-- 2015-09-08 18:20:00 EDT / 1441750800 --> <row><v>9.0000000000e+00</v><v>1.0000000000e+01</v></row>
+			<!-- 2015-09-08 18:25:00 EDT / 1441751100 --> <row><v>1.0000000000e+01</v><v>1.1000000000e+01</v></row>
+			<!-- 2015-09-08 18:30:00 EDT / 1441751400 --> <row><v>1.1000000000e+01</v><v>1.2000000000e+01</v></row>
+			<!-- 2015-09-08 18:35:00 EDT / 1441751700 --> <row><v>1.2000000000e+01</v><v>1.3000000000e+01</v></row>
+		</database>
+	</rra>
+</rrd>

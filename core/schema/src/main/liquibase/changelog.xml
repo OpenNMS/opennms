@@ -65,10 +65,17 @@
 	<include file="1.13.0/changelog.xml"/>
 	<include file="1.13.1/changelog.xml"/>
 	<include file="1.13.3/changelog.xml"/>
+	<include file="1.13.4/changelog.xml"/>
 	<include file="1.13.5/changelog.xml"/>
 	<include file="1.14.0/changelog.xml"/>
 	<include file="14.0.3/changelog.xml"/>
 	<include file="14.0.4/changelog.xml"/>
+	<include file="1.15.1/changelog.xml"/>
+	<include file="1.15.2/changelog.xml"/>
+	<include file="16.0.4/changelog.xml"/>
+	<include file="17.0.0/changelog.xml"/>
+	<include file="18.0.0/changelog.xml"/>
+	<include file="19.0.0/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />
@@ -80,12 +87,5 @@
 	<include file="stored-procedures/getPercentAvailabilityInWindow.xml" />
 	<include file="stored-procedures/dropTriggerIfExists.xml" />
 	<include file="stored-procedures/generate_daily_series.xml"/>
-
-	<include file="triggers/setIfServiceKeysOnInsertTrigger.xml" />
-	<include file="triggers/setIfServiceKeysOnUpdateTrigger.xml" />
-	<include file="triggers/setIpInterfaceKeysOnInsertTrigger.xml" />
-	<include file="triggers/setIpInterfaceKeysOnUpdateTrigger.xml" />
-	<include file="triggers/setSnmpInterfaceKeysOnInsertTrigger.xml" />
-	<include file="triggers/setSnmpInterfaceKeysOnUpdateTrigger.xml" />
 
 </databaseChangeLog>

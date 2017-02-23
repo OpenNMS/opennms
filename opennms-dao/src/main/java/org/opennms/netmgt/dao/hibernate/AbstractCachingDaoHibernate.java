@@ -181,11 +181,12 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
 
     /** {@inheritDoc} */
     @Override
-    public void save(T entity) throws DataAccessException {
-        super.save(entity);
+    public DbKey save(T entity) throws DataAccessException {
+        DbKey retval = super.save(entity);
         if (m_cache.get() != null) {
             m_cache.get().put(getKey(entity), entity);
         }
+        return retval;
     }
 
     /** {@inheritDoc} */

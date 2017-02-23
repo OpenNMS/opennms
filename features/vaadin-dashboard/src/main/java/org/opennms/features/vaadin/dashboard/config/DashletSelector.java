@@ -87,7 +87,7 @@ public class DashletSelector implements BundleActivator {
      */
     public void bind(DashletFactory dashletFactory) {
         if (dashletFactory != null) {
-            LoggerFactory.getLogger(DashletSelector.class).warn("bind service " + dashletFactory.getClass().getName());
+            LoggerFactory.getLogger(DashletSelector.class).info("bind service " + dashletFactory.getClass().getName());
 
             m_serviceInterfaceMap.put(dashletFactory.getName(), dashletFactory);
             fireServiceListChangedListeners();
@@ -103,7 +103,7 @@ public class DashletSelector implements BundleActivator {
      */
     public void unbind(DashletFactory dashletFactory) {
         if (dashletFactory != null) {
-            LoggerFactory.getLogger(DashletSelector.class).warn("unbind service " + dashletFactory.getClass().getName());
+            LoggerFactory.getLogger(DashletSelector.class).info("unbind service " + dashletFactory.getClass().getName());
 
             m_serviceInterfaceMap.remove(dashletFactory.getName());
             fireServiceListChangedListeners();

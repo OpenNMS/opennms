@@ -4,9 +4,9 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
@@ -16,13 +16,18 @@
     <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
     <context:component-scan base-package="org.opennms.web.controller"/>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-        <property name="locations">
-            <list>
-                <value>file:${opennms.home}/etc/model-importer.properties</value>
-            </list>
-        </property>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <!-- Map controllers based on their bean name -->
@@ -40,8 +45,7 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
     <bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass"
-                  value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="order" value="1"/>
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
@@ -64,29 +68,13 @@
         <property name="flowExecutor" ref="flowExecutor"/>
     </bean>
 
-    <bean name="/admin/provisioningGroups.htm" class="org.opennms.web.controller.ProvisioningGroupsController">
-        <property name="provisioningService" ref="manualProvisioningService"/>
-        <property name="foreignSourceService" ref="defaultForeignSourceService"/>
-        <property name="commandName" value="groupAction"/>
-    </bean>
-
-    <bean name="/admin/editProvisioningGroup.htm" class="org.opennms.web.controller.EditProvisioningGroupController">
-        <property name="provisioningService" ref="manualProvisioningService"/>
-        <property name="bindOnNewForm" value="true"/>
-        <property name="commandName" value="nodeEditForm"/>
-        <property name="successView" value="redirect:/admin/provisioningGroups.htm"/>
-    </bean>
-
     <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-        <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository"/>
-        <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
+        <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+        <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     </bean>
 
-    <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">
-        <property name="bindOnNewForm" value="true"/>
-        <property name="foreignSourceService" ref="defaultForeignSourceService"/>
-        <property name="commandName" value="foreignSourceEditForm"/>
-        <property name="successView" value="redirect:/admin/provisioningGroups.htm"/>
+    <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
+          <property name="eventConfDao" ref="eventConfDao"/>
     </bean>
 
     <bean name="/admin/applications.htm"
@@ -159,23 +147,8 @@
 
     <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
         <property name="applicationDao" ref="applicationDao"/>
+        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
         <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    </bean>
-
-    <bean name="/distributedStatusDetails.htm"
-          class="org.opennms.web.controller.DistributedStatusDetailsController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.DistributedStatusDetailsCommand</value>
-        </property>
-        <property name="validator" ref="distributedStatusDetailsValidator"/>
-        <property name="successView">
-            <value>distributedStatusDetails</value>
-        </property>
-        <property name="distributedStatusService"
-                  ref="distributedStatusService"/>
     </bean>
 
     <bean name="/distributedStatusHistory.htm"
@@ -192,62 +165,6 @@
 
     <bean id="locationMonitorIdValidator" class="org.opennms.web.validator.LocationMonitorIdValidator">
         <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    </bean>
-
-    <bean name="/distributed/locationMonitorDetails.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorDetailsController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.LocationMonitorIdCommand</value>
-        </property>
-        <property name="validator" ref="locationMonitorIdValidator"/>
-        <property name="successView">
-            <value>distributed/locationMonitorDetails</value>
-        </property>
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-    </bean>
-
-    <bean name="/admin/distributed/locationMonitorPause.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorPauseController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.LocationMonitorIdCommand</value>
-        </property>
-        <property name="validator" ref="locationMonitorIdValidator"/>
-        <property name="successView">
-            <value>redirect:/distributed/locationMonitorList.htm</value>
-        </property>
-        <property name="errorView">
-            <value>distributed/error</value>
-        </property>
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-    </bean>
-
-    <bean name="/element/nodeList.htm" class="org.opennms.web.controller.node.NodeListController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.NodeListCommand</value>
-        </property>
-        <property name="successView">
-            <value>element/nodeList</value>
-        </property>
-        <property name="nodeListService" ref="nodeListService"/>
-    </bean>
-
-    <bean name="/admin/node/add.htm" class="org.opennms.web.controller.node.NodeProvisioningController">
-        <property name="redirectView">
-            <value>add.htm</value>
-        </property>
-        <property name="successView">
-            <value>admin/node/add</value>
-        </property>
-        <property name="nodeProvisionService" ref="nodeProvisionService"/>
     </bean>
 
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
@@ -311,6 +228,22 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
+    <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
+        <property name="successView" value="bsm/summary-box"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean name="/trend/trend.htm" class="org.opennms.web.controller.trend.TrendController">
+    </bean>
+
+    <bean name="/trend/trend-box.htm" class="org.opennms.web.controller.trend.TrendBoxController">
+    </bean>
+
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
+    </bean>
+
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
     </bean>
 
@@ -368,24 +301,6 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
-    <bean name="/admin/distributed/locationMonitorResume.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorResumeController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.LocationMonitorIdCommand</value>
-        </property>
-        <property name="validator" ref="locationMonitorIdValidator"/>
-        <property name="successView">
-            <value>redirect:/distributed/locationMonitorList.htm</value>
-        </property>
-        <property name="errorView">
-            <value>distributed/error</value>
-        </property>
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-    </bean>
-
     <bean name="/admin/distributed/locationMonitorPauseAll.htm"
           class="org.opennms.web.controller.distributed.LocationMonitorPauseAllController">
         <property name="distributedPollerService" ref="distributedPollerService"/>
@@ -396,24 +311,6 @@
           class="org.opennms.web.controller.distributed.LocationMonitorResumeAllController">
         <property name="distributedPollerService" ref="distributedPollerService"/>
         <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
-    </bean>
-
-    <bean name="/admin/distributed/locationMonitorDelete.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorDeleteController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.LocationMonitorIdCommand</value>
-        </property>
-        <property name="validator" ref="locationMonitorIdValidator"/>
-        <property name="successView">
-            <value>redirect:/distributed/locationMonitorList.htm</value>
-        </property>
-        <property name="errorView">
-            <value>distributed/error</value>
-        </property>
-        <property name="distributedPollerService" ref="distributedPollerService"/>
     </bean>
 
     <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
@@ -430,7 +327,7 @@
                     <property name="name" value="Distributed"/>
                     <property name="url" value="RemotePollerMap/index.jsp"/>
                     <property name="locationMatch" value="RemotePollerMap"/>
-                    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+                    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
                 </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Topology"/>
@@ -441,12 +338,6 @@
                     <property name="name" value="Geographical"/>
                     <property name="url" value="node-maps"/>
                     <property name="locationMatch" value="node-maps"/>
-                </bean>
-                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
-                    <property name="name" value="SVG"/>
-                    <property name="url" value="map/index.jsp"/>
-                    <property name="locationMatch" value="map"/>
-                    <property name="file" value="${opennms.home}/etc/map.enable"/>
                 </bean>
             </list>
         </property>
@@ -538,17 +429,31 @@
                                 <property name="url" value="outage/index.jsp"/>
                                 <property name="locationMatch" value="outage"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.SurveillanceViewNavBarEntry">
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Surveillance"/>
-                                <property name="url" value=""/>
-                                <property name="locationMatch" value="surveillance"/>
-                                <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+                                <property name="url" value="surveillance-view.jsp"/>
+                                <property name="locationMatch" value="surveillance-view"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Heatmap"/>
+                                <property name="url" value="heatmap/index.jsp"/>
+                                <property name="locationMatch" value="heatmap"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Trend"/>
+                                <property name="url" value="trend/index.jsp"/>
+                                <property name="locationMatch" value="trend"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                                 <property name="name" value="Distributed Status"/>
                                 <property name="url" value="distributedStatusSummary.htm"/>
                                 <property name="locationMatch" value="distributedstatus"/>
-                                <property name="locationMonitorDao" ref="locationMonitorDao"/>
+                                <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Scan Reports"/>
+                                <property name="url" value="scanreports/index.jsp"/>
+                                <property name="locationMatch" value="scanReport"/>
                             </bean>
                         </list>
                     </property>
@@ -571,7 +476,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="KSC Reports"/>
-                                <property name="url" value="KSC/index.htm"/>
+                                <property name="url" value="KSC/index.jsp"/>
                                 <property name="locationMatch" value="ksc"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -591,14 +496,6 @@
                 <ref bean="dashboardMenuEntries" />
 
                 <ref bean="mapMenuEntries" />
-
-<!-- called "Quick-Add Node" in the user menu now
-                <bean class="org.opennms.web.navigate.ProvisionUserNavBarEntry">
-                    <property name="name" value="Add Node"/>
-                    <property name="url" value="admin/node/add.htm"/>
-                    <property name="locationMatch" value="addNode"/>
-                </bean>
--->
 
 <!-- called "Configure OpenNMS" in the user menu now
                 <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">
@@ -635,15 +532,6 @@
         <property name="adminApplicationService" ref="adminApplicationService"/>
     </bean>
 
-    <!-- Graphing -->
-    <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="chooseResourceService" ref="chooseResourceService"/>
-        <property name="defaultEndUrl">
-            <value>graph/results.htm</value>
-        </property>
-    </bean>
-
     <!-- Database Reports -->
 
     <bean name="/report/database/index.htm"
@@ -657,14 +545,6 @@
 
     <bean name="/report/database/batchReport.htm"
           class="org.opennms.web.report.database.BatchReportFlowHander"/>
-    <bean name="/report/database/onlineReport.htm"
-          class="org.opennms.web.controller.OnlineReportController">
-        <property name="reportWrapperService" ref="reportWrapperService"/>
-        <property name="categoryConfigService" ref="categoryConfigService"/>
-        <property name="categoryDao" ref="categoryDao"/>
-        <property name="bindOnNewForm" value="true"/>
-        <property name="commandName" value="parameters"/>
-    </bean>
 
     <bean name="/report/database/downloadReport.htm"
           class="org.opennms.web.controller.DownloadReportController">
@@ -679,19 +559,7 @@
         <property name="rrdGraphService" ref="rrdGraphService"/>
     </bean>
 
-    <bean name="/summary/results.htm" class="org.opennms.web.controller.RrdSummaryController">
-        <property name="rrdSummaryService" ref="rrdSummaryService"/>
-    </bean>
-
     <!-- KSC reports -->
-    <bean name="/KSC/index.htm" class="org.opennms.web.controller.ksc.IndexController">
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/include-box.htm" class="org.opennms.web.controller.ksc.IncludeBoxController">
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
 
     <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
@@ -725,16 +593,6 @@
         <property name="resourceService" ref="resourceService"/>
     </bean>
 
-    <bean name="/KSC/customGraphChooseParentResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseParentResourceController">
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphChooseResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseResourceController">
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
     <bean name="/KSC/customGraphEditDetails.htm"
           class="org.opennms.web.controller.ksc.CustomGraphEditDetailsController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
@@ -750,19 +608,6 @@
         <property name="statisticsReportService" ref="statisticsReportService"/>
     </bean>
 
-    <bean name="/statisticsReports/report.htm" class="org.opennms.web.controller.statisticsReports.ReportController">
-        <property name="commandName">
-            <value>command</value>
-        </property>
-        <property name="commandClass">
-            <value>org.opennms.web.command.StatisticsReportCommand</value>
-        </property>
-        <property name="validator" ref="statisticsReportCommandValidator"/>
-        <property name="successView">
-            <value>statisticsReports/report</value>
-        </property>
-        <property name="statisticsReportService" ref="statisticsReportService"/>
-    </bean>
 
     <!--  Rancid Integration -->
     <!-- RANCID stuff -->
@@ -790,83 +635,9 @@
         <property name="inventoryService" ref="inventoryService"/>
     </bean>
 
-    <bean name="/admin/rancid/rancidCreate.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidCreateController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidUpdate.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidUpdateController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidDelete.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidDeleteController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidStatus.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidStatusController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidRouterDbCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidClogin.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidCloginUpdateController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidCloginCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidDeleteClogin.htm"
-          class="org.opennms.web.controller.inventory.AdminRancidCloginDeleteController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminRancidCloginCommClass"/>
-        <property name="formView" value="admin/rancid/rancidAdmin"/>
-        <property name="successView" value="admin/rancid/rancidAdmin"/>
-    </bean>
-
-
-    <bean name="/inventory/rancidReportExec.htm"
-          class="org.opennms.web.controller.inventory.RancidReportExecController">
-        <property name="inventoryReportService" ref="inventoryReportService"/>
-        <property name="configurationReportService" ref="configurationReportService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.RancidReportExecCommClass"/>
-        <property name="formView" value="inventory/rancidReportExec"/>
-        <property name="successView" value="inventory/rancidReportExec"/>
-    </bean>
-
 
     <bean name="/admin/storage/storageAdmin.htm" class="org.opennms.web.controller.inventory.AdminStorageController">
         <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/admin/storage/storageCreateBucket.htm"
-          class="org.opennms.web.controller.inventory.AdminStorageCreateBucketController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminStorageCommClass"/>
-        <property name="formView" value="admin/storage/storageAdmin"/>
-        <property name="successView" value="admin/storage/storageAdmin"/>
-    </bean>
-
-    <bean name="/admin/storage/storageDeleteBucket.htm"
-          class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketController">
-        <property name="inventoryService" ref="inventoryService"/>
-        <property name="commandClass" value="org.opennms.web.controller.inventory.AdminStorageCommClass"/>
-        <property name="formView" value="admin/storage/storageAdmin"/>
-        <property name="successView" value="admin/storage/storageAdmin"/>
     </bean>
 
     <bean name="/admin/storage/storageDeleteBucketItem.htm"
@@ -874,6 +645,26 @@
         <property name="inventoryService" ref="inventoryService"/>
     </bean>
 
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="notifdConfigFactory-init">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
+
+    <bean name="/admin/notification/noticeWizard/eventNotices.htm"
+          class="org.opennms.web.controller.admin.notifications.EventNoticesController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="notificationFactory" ref="notificationFactory"/>
+    </bean>
+
+    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
+          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
 
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">

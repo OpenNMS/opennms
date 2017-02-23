@@ -47,7 +47,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.responder.Sleeper;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
@@ -57,11 +56,12 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -76,7 +76,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -141,10 +141,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         // Create our event manager and anticipator
-        m_anticipator = new EventAnticipator();
-
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.setSynchronous(true);
 
         // Ensure our annotations are called
@@ -592,18 +589,18 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
         // No event should be generated
         sleep(POLLING_INTERVAL_DELTA);
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        assertEquals("Received unexpected events", 0, m_anticipator.getUnanticipatedEvents().size());
         m_anticipator.reset();
     }
 
     private void verifyAnticipated(long millis) {
         // Verify the AP UP/DOWN events
         LOG.debug("Events we're still waiting for: {}", m_anticipator.waitForAnticipated(millis));
-        LOG.debug("Unanticipated: {}", m_anticipator.unanticipatedEvents());
+        LOG.debug("Unanticipated: {}", m_anticipator.getUnanticipatedEvents());
 
         assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
         sleep(200);
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        assertEquals("Received unexpected events", 0, m_anticipator.getUnanticipatedEvents().size());
         m_anticipator.reset();
     }
 

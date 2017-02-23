@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
@@ -40,9 +42,10 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsAlarm alarm) {
-        super.save(alarm);
+    public Integer save(final OnmsAlarm alarm) {
+        Integer retval = super.save(alarm);
         updateSubObjects(alarm);
+        return retval;
     }
 
     @Override
@@ -52,7 +55,9 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     }
 
     private void updateSubObjects(final OnmsAlarm alarm) {
-        getDistPollerDao().save(alarm.getDistPoller());
+        // Assume that the system ID is the ID of an OpenNMS system
+        // instead of a Minion or Remote Poller
+        getDistPollerDao().save((OnmsDistPoller)alarm.getDistPoller());
         getEventDao().save(alarm.getLastEvent());
         getNodeDao().save(alarm.getNode());
         getServiceTypeDao().save(alarm.getServiceType());
@@ -85,6 +90,11 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
 
     @Override
     public List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }

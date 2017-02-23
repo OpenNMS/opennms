@@ -30,10 +30,9 @@ package org.opennms.netmgt.enlinkd;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
+import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -45,10 +44,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public abstract class NodeDiscovery implements ReadyRunnable {
 
-	/**
+    /**
      * The node ID of the system used to collect the SNMP information
      */
-    protected final LinkableSnmpNode m_node;
+    protected final Node m_node;
 
     /**
      * The scheduler object
@@ -71,7 +70,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
 
     protected final EnhancedLinkd m_linkd;
-
+    
     /**
      * Constructs a new SNMP collector for a node using the passed interface
      * as the collection point. The collection does not occur until the
@@ -81,7 +80,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public NodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
@@ -100,46 +99,55 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      */
     public void run() {
-    	EventBuilder builder;
         if (m_suspendCollection) {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
+            sendSuspendedEvent(getNodeId());
         } else {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-            
+            sendStartEvent(getNodeId());
             runCollection();
-            
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-
+            sendCompletedEvent(getNodeId());
         }
         m_runned = true;
         reschedule();
     }
+
+    protected void sendSuspendedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+       m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
     
+    protected void sendStartEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+        
+    }
+    
+    protected void sendCompletedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+
     protected abstract void runCollection(); 
     /**
      * <p>
      * getScheduler
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         return m_scheduler;
@@ -151,7 +159,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      * 
      * @param scheduler
-     *            a {@link org.opennms.netmgt.linkd.scheduler.Scheduler}
+     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
      *            object.
      */
     public void setScheduler(Scheduler scheduler) {
@@ -173,7 +181,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     /**
 	 * 
 	 */
-    private void reschedule() {
+    public void reschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
@@ -265,7 +273,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getTarget());
+        return m_linkd.getSnmpAgentConfig(getTarget(), m_node.getLocation());
     }
 
     /**
@@ -360,6 +368,10 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         return m_node.getSysname();
     }
 
+    public String getLocation() {
+        return m_node.getLocation();
+    }
+
     public abstract String getName();
 
 	@Override
@@ -393,6 +405,5 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 		if (m_poll_interval != other.m_poll_interval)
 			return false;
 		return true;
-	}
-    
+	}	
 }

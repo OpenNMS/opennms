@@ -38,13 +38,14 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,29 +57,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class TcaCollector implements ServiceCollector {
+public class TcaCollector extends AbstractLegacyServiceCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(TcaCollector.class);
 
 	/** The TCA Data Collection Configuration DAO. */
 	private TcaDataCollectionConfigDao m_configDao;
 
-	/**
-	 * Gets the TCA Data Collection Configuration DAO.
-	 *
-	 * @return the TCA Data Collection Configuration DAO
-	 */
-	public TcaDataCollectionConfigDao getConfigDao() {
-		return m_configDao;
-	}
-
-	/**
-	 * Sets the TCA Data Collection Configuration DAO.
-	 *
-	 * @param configDao the new TCA Data Collection Configuration DAO
-	 */
-	public void setConfigDao(TcaDataCollectionConfigDao configDao) {
-		this.m_configDao = configDao;
-	}
+	private ResourceStorageDao m_resourceStorageDao;
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(java.util.Map)
@@ -96,8 +81,13 @@ public class TcaCollector implements ServiceCollector {
 		}
 
 		// Retrieve the DAO for our configuration file.
-		if (m_configDao == null)
-			m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
+		if (m_configDao == null) {
+		    m_configDao = BeanUtils.getBean("daoContext", "tcaDataCollectionConfigDao", TcaDataCollectionConfigDao.class);
+		}
+
+		if (m_resourceStorageDao == null) {
+		    m_resourceStorageDao = BeanUtils.getBean("daoContext", "resourceStorageDao", ResourceStorageDao.class);
+		}
 
 		// If the RRD file repository directory does NOT already exist, create it.
 		LOG.debug("initialize: Initializing RRD repo from XmlCollector...");
@@ -146,7 +136,7 @@ public class TcaCollector implements ServiceCollector {
 			if (collectionName == null) {
 				throw new CollectionException("Parameter collection is required for the TCA Collector!");
 			}
-			TcaCollectionSet collectionSet = new TcaCollectionSet((SnmpCollectionAgent)agent, getRrdRepository(collectionName));
+			TcaCollectionSet collectionSet = new TcaCollectionSet((SnmpCollectionAgent)agent, getRrdRepository(collectionName), m_resourceStorageDao);
 			collectionSet.setCollectionTimestamp(new Date());
 			collectionSet.collect();
 			return collectionSet;
@@ -162,4 +152,31 @@ public class TcaCollector implements ServiceCollector {
 	public RrdRepository getRrdRepository(String collectionName) {
 		return m_configDao.getConfig().buildRrdRepository(collectionName);
 	}
+
+
+    /**
+     * Gets the TCA Data Collection Configuration DAO.
+     *
+     * @return the TCA Data Collection Configuration DAO
+     */
+    public TcaDataCollectionConfigDao getConfigDao() {
+        return m_configDao;
+    }
+
+    /**
+     * Sets the TCA Data Collection Configuration DAO.
+     *
+     * @param configDao the new TCA Data Collection Configuration DAO
+     */
+    public void setConfigDao(TcaDataCollectionConfigDao configDao) {
+        this.m_configDao = configDao;
+    }
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
+    }
 }

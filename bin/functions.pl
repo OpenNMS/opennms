@@ -12,6 +12,7 @@ use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
 use IPC::Open2;
+use Scalar::Util qw(looks_like_number);
 
 use vars qw(
 	$BUILD_PROFILE
@@ -28,7 +29,9 @@ use vars qw(
 	$PREFIX
 	$SKIP_OPENJDK
 	$TESTS
+	$SINGLE_TEST
 	$VERBOSE
+	@DEFAULT_GOALS
 	@ARGS
 );
 @ARGS          = ();
@@ -39,6 +42,7 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 $PATHSEP       = $Config{'path_sep'};
 $SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 $VERBOSE       = undef;
+@DEFAULT_GOALS = ( "install" );
 
 @JAVA_SEARCH_DIRS = qw(
 	/usr/lib/jvm
@@ -87,12 +91,10 @@ if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
 }
 
-if (not $MAVEN_OPTS =~ /\:PermSize/) {
-	$MAVEN_OPTS .= " -XX:PermSize=512m";
-}
-
-if (not $MAVEN_OPTS =~ /MaxPermSize/) {
-	$MAVEN_OPTS .= " -XX:MaxPermSize=1g";
+if (not $MAVEN_OPTS =~ /TieredCompilation/) {
+	# Improve startup speed by disabling collection of extra profiling information during compiles since they're not
+	# long-running enough for them to be a net-win for performance.
+	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
 }
 
 if (not $MAVEN_OPTS =~ /-Xmx/) {
@@ -101,12 +103,6 @@ if (not $MAVEN_OPTS =~ /-Xmx/) {
 
 if (not $MAVEN_OPTS =~ /ReservedCodeCacheSize/) {
 	$MAVEN_OPTS .= " -XX:ReservedCodeCacheSize=512m";
-}
-
-if (not $MAVEN_OPTS =~ /TieredCompilation/) {
-	# Improve startup speed by disabling collection of extra profiling information during compiles since they're not
-	# long-running enough for them to be a net-win for performance.
-	$MAVEN_OPTS .= " -XX:+TieredCompilation -XX:TieredStopAtLevel=1";
 }
 
 if (not $MAVEN_OPTS =~ /UseGCOverheadLimit/) {
@@ -128,6 +124,7 @@ if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
+	"single-test|T=s"            => \$SINGLE_TEST,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
 	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
@@ -155,8 +152,10 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
-	-t/--enable-tests      enable tests when building
-	-l/--log-level         log level (error/warning/info/debug)
+	-t/--enable-tests      enable integration tests when building
+	-T/--single-test CLASS run a single unit/integration test
+	-l/--log-level LEVEL   log level (error/warning/info/debug)
+	-v/--verbose           verbose mode (shorthand for "--log-level debug")
 END
 	exit 1;
 }
@@ -216,12 +215,20 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
+if (defined $SINGLE_TEST) {
+        if ($SINGLE_TEST =~ m/IT$/) {
+		$TESTS = 1;
+		@DEFAULT_GOALS = ( "failsafe:integration-test", "failsafe:verify" );
+		debug("running single integration test");
+		unshift(@ARGS, '-Dit.test=' . $SINGLE_TEST);
+	} else {
+		debug("running single unit test");
+		unshift(@ARGS, '-Dtest=' . $SINGLE_TEST);
+	}
+}
 if (defined $TESTS) {
-	debug("tests are enabled");
-	unshift(@ARGS, '-DfailIfNoTests=false');
-} else {
-	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
-	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
+	debug("integration tests are enabled");
+	unshift(@ARGS, '-DskipITs=false');
 }
 unshift(@ARGS, '-Djava.awt.headless=true');
 
@@ -254,7 +261,7 @@ if (-r File::Spec->catfile($ENV{'HOME'}, '.opennms-buildrc')) {
 	if (open(FILEIN, File::Spec->catfile($ENV{'HOME'}, '/.opennms-buildrc'))) {
 		while (my $line = <FILEIN>) {
 			chomp($line);
-			if ($line !~ /^\s*$/ && $line !~ /^\s*\#/) {
+			if ($line !~ /^\s*$/ and $line !~ /^\s*\#/) {
 				unshift(@ARGS, $line);
 			}
 		}
@@ -305,7 +312,7 @@ sub find_git {
 }
 
 sub get_minimum_java {
-	my $minimum_java = '1.7';
+	my $minimum_java = '1.8';
 
 	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
 	if (-e $pomfile) {
@@ -332,9 +339,9 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
-	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
-	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?$/ms;
+	($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
+	($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
 	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
@@ -371,6 +378,10 @@ sub find_java_home {
 					next if ($java  =~ /openjdk/i);
 					next if ($build =~ /openjdk/i);
 				}
+				next unless (defined $shortversion and $shortversion);
+
+				$versions->{$shortversion}             = {} unless (exists $versions->{$shortversion});
+				$versions->{$shortversion}->{$version} = {} unless (exists $versions->{$shortversion}->{$version});
 
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
@@ -382,7 +393,7 @@ sub find_java_home {
 	my $highest_valid = undef;
 
 	for my $majorversion (sort keys %$versions) {
-		if ($majorversion < $minimum_java) {
+		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and $majorversion < $minimum_java) {
 			next;
 		}
 
@@ -427,6 +438,10 @@ sub clean_git {
 
 sub clean_m2_repository {
 	my %dirs;
+	my $repodir = File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository');
+	if (not -d $repodir) {
+		return;
+	}
 	find(
 		{
 			wanted => sub {
@@ -436,7 +451,7 @@ sub clean_m2_repository {
 				}
 			}
 		},
-		File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository')
+		$repodir
 	);
 	my @remove = sort keys %dirs;
 	info("cleaning up old m2_repo directories: " . @remove);

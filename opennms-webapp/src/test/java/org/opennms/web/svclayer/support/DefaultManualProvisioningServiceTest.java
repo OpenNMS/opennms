@@ -29,12 +29,26 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -42,7 +56,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
-public class DefaultManualProvisioningServiceTest extends TestCase {
+public class DefaultManualProvisioningServiceTest {
     
     private DefaultManualProvisioningService m_provisioningService;
 
@@ -50,23 +64,27 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
     
     private ForeignSourceRepository m_activeRepository = new MockForeignSourceRepository();
     private ForeignSourceRepository m_pendingRepository = new MockForeignSourceRepository();
+    private MockServiceTypeDao m_serviceTypeDao = new MockServiceTypeDao();
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         m_testData = m_activeRepository.importResourceRequisition(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
 
         m_provisioningService = new DefaultManualProvisioningService();
         m_provisioningService.setDeployedForeignSourceRepository(m_activeRepository);
         m_provisioningService.setPendingForeignSourceRepository(m_pendingRepository);
+        m_provisioningService.setServiceTypeDao(m_serviceTypeDao);
     }
 
+    @Test
     public void testGetProvisioningGroupNames() {
         Set<String> expected = new TreeSet<String>();
         expected.add("matt:");
         Collection<String> groupNames = m_provisioningService.getProvisioningGroupNames();
         assertEquals(expected, groupNames);
     }
-    
+
+    @Test
     public void testGetProvisioningGroup() {
         String name = "matt:";
         
@@ -74,7 +92,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         Requisition actual = m_provisioningService.getProvisioningGroup(name);
         assertEquals(expected, actual);
     }
-    
+
+    @Test
     public void testAddNewNodeToGroup() {
         String groupName = "matt:";
         String nodeLabel = "david";
@@ -88,7 +107,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertEquals(initialCount+1, newCount);
         assertEquals(nodeLabel, result.getNodes().get(0).getNodeLabel());
     }
-    
+
+    @Test
     public void testAddCategoryToNode() {
         String groupName = "matt:";
         String pathToNode = "node[0]";
@@ -105,7 +125,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
-    
+
+    @Test
     public void testAddInterfaceToNode() {
         String groupName = "matt:";
         String pathToNode = "node[0]";
@@ -122,7 +143,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
-    
+
+    @Test
     public void testAddServiceToInterface() {
         String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
@@ -138,7 +160,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
     }
-    
+
+    @Test
     public void testDeletePath() {
         String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
@@ -155,5 +178,29 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(svc);
         assertFalse(svc.getServiceName().equals(svcName));
     }
-    
+
+    @Test
+    public void serviceTypeNamesIncludesServiceFromPollerConfiguration() {
+        // Map of service monitors
+        final Map<String, ServiceMonitor> serviceMonitors = new HashMap<String, ServiceMonitor>();
+        serviceMonitors.put("Shochu-Stock-Level", new AbstractServiceMonitor() {
+            @Override
+            public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+                return null;
+            }
+        });
+
+        // Build a mock config. that returns our map
+        final PollerConfig pollerConfig = EasyMock.createNiceMock(PollerConfig.class);
+        EasyMock.expect(pollerConfig.getServiceMonitors()).andReturn(serviceMonitors).anyTimes();
+        m_provisioningService.setPollerConfig(pollerConfig);
+
+        EasyMock.replay(pollerConfig);
+
+        final Collection<String> services = m_provisioningService.getServiceTypeNames("");
+        assertTrue(services.contains("ICMP"));
+        assertTrue(services.contains("Shochu-Stock-Level"));
+
+        EasyMock.verify(pollerConfig);
+    }
 }

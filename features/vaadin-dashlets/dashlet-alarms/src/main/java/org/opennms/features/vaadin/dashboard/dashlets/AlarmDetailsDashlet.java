@@ -28,14 +28,26 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import com.google.common.collect.Lists;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.plugins.browsers.*;
+import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
+import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
+import org.opennms.features.topology.plugins.browsers.AlarmTable;
+import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -44,12 +56,20 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionOperations;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a Alert Dashlet with some details.
@@ -60,11 +80,11 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * The {@link AlarmDao} used
      */
-    private AlarmDao m_alarmDao;
+    private final AlarmDao m_alarmDao;
     /**
      * The {@link NodeDao} used
      */
-    private NodeDao m_nodeDao;
+    private final NodeDao m_nodeDao;
     /**
      * Helper for handling criterias
      */
@@ -80,7 +100,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * alarm table
      */
-    AlarmRepository m_alarmRepository;
+    private final AlarmRepository m_alarmRepository;
+
+    private final TransactionOperations m_transactionTemplate;
 
     /**
      * Constructor for instantiating new objects.
@@ -89,7 +111,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
         super(name, dashletSpec);
 
         /**
@@ -98,6 +120,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
+        m_transactionTemplate = transactionTemplate;
     }
 
     @Override
@@ -162,7 +185,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 private AlarmTable m_alarmTable;
 
                 {
-                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao), m_alarmRepository);
+                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao, m_transactionTemplate), m_alarmRepository);
 
                     m_alarmTable.setSizeFull();
 
@@ -229,7 +252,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     List<Restriction> restrictions = new LinkedList<Restriction>();
                     restrictions.add(new InRestriction("id", alarmIds));
 
-                    ((OnmsDaoContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+                    ((OnmsVaadinContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
 
                     setBoosted(checkBoosted(alarms));
 
@@ -275,9 +298,22 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
-        alarmCb.distinct();
+        /**
+         * due to restrictions in the criteria api it's quite hard
+         * to use distinct and orderBy together, so I apply a workaround
+         * to avoid alarmCb.distinct();
+         */
 
-        return m_alarmDao.findMatching(alarmCb.toCriteria());
+        List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
+        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
+
+        for (OnmsAlarm onmsAlarm : onmsAlarmList) {
+            if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {
+                onmsAlarmMap.put(onmsAlarm.getId(), onmsAlarm);
+            }
+        }
+
+        return Lists.newArrayList(onmsAlarmMap.values());
     }
 
     /**
@@ -294,9 +330,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         } else {
             StringBuilder sb = new StringBuilder();
 
-            sb.append("<table class='onms'>");
+            sb.append("<table class='alert-details-dashlet onms-table'>");
             sb.append("<thead>");
-            sb.append("<th class='onms'>ID</th><th class='onms'>Severity</th><th class='onms'>Node</th><th class='onms'>Count</th><th class='onms'>Last Event Time</th><th class='onms'>Log Msg</th>");
+            sb.append("<th class='alert-details-dashlet onms-header-cell'>ID</th><th class='alert-details-dashlet onms-header-cell'>Severity</th><th class='alert-details-dashlet onms-header-cell'>Node</th><th class='alert-details-dashlet onms-header-cell'>Count</th><th class='alert-details-dashlet onms-header-cell'>Last Event Time</th><th class='alert-details-dashlet onms-header-cell'>Log Msg</th>");
             sb.append("</thead>");
 
             for (OnmsAlarm onmsAlarm : alarms) {
@@ -313,14 +349,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     }
                 }
 
-                String s = "";
-                sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
-                sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
+                sb.append("<tr class='alert-details-dashlet " + onmsAlarm.getSeverity().getLabel() + "'>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
             sb.append("</table>");

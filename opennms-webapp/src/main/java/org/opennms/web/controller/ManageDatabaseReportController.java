@@ -34,7 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.command.ManageDatabaseReportCommand;
+import org.opennms.web.svclayer.model.ManageDatabaseReportCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;

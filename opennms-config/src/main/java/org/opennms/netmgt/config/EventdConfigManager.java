@@ -227,6 +227,10 @@ public class EventdConfigManager implements EventdConfig {
     /**
      * Return the SQL statement to get the next event ID.
      *
+     * @deprecated This is only used when using {@link JdbcEventWriter}
+     * so when we remove the JDBC implementation, we can get rid of this
+     * class.
+     * 
      * @return the SQL statement to get the next event ID
      */
     public String getGetNextEventID() {

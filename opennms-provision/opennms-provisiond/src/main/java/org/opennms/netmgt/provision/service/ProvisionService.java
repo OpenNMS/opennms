@@ -34,18 +34,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author brozow
  */
 public interface ProvisionService {
-    
-	
+
     boolean isRequisitionedEntityDeletionEnabled();
 
     boolean isDiscoveryEnabled();
@@ -69,22 +71,18 @@ public interface ProvisionService {
     void clearCache();
 
     /**
-     * Lookup a distPoller in the database, creating it if necessary. This
-     * method looks up the OnmsDistPoller object with the name 'dpName' in the
-     * database and returns it. If there is not distPoller with that name that
-     * one is created using the name and the address provided, saved in the
-     * database, and returned.
+     * Lookup a monitoring location in the database, creating it if necessary. This
+     * method looks up the {@link OnmsMonitoringLocation} object with the ID 'locationId' in the
+     * database and returns it. If there is no {@link OnmsMonitoringLocation} with that name then
+     * one is created using the name provided, saved in the database, and returned.
      *
-     * @param dpName
-     *            The name of the distPoller that is needed
-     * @param dpAddr
-     *            The address to give the new distPoller if it is necessary to
-     *            create one
-     * @return a new distPoller that will be saved to the database when the
+     * @param locationId
+     *            The ID of the {@link OnmsMonitoringLocation} that is needed
+     * @return a new {@link OnmsMonitoringLocation} that will be saved to the database when the
      *         transaction is committed.
      */
     @Transactional
-    OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr);
+    OnmsMonitoringLocation createLocationIfNecessary(String locationId);
 
     /**
      * Update the database entry for the given node. The node supplied is used
@@ -138,7 +136,6 @@ public interface ProvisionService {
 
     @Transactional
     void deleteService(Integer nodeId, InetAddress addr, String service);
-
 
     /**
      * Insert the provided node into the database
@@ -212,8 +209,8 @@ public interface ProvisionService {
 
     Requisition loadRequisition(Resource resource);
 
-    List<ServiceDetector> getDetectorsForForeignSource(String foreignSource);
-    
+    List<PluginConfig> getDetectorsForForeignSource(String foreignSource);
+
     List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     
     List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName);
@@ -233,7 +230,7 @@ public interface ProvisionService {
     OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
     @Transactional
-    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource);
+    OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location);
 
     @Transactional
     OnmsNode getNode(Integer nodeId);
@@ -241,4 +238,9 @@ public interface ProvisionService {
     public HostnameResolver getHostnameResolver();
     public void setHostnameResolver(final HostnameResolver resolver);
 
+    LocationAwareDetectorClient getLocationAwareDetectorClient();
+
+    LocationAwareSnmpClient getLocationAwareSnmpClient();
+
+    LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
 }

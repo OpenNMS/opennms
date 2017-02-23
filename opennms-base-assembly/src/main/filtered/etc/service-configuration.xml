@@ -8,56 +8,6 @@ maintained
 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service>
-    <name>:Name=XSLTProcessor</name>
-    <class-name>mx4j.tools.adaptor.http.XSLTProcessor</class-name>
-  </service>
-  <service>
-    <name>:Name=HttpAdaptor</name>
-    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>
-    <attribute>
-      <name>Port</name>
-      <value type="java.lang.Integer">8180</value>
-    </attribute>
-    <attribute>
-      <name>Host</name>
-      <value type="java.lang.String">127.0.0.1</value>
-    </attribute>
-    <attribute>
-      <name>ProcessorName</name>
-      <value type="javax.management.ObjectName">:Name=XSLTProcessor</value>
-    </attribute>
-    <attribute>
-      <name>AuthenticationMethod</name>
-      <value type="java.lang.String">basic</value>
-    </attribute>
-    <invoke at="start" pass="0" method="addAuthorization">
-      <argument type="java.lang.String">admin</argument>
-      <argument type="java.lang.String">admin</argument>
-    </invoke>
-    <invoke at="start" pass="0" method="start"/>
-  </service>
-  <service>
-    <name>:Name=HttpAdaptorMgmt</name>
-    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>
-    <attribute>
-      <name>Port</name>
-      <value type="java.lang.Integer">8181</value>
-    </attribute>
-    <attribute>
-      <name>Host</name>
-      <value type="java.lang.String">127.0.0.1</value>
-    </attribute>
-    <attribute>
-      <name>AuthenticationMethod</name>
-      <value type="java.lang.String">basic</value>
-    </attribute>
-    <invoke at="start" pass="0" method="addAuthorization">
-      <argument type="java.lang.String">manager</argument>
-      <argument type="java.lang.String">manager</argument>
-    </invoke>
-    <invoke at="start" pass="0" method="start"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Manager</name>
     <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
     <invoke at="stop" pass="1" method="doSystemExit"/>
@@ -103,14 +53,6 @@ maintained
   <service>
     <name>OpenNMS:Name=Actiond</name>
     <class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=Capsd</name>
-    <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
@@ -261,6 +203,22 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
+    <name>OpenNMS:Name=Bsmd</name>
+    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
+    <attribute>
+      <name>LoggingPrefix</name>
+      <value type="java.lang.String">bsmd</value>
+    </attribute>
+    <attribute>
+      <name>SpringContext</name>
+      <value type="java.lang.String">bsmdContext</value>
+    </attribute>
+    <invoke at="start" pass="0" method="init"/>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+  <service>
     <name>OpenNMS:Name=Alarmd</name>
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
@@ -301,14 +259,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="false">
-    <name>OpenNMS:Name=Linkd</name>
-    <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
     <name>OpenNMS:Name=Correlator</name>
     <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -333,34 +283,8 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="false">
-    <name>OpenNMS:Name=Xmlrpcd</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Xmlrpcd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=XmlrpcProvisioner</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
     <name>OpenNMS:Name=AsteriskGateway</name>
     <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <!--  AccessPointMonitor is now distributed separately. You will need to ensure
-        it is installed before you enable it here. -->
-  <service enabled="false">
-    <name>OpenNMS:Name=AccessPointMonitor</name>
-    <class-name>org.opennms.netmgt.accesspointmonitor.jmx.AccessPointMonitor</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

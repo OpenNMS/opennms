@@ -1,0 +1,78 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== CDP Discovery
+
+The _Cisco Discovery Protocol (CDP)_ is a proprietary link layer protocol from _Cisco_.
+It is used by network devices to advertise identity, capabilities and neighbors.
+_CDP_ performs functions similar to several proprietary protocols, such as the _Link Layer Discovery Protocol (LLDP)_, _Extreme Discovery Protocol_, _Foundry Discovery Protocol (FDP)_, _Nortel Discovery Protocol (also known as SONMP)_, and _Microsoft's Link Layer Topology Discovery (LLTD)_.
+The _CDP_ discovery uses information provided by the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-CDP-MIB[CISCO-CDP-MIB] and link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-VTP-MIB[CISCO-VTP-MIB].
+
+NOTE: Only nodes with a running _CDP_ process can be part of the link discovery.
+      The data is similar to running a `show cdp neighbor` command on the IOS CLI of the device.
+      Linux and Windows servers don't have a _CDP_ process running by default and will not be part of the link discovery.
+
+The following OIDs are supported to discover and build the _CDP_ network topology.
+
+.Supported OIDS from the IF-MIB
+[options="header, autowidth"]
+|===
+| Name                      | OID                             | Description
+| _ifDescr_                 | `.1.3.6.1.2.1.2.2.1.2`          | A textual string containing information about the interface.
+                                                                This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.
+|===
+
+.Supported OIDS from the CISCO-CDP-MIB to discover links
+[options="header, autowidth"]
+|===
+| Name                      | OID                             | Description
+| _cdpInterfaceName_        | `.1.3.6.1.4.1.9.9.23.1.1.1.1.6` | The name of the local interface as advertised by _CDP_ in the _Port-ID TLV_.
+| _cdpCacheEntry_           | `.1.3.6.1.4.1.9.9.23.1.2.1.1`   | An entry (conceptual row) in the _cdpCacheTable_, containing the information received via _CDP_ on one interface from one device.
+                                                                Entries appear when a _CDP_ advertisement is received from a neighbor device.
+                                                                Entries disappear when _CDP_ is disabled on the interface, or globally.
+| _cdpCacheAddressType_     | `.1.3.6.1.4.1.9.9.23.1.2.1.1.3` | An indication of the type of address contained in the corresponding instance of _cdpCacheAddress_.
+| _cdpCacheAddress_         | `.1.3.6.1.4.1.9.9.23.1.2.1.1.4` | The (first) network-layer address of the device's SNMP-agent as reported in the Address _TLV_ of the most recently received _CDP_ message.
+                                                                For example, if the corresponding instance of _cacheAddressType_ had the value `ip(1)`, then this object would be an IP-address.
+| _cdpCacheVersion_         | `.1.3.6.1.4.1.9.9.23.1.2.1.1.5` | The Version string as reported in the most recent _CDP_ message.
+                                                                The zero-length string indicates no Version field _(TLV)_ was reported in the most recent _CDP_ message.
+| _cdpCacheDeviceId_        | `.1.3.6.1.4.1.9.9.23.1.2.1.1.6` | The _Device-ID_ string as reported in the most recent _CDP_ message.
+                                                                The zero-length string indicates no _Device-ID_ field _(TLV)_ was reported in the most recent _CDP_ message.
+| _cdpCacheDevicePort_      | `.1.3.6.1.4.1.9.9.23.1.2.1.1.7` | The _Port-ID_ string as reported in the most recent _CDP_ message.
+                                                                This will typically be the value of the _ifName_ object (e.g., `Ethernet0`).
+                                                                The zero-length string indicates no _Port-ID_ field _(TLV)_ was reported in the most recent _CDP_ message.
+| _cdpCachePlatform_        | `.1.3.6.1.4.1.9.9.23.1.2.1.1.8` | The Device's Hardware Platform as reported in the most recent _CDP_ message.
+                                                                The zero-length string indicates that no Platform field _(TLV)_ was reported in the most recent _CDP_ message.
+| _cdpGlobalRun_            | `.1.3.6.1.4.1.9.9.23.1.3.1.0`   | An indication of whether the Cisco Discovery Protocol is currently running.
+                                                                Entries in _cdpCacheTable_ are deleted when CDP is disabled.
+| _cdpGlobalDeviceId_       | `.1.3.6.1.4.1.9.9.23.1.3.4.0`   | The device ID advertised by this device.
+                                                                The format of this device id is characterized by the value of _cdpGlobalDeviceIdFormat_ object.
+| _cdpGlobalDeviceIdFormat_ | `.1.3.6.1.4.1.9.9.23.1.3.7.0`   | An indication of the format of Device-Id contained in the corresponding instance of _cdpGlobalDeviceId_.
+                                                                User can only specify the formats that the device is capable of as denoted in _cdpGlobalDeviceIdFormatCpb_ object. +
+                                                                *_serialNumber(1):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of an _ASCII_ string contain the device serial number. +
+                                                                *_macAddress(2):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of Layer 2 MAC address. +
+                                                                *_other(3):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of a platform specific _ASCII_ string contain info that identifies the device.
+                                                                For example: _ASCII string_ contains _serialNumber_ appended/prepened with system name.
+|===
+
+.Supported OIDS from the CISCO-VTP-MIB.
+[options="header, autowidth"]
+|===
+| _vtpVersion_              | `.1.3.6.1.4.1.9.9.46.1.1.1.0`   | The version of VTP in use on the local system.
+                                                                A device will report its version capability and not any particular version in use on the device.
+                                                                If the device does not support _VTP_, the version is _none(3)_.
+| _ciscoVtpVlanState_       | `.1.3.6.1.4.1.9.9.46.1.3.1.1.2` | The state of this _VLAN_.
+                                                                The state _mtuTooBigForDevice_ indicates that this device cannot participate in this _VLAN_ because the _VLAN's MTU_ is larger than the device can support. +
+                                                                The state _mtuTooBigForTrunk_ indicates that while this _VLAN's MTU_ is supported by this device, it is too large for one or more of the device's trunk ports. +
+                                                                _operational(1)_, _suspended(2)_, _mtuTooBigForDevice(3)_, _mtuTooBigForTrunk(4)_
+| _ciscoVtpVlanType_        | `.1.3.6.1.4.1.9.9.46.1.3.1.1.3` | The type of this _VLAN_. +
+                                                                _ethernet(1)_, _fddi(2)_, _tokenRing(3)_, _fddiNet(4)_, _trNet(5)_, _deprecated(6)_
+| _ciscoVtpVlanName_        | `.1.3.6.1.4.1.9.9.46.1.3.1.1.4` | The name of this _VLAN_.
+                                                                This name is used as the _ELAN-name_ for an _ATM LAN-Emulation_ segment of this _VLAN_.
+|===
+
+Generic information about the _CDP_ process can be found in the _CDP Information_ box on the _Node Detail Page_ of the device.
+Information gathered from these OIDs will be stored in the following database table:
+
+.Database tables related to CDP discovery
+image::enlinkd/cdp-database.png[]

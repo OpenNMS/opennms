@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -143,48 +144,6 @@ public abstract class MonitorTester {
         @Override
         public Logger getParentLogger() throws SQLFeatureNotSupportedException {
             throw new SQLFeatureNotSupportedException("getParentLogger not supported");
-        }
-    }
-
-    public static class SimpleMonitoredService implements MonitoredService {
-        private InetAddress ipAddress;
-        private int nodeId;
-        private String nodeLabel;
-        private String svcName;
-
-        public SimpleMonitoredService(final InetAddress ipAddress, int nodeId, String nodeLabel, String svcName) {
-            this.ipAddress = ipAddress;
-            this.nodeId = nodeId;
-            this.nodeLabel = nodeLabel;
-            this.svcName = svcName;
-        }
-
-        public String getSvcUrl() {
-            return null;
-        }
-
-        public String getSvcName() {
-            return svcName;
-        }
-
-        public String getIpAddr() {
-            return ipAddress.getHostAddress();
-        }
-
-        public int getNodeId() {
-            return nodeId;
-        }
-
-        public String getNodeLabel() {
-            return nodeLabel;
-        }
-
-        public NetworkInterface<InetAddress> getNetInterface() {
-            return new InetNetworkInterface(getAddress());
-        }
-
-        public InetAddress getAddress() {
-            return ipAddress;
         }
     }
 

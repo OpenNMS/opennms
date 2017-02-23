@@ -30,7 +30,7 @@ package org.opennms.web.validator;
 
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.web.command.LocationMonitorIdCommand;
+import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -64,7 +64,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
                                "Value required.");
         } else {
             try {
-                int monitorId = cmd.getMonitorId();
+                String monitorId = cmd.getMonitorId();
                 OnmsLocationMonitor monitor = m_locationMonitorDao.get(monitorId);
                 if (monitor == null) {
                     throw new ObjectRetrievalFailureException(OnmsLocationMonitor.class, monitorId, "Could not find location monitor with id " + monitorId, null);

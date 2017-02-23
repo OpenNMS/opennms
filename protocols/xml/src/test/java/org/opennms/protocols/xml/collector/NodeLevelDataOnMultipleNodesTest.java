@@ -40,17 +40,21 @@ import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
@@ -64,8 +68,8 @@ import org.springframework.core.io.Resource;
  */
 public class NodeLevelDataOnMultipleNodesTest {
 
-    /** The Constant TEST_SNMP_DIRECTORY. */
-    private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
+    @Rule
+    public TemporaryFolder m_temporaryFolder = new TemporaryFolder();
 
     /** The event proxy. */
     private EventProxy m_eventProxy;
@@ -73,7 +77,15 @@ public class NodeLevelDataOnMultipleNodesTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    /** The XML collector. */
     private XmlCollector m_collector;
+
+    /** The RRD strategy. */
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
+    private FilesystemResourceStorageDao m_resourceStorageDao;
+
+    private RrdPersisterFactory m_persisterFactory;
 
     /**
      * Sets the up.
@@ -82,12 +94,16 @@ public class NodeLevelDataOnMultipleNodesTest {
      */
     @Before
     public void setUp() throws Exception {
-        FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        initializeRrdStrategy();
+        m_rrdStrategy = getRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
+        m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
@@ -100,6 +116,10 @@ public class NodeLevelDataOnMultipleNodesTest {
         m_collector.setXmlCollectionDao(m_xmlCollectionDao);
 
         EasyMock.replay(m_eventProxy);
+    }
+
+    protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
+        return new JRobinRrdStrategy();
     }
 
     /**
@@ -125,31 +145,22 @@ public class NodeLevelDataOnMultipleNodesTest {
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
 
         executeCollectorTest(1, "127.0.0.1", "src/test/resources/node-level.xml", parameters, 1);
-        File file = new File("target/snmp/1/node-level-stats.jrb");
+        File file = new File(getSnmpRoot(), "1/node-level-stats.jrb");
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };
         validateJrb(file, dsnames, dsvalues);
 
         executeCollectorTest(2, "127.0.0.2", "src/test/resources/node-level-2.xml", parameters, 1);
-        file = new File("target/snmp/2/node-level-stats.jrb");
+        file = new File(getSnmpRoot(), "2/node-level-stats.jrb");
         dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         dsvalues = new Double[] { 20.0, 21.0, 22.0, 23.0, 24.0, 25.0 };
         validateJrb(file, dsnames, dsvalues);
 
         executeCollectorTest(3, "127.0.0.3", "src/test/resources/node-level-3.xml", parameters, 1);
-        file = new File("target/snmp/3/node-level-stats.jrb");
+        file = new File(getSnmpRoot(), "3/node-level-stats.jrb");
         dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         dsvalues = new Double[] { 30.0, 31.0, 32.0, 33.0, 34.0, 35.0 };
         validateJrb(file, dsnames, dsvalues);
-    }
-
-    /**
-     * Initialize RRD strategy.
-     *
-     * @throws Exception the exception
-     */
-    protected void initializeRrdStrategy() throws Exception {
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
     }
 
     /**
@@ -195,7 +206,7 @@ public class NodeLevelDataOnMultipleNodesTest {
         CollectionAgent collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(collectionAgent.getNodeId()).andReturn(nodeId).anyTimes();
         EasyMock.expect(collectionAgent.getHostAddress()).andReturn(ipAddress).anyTimes();
-        EasyMock.expect(collectionAgent.getStorageDir()).andReturn(new File(Integer.toString(nodeId))).anyTimes();
+        EasyMock.expect(collectionAgent.getStorageResourcePath()).andReturn(ResourcePath.get(Integer.toString(nodeId))).anyTimes();
         EasyMock.replay(collectionAgent);
 
         m_collector.initialize(collectionAgent, parameters);
@@ -203,13 +214,14 @@ public class NodeLevelDataOnMultipleNodesTest {
         m_collector.release(collectionAgent);
         collectionSet = m_collector.collect(collectionAgent, m_eventProxy, parameters);
         m_collector.release(collectionAgent);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
+
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY, Integer.toString(nodeId)), new String[] { getRrdExtension() }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(getSnmpRoot(), Integer.toString(nodeId)), new String[] { getRrdExtension() }, true).size());
         EasyMock.verify(collectionAgent);
     }
 
@@ -242,11 +254,14 @@ public class NodeLevelDataOnMultipleNodesTest {
     private RrdRepository createRrdRepository(String collection) throws IOException {
         XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName(collection).getXmlRrd();
         RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(new File(TEST_SNMP_DIRECTORY));
+        repository.setRrdBaseDir(getSnmpRoot());
         repository.setHeartBeat(rrd.getStep() * 2);
         repository.setStep(rrd.getStep());
         repository.setRraList(rrd.getXmlRras());
         return repository;
     }
 
+    public File getSnmpRoot() {
+        return new File(m_temporaryFolder.getRoot(), "snmp");
+    }
 }

@@ -115,7 +115,7 @@ public class ChartConfigFactory extends ChartConfigManager {
     @Override
     public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_chartConfigFile.lastModified()) {
-            NotifdConfigFactory.getInstance().reload();
+            ChartConfigFactory.getInstance().reload();
         }
     }
 

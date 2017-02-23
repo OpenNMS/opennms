@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -48,22 +49,22 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -77,12 +78,13 @@ import org.opennms.netmgt.model.RequisitionedCategoryAssociation;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
@@ -95,6 +97,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -135,7 +138,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Autowired
-    private DistPollerDao m_distPollerDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -159,9 +162,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
 
     @Autowired
-    private DiscoveryConfigurationFactory m_discoveryFactory;
-
-    @Autowired
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
 
@@ -170,7 +170,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Autowired
-    @Qualifier("fastPending")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Autowired
@@ -179,7 +179,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
-    private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+    private HostnameResolver m_hostnameResolver;
+
+    @Autowired
+    private LocationAwareDetectorClient m_locationAwareDetectorClient;
+
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookuClient;
+
+    @Autowired
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -188,6 +197,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
         RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
+        m_hostnameResolver = new DefaultHostnameResolver(m_locationAwareDnsLookuClient);
     }
 
     /**
@@ -205,12 +215,19 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return System.getProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false").equalsIgnoreCase("true");
     }
 
+    private void updateLocation(final OnmsNode node) {
+        if (node.getLocation() == null) {
+            node.setLocation(m_monitoringLocationDao.getDefaultLocation());
+        } else {
+            node.setLocation(createLocationIfNecessary(node.getLocation().getLocationName()));
+        }
+    }
+
     /** {@inheritDoc} */
     @Transactional
     @Override
     public void insertNode(final OnmsNode node) {
-
-        node.setDistPoller(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+        updateLocation(node);
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -222,7 +239,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void updateNode(final OnmsNode node, String rescanExisting) {
-
+        updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
@@ -247,20 +264,38 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 primary = node.getIpInterfaces().iterator().next();
             }
 
-            if (primary != null) {
-                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
-                final InetAddress addr = primary.getIpAddress();
-                final String ipAddress = str(addr);
-                final String hostname = m_hostnameResolver.getHostname(addr);
+            final InetAddress primaryAddr = primary.getIpAddress();
+            final String primaryHostname = getHostnameResolver().getHostname(primaryAddr, node.getLocation().getLocationName());
 
-                if (hostname == null || ipAddress.equals(hostname)) {
-                    node.setLabel(ipAddress);
-                    node.setLabelSource(NodeLabelSource.ADDRESS);
+            if (primaryHostname == null && node.getLabel() != null && NodeLabelSource.HOSTNAME.equals((node.getLabelSource()))) {
+                LOG.warn("Previous node label source for address {} was hostname, but it does not currently resolve.  Skipping update.", InetAddressUtils.str(primaryAddr));
+                return;
+            }
+
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                final InetAddress addr = iface.getIpAddress();
+                final String ipAddress = str(addr);
+                final String hostname = getHostnameResolver().getHostname(addr, node.getLocation().getLocationName());
+
+                if (iface.equals(primary)) {
+                    LOG.debug("Node Label was set by hostname or address.  Re-setting.");
+                    if (hostname == null || ipAddress.equals(hostname)) {
+                        node.setLabel(ipAddress);
+                        node.setLabelSource(NodeLabelSource.ADDRESS);
+                    } else {
+                        node.setLabel(hostname);
+                        node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    }
+                }
+
+                if (hostname == null) {
+                    iface.setIpHostName(ipAddress);
                 } else {
-                    node.setLabel(hostname);
-                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                    iface.setIpHostName(hostname);
                 }
             }
+        } else {
+            LOG.debug("Node label source ({}) is not host or address. Skipping update.", node.getLabelSource());
         }
     }
 
@@ -699,33 +734,35 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.flush();
     }
 
-    /** {@inheritDoc} */
     @Override
-    public OnmsDistPoller createDistPollerIfNecessary(final String dpName, final String dpAddr) {
-        return createDistPollerIfNecessary(new OnmsDistPoller(dpName, dpAddr));
+    public OnmsMonitoringLocation createLocationIfNecessary(final String locationName) {
+        if (locationName == null) {
+            return createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        } else {
+            OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+            location.setLocationName(locationName);
+            // NMS-7968: Set monitoring area too because it is a non-null field
+            location.setMonitoringArea(locationName);
+            return createLocationDefIfNecessary(location);
+        }
     }
 
-    public OnmsDistPoller createDistPollerIfNecessary(OnmsDistPoller scannedDistPoller) {
-
-        final OnmsDistPoller distPoller = scannedDistPoller == null ? new OnmsDistPoller("localhost", "127.0.0.1") : scannedDistPoller;
-
-        return new CreateIfNecessaryTemplate<OnmsDistPoller, DistPollerDao>(m_transactionManager, m_distPollerDao) {
+    protected OnmsMonitoringLocation createLocationDefIfNecessary(final OnmsMonitoringLocation location) {
+        return new CreateIfNecessaryTemplate<OnmsMonitoringLocation, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override
-            protected OnmsDistPoller query() {
-                return m_distPollerDao.get(distPoller.getName());
+            protected OnmsMonitoringLocation query() {
+                return m_dao.get(location.getLocationName());
             }
 
             @Override
-            public OnmsDistPoller doInsert() {
-                m_distPollerDao.save(distPoller);
-                m_distPollerDao.flush();
-                return distPoller;
+            public OnmsMonitoringLocation doInsert() {
+                m_dao.save(location);
+                m_dao.flush();
+                return location;
             }
         }.execute();
-
     }
-
 
 
     /** {@inheritDoc} */
@@ -975,6 +1012,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             final ForeignSource fs = m_foreignSourceRepository.getForeignSource(effectiveForeignSource);
 
             final Duration scanInterval = fs.getScanInterval();
+
+            if (scanInterval.getMillis() <= 0) {
+                LOG.debug("Node ({}/{}/{}) scan interval is zero, skipping schedule.", node.getId(), node.getForeignSource(), node.getForeignId());
+                return null;
+            }
+
             Duration initialDelay = Duration.ZERO;
             if (node.getLastCapsdPoll() != null && !force) {
                 final DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
@@ -984,7 +1027,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 }
             }
 
-            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), initialDelay, scanInterval);
+            return new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), node.getLocation(), initialDelay, scanInterval);
         } catch (final ForeignSourceRepositoryException e) {
             LOG.warn("unable to get foreign source '{}' from repository", effectiveForeignSource, e);
             return null;
@@ -1034,6 +1077,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 return getDbNode(node);
             }
 
+            private final List<String> m_categoriesAdded = new ArrayList<>();
+            private final List<String> m_categoriesDeleted = new ArrayList<>();
+
             private boolean handleCategoryChanges(final OnmsNode dbNode) {
                 final String foreignSource = dbNode.getForeignSource();
                 final List<String> categories = new ArrayList<>();
@@ -1065,6 +1111,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
                         LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categoryName);
+                        m_categoriesDeleted.add(categoryName);
                         dbNode.removeCategory(reqCat.getCategory());
                         node.removeCategory(reqCat.getCategory());
                         reqIter.remove();
@@ -1075,6 +1122,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 // the remainder of requisitioned categories get added
                 for (final String cat : categories) {
+                    m_categoriesAdded.add(cat);
                     final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
                     final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
                     node.addCategory(onmsCat);
@@ -1089,6 +1137,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doUpdate(final OnmsNode dbNode) {
+                dbNode.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
+                LOG.debug("Associating node {}/{}/{} with location: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), dbNode.getLocation());
+
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
 
                 final boolean changed = handleCategoryChanges(dbNode);
@@ -1098,7 +1149,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
-                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel()));
+                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel(), m_categoriesAdded.toArray(new String[0]), m_categoriesDeleted.toArray(new String[0])));
                     LOG.debug("Node {}/{}/{} categories changed: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 } else {
                     LOG.debug("Node {}/{}/{} categories unchanged: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
@@ -1110,7 +1161,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setDistPoller(createDistPollerIfNecessary(node.getDistPoller()));
                 return saveOrUpdate(node);
             }
         }.execute();
@@ -1164,33 +1214,14 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_ipInterfaceDao.flush();
 
         return iface;
-
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<ServiceDetector> getDetectorsForForeignSource(final String foreignSourceName) {
+    public List<PluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
         final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
-
-        final List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
-        if (detectorConfigs == null) {
-            return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
-        }
-
-        final List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
-        for(final PluginConfig detectorConfig : detectorConfigs) {
-            final ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
-            if (detector == null) {
-                LOG.error("Configured plugin does not exist: {}", detectorConfig);
-            } else {
-                detector.setServiceName(detectorConfig.getName());
-                detector.init();
-                detectors.add(detector);
-            }
-        }
-
-        return detectors;
+        return foreignSource.getDetectors();
     }
 
     /** {@inheritDoc} */
@@ -1324,14 +1355,20 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource) {
+    public OnmsNode createUndiscoveredNode(final String ipAddress, final String foreignSource, final String locationString) {
+        final String effectiveForeignSource = foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource;
+        final String effectiveLocationName = MonitoringLocationUtils.isDefaultLocationName(locationString) ? null : locationString;
 
-        OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
+        final OnmsNode node = new UpsertTemplate<OnmsNode, NodeDao>(m_transactionManager, m_nodeDao) {
 
             @Override
             protected OnmsNode query() {
-                List<OnmsNode> nodes = m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress);
-                return nodes.size() > 0 ? nodes.get(0) : null;
+                // Find all of the nodes in the target requisition with the given IP address
+                return m_nodeDao.findByForeignSourceAndIpAddress(effectiveForeignSource, ipAddress).stream().filter(n -> {
+                    // Now filter the nodes by location
+                    final String existingLocationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(n);
+                    return Objects.equals(existingLocationName, effectiveLocationName);
+                }).findFirst().orElse(null);
             }
 
             @Override
@@ -1344,9 +1381,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+                OnmsMonitoringLocation location = createLocationIfNecessary(locationString);
+                // Associate the location with the node
+                final OnmsNode node = new OnmsNode(location);
 
-                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
+                final String hostname = getHostnameResolver().getHostname(addr(ipAddress), locationString);
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1355,7 +1394,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
 
-                node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
+                node.setForeignSource(effectiveForeignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
@@ -1372,9 +1411,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }.execute();
 
         if (node != null) {
-            if (foreignSource != null) {
+            if (effectiveForeignSource != null) {
                 node.setForeignId(node.getNodeId());
-                createUpdateRequistion(ipAddress, node, foreignSource);
+                createUpdateRequistion(ipAddress, node, effectiveLocationName, effectiveForeignSource);
             }
 
             // we do this here rather than in the doInsert method because
@@ -1386,7 +1425,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
-    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, String m_foreignSource) {
+    private boolean createUpdateRequistion(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
         LOG.debug("Creating/Updating requistion {} for newSuspect {}...", m_foreignSource, addrString);
         try {
             Requisition r = null;
@@ -1412,6 +1451,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             rn.setBuilding(m_foreignSource);
             rn.setForeignId(node.getForeignId());
             rn.setNodeLabel(node.getLabel());
+            rn.setLocation(locationName);
             r.putNode(rn);
             m_foreignSourceRepository.save(r);
             m_foreignSourceRepository.flush();
@@ -1428,9 +1468,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getNode(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
         m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 
@@ -1439,8 +1481,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getDbNodeInitCat(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
+        m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
-        m_nodeDao.initialize(node.getDistPoller());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 
@@ -1450,5 +1494,20 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public HostnameResolver getHostnameResolver() {
         return m_hostnameResolver;
+    }
+
+    @Override
+    public LocationAwareDetectorClient getLocationAwareDetectorClient() {
+        return m_locationAwareDetectorClient;
+    }
+
+    @Override
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
+    }
+
+    @Override
+    public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
+        return m_locationAwareDnsLookuClient;
     }
 }

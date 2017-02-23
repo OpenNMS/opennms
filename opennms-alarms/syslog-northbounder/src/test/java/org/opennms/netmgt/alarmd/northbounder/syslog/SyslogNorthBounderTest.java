@@ -43,70 +43,103 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.productivity.java.syslog4j.server.SyslogServer;
-import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
-import org.productivity.java.syslog4j.server.SyslogServerEventHandlerIF;
-import org.productivity.java.syslog4j.server.SyslogServerIF;
-import org.productivity.java.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
-import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.graylog2.syslog4j.server.SyslogServer;
+import org.graylog2.syslog4j.server.SyslogServerConfigIF;
+import org.graylog2.syslog4j.server.SyslogServerEventHandlerIF;
+import org.graylog2.syslog4j.server.SyslogServerIF;
+import org.graylog2.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
+import org.graylog2.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Tests the Syslog North Bound Interface
- * 
+ * Tests the Syslog North Bound Interface.
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-//@RunWith(OpenNMSJUnit4ClassRunner.class)
-// context not used but we this annotation is mandatory
-@ContextConfiguration(locations = "classpath:/test-context.xml")
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/test-context.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 // TODO:Would be great to do something like the following annotation...
 // @JUnitSyslogServer(port=8514)
 public class SyslogNorthBounderTest {
-    
 
-    private static final int TEST_NODE_ID = 777;
+    /** The Constant SERVER_HOST. */
     private static final String SERVER_HOST = "127.0.0.1";
+
+    /** The Constant MESSAGE_LENGTH. */
     public static final int MESSAGE_LENGTH = 1024;
+
+    /** The Constant SERVER_PORT. */
     private static final int SERVER_PORT = 8514;
+
+    /** The Constant SERVER_PROTOCOL. */
     private static final String SERVER_PROTOCOL = "UDP";
+
+    /** The Constant FACILITY. */
     private static final String FACILITY = "LOCAL0";
 
-    public SyslogServerIF m_server;
-    public TestPrintStream m_logStream;
+    /** The Node DAO. */
+    @Autowired
+    protected MockNodeDao m_nodeDao;
+
+    @Autowired
+    protected MonitoringLocationDao m_locationDao;
+
+    /** The Syslog Server. */
+    private SyslogServerIF m_server;
+
+    /** The Test LOG stream. */
+    protected TestPrintStream m_logStream;
 
     /**
-     * Needed a String based OutputStream class for the Syslog4j eventhandler
-     * interface.
+     * Needed a String based OutputStream class for the Syslog4j eventhandler interface.
      * 
      * @author <a href="mailto:david@opennms.org">David Hustace</a>
      * 
      */
     class StringOutputStream extends OutputStream {
 
+        /** The string buffer. */
         StringBuilder m_buf = new StringBuilder(MESSAGE_LENGTH);
 
+        /* (non-Javadoc)
+         * @see java.io.OutputStream#write(int)
+         */
         @Override
         synchronized public void write(int inByte) throws IOException {
             m_buf.append((char) inByte);
         }
 
+        /**
+         * Gets the string.
+         *
+         * @return the string
+         */
         synchronized public String getString() {
             String buffer = m_buf.toString();
             m_buf.setLength(0);
             return buffer;
         }
-
     }
 
     /**
@@ -120,13 +153,24 @@ public class SyslogNorthBounderTest {
      */
     class TestPrintStream extends PrintStream {
 
+        /** The string output stream. */
         private StringOutputStream m_out;
 
+        /**
+         * Instantiates a new test print stream.
+         *
+         * @param out the out
+         */
         public TestPrintStream(StringOutputStream out) {
             super(out);
             m_out = out;
         }
 
+        /**
+         * Read stream.
+         *
+         * @return the string
+         */
         public String readStream() {
             return m_out.getString();
         }
@@ -134,12 +178,12 @@ public class SyslogNorthBounderTest {
 
     /**
      * Getting ready for tests.
-     * @throws InterruptedException 
+     *
+     * @throws InterruptedException the interrupted exception
      */
     @Before
     public void startServer() throws InterruptedException {
         MockLogAppender.setupLogging();
-        
 
         SyslogServerConfigIF serverConfig = new UDPNetSyslogServerConfig(SERVER_HOST, SERVER_PORT);
         serverConfig.setShutdownWait(0);
@@ -147,10 +191,8 @@ public class SyslogNorthBounderTest {
         SyslogServerEventHandlerIF eventHandler = new PrintStreamSyslogServerEventHandler(m_logStream);
         serverConfig.addEventHandler(eventHandler);
         m_server = SyslogServer.createThreadedInstance("test-udp", serverConfig);
-        
-        
         m_server.initialize("udp", serverConfig);
-        
+
         //Need this sleep, found a deadlock in the server.
         Thread.sleep(100);
         m_server.run();
@@ -158,60 +200,55 @@ public class SyslogNorthBounderTest {
 
     /**
      * Cleans up the Syslog server after each test runs.
-     * @throws InterruptedException 
+     *
+     * @throws InterruptedException the interrupted exception
      */
     @After
     public void stopServer() throws InterruptedException {
         m_server.shutdown();
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
-    
     /**
      * This tests forwarding of 7 alarms, one for each OpenNMS severity to
      * verify the LOG_LEVEL agrees with the Severity based on our algorithm.
-     * @throws Exception 
+     *
+     * @throws Exception the exception
      */
     @Test
     public void testForwardAlarms() throws Exception {
-        
         String xml = generateConfigXml();
-        
         Resource resource = new ByteArrayResource(xml.getBytes());
-        
+
         SyslogNorthbounderConfigDao dao = new SyslogNorthbounderConfigDao();
         dao.setConfigResource(resource);
         dao.afterPropertiesSet();
 
         SyslogNorthbounderConfig config = dao.getConfig();
-        
-        List<SyslogDestination> destinations = config.getDestinations();
 
         List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
-        
-        for (SyslogDestination syslogDestination : destinations) {
-            SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
-            nbi.setNodeDao(new TestNodeDao());
+
+        for (SyslogDestination syslogDestination : config.getDestinations()) {
+            SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }
 
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
-        
-        OnmsDistPoller distpoller = new OnmsDistPoller("barbrady", "192.0.2.11");
-        OnmsNode node = new OnmsNode(distpoller, "p-brane");
+
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
-        node.setId(TEST_NODE_ID);
-        
+        node.setId(m_nodeDao.getNextNodeId());
+
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
         snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
         snmpInterface.setIfDescr("en1");
         snmpInterface.setIfName("en1/0");
         snmpInterface.setPhysAddr("00:00:00:00:00:01");
-        
+
         Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>(j);
         InetAddress address = InetAddress.getByName("10.0.1.1");
         OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
@@ -220,13 +257,13 @@ public class SyslogNorthBounderTest {
         onmsIf.setIfIndex(1);
         onmsIf.setIpHostName("p-brane");
         onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        
+
         ipInterfaces.add(onmsIf);
-        
+
         node.setIpInterfaces(ipInterfaces);
-
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
         for (SyslogNorthbounder nbi : nbis) {
-
             for (int i = 1; i <=j; ++i) {
                 OnmsAlarm onmsAlarm = new OnmsAlarm();
                 onmsAlarm.setId(i);
@@ -268,11 +305,11 @@ public class SyslogNorthBounderTest {
         }
 
         Assert.assertTrue("Log messages sent: 7, Log messages received: " + messages.size(), 7 == messages.size());
-        
+
         for (String message : messages) {
             System.out.println(message);
         }
-        
+
         int i = 0;
         for (String message : messages) {
             if (i == 0) {
@@ -310,6 +347,11 @@ public class SyslogNorthBounderTest {
 
     }
 
+    /**
+     * Generates configuration XML.
+     *
+     * @return the string
+     */
     private String generateConfigXml() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<syslog-northbounder-config>\n" + 

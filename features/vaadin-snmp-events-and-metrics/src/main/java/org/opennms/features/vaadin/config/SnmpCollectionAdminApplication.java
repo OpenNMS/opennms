@@ -29,7 +29,7 @@
 package org.opennms.features.vaadin.config;
 
 import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;

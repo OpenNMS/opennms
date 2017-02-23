@@ -31,9 +31,9 @@ package org.opennms.netmgt.threshd;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -69,7 +69,7 @@ public class ThresholdingEventProxy implements EventProxy {
      * <p>send</p>
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     @Override
     public void send(Log eventLog) throws EventProxyException {

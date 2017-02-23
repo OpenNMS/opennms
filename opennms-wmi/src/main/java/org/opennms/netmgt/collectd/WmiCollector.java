@@ -46,11 +46,13 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiResourceType;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
@@ -60,7 +62,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
@@ -82,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public class WmiCollector implements ServiceCollector {
+public class WmiCollector extends AbstractLegacyServiceCollector {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiCollector.class);
 
@@ -166,7 +168,7 @@ public class WmiCollector implements ServiceCollector {
                             for (final Attrib attrib : wpm.getAttrib()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
-                                resource.setAttributeValue(attribType, prop.getWmiValue().toString());
+                                resource.setAttributeValue(attribType, prop.getWmiValue());
                             }
                             collectionSet.getCollectionResources().add(resource);
                         }
@@ -184,7 +186,7 @@ public class WmiCollector implements ServiceCollector {
                 }
             }
         }
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
         return collectionSet;
     }
     
@@ -293,12 +295,6 @@ public class WmiCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing collector: {}", getClass());
         try {
             WmiDataCollectionConfigFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);

@@ -1,0 +1,36 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+This document is the guideline for people who wish to contribute to writing documentation for the OpenNMS project.
+The OpenNMS software is free and open source, contribution of any kind is welcome.
+We ask that you observe the rules and guidelines outlined here to maintain consistency across the project.
+
+Each (sub)project is represented as a section of the documentation.
+Each section will produce a HTML output in the file system that is generated in the `target/generated` sources folder.
+
+The chosen file format for documentation is AsciiDoc (http://www.methods.co.nz/asciidoc[Asciidoc Homepage]).
+Document files use the `.adoc` file extension.
+
+Note that there are different ways to contribute documentation, each suitable for the different use cases:
+
+* Tutorials and How To's should be published on the http://wiki.opennms.org[OpenNMS Wiki].
+For example:
+you want to describe how to use the Net-SNMP agent and the SNMP monitor from OpenNMS to solve a special use case with OpenNMS.
+
+* The documentation in the source code should be formal technical documentation.
+The writing style should be accurate and concise.
+However, ensure that you explain concepts in detail and do not make omissions.
+
+[[gd-docs-file-structure]]
+=== File Structure in opennms-doc
+
+[options="header", cols="e,d"]
+|===
+| Directory            | Contents
+| `guide-user/`        | module with the guide for OpenNMS user e.g. NOC user who don't change behavior of OpenNMS.
+| `guide-admin/`       | module with the guide for administrators configuring, optimizing and running OpenNMS
+| `guide-development/` | module with the guide for those who want to develop OpenNMS
+| `guide-install/`     | module with the guide of how to install OpenNMS on different operating systems
+| `releasenotes/`      | module with the changelog and release notes
+|===

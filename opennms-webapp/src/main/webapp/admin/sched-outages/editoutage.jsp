@@ -41,9 +41,9 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -130,13 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath(criticalpathip);
+    private static Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
         
     }
 	
-	private static Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(nodeid);
+	private static Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -149,7 +149,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -466,7 +466,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByNodeId(newNodeId)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -481,7 +481,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -604,25 +604,19 @@ Could not find an outage to edit because no outage name parameter was specified 
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="norequirejs" value="true" />
 	<jsp:param name="title" value="Edit Outage" />
 	<jsp:param name="headTitle" value="Edit" />
 	<jsp:param name="headTitle" value="Scheduled Outages" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="location" value="admin" />
-	<jsp:param name="breadcrumb"
-		value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-		value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
 	<jsp:param name="breadcrumb" value="Edit" />
+    <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>' />
 </jsp:include>
 
-<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />
-<script type="text/javascript" src="js/jquery/jquery.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>
-<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>
 <style type="text/css">
 	/* TODO shouldn't be necessary */
 	.ui-button { margin-left: -1px; }

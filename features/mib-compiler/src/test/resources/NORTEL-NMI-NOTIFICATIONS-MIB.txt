@@ -1,0 +1,204 @@
+
+NORTEL-NMI-NOTIFICATIONS-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortelNetworkManagementInterfaceMIBs 
+           FROM NORTEL-GENERIC-MIB 
+   
+       NortelNMIneType,  
+       NortelNMIadminState, NortelNMIoperState,
+       NortelNMIunknownStatusValue
+           FROM NORTEL-NMI-TC-MIB
+
+       DisplayString
+           FROM SNMPv2-TC
+                                
+       MODULE-IDENTITY, OBJECT-IDENTITY, 
+       OBJECT-TYPE, Unsigned32
+           FROM SNMPv2-SMI;
+
+
+   nortelNMInotificationsMIB  MODULE-IDENTITY
+       LAST-UPDATED "9907190000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "   Jingdong Liu
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+
+       DESCRIPTION
+               "This module contains the notification branches for 
+                the Nortel NMI along with the definition of the 
+                notification sequence number variable." 
+
+       -- Revision history
+       REVISION "9907190000Z"
+       DESCRIPTION
+                "Add ASCII string limitations for NE name / componentID, etc."
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The fourth version of this MIB module.
+                  Module-identity oid assignment changed.
+            
+                  Revisions introduced by Shobana Sundaram."
+
+
+       REVISION "9905310000Z"
+       DESCRIPTION
+                " The third version of this MIB module.
+                  Contact info updated and Revision history added.
+            
+                  Revisions introduced by Shobana Sundaram."
+
+
+       REVISION "9904120000Z"
+       DESCRIPTION
+                " The second version of this MIB module.
+                  Contact info updated and Revision history added."
+
+       REVISION "9903220000Z"
+       DESCRIPTION
+                " The first version of this MIB module."
+
+
+       ::= { nortelNetworkManagementInterfaceMIBs 6 }
+
+
+   nortelNMIcurrentTxNotificationSequenceNum  OBJECT-TYPE
+      SYNTAX   Unsigned32
+       MAX-ACCESS  read-only
+       STATUS  current
+       DESCRIPTION
+          "This variable represents the sequence number of the 
+           Notifications and is incremented by one whenever a 
+           notification is emitted from the agent.  This would be 
+           included as a varbind for all notifications and this value
+           when read indicates the sequence number of the last 
+           transmitted trap. " 
+
+        ::= { nortelNMInotificationsMIB 1 }
+
+   nortelNMIcommonNotiVarbinds OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for varbinds that are 
+                   common to all categories of Nortel NMI Notifications."
+           ::=  { nortelNMInotificationsMIB 2 }
+
+ 
+   nortelNMIconfigNotiMIB OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for all configuration 
+                   related Nortel NMI Notifications."
+           ::=  { nortelNMInotificationsMIB 3 }
+
+ 
+   nortelNMIfaultNotiMIB OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for all fault management 
+                   related Nortel NMI Notifications."
+           ::=  { nortelNMInotificationsMIB 4 }
+
+   nortelNMIinfoNotiMIB OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for all informational log 
+                   related Nortel NMI Notifications."
+           ::=  { nortelNMInotificationsMIB 5 }
+
+
+
+
+  -- The following variables belong to the accessible-for-notify clause and
+  -- are defined here mainly to be included as varbinds to notifications.
+  -- No other protocol operations will be supported for these
+
+
+         nortelNMInotifyNeType  OBJECT-TYPE
+              SYNTAX NortelNMIneType
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable represents the type of the NE that is being
+                  enrolled into the network management domain. 
+                  NortelNMIneType textual
+                  convention is defined at the NORTEL-NMI-TC-MIB."
+
+              ::= { nortelNMIcommonNotiVarbinds  1 }
+
+
+         nortelNMInotifyNeName  OBJECT-TYPE
+              SYNTAX  DisplayString (SIZE(1..32))
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable represents the name of the NE that
+                  is being enrolled into the network management domain.
+                  This name should uniquely identify the NE in the EMS
+                  domain across all NE types.
+                  The NeName string should be a single word, can only contain 
+                  alphanumeric characters and underscores. No commas, spaces, 
+                  slashes, hyphens, or dollar signs is allowed."
+
+              ::= { nortelNMIcommonNotiVarbinds  2 }
+
+
+         nortelNMInotifyNeAdminState OBJECT-TYPE
+              SYNTAX  NortelNMIadminState
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable presents the administratively assigned
+                  state (ITU-T X.731) of the NE. The textual convention 
+                  NortelNMIadminState defined at NORTEL-NMI-TC-MIB."
+
+              ::= { nortelNMIcommonNotiVarbinds  3 }
+
+
+         nortelNMInotifyNeOperState OBJECT-TYPE
+              SYNTAX  NortelNMIoperState
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable presents the current operational state
+                  (ITU-T X.731) of the NE."
+
+              ::= { nortelNMIcommonNotiVarbinds  4 }
+
+
+        nortelNMInotifyNeUnknownStatus OBJECT-TYPE
+              SYNTAX  NortelNMIunknownStatusValue
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+
+                 "This variable presents the NE unknown Status Values as 
+                  per (ITU-T X.731). The textual convention 
+                  NortelNMIunknownStatusValue defined at NORTEL-NMI-TC-MIB
+                  is of type Truthvalue (SNMPv2-TC)."
+
+              ::= { nortelNMIcommonNotiVarbinds  5 }
+
+
+
+
+
+
+
+
+
+END
+
+

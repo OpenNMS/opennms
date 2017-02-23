@@ -143,6 +143,14 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 		security1.addDoNotOverride("I'm very important, don't mess with me!");
 		security1.addDoNotOverride("Also important");
 		global0.setSecurity(security1);
+		Parameter parameter0 = new Parameter();
+		parameter0.setName("operating-system");
+		parameter0.setValue("cisco-ios");
+		event1.addParameter(parameter0);
+                Parameter parameter1 = new Parameter();
+                parameter1.setName("location");
+                parameter1.setValue("planet-earth");
+                event1.addParameter(parameter1);
 
 		events1.setGlobal(global0);
 
@@ -210,6 +218,8 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 					"    <parmid>parm[#1]</parmid>" +
 					"    <decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>" +
 					"  </varbindsdecode>" +
+                                        "  <parameter name=\"operating-system\" value=\"cisco-ios\"/>" +
+                                        "  <parameter name=\"location\" value=\"planet-earth\"/>" +
 					"  <operaction menutext=\"Test\" state=\"on\">This is a test</operaction>" +
 					"  <autoacknowledge state=\"on\">These are important data</autoacknowledge>" +
 					"  <loggroup>loggroup</loggroup>" +

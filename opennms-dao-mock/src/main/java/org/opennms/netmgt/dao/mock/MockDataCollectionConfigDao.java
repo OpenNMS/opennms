@@ -33,9 +33,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -48,6 +49,11 @@ public class MockDataCollectionConfigDao implements DataCollectionConfigDao {
 
     @Override
     public List<MibObject> getMibObjectList(final String cName, final String aSysoid, final String anAddress, final int ifType) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<MibObjProperty> getMibObjProperties(final String cName, final String aSysoid, final String anAddress) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

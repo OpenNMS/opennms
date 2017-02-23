@@ -1,0 +1,41 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+[[ga-notifications-getting-started]]
+=== Getting Started
+
+The status of notifications is indicated by an icon at the top right of the web UI's navigation bar.
+_{opennms-product-name}_ installs with notifications globally disabled by default.
+
+==== Enabling Notifications
+
+To enable notifications in _{opennms-product-name}_, log in to the web UI as a user with administrator privileges. Hover over the user icon and click the _Configure OpenNMS_ link.
+The controls for global notification status appear in the top-level configuration menu as _Notification Status_.
+Click the _On_ radio button and then the _Update_ button.
+Notifications are now globally enabled.
+
+NOTE: The web workflow above is functionally equivalent to editing the `notifd-configuration.xml` file and setting `status="on"` in the top-level `notifd-configuration` element.
+This configuration file change is picked up on the fly with no need to restart or send an event.
+
+==== Configuring Destination Paths
+
+To configure notification destination paths in _{opennms-product-name}_, navigate to _Configure OpenNMS_ and, in the _Event Management_ section, choose _Configure Notifications_.
+In the resulting dialog choose _Configure Destination Paths_.
+
+NOTE: The destination paths configuration is stored in the `destinationPaths.xml` file.
+Changes to this file are picked up on the fly with no need to restart or send an event.
+
+// TODO: Document destination path editor
+
+==== Configuring Event Notifications
+
+To configure notifications for individual events in _{opennms-product-name}_, navigate to _Configure OpenNMS_ and, in the _Event Management section, choose _Configure Notifications_.
+Then choose _Configure Event Notifications_.
+
+NOTE: The event notification configuration is stored in the `notifications.xml` file.
+Changes to this file are picked up on the fly with no need to restart or send an event.
+
+// TODO: Document event notification editor
+
+// TODO: Document path-outage feature

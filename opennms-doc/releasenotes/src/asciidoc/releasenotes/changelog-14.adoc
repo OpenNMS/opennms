@@ -1,7 +1,8 @@
-[releasenotes-14]
-=== OpenNMS 14
 
-[releasenotes-changelog-14.0.3]
+[[release-14-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-14.0.3]]
 ==== Release 14.0.3
 
 Release 14.0.3 is the latest stable release of OpenNMS.  It provides a few small fixes and enhancements over OpenNMS 14.0.2, and we believe we have truly squashed the wallboard memory leak this time. ;)  It also includes an important security fix which affects all previous versions of OpenNMS for CVE-2015-0975, which can provide remote access to local system files. This upgrade is the STRONGLY recommended for all OpenNMS 14.x users.  For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.2/WHATSNEW.md[What's New in OpenNMS 14] page.
@@ -30,7 +31,7 @@ The codename for 14.0.3 is _Surge_.
 * The Wallboard app makes OpenNMS unusable after a few days even if it is not used. (Issue http://issues.opennms.org/browse/NMS-7230[NMS-7230])
 
 
-[releasenotes-changelog-14.0.2]
+[[releasenotes-changelog-14.0.2]]
 ==== Release 14.0.2
 
 Release 14.0.2 is the latest stable release of OpenNMS.  It provides a few small fixes and enhancements over OpenNMS 14.0.1, including a fix for a critical memory leak in the OpenNMS web UI.  This upgrade is strongly recommended for all OpenNMS 14.x users.  For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.2/WHATSNEW.md[What's New in OpenNMS 14] page.
@@ -65,7 +66,7 @@ The codename for 14.0.2 is _Club-Mate_.
 * The Wallboard app makes OpenNMS unusable after a few days even if it is not used. (Issue http://issues.opennms.org/browse/NMS-7230[NMS-7230])
 * Mikrotik RouterOS trap definitions (Issue http://issues.opennms.org/browse/NMS-7237[NMS-7237])
 
-[releasenotes-changelog-14.0.1]
+[[releasenotes-changelog-14.0.1]]
 ==== Release 14.0.1
 
 Release 14.0.1 is the latest stable release of OpenNMS.  It provides a few small fixes and enhancements over OpenNMS 14.0.0. For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.0/WHATSNEW.md[What's New in OpenNMS 14] page.
@@ -86,7 +87,7 @@ The codename for 14.0.1 is _Big Red_.
 * command-line scripts should output to the console (Issue http://issues.opennms.org/browse/NMS-7174[NMS-7174])
 * "OpenNMS Disconnect -- is the OpenNMS daemon running?" is confusing (Issue http://issues.opennms.org/browse/NMS-7177[NMS-7177])
 
-[releasenotes-changelog-14.0.0]
+[[releasenotes-changelog-14.0.0]]
 ==== Release 14.0.0
 
 Release 14.0.0 is the latest stable release of OpenNMS.  It would have been 1.14.0, but we have changed versioning conventions.  There are a huge number of bug fixes and changes in this release since the last unstable version, 1.13.4.  For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.0/WHATSNEW.md[What's New in OpenNMS 14] page.
@@ -312,4 +313,3 @@ The codename for 14.0.0 is _Cheerwine_.
 * Test Enhanced Linkd (Issue http://issues.opennms.org/browse/NMS-6989[NMS-6989])
 * Test Topology GUI (Issue http://issues.opennms.org/browse/NMS-6990[NMS-6990])
 * Test Remote Polling (Issue http://issues.opennms.org/browse/NMS-6991[NMS-6991])
-

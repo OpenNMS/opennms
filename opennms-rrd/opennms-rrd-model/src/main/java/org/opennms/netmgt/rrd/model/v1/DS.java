@@ -97,4 +97,12 @@ public class DS extends AbstractDS {
 
         return super.formatEquals(ds);
     }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractDS#isCounter()
+     */
+    @Override
+    public boolean isCounter() {
+        return !getType().equals(DSType.GAUGE);
+    }
 }

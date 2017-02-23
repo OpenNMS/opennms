@@ -3,50 +3,50 @@
 
     <resourceType name="cbgpPeerAddrFamilyPrefixEntry" label="Cisco BGP Peer / Address Family"
                   resourceLabel="Peer ${subIndex(0,4)}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
    <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
                  resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
 
     <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
                   resourceLabel="${cvmTempStatusDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoEnvMonVoltageStatusIndex" label="Cisco Voltage"
                   resourceLabel="${cvmVoltStatusDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     
     <resourceType name="ciscoMemoryPoolType" label="Cisco Memory Pool"
                   resourceLabel="${cscoMemoryPoolName} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoSlbInstance" label="Cisco SLB Instance"
                   resourceLabel="Cisco SLB (Slot ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="cesServerFarmRserverEntry" label="Cisco SLB Server Farm / Real Server"
                   resourceLabel="Cisco SLB Entity ${subIndex(0, 1)}, Server Farm ${string(subIndex(1, n))}, Real Server ${string(subIndex(n, n))}, port ${subIndex(n)}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)"
                   resourceLabel="${rttMonCtrlAdminTag} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="cisco-frame-relay" ifType="all">
@@ -61,12 +61,9 @@
       <!-- Cisco MIBs -->
 
       <group name = "adsl-line" ifType = "94">
-        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.5" instance="ifIndex" alias="AturCurAtn"  type="Gauge32" />
-        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.5" instance="ifIndex" alias="AtucCurAtn"  type="Gauge32" />
-        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.7" instance="ifIndex" alias="AturCurOPwr" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.7" instance="ifIndex" alias="AtucCurOPwr" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.4" instance="ifIndex" alias="AturCurSnr"  type="Gauge32" />
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.4" instance="ifIndex" alias="AtucCurSnr"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.5" instance="ifIndex" alias="AturCurAtn"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.7" instance="ifIndex" alias="AturCurOPwr" type="Gauge32" />
       </group>
 
       <group name="altiga" ifType="ignore">
@@ -89,7 +86,6 @@
       </group>
 
       <group  name="cisco-ap-dot11-stats" ifType="71">
-        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.2.1.1" instance="ifIndex" alias="ciscoApActClients"   type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.1" instance="ifIndex" alias="ciscoApAssociated"   type="Counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.2" instance="ifIndex" alias="ciscoApAuthen"       type="Counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.3" instance="ifIndex" alias="ciscoApRoamedIn"     type="Counter32" />
@@ -980,6 +976,36 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco ASA5515-X">
+        <sysoid>.1.3.6.1.4.1.9.1.1421</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5525-X">
+        <sysoid>.1.3.6.1.4.1.9.1.1408</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5580">
+        <sysoid>.1.3.6.1.4.1.9.1.914</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco ASA5585Ssp10">
         <sysoid>.1.3.6.1.4.1.9.1.1194</sysoid>
         <collect>
@@ -1071,5 +1097,15 @@
           <includeGroup>mib2-interfaces</includeGroup> 
         </collect> 
       </systemDef> 
+
+      <systemDef name="Cisco ASA 5585-X Security Services Processor-60">
+        <sysoid>.1.3.6.1.4.1.9.1.1201</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
 
 </datacollection-group>

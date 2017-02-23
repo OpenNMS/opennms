@@ -32,7 +32,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,7 +51,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -60,6 +62,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -96,7 +99,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private InetAddress m_ipAddr;
 
 	/** persistent field */
-	private OnmsDistPoller m_distPoller;
+	private OnmsMonitoringSystem m_distPoller;
 
 	/** nullable persistent field */
 	private String m_eventSnmpHost;
@@ -340,7 +343,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
     @Column(name="eventId", nullable=false)
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")    
+    @GeneratedValue(generator="eventSequence")
 	public Integer getId() {
 		return m_eventId;
 	}
@@ -460,12 +463,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/**
 	 * <p>getDistPoller</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsMonitoringSystem} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="eventDpName", nullable=false)
-	public OnmsDistPoller getDistPoller() {
+	@ManyToOne
+	@JoinColumn(name="systemId", nullable=false)
+	public OnmsMonitoringSystem getDistPoller() {
 		return m_distPoller;
 	}
 
@@ -474,7 +477,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
-	public void setDistPoller(OnmsDistPoller distPoller) {
+	public void setDistPoller(OnmsMonitoringSystem distPoller) {
 		m_distPoller = distPoller;
 	}
 
@@ -543,12 +546,22 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	@XmlElement(name="parms")
-	@Column(name="eventParms", length=1024)
+	@XmlTransient
+	@Column(name="eventParms")
 	public String getEventParms() {
 		return m_eventParms;
 	}
 
+        @Transient
+	@XmlElementWrapper(name="parameters")
+        @XmlElement(name="parameter")
+	public List<OnmsEventParameter> getEventParameters() {
+	    if (m_eventParms == null) {
+	        return null;
+	    }
+	    return EventParameterUtils.decode(m_eventParms).stream().map(p -> new OnmsEventParameter(p)).collect(Collectors.toList());
+	}
+	
 	/**
 	 * <p>setEventParms</p>
 	 *

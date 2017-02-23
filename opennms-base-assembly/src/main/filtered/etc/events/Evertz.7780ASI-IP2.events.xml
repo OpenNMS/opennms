@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Start of auto generated data from MIB: ASIIP27780-TRAPS -->
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1000</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultboardStatusFalse</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultboardStatusFalse</event-label>
+        <descr>&lt;p&gt;Board Status OK&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultboardStatusFalse trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultboardStatusTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1001</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultboardStatusTrue</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultboardStatusTrue</event-label>
+        <descr>&lt;p&gt;Board Status Fault&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultboardStatusTrue trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1002</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi1False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi1False</event-label>
+        <descr>&lt;p&gt;ASI Input signal Present on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi1False trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1003</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi1True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi1True</event-label>
+        <descr>&lt;p&gt;ASI Input signal Not present on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi1True trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1004</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi2False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi2False</event-label>
+        <descr>&lt;p&gt;ASI Input signal Present on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi2False trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1005</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi2True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi2True</event-label>
+        <descr>&lt;p&gt;ASI Input signal Not present on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputPresentAsi2True trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1006</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi1False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi1False</event-label>
+        <descr>&lt;p&gt;ASI Input sync OK on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi1False trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1007</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi1True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi1True</event-label>
+        <descr>&lt;p&gt;ASI Input sync Error on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi1True trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1008</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi2False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi2False</event-label>
+        <descr>&lt;p&gt;ASI Input sync OK on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi2False trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1009</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi2True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi2True</event-label>
+        <descr>&lt;p&gt;ASI Input sync Error on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputSyncErrorAsi2True trap received
+            faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1010</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi1False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi1False</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count OK on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi1False trap
+            received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1011</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi1True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi1True</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count Error on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi1True trap
+            received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1012</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi2False</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi2False</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count OK on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi2False trap
+            received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.50.73.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1013</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi2True</uei>
+        <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi2True</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count Error on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz ASIIP27780 Event: faultasiInputContinuityErrorAsi2True trap
+            received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>
+        <!-- End of auto generated data from MIB: ASIIP27780-TRAPS -->

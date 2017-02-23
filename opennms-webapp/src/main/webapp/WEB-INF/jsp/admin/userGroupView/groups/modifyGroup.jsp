@@ -47,7 +47,6 @@
     }
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
-    String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
 	String[] categoryListInGroup = group.getAuthorizedCategories().toArray(new String[0]);
     String[] categoryListNotInGroup = group.getUnauthorizedCategories(Arrays.asList(allCategories)).toArray(new String[0]);
     String[] selectedUsers = group.getUsers().toArray(new String[0]);
@@ -298,35 +297,6 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Modifying Group: <%=group.getName()%></h3>
-      </div>
-      <div class="panel-body">
-        <p>Assign a default map to group selecting from selection list.</p>
-        <div class="row">
-          <div class="col-sm-4">
-            <select class="form-control" name="groupDefaultMap">
-            	<option selected><%=group.getDefaultMap()%></option>
-            	<%
-            	for (String mapname: allVisibleMaps) {
-                  if (!mapname.equals(group.getDefaultMap())) {
-            	%>
-                <option><%=mapname%></option>
-                <%
-                  }
-            	}
-                %>
-            </select>
-          </div> <!-- column -->
-        </div> <!-- row -->
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
         <h3 class="panel-title">Assignments</h3>
       </div>
       <div class="panel-body">
@@ -387,7 +357,7 @@
                     <div class="btn-group-vertical" align="center">
   	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
   	                  <button type="button" class="btn btn-default" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
-                    <div>
+                    </div>
 	                </td>
 	                <td>
                     <div class="btn-group-vertical">
@@ -458,10 +428,10 @@
         <div class="col-sm-12">
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
           <button id="addSchedule" class="btn btn-default" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
-          <select name="numSchedules" class="btn btn-default" value="3">
+          <select name="numSchedules" class="btn btn-default">
             <option value="1">1</option>
             <option value="2">2</option>
-            <option value="3">3</option>
+            <option value="3" selected="selected">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
             <option value="6">6</option>
@@ -485,6 +455,8 @@
     <button type="button" class="btn btn-default" name="cancel" onclick="cancelGroup()">Cancel</button>
   </div> <!-- column -->
 </div> <!-- row -->
+
+</form>
 
 <script type="text/javascript">
   // shorthand for refering to menus

@@ -39,24 +39,17 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -69,16 +62,15 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.mock.MockScheduler;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.test.mock.EasyMockUtils;
@@ -89,6 +81,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import junit.framework.TestCase;
 
 public class CollectdTest extends TestCase {
 
@@ -128,32 +122,6 @@ public class CollectdTest extends TestCase {
         m_eventIpcManager.removeEventListener(isA(EventListener.class));
         expectLastCall().anyTimes();
 
-//        MockNetwork m_network = new MockNetwork();
-//        m_network.setCriticalService("ICMP");
-//        m_network.addNode(1, "Router");
-//        m_network.addInterface("192.168.1.1");
-//        m_network.addService("ICMP");
-//        m_network.addService("SMTP");
-//        m_network.addInterface("192.168.1.2");
-//        m_network.addService("ICMP");
-//        m_network.addService("SMTP");
-//        m_network.addNode(2, "Server");
-//        m_network.addInterface("192.168.1.3");
-//        m_network.addService("ICMP");
-//        m_network.addService("HTTP");
-//        m_network.addNode(3, "Firewall");
-//        m_network.addInterface("192.168.1.4");
-//        m_network.addService("SMTP");
-//        m_network.addService("HTTP");
-//        m_network.addInterface("192.168.1.5");
-//        m_network.addService("SMTP");
-//        m_network.addService("HTTP");
-//
-//        MockDatabase m_db = new MockDatabase();
-//        m_db.populate(m_network);
-//
-//        DataSourceFactory.setInstance(m_db);
-
         // Mock the FilterDao without using EasyMockUtils so that it can be verified separately
         m_filterDao = EasyMock.createMock(FilterDao.class);
         List<InetAddress> allIps = new ArrayList<InetAddress>();
@@ -179,15 +147,15 @@ public class CollectdTest extends TestCase {
 
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(m_eventIpcManager);
-        //m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setIpInterfaceDao(m_ipIfDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setScheduler(m_scheduler);
         m_collectd.setTransactionTemplate(transTemplate);
-        //m_collectd.afterPropertiesSet();
+        m_collectd.setPersisterFactory(new MockPersisterFactory());
+        m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
+        m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
 
-        
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
     }
 
@@ -377,10 +345,7 @@ public class CollectdTest extends TestCase {
 
     private void setupCollector(String svcName, boolean successfulInit) throws CollectionInitializationException {
         ServiceCollector svcCollector = m_easyMockUtils.createMock(ServiceCollector.class);
-        if (successfulInit) {
-            svcCollector.initialize(isA(CollectionAgent.class), isAMap(String.class, Object.class));
-        }
-        svcCollector.initialize(Collections.<String,String>emptyMap());
+        svcCollector.initialize();
         MockServiceCollector.setDelegate(svcCollector);
 
         // Tell the config to use the MockServiceCollector for the specified service
@@ -395,71 +360,6 @@ public class CollectdTest extends TestCase {
         expect(m_collectdConfig.getThreads()).andReturn(1).anyTimes();
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
-    }
-
-    
-    public static class MockServiceCollector implements ServiceCollector {
-        private static ServiceCollector s_delegate;
-
-        public MockServiceCollector() {
-            
-        }
-        
-        public static void setDelegate(ServiceCollector delegate) {
-            s_delegate = delegate;
-        }
-        
-        @Override
-        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-            return new AbstractCollectionSet() {
-                private Date m_timestamp = new Date();
-                @Override
-                public int getStatus() {
-                    return ServiceCollector.COLLECTION_SUCCEEDED;
-                }
-
-                @Override
-                public void visit(CollectionSetVisitor visitor) {
-                    visitor.visitCollectionSet(this);   
-                    visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public Date getCollectionTimestamp() {
-                    return m_timestamp;
-                }
-            };
-        }
-
-        @Override
-        public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
-            s_delegate.initialize(parameters);
-        }
-
-        @Override
-        public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-            s_delegate.initialize(agent, parameters);
-        }
-
-        @Override
-        public void release() {
-            s_delegate.release();
-        }
-
-        @Override
-        public void release(CollectionAgent agent) {
-            s_delegate.release(agent);
-        }
-
-        @Override
-        public RrdRepository getRrdRepository(String collectionName) {
-            RrdRepository repo = new RrdRepository();
-            repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
-            repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
-            repo.setStep(300);
-            repo.setHeartBeat(2 * 300);
-            return repo;
-        }
     }
 
 }

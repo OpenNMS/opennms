@@ -47,10 +47,11 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsIpInterface iface) {
+    public Integer save(final OnmsIpInterface iface) {
         updateParent(iface);
-        super.save(iface);
+        Integer retval = super.save(iface);
         updateSubObjects(iface);
+        return retval;
     }
 
     @Override

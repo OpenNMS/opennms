@@ -1,0 +1,58 @@
+cluster_name: 'Test Cluster'
+max_hint_window_in_ms: 10800000 # 3 hours
+hinted_handoff_throttle_in_kb: 1024
+max_hints_delivery_threads: 2
+authenticator: AllowAllAuthenticator
+authorizer: AllowAllAuthorizer
+permissions_validity_in_ms: 2000
+partitioner: org.apache.cassandra.dht.Murmur3Partitioner
+data_file_directories:
+    - target/embeddedCassandra/data
+commitlog_directory: target/embeddedCassandra/commitlog
+disk_failure_policy: stop
+key_cache_size_in_mb:
+key_cache_save_period: 14400
+row_cache_size_in_mb: 0
+row_cache_save_period: 0
+saved_caches_directory: target/embeddedCassandra/saved_caches
+commitlog_sync: periodic
+commitlog_sync_period_in_ms: 10000
+commitlog_segment_size_in_mb: 32
+seed_provider:
+    - class_name: org.apache.cassandra.locator.SimpleSeedProvider
+      parameters:
+          - seeds: "127.0.0.1"
+concurrent_reads: 32
+concurrent_writes: 32
+trickle_fsync: false
+trickle_fsync_interval_in_kb: 10240
+storage_port: 7010
+ssl_storage_port: 7011
+listen_address: 127.0.0.1
+start_native_transport: true
+native_transport_port: 9043
+start_rpc: true
+rpc_address: localhost
+rpc_port: 9170
+rpc_keepalive: true
+rpc_server_type: sync
+thrift_framed_transport_size_in_mb: 15
+thrift_max_message_length_in_mb: 16
+incremental_backups: false
+snapshot_before_compaction: false
+auto_snapshot: false
+column_index_size_in_kb: 64
+compaction_throughput_mb_per_sec: 16
+cross_node_timeout: false
+endpoint_snitch: SimpleSnitch
+dynamic_snitch_update_interval_in_ms: 100
+dynamic_snitch_reset_interval_in_ms: 600000
+dynamic_snitch_badness_threshold: 0.1
+request_scheduler: org.apache.cassandra.scheduler.NoScheduler
+index_interval: 128
+encryption_options:
+    internode_encryption: none
+    keystore: conf/.keystore
+    keystore_password: cassandra
+    truststore: conf/.truststore
+    truststore_password: cassandra

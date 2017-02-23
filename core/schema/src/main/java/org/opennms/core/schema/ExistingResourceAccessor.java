@@ -73,6 +73,6 @@ public class ExistingResourceAccessor implements ResourceAccessor {
 
     @Override
     public String toString() {
-        return m_resource.toString();
+        return m_resource == null ? "null" : m_resource.toString();
     }
 }

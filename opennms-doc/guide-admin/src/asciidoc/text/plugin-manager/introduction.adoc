@@ -1,0 +1,26 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+With the introduction of __Karaf__ as an __OSGi__ application container, _{opennms-product-name}_ now has the ability to install or upgrade features on top of a running instance of _{opennms-product-name}_.
+In addition, the new distributed _OSGi_ architecture allows an _{opennms-product-name}_ system to be deployed as multiple software modules each running in their own __Karaf__ instance.
+
+The _{opennms-product-name}_ Plugin Manager_ provides a unified interface for managing the lifecycle of optional _OSGi_ plugins installed in _{opennms-product-name}_ or in any _Karaf_ instances which it manages.
+This need not be limited to _Karaf_ instances running _{opennms-product-name}_ but can also be used to deploy modules to _Karaf_ instances running user applications.
+
+In addition to managing the installation of _OSGi_ features, the _Plugin Manager_ also allows the installation of licence keys which can be used to enable features for a particular instance of _{opennms-product-name}_.
+Although the _{opennms-product-name}_ platform remains open source, this provides a mechanism for third parties developing features on top of the _{opennms-product-name}_ platform to manage access to their software.
+
+The _Plugin Manager_ also provides a mechanism for a separate 'app-store' or Available Plugins Server to be used to deliver these new features and / or licences into a particular _{opennms-product-name}_ instance.
+It is also possible to deliver software without access to the internet using the traditional _Karaf_ Kar/RPM deployment model. (Kar files are a
+form of zip file containing bundles and features definitions which can be deployed in the _Karaf_ /deploy directory). These can be placed in the /deploy directory directly or installed there using an RPM). In this case a number of features can be delivered together in a single software package but each only enabled at run time using the Plugin Manager.
+
+_{opennms-product-name}_ plugins are standard _Karaf_ features with additional metadata which describes the feature and the licence (if any) required.
+A plugin requiring a licence will not start if a valid licence string is not also installed.
+
+Note that _Karaf_'s features mechanism has not been modified in any way.
+The Plugin Manager simply provides a user front end and additional metadata for features.
+Plugin features can be installed from the internal features repository, remote maven repositories or _Kar_ files placed in the deploy directory depending on how the _Karaf_ configuration is set up. The standard _{opennms-product-name}_ configuration has no remote maven access enabled for _Karaf_ and external features must be locally provisioned as a _Kar_ or an _RPM_ before being enabled with the _Plugin Manager_.
+
+This guide describes how to deploy and manage plugins using the _Plugin Manager_.
+A separate plugin developer's guide is provided for those wishing to write their own plugins.

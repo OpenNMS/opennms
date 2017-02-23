@@ -32,7 +32,7 @@ import java.io.File;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.ui.Window;

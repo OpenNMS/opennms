@@ -29,10 +29,11 @@
 package org.opennms.osgi;
 
 
-import org.opennms.vaadin.extender.SessionListener;
-
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
+
+import org.opennms.vaadin.extender.SessionListener;
 
 /**
  * The {@linkplain org.opennms.osgi.OnmsServiceManager} is a abstraction layer above the {@link org.osgi.framework.BundleContext}.
@@ -63,7 +64,7 @@ public interface OnmsServiceManager extends SessionListener {
      * @param applicationContext   the session scope. Must not be null.
      * @param additionalProperties Additional Properties. Must not be null.
      */
-    <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties additionalProperties);
+    <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Dictionary<String,Object> additionalProperties);
 
     /**
      * Returns a service in session-scope. Be aware that if there are multiple services registered
@@ -81,7 +82,7 @@ public interface OnmsServiceManager extends SessionListener {
      * @param applicationContext   The session scope. Must not be null.
      * @param additionalProperties optional additional propeties. Must not be null.
      */
-    <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties);
+    <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Hashtable<String,Object> additionalProperties);
 
     VaadinApplicationContext createApplicationContext(VaadinApplicationContextCreator creator);
 

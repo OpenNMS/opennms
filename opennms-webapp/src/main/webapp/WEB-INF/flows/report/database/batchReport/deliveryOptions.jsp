@@ -34,7 +34,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib tagdir="/WEB-INF/tags/element" prefix="onms"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Database Reports" />
@@ -55,14 +54,13 @@
                     <div class="form-group">
                         <div class="col-md-2">
                             <form:label path="instanceId" for="instanceId">Unique name:</form:label>
-                            <form:input path="instanceId" cssClass="form-control"/>
-                            <onms:tooltip id="uniqueNameTT">A name to identify this report. Must be unique overall reports.</onms:tooltip>
+                            <form:input path="instanceId" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="A name to identify this report. Must be unique overall reports."/>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-2">
                             <form:label path="format" for="format">Format:</form:label>
-                            <form:select path="format" cssClass="form-control">
+                            <form:select path="format" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="The output format of the generated report.">
                                 <form:options items="${formats}"/>
                             </form:select>
                         </div>
@@ -71,10 +69,9 @@
                     <div class="form-group">
                         <div class="col-md-2">
                             <div class="checkbox">
-                                <label>
+                                <label data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
                                     <form:checkbox path="sendMail"/>Email report
                                 </label>
-                                <onms:tooltip id="emailReportTT">Indicates whether the generated report is send via email to the defined recipient.</onms:tooltip>
                             </div>
                         </div>
                     </div>
@@ -82,18 +79,17 @@
                     <div class="form-group">
                         <div class="col-md-2">
                             <form:label path="mailTo" for="mailTo">Recipient:</form:label>
-                            <form:input path="mailTo"  cssClass="form-control"/>
+                            <form:input path="mailTo" cssClass="form-control" data-toggle="tooltip" data-placement="right" title="The recipient of the generated report if 'Email report' is enabled."/>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-md-2">
                             <div class="checkbox">
-                                <label>
+                                <label data-toggle="tooltip" data-placement="right" title="Indicates whether a copy of the generated report is stored on disk.">
                                     <form:checkbox path="persist"/>Save a copy of this report
                                 </label>
                             </div>
-                            <onms:tooltip id="persistTT">Indicates whether a copy of the generated report is stored on disk.</onms:tooltip>
                         </div>
                     </div>
 
@@ -110,5 +106,13 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        onVersionChange();
+    })
+</script>
+
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

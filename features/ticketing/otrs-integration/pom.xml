@@ -2,11 +2,11 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>14.0.3-SNAPSHOT</version>
+		<version>20.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-otrs</artifactId>
-	<name>OpenNMS Features OTRS Integration</name>
+	<name>OpenNMS :: Features :: Ticketing :: OTRS</name>
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -39,7 +39,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+						<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 					</instructions>
@@ -71,6 +71,11 @@
 			<artifactId>org.opennms.features.ticketing.api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.opennms.features.ticketing</groupId>
+			<artifactId>opennms-integration-otrs-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-util</artifactId>
 		</dependency>
@@ -82,11 +87,19 @@
 			    <groupId>commons-logging</groupId>
 			    <artifactId>commons-logging</artifactId>
 			  </exclusion>
+			  <exclusion>
+			    <groupId>axis</groupId>
+			    <artifactId>axis-wsdl4j</artifactId>
+			  </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>

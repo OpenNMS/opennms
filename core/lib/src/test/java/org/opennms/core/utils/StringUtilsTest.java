@@ -33,7 +33,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -72,6 +76,16 @@ public class StringUtilsTest {
                 }, actual);
     }
 
+    // Check NMS-6331 for more details.
+    @Test
+    public void testRrdPathWithSpaces() {
+        String arg = "/usr/bin/rrdtool graph - --start 1463938619 --end 1464025019 --title=\"fwdd Uptime\" DEF:time=\"snmp/fs/The OpenNMS Office/Main Router/juniper-fwdd-process.rrd\":junFwddUptime:AVERAGE";
+        String[] actual = StringUtils.createCommandArray(arg);
+        assertArrayEquals(new String[]{
+                "/usr/bin/rrdtool", "graph", "-", "--start", "1463938619", "--end", "1464025019", "--title=fwdd Uptime", "DEF:time=snmp/fs/The OpenNMS Office/Main Router/juniper-fwdd-process.rrd:junFwddUptime:AVERAGE"
+                }, actual);
+    }
+
     @Test
     public void testWindowsPaths() {
     	if (File.separatorChar != '\\') return;
@@ -88,6 +102,74 @@ public class StringUtilsTest {
     	}
     }
     
+    @Test
+    public void testIso8601OffsetString() {
+        assertEquals("1970-01-01T00:00:00Z", StringUtils.iso8601OffsetString(new Date(0), ZoneId.of("Z"), null));
+        assertEquals("1970-01-01T00:00:00.001Z", StringUtils.iso8601OffsetString(new Date(1), ZoneId.of("Z"), null));
+    }
+    
+    @Test
+    public void testIso8601LocalOffsetString() {
+        assertEquals(StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), null), StringUtils.iso8601LocalOffsetString(new Date(0)));
+    }
+
+    private static interface EqualsTrimmingMatcher {
+        boolean equalsTrimmed(String a, String b);
+    }
+
+    @Test
+    public void testEqualsTrimmed() {
+        Map<String, EqualsTrimmingMatcher> impls = new LinkedHashMap<>();
+        impls.put("naive", new EqualsTrimmingMatcher() {
+            @Override
+            public boolean equalsTrimmed(String a, String b) {
+                return a != null && a.trim().equals(b);
+            }
+        });
+
+        impls.put("optimized", new EqualsTrimmingMatcher() {
+            @Override
+            public boolean equalsTrimmed(String a, String b) {
+                return StringUtils.equalsTrimmed(a, b);
+            }
+        });
+
+        for (Map.Entry<String, EqualsTrimmingMatcher> impl : impls.entrySet()) {
+            final String name = impl.getKey();
+            final EqualsTrimmingMatcher matcher = impl.getValue(); 
+            System.err.printf("Testing %s implementation.\n", name);
+
+            // Negative hits
+            assertEquals(name, false, matcher.equalsTrimmed(null, null));
+            assertEquals(name, false, matcher.equalsTrimmed(null, "x"));
+            assertEquals(name, false, matcher.equalsTrimmed("x", " x"));
+            assertEquals(name, false, matcher.equalsTrimmed("xx", "x"));
+            assertEquals(name, false, matcher.equalsTrimmed("x", "xx"));
+            assertEquals(name, false, matcher.equalsTrimmed("x ", "xx"));
+            assertEquals(name, false, matcher.equalsTrimmed("x", "x "));
+            assertEquals(name, false, matcher.equalsTrimmed("x", " x "));
+
+            // Positive hits
+            assertEquals(name, true, matcher.equalsTrimmed("x", "x"));
+            assertEquals(name, true, matcher.equalsTrimmed(" x", "x"));
+            assertEquals(name, true, matcher.equalsTrimmed("x ", "x"));
+            assertEquals(name, true, matcher.equalsTrimmed(" x ", "x"));
+            assertEquals(name, true, matcher.equalsTrimmed(" \t\nx\t\n ", "x"));
+
+            // Increase this when profiling
+            final int N = 100000;
+            long start = System.currentTimeMillis();
+            for (int i = 0; i < N; i++) {
+                // Both a negative positive hit
+                matcher.equalsTrimmed("x", "xx");
+                matcher.equalsTrimmed(" x ", "x");
+            }
+            long end = System.currentTimeMillis();
+            System.err.printf("The %s implementation processed %d matches in %d ms.\n",
+                    name, N, end - start);
+        }
+    }
+
     private void testCreateCmdArray(String[] expected, String arg) {
         String[] actual = StringUtils.createCommandArray(arg);
         assertArrayEquals(expected, actual);

@@ -132,6 +132,7 @@ public class RScriptExecutor {
                 Writer out = new OutputStreamWriter(fos);) {
             template.process(input.getArguments(), out);
         } catch (IOException | TemplateException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("Failed to process the template.", e);
         }
 
@@ -141,6 +142,7 @@ public class RScriptExecutor {
         try {
             inputTableAsCsv = toCsv(input.getTable());
         } catch (IOException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("Failed to convert the input table to CSV.", e);
         }
 
@@ -169,29 +171,32 @@ public class RScriptExecutor {
         try {
             executor.execute(cmdLine);
         } catch (IOException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("An error occured while executing Rscript, or the requested script.",
                     inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), e);
         }
 
         // Parse and return the results
         try {
-            ImmutableTable<Integer, String, Double> table = fromCsv(stdout.toString());
+            ImmutableTable<Long, String, Double> table = fromCsv(stdout.toString());
             return new RScriptOutput(table);
         } catch (Throwable t) {
             throw new RScriptException("Failed to parse the script's output.",
                     inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), t);
+        } finally {
+            scriptOnDisk.delete();
         }
     }
 
     /**
      * Convert the CSV string to an immutable table.
      */
-    protected static ImmutableTable<Integer, String, Double> fromCsv(final String csv) throws IOException {
-        ImmutableTable.Builder<Integer, String, Double> builder = ImmutableTable.builder();
+    protected static ImmutableTable<Long, String, Double> fromCsv(final String csv) throws IOException {
+        ImmutableTable.Builder<Long, String, Double> builder = ImmutableTable.builder();
         try (StringReader reader = new StringReader(csv);
                 CSVParser parser = new CSVParser(reader,
                         CSVFormat.RFC4180.withHeader());) {
-            int rowIndex = 0;
+            long rowIndex = 0;
             Map<String, Integer> headerMap = parser.getHeaderMap();
             for (CSVRecord record : parser) {
                 for (String key : headerMap.keySet()) {
@@ -213,13 +218,13 @@ public class RScriptExecutor {
     /**
      * Convert the table to a CSV string.
      */
-    protected static StringBuilder toCsv(final RowSortedTable<Integer, String, Double> table) throws IOException {
+    protected static StringBuilder toCsv(final RowSortedTable<Long, String, Double> table) throws IOException {
         final String columnNames[] = table.columnKeySet().toArray(new String[]{});
 
         final StringBuilder sb = new StringBuilder();
         final CSVPrinter printer = CSVFormat.RFC4180.withHeader(columnNames).print(sb);
 
-        for (int rowIndex : table.rowKeySet()) {
+        for (long rowIndex : table.rowKeySet()) {
             for (String columnName : columnNames) {
                 Double value = table.get(rowIndex, columnName);
                 if (value == null) {

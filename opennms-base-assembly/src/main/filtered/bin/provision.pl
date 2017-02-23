@@ -236,6 +236,9 @@ sub cmd_requisition {
 	if ($command eq 'list') {
 		cmd_list($foreign_source);
 	} elsif (is_add($command)) {
+		if ($foreign_source =~ /[\/\\?:&*'"]/) {
+			pod2usage(-exitval => 1, -message => "Error: foreign source cannot contain :, /, \\, ?, &, *, ', \"", -verbose => 0);
+		}
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
@@ -311,6 +314,9 @@ sub cmd_node {
 	}
 
 	if (is_add($command)) {
+		if ($foreign_id =~ /[\/\\?:&*'"]/) {
+			pod2usage(-exitval => 1, -message => "Error: foreign id cannot contain :, /, \\, ?, &, *, ', \"", -verbose => 0);
+		}
 		my $node_label = shift @args;
 		if (not defined $node_label or $node_label eq "") {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a node label!", -verbose => 0);

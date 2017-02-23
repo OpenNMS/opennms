@@ -67,6 +67,8 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
     
     /** Constant <code>REF_ATTR="ref"</code> */
     public static final String REF_ATTR = "ref";
+    /** Constant <code>DEPENDS_ON_ATTR="depends-on"</code> */
+    public static final String DEPENDS_ON_ATTR = "depends-on";
     /** Constant <code>INTERFACE_ATTR="interface"</code> */
     public static final String INTERFACE_ATTR = "interface";
     /** Constant <code>INTERFACES_ELEM="interfaces"</code> */
@@ -87,6 +89,11 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
         String ref = element.getAttribute(REF_ATTR);
         bean.addPropertyReference("target", ref);
         bean.addPropertyReference("serviceRegistry", SERVICE_REGISTRY_BEAN_NAME);
+        
+        String dependsOn = element.getAttribute(DEPENDS_ON_ATTR);
+        if (dependsOn != null && !"".equals(dependsOn.trim())) {
+            bean.addDependsOn(dependsOn.trim());
+        }
         
         String serviceInterface = element.getAttribute(INTERFACE_ATTR);
         if (StringUtils.hasText(serviceInterface)) {

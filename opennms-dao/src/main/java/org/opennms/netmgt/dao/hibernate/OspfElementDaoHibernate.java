@@ -68,5 +68,12 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
         return find("from OspfElement rec where rec.ospfRouterId = ?", routerId);
     }
 
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (OspfElement element : find("from OspfElement rec where rec.node.id = ? ",
+                                  nodeId)) {
+            delete(element);
+        }
+    }
 
 }

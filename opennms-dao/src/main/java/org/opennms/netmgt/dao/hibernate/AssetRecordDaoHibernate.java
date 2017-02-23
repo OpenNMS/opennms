@@ -75,7 +75,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
     @Override
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
 
-        @SuppressWarnings("unchecked") List<Object[]> assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '" + foreignSource + "%'");
+        @SuppressWarnings("unchecked") List<Object[]> assetNumbers = (List<Object[]>)getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '" + foreignSource + "%'");
 
         Map<String, Integer> assetNumberMap = new HashMap<String, Integer>();
         for (Object[] an : assetNumbers) {
@@ -154,7 +154,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         criteria.setResultTransformer(Transformers.aliasToBean(OnmsAssetRecord.class));
 
         @SuppressWarnings("unchecked") 
-        List<OnmsAssetRecord> result = getHibernateTemplate().findByCriteria(criteria);
+        List<OnmsAssetRecord> result = (List<OnmsAssetRecord>)getHibernateTemplate().findByCriteria(criteria);
         return result;
     }
 }

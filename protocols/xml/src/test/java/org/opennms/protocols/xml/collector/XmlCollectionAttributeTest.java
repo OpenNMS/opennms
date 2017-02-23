@@ -31,6 +31,7 @@ package org.opennms.protocols.xml.collector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.protocols.xml.config.XmlObject;
 
 /**
@@ -45,48 +46,48 @@ public class XmlCollectionAttributeTest {
      */
     @Test
     public void testNumericValuesWithUnits() {
-        XmlObject object = new XmlObject("test", "gauge");
+        XmlObject object = new XmlObject("test", AttributeType.GAUGE);
         AttributeGroupType group = new AttributeGroupType("xml-data", AttributeGroupType.IF_TYPE_ALL);
         final XmlCollectionAttributeType type = new XmlCollectionAttributeType(object, group);
         
         // Standard Numeric Value
         XmlCollectionAttribute a = new XmlCollectionAttribute(null, type, "4.6");
-        Assert.assertEquals("4.6", a.getNumericValue());
+        Assert.assertEquals(4.6, a.getNumericValue());
         Assert.assertEquals("4.6", a.getStringValue());
 
         // Percentage Value
         a = new XmlCollectionAttribute(null, type, "4.6%");
-        Assert.assertEquals("4.6", a.getNumericValue());
+        Assert.assertEquals(4.6, a.getNumericValue());
         Assert.assertEquals("4.6%", a.getStringValue());
 
         // Value with Units - Model 1
         a = new XmlCollectionAttribute(null, type, "4.6Bps");
-        Assert.assertEquals("4.6", a.getNumericValue());
+        Assert.assertEquals(4.6, a.getNumericValue());
         Assert.assertEquals("4.6Bps", a.getStringValue());
 
         // Value with Units - Model 2
         a = new XmlCollectionAttribute(null, type, "4.6 bps");
-        Assert.assertEquals("4.6", a.getNumericValue());
+        Assert.assertEquals(4.6, a.getNumericValue());
         Assert.assertEquals("4.6 bps", a.getStringValue());
 
         // Negative value
         a = new XmlCollectionAttribute(null, type, "-42");
-        Assert.assertEquals("-42.0", a.getNumericValue());
+        Assert.assertEquals(-42.0, a.getNumericValue());
         Assert.assertEquals("-42", a.getStringValue());
 
         // Negative Value with Units
         a = new XmlCollectionAttribute(null, type, "-32 celcius");
-        Assert.assertEquals("-32.0", a.getNumericValue());
+        Assert.assertEquals(-32.0, a.getNumericValue());
         Assert.assertEquals("-32 celcius", a.getStringValue());
 
         // Value in scientific notation - Model 1
         a = new XmlCollectionAttribute(null, type, "4.2E2");
-        Assert.assertEquals("420.0", a.getNumericValue());
+        Assert.assertEquals(420.0, a.getNumericValue());
         Assert.assertEquals("4.2E2", a.getStringValue());
 
         // Value in scientific notation - Model 2
         a = new XmlCollectionAttribute(null, type, "-4e-2");
-        Assert.assertEquals("-0.04", a.getNumericValue());
+        Assert.assertEquals(-0.04, a.getNumericValue());
         Assert.assertEquals("-4e-2", a.getStringValue());
     }
 

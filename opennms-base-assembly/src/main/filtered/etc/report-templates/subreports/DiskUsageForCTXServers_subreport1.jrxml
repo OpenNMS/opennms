@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T17:15:50 -->
+<!-- 2015-09-10T17:17:13 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DiskUsageForCTXServer_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="59dc74f3-5a5f-4957-94c9-288eacb7b951">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
@@ -17,39 +17,45 @@
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
-	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="foreignid" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
-	<parameter name="hrStoragePath_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getNodeLevelResourceDirectory($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}) + "/hrStorageIndex/C/mib2-host-resources-storage.jrb"]]></defaultValueExpression>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<parameter name="nodeid" class="java.lang.Integer"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
- DEF:total=$P{hrStoragePath_PATH}:hrStorageSize:AVERAGE
- DEF:used=$P{hrStoragePath_PATH}:hrStorageUsed:AVERAGE
- DEF:units=$P{hrStoragePath_PATH}:hrStorageAllocUnits:AVERAGE
- CDEF:totalBytes=total,units,*
- CDEF:usedBytes=used,units,*
- XPORT:totalBytes:dskTotal
- XPORT:usedBytes:dskUsed
- XPORT:units:dskUnits]]>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
+	</parameter>
+	<queryString language="Measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
+  <source aggregation="AVERAGE" label="total" attribute="hrStorageSize" transient="true" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>
+  <source aggregation="AVERAGE" label="used" attribute="hrStorageUsed" transient="true" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>
+  <source aggregation="AVERAGE" label="units" attribute="hrStorageAllocUnits" transient="false" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>
+  <expression transient="false" label="dskTotal">total * units</expression>
+  <expression transient="false" label="dskUsed">used * units</expression>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="Step" class="java.lang.Long"/>
+	<field name="step" class="java.lang.Long"/>
 	<field name="dskTotal" class="java.lang.Double">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="dskUsed" class="java.lang.Double"/>
-	<field name="dskUnits" class="java.lang.Double"/>
+	<field name="units" class="java.lang.Double"/>
 	<variable name="used_AVG" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{dskUsed}]]></variableExpression>
 	</variable>
@@ -59,6 +65,7 @@
 	<variable name="free_AVG" class="java.lang.Double">
 		<variableExpression><![CDATA[$F{dskTotal}-$F{dskUsed}]]></variableExpression>
 	</variable>
+	<filterExpression><![CDATA[!$F{dskUsed}.isNaN() && !$F{dskTotal}.isNaN() && !$F{units}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

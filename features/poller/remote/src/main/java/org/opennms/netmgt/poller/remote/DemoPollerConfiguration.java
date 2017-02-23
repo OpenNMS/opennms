@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 
@@ -58,8 +57,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         
         List<PolledService> polledServices = new ArrayList<PolledService>();
         
-        OnmsDistPoller distPoller = new OnmsDistPoller("locahost", "127.0.0.1");
-        NetworkBuilder m_builder = new NetworkBuilder(distPoller);
+        NetworkBuilder m_builder = new NetworkBuilder();
         m_builder.addNode("Google").setId(1);
         m_builder.addInterface("64.233.161.99").setId(11);
         polledServices.add(createPolledService(111, m_builder.addService(http), new HashMap<String,Object>(), 3000));

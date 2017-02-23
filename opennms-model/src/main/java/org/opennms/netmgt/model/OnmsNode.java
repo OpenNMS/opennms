@@ -71,18 +71,21 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonValue;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -165,7 +168,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private String m_foreignId;
 
     /** persistent field */
-    private OnmsDistPoller m_distPoller;
+    private OnmsMonitoringLocation m_location;
 
     /** persistent field */
     private OnmsAssetRecord m_assetRecord;
@@ -189,13 +192,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<>();
-
-    /** persistent field */
     private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
-
-    /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<>();
 
     private Set<OnmsCategory> m_categories = new LinkedHashSet<>();
 
@@ -204,7 +201,12 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private PathElement m_pathElement;
 
     /**
-     * <p>Constructor for OnmsNode.</p>
+     * <p>
+     * Constructor for OnmsNode. This constructor should only be used
+     * by JAXB and by unit tests that do not need to persist the {@link OnmsNode}
+     * in the database. It does not associate the {@link OnmsNode} with a
+     * required {@link OnmsMonitoringLocation}.
+     * </p>
      */
     public OnmsNode() {
         this(null);
@@ -213,16 +215,22 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * <p>Constructor for OnmsNode.</p>
      *
-     * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @param location The location where this node is located
      */
-    public OnmsNode(final OnmsDistPoller distPoller) {
-        m_distPoller = distPoller;
-        m_assetRecord = new OnmsAssetRecord();
-        m_assetRecord.setNode(this);
+    public OnmsNode(final OnmsMonitoringLocation location) {
+        // Set the location
+        setLocation(location);
     }
 
-    public OnmsNode(final OnmsDistPoller distPoller, final String label) {
-        this(distPoller);
+    /**
+     * <p>Constructor for OnmsNode.</p>
+     *
+     * @param location The location where this node is located
+     * @param label The node label
+     */
+    public OnmsNode(final OnmsMonitoringLocation location, final String label) {
+        this(location);
+        // Set the label
         setLabel(label);
     }
 
@@ -724,25 +732,23 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
-     * Distributed Poller responsible for this node
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * Monitoring location that this node is located in.
      */
-    @XmlTransient
-    @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName")
-    public OnmsDistPoller getDistPoller() {
-        return m_distPoller;
+    @JsonBackReference
+    @XmlElement(name="location")
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="location")
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
 
     /**
-     * <p>setDistPoller</p>
-     *
-     * @param distpoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * Set the monitoring location that this node is located in.
      */
-    public void setDistPoller(org.opennms.netmgt.model.OnmsDistPoller distpoller) {
-        m_distPoller = distpoller;
+    public void setLocation(OnmsMonitoringLocation location) {
+        m_location = location;
     }
 
     /**
@@ -753,6 +759,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @XmlElement(name="assetRecord")
     public OnmsAssetRecord getAssetRecord() {
+        if (m_assetRecord == null) {
+            m_assetRecord = new OnmsAssetRecord();
+            m_assetRecord.setNode(this);
+        }
         return m_assetRecord;
     }
 
@@ -908,6 +918,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @return a {@link java.util.Set} object.
      */
+    @XmlTransient
+    @JsonIgnore
     @OneToMany(mappedBy="node",orphanRemoval=true)
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<LldpLink> getLldpLinks() {
@@ -954,65 +966,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setSnmpInterfaces(Set<OnmsSnmpInterface> snmpinterfaces) {
         m_snmpInterfaces = snmpinterfaces;
-    }
-
-    /**
-     * The ARP interfaces with this node as a source
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    @XmlTransient
-    @JsonIgnore
-    @OneToMany(mappedBy="sourceNode",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
-    public Set<OnmsArpInterface> getArpInterfacesBySource() {
-        return m_arpInterfacesBySource;
-    }
-
-    /**
-     * @param arpInterfaces a {@link java.util.Set} object.
-     */
-    public void setArpInterfacesBySource(Set<OnmsArpInterface> arpInterfaces) {
-        m_arpInterfacesBySource = arpInterfaces;
-    }
-
-    /**
-     * @param iface a {@link org.opennms.netmgt.model.OnmsArpInterface} object.
-     */
-    public void addArpInterfaceBySource(OnmsArpInterface iface) {
-        iface.setNode(this);
-        getArpInterfacesBySource().add(iface);
-    }
-
-    /**
-     * The ARP interfaces on this node
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    @XmlTransient
-    @JsonIgnore
-    @OneToMany(mappedBy="node")
-    public Set<OnmsArpInterface> getArpInterfaces() {
-        return m_arpInterfaces;
-    }
-
-    /**
-     * <p>setArpInterfaces</p>
-     *
-     * @param arpInterfaces a {@link java.util.Set} object.
-     */
-    public void setArpInterfaces(Set<OnmsArpInterface> arpInterfaces) {
-        m_arpInterfaces = arpInterfaces;
-    }
-
-    /**
-     * <p>addArpInterface</p>
-     *
-     * @param iface a {@link org.opennms.netmgt.model.OnmsArpInterface} object.
-     */
-    public void addArpInterface(OnmsArpInterface iface) {
-        iface.setNode(this);
-        getArpInterfaces().add(iface);
     }
 
     /**
@@ -1102,13 +1055,13 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
+        retval.append("location", m_location == null ? null : m_location.getLocationName());
         retval.append("foreignSource", m_foreignSource);
         retval.append("foreignId", m_foreignId);
         retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
-        // retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);
         retval.append("sysName", m_sysName);
         retval.append("sysDescription", m_sysDescription);
@@ -1168,6 +1121,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @Transient
+    @JsonIgnore
     public OnmsSnmpInterface getSnmpInterfaceWithIfIndex(int ifIndex) {
         for (OnmsSnmpInterface dbSnmpIface : getSnmpInterfaces()) {
             if (dbSnmpIface.getIfIndex().equals(ifIndex)) {
@@ -1503,7 +1457,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeIpInterfaces</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -1606,7 +1560,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeNode</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {

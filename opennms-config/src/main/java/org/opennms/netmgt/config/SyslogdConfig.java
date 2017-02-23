@@ -43,7 +43,7 @@ public interface SyslogdConfig {
      *
      * @return a int.
      */
-    public abstract int getSyslogPort();
+    int getSyslogPort();
 
     /**
      * <p>getListenAddress</p>
@@ -51,62 +51,95 @@ public interface SyslogdConfig {
      * @return a {@link java.lang.String} object.
      * @since 1.8.1
      */
-    public abstract String getListenAddress();
+    String getListenAddress();
     
     /**
      * <p>getNewSuspectOnMessage</p>
      *
      * @return a boolean.
      */
-    public abstract boolean getNewSuspectOnMessage();
+    boolean getNewSuspectOnMessage();
 
     /**
      * <p>getForwardingRegexp</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getForwardingRegexp();
+    String getForwardingRegexp();
 
     /**
      * <p>getMatchingGroupHost</p>
      *
      * @return a int.
      */
-    public abstract int getMatchingGroupHost();
+    int getMatchingGroupHost();
 
     /**
      * <p>getMatchingGroupMessage</p>
      *
      * @return a int.
      */
-    public abstract int getMatchingGroupMessage();
+    int getMatchingGroupMessage();
 
     /**
      * <p>getParser</p>
      *
      * @return the parser class to use when parsing syslog messages, as a string.
      */
-    public abstract String getParser();
+    String getParser();
 
     /**
-     * <p>getUeiList</p>
-     *
+     * A collection of Strings->UEI's
+     * 
      * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
      */
-    public abstract UeiList getUeiList();
+    UeiList getUeiList();
 
     /**
-     * <p>getHideMessages</p>
+     * A collection of Strings we do not want to attach to the event.
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      */
-    public abstract HideMessage getHideMessages();
+    HideMessage getHideMessages();
     
     /**
      * <p>getDiscardUei</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getDiscardUei();
-}
+    String getDiscardUei();
 
+    /**
+     * Number of threads used for consuming/dispatching messages.
+     *
+     * @return number of threads
+     */
+    int getNumThreads();
+
+    /**
+     * Maximum number of messages to keep in memory while waiting
+     * to be dispatched.
+     *
+     * @return queue size
+     */
+    int getQueueSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch reaches this size, it will be dispatched.
+     *
+     * @return batch size
+     */
+    int getBatchSize();
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     *
+     * When the batch has been created for longer than this interval
+     * it will be dispatched, regardless of the size.
+     *
+     * @return interval in ms
+     */
+    int getBatchIntervalMs();
+}

@@ -57,8 +57,12 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
 	 */
         @Override
-	public String getNumericValue() {
-		return m_value;
+	public Double getNumericValue() {
+        try {
+            return Double.parseDouble(m_value);
+        } catch (NumberFormatException|NullPointerException e) {
+            return null;
+        }
 	}
 
 	/* (non-Javadoc)

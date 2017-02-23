@@ -110,7 +110,7 @@ public abstract class UnimplementedIpInterfaceDao implements IpInterfaceDao {
     }
 
     @Override
-    public void save(OnmsIpInterface entity) {
+    public Integer save(OnmsIpInterface entity) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

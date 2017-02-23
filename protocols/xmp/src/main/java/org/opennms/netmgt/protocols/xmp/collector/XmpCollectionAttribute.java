@@ -84,10 +84,16 @@ public class XmpCollectionAttribute extends AbstractCollectionAttribute {
     /**
      * <p>getNumericValue</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Double} object.
      */
     @Override
-    public String getNumericValue() { return aVar.getValue(); }
+    public Double getNumericValue() {
+        try {
+            return Double.parseDouble(aVar.getValue());
+        } catch (NumberFormatException|NullPointerException e) {
+            return null;
+        }
+    }
 
     //public void visit(CollectionSetVisitor visitor) { super(visitor); }
 

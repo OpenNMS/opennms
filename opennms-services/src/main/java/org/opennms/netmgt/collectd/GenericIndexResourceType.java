@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;

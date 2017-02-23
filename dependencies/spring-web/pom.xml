@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>spring-web-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Spring Web</name>
+  <name>OpenNMS :: Dependencies :: Spring Web</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the spring library.
@@ -25,11 +25,6 @@
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.spring-webmvc</artifactId>
-      <version>${springVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.spring-struts</artifactId>
       <version>${springVersion}</version>
     </dependency>
     <dependency>
@@ -87,6 +82,14 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -152,10 +155,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
     </dependency>
     <dependency>
       <groupId>xalan</groupId>

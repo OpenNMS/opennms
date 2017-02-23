@@ -54,7 +54,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
+import org.opennms.netmgt.provision.detector.jmx.Jsr160DetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,10 +68,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml",
+                                 "classpath:/test-spring-jmxconfig.xml"})
 public class Jsr160DetectorTest implements InitializingBean {
 
     @Autowired
+    public Jsr160DetectorFactory m_detectorFactory;
+    
     public Jsr160Detector m_detector;
 
     public static MBeanServer m_beanServer;
@@ -77,6 +83,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        this.m_detectorFactory.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -88,7 +95,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Before
     public void setUp() throws IOException {
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         assertNotNull(m_detector);
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9123/server");
@@ -100,6 +107,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @After
     public void tearDown() throws IOException{
         m_connectorServer.stop();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
@@ -134,4 +142,19 @@ public class Jsr160DetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
 
     }
+
+    /**
+     * If we try to connect to localhost on the default OpenNMS JMX port, the detector
+     * should connect to the in-JVM {@link MBeanServer} and return that the service has
+     * been detected.
+     */
+    @Test(timeout=20000)
+    public void testDetectorLocalJvm() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+
+        m_detector.setPort(18980);
+        m_detector.init();
+
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.ONE_TWENTY_SEVEN));
+    }
+
 }

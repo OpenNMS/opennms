@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.Table;
+
 import org.hibernate.Criteria;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -44,12 +51,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
  *
@@ -61,7 +62,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoHibernate.class);
     Class<T> m_entityClass;
     private String m_lockName;
-    private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
+    protected final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
     public AbstractDaoHibernate(final Class<T> entityClass) {
         super();
@@ -96,6 +97,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /** {@inheritDoc} */
     @Override
     public void clear() {
+        getHibernateTemplate().flush(); // always flush before clearing, otherwise pending updates/saves are not executed
         getHibernateTemplate().clear();
     }
 
@@ -111,7 +113,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query) {
-        return getHibernateTemplate().find(query);
+        return (List<T>)getHibernateTemplate().find(query);
     }
 
     /**
@@ -123,7 +125,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query, final Object... values) {
-        return getHibernateTemplate().find(query, values);
+        return (List<T>)getHibernateTemplate().find(query, values);
     }
     
     /**
@@ -137,7 +139,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
         @SuppressWarnings("unchecked")
-        final List<S> notifs = getHibernateTemplate().find(query, values);
+        final List<S> notifs = (List<S>)getHibernateTemplate().find(query, values);
         return notifs;
     }
 
@@ -181,6 +183,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().execute(callback).intValue();
     }
 
+    /**
+     * Return a single instance that matches the query string, 
+     * or null if the query returns no results.
+     */
     protected T findUnique(final String queryString, final Object... args) {
         final Class <? extends T> type = m_entityClass;
     	final HibernateCallback<T> callback = new HibernateCallback<T>() {
@@ -250,55 +256,30 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public List<T> findAll() throws DataAccessException {
         return getHibernateTemplate().loadAll(m_entityClass);
     }
-    
-    /**
-     * <p>findMatchingObjects</p>
-     *
-     * @param type a {@link java.lang.Class} object.
-     * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
-     * @param <S> a S object.
-     * @return a {@link java.util.List} object.
-     */
-    @SuppressWarnings("unchecked")
-    public <S> List<S> findMatchingObjects(final Class<S> type, final OnmsCriteria onmsCrit ) {
-        onmsCrit.resultsOfType(type);
-        
-        final HibernateCallback<S> callback = new HibernateCallback<S>() {
-            @Override
-            public S doInHibernate(final Session session) throws HibernateException, SQLException {
-            	final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
-                if (onmsCrit.getFirstResult() != null) attachedCrit.setFirstResult(onmsCrit.getFirstResult());
-                if (onmsCrit.getMaxResults() != null) attachedCrit.setMaxResults(onmsCrit.getMaxResults());
-                return (S)attachedCrit.list();
-            }
-            
-        };
-        return getHibernateTemplate().executeFind(callback);
-    }
-    
+
     @SuppressWarnings("unchecked")
     @Override
-	public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
-    	final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
-                        @Override
-			public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
-				LOG.debug("criteria = {}", criteria);
-            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
-				return (List<T>)(hibernateCriteria.list());
+    public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
+        final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
+            @Override
+            public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+                LOG.debug("criteria = {}", criteria);
+                final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+                return (List<T>)(hibernateCriteria.list());
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return getHibernateTemplate().execute(callback);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
-    	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
                 
-            	final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
-            	hibernateCriteria.setProjection(Projections.rowCount());
+                final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
+                hibernateCriteria.setProjection(Projections.rowCount());
                 Long retval = (Long)hibernateCriteria.uniqueResult();
                 hibernateCriteria.setProjection(null);
                 hibernateCriteria.setResultTransformer(Criteria.ROOT_ENTITY);
@@ -323,7 +304,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (List<T>)attachedCrit.list();
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return getHibernateTemplate().execute(callback);
     }
     
     /** {@inheritDoc} */
@@ -385,9 +366,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
-    public void save(final T entity) throws DataAccessException {
+    public K save(final T entity) throws DataAccessException {
         try {
-            getHibernateTemplate().save(entity);
+            return (K)getHibernateTemplate().save(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
             throw e;
@@ -434,15 +415,17 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * {@see http://issues.opennms.org/browse/NMS-5029}
      */
     private void logExtraSaveOrUpdateExceptionInformation(final T entity, final DataAccessException e) {
-    	Throwable cause = e;
+        Throwable cause = e;
         while (cause.getCause() != null) {
-            if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
-            	final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
-                LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName(), EntityMode.POJO));
-                break;
-            } else if (cause.getMessage().contains("given object has a null identifier")) {
-                LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());
-                break;
+            if (cause.getMessage() != null) {
+                if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
+                    final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
+                    LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName(), EntityMode.POJO));
+                    break;
+                } else if (cause.getMessage().contains("given object has a null identifier")) {
+                    LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());
+                    break;
+                }
             }
             cause = cause.getCause();
         }

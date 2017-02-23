@@ -2,7 +2,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -38,7 +38,7 @@
 <%@page import="java.util.regex.Pattern"%>
 <%@page import="org.springframework.util.Assert"%>
 
-<%@page import="org.opennms.netmgt.EventConstants"%>
+<%@page import="org.opennms.netmgt.events.api.EventConstants"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
@@ -98,7 +98,7 @@
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
   <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value="<%="Event " + (event == null? "Not Found" : event.getId()) %>" />
+  <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
 </jsp:include>
 
 <% if (event == null ) { %>
@@ -127,8 +127,13 @@
             <td class="col-md-3"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
           </c:if>
         </tr>
-
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+              <th class="col-md-1">Event Source Location</th>
+              <td class="col-md-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
+              <th class="col-md-1">Node Location</th>
+              <td class="col-md-3"><%= event.getNodeLocation() %></td>
+          </tr>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Time</th>
           <td class="col-md-3"><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
           <th class="col-md-1">Interface</th>

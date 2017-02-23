@@ -2,7 +2,7 @@
 	margin: 0;
 	padding:
 	}
-	
+
 
 
 .eXtremeTable select {
@@ -35,12 +35,11 @@
 }
 
 .eXtremeTable .titleRow {
-	
+
 	background-color: #F4F4F4;
 }
 
 .eXtremeTable .titleRow td {
-	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
@@ -73,7 +72,6 @@
 
 .eXtremeTable .tableHeader {
 	background-color: #009900;
-	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
@@ -93,7 +91,6 @@
 
 .eXtremeTable .tableHeaderSort {
 	background-color: #00CC00;
-	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
@@ -150,7 +147,7 @@
 
 .eXtremeTable .compactToolbar {
 	background-color: #F4F4F4;
-	
+
 }
 
 .eXtremeTable .toolbar {
@@ -171,7 +168,6 @@
 	color: #444444;
 	padding: 0px 1px 0px 1px;
 	text-align:center;
-	background-image: url(images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: #366903;
@@ -188,7 +184,7 @@ padding-top: 2px;
         padding-right: 2px;
         padding-bottom: 2px;
         padding-left: 2px;
-	
+
 }
 
 .eXtremeTable .filterButtons {
@@ -233,4 +229,3 @@ padding-top: 2px;
 	color: black;
 	font-family: "Lucida Grande", Verdana, sans-serif;
 }
-

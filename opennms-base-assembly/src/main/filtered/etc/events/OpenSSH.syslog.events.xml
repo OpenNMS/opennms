@@ -47,6 +47,25 @@
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%" alarm-type="3" auto-clean="false" />
     </event>
     <event>
+        <uei>uei.opennms.org/vendor/openssh/syslog/sshd/authenticationRefused</uei>
+        <event-label>OpenSSH-defined event: authentication refused</event-label>
+        <descr>
+            &lt;p&gt;The OpenSSH sshd daemon refused to perform an authentication. It may happens, for example, when the OpenSSH server uses public key based authentication, and the authorized_keys file does not have the proper permissions and ownership. &lt;br&gt;
+            Reason: %parm[errorMessage]%&lt;br&gt;
+            Host: %nodelabel%&lt;br&gt;
+            Interface: %interface% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;OpenSSH server on node %nodelabel% refused to perform some authentication &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+    </event>
+    <event>
         <uei>uei.opennms.org/vendor/openssh/syslog/sshd/bindFailure</uei>
         <event-label>OpenSSH-defined event: Socket bind failure</event-label>
         <descr>

@@ -49,4 +49,7 @@ public interface BridgeElementDao extends OnmsDao<BridgeElement, Integer> {
     public BridgeElement getByBridgeIdVlan(String id, Integer vlanId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+    
+    void deleteByNodeId(Integer nodeiId);
+
 }

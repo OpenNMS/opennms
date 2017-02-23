@@ -99,7 +99,7 @@ public class OnmsLocationSpecificStatus {
      * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      */
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
-    @JoinColumn(name="locationMonitorId")
+    @JoinColumn(name="systemId")
     public OnmsLocationMonitor getLocationMonitor() {
         return m_locationMonitor;
     }

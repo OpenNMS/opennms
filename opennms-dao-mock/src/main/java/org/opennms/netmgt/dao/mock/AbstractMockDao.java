@@ -46,11 +46,12 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LegacyOnmsDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
@@ -69,6 +70,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
+    private MonitoringLocationDao m_locationDao;
     private DistPollerDao m_distPollerDao;
     private MonitoredServiceDao m_monitoredServiceDao;
     private ServiceTypeDao m_serviceTypeDao;
@@ -162,29 +164,33 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public T get(final K id) {
-        LOG.debug("get({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
     public T load(K id) {
-        LOG.debug("load({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
-    public void save(final T entity) {
-        if (entity == null) return;
+    public K save(final T entity) {
+        if (entity == null) return null;
         K id = getId(entity);
         if (id == null) {
             generateId(entity);
             id = getId(entity);
         }
-        LOG.debug("save({})", entity);
         if (m_entries.containsKey(id)) {
-            LOG.debug("save({}): id exists: {}", entity, id);
+            LOG.debug("save({}): id already exists: {}", entity, id);
+        } else {
+            LOG.debug("save({})", entity);
         }
         m_entries.put(id, entity);
+        return id;
     }
 
     @Override
@@ -239,7 +245,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
         }
         return m_categoryDao;
     }
-    
+
+    protected MonitoringLocationDao getMonitoringLocationDao() {
+        if (m_locationDao == null) {
+            m_locationDao = getServiceRegistry().findProvider(MonitoringLocationDao.class);
+            Assert.notNull(m_locationDao);
+        }
+        return m_locationDao;
+    }
+
     protected DistPollerDao getDistPollerDao() {
         if (m_distPollerDao == null) {
             m_distPollerDao = getServiceRegistry().findProvider(DistPollerDao.class);
@@ -290,11 +304,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     public static final class NullEventForwarder implements EventForwarder {
         @Override
-        public void sendNow(Event event) {
-        }
+        public void sendNow(Event event) { }
 
         @Override
-        public void sendNow(Log eventLog) {
-        }
+        public void sendNow(Log eventLog) { }
+
+        @Override
+        public void sendNowSync(Event event) { }
+
+        @Override
+        public void sendNowSync(Log eventLog) { }
     }
 }

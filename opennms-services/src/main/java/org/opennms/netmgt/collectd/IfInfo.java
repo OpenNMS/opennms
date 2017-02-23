@@ -29,16 +29,13 @@
 
 package org.opennms.netmgt.collectd;
 
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,18 +213,13 @@ public final class IfInfo extends SnmpCollectionResource {
         return getResourceType().getCollection();
     }
 
-    /** {@inheritDoc} 
-     * @throws FileNotFoundException */
     @Override
-    public File getResourceDir(RrdRepository repository) throws FileNotFoundException {
+    public ResourcePath getPath() {
         String label = getInterfaceLabel();
         if (label == null || "".equals(label)) {
-            throw new FileNotFoundException("Could not construct resource directory because interface label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
-        } else {
-            File rrdBaseDir = repository.getRrdBaseDir();
-            File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
-            return new File(dir, label);
+            throw new IllegalStateException("Could not construct resource directory because interface label is null or blank: nodeId: " + getNodeId());
         }
+        return ResourcePath.get(getCollectionAgent().getStorageResourcePath(), label);
     }
 
     /**
@@ -274,11 +266,12 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String getInstance() {
-        return Integer.toString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
+        return Integer.toUnsignedString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
     }
 
     @Override
-    public String getParent() {
-        return getCollectionAgent().getStorageDir().toString();
+    public ResourcePath getParent() {
+        return getCollectionAgent().getStorageResourcePath();
     }
+
 } // end class

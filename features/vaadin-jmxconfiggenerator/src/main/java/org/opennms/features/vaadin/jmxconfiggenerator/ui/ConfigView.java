@@ -28,6 +28,11 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaConfigModel;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
@@ -43,9 +48,6 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaConfigModel;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
 
 /**
  * This form handles editing of a {@link ServiceConfig} model.
@@ -64,7 +66,7 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 
 		public ConfigForm() {
 			this.configFieldGroup = new FieldGroup();
-			this.configFieldGroup.setItemDataSource(new BeanItem<>(UIHelper.getCurrent().getUiModel().getServiceConfig()));
+			this.configFieldGroup.setItemDataSource(new BeanItem<>(UIHelper.getCurrent(JmxConfigGeneratorUI.class).getUiModel().getServiceConfig()));
 
 			initFields();
 			updateAuthenticationFields(false); // default -> hide those fields
@@ -96,6 +98,7 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 		private void initFields() {
 			CheckBox authenticateField = new CheckBox();
 			authenticateField.setCaption("Authentication");
+			authenticateField.setId("authenticate");
 			authenticateField.addValueChangeListener(new Property.ValueChangeListener() {
 				@Override
 				public void valueChange(Property.ValueChangeEvent event) {
@@ -105,11 +108,13 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			authenticateField.setDescription("Connection requires authentication");
 
 			TextField userField = new TextField();
+			userField.setId("authenticateUser");
 			userField.setCaption("User");
 			userField.setNullRepresentation("");
 			userField.setDescription("Username for JMX-RMI Authentication");
 
 			PasswordField passwordField = new PasswordField();
+			passwordField.setId("authenticatePassword");
 			passwordField.setCaption("Password");
 			passwordField.setNullRepresentation("");
 			passwordField.setDescription("Password for JMX-RMI Authentication");
@@ -149,11 +154,10 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			((AbstractComponent) skipDefaultVMField).setDescription("Set to include/exclude default JavaVM MBeans");
 			addComponent(skipDefaultVMField);
 
-			final Field<?> runWritableMbeansField = configFieldGroup.buildAndBind(MetaConfigModel.RUN_WRITABLE_MBEANS);
-			runWritableMbeansField.setCaption("Run writable MBeans");
-			((AbstractComponent) runWritableMbeansField)
-					.setDescription("By default writable MBeans are not included, even if they are readable. Enable to exclude/include writable MBeans as well.");
-			addComponent(runWritableMbeansField);
+			final Field<?> skipNonNumberField = configFieldGroup.buildAndBind(MetaConfigModel.SKIP_NON_NUMBER);
+			skipNonNumberField.setCaption("Skip non-number values");
+			((AbstractComponent) skipNonNumberField).setDescription("Set to include/exclude non-number values");
+			addComponent(skipNonNumberField);
 
 			final Field<?> jmxMpField = configFieldGroup.buildAndBind(MetaConfigModel.JMXMP);
 			jmxMpField.setCaption("JMXMP");

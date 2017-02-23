@@ -1,0 +1,39 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-rc-imp-analysis]]
+=== Root Cause and Impact Analysis
+
+The _Root Cause_ operation can be used to quickly identify the underlying _Reduction Keys_ as _Edges_ that contribute to the current _Operational Status_ of an element.
+The _Impact Analysis_ operation, converse to the _Root Cause_ operation, can be used to identify all of the _BS_ affected by a given element.
+Both of these options are available in the context menu of the _Topology User Interface_ when visualizing _BS_.
+
+The following example shows how to identify the _Root Cause_ of the critical status of the _Shop_ service.
+Use the _Context Menu_ on the _BS_ to investigate the _Root Cause_ shown in figure <<ug-bsm-example-rca-action, View before performing Root Cause Analysis>>.
+
+[[ug-bsm-example-rca-action]]
+.View before performing Root Cause Analysis
+image:bsm/03_bsm-rca-action.png[]
+
+The _Topology UI_ sets only elements to _Focus_ which are the reason for the _Operational Status_ of the selected _BS_.
+In figure <<ug-bsm-example-rca-results, View after performing Root Cause Analysis>> the _Page Sequence Monitor_ which tests the user login is down and has set the _BS_ to a critical status.
+
+[[ug-bsm-example-rca-results]]
+.View after performing Root Cause Analysis
+image:bsm/04_bsm-rca-results.png[]
+
+Similar to identifying a root cause for a _BS_ it is also possible to identfy which _Business Services_ from a specific _Edge_ are affected.
+Use the _Context Menu_ on a specific _Edge_ element and select _Impact Analysis_ shown in figure <<ug-bsm-example-ia-action, View before performing Impact Analysis>>.
+
+[[ug-bsm-example-ia-action]]
+.View before performing Impact Analysis
+image:bsm/05_bsm-ia-action.png[]
+
+In figure <<ug-bsm-example-ia-results, View after performing Impact Analysis>> the _Business Services_ for _Login_, _Shop_ and _Payment_ are affected if this _HTTP_ service is unavailable.
+
+[[ug-bsm-example-ia-results]]
+.View after performing Impact Analysis
+image:bsm/06_bsm-ia-results.png[]
+
+NOTE: For the reason the service _PSM Shop_ is introducing the critical status for the _Business Service_ _Shop_, the _HTTP_ service has no impact on the _Operational Status_ of the _PSM Shop_ and is not shown.

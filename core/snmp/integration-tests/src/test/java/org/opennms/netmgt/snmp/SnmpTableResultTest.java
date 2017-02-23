@@ -63,11 +63,6 @@ public class SnmpTableResultTest {
             m_receivedRows.add(result);
             System.err.println("Received Row: "+result);
         }
-
-        public void reset() {
-            m_rowCount = 0;
-        }
-
     }
 
     public SnmpValue value(String val) {
@@ -85,7 +80,7 @@ public class SnmpTableResultTest {
     @Before
     public void setUp() throws Exception {
         m_rowCallback = new TestRowCallback();
-        m_columns = new SnmpObjId[] { SnmpTrackerTest.SnmpTableConstants.ifIndex, SnmpTrackerTest.SnmpTableConstants.ifDescr, SnmpTrackerTest.SnmpTableConstants.ifMtu };
+        m_columns = new SnmpObjId[] { SnmpTrackerIT.SnmpTableConstants.ifIndex, SnmpTrackerIT.SnmpTableConstants.ifDescr, SnmpTrackerIT.SnmpTableConstants.ifMtu };
         m_tableResult = new SnmpTableResult(m_rowCallback, m_columns);
         System.err.println("---");
     }
@@ -140,17 +135,17 @@ public class SnmpTableResultTest {
         
         anticipateRows("1");
 
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "1"));
 
         verifyRows();
         
         anticipateRows("2");
 
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "2"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "2"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "2"));
 
         verifyRows();
         
@@ -167,17 +162,17 @@ public class SnmpTableResultTest {
 
         anticipateRows("1", "2");
         
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "1"));
 
         /* no way to tell that a result is not coming for ifDescr so no rows
          * expected
          */
         verifyRowCount(0);
 
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "2"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "2"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "2"));
 
         verifyRows();
         
@@ -194,19 +189,19 @@ public class SnmpTableResultTest {
         
         anticipateRows("1", "2", "3");
         
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "1"));
 
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "2"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "2"));
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifMtu);
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "2"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "2"));
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifMtu);
 
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "3"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "3"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "3"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "3"));
 
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifIndex);
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifDescr);
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifIndex);
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifDescr);
 
         m_tableResult.tableFinished();
 
@@ -219,13 +214,13 @@ public class SnmpTableResultTest {
         anticipateRows("127.0.0.1");
         
         /* yes, yes, I know these are not the right places to put them in The Real World ;) */
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifIndex, "127.0.0.1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifDescr, "127.0.0.1"));
-        m_tableResult.storeResult(result(SnmpTrackerTest.SnmpTableConstants.ifMtu, "127.0.0.1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifIndex, "127.0.0.1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifDescr, "127.0.0.1"));
+        m_tableResult.storeResult(result(SnmpTrackerIT.SnmpTableConstants.ifMtu, "127.0.0.1"));
         
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifIndex);
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifDescr);
-        m_tableResult.columnFinished(SnmpTrackerTest.SnmpTableConstants.ifMtu);
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifIndex);
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifDescr);
+        m_tableResult.columnFinished(SnmpTrackerIT.SnmpTableConstants.ifMtu);
 
         m_tableResult.tableFinished();
         

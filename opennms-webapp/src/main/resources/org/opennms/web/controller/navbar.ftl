@@ -9,7 +9,7 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/logo-bootstrap.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/logo-bootstrap.png'" />
+        <img id="logo" src="${baseHref}images/horizon_logo.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/horizon_logo_small.png'" />
       </a>
     </div>
 
@@ -50,7 +50,7 @@
 		        <#-- has sub-entries, draw menu drop-downs -->
 		        <li class="dropdown">
 		          <#if item.url?has_content && item.url != "#">
-		            <a href="${item.url}" name="nav-${item.name}-top" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
+		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
 		          <#else>
 		            <a href="#" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
 		          </#if>
@@ -59,7 +59,7 @@
 		              <#if shouldDisplay(subItem) >
 		              <li>
 		                <#if subItem.url?has_content >
-		                  <a name="nav-${item.name}-${subItem.name}" href="${subItem.url}">${subItem.name}</a>
+		                  <a name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
 		                <#else>
 		                  <a name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
 		                </#if>
@@ -70,7 +70,7 @@
 		        </li>
 		      <#else>
 		        <#if item.url?has_content >
-		          <li><a name="nav-${item.name}-top" href="${item.url}">${item.name}</a></li>
+		          <li><a name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
 		        <#else>
 		          <a name="nav-${item.name}-top" href="#">${item.name}</a>
 		        </#if>
@@ -93,7 +93,7 @@
                 <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
               </#if>
               <#if isAdmin || isProvision >
-                <li><a name="nav-admin-quick-add" href="${baseHref}admin/node/add.htm" style="white-space: nowrap">Quick-Add Node</a></li>
+                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
               </#if>
               <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>
               <#if request.remoteUser?has_content >
@@ -109,7 +109,7 @@
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
 <script type='text/javascript'>
-if (window.location != window.parent.location) {
+if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
   // Hide the header
   $("#header").hide();
   // Remove any padding from the body

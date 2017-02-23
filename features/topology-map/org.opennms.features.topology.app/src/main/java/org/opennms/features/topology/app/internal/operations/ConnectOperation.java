@@ -37,7 +37,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class ConnectOperation implements Operation {
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
     	String ns = operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
     	if(targets != null && targets.size() > 1) {
     		VertexRef sourceRef = targets.get(0);
@@ -46,7 +46,6 @@ public class ConnectOperation implements Operation {
     			operationContext.getGraphContainer().getBaseTopology().connectVertices(sourceRef, targetRef);
     		}
     	}
-    	return null;
     }
 
     @Override

@@ -34,8 +34,8 @@ import java.util.List;
 
 import org.easymock.EasyMock;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 
 import static org.easymock.EasyMock.*;
 
@@ -52,35 +52,28 @@ public class CorrelatorTest extends TestCase {
 	private CorrelationEngine m_engine;
 	private Correlator m_correlator;
 
-        @Override
+	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
-
 		m_eventIpcManager = createMock(EventIpcManager.class);
 		m_engine = createMock(CorrelationEngine.class);
 		
-		expect(m_engine.getName()).andStubReturn("myMockEngine");
-		
-		m_correlator = new Correlator();
-		m_correlator.setEventIpcManager(m_eventIpcManager);
-		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
-	}
-
-        @Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-	
-	public void testStartStop() throws Exception {
-		
 		List<String> interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
-		
+
+		expect(m_engine.getName()).andStubReturn("myMockEngine");
 		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
+
 		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
 
 		replayMocks();
-		
+	}
+
+	public void testStartStop() throws Exception {
+
+		m_correlator = new Correlator();
+		m_correlator.setEventIpcManager(m_eventIpcManager);
+		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
 		m_correlator.afterPropertiesSet();
+
 		assertEquals("Expected the correlator to be init'd", Fiber.START_PENDING, m_correlator.getStatus());
 		m_correlator.start();
 		assertEquals("Expected the correlator to be running", Fiber.RUNNING, m_correlator.getStatus());
@@ -91,18 +84,13 @@ public class CorrelatorTest extends TestCase {
 	}
 	
 	public void testRegisterForEvents() throws Exception {
-		
-		List<String> interestingEvents = Collections.singletonList("uei.opennms.org:/testEvent");
-		
-		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
-		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
 
-		replayMocks();
-		
+		m_correlator = new Correlator();
+		m_correlator.setEventIpcManager(m_eventIpcManager);
+		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
 		m_correlator.afterPropertiesSet();
 		
 		verifyMocks();
-		
 	}
 	
 	private <T> T createMock(Class<T> clazz) {
@@ -119,7 +107,4 @@ public class CorrelatorTest extends TestCase {
 		EasyMock.verify(mocks.toArray());
 		EasyMock.reset(mocks.toArray());
 	}
-	
-	
-
 }

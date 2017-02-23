@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>14.0.3-SNAPSHOT</version>
+        <version>20.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -13,11 +13,10 @@
     <name>OpenNMS :: Documentation</name>
     <description>Official documentation</description>
     <modules>
-        <module>guide-doc</module>
         <module>guide-install</module>
         <module>guide-user</module>
-        <module>guide-development</module>
         <module>guide-admin</module>
+        <module>guide-development</module>
         <module>releasenotes</module>
         <module>guide-all</module>
     </modules>
@@ -74,7 +73,6 @@
                         <version>${jrubyVersion}</version>
                     </dependency>
                 </dependencies>
-
                 <executions>
                     <execution>
                         <id>output-html</id>
@@ -98,6 +96,7 @@
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipPdfGeneration}</skip>
                             <backend>pdf</backend>
                             <doctype>book</doctype>
                             <!-- WARNING callout bullets don't yet work with CodeRay -->
@@ -118,7 +117,10 @@
                     <outputDirectory>${asciidoc.output.directory}</outputDirectory>
                     <imagesDir>images</imagesDir>
                     <attributes>
+                        <opennms-product-name>OpenNMS Horizon</opennms-product-name>
                         <opennms-version>${project.version}</opennms-version>
+                        <opennms-package-base-name>opennms</opennms-package-base-name>
+                        <jasperReportsVersion>${jasperreportsVersion}</jasperReportsVersion>
                     </attributes>
                 </configuration>
             </plugin>
@@ -143,7 +145,7 @@
                         <descriptors>
                             <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
                         </descriptors>
-                        <tarLongFileMode>gnu</tarLongFileMode>
+                        <tarLongFileMode>posix</tarLongFileMode>
                     </configuration>
                 </plugin>
             </plugins>

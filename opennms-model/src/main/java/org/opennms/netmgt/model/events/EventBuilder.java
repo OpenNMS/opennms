@@ -33,13 +33,15 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -82,40 +84,50 @@ public class EventBuilder {
         m_event = new Event();
         setUei(uei);
         setTime(date);
-        setCreationTime(date);
         setSource(source);
     }
-    
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public EventBuilder(final Event event) {
-        this(event, new Date());
+        m_event = event;
+        Date now = new Date();
+        setTime(now);
     }
 
     /**
-     * <p>Constructor for EventBuilder.</p>
+     * <p>getEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public EventBuilder(final Event event, final Date date) {
-    	m_event = event;
-	    setTime(date);
-	    setCreationTime(date);
-	}
-
-	/**
-	 * <p>getEvent</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event getEvent() {
+    public Event getEvent() {
+        if (m_event.getCreationTime() == null) {
+            // The creation time has been used as the time when the event
+            // is stored in the database so update it right before we return
+            // the event object.
+            m_event.setCreationTime(new Date());
+        }
         return m_event;
     }
-	
+
+    public Log getLog() {
+        Event event = getEvent();
+
+        Events events = new Events();
+        events.setEvent(new Event[]{event});
+
+        Header header = new Header();
+        header.setCreated(event.getCreationTime().toString());
+
+        Log log = new Log();
+        log.setHeader(header);
+        log.setEvents(events);
+        return log;
+    }
+
     public EventBuilder setUei(final String uei) {
         m_event.setUei(uei);
         return this;
@@ -129,19 +141,8 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setTime(final Date date) {
-       m_event.setTime(EventConstants.formatToString(date));
+       m_event.setTime(date);
        return this;
-    }
-    
-    /**
-     * <p>setCreationTime</p>
-     *
-     * @param date a {@link java.util.Date} object.
-     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
-     */
-    public EventBuilder setCreationTime(final Date date) {
-        m_event.setCreationTime(EventConstants.formatToString(date));
-        return this;
     }
 
     /**
@@ -297,7 +298,7 @@ public class EventBuilder {
         }
 
         for(final Parm parm : m_event.getParmCollection()) {
-            if (parm.getParmName().equals(val)) {
+            if (parm.getParmName().equals(parmName)) {
             	final Value value = new Value();
                 value.setContent(val);
                 parm.setValue(value);

@@ -10,97 +10,97 @@
     </rrd>
 
     <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
     </resourceType>
 
     <resourceType name="bgpPeerEntry" label="BGP Peer"
                   resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="cbgpPeerAddrFamilyPrefixEntry" label="Cisco BGP Peer / Address Family"
                   resourceLabel="Peer ${subIndex(0,4)}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
    <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
                  resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
 
     <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
                   resourceLabel="${cvmTempStatusDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoEnvMonVoltageStatusIndex" label="Cisco Voltage"
                   resourceLabel="${cvmVoltStatusDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     
     <resourceType name="ciscoMemoryPoolType" label="Cisco Memory Pool"
                   resourceLabel="${cscoMemoryPoolName} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoSlbInstance" label="Cisco SLB Instance"
                   resourceLabel="Cisco SLB (Slot ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="cesServerFarmRserverEntry" label="Cisco SLB Server Farm / Real Server"
                   resourceLabel="Cisco SLB Entity ${subIndex(0, 1)}, Server Farm ${string(subIndex(1, n))}, Real Server ${string(subIndex(n, n))}, port ${subIndex(n)}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="applIndex" label="Network Services Application"
                   resourceLabel="${applDescription} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="asAppIndex" label="IP Unity Applications"
                   resourceLabel="${asAppName} (index ${index})">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
                   resourceLabel="${hrStorageDescr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy"/>
     </resourceType>
 
     <resourceType name="hrStorageNonUnique" label="Storage (MIB-2 Host Resources, non-unique descriptions)"
                   resourceLabel="${hrStorageDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ipuMGCPMsgStatsEntry" label="IP Unity MGCP Message Stats"
                   resourceLabel="MGC.MsgType: ${index} (1=crcx 2=mdcx 3=dlcx 4=rqnt 5=ntfy 6=auep 7=aucx 8=rsip 9=epcf 10=other)">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)"
                   resourceLabel="${naDfFileSys} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)"
                   resourceLabel="${diskIODevice} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="diskIODevice" />
 		<parameter key="replace-all" value="s/^-//" />
@@ -111,7 +111,7 @@
 
     <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)"
                   resourceLabel="${ns-dskPath} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="ns-dskPath" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
@@ -123,88 +123,88 @@
 
     <resourceType name="pgmonIndex" label="SystemEDGE Process Group Monitor"
                   resourceLabel="${pgmonDescr} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)"
                   resourceLabel="${rttMonCtrlAdminTag} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="umOrgIndex" label="Unified Messaging Organization"
                   resourceLabel="${umOrgName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- SNMP Informant Resource Types -->
     <resourceType name="sinfCpuInstance" label="SNMP Informant CPU"
                   resourceLabel="CPU${sinfCpuInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="ainfCpuInstance" label="SNMP Informant Advanced CPU"
                   resourceLabel="CPU${ainfCpuInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="sinfLDskInstance" label="SNMP Informant Logical Disk"
                   resourceLabel="${sinfLDskInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="ainfLDskInstance" label="SNMP Informant Advanced Logical Disk"
                   resourceLabel="${ainfLDskInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="sinfNetInstance" label="SNMP Informant Network Interface"
                   resourceLabel="${sinfNetInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="ainfNetInstance" label="SNMP Informant Advanced Network Interface"
                   resourceLabel="${ainfNetInstance}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
      
     <resourceType name="ltmPoolStatName" label="F5 LTM Pool Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmPoolStatName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
      
     <resourceType name="ltmVSStatName" label="F5 LTM Virtual Server Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmVSStatName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
      
     <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)"
                   resourceLabel="${f5ifName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Mikrotik Resource Types -->
     <resourceType name="mtxrWlStatIndex" label="Local PtP or SU Interface (Mikrotik)"
                   resourceLabel="${mtxrWlStatSsid}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="mtxrWlRtabAddr" label="Subscriber or Remote Radio (Mikrotik)"
                  resourceLabel="SU ${index}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Asterisk Resource Types -->
     <resourceType name="astChanType" label="Asterisk Channel Type"
                  resourceLabel="${astChanTypeName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="astChanTypeName" />
 		<parameter key="replace-all" value="s/\\s+//" />
@@ -213,55 +213,55 @@
 
     <!-- Juniper Resource Types -->
     <resourceType name="juniSystemSlot" label="Juniper ERX System Slot" resourceLabel="${juniSystemModuleDescr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <resourceType name="juniSystemTempIndex" label="Juniper ERX Temperature Sensor" resourceLabel="Physical Index ${juniSTPhysicalIndex}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- DELL Remote Access Controller Resource Types -->
     <resourceType name="drsChassisIndex" label="Dell DRAC Chassis">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="drsPSUIndex" label="Dell DRAC PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Dell OpenManage Resource Types -->
     <resourceType name="coolingDeviceIndex" label="Dell Cooling Device" resourceLabel="${coolingDeviceLocationName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <resourceType name="xmpFilesys" label="Cartographer Filesystem" resourceLabel="${mountpoint}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
      </resourceType>
 
     <resourceType name="temperatureProbeIndex" label="Dell Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="powerUsageIndex" label="Dell Power Usage" resourceLabel="${powerUsageEntityName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- PRINTER-MIB Resource Types -->
     <resourceType name="prtMarkerSuppliesIndex" label="Printer Marker Supply" resourceLabel="${prtMarkerSuppliesDescription}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- HP-UX fileSystemTable resource type -->
     <resourceType name="hpuxFSTable" label="HP-UX Filesystem" resourceLabel="${hpuxFSName} on ${hpuxFSDir}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="hpuxFSDir" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
@@ -272,7 +272,7 @@
 
     <!-- Netware Resource Types -->
     <resourceType name="netwareDisk" label="Netware Disk" resourceLabel="${nwLabel}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="nwLabel" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
@@ -285,84 +285,84 @@
 
     <!-- Brocade Resource Types -->
     <resourceType name="swFCPortIndex" label="Brocade Fibre Channel">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- APC Resource Types -->
     <resourceType name="rPDULoadStatusIndex" label="APC PDU Amp current">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Liebert Resource Types -->
     <resourceType name="lgpEnvTemperatureIdDegF" label="Liebert Temp Index Fahrenheit">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="lgpPwrMeasurementPtIndex" label="Liebert Power Measurement Index">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <!-- Resource Type for WMI TCP/IP Network Interfaces -->
      <resourceType name="wmiTcpipNetworkInterface" label="Windows TCP/IP Network Interface"
                   resourceLabel="${wmiIpNetIfName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <!-- Resource Type for WMI CPUs -->
      <resourceType name="wmiOSCpu" label="Windows Processor"
                   resourceLabel="${wmiOSCpuName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <!-- Resource Type for WMI Physical Disks -->
      <resourceType name="wmiPhysicalDisk" label="Windows Physical Disk"
                   resourceLabel="${wmiPDName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <!-- Resource Type for WMI Logical Disks -->
      <resourceType name="wmiLogicalDisk" label="Windows Logical Disk"
                   resourceLabel="${wmiLDName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
      <!-- Resource Type for XMP processes -->
      <resourceType name="procStats" label="Cartographer Process Stats" resourceLabel="${index}" >
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
      </resourceType>
 
     <resourceType name="msdpPeerEntry" label="MSDP Peer"
         resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="mplsL3VpnVrf" label="MPLS L3VPN VRF"
         resourceLabel="${mL3VVrfName} - ${mL3VVrfDescr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- HOST-RESOURCES hrDeviceTable / hrProcessorTable resource type -->
     <resourceType name="hrDeviceEntry" label="Host Resources Device"
                   resourceLabel="${hrDeviceDescr} (${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- IBM-AIX-MIB resource types -->
     <resourceType name="aixVolumeGroup" label="AIX Volume Group"
                   resourceLabel="${aixVgName} (ID ${aixVgIdentifier})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="aixVgName" />
 		<parameter key="replace-all" value="s/\\+s//" />
@@ -371,7 +371,7 @@
 
     <resourceType name="aixPhysicalVolume" label="AIX Physical Volume"
                   resourceLabel="${aixPvName} (VG ${aixPvNameVG})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="aixPvName" />
 		<parameter key="replace-all" value="s/\\s+//" />
@@ -380,7 +380,7 @@
 
     <resourceType name="aixPagingSpace" label="AIX Paging Space"
                   resourceLabel="${aixPageName} (VG ${aixPvNameVG}, PV ${aixPageNamePV})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="aixPageName" />
 		<parameter key="replace-all" value="s/\\s+//" />
@@ -389,7 +389,7 @@
 
     <resourceType name="aixPrintQueue" label="AIX Print Queue"
                   resourceLabel="${aixPrtQueName} (${aixPrtQueDevice})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="aixPrtQueName" />
 		<parameter key="replace-all" value="s/\\s+//" />
@@ -398,7 +398,7 @@
 
     <resourceType name="aixFilesystem" label="AIX Filesystem"
                   resourceLabel="${aixFsName} (${aixFsMountPoint})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="aixFsMountPoint" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
@@ -408,50 +408,50 @@
     </resourceType>
 
     <resourceType name="pipePosition" label="Allot NetEnforcer Pipe Position" resourceLabel="${pipeName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     
     <resourceType name="vcPipePosition" label="Allot NetEnforcer VC Position" resourceLabel="${vcName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Equallogic Instances -->
     <resourceType name="EqVol" label="Equallogic Volume ID" resourceLabel="${EqVolName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Riverbed Steelhead MIB Instances -->
     <resourceType name="rbshCpuIndivIndex" label="Riverbed Steelhead CPU" resourceLabel="CPU ${rbshCpuIndivId}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="rbshBwPort" label="Riverbed Per-Port Bandwidth" resourceLabel="Port ${rbshBwPortNumber}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="stSentry3Tower" label="ServerTech Sentry Tower (3rd Gen)" resourceLabel="${towerName} - ID ${towerID}, Model ${towerModelNumber}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="stSentry3Infeed" label="ServerTech Sentry Input Feed (3rd Gen)" resourceLabel="${infeedName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="stSentry3EnvMon" label="ServerTech Sentry Environmental Monitor (3rd Gen)" resourceLabel="${envMonName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <groups>

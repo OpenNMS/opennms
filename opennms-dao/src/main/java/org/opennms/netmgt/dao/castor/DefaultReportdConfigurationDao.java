@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.List;
 
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.dao.api.ReportdConfigurationDao;

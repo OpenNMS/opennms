@@ -55,11 +55,20 @@ import org.xml.sax.InputSource;
  */
 public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
 
-    /** The base configuration object (or configuration reference). */
+    /**
+     * The base configuration object (or configuration reference).
+     */
     private ServiceConfiguration baseConfig;
 
-    /** The services configuration file. */
+    /** 
+     * The services configuration file.
+     */
     private File configFile;
+
+    /**
+     * Flag to skip the upgrade if the installed version is 14.0.0 or higher.
+     */
+    private boolean skipMe = false;
 
     /**
      * Instantiates a new Service Configuration migrator offline.
@@ -70,7 +79,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
         super();
         try {
             configFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration.xml"));
+            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-14.0.0.xml"));
             baseConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, src);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't find Services Configuration file", e);
@@ -106,6 +115,11 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (isInstalledVersionGreaterOrEqual(14, 0, 0)) {
+            log("This upgrade procedure should only run against systems older than 14.0.0; the current version is " + getOpennmsVersion() + "\n");
+            skipMe = true;
+            return;
+        }
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
@@ -119,6 +133,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
+        if (skipMe) return;
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
@@ -131,6 +146,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
+        if (skipMe) return;
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -142,6 +158,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (skipMe) return;
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
             int index = 0;
@@ -170,9 +187,13 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
                 }
                 Attribute a = getLoggingPrefix(localSvc);
                 if (a != null) {
-                    log("Fixing logging prefix for service %s\n", localSvc.getName());
                     String prefix = a.getValue().getContent().toLowerCase();
-                    a.getValue().setContent(prefix);
+                    // If the logging prefix isn't already lower case...
+                    if (!a.getValue().getContent().equals(prefix)) {
+                        // then set it to the lower case value
+                        log("Fixing logging prefix for service %s\n", localSvc.getName());
+                        a.getValue().setContent(prefix);
+                    }
                 }
                 index++;
             }
@@ -200,7 +221,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      * @param serviceName the service name
      * @return the service
      */
-    private Service getService(ServiceConfiguration svcConfig, String serviceName) {
+    private static Service getService(ServiceConfiguration svcConfig, String serviceName) {
         for(Service s : svcConfig.getServiceCollection()) {
             if (s.getName().equals(serviceName)) {
                 return s;
@@ -215,7 +236,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      * @param svc the OpenNMS service
      * @return the logging prefix attribute
      */
-    private Attribute getLoggingPrefix(Service svc) {
+    private static Attribute getLoggingPrefix(Service svc) {
         for (Attribute a : svc.getAttributeCollection()) {
             if (a.getName().equals("LoggingPrefix")) {
                 return a;

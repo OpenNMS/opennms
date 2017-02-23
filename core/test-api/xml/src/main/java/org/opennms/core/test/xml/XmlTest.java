@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,8 +42,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -90,7 +95,7 @@ abstract public class XmlTest<T> {
         initXmlUnit();
     }
 
-    private static void initXmlUnit() {
+    public static void initXmlUnit() {
         XMLUnit.setIgnoreWhitespace(true);
         XMLUnit.setIgnoreAttributeOrder(true);
         XMLUnit.setIgnoreComments(true);
@@ -326,6 +331,13 @@ abstract public class XmlTest<T> {
         return xml;
     }
 
+    public static <T> T unmarshalFromXmlWithJaxb(String xml, Class<T> type) {
+        LOG.debug("JAXB XML: {}", xml);
+        final T unmarshalledObject = JaxbUtils.unmarshal(type, xml);
+        LOG.debug("Reference Object: {}", unmarshalledObject);
+        return unmarshalledObject;
+    }
+
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         // ugly hack alert!
         final XmlTest<Object> test = new XmlTest<Object>(null, null, null) {
@@ -502,9 +514,21 @@ abstract public class XmlTest<T> {
             final Object[] expectedArray = (Object[])expected;
             final Object[] actualArray   = (Object[])actual;
             assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof long[] || actual instanceof long[]) {
+            final long[] expectedArray = (long[])expected;
+            final long[] actualArray   = (long[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof int[] || actual instanceof int[]) {
+            final int[] expectedArray = (int[])expected;
+            final int[] actualArray   = (int[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof byte[] || actual instanceof byte[]) {
+            final byte[] expectedArray = (byte[])expected;
+            final byte[] actualArray   = (byte[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else {
+            expected.getClass().isPrimitive();
             assertEquals(assertionMessage, expected, actual);
         }
     }
-
 }

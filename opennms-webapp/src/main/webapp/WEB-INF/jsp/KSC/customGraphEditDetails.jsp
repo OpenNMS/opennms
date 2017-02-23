@@ -45,8 +45,9 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
+  <jsp:param name="renderGraphs" value="true" />
 </jsp:include>
 
 <script type="text/javascript">
@@ -104,7 +105,7 @@
       </div>
       <table class="table">
         <tr>
-          <td align="right">
+          <td align="right" class="col-md-4">
             ${resultSet.title}
             <br/>
               <c:if test="${!empty resultSet.resource.parent}">
@@ -133,15 +134,8 @@
             <br/>
             <b>To</b> ${resultSet.end}
           </td>
-          <td align="left">
-            <c:url var="graphUrl" value="${baseHref}graph/graph.png">
-              <c:param name="resourceId" value="${resultSet.resource.id}"/>
-              <c:param name="report" value="${resultSet.prefabGraph.name}"/>
-              <c:param name="start" value="${resultSet.start.time}"/>
-              <c:param name="end" value="${resultSet.end.time}"/>
-              <c:param name="zoom" value="true"/>
-            </c:url>
-            <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title}" />
+          <td align="left" class="col-md-8">
+            <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
           </td>
         </tr>
       </table>

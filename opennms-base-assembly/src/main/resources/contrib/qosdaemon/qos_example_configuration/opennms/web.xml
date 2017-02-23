@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app id="opennms" version="2.4"
-		 xmlns="http://java.sun.com/xml/ns/j2ee"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="opennms" version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
+
 <!-- v2.5 web.xml C Gallen based on openoss 1.3.2-SNAPSHOT OpenNMS Version 5189 22-11-2006 -->
 <!-- changed from localhost:8080 to localhost:8081 in order to allow JBOSS to run on port 8080 -->
 <!-- added filter to make refresh of alarms jsp every 10 secs-->
@@ -179,10 +181,6 @@
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
-  </listener>
-
-  <listener>
-        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
 
   <listener>
@@ -694,11 +692,6 @@
     <!-- servlet for grabbing SNMP node information -->
     <servlet-name>snmpGetNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for grabbing SNMP interface information -->
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetInterfacesServlet</servlet-class>
   </servlet>
   <servlet>
     <!-- servlet for grabbing node, interface and service information -->
@@ -1335,10 +1328,6 @@
   <servlet-mapping>
     <servlet-name>snmpGetNodes</servlet-name>
     <url-pattern>/admin/snmpGetNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <url-pattern>/admin/snmpGetInterfaces</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>getNodes</servlet-name>

@@ -14,6 +14,7 @@
   <event-file>events/Translator.default.events.xml</event-file>
   
   <event-file>events/Rancid.events.xml</event-file>
+  <event-file>events/AlarmChangeNotifierEvents.xml</event-file>
   
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
@@ -49,9 +50,11 @@
   <event-file>events/Avocent.DSR.events.xml</event-file>
   <event-file>events/Avocent.DSR1021.events.xml</event-file>
   <event-file>events/Avocent.DSR2010.events.xml</event-file>
+  <event-file>events/Avocent-DSView.events.xml</event-file>
   <event-file>events/Avocent.Mergepoint.events.xml</event-file>
   <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
+  <event-file>events/A10.AX.events.xml</event-file>
   <event-file>events/ATMForum.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
@@ -64,6 +67,7 @@
   <event-file>events/Brocade.events.xml</event-file>
   <event-file>events/Broadcom-BASPTrap.events.xml</event-file>
   <event-file>events/CA.ArcServe.events.xml</event-file>
+  <event-file>events/Ceragon-FA1500.events.xml</event-file>
   <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Cisco.CIDS.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
@@ -71,6 +75,7 @@
   <event-file>events/Cisco.SCE.events.xml</event-file>
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
+  <event-file>events/CitrixNetScaler.events.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
   <event-file>events/ComtechEFData.events.xml</event-file>
   <event-file>events/Concord.events.xml</event-file>
@@ -85,8 +90,14 @@
   <event-file>events/Crossbeam.events.xml</event-file>
   <event-file>events/Dell-Asf.events.xml</event-file>
   <event-file>events/DellArrayManager.events.xml</event-file>
+  <event-file>events/DellEquallogic.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
   <event-file>events/Dell-ITassist.events.xml</event-file>
+  <event-file>events/Dell-F10-bgb4-v2.events.xml</event-file>
+  <event-file>events/Dell-F10-chassis.events.xml</event-file>
+  <event-file>events/Dell-F10-copy-config.events.xml</event-file>
+  <event-file>events/Dell-F10-mstp.events.xml</event-file>
+  <event-file>events/Dell-F10-system-component.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
@@ -99,6 +110,10 @@
   <event-file>events/EMC.events.xml</event-file>
   <event-file>events/EMC-Celerra.events.xml</event-file>
   <event-file>events/EMC-Clariion.events.xml</event-file>
+  <event-file>events/Evertz.7780ASI-IP2.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP-FR.events.xml</event-file>
+  <event-file>events/Evertz.7881DEC-MP2-HD.events.xml</event-file>
   <event-file>events/Extreme.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/fcmgmt.events.xml</event-file>
@@ -123,6 +138,7 @@
   <event-file>events/IBM-UMS.events.xml</event-file>
   <event-file>events/IBMRSA2.events.xml</event-file>
   <event-file>events/IEEE802dot11.events.xml</event-file>
+  <event-file>events/Infoblox.events.xml</event-file>
   <event-file>events/Intel.events.xml</event-file>
   <event-file>events/INTEL-LAN-ADAPTERS-MIB.events.xml</event-file>
   <event-file>events/InteractiveIntelligence.events.xml</event-file>
@@ -132,6 +148,8 @@
   <event-file>events/IPV6.events.xml</event-file>
   <event-file>events/Juniper.mcast.events.xml</event-file>
   <event-file>events/Juniper.events.xml</event-file>
+  <event-file>events/Juniper.ive.events.xml</event-file>
+  <event-file>events/Juniper.screen.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>
@@ -146,6 +164,7 @@
   <event-file>events/McAfee.events.xml</event-file>
   <event-file>events/MGE-UPS.events.xml</event-file>
   <event-file>events/Microsoft.events.xml</event-file>
+  <event-file>events/MikrotikRouterOS.events.xml</event-file>
   <event-file>events/Multicast.standard.events.xml</event-file>
   <event-file>events/MPLS.events.xml</event-file>
   <event-file>events/MRV.events.xml</event-file>
@@ -154,7 +173,8 @@
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
-  <event-file>events/Netscalar.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.syslog.events.xml</event-file>
   <event-file>events/Netscreen.events.xml</event-file>
   <event-file>events/NetSNMP.events.xml</event-file>
   <event-file>events/Nokia.events.xml</event-file>
@@ -162,11 +182,14 @@
   <event-file>events/Novell.events.xml</event-file>
   <event-file>events/OpenNMSMIB.events.xml</event-file>
   <event-file>events/OpenSSH.syslog.events.xml</event-file>
+  <event-file>events/OpenWrt.syslog.events.xml</event-file>
   <event-file>events/Oracle.events.xml</event-file>
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>
   <event-file>events/Overture.events.xml</event-file>
+  <event-file>events/Procmail.syslog.events.xml</event-file>
   <event-file>events/POSIX.syslog.events.xml</event-file>
+  <event-file>events/Postfix.syslog.events.xml</event-file>
   <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
@@ -176,6 +199,7 @@
   <event-file>events/Powerware.events.xml</event-file>
   <event-file>events/Primecluster.events.xml</event-file>
   <event-file>events/Quintum.events.xml</event-file>
+  <event-file>events/Raytheon.events.xml</event-file>
   <event-file>events/RADLAN-MIB.events.xml</event-file>
   <event-file>events/RAPID-CITY.events.xml</event-file>
   <event-file>events/Redline.events.xml</event-file>
@@ -186,6 +210,10 @@
   <event-file>events/RMON.events.xml</event-file>
   <event-file>events/Sensaphone.events.xml</event-file>
   <event-file>events/Sentry.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000-HG1500.events.xml</event-file>
+  <event-file>events/Siemens-HiPath4000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath8000-OpenScapeVoice.events.xml</event-file>
   <event-file>events/SNA-NAU.events.xml</event-file>
   <event-file>events/SNMP-REPEATER.events.xml</event-file>
   <event-file>events/Snort.events.xml</event-file>
@@ -203,6 +231,7 @@
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>
   <event-file>events/Uptime.events.xml</event-file>
+  <event-file>events/Veeam_Backup-Replication.events.xml</event-file>
   <event-file>events/Veraz.events.xml</event-file>
   <event-file>events/VMWare.env.events.xml</event-file>
   <event-file>events/VMWare.vc.events.xml</event-file>

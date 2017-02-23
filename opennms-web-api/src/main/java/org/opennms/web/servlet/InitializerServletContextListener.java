@@ -28,7 +28,6 @@
 
 package org.opennms.web.servlet;
 
-import java.net.ConnectException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,40 +36,32 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.RTCPostSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Initializes our internal servlet systems at servlet container startup, and
- * destroys any pool resources at servlet container shutdown.
- *
  * This listener is specified in the web.xml to listen to
  * <code>ServletContext</code> lifecyle events. On startup it calls
- * ServletInitializer.init and initializes the UserFactory, GroupFactory. On
- * shutdown it calls ServletInitializer.destroy.
+ * {@link ServletInitializer#init(javax.servlet.ServletContext)} to set 
+ * up OpenNMS-specific properties and starts an RTC subscription timer. On
+ * shutdown it stops the RTC timer.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public class InitializerServletContextListener implements ServletContextListener {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(InitializerServletContextListener.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(InitializerServletContextListener.class);
 
     private Timer rtcCheckTimer = null;
 
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        // Initialize the common configuration properties for the web UI.
         try {
-            /*
-             * Initialize the scarce resource policies (db connections) and
-             * common configuration.
-             */
             ServletInitializer.init(event.getServletContext());
-
             LOG.info("Initialized servlet systems successfully");
         } catch (ServletException e) {
             LOG.error("Error while initializing servlet systems: {}", e, e);
@@ -78,39 +69,36 @@ public class InitializerServletContextListener implements ServletContextListener
             LOG.error("Error while initializing user, group, or view factory: {}", e, e);
         }
 
+        // Create a new Timer that will periodically resubscribe to RTC category updates.
+        // This timer is set to execute every 20 seconds. This is relatively frequent but
+        // the subscription events will only be sent if categories are judged to be 'disconnected'
+        // due to their timestamps not being updated inside {@link CategoryModel}.
         try {
             rtcCheckTimer = new Timer();
-            rtcCheckTimer.schedule(new RTCPostSubscriberTimerTask(), new Date(), 130000);
+            rtcCheckTimer.schedule(new RTCPostSubscriberTimerTask(), new Date(), 20000);
         } catch (ServletException e) {
             LOG.error("Error while initializing RTC check timer: {}", e, e);
         }
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * Cancel the RTC subscription timer.
+     */
     @Override
     public void contextDestroyed(ServletContextEvent event) {
-        try {
-            /*
-             * Let the scarce resource policies release any shared
-             * resouces (db connections).
-             */
-            ServletInitializer.destroy(event.getServletContext());
-
-            // Report success.
-            LOG.info("Destroyed servlet systems successfully");
-        } catch (ServletException e) {
-            LOG.error("Error while destroying servlet systems: {}", e, e);
-        }
-
         if (rtcCheckTimer != null) {
             rtcCheckTimer.cancel();
             rtcCheckTimer = null;
         }
     }
 
+    /**
+     * This task is used to call {@link RTCPostSubscriber#subscribeAll(String)} if the categories have
+     * not been updated recently or ever (such as at startup).
+     */
     public static class RTCPostSubscriberTimerTask extends TimerTask {
-        private CategoryList m_categorylist;
+        private static CategoryList m_categorylist;
 
         public RTCPostSubscriberTimerTask() throws ServletException {
             m_categorylist = new CategoryList();
@@ -132,12 +120,6 @@ public class InitializerServletContextListener implements ServletContextListener
             try {
                 RTCPostSubscriber.subscribeAll("WebConsoleView");
                 LOG.info("RTC POST subscription event sent successfully");
-            } catch (EventProxyException e) {
-                if (e.getCause() instanceof ConnectException) {
-                    LOG.info("RTC POST failed due to ConnectException: {}", e.getCause().toString());
-                } else {
-                    LOG.error("Error subscribing to RTC POSTs: {}", e, e);
-                }
             } catch (Throwable e) {
                 LOG.error("Error subscribing to RTC POSTs: {}", e, e);
             }

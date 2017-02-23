@@ -34,7 +34,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
 import org.opennms.netmgt.config.poller.outages.Interface;
 import org.opennms.netmgt.config.poller.outages.Node;
 import org.opennms.netmgt.config.poller.outages.Outage;
@@ -48,28 +48,16 @@ import org.springframework.util.Assert;
  *
  * @author brozow
  */
-abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
-    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
-    
+abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
     public PollOutagesConfigManager() {
         super(Outages.class, "poll outage configuration");
-    }
-
-    public Lock getReadLock() {
-        return m_readLock;
-    }
-    
-    public Lock getWriteLock() {
-        return m_writeLock;
     }
 
     /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
-         * It sucks to duplicate this first test from AbstractCastorConfigDao,
+         * It sucks to duplicate this first test from AbstractJaxbConfigDao,
          * but we need to do so to ensure we don't get an NPE while initializing
          * programmaticStoreConfigResource (if needed).
          */
@@ -89,7 +77,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      *
      * @return Returns the config.
      */
-    protected Outages getConfig() {
+    protected Outages getObject() {
         getReadLock().lock();
         try {
             return getContainer().getObject();
@@ -106,7 +94,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public Outage[] getOutages() {
         getReadLock().lock();
         try {
-            return getConfig().getOutage();
+            return getObject().getOutage();
         } finally {
             getReadLock().unlock();
         }
@@ -122,7 +110,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public Outage getOutage(final String name) {
         getReadLock().lock();
         try {
-            return getConfig().getOutage(name);
+            return getObject().getOutage(name);
         } finally {
             getReadLock().unlock();
         }
@@ -270,7 +258,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void addOutage(final Outage newOutage) {
         getWriteLock().lock();
         try {
-            getConfig().addOutage(newOutage);
+            getObject().addOutage(newOutage);
         } finally {
             getWriteLock().unlock();
         }
@@ -284,7 +272,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void removeOutage(final String outageName) {
         getWriteLock().lock();
         try {
-            getConfig().removeOutage(outageName);
+            getObject().removeOutage(outageName);
         } finally {
             getWriteLock().unlock();
         }
@@ -298,7 +286,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void removeOutage(final Outage outageToRemove) {
         getWriteLock().lock();
         try {
-            getConfig().removeOutage(outageToRemove);
+            getObject().removeOutage(outageToRemove);
         } finally {
             getWriteLock().unlock();
         }
@@ -313,10 +301,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
         getWriteLock().lock();
         try {
-            int count = getConfig().getOutageCount();
+            int count = getObject().getOutageCount();
             for (int i = 0; i < count; i++) {
-                if (getConfig().getOutage(i).equals(oldOutage)) {
-                    getConfig().setOutage(i, newOutage);
+                if (getObject().getOutage(i).equals(oldOutage)) {
+                    getObject().setOutage(i, newOutage);
                     return;
                 }
             }

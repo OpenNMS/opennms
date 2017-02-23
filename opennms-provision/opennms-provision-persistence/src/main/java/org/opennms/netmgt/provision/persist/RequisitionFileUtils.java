@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public abstract class RequisitionFileUtils {
             return null;
         }
 
-        final String sourceFileName = url.getFile();
+        final String sourceFileName = getFilename(url);
         if (sourceFileName == null) {
             LOG.warn("Trying to create snapshot for {}, but getFile() doesn't return a value", url);
             return null;
@@ -131,12 +132,7 @@ public abstract class RequisitionFileUtils {
         }
 
         if (url != null) {
-            String sourceFileName = null;
-            try {
-                sourceFileName = URLDecoder.decode(url.getFile(), "utf-8");
-            } catch (final java.io.UnsupportedEncodingException e) {
-                LOG.warn("Failed to decode URL {} as a file.", url.getFile(), e);
-            }
+            final String sourceFileName = getFilename(url);
             if (sourceFileName != null) {
                 final File sourceFile = new File(sourceFileName);
                 final File sourceDirectory = sourceFile.getParentFile();
@@ -218,4 +214,12 @@ public abstract class RequisitionFileUtils {
         return isNewer;
     }
 
+    private static String getFilename(final URL url) {
+        try {
+            return URLDecoder.decode(url.getFile(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            LOG.warn("Failed to decode URL {} as a file.", url.getFile(), e);
+            return null;
+        }
+    }
 }

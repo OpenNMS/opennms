@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -37,11 +37,10 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * <p>AliasedResource class.</p>
@@ -98,7 +97,7 @@ public class AliasedResource extends SnmpCollectionResource {
             return Integer.toString(getIfInfo().getNodeId());
         } else if ("nodelabel".equalsIgnoreCase(m_domain)) {
             try {
-                return NodeLabelJDBCImpl.getInstance().retrieveLabel(getIfInfo().getNodeId()).getLabel();
+                return new NodeLabelJDBCImpl().retrieveLabel(getIfInfo().getNodeId()).getLabel();
             } 
             catch (Throwable e) {
                 return "nodeid-" + Integer.toString(getIfInfo().getNodeId());
@@ -107,12 +106,10 @@ public class AliasedResource extends SnmpCollectionResource {
         return m_domain;
         }
     }
- 
-    /** {@inheritDoc} */
+
     @Override
-    public File getResourceDir(final RrdRepository repository) {
-        File domainDir = new File(repository.getRrdBaseDir(), getDomain());
-        return new File(domainDir, getAliasDir());
+    public ResourcePath getPath() {
+        return ResourcePath.get(getDomain(), getAliasDir());
     }
 
     /**
@@ -210,7 +207,7 @@ public class AliasedResource extends SnmpCollectionResource {
     }
 
     @Override
-    public String getParent() {
+    public ResourcePath getParent() {
         return null; //For node and interface type resources, use the default parent
     }
 
@@ -228,4 +225,5 @@ public class AliasedResource extends SnmpCollectionResource {
     public TimeKeeper getTimeKeeper() {
         return null;
     }
+
 }

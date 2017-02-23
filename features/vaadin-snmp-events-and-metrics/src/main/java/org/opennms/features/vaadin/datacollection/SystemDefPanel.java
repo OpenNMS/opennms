@@ -35,7 +35,7 @@ import java.util.TreeSet;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;

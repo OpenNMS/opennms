@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.23552.3.5</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/raytheon/VOIPLinkTimeout</uei>
+        <event-label>Raytheon NXU-2A trap event: VOIP Link Timeout</event-label>
+        <descr>&lt;p&gt;This trap indicates that the VOIP link has been
+            lost.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; NXU Event: VOIP Link Lost&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.23552.3.5</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>8</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/raytheon/PowerUp</uei>
+        <event-label>Raytheon NXU-2A trap event: PowerUp</event-label>
+        <descr>&lt;p&gt;This trap indicates that the NXU has been powered
+            up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; NXU Event: Power Up&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.23552.3.5</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/raytheon/PTT</uei>
+        <event-label>Raytheon NXU-2A trap event: PTT Time Out</event-label>
+        <descr>&lt;p&gt;This trap indicates that the NXU has reported a PTT Time Out Timer error.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; NXU Event: PTT Time Out&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.23552.3.5</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/raytheon/COR</uei>
+        <event-label>Raytheon NXU-2A trap event: COR > 180 seconds</event-label>
+        <descr>&lt;p&gt;This trap indicates that the NXU has reported a COR active over 180 seconds.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; NXU Event: COR > 180&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+</events>

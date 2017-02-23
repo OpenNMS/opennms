@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 
 /**
  * <p>Pop3Detector class.</p>
@@ -38,8 +35,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class Pop3Detector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final int DEFAULT_PORT = 110;

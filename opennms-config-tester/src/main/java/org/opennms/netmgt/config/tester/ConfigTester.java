@@ -38,10 +38,10 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConfigTester implements ApplicationContextAware {
 	private ApplicationContext m_context;
@@ -81,9 +81,10 @@ public class ConfigTester implements ApplicationContextAware {
 	}
 
 	public static void main(String[] argv) {
-		
-		ApplicationContext context = BeanUtils.getFactory("configTesterContext", ClassPathXmlApplicationContext.class);
-		ConfigTester tester = context.getBean("configTester", ConfigTester.class);
+
+        FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
+        DataSourceFactory.setInstance(new ConfigTesterDataSource());
+		ConfigTester tester = BeanUtils.getBean("configTesterContext", "configTester", ConfigTester.class);
 
 		final CommandLineParser parser = new PosixParser();
 

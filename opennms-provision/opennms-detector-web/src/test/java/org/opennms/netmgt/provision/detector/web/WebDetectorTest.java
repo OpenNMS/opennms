@@ -55,15 +55,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * <p>The JUnit tests are basically the same as the HttpDetector with some minor changes in order to let HttpClient works.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
- * @version $Id: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class WebDetectorTest implements InitializingBean {
 
     @Autowired
-    private WebDetector m_detector;
+    private WebDetectorFactory m_detectorFactory;
 
+    private WebDetector m_detector;
+    
     private SimpleServer m_server;
 
     private String headers = "HTTP/1.1 200 OK\r\n"
@@ -111,6 +112,7 @@ public class WebDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setPort(80);
         m_detector.setPath("/");
         m_detector.setResponseRange("100-399");

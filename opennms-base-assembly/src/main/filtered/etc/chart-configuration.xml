@@ -105,7 +105,7 @@
         </tns:rgb>
     </tns:grid-lines>
     <tns:series-def number="1" series-name="Current" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
+	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
@@ -119,7 +119,7 @@
       </tns:rgb>
     </tns:series-def>
     <tns:series-def number="2" series-name="Resolved" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NOT NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
+	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NOT NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>0</tns:rgb-color>

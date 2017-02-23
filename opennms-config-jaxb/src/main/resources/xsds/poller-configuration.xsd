@@ -68,19 +68,6 @@
         </simpleType>
       </attribute>
 
-      <attribute default="false" name="xmlrpc" use="optional">
-        <annotation>
-          <documentation>Flag which indicates if an external XMLRPC server has
-          to be notified with any event process errors</documentation>
-        </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(true|false)"/>
-          </restriction>
-        </simpleType>
-      </attribute>
-
       <attribute default="false" name="pathOutageEnabled" use="optional">
         <annotation>
           <documentation>Flag which indicates if the optional path outage

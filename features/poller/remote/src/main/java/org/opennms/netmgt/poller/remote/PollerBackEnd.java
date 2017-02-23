@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,14 +31,17 @@ package org.opennms.netmgt.poller.remote;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 
 /**
  * <p>PollerBackEnd interface.</p>
@@ -51,15 +54,15 @@ public interface PollerBackEnd {
     public static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
     public static final String CONNECTION_HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.connectionHostAddress";
     public static final String CONNECTION_HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.connectionHostName";
-    
+
     /**
      * Return the set of available MonitoringLocationDefinitions
      *
-     * @returns the set of monitoring loat
+     * @returns the set of monitoring locations
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
-    
+    Collection<OnmsMonitoringLocation> getMonitoringLocations();
+
     /**
      * Register a new location monitor
      *
@@ -67,16 +70,16 @@ public interface PollerBackEnd {
      * this location monitor
      * @return the id of the new locations monitor
      */
-    int registerLocationMonitor(String monitoringLocationId);
-    
+    String registerLocationMonitor(String monitoringLocationId);
+
     /**
      * Get monitor name
      *
      * @param locationMonitorId a int.
      * @return a {@link java.lang.String} object.
      */
-    String getMonitorName(int locationMonitorId);
-    
+    String getMonitorName(String locationMonitorId);
+
     /**
      * Get service monitor locators for creating serviceMonitors for the poller.
      *
@@ -93,16 +96,16 @@ public interface PollerBackEnd {
      * @returns true if and only if the server recognizes this locationMonitor
      * @return a boolean.
      */
-    boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails);
-    
+    boolean pollerStarting(String locationMonitorId, Map<String, String> pollerDetails);
+
     /**
      * Notifies the backend that a registered poller is stopping
      *
      * @param locationMonitorId the id of the requesting location monitor
      */
-    void pollerStopping(int locationMonitorId);
-    
- 
+    void pollerStopping(String locationMonitorId);
+
+
     /**
      * Checkin with the backend to let it know that the poller is still alive and to find
      * out if there are any configuration changes.
@@ -111,16 +114,51 @@ public interface PollerBackEnd {
      * @param currentConfigurationVersion the version of the configuration that the location monitor is currently using
      * @return true if the configuration should be updated.
      */
-    MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion);
-    
+    MonitorStatus pollerCheckingIn(String locationMonitorId, Date currentConfigurationVersion);
+
+    /**
+     * Gets the poller configuration assigned to this location monitor.
+     *
+     * @deprecated Use {@link #getPollerConfigurationForLocation(String)} instead.
+     * 
+     * @see http://issues.opennms.org/browse/PB-36
+     * 
+     * @param locationMonitorId the id of the requesting location monitor
+     * @return the PollerConfiguration for the indicated location monitor
+     */
+    PollerConfiguration getPollerConfiguration(String locationMonitorId);
+
     /**
      * Gets the poller configuration assigned to this monitoring location
      *
-     * @param locationMonitorId the id of the requesting location monitor
-     * @return the PollerConfiguration for the indicicated location monitor
+     * @param location the location
+     * @return the PollerConfiguration for the indicated location
      */
-    PollerConfiguration getPollerConfiguration(int locationMonitorId);
-    
+    PollerConfiguration getPollerConfigurationForLocation(String location);
+
+    /**
+     * Gets all applications associated with {@link OnmsMonitoredService}
+     * objects managed by this monitoring location.
+     *
+     * @param location the location
+     * @return a Set of application names for this location
+     */
+    Set<String> getApplicationsForLocation(String location);
+
+    /**
+     * Gets all of the metadata fields to be used and optionally reported by
+     * the poller frontend.
+     * 
+     * @return a Set of metadata fields
+     */
+    Set<MetadataField> getMetadataFields();
+
+    /**
+     * Gets the theme (color, title, logo) information to use in poller UIs
+     * @return a poller theme
+     */
+    PollerTheme getTheme();
+
     /**
      * Report a poll result from the client to the server.
      *
@@ -128,8 +166,12 @@ public interface PollerBackEnd {
      * @param serviceId the id of the service that was polled
      * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    void reportResult(int locationMonitorID, int serviceId, PollStatus status);
+    void reportResult(String locationMonitorID, int serviceId, PollStatus status);
 
+    /**
+     * Report a single scan from the client to the server.
+     */
+    void reportSingleScan(ScanReport report);
 
     /**
      * <p>configurationUpdated</p>

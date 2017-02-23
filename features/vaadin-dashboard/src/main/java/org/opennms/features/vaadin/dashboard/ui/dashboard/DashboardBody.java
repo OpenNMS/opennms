@@ -213,6 +213,7 @@ public class DashboardBody extends DDGridLayout {
         panel.setSizeFull();
         panel.setCaption(caption);
         panel.setContent(content);
+        panel.addStyleName("novscroll");
 
         return panel;
     }

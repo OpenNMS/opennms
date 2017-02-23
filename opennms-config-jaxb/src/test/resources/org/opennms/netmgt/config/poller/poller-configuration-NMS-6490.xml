@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<poller-configuration threads="10" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" xmlrpc="false" pathOutageEnabled="false" xmlns="http://xmlns.opennms.org/xsd/config/poller" xmlns:ps="http://xmlns.opennms.org/xsd/page-sequence">
+<poller-configuration threads="10" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" pathOutageEnabled="false" xmlns="http://xmlns.opennms.org/xsd/config/poller" xmlns:ps="http://xmlns.opennms.org/xsd/page-sequence">
     <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
         <critical-service name="ICMP"/>
     </node-outage>

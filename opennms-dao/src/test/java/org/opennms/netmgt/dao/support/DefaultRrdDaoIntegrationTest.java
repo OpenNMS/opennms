@@ -33,20 +33,23 @@ import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.IOUtils;
+import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -54,16 +57,15 @@ import org.opennms.test.FileAnticipator;
 public class DefaultRrdDaoIntegrationTest extends TestCase {
     private FileAnticipator m_fileAnticipator;
 
-    private RrdStrategy<Object,Object> m_rrdStrategy;
-    
+    private RrdStrategy<RrdDef,RrdDb> m_rrdStrategy;
+
     private DefaultRrdDao m_dao;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-        m_rrdStrategy = RrdUtils.getStrategy();
+
+        m_rrdStrategy = new JRobinRrdStrategy();
         
         m_fileAnticipator = new FileAnticipator();
         
@@ -100,26 +102,26 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         long start = System.currentTimeMillis();
         long end = start + (24 * 60 * 60 * 1000);
         
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "snmp/1/eth0", "ifInOctets.jrb");
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
         MockResourceType childResourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet,  new ResourcePath("foo"));
         childResource.setParent(topResource);
         
         File snmp = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
         File node = m_fileAnticipator.tempDir(snmp, topResource.getName());
         File intf = m_fileAnticipator.tempDir(node, childResource.getName());
         
-        RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), "GAUGE", 600, "U", "U");
-        Object def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), RrdAttributeType.GAUGE, 600, "U", "U");
+        RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def, null);
-        File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + RrdUtils.getExtension());
+        File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + m_rrdStrategy.getDefaultFileExtension());
         
-        Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < 10; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 + 300*i) + ":1");
         }

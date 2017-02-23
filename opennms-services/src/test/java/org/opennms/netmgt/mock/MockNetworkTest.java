@@ -30,6 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -37,14 +38,14 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -161,7 +162,7 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap<String, Object>());
+            PollStatus pollResult = monitor.poll(service, Collections.emptyMap());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -280,8 +281,8 @@ public class MockNetworkTest extends TestCase {
         assertEquals("HTTP", httpSvc.getSvcName());
         assertEquals(svrIface, httpSvc.getInterface());
 
-        assertTrue(icmpSvc.getId() == icmpSvc2.getId());
-        assertFalse(icmpSvc.getId() == httpSvc.getId());
+        assertTrue(icmpSvc.getSvcId() == icmpSvc2.getSvcId());
+        assertFalse(icmpSvc.getSvcId() == httpSvc.getSvcId());
     }
 
     public void testEventListeners() {
@@ -385,7 +386,7 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(0, anticipator.unanticipatedEvents().size());
+        assertEquals(0, anticipator.getUnanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
         Event nodeEvent = MockEventUtil.createNodeDownEvent("Test", node);
@@ -394,7 +395,7 @@ public class MockNetworkTest extends TestCase {
         m_eventMgr.sendNow(nodeEvent);
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
     
@@ -402,9 +403,8 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddressUtils.addr("1.1.1.1"), "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap<String, Object>());
+        monitor.poll(svc, Collections.emptyMap());
         assertEquals(1, m_network.getInvalidPollCount());
-
     }
 
     public void testLookupNotThere() {
@@ -497,7 +497,7 @@ public class MockNetworkTest extends TestCase {
         List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
         for (MockService svc : expectedSvcs) {
-            assertTrue(svcs.contains(Integer.valueOf(svc.getId())));
+            assertTrue(svcs.contains(Integer.valueOf(svc.getSvcId())));
         }
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");
@@ -663,7 +663,7 @@ public class MockNetworkTest extends TestCase {
 
         assertEquals(1, anticipator.waitForAnticipated(1500).size());
         assertEquals(0, anticipator.waitForAnticipated(1000).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
 

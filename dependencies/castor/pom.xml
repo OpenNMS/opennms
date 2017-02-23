@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>castor-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Castor</name>
+  <name>OpenNMS :: Dependencies :: Castor</name>
   <properties>
     <castorVersion>1.1.2.1</castorVersion>
   </properties>
@@ -63,17 +63,6 @@
       <id>maven-repo</id>
       <name>Maven Central</name>
       <url>http://maven.opennms.org/content/repositories/central/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>codehaus</id>
-      <name>Maven/Codehaus Repository</name>
-      <url>http://maven.opennms.org/content/repositories/codehaus/</url>
     </pluginRepository>
   </pluginRepositories>
 </project>

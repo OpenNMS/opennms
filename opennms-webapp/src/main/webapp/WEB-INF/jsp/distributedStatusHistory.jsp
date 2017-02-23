@@ -56,18 +56,18 @@
   <div class="panel-body">
     <br/>
     <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form-horizontal">
-      <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.name}"/>
+      <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.locationName}"/>
       <div class="form-group">
         <label class="col-md-2 control-label" for="location">Location</label>
         <div class="col-md-4">
           <select class="form-control" name="location" id="location" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.locations}" var="location">
               <c:choose>
-                <c:when test="${location.name == historyModel.chosenLocation.name}">
-                  <option selected="selected">${location.name}</option>
+                <c:when test="${location.locationName == historyModel.chosenLocation.locationName}">
+                  <option selected="selected">${location.locationName}</option>
                 </c:when>
                 <c:otherwise>
-                  <option>${location.name}</option>
+                  <option>${location.locationName}</option>
                 </c:otherwise>
               </c:choose>
             </c:forEach>
@@ -86,7 +86,7 @@
                 <c:forEach items="${historyModel.monitors}" var="monitor">
                   <c:choose>
                     <c:when test="${monitor.id == historyModel.chosenMonitor.id}">
-                      <option value="${monitor.id}" selected="selected">${monitor.definitionName}-${monitor.id}</option>
+                      <option value="${monitor.id}" selected="selected">${monitor.name}</option>
                     </c:when>
                     <c:otherwise>
                       <option value="${monitor.id}">${monitor.name}</option>
@@ -144,7 +144,7 @@
     </form>
 
     <form action="distributedStatusDetails.htm" name="viewStatusDetails">
-      <input type="hidden" name="location" value="${historyModel.chosenLocation.name}"/>
+      <input type="hidden" name="location" value="${historyModel.chosenLocation.locationName}"/>
       <input type="hidden" name="application" value="${historyModel.chosenApplication.name}"/>
     </form>
       

@@ -30,6 +30,7 @@ package org.opennms.features.topology.api;
 
 import java.util.Set;
 
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -49,14 +50,21 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
 
         private final Set<VertexRef> m_vertexRefs;
         private final boolean m_displayingAllVertices;
+        private final GraphProvider m_source;
 
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs) {
-            this(vertexRefs, false);
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, GraphProvider source) {
+            this(vertexRefs, source, false);
         }
 
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, boolean displayingAllVertices){
+        /**
+         * @param vertexRefs            The vertices currently selected.
+         * @param source                The source of the event.
+         * @param displayingAllVertices If all vertices are selected this should be true.
+         */
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, GraphProvider source, boolean displayingAllVertices){
             m_vertexRefs = vertexRefs;
             m_displayingAllVertices = displayingAllVertices;
+            m_source = source;
         }
 
         public Set<VertexRef> getVertexRefs() {
@@ -66,10 +74,14 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
         public boolean allVerticesSelected(){
             return m_displayingAllVertices;
         }
-        
+
+        public GraphProvider getSource() {
+            return m_source;
+        }
+
         @Override
         public String toString() {
-            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + "]";
+            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + ", source=" + m_source + "]";
         }
     }
 }

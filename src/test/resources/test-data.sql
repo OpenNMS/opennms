@@ -86,13 +86,6 @@ SELECT pg_catalog.setval('usernotifnxtid', 1, false);
 
 
 --
--- Name: vulnnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('vulnnxtid', 1, false);
-
-
---
 -- Data for Name: alarms; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
@@ -277,24 +270,12 @@ INSERT INTO outages (outageid, svclosteventid, svcregainedeventid, nodeid, ipadd
 
 
 --
--- Data for Name: servermap; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
 -- Data for Name: service; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 INSERT INTO service (serviceid, servicename) VALUES (1, 'ICMP');
 INSERT INTO service (serviceid, servicename) VALUES (2, 'SNMP');
 INSERT INTO service (serviceid, servicename) VALUES (3, 'HTTP');
-
-
---
--- Data for Name: servicemap; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
 
 
 --
@@ -320,18 +301,6 @@ INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snm
 
 --
 -- Data for Name: usersnotified; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: vulnerabilities; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: vulnplugins; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 

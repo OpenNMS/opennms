@@ -168,7 +168,7 @@ public class JavaReadMailerTest {
         
         SendmailConfig config = new SendmailConfig();
         
-        config.setAttemptInterval(1000);
+        config.setAttemptInterval(1000l);
         config.setDebug(true);
         config.setName("test");
         

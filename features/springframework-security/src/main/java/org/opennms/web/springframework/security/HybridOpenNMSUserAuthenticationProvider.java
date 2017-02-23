@@ -28,11 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -73,9 +71,10 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         final String authUsername = authentication.getPrincipal().toString();
         final String authPassword = authentication.getCredentials().toString();
-        final OnmsUser user = m_userDao.getByUsername(authUsername);
+        final SpringSecurityUser user = m_userDao.getByUsername(authUsername);
 
         if (user == null) {
+            LOG.warn("User not found: " + authUsername);
             throw new BadCredentialsException("Bad credentials");
         }
 
@@ -98,21 +97,23 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
         return new OnmsAuthenticationToken(user);
     }
 
-    protected void checkUserPassword(final String authUsername, final String authPassword, final OnmsUser user) throws AuthenticationException {
+    protected void checkUserPassword(final String authUsername, final String authPassword, final SpringSecurityUser user) throws AuthenticationException {
         final String existingPassword = user.getPassword();
         boolean hasUser = false;
         try {
             hasUser = m_userManager.hasUser(user.getUsername());
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             throw new AuthenticationServiceException("An error occurred while checking for " + authUsername + " in the UserManager", e);
         }
 
         if (hasUser) {
             if (!m_userManager.comparePasswords(authUsername, authPassword)) {
+                LOG.warn("Password auth failed for user: " + authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         } else {
             if (!m_userManager.checkSaltedPassword(authPassword, existingPassword)) {
+                LOG.warn("Salted password auth failed for user: " + authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         }

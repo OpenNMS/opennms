@@ -80,13 +80,6 @@ public class PollerConfiguration implements Serializable {
     private String m_serviceUnresponsiveEnabled = "false";
 
     /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    @XmlAttribute(name="xmlrpc")
-    private String m_xmlrpc = "false";
-
-    /**
      * Flag which indicates if the optional path outage feature is enabled
      */
     @XmlAttribute(name="pathOutageEnabled")
@@ -142,18 +135,6 @@ public class PollerConfiguration implements Serializable {
 
     public void setServiceUnresponsiveEnabled(final String serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
-    }
-
-    /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    public String getXmlrpc() {
-        return m_xmlrpc == null? "false" : m_xmlrpc;
-    }
-    
-    public void setXmlrpc(final String xmlrpc) {
-        m_xmlrpc = xmlrpc;
     }
 
     /**
@@ -231,25 +212,31 @@ public class PollerConfiguration implements Serializable {
         return m_monitors.remove(monitor);
     }
 
-    public PollerConfiguration getPollerConfigurationForPackage(final String pollingPackageName) {
-        if (pollingPackageName == null) return null;
-        final Package pkg = getPackage(pollingPackageName);
-        if (pkg == null) return null;
-
+    public PollerConfiguration getPollerConfigurationForPackages(final List<String> pollingPackageNames) {
+        if (pollingPackageNames == null || pollingPackageNames.size() < 1) return null;
+        
         final Set<String> seenMonitors = new HashSet<String>();
         final PollerConfiguration newConfig = new PollerConfiguration();
         newConfig.setThreads(getThreads());
         newConfig.setNextOutageId(getNextOutageId());
         newConfig.setServiceUnresponsiveEnabled(getServiceUnresponsiveEnabled());
-        newConfig.setXmlrpc(getXmlrpc());
         newConfig.setPathOutageEnabled(getPathOutageEnabled());
         newConfig.setNodeOutage(getNodeOutage());
         
-        newConfig.addPackage(pkg);
-        
-        for (final Service service : pkg.getServices()) {
-            seenMonitors.add(service.getName());
+        // Add all requested polling packages to the config
+        boolean foundPackage = false;
+        for (String pollingPackageName : pollingPackageNames) {
+            final Package pkg = getPackage(pollingPackageName);
+            if (pkg != null) {
+                newConfig.addPackage(pkg);
+                foundPackage = true;
+                for (final Service service : pkg.getServices()) {
+                    seenMonitors.add(service.getName());
+                }
+            }
         }
+        // If the list of polling packages doesn't match anything, then return null
+        if (!foundPackage) return null;
         
         for (final Monitor monitor : getMonitors()) {
             if (seenMonitors.contains(monitor.getService())) {
@@ -270,7 +257,6 @@ public class PollerConfiguration implements Serializable {
         result = prime * result + ((m_pathOutageEnabled == null) ? 0 : m_pathOutageEnabled.hashCode());
         result = prime * result + ((m_serviceUnresponsiveEnabled == null) ? 0 : m_serviceUnresponsiveEnabled.hashCode());
         result = prime * result + ((m_threads == null) ? 0 : m_threads.hashCode());
-        result = prime * result + ((m_xmlrpc == null) ? 0 : m_xmlrpc.hashCode());
         return result;
     }
 
@@ -335,13 +321,6 @@ public class PollerConfiguration implements Serializable {
         } else if (!m_threads.equals(other.m_threads)) {
             return false;
         }
-        if (m_xmlrpc == null) {
-            if (other.m_xmlrpc != null) {
-                return false;
-            }
-        } else if (!m_xmlrpc.equals(other.m_xmlrpc)) {
-            return false;
-        }
         return true;
     }
 
@@ -351,7 +330,6 @@ public class PollerConfiguration implements Serializable {
                 "threads=" + m_threads +
                 ",nextOutageId=" + m_nextOutageId +
                 ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
-                ",xmlrpc=" + m_xmlrpc +
                 ",pathOutageEnabled=" + m_pathOutageEnabled +
                 ",nodeOutage=" + m_nodeOutage +
                 ",packages=" + m_packages +

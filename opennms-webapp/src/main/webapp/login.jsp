@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,8 @@
   <jsp:param name="title" value="Login" />
   <jsp:param name="nonavbar" value="true" />
 </jsp:include>
+
+<jsp:include page="/includes/mobile-app-promo.jsp" flush="false" />
 
 <%-- this form-login-page form is also used as the 
          form-error-page to ask for a login again.

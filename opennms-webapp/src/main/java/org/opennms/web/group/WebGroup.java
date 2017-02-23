@@ -44,7 +44,6 @@ public class WebGroup {
     
     private String m_name;
     private String m_comments;
-    private String m_defaultMap = "";
 
     private List<String> m_dutySchedules = new ArrayList<String>();
     private List<String> m_authorizedCategories = new ArrayList<String>();
@@ -65,8 +64,6 @@ public class WebGroup {
     public WebGroup(Group group, List<String> authorizedCategories) {
         m_name = group.getName();
         m_comments = group.getComments();
-        if (group.getDefaultMap() != null )
-            m_defaultMap = group.getDefaultMap();
         m_dutySchedules.addAll(group.getDutyScheduleCollection());
         m_users.addAll(group.getUserCollection());
         m_authorizedCategories.addAll(authorizedCategories);
@@ -188,24 +185,4 @@ public class WebGroup {
         remainingUsers.removeAll(m_users);
         return remainingUsers;
     }
-    
-    /**
-     * <p>getDefaultMap</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDefaultMap() {
-        return m_defaultMap;
-    }
-
-    /**
-     * <p>setDefaultMap</p>
-     *
-     * @param defaultMap a {@link java.lang.String} object.
-     */
-    public void setDefaultMap(String defaultMap) {
-        m_defaultMap = defaultMap;
-    }
-
-    
 }

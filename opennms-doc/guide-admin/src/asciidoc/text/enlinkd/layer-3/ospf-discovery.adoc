@@ -1,0 +1,54 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== OSPF Discovery
+
+The relevant MIBs for OSPF topology are _OSPF-MIB_ and _OSPF-TRAP-MIB_.
+In these MIBs are defined the relevant objects used to find OSPF links, specifically:
+
+* The _Router ID_ which, in OSPF, has the same format as an IP address
+* But identifies the router independent of its IP address.
+
+Also all the interfaces are identified by their IP addresses.
+The OSPF links come from the SNMP _ospfNbrTable_ defined in OSPF-MIB and this table is in practice persisted in the _ospfLink_ table:
+
+.Supported OIDs from OSPF-MIB
+[options="header, autowidth"]
+|===
+| Name                      | OID                      | Description
+| _ospfRouterId_            | `.1.3.6.1.2.1.14.1.1.0`  | A 32-bit integer uniquely identifying the router in the Autonomous System.
+                                                         By convention, to ensure uniqueness, this should default to the value of one of the router's IP interface addresses.
+                                                         This object is persistent and when written the entity *should* save the change to non-volatile storage.
+| _ospfAdminStat_           | `.1.3.6.1.2.1.14.1.2.0`  | The administrative status of _OSPF_ in the router.
+                                                         The value _enabled_ denotes that the _OSPF Process_ is active on at least one interface; _disabled_ disables it on all interfaces.
+                                                         This object is persistent and when written the entity *should* save the change to non-volatile storage.
+| _ospfVersionNumber_       | `.1.3.6.1.2.1.14.1.3.0`  | The current version number of the _OSPF protocol_ is _2_.
+| _ospfAreaBdrRtrStatus_    | `.1.3.6.1.2.1.14.1.4.0`  | A flag to note whether this router is an _Area Border Router_.
+| _ospfAreaASBdrRtrStatus_  | `.1.3.6.1.2.1.14.1.5.0`  | A flag to note whether this router is configured as an _Autonomous System Border Router_.
+                                                         This object is persistent and when written the entity *should* save the change to non-volatile storage.
+| _ospfIfIpAddress_         | `.1.3.6.1.2.1.14.7.1.1`  | The IP address of this _OSPF_ interface.
+| _ospfAddressLessIf_       | `.1.3.6.1.2.1.14.7.1.2`  | For the purpose of easing the instancing of addressed and addressless interfaces; this variable takes the value _0_ on interfaces with IP addresses and the corresponding value of _ifIndex_ for interfaces having no _IP address_.
+| _ospfNbrIpAddr_           | `.1.3.6.1.2.1.14.10.1.1` | The IP address this neighbor is using in its IP source address.
+                                                         Note that, on addressless links, this will not be 0.0.0.0 but the address of another of the neighbor's interfaces.
+| _ospfNbrAddressLessIndex_ | `.1.3.6.1.2.1.14.10.1.2` | On an interface having an _IP address_, zero.
+                                                         On addressless interfaces, the corresponding value of _ifIndex_ in the _Internet Standard MIB_.
+                                                         On row creation, this can be derived from the instance.
+| _ospfNbrRtrId_            | `.1.3.6.1.2.1.14.10.1.3` | A 32-bit integer (represented as a type _IpAddress_) uniquely identifying the neighboring router in the _Autonomous System_.
+|===
+
+.Supported OIDs from IP-MIB
+[options="header, autowidth"]
+|===
+| Name                     | OID                     | Description
+| _ipAdEntIfIndex_         | `.1.3.6.1.2.1.4.20.1.2` | The index value which uniquely identifies the interface to which this entry is applicable.
+                                                       The interface identified by a particular value of this index is the same interface as identified by the same value of the _IF-MIB's ifIndex_.
+| _ipAdEntNetMask_         | `.1.3.6.1.2.1.4.20.1.3` | The subnet mask associated with the _IPv4_ address of this entry.
+                                                       The value of the mask is an _IPv4_ address with all the network bits set to _1_ and all the hosts bits set to _0_.
+|===
+
+Generic information about the _OSPF_ link discovery process can be found in the _OSPF Information_ box on the _Node Detail Page_ of the device.
+Information gathered from these OIDs will be stored in the following database table:
+
+.Database tables related to OSPF discovery
+image::enlinkd/ospf-database.png[]

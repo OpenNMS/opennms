@@ -2,7 +2,7 @@
 %define debug_package %{nil}
 
 %{!?package_arch:%define package_arch noarch}
-%{!?package_version:%define package_version 1.5.0}
+%{!?package_version:%define package_version 1.8}
 %{!?package_release:%define package_release 1}
 %{!?package_epoch:%define package_epoch 2000}
 %{!?my_epoch:%define my_epoch %{package_epoch}}

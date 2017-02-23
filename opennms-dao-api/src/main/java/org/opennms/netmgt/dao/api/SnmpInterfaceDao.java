@@ -47,6 +47,7 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex);
+
     /**
      * <p>findByForeignKeyAndIfIndex</p>
      *
@@ -56,5 +57,6 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex);
-    
+
+    OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description);
 }

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.test-api</artifactId>
+    <version>20.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.core.test-api</groupId>
+  <artifactId>org.opennms.core.test-api.karaf</artifactId>
+  <name>OpenNMS :: Core :: Test API :: Karaf</name>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>depends-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-depends-file</id>
+            <goals>
+              <goal>generate-depends-file</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- Copy all Pax Exam artifacts into the Karaf repository -->
+          <execution>
+            <id>copy</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <useRepositoryLayout>true</useRepositoryLayout>
+              <excludeTypes>tar.gz</excludeTypes>
+              <excludeGroupIds>org.opennms</excludeGroupIds>
+              <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <version>${karafVersion}</version>
+        <executions>
+          <execution>
+            <id>add-features-to-repo</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>add-features-to-repo</goal>
+            </goals>
+            <configuration>
+              <karafVersion>${karafVersion}</karafVersion>
+              <descriptors>
+                <!-- Karaf standard features -->
+                <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
+                <!-- Karaf Spring features -->
+                <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor>
+                <!-- Pax Exam features -->
+                <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
+                <!-- Pax Web features -->
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.2.4/xml/features</descriptor>
+              </descriptors>
+              <features>
+                <!--
+                  Make sure that all features that we try to install inside the integration tests and 
+                  their dependencies are installed into the test-repo repository.
+                -->
+
+                <!-- Pax Exam feature that is necessary to run the tests -->
+                <feature>exam</feature>
+
+                <!-- Standard Karaf features -->
+                <feature>admin</feature>
+                <feature>aries-blueprint</feature>
+                <feature>aries-proxy</feature>
+                <feature>blueprint-web</feature>
+                <feature>config</feature>
+                <feature>deployer</feature>
+                <feature>diagnostic</feature>
+                <feature>eventadmin</feature>
+                <feature>features</feature>
+                <feature>http</feature>
+                <feature>http-whiteboard</feature>
+                <feature>jaas</feature>
+                <feature>jasypt-encryption</feature>
+                <feature>jetty</feature>
+                <feature>karaf-framework</feature>
+                <feature>kar</feature>
+                <feature>management</feature>
+                <feature>obr</feature>
+                <feature>scr</feature>
+                <feature>service-security</feature>
+                <feature>service-wrapper</feature>
+                <feature>shell</feature>
+                <feature>ssh</feature>
+                <feature>war</feature>
+                <feature>webconsole</feature>
+                <feature>wrap</feature>
+                <feature>wrapper</feature>
+
+                <!-- Spring features -->
+                <feature>spring</feature>
+                <feature>spring-aspects</feature>
+                <feature>spring-instrument</feature>
+                <feature>spring-jdbc</feature>
+                <feature>spring-jms</feature>
+                <feature>spring-test</feature>
+                <feature>spring-orm</feature>
+                <feature>spring-oxm</feature>
+                <feature>spring-tx</feature>
+                <feature>spring-web</feature>
+
+              </features>
+              <repository>${project.build.directory}/paxexam/test-repo</repository>
+            </configuration>
+          </execution>
+        </executions>
+        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+            <version>2.6</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-integration-tests</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/paxexam/test-repo</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>pax-exam-dependencies</artifactId>
+      <type>pom</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Apache Karaf container tar.gz -->
+    <dependency>
+      <groupId>org.apache.karaf</groupId>
+      <artifactId>apache-karaf</artifactId>
+      <version>${karafVersion}</version>
+      <type>tar.gz</type>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+
+    <!-- Karaf standard features artifact -->
+    <dependency>
+      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <artifactId>standard</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Karaf Spring features artifact -->
+    <dependency>
+      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <artifactId>spring</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Pax Exam features artifact -->
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-features</artifactId>
+      <version>${paxExamVersion}</version>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Pax Web features artifact -->
+    <dependency>
+      <groupId>org.ops4j.pax.web</groupId>
+      <artifactId>pax-web-features</artifactId>
+      <version>3.2.4</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- OpenNMS container features artifact -->
+    <!--
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>karaf</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>test</scope>
+    </dependency>
+    -->
+
+    <!-- OpenNMS product features artifact -->
+    <!--
+    <dependency>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>test</scope>
+    </dependency>
+    -->
+
+    <!-- OpenNMS Minion features artifact -->
+    <!--
+    <dependency>
+      <groupId>org.opennms.karaf</groupId>
+      <artifactId>opennms</artifactId>
+      <version>${project.version}</version>
+      <classifier>minion</classifier>
+      <type>xml</type>
+      <scope>test</scope>
+    </dependency>
+    -->
+
+    <!-- Other projects necessary to make the features-maven-plugin happy -->
+    <!--
+    <dependency>
+      <groupId>org.opennms.features.amqp</groupId>
+      <artifactId>org.opennms.features.amqp.event-forwarder</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.amqp</groupId>
+      <artifactId>org.opennms.features.amqp.event-receiver</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.broker</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>activemq-receiver</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-alarms</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-bsm</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-charts</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-image</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-ksc</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-map</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-rrd</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-rtc</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-summary</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-surveillance</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-topology</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-url</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    -->
+
+  </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.release</id>
+      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.release/</url>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.external</id>
+      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.external/</url>
+    </repository>
+    <repository>
+       <id>vaadin-addons</id>
+       <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
+    </repository>
+    <repository>
+      <id>sonatype-public-repo</id>
+      <name>Sonatype Public Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
+    </repository>
+  </repositories>
+</project>

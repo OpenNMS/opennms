@@ -9,7 +9,7 @@ set -e
 
 case "$1" in
     configure)
-        for version in 7 8; do
+        for version in 8; do
             for postfix in oracle sun openjdk; do
                 dir="/usr/lib/jvm/java-$version-$postfix"
                 if [ -x "$dir"/bin/java ]; then

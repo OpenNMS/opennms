@@ -46,7 +46,7 @@ public interface ReportServiceLocator  {
      * @return  the ReportService bean used to run this report
      * @throws  org.opennms.reporting.core.svclayer.ReportServiceLocatorException if any.
      */
-    public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException; 
+    ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException;
     
     /**
      * This method is used to retrieve the ReportService bean associated with a report Id
@@ -55,6 +55,6 @@ public interface ReportServiceLocator  {
      * @return  the ReportService bean used to run this report
      * @throws  org.opennms.reporting.core.svclayer.ReportServiceLocatorException if any.
      */
-    public ReportService getReportServiceForId(String reportId) throws ReportServiceLocatorException; 
+    ReportService getReportServiceForId(String reportId) throws ReportServiceLocatorException;
 
 }

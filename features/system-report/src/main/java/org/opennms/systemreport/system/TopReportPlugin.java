@@ -74,6 +74,10 @@ public class TopReportPlugin extends AbstractSystemReportPlugin {
                 final String topcmd = top + " -l 1";
                 LOG.trace("calling: {}", topcmd);
                 topOutput = getResourceLocator().slurpOutput(topcmd, false);
+            } else if (topOutput.contains("-d count") && topOutput.contains("-J jail")) {
+                final String topcmd = top + " -b -d 1";
+                LOG.trace("calling: {}", topcmd);
+                topOutput = getResourceLocator().slurpOutput(topcmd, false);
             } else {
                 topOutput = null;
             }

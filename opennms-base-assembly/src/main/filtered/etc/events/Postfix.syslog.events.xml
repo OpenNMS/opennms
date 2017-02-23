@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <!-- Begin syslog event definitions for Postfix  -->
+    <event>
+        <uei>uei.opennms.org/vendor/postfix/syslog/postfix/obsoleteDatabase</uei>
+        <event-label>Postfix-defined event: obsolete database file</event-label>
+        <descr>
+            &lt;p&gt;The database file %parm[databaseName]% on %nodelabel% is obsolete. E-mail delivery might not work as expected. &lt;br&gt;
+            Database: %parm[databaseName]% &lt;br&gt;
+            SourceFile: %parm[sourceFile]% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Postfix: Obsolete database file %parm[databaseName]% on node %nodelabel%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[databaseName]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/vendor/postfix/syslog/postfix/TLSDisabled</uei>
+        <event-label>Postfix-defined event: TLS support disabled</event-label>
+        <descr>
+            &lt;p&gt;TLS support has been disabled in postfix on node %nodelabel%. Most probably because of a configuration error.&lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Postfix: TLS support disabled on node %nodelabel%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <!-- End syslog event definitions for Postfix  -->
+</events>

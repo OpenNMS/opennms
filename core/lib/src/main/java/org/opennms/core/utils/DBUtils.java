@@ -38,20 +38,18 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * <p>DBUtils class.</p>
+ * A utility for tracking open JDBC {@link Statement}s, {@link ResultSet}s, and {@link Connection}s
+ * to ease cleanup and avoid connection leaks.
  *
- * @author ranger
+ * @author Benjamin Reed &lt;ranger@opennms.org&gt;
  */
 public class DBUtils {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DBUtils.class);
-	
+    private Logger LOG = LoggerFactory.getLogger(DBUtils.class);
+
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
-    private Class<?> m_loggingClass;
 
     /**
      * <p>Constructor for DBUtils.</p>
@@ -59,7 +57,7 @@ public class DBUtils {
     public DBUtils() {
         this(DBUtils.class);
     }
-    
+
     /**
      * <p>Constructor for DBUtils.</p>
      *
@@ -69,7 +67,7 @@ public class DBUtils {
         m_statements = Collections.synchronizedSet(new HashSet<Statement>());
         m_resultSets = Collections.synchronizedSet(new HashSet<ResultSet>());
         m_connections = Collections.synchronizedSet(new HashSet<Connection>());
-        m_loggingClass = loggingClass;
+        LOG = LoggerFactory.getLogger(loggingClass);
     }
 
     public DBUtils(Class<?> loggingClass, Object... targets) {
@@ -85,7 +83,7 @@ public class DBUtils {
      * @return a {@link org.opennms.core.utils.DBUtils} object.
      */
     public DBUtils setLoggingClass(Class<?> c) {
-        m_loggingClass = c;
+        LOG = LoggerFactory.getLogger(c);
         return this;
     }
 
@@ -120,7 +118,7 @@ public class DBUtils {
             }
         }
         m_resultSets.clear();
-        
+
         for (Statement s : m_statements) {
             if (s != null) {
                 try {
@@ -131,7 +129,7 @@ public class DBUtils {
             }
         }
         m_statements.clear();
-        
+
         for (Connection c : m_connections) {
             if (c != null) {
                 try {
@@ -143,5 +141,5 @@ public class DBUtils {
         }
         m_connections.clear();
     }
-    
+
 }

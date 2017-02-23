@@ -57,7 +57,7 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
                     "<?xml version=\"1.0\"?>\n" + 
                             "<?castor class-name=\"org.opennms.netmgt.collectd.CollectdConfiguration\"?>\n" + 
                             "<collectd-configuration threads=\"50\">\n" + 
-                            "        <package name=\"example1\">\n" + 
+                            "        <package name=\"example1\" remote=\"false\">\n" +
                             "                <filter>IPADDR != '0.0.0.0'</filter>\n" + 
                             "                <include-range begin=\"1.1.1.1\" end=\"254.254.254.254\" />\n" + 
                             "                <service name=\"SNMP\" interval=\"30000\" user-defined=\"false\" status=\"on\">\n" + 
@@ -76,7 +76,11 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
                             "                        <parameter key=\"collection\" value=\"jsr160\" />\n" + 
                             "                        <parameter key=\"thresholding-enabled\" value=\"true\" />\n" + 
                             "                </service>\n" + 
-                            "        </package>\n" + 
+                            "        </package>\n" +
+                            "        <package name=\"example2\" remote=\"true\">\n" +
+                            "                <filter>IPADDR != '0.0.0.0'</filter>\n" +
+                            "                <service name=\"dummy\" interval=\"30000\" user-defined=\"true\" status=\"off\"/>\n" +
+                            "        </package>\n" +
                             "        <collector service=\"SNMP\"\n" + 
                             "                class-name=\"org.opennms.netmgt.collectd.SnmpCollector\" />\n" + 
                             "        <collector service=\"OpenNMS-JVM\"\n" + 
@@ -123,7 +127,20 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
         jvm.addParameter("thresholding-enabled", "true");
         p.addService(jvm);
 
+        final Service dummyService = new Service();
+        dummyService.setName("dummy");
+        dummyService.setStatus("off");
+        dummyService.setUserDefined("true");
+        dummyService.setInterval(30000L);
+
+        final Package p2 = new Package();
+        p2.setName("example2");
+        p2.setRemote(true);
+        p2.setFilter(p.getFilter());
+        p2.addService(dummyService);
+
         config.addPackage(p);
+        config.addPackage(p2);
 
         config.addCollector("SNMP", "org.opennms.netmgt.collectd.SnmpCollector");
         config.addCollector("OpenNMS-JVM", "org.opennms.netmgt.collectd.Jsr160Collector");

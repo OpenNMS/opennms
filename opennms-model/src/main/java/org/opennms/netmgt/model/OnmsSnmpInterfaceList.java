@@ -34,6 +34,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 
@@ -44,6 +46,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
  * @version $Id: $
  */
 @XmlRootElement(name = "snmpInterfaces")
+@JsonRootName("snmpInterfaces")
 public class OnmsSnmpInterfaceList extends JaxbListWrapper<OnmsSnmpInterface> {
     private static final long serialVersionUID = 1L;
 
@@ -53,6 +56,7 @@ public class OnmsSnmpInterfaceList extends JaxbListWrapper<OnmsSnmpInterface> {
     }
 
     @XmlElement(name="snmpInterface")
+    @JsonProperty("snmpInterface")
     public List<OnmsSnmpInterface> getObjects() {
         return super.getObjects();
     }

@@ -32,7 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,17 +40,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -196,11 +194,17 @@ final class PollerEventProcessor implements EventListener {
         final String svcName = event.getService();
 
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
-
         try {
             nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
         } catch (final Exception e) {
             LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
         }
 
         final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
@@ -211,7 +215,7 @@ final class PollerEventProcessor implements EventListener {
                 return;
             }
         }
-        getPoller().scheduleService(nodeId.intValue(), nodeLabel, ipAddr, svcName);
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName);
 
     }
 
@@ -351,12 +355,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
 
@@ -364,10 +363,6 @@ final class PollerEventProcessor implements EventListener {
         PollableNode node = getNetwork().getNode(nodeId.intValue());
         if (node == null) {
             LOG.error("Nodeid {} does not exist in pollable node map, unable to delete node.", nodeId);
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist in pollable node map.", status, "OpenNMS.Poller");
-            }
             return;
         }
         node.delete();
@@ -431,12 +426,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
 
@@ -444,10 +434,6 @@ final class PollerEventProcessor implements EventListener {
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
             LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
-            }
             return;
         }
         iface.delete();
@@ -465,12 +451,7 @@ final class PollerEventProcessor implements EventListener {
         InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
 
@@ -495,7 +476,7 @@ final class PollerEventProcessor implements EventListener {
         }
         if (isPoller) {
             LOG.info("reloadConfigHandler: reloading poller configuration");
-            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONF_FILE_NAME);
+            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
             EventBuilder ebldr = null;
             try {
                 getPollerConfig().update();
@@ -652,31 +633,52 @@ final class PollerEventProcessor implements EventListener {
             return;
         }
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        try {
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+        }
 
         getPollerConfig().rebuildPackageIpListMap();
-        serviceReschedule(nodeId, nodeLabel, event, rescheduleExisting);
+        serviceReschedule(nodeId, nodeLabel, nodeLocation, event, rescheduleExisting);
     }
 
     private void rescheduleAllServices(Event event) {
         LOG.info("Poller configuration has been changed, rescheduling services.");
         getPollerConfig().rebuildPackageIpListMap();
         for (Long nodeId : getNetwork().getNodeIds()) {
-            serviceReschedule(nodeId, null,  event, true);
+            String nodeLabel = null;
+            try {
+                nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+            }
+
+            String nodeLocation = null;
+            try {
+                nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+            }
+
+            serviceReschedule(nodeId, nodeLabel, nodeLocation, event, true);
         }
     }
 
-    private void serviceReschedule(Long nodeId, String nodeLabel, Event sourceEvent, boolean rescheduleExisting) {
+    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation, Event sourceEvent, boolean rescheduleExisting) {
         if (nodeId == null || nodeId <= 0) {
             LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
             return;
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(sourceEvent.getTime());
-        } catch (final ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = sourceEvent.getTime();
 
         final Set<Service> databaseServices = new HashSet<>();
 
@@ -760,7 +762,7 @@ final class PollerEventProcessor implements EventListener {
             }
 
             LOG.debug("{} is being scheduled (or rescheduled) for polling.", databaseService);
-            getPoller().scheduleService(nodeId.intValue(),nodeLabel, databaseService.getAddress(), databaseService.getServiceName());
+            getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, databaseService.getAddress(), databaseService.getServiceName());
             if (!getPollerConfig().isPolled(databaseService.getAddress(), databaseService.getServiceName())) {
                 LOG.debug("{} is no longer polled.  Closing any pending outages.", databaseService);
                 closeOutagesForService(sourceEvent, nodeId, closeDate, databaseService);
@@ -804,13 +806,6 @@ final class PollerEventProcessor implements EventListener {
 
     private PollableNetwork getNetwork() {
         return getPoller().getNetwork();
-    }
-
-    /**
-     * @return Returns the XMLRPC.
-     */
-    private boolean isXmlRPCEnabled() {
-        return getPollerConfig().shouldNotifyXmlrpc();
     }
 
     public static class Service implements Comparable<Service> {

@@ -70,7 +70,10 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
      * A map used to store {@link Wallboard} and {@link TabSheet.Tab} instances
      */
     private Map<Wallboard, TabSheet.Tab> m_wallboardEditorMap = new HashMap<Wallboard, TabSheet.Tab>();
-
+    /**
+     * The wallboard overview component
+     */
+    private WallboardOverview m_dashboardOverview;
     /**
      * The constructor used for instantiating new objects.
      *
@@ -99,9 +102,9 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
         /**
          * Adding the {@link WallboardOverview}
          */
-        WallboardOverview dashboardOverview = new WallboardOverview(this);
+        m_dashboardOverview = new WallboardOverview(this);
 
-        Tab overviewTab = m_tabSheet.addTab(dashboardOverview, "Overview");
+        Tab overviewTab = m_tabSheet.addTab(m_dashboardOverview, "Overview");
 
         overviewTab.setClosable(false);
 
@@ -158,6 +161,18 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
     }
 
     /**
+     * Removes a tab identified by name
+     */
+    public void removeTab(String name) {
+        for(int i=0; i<m_tabSheet.getComponentCount(); i++) {
+            Tab tab = m_tabSheet.getTab(i);
+            if (name.equals(tab.getCaption())) {
+                m_tabSheet.removeTab(tab);
+            }
+        }
+    }
+
+    /**
      * This method is used to add a new {@link TabSheet.Tab} component. It creates a new window querying the user for the name of the new {@link Wallboard}.
      */
     protected void addNewTabComponent() {
@@ -166,7 +181,12 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
         window.setModal(true);
         window.setClosable(false);
         window.setResizable(false);
-
+        window.addCloseListener(new Window.CloseListener() {
+            @Override
+            public void windowClose(Window.CloseEvent e) {
+                m_dashboardOverview.refreshTable();
+            }
+        });
         getUI().addWindow(window);
 
         window.setContent(new VerticalLayout() {

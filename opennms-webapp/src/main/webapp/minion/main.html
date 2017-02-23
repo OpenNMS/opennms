@@ -1,0 +1,250 @@
+<div ng-controller="ListCtrl">
+<div ng-controller="MinionListCtrl">
+
+	<!-- Modal form for adding filters -->
+	<div id="filterModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<label>Add Filter:</label>
+					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
+						<div class="form-group">
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+							<option value="id">ID</option>
+							<option value="label">Label</option>
+							<option value="location">Location</option>
+							<option value="status">Status</option>
+							<option value="lastUpdated">Last Updated</option>
+						</select>
+						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+							<option value="EQ">=</option>
+							<option value="NE">!=</option>
+							<option value="LT">&lt;</option>
+							<option value="LE">&lt;=</option>
+							<option value="GT">&gt;</option>
+							<option value="GE">&gt;=</option>
+						</select>
+						<input class="form-control" type="text" ng-model="clause.value" ng-if="clause.property !== 'lastUpdated'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-if="clause.property === 'lastUpdated'"/>
+						</div>
+						<br/><br/>
+						<button class="btn btn-default" type="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal help window -->
+	<div id="helpModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<h3>Help</h3>
+
+					<h4>Filtering</h4>
+					<p>
+						Click on the <i class="fa fa-search-plus"></i> icon to filter the list. You can match a portion of a value by using
+						the * character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
+					</p>
+
+					<h4>Filter by Example</h4>
+					<p>
+						You can click on the <i class="fa fa-plus-square-o"></i> icon next to a value to only show rows that contain that value. 
+						If you click on the <i class="fa fa-minus-square-o"></i> icon, it will remove rows with that value from the results.
+						For timestamp values, clicking on the <i class="fa fa-toggle-left"></i> icon will show timestamps newer than the specified
+						value and clicking on the <i class="fa fa-toggle-right"></i> icon will show timestamps older than the value.
+					</p>
+
+					<h4>Sorting</h4>
+					<p>Click on a column header to sort by that column. Click the same column again to reverse the sort order.</p>
+
+					<h4>Items per Page</h4>
+					<p>You can change the number of items per page by entering a numeric value in the <i class="fa fa-th-list"></i> box.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Filter list -->
+	<div class="well well-sm">
+		<span class="h4" style="line-height:2.8;">
+			Filters&nbsp;&nbsp;
+			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			&nbsp;
+			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
+			&nbsp;
+			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+			&nbsp;
+		</span>
+		<span ng-hide="query.searchClauses.length == 0">
+			<span ng-repeat="clause in query.searchClauses">
+				<div class="btn-group" style="margin:3px;">
+					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
+						{{clause.property | property}}
+						{{clause.operator | operator : clause.value}}
+						{{clause.value | value : clause.property}}
+						&nbsp;
+						<i class="fa fa-close"></i>
+					</button>
+				</div>
+			</span>
+		</span>
+	</div>
+
+	<!-- Paging controls -->
+	<div>
+		<div class="btn-toolbar">
+			<div class="btn-group">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
+				</a>
+			</div>
+			<div class="btn-group">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
+				</a>
+			</div>
+
+			<div class="btn-group">
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+					{{(query.offset/query.limit) - 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+					{{(query.offset/query.limit) - 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+					{{query.offset/query.limit}}
+				</a>
+				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+					{{(query.offset/query.limit) + 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 3}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 4}}
+				</a>
+			</div>
+
+			<div class="pull-right">
+				<!-- Add 1 to each offset since they are zero-based -->
+				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
+					<div class="input-group" style="margin-left:10px;">
+						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+						<input class="form-control" type="number" ng-model="query.newLimit"/>
+					</div>
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+						</a>
+					</div>
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+						</a>
+					</div>
+				</form>
+			</div>
+
+			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
+			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+		</div>
+	</div>
+
+	<br/>
+
+	<div class="panel panel-default">
+		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
+		<table class="table table-bordered table-striped" style="font-size:100%">
+			<tbody>
+				<tr>
+					<th class="col-sm-2 text-nowrap">
+						<a ng-click="changeOrderBy('id')">ID</a>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2 text-nowrap">
+						<a ng-click="changeOrderBy('label')">Label</a>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2 text-nowrap">
+						<a ng-click="changeOrderBy('location')">Location</a>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('type')">Type</a>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'type' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1 text-nowrap">
+						<a ng-click="changeOrderBy('status')">Status</a>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'status' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2 text-nowrap">
+						<a ng-click="changeOrderBy('date')">Last Updated</a>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'date' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2 text-nowrap">
+						Properties
+					</th>
+				</tr>
+
+				<tr ng-repeat="item in items">
+					<td class="text-nowrap" style="line-height:24px;">
+						{{item.id}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap">
+						<!-- TODO: Figure out how to handle null/blank label, it should still be editable -->
+						<onms-list-edit-in-place item="item" value="item.label" value-type="'text'" on-submit="update(item)">
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						</onms-list-edit-in-place>
+					</td>
+					<td class="text-nowrap">
+						{{item.location}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						{{item.type}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.status !== null">
+							{{item.status}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						</span>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.date !== null">
+							{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right fa-lg"/></a>
+						</span>
+					</td>
+					<td>
+						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>

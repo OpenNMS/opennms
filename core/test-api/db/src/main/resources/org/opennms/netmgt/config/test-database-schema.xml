@@ -80,18 +80,6 @@
 		<column name="lastFail"/>
 	</table>
 
-	<table name="serverMap">
-		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-		<column name="ipAddr" visible="false"/>
-		<column name="serverName"/>
-	</table>
-
-	<table name="serviceMap">
-		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-		<column name="ipAddr" visible="false"/>
-		<column name="serviceMapName"/>
-	</table>
-
 	<table name="assets">
 		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
 		<column name="nodeID" visible="false"/>

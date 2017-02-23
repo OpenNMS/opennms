@@ -75,7 +75,7 @@ public class MockJavaMailConfigurationDao implements JavaMailConfigurationDao {
     }
 
     @Override
-    public End2endMailConfig getEnd2EndConfig(String name) {
+    public End2endMailConfig getEnd2endConfig(String name) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -89,13 +89,59 @@ public class MockJavaMailConfigurationDao implements JavaMailConfigurationDao {
     @Override
     public void verifyMarshaledConfiguration() throws IllegalStateException {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         // TODO Auto-generated method stub
-        
+    }
+
+    @Override
+    public void addSendMailConfig(SendmailConfig sendmailConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void addReadMailConfig(ReadmailConfig readmailConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void addEnd2endMailConfig(End2endMailConfig end2endConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void saveConfiguration() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean removeSendMailConfig(String sendmailConfigName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean removeReadMailConfig(String readmailConfigName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean removeEnd2endConfig(String end2endConfigName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setDefaultSendmailConfig(String sendmailConfigName) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void setDefaultReadmailConfig(String sendmailConfigName) {
+        // TODO Auto-generated method stub
     }
 
 }

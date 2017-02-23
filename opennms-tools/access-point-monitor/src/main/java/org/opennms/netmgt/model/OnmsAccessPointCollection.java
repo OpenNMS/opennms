@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name = "accesspoints")
+@JsonRootName("accesspoints")
 public class OnmsAccessPointCollection extends JaxbListWrapper<OnmsAccessPoint> {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class OnmsAccessPointCollection extends JaxbListWrapper<OnmsAccessPoint> 
     }
 
     @XmlElement(name="accesspoint")
+    @JsonProperty("accesspoint")
     public List<OnmsAccessPoint> getObjects() {
         return super.getObjects();
     }

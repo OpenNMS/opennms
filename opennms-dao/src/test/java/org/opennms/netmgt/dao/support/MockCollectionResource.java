@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -40,7 +40,7 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * MockCollectionResource
@@ -49,12 +49,12 @@ import org.opennms.netmgt.rrd.RrdRepository;
  */
 public class MockCollectionResource implements CollectionResource {
     
-    private final String parent;
+    private final ResourcePath parent;
     private String instance;
     private final String type;
     private final Map<String,String> attributes = new HashMap<String,String>();
     
-    public MockCollectionResource(String parent, String instance, String type) {
+    public MockCollectionResource(ResourcePath parent, String instance, String type) {
         this.parent = parent;
         this.instance = instance;
         this.type = type;
@@ -66,7 +66,7 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public File getResourceDir(RrdRepository repository) {
+    public ResourcePath getPath() {
         return null;
     }
 
@@ -92,7 +92,13 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public String getStringValue() { return attrValue; }
                 @Override
-                public String getNumericValue() { return attrValue; }
+                public Double getNumericValue() {
+                    try {
+                        return Double.parseDouble(attrValue);
+                    } catch (NumberFormatException|NullPointerException e) {
+                        return null;
+                    }
+                }
                 @Override
                 public String getName() { return attrName; }
                 @Override
@@ -104,7 +110,7 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public void visit(CollectionSetVisitor visitor) { }
                 @Override
-                public String getType() { return "string"; }
+                public AttributeType getType() { return AttributeType.STRING; }
                 @Override
                 public String getMetricIdentifier() { return "MOCK_"+getName(); }
             };
@@ -118,7 +124,7 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public String getParent() {
+    public ResourcePath getParent() {
         return parent;
     }
 

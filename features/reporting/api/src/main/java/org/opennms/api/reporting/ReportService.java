@@ -54,7 +54,7 @@ public interface ReportService {
      * @return true if the reportParms supplied match those in the report
      *         definition.
      */
-    public abstract boolean validate(Map<String, Object> reportParms,
+    boolean validate(Map<String, Object> reportParms,
             String reportId);
 
     /**
@@ -67,7 +67,7 @@ public interface ReportService {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.api.reporting.ReportException if any.
      */
-    public abstract String run(Map<String, Object> reportParms,
+    String run(Map<String, Object> reportParms,
             String reportId) throws ReportException;
 
     /**
@@ -77,7 +77,7 @@ public interface ReportService {
      *            reportId as defined in database-reports.xml
      * @return a list of supported formats
      */
-    public abstract List<ReportFormat> getFormats(String reportId);
+    List<ReportFormat> getFormats(String reportId);
 
     /**
      * This method renders the report into a given output stream.
@@ -92,7 +92,7 @@ public interface ReportService {
      *            stream to render the resulting report
      * @throws org.opennms.api.reporting.ReportException if any.
      */
-    public abstract void render(String ReportId, String location,
+    void render(String ReportId, String location,
             ReportFormat format, OutputStream outputStream)
             throws ReportException;
 
@@ -109,7 +109,7 @@ public interface ReportService {
      * @param reportParms a {@link java.util.HashMap} object.
      * @throws org.opennms.api.reporting.ReportException if any.
      */
-    public abstract void runAndRender(Map<String, Object> reportParms,
+    void runAndRender(Map<String, Object> reportParms,
             String ReportId, ReportFormat format, OutputStream outputStream)
             throws ReportException;
 
@@ -120,7 +120,7 @@ public interface ReportService {
      *         the report
      * @param ReportId a {@link java.lang.String} object.
      */
-    public abstract ReportParameters getParameters(String ReportId)
+    ReportParameters getParameters(String ReportId)
             throws ReportException;
     
 }

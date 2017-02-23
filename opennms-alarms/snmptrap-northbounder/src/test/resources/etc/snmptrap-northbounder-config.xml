@@ -1,0 +1,56 @@
+<snmptrap-northbounder-config>
+
+	<enabled>true</enabled>
+	<nagles-delay>1000</nagles-delay>
+	<batch-size>100</batch-size>
+	<queue-size>300000</queue-size>
+
+	<snmp-trap-sink>
+		<name>localTest1</name>
+		<ip-address>127.0.0.1</ip-address>
+		<port>162</port>
+		<version>v2c</version>
+		<mapping-group name="My Mappings">
+			<rule>foreignSource matches '^Server.*'</rule>
+			<mapping name="trap01">
+				<rule>uei == 'uei.opennms.org/trap/myTrap1'</rule>
+				<enterprise-oid>.1.2.3.4.5.6.7.8.100</enterprise-oid>
+				<specific>1</specific>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.1</oid>
+					<type>Int32</type>
+					<value>eventParametersCollection[0].value</value>
+				</varbind>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.2</oid>
+					<type>OctetString</type>
+					<value>parameters['alarmMessage']</value>
+					<max>48</max>
+				</varbind>
+			</mapping>
+			<mapping name="trap02">
+				<rule>uei == 'uei.opennms.org/trap/myTrap2'</rule>
+				<enterprise-oid>.1.2.3.4.5.6.7.8.101</enterprise-oid>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.2</oid>
+					<type>OctetString</type>
+					<value>parameters['myMessage']</value>
+					<instance>parameters['myId']</instance>
+				</varbind>
+			</mapping>
+		</mapping-group>
+	</snmp-trap-sink>
+
+	<snmp-trap-sink>
+		<name>localTest2</name>
+		<ip-address>127.0.0.2</ip-address>
+		<port>162</port>
+		<version>v1</version>
+		<community>public</community>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-01.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-02.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-03.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-04.xml</import-mappings>
+	</snmp-trap-sink>
+
+</snmptrap-northbounder-config>

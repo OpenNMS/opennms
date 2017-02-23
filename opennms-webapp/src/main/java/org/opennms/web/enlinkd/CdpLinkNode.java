@@ -29,7 +29,7 @@
 package org.opennms.web.enlinkd;
 
 
-public class CdpLinkNode {
+public class CdpLinkNode implements Comparable<CdpLinkNode>{
 
     
     private String  m_cdpLocalPort;
@@ -141,6 +141,11 @@ public class CdpLinkNode {
 
     public void setCdpLastPollTime(String cdpLastPollTime) {
         m_cdpLastPollTime = cdpLastPollTime;
+    }
+
+    @Override
+    public int compareTo(CdpLinkNode o) {
+        return m_cdpLocalPort.compareTo(o.m_cdpLocalPort);
     }
 
 }

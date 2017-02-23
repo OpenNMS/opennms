@@ -37,19 +37,24 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.core.utils.TimeSeries.Strategy;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -68,6 +73,7 @@ public class NrtController {
     private GraphDao m_graphDao;
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
+    private ResourceStorageDao m_resourceStorageDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
@@ -118,7 +124,8 @@ public class NrtController {
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
 
-        String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
+        String nrtCollectionTaskId = String.format("NrtCollectionTaskId_%d_%d",
+                System.currentTimeMillis(), new Random().nextInt());
 
         List<CollectionJob> collectionJobs = createCollectionJobs(reportResource, prefabGraph, nrtCollectionTaskId);
         for (CollectionJob collectionJob : collectionJobs) {
@@ -126,7 +133,7 @@ public class NrtController {
             getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
         }
 
-        ModelAndView modelAndView = new ModelAndView("nrt/realtime");
+        ModelAndView modelAndView = new ModelAndView("nrt/realtime.json");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
 
         modelAndView.addObject("graphTitle", prefabGraph.getTitle());
@@ -248,7 +255,9 @@ public class NrtController {
             //I know....
             if (protocol.equals("SNMP") || protocol.equals("TCA")) {
                 collectionJob.setNetInterface(protocol);
-                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
+                OnmsMonitoringLocation location = node.getLocation();
+                String locationName = (location == null) ? null : location.getLocationName();
+                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress(), locationName);
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
                 collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
                 collectionJobs.add(collectionJob);
@@ -319,10 +328,30 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            final String rrdRelativePath = attr.getRrdRelativePath();
-            final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
+            // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
+            // by the ResourceStorageDao.
+            ResourcePath pathToMetaFile;
+            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS) {
+                String path = attr.getRrdRelativePath();
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                pathToMetaFile = ResourcePath.get(path.split(":"));
+            } else {
+                final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+                String metaFileNameWithoutExtension = attr.getRrdFile();
+                for (final String ext : knownExtensions) {
+                    if (metaFileNameWithoutExtension.endsWith(ext)) {
+                        metaFileNameWithoutExtension = metaFileNameWithoutExtension.substring(0,
+                                metaFileNameWithoutExtension.lastIndexOf(ext));
+                        break;
+                    }
+                }
+                pathToMetaFile = ResourcePath.get(attr.getResource().getPath(), metaFileNameWithoutExtension);
+            }
 
-            final Set<Entry<String, String>> metaDataEntrySet = RrdUtils.readMetaDataFile(m_resourceDao.getRrdDirectory().getPath(), rrdName).entrySet();
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(pathToMetaFile).entrySet();
+            logger.debug("Meta-data for attribute '{}' at path '{}' contains: {}", attr, pathToMetaFile, metaDataEntrySet);
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();
@@ -396,5 +425,13 @@ public class NrtController {
 
     public void setNrtBroker(NrtBroker nrtBroker) {
         this.m_nrtBroker = nrtBroker;
+    }
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
     }
 }

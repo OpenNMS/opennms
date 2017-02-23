@@ -27,7 +27,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk jdk >= 2000:1.7}
+%{!?jdk:%define jdk java-1.8.0}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -63,11 +63,11 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 8.4
-Requires:		postgresql-server  >= 8.4
+Requires(pre):		postgresql-server  >= 9.1
+Requires:		postgresql-server  >= 9.1
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
-BuildRequires:		%{jdk}
+#BuildRequires:		%{jdk}
 
 Prefix: %{instprefix}
 Prefix: %{sharedir}
@@ -89,13 +89,14 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp
-Requires:	jicmp
-Requires(pre):	jicmp6
-Requires:	jicmp6
+Requires(pre):	jicmp >= 2.0.0
+Requires:	jicmp >= 2.0.0
+Requires(pre):	jicmp6 >= 2.0.0
+Requires:	jicmp6 >= 2.0.0
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
+Obsoletes: opennms-plugin-protocol-xml
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -114,6 +115,17 @@ If you wish to install them to an alternate location, use the --relocate rpm
 option, like so:
 
   rpm -i --relocate %{logdir}=/mnt/netapp/%{name}-logs %{name}-core.rpm
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package source
+Summary:	Source for the %{_descr} network management platform
+Group:		Applications/System
+
+%description source
+This package contains the source tarball for %{_descr}, for AGPL compliance.
 
 %{extrainfo}
 %{extrainfo2}
@@ -175,6 +187,19 @@ embedded in the main core process.
 %{extrainfo2}
 
 
+%package webapp-remoting
+Summary:	Remote Poller webapp
+Group:		Applications/System
+Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Conflicts:	%{name}-webapp-jetty < 19.0.0-0
+
+%description webapp-remoting
+The JNLP application that provides the Remote Poller.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package ncs
 Summary:	Network Component Services
 Group:		Applications/System
@@ -191,12 +216,10 @@ disparate nodes.
 %package plugins
 Summary:	All Plugins
 Group:		Applications/System
+Requires(pre):	%{name}-plugin-northbounder-jms
+Requires:	%{name}-plugin-northbounder-jms
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
-Requires(pre):	%{name}-plugin-provisioning-link
-Requires:	%{name}-plugin-provisioning-link
-Requires(pre):	%{name}-plugin-provisioning-map
-Requires:	%{name}-plugin-provisioning-map
 Requires(pre):	%{name}-plugin-provisioning-rancid
 Requires:	%{name}-plugin-provisioning-rancid
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
@@ -217,8 +240,6 @@ Requires(pre):	%{name}-plugin-protocol-nsclient
 Requires:	%{name}-plugin-protocol-nsclient
 Requires(pre):	%{name}-plugin-protocol-radius
 Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xml
-Requires:	%{name}-plugin-protocol-xml
 Requires(pre):	%{name}-plugin-protocol-xmp
 Requires:	%{name}-plugin-protocol-xmp
 Requires(pre):	%{name}-plugin-collector-vtdxml-handler
@@ -231,6 +252,39 @@ This installs all optional plugins.
 %{extrainfo2}
 
 
+%package plugin-northbounder-jms
+Summary:	JMS Alarm Northbounder
+Group:		Applications/System
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-northbounder-jms
+This northbounder allows you to send OpenNMS alarms to an 
+external JMS listener.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-map
+Summary:	Obsolete: Map Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-map
+The map provisioning adapter is no longer part of OpenNMS.
+
+
+%package plugin-provisioning-link
+Summary:	Obsolete: Link Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-link
+The map provisioning adapter is no longer part of OpenNMS.
+
+
 %package plugin-provisioning-dns
 Summary:	DNS Provisioning Adapter
 Group:		Applications/System
@@ -240,35 +294,6 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
 provisioned nodes.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-provisioning-link
-Summary:	Link Provisioning Adapter
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-provisioning-link
-The link provisioning adapter creates links between provisioned nodes based on naming
-conventions defined in the link-adapter-configuration.xml file.  It also updates the
-status of the map links based on data link events.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-provisioning-map
-Summary:	Map Provisioning Adapter
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-provisioning-map
-The map provisioning adapter will automatically create maps when nodes are provisioned
-in %{_descr}.
 
 %{extrainfo}
 %{extrainfo2}
@@ -413,19 +438,6 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %{extrainfo2}
 
 
-%package plugin-protocol-xml
-Summary:	XML Collector
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-protocol-xml
-The XML protocol plugin provides a collector for XML data.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-protocol-xmp
 Summary:	XMP Poller
 Group:		Applications/System
@@ -456,8 +468,8 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 Summary:	VTD-XML Collection Handler
 Group:		Applications/System
 License:	GPL
-Requires(pre):	%{name}-plugin-protocol-xml = %{version}-%{release}
-Requires:	%{name}-plugin-protocol-xml = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
@@ -466,10 +478,9 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
 %{extrainfo}
 %{extrainfo2}
 
-
 %prep
 
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -479,7 +490,7 @@ tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BU
 ##############################################################################
 
 %build
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 # nothing necessary
 
@@ -496,6 +507,8 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+
 if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
@@ -509,21 +522,23 @@ if [ "%{skip_compile}" = 1 ]; then
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		cd $dir
-			"$TOPDIR"/compile.pl -N $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
+			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
 		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" install
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
+./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
+	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
 
 cd opennms-tools
-	../compile.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
 	-Dopennms.home="%{instprefix}" install
 cd -
 
@@ -531,17 +546,17 @@ echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT%{instprefix}
+mkdir -p %{buildroot}%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+tar zxvf %{_builddir}/%{name}-%{version}-%{release}/target%{buildroot}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
 ### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
-mkdir -p $RPM_BUILD_ROOT%{profiledir}
-cat > $RPM_BUILD_ROOT%{profiledir}/%{name}.sh << END
+mkdir -p %{buildroot}%{profiledir}
+cat > %{buildroot}%{profiledir}/%{name}.sh << END
 #!/bin/bash
 
 OPENNMS_HOME=%{instprefix}
@@ -553,45 +568,52 @@ export OPENNMS_HOME PATH
 
 END
 
-rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-mkdir -p $RPM_BUILD_ROOT%{_docdir}
-mv $RPM_BUILD_ROOT%{instprefix}/docs $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
+# Move the docs into %{_docdir}
+rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
+mkdir -p %{buildroot}%{_docdir}
+mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
+cp README* %{buildroot}%{instprefix}/etc/
+rm -rf %{buildroot}%{instprefix}/etc/README
+rm -rf %{buildroot}%{instprefix}/etc/README.build
 
-install -d -m 755 $RPM_BUILD_ROOT%{logdir}
-mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
+install -d -m 755 %{buildroot}%{logdir}
+mv %{buildroot}%{instprefix}/logs/.readme %{buildroot}%{logdir}/
+rm -rf %{buildroot}%{instprefix}/logs
 
-install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
-mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/share
+install -d -m 755 %{buildroot}%{sharedir}
+mv %{buildroot}%{instprefix}/share/* %{buildroot}%{sharedir}/
+rm -rf %{buildroot}%{instprefix}/share
 
-rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
-chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
+# Copy the /etc directory into /etc/pristine
+rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
+chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
-install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
-rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
+install -d -m 755 %{buildroot}%{_initrddir} %{buildroot}%{_sysconfdir}/sysconfig
+install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
+install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
+rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
 
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
+rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
 
-cd $RPM_BUILD_ROOT
+# Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
+for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
+# Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
+# NOTE: We can't do this because the JARs in webstart are signed
+#for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
+
+cd %{buildroot}
 
 # core package files
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+find %{buildroot}%{instprefix}/etc ! -type d | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
 	grep -v 'jira.properties' | \
-	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
@@ -599,24 +621,21 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
 	sort > %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'ncs.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
 	grep -v 'jira.properties' | \
-	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
@@ -624,20 +643,18 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/bin ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v '/jmx-config-generator' | \
 	grep -v '/remote-poller.sh' | \
 	grep -v '/remote-poller.jar' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{sharedir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
 	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
@@ -647,60 +664,64 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v 'xml-collector' | \
+find %{buildroot}%{instprefix}/contrib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v 'ncs-' | \
-	grep -v 'provisioning-adapter' | \
-	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
-	grep -v 'jdhcp' | \
-	grep -v 'jira' | \
-	grep -v 'org.opennms.protocols.nsclient' | \
-	grep -v 'org.opennms.protocols.radius' | \
+find %{buildroot}%{instprefix}/lib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'gnu-crypto' | \
+	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
+	grep -v 'org.opennms.features.ncs.ncs-' | \
+	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
-	grep -v 'org.opennms.protocols.xml' | \
-	grep -v 'opennms-vtdxml-collector-handler' | \
-	grep -v 'vtd-xml' | \
-	grep -v 'org.opennms.protocols.xmp' | \
-	grep -v 'xmp' | \
-	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
+	grep -v 'org.opennms.features.juniper-tca-collector' | \
+	grep -v 'org.opennms.protocols.cifs' | \
+	grep -v 'org.opennms.protocols.dhcp' | \
+	grep -v 'org.opennms.protocols.nsclient' | \
+	grep -v 'org.opennms.protocols.radius' | \
+	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'opennms-vtdxml-collector-handler' | \
+	grep -v 'provisioning-adapter' | \
+	grep -v 'vtd-xml' | \
+	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/system ! -type d | \
+    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	grep -v 'jira-' | \
+    sort >> %{_tmppath}/files.main
+# Put the etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
-find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{jettydir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/ncs' | \
+	grep -v '/WEB-INF/lib/org.opennms.features.ncs.ncs' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
+	sed -e "s,^%{buildroot},%config ," | \
+	grep -v '/opennms-remoting' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir} -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+find %{buildroot}%{jettydir} -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
+	grep -v '/opennms-remoting' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 ##############################################################################
 # file setup
@@ -732,8 +753,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files ncs
 %defattr(644 root root 755)
-%{instprefix}/lib/ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
+%{instprefix}/lib/org.opennms.features.ncs.ncs-*.jar
+%{jettydir}/%{servletdir}/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar
 %config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
 %config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
 %{sharedir}/xsds/ncs-*.xsd
@@ -744,31 +765,30 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/drools-engine.d/ncs/*
 %{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
 
+%files source
+%defattr(644 root root 755)
+%{jettydir}/opennms/source/*
+
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 
+%files webapp-remoting
+%defattr(644 root root 755)
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+%{jettydir}/opennms-remoting
+
 %files plugins
+
+%files plugin-northbounder-jms
+%defattr(644 root root 755)
+%{instprefix}/lib/opennms-alarm-northbounder-jms-*.jar
+%config(noreplace) %{instprefix}/etc/jms-northbounder-configuration.xml
+%{sharedir}/etc-pristine/jms-northbounder-configuration.xml
 
 %files plugin-provisioning-dns
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
-
-%files plugin-provisioning-link
-%defattr(664 root root 775)
-%{instprefix}/lib/opennms-link-provisioning-adapter*.jar
-%config(noreplace) %{instprefix}/etc/link-adapter-configuration.xml
-%config(noreplace) %{instprefix}/etc/endpoint-configuration.xml
-%{sharedir}/etc-pristine/link-adapter-configuration.xml
-%{sharedir}/etc-pristine/endpoint-configuration.xml
-
-%files plugin-provisioning-map
-%defattr(664 root root 775)
-%{instprefix}/lib/opennms-map-provisioning-adapter*.jar
-%{instprefix}/etc/examples/mapsadapter-configuration.xml
-%config(noreplace) %{instprefix}/etc/mapsadapter-configuration.xml
-%{sharedir}/etc-pristine/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid
 %defattr(664 root root 775)
@@ -792,7 +812,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-ticketer-jira
 %defattr(664 root root 775)
-%{instprefix}/lib/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 
@@ -829,17 +850,6 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/gnu-crypto*.jar
 %{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
-
-%files plugin-protocol-xml
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
-%config(noreplace) %{instprefix}/etc/examples/opennms-mx4j/*
-%{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
-%{sharedir}/etc-pristine/xml-*.xml
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)
@@ -881,6 +891,15 @@ else
 	echo "done"
 fi
 
+printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+else
+  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  echo "done"
+fi
+
 %postun -p /bin/bash docs
 ROOT_INST="$RPM_INSTALL_PREFIX0"
 SHARE_INST="$RPM_INSTALL_PREFIX1"
@@ -893,6 +912,12 @@ if [ "$1" = 0 ]; then
 	if [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
+fi
+
+if [ "$1" = 0 ]; then
+  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  fi
 fi
 
 %post -p /bin/bash core
@@ -973,7 +998,7 @@ for dir in /etc /etc/rc.d; do
 	fi
 done
 
-for LIBNAME in jicmp jicmp6 jrrd; do
+for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
@@ -989,9 +1014,13 @@ if [ -d "$ROOT_INST/data" ]; then
 fi
 echo "done"
 
+if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
+	"$ROOT_INST/bin/runjava" "-s"
+fi
+
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
-echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
+echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
 echo " *** to date before you start %{_descr}.  See the install guide at"
 echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."

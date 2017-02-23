@@ -228,7 +228,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 			ossDao.init();  // initialises the node and alarm caches
 			initialised=true;
 		} catch (Throwable ex){
-		throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
+		throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+".init() problem initialising class");
 	}
 		
 // TODO remove
@@ -404,9 +404,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setFirstEventTime(nnae.getEventTime());
 				alarm.setLastEventTime(nnae.getEventTime());
 				
-// TODO removed - do create distpoller with hibernate dao				
-//				alarm.setDistPoller(new OnmsDistPoller("undefined","localhost")); //simple constructor
-				alarm.setDistPoller(distPollerDao.get("localhost"));
+				alarm.setDistPoller(distPollerDao.whoami());
 				
 				alarm.setDescription(nnae.getAdditionalText()); //TODO need Qosd Not to generate this if remote
 				alarm.setCounter(new Integer(1));

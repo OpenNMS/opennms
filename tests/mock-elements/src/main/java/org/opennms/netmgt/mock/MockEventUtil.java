@@ -30,16 +30,13 @@ package org.opennms.netmgt.mock;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -74,7 +71,15 @@ public abstract class MockEventUtil {
     public static Event createNodeLostServiceEvent(String source, MockService svc, String reason) {
         return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, reason);
     }
-    
+
+    public static Event createOutageCreatedEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.OUTAGE_CREATED_EVENT_UEI, svc, reason);
+    }
+
+    public static Event createOutageResolvedEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc, reason);
+    }
+
     /**
      * <p>createNodeLostServiceEvent</p>
      *
@@ -482,7 +487,7 @@ public abstract class MockEventUtil {
      * @param date a {@link java.util.Date} object.
      */
     public static void setEventTime(Event event, Date date) {
-        event.setTime(EventConstants.formatToString(date));
+        event.setTime(date);
     }
     
     /**
@@ -534,7 +539,6 @@ public abstract class MockEventUtil {
     public static EventBuilder createEventBuilder(String source, String uei) {
         EventBuilder builder = new EventBuilder(uei, source);
         Date currentTime = new Date();
-        builder.setCreationTime(currentTime);
         builder.setTime(currentTime);
         return builder;
     }
@@ -555,26 +559,6 @@ public abstract class MockEventUtil {
         event.addParam(EventConstants.PARM_NEW_NODEID, newNode);
         return event.getEvent();
     }
-    
-    /**
-     * <p>convertEventTimeIntoTimestamp</p>
-     *
-     * @param eventTime a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    public static Timestamp convertEventTimeIntoTimestamp(String eventTime) {
-        Timestamp timestamp = null;
-        try {
-            Date date = EventConstants.parseToDate(eventTime);
-            timestamp = new Timestamp(date.getTime());
-        } catch (ParseException e) {
-        	LOG.warn("Failed to convert event time {} to timestamp.", eventTime, e);
-    
-            timestamp = new Timestamp((new Date()).getTime());
-        }
-        return timestamp;
-    }
-
 
     /**
      * <p>eventsMatch</p>
@@ -613,17 +597,14 @@ public abstract class MockEventUtil {
             }
             
             if (toleratedTimestampOffset > 0) {
-                try {
-                    final long d1 = e1.getDate().getTime();
-                    final long d2 = e2.getDate().getTime();
-                    if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
-                        // d1 is within [toleratedTimestampOffset] of d2
-                    } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
-                        // d2 is within [toleratedTimestampOffset] of d1
-                    } else {
-                        return false;
-                    }
-                } catch (final ParseException e) {
+                final long d1 = e1.getTime().getTime();
+                final long d2 = e2.getTime().getTime();
+                if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
+                    // d1 is within [toleratedTimestampOffset] of d2
+                } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
+                    // d2 is within [toleratedTimestampOffset] of d1
+                } else {
+                    return false;
                 }
             } else if (!e1.getTime().equals(e2.getTime())) {
                 return false;

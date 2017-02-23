@@ -30,23 +30,27 @@ package org.opennms.netmgt.enlinkd;
 
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.linkd.scheduler.Scheduler;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
+import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -83,13 +87,17 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     /**
      * List that contains Linkable Nodes.
      */
-    private List<LinkableSnmpNode> m_nodes;
+    private List<Node> m_nodes;
 
     /**
      * Event handler
      */
     private volatile EventForwarder m_eventForwarder;
 
+    @Autowired
+    private LocationAwareSnmpClient m_locationAwareSnmpClient;
+
+    private volatile Set<Integer> m_bridgecollectionsscheduled = new HashSet<Integer>();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -110,17 +118,21 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                      "must set the eventForwarder property");
 
+        LOG.info("init: Loading nodes.....");
         m_nodes = m_queryMgr.getSnmpNodeList();
+        LOG.info("init: Nodes loaded.");
+        LOG.info("init: Loading Bridge Topology.....");
+        m_queryMgr.loadBridgeTopology();
+        LOG.info("init: Bridge Topology loaded.");
 
         Assert.notNull(m_nodes);
         scheduleCollection();
-
-        LOG.info("init: ENHANCED LINKD CONFIGURATION INITIALIZED");
+        LOG.info("init: ENHANCED LINKD INITIALIZED");
     }
 
     private void scheduleCollection() {
         synchronized (m_nodes) {
-            for (final LinkableSnmpNode node : m_nodes) {
+            for (final Node node : m_nodes) {
                 scheduleCollectionForNode(node);
             }
         }
@@ -133,7 +145,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param node
      */
-    private void scheduleCollectionForNode(final LinkableSnmpNode node) {
+    private void scheduleCollectionForNode(final Node node) {
 
         for (final NodeDiscovery snmpcoll : getSnmpCollections(node) ){
             LOG.info("ScheduleCollectionForNode: Scheduling {}",
@@ -148,52 +160,51 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param nodeid
      */
-    public List<NodeDiscovery> getSnmpCollections(LinkableSnmpNode node) {
+    public List<NodeDiscovery> getSnmpCollections(Node node) {
         List<NodeDiscovery> snmpcolls = new ArrayList<NodeDiscovery>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.info("getSnmpCollections: adding Lldp Discovery: {}",
                     node);
-            NodeDiscoveryLldp lldpcoll = new NodeDiscoveryLldp(this, node);
-            snmpcolls.add(lldpcoll);
+            snmpcolls.add(new NodeDiscoveryLldp(this, node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
                     node);
-             NodeDiscoveryCdp cdpcoll = new NodeDiscoveryCdp(this, node);
-             snmpcolls.add(cdpcoll);   	
+             snmpcolls.add(new NodeDiscoveryCdp(this, node));   	
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
         	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
                     node);
-        	NodeDiscoveryIpNetToMedia ipnettomediacoll = new NodeDiscoveryIpNetToMedia(this, node);
-        	snmpcolls.add(ipnettomediacoll);
+        	snmpcolls.add(new NodeDiscoveryIpNetToMedia(this, node));
         	
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
-        	NodeDiscoveryBridge bridgecoll = new NodeDiscoveryBridge(this, node);
-        	snmpcolls.add(bridgecoll);
+        	snmpcolls.add(new NodeDiscoveryBridge(this, node));
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.info("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
-        	NodeDiscoveryOspf ospfcoll = new NodeDiscoveryOspf(this, node);
-        	snmpcolls.add(ospfcoll);
+        	snmpcolls.add(new NodeDiscoveryOspf(this, node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.info("getSnmpCollections: adding Is-Is Discovery: {}",
                     node);
-        	NodeDiscoveryIsis isiscoll = new NodeDiscoveryIsis(this, node);
-        	snmpcolls.add(isiscoll);
+        	snmpcolls.add(new NodeDiscoveryIsis(this, node));
         }
 
         return snmpcolls;
     }
 
+    public NodeDiscovery getNodeBridgeDiscoveryTopology(Node node) {
+        LOG.info("getBridgeDiscoveryTopology: adding Bridge Topology Discovery: {}",
+                node);
+        return new NodeDiscoveryBridgeTopology(this, node);
+    }
     /**
      * <p>
      * onStart
@@ -256,7 +267,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<LinkableSnmpNode> getLinkableNodes() {
+    public Collection<Node> getLinkableNodes() {
         synchronized (m_nodes) {
             return m_nodes;
         }
@@ -264,7 +275,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public boolean scheduleNodeCollection(int nodeid) {
 
-        LinkableSnmpNode node = getNode(nodeid);
+        Node node = getNode(nodeid);
         if (node != null) {
             LOG.info("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
                             nodeid);
@@ -291,19 +302,45 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-            final LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeId);
+        boolean allready = true;
+            final Node node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
+                if (snmpColl instanceof NodeDiscoveryBridgeTopology)
+                    continue;
+                if (!snmpColl.isReady()) {
+                    allready = false;
+                    continue;
+                }
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
             }
 
-            return true;
+            return allready;
+    }
+
+    public boolean runTopologyDiscovery(final int nodeId) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(node);
+        snmpColl.setScheduler(m_scheduler);
+        snmpColl.run();
+        return true;
+    }
+    
+    public synchronized void scheduleBridgeTopologyDiscovery(final int nodeId) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        if (node == null)
+        	return;
+        final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(node);
+        LOG.info("scheduleBridgeTopologyDiscovery: Scheduling {}",
+                    snmpColl.getInfo());
+        snmpColl.setScheduler(m_scheduler);
+        snmpColl.schedule();
     }
 
     void wakeUpNodeCollection(int nodeid) {
 
-        LinkableSnmpNode node = getNode(nodeid);
+        Node node = getNode(nodeid);
 
         if (node == null) {
             LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}",
@@ -333,15 +370,30 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
-            m_queryMgr.delete(nodeid);
-
-        LinkableSnmpNode node = removeNode(nodeid);
+        Date now = new Date();
+        BroadcastDomain domain = m_queryMgr.getBridgeTopologyBroadcastDomain(nodeid);
+        LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
+        // must be calculated the topology for nodeid...
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(this,getNode(nodeid));
+        ndbt.setDomain(domain);
+        domain.getLock(this);
+        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
+        ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
+        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
+        m_queryMgr.store(domain,now);
+        m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
+        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
+        domain.removeBridge(nodeid);
+        domain.releaseLock(this);
+        
+        Node node = removeNode(nodeid);
 
         if (node == null) {
             LOG.warn("deleteNode: node not found: {}", nodeid);
         } else {
             Collection<NodeDiscovery> collections = getSnmpCollections(node);
-            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to delete",
                             collections.size());
             for (NodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -354,8 +406,17 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 }
 
             }
+            NodeDiscovery topology = getNodeBridgeDiscoveryTopology(node);
+            ReadyRunnable rr = getReadyRunnable(topology);
 
+            if (rr == null) {
+                LOG.warn("deleteNode: found null ReadyRunnable");
+            } else {
+                rr.unschedule();
+            }
         }
+        m_queryMgr.delete(nodeid);
+        m_queryMgr.cleanBroadcastDomains();
 
     }
 
@@ -363,7 +424,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
                 nodeid);
         
-        LinkableSnmpNode node = getNode(nodeid);
+        Node node = getNode(nodeid);
         if (node == null) {
             LOG.warn("rescheduleNodeCollection: node not found: {}", nodeid);
         } else {
@@ -391,7 +452,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);
    
-        LinkableSnmpNode node = getNode(nodeid);
+        Node node = getNode(nodeid);
 
         if (node == null) {
             LOG.warn("suspendNodeCollection: found null ReadyRunnable");
@@ -424,9 +485,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     }
 
-    LinkableSnmpNode getNode(int nodeid) {
+    Node getNode(int nodeid) {
         synchronized (m_nodes) {
-            for (LinkableSnmpNode node : m_nodes) {
+            for (Node node : m_nodes) {
                 if (node.getNodeId() == nodeid)
                     return node;
             }
@@ -434,11 +495,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
     }
 
-    private LinkableSnmpNode removeNode(int nodeid) {
+    private Node removeNode(int nodeid) {
         synchronized (m_nodes) {
-            Iterator<LinkableSnmpNode> ite = m_nodes.iterator();
+            Iterator<Node> ite = m_nodes.iterator();
             while (ite.hasNext()) {
-                LinkableSnmpNode curNode = ite.next();
+                Node curNode = ite.next();
                 if (curNode.getNodeId() == nodeid) {
                     ite.remove();
                     return curNode;
@@ -469,7 +530,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * getScheduler
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         return m_scheduler;
@@ -481,7 +542,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * </p>
      * 
      * @param scheduler
-     *            a {@link org.opennms.netmgt.linkd.scheduler.Scheduler}
+     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
      *            object.
      */
     public void setScheduler(Scheduler scheduler) {
@@ -529,18 +590,40 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 	public String getSource() {
 		return "enlinkd";
 	}
-	
-    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {
-    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+
+    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr, String location) {
+    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr, location);
     }
-    
-    
+
     public long getInitialSleepTime() {
     	return m_linkdConfig.getInitialSleepTime();
     }
 
     public long getRescanInterval() {
             return m_linkdConfig.getRescanInterval(); 
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return m_locationAwareSnmpClient;
+    }
+    
+    public int getMaxbft() {
+    	return m_linkdConfig.getMaxBft();
+    }
+    
+    public boolean collectBft(int nodeid) {
+    	if (getQueryManager().getUpdateBftMap().size()+m_bridgecollectionsscheduled.size() >= m_linkdConfig.getMaxBft() )
+    		return false;
+    	synchronized (m_bridgecollectionsscheduled) {
+        	m_bridgecollectionsscheduled.add(nodeid);
+		}
+    	return true;
+    }
+    
+    public synchronized void collectedBft(int nodeid) {
+    	synchronized (m_bridgecollectionsscheduled) {
+        	m_bridgecollectionsscheduled.remove(nodeid);
+		}
     }
 
 }

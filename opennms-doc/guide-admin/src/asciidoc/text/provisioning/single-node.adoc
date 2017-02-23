@@ -1,0 +1,13 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Provisioning Single Nodes (Quick Add Node)
+
+Often, it is requested that a single node add/update be completed for an already defined provisioning group.
+There is a ReST API for the _Add Node_ implementation found in the {opennms-product-name} Web-UI.
+For this to work, the provisioning group must already exist in the system even if there are no nodes defined in the group.
+
+. Create a foreign source (if required)
+. Specify SNMP configuration
+. Provide a single node with the following specification

@@ -35,10 +35,7 @@ import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>WebDetector class.</p>
  *
@@ -47,7 +44,7 @@ import org.springframework.stereotype.Component;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     private static final String DEFAULT_SERVICE_NAME = "WEB";
@@ -128,10 +125,9 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
         client.setPath(getPath());
         client.setSchema(getSchema());
         client.setUserAgent(getUserAgent());
-        client.setVirtualHost(getVirtualHost(), getPort());
+        client.setVirtualHost(getVirtualHost());
         client.setQueryString(getQueryString());
         client.setUseHttpV1(isUseHttpV1());
-        client.setUseSSLFilter(isUseSSLFilter());
         if (isAuthEnabled()) {
             client.setAuth(getAuthUser(), getAuthPassword());
             client.setAuthPreemtive(isAuthPreemtive());

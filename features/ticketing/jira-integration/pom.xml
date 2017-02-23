@@ -3,53 +3,50 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.ticketing</artifactId>
-        <version>14.0.3-SNAPSHOT</version>
+        <version>20.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jira-troubleticketer</artifactId>
-    <packaging>jar</packaging>
-    <name>OpenNMS Features JIRA Trouble Ticketer</name>
-
-    <repositories>
-        <repository>
-            <id>atlassian-public</id>
-            <name>Atlassian public repo</name>
-            <url>http://maven.opennms.org/content/repositories/atlassian-public/</url>
-        </repository>
-    </repositories>
-
+    <packaging>bundle</packaging>
+    <name>OpenNMS :: Features :: Ticketing :: JIRA</name>
     <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <!-- appendAssemblyId>false</appendAssemblyId -->
-                    <tarLongFileMode>gnu</tarLongFileMode>
-                </configuration>
-            </plugin>
-        </plugins>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <extensions>true</extensions>
+          <configuration>
+            <instructions>
+              <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            </instructions>
+          </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.opennms.maven.plugins</groupId>
+            <artifactId>features-maven-plugin</artifactId>
+            <configuration>
+                <bundles>
+                    <bundle>mvn:org.opennms.features/jira-troubleticketer/${project.version}</bundle>
+                </bundles>
+            </configuration>
+        </plugin>
+      </plugins>
     </build>
-
     <dependencies>
-        <!-- 
-            Pull in the global Jersey dependencies so that all of the JAXB and Spring
-            exclusions are applied.
-        -->
         <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jersey-dependencies</artifactId>
-            <type>pom</type>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
@@ -60,8 +57,13 @@
             <artifactId>org.opennms.core.lib</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>jira-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -69,23 +71,22 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client</artifactId>
-            <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>2.4.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -34,6 +34,16 @@
               <artifactId>opennms-webapp</artifactId>
             </overlay>
             <overlay>
+              <groupId>org.opennms</groupId>
+              <artifactId>opennms-webapp-rest</artifactId>
+              <excludes>
+                <exclude>META-INF/MANIFEST.MF</exclude>
+                <exclude>WEB-INF/web.xml</exclude>
+                <!-- We can exclude the svclayer context because all of its services are also defined in the main webapp -->
+                <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
+              </excludes>
+            </overlay>
+            <overlay>
               <groupId>org.opennms.features</groupId>
               <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
               <excludes>
@@ -43,7 +53,7 @@
             </overlay>
             <overlay>
               <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>ncs-alarm-gui</artifactId>
+              <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
                 <exclude>WEB-INF/web.xml</exclude>
@@ -110,8 +120,46 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- The bsm.rest.api uses org.reflections, manually copy it to the web app -->
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.geolocation</groupId>
+      <artifactId>org.opennms.features.geolocation.rest</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-alarm-gui</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
       <type>war</type>
       <version>${project.version}</version>
       <scope>runtime</scope>
@@ -131,12 +179,19 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-webapp-rest</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-    
+
   <pluginRepositories>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>

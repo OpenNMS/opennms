@@ -69,7 +69,7 @@
 	<head>
 		<title>OpenNMS - Remote Monitor</title>
 		<link rel="stylesheet" type="text/css" href="styles.css" />
-		<script type="text/javascript" language="javascript">
+		<script type="text/javascript">
 			window.mapImplementation = "<%= mapImplementation %>";
 			window.openlayersUrl = "<%= openlayersUrl %>";
 			window.openlayersAttribution = "<%= openlayersAttribution %>";

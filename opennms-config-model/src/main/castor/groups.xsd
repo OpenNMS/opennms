@@ -74,6 +74,7 @@
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
 
+        <!-- the default-map option is deprecated and no longer used -->
         <element maxOccurs="1" minOccurs="0" name="default-map" type="string"/>
 
         <element maxOccurs="1" minOccurs="0" name="comments" type="string"/>

@@ -1,0 +1,13 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+This section describes how to model and configure _Business Services (BS)_ and orchestrate them in a hierarchy.
+The concepts and usage of the section _Business Service Monitoring_ from the _User Guide_ is presumed.
+
+_Business Service Monitoring (BSM)_ includes the following components:
+
+* _Business Service Monitoring Daemon (BSMD)_: Maintains and drives the state of all _BS_
+* _Business Service Editor_: Web application which allows you to create, update or delete _BS_
+* _Topology View for Business Services_: Visual representation of the _Business Service Hierarchy_ as a component of the _Topology User Interface_.
+* _BSM ReST API_: ReST based API to create, read, update or delete _BS_

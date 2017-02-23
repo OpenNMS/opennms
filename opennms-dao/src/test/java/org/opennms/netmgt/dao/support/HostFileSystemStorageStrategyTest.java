@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import org.junit.Assert;
 
@@ -36,6 +36,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -59,7 +60,7 @@ public class HostFileSystemStorageStrategyTest {
         strategy.setStorageStrategyService(service);
 
         // Test Resource Name - root file system
-        String parentResource = "1";
+        ResourcePath parentResource = ResourcePath.get("1");
         MockCollectionResource resource = new MockCollectionResource(parentResource, "1", "hrStorageIndex");
         resource.getAttributeMap().put("hrStorageDescr", "/");
         String resourceName = strategy.getResourceNameFromIndex(resource);
@@ -71,7 +72,7 @@ public class HostFileSystemStorageStrategyTest {
         Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals("1" + File.separator + "hrStorageIndex" + File.separator + "_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName));
+        Assert.assertEquals(ResourcePath.get("1", "hrStorageIndex", "_root_fs"), strategy.getRelativePathForAttribute(parentResource, resourceName));
 
         EasyMock.verify(service);
     }

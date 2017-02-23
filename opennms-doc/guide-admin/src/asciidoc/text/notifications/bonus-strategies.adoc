@@ -1,0 +1,8 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-notifications-bonus-strategies]]
+=== Bonus Notification Methods
+
+A handful of newer notification methods are included in _{opennms-product-name}_ but currently require manual steps to activate.

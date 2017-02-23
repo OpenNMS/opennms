@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="15">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+      <resourceType name="cpu" label="CPU" resourceLabel="CPU ${cpuName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+      </resourceType>
+
+      <resourceType name="disk" label="Disk" resourceLabel="Disk ${diskId}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="diskId" />
+        </storageStrategy>
+      </resourceType>
+    </snmp-collection>
+</datacollection-config>

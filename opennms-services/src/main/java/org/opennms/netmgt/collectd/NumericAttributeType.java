@@ -30,11 +30,11 @@ package org.opennms.netmgt.collectd;
 
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,31 +46,57 @@ import org.slf4j.LoggerFactory;
  */
 public class NumericAttributeType extends SnmpAttributeType implements NumericCollectionAttributeType {
     private static final Logger LOG = LoggerFactory.getLogger(NumericAttributeType.class);
-    
-    static final String DST_COUNTER = "COUNTER";
-    
+
+    private final AttributeType m_type;
+
+    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
+
+    /**
+     * <p>isNumericType</p>
+     *
+     * @param rawType a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    public static boolean isNumericType(String rawType) {
+        String type = rawType.toLowerCase();
+        for (int i = 0; i < s_numericTypes.length; i++) {
+            String supportedType = s_numericTypes[i];
+            if (type.startsWith(supportedType))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean supportsType(String rawType) {
+        return isNumericType(rawType);
+    }
+
     /**
      * <p>Constructor for NumericAttributeType.</p>
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);
-        
-            // Assign the data source object identifier and instance
-            LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{}", getName(), getOid(), getInstance());
-            
-            String alias = getAlias();
-            if (alias.length() > PersistOperationBuilder.MAX_DS_NAME_LENGTH) {
-                logNameTooLong();
-            }
 
+        if (mibObj.getType().toLowerCase().startsWith("counter")) {
+            m_type = AttributeType.COUNTER;
+        } else {
+            m_type = AttributeType.GAUGE;
+        }
 
+        // Assign the data source object identifier and instance
+        LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{}", getName(), getOid(), getInstance());
     }
-    
+
+    @Override
+    public AttributeType getType() {
+        return m_type;
+    }
+
     @Override
     public String getMaxval() {
         return m_mibObj.getMaxval();
@@ -86,8 +112,4 @@ public class NumericAttributeType extends SnmpAttributeType implements NumericCo
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistNumericAttribute(attribute);
     }
-
-    void logNameTooLong() {
-        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", getAlias());
-   }
 }

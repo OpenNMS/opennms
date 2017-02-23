@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.util;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Logmsg;
 
 /**
@@ -50,12 +50,12 @@ public abstract class LogMessage {
      * @return the formatted logmsg
      */
     public static String format(Logmsg msg) {
-        String txt = Constants.escape(msg.getContent(), Constants.DB_ATTRIB_DELIM);
+        String txt = EventDatabaseConstants.escape(msg.getContent(), EventDatabaseConstants.DB_ATTRIB_DELIM);
         String log = msg.getDest();
 
-        String fmsg = txt + Constants.DB_ATTRIB_DELIM + log;
+        String fmsg = txt + EventDatabaseConstants.DB_ATTRIB_DELIM + log;
         if (fmsg.length() >= 256)
-            fmsg = fmsg.substring(0, 252) + Constants.VALUE_TRUNCATE_INDICATOR;
+            fmsg = fmsg.substring(0, 252) + EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR;
 
         return fmsg;
     }

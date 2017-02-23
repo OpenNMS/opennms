@@ -29,27 +29,36 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.util.Date;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.AttributeGroupWrapper;
+import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
+import org.opennms.netmgt.collection.support.CollectionResourceWrapper;
+import org.opennms.netmgt.collection.support.CollectionSetVisitorWrapper;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -70,7 +79,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 final class CollectableService implements ReadyRunnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
-    
+
+    protected static final String STRICT_INTERVAL_SYS_PROP = "org.opennms.netmgt.collectd.strictInterval";
+
+    protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
+
+    private final boolean m_usingStrictInterval = Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
+
     /**
      * Interface's parent node identifier
      */
@@ -79,7 +94,7 @@ final class CollectableService implements ReadyRunnable {
     /**
      * Last known/current status
      */
-    private volatile int m_status;
+    private volatile CollectionStatus m_status;
 
     /**
      * The last time the collector was scheduled for collection.
@@ -119,6 +134,10 @@ final class CollectableService implements ReadyRunnable {
     
     private final RrdRepository m_repository;
 
+    private final PersisterFactory m_persisterFactory;
+
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -130,27 +149,30 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
+            Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
+            PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
+
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
+        m_persisterFactory = persisterFactory;
+        m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
-        m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+        m_status = CollectionStatus.SUCCEEDED;
 
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
-        
-        m_spec.initialize(m_agent);
-        
+
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
     }
     
     /**
@@ -317,8 +339,14 @@ final class CollectableService implements ReadyRunnable {
             return;
         }
 
-        // Update last scheduled poll time
-        m_lastScheduledCollectionTime = System.currentTimeMillis();
+        // Update last scheduled poll time; if we are not doing strict interval,
+        // it is the current time; if we are, it is the previous time plus the
+        // interval
+        if (m_lastScheduledCollectionTime == 0 || !m_usingStrictInterval) {
+            m_lastScheduledCollectionTime = System.currentTimeMillis();
+        } else {
+            m_lastScheduledCollectionTime += m_spec.getInterval();
+        }
 
         /*
          * Check scheduled outages to see if any apply indicating
@@ -327,29 +355,39 @@ final class CollectableService implements ReadyRunnable {
         if (!m_spec.scheduledOutage(m_agent)) {
             try {
                 doCollection();
-                updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
+                updateStatus(CollectionStatus.SUCCEEDED, null);
             } catch (CollectionTimedOut e) {
                 LOG.info(e.getMessage());
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
             } catch (CollectionWarning e) {
                 LOG.warn(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
+            } catch (CollectionUnknown e) {
+                LOG.warn(e.getMessage(), e);
+                // Omit any status updates
             } catch (CollectionException e) {
                 LOG.error(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+                updateStatus(CollectionStatus.FAILED, e);
             } catch (Throwable e) {
                 LOG.error(e.getMessage(), e);
-                updateStatus(ServiceCollector.COLLECTION_FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
+                updateStatus(CollectionStatus.FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
             }
         }
-        
+
+        // If we are doing strict interval, determine how long the collection
+        // has taken, so we can cut that off of the service interval
+        long diff = 0;
+        if (m_usingStrictInterval) {
+            diff = System.currentTimeMillis() - m_lastScheduledCollectionTime;
+            diff = Math.min(diff, m_spec.getInterval());
+        }
     	// Reschedule the service
-        m_scheduler.schedule(m_spec.getInterval(), getReadyRunnable());
+        m_scheduler.schedule(m_spec.getInterval() - diff, getReadyRunnable());
     }
 
-    private void updateStatus(int status, CollectionException e) {
+    private void updateStatus(CollectionStatus status, CollectionException e) {
         // Any change in status?
-        if (status != m_status) {
+        if (!status.equals(m_status)) {
             // Generate data collection transition events
             LOG.debug("run: change in collection status, generating event.");
             
@@ -360,11 +398,11 @@ final class CollectableService implements ReadyRunnable {
 
             // Send the appropriate event
             switch (status) {
-            case ServiceCollector.COLLECTION_SUCCEEDED:
+            case SUCCEEDED:
                 sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI, null);
                 break;
 
-            case ServiceCollector.COLLECTION_FAILED:
+            case FAILED:
                 sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI, reason);
                 break;
 
@@ -377,17 +415,9 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-        private static BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
-            if (ResourceTypeUtils.isStoreByGroup()) {
-                return new GroupPersister(params, repository);
-            } else {
-                return new OneToOnePersister(params, repository);
-            }
-        }
-
-        /**
-         * Perform data collection.
-         */
+    /**
+     * Perform data collection.
+     */
 	private void doCollection() throws CollectionException {
 		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
@@ -396,13 +426,17 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            BasePersister persister = createPersister(m_params, m_repository);
-                            persister.setIgnorePersist(result.ignorePersist());
+                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
+                            if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
+                                final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
+                                // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper
+                                persister = wrapResourcesWithTimekeeper(persister, timeKeeper);
+                            }
                             result.visit(persister);
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
-                        
+
                         /*
                          * Do the thresholding; this could be made more generic (listeners being passed the collectionset), but frankly, why bother?
                          * The first person who actually needs to configure that sort of thing on the fly can code it up.
@@ -415,8 +449,8 @@ final class CollectableService implements ReadyRunnable {
                                 result.visit(m_thresholdVisitor);
                             }
                         }
-                       
-                        if (result.getStatus() != ServiceCollector.COLLECTION_SUCCEEDED) {
+
+                        if (!CollectionStatus.SUCCEEDED.equals(result.getStatus())) {
                             throw new CollectionFailed(result.getStatus());
                         }
                     }
@@ -586,10 +620,8 @@ final class CollectableService implements ReadyRunnable {
     }
     
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
-        m_spec.release(m_agent);
         m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
-        m_spec.initialize(m_agent);
     }
 
     /**
@@ -621,7 +653,67 @@ final class CollectableService implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.scheduler.ReadyRunnable} object.
      */
     public ReadyRunnable getReadyRunnable() {
-	return this;
+        return this;
     }
 
+    public static CollectionSetVisitor wrapResourcesWithTimekeeper(CollectionSetVisitor visitor, TimeKeeper timeKeeper) {
+        // Wrap the given visitor and intercept the calls to visit the resources
+        final CollectionSetVisitor wrappedVisitor = new CollectionSetVisitorWrapper(visitor) {
+            private CollectionResource wrappedResource;
+            private CollectionAttribute wrappedAttribute;
+            private AttributeGroup wrappedGroup;
+
+            @Override
+            public void visitResource(CollectionResource resource) {
+                // Wrap the given resource and return the custom timekeeper
+                wrappedResource = new CollectionResourceWrapper(resource) {
+                    @Override
+                    public TimeKeeper getTimeKeeper() {
+                        return timeKeeper;
+                    }
+                };
+                visitor.visitResource(wrappedResource);
+            }
+
+            @Override
+            public void completeResource(CollectionResource resource) {
+                visitor.completeResource(wrappedResource);
+            }
+
+            @Override
+            public void visitAttribute(CollectionAttribute attribute) {
+                // Wrap the given attribute and return the custom resource
+                wrappedAttribute = new CollectionAttributeWrapper(attribute) {
+                    @Override
+                    public CollectionResource getResource() {
+                        return wrappedResource;
+                    }
+                };
+                visitor.visitAttribute(wrappedAttribute);
+            }
+
+            @Override
+            public void completeAttribute(CollectionAttribute attribute) {
+                visitor.completeAttribute(wrappedAttribute);
+            }
+
+            @Override
+            public void visitGroup(AttributeGroup group) {
+                // Wrap the given attribute group and return the custom resource
+                wrappedGroup = new AttributeGroupWrapper(group) {
+                    @Override
+                    public CollectionResource getResource() {
+                        return wrappedResource;
+                    }
+                };
+                visitor.visitGroup(wrappedGroup);
+            }
+
+            @Override
+            public void completeGroup(AttributeGroup group) {
+                visitor.completeGroup(wrappedGroup);
+            }
+        };
+        return wrappedVisitor;
+    }
 }

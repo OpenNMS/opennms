@@ -50,7 +50,7 @@
 
 package org.opennms.netmgt.protocols.xmp.collector;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +60,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,14 +126,15 @@ public class XmpCollectionResource extends AbstractCollectionResource
     // get the location where we are supposed to write our data to
     /** {@inheritDoc} */
     @Override
-    public File getResourceDir(RrdRepository repository)
+    public ResourcePath getPath()
     {
+        ResourcePath nodeDir = m_agent.getStorageResourcePath();
 
         // if we are a collection resource for scalars,
         // return what our super class would return
 
         if (m_nodeTypeName.equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
-            return new File(repository.getRrdBaseDir(), getParent());
+            return nodeDir;
         }
 
         // we are a collection resource for tabular data
@@ -146,21 +147,13 @@ public class XmpCollectionResource extends AbstractCollectionResource
         // the instance/key that was used for the query; if not,
         // we will use the key returned per table row
 
-        File instDir, rtDir;
-
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, getParent());
-
         // if we have a resourceType, put instances under it
         if (m_resourceType != null) {
-            rtDir = new File(nodeDir,m_resourceType);
-            instDir = new File(rtDir,m_instance);
+            return nodeDir.get(m_resourceType).get(m_instance);
         }
         else {
-            instDir = new File(nodeDir,m_instance);
+            return nodeDir.get(m_instance);
         }
-
-        return instDir;
     }
 
     /**

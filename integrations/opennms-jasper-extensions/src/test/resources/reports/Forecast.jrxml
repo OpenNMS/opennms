@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Forecast" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a465670-cc4a-4270-965f-8efb86e33b71">
+    <property name="template.engine" value="tabular_template"/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+
+    <subDataset name="tableDataset" uuid="79a07614-74e8-430c-b7cf-2b1859345462">
+        <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+        <queryString>
+            <![CDATA[]]>
+        </queryString>
+    </subDataset>
+    <subDataset name="rrdDataset" whenResourceMissingType="Error" uuid="23af2521-c8a1-49c8-bd08-8345a068e24b">
+        <property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS PostreSQL"/>
+        <parameter name="ds_IPv4_interface" class="java.lang.String">
+            <defaultValueExpression><![CDATA["127.0.0.1"]]></defaultValueExpression>
+        </parameter>
+        <parameter name="MEASUREMENT_URL" class="java.lang.String" />
+        <parameter name="MEASUREMENT_USERNAME" class="java.lang.String" />
+        <parameter name="MEASUREMENT_PASSWORD" class="java.lang.String" />
+        <parameter name="ds_startDate" class="java.lang.String" />
+        <parameter name="ds_endDate" class="java.lang.String" />
+        <parameter name="ds_dsName" class="java.lang.String" />
+        <queryString language="measurement">
+            <![CDATA[<query-request step="500" start="$P{ds_startDate}" end="$P{ds_endDate}">
+  <analytics-command filter="HoltWinters" column-name-or-prefix="HW">
+    <arguments>
+        <argument>Values</argument>
+        <argument>1</argument>
+        <argument>86400</argument>
+    </arguments>
+  </analytics-command>
+  <source aggregation="AVERAGE" attribute="$P{ds_dsName}" transient="true" resourceId="FORECAST-RESOURCE-ID"/>
+</query-request>]]>
+        </queryString>
+        <field name="timestamp" class="java.util.Date">
+            <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+        <field name="Values" class="java.lang.Double">
+            <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+        <field name="HWFit" class="java.lang.Double">
+            <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+        <field name="HWUpr" class="java.lang.Double">
+            <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+        <field name="HWLwr" class="java.lang.Double">
+            <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+    </subDataset>
+
+    <parameter name="MEASUREMENT_URL" class="java.lang.String" isForPrompting="false" />
+    <parameter name="MEASUREMENT_USERNAME" class="java.lang.String" isForPrompting="false" />
+    <parameter name="MEASUREMENT_PASSWORD" class="java.lang.String" isForPrompting="false" />
+    <parameter name="startDate" class="java.lang.String" isForPrompting="false" />
+    <parameter name="endDate" class="java.lang.String" isForPrompting="false" />
+    <parameter name="dsName" class="java.lang.String" isForPrompting="false" />
+
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <title>
+        <band height="516" splitType="Stretch">
+            <componentElement>
+                <reportElement x="0" y="30" width="710" height="486" uuid="b021e791-f251-425a-b355-65699a232537"/>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="rrdDataset" uuid="51c89ce3-0f5e-46dd-9b25-3b854c869450">
+                        <datasetParameter name="MEASUREMENT_URL">
+                                <datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="MEASUREMENT_USERNAME">
+                            <datasetParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="MEASUREMENT_PASSWORD">
+                            <datasetParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="ds_dsName">
+                                <datasetParameterExpression><![CDATA[$P{dsName}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="ds_startDate">
+                                <datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="ds_endDate">
+                                <datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+                        </datasetParameter>
+                    </datasetRun>
+                    <jr:column width="40" uuid="5a7b1296-2109-4a24-b383-5cea2cba49ac">
+                        <jr:tableHeader height="30"/>
+                        <jr:tableFooter height="30"/>
+                        <jr:columnHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="d3882855-2a50-41cf-b626-251eee834ee1"/>
+                                <text><![CDATA[Timestamp]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:columnFooter height="30"/>
+                        <jr:detailCell height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="fb754ddb-b12e-4112-8242-b06257f4664f"/>
+                                <textFieldExpression><![CDATA[$F{timestamp}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="40" uuid="f310e1db-351b-4ce2-8f0e-27cf67bd7c34">
+                        <jr:tableHeader height="30"/>
+                        <jr:tableFooter height="30"/>
+                        <jr:columnHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="7302810c-12ab-4bcd-b7b2-c069b7fd2acd"/>
+                                <text><![CDATA[Values]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:columnFooter height="30"/>
+                        <jr:detailCell height="30">
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="0" width="40" height="30" uuid="68efa3be-274a-425a-81cb-3caee899bea5"/>
+                                <textFieldExpression><![CDATA[$F{Values}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="40" uuid="afc88e85-6797-457d-9c39-e75649e7e0b1">
+                        <jr:tableHeader height="30"/>
+                        <jr:tableFooter height="30"/>
+                        <jr:columnHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="b3d0791f-571e-4236-b4ca-ba9624c9cc7e"/>
+                                <text><![CDATA[HWFit]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:columnFooter height="30"/>
+                        <jr:detailCell height="30">
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="0" width="40" height="30" uuid="95180cd1-4dcb-4184-8b6d-6a6c4b863141"/>
+                                <textFieldExpression><![CDATA[$F{HWFit}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="40" uuid="bbe71477-5794-4f45-a84d-09800147c463">
+                        <jr:tableHeader height="30"/>
+                        <jr:tableFooter height="30"/>
+                        <jr:columnHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="09f03dbf-1ba0-4ff5-8576-1fe90a831e60"/>
+                                <text><![CDATA[HWUpr]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:columnFooter height="30"/>
+                        <jr:detailCell height="30">
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="0" width="40" height="30" uuid="034446c9-9722-4a0d-9e89-4bdb6d812c8c"/>
+                                <textFieldExpression><![CDATA[$F{HWUpr}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="40" uuid="5a9b04bb-72dd-4454-93ee-4c48775aeb79">
+                        <jr:tableHeader height="30"/>
+                        <jr:tableFooter height="30"/>
+                        <jr:columnHeader height="30">
+                            <staticText>
+                                <reportElement x="0" y="0" width="40" height="30" uuid="6d82aa63-d1fd-4ad3-9aae-dbe049fc9a09"/>
+                                <text><![CDATA[HWLwr]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:columnFooter height="30"/>
+                        <jr:detailCell height="30">
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="0" width="40" height="30" uuid="93cabcb3-06bf-4970-bc94-8c22dd65ad77"/>
+                                <textFieldExpression><![CDATA[$F{HWLwr}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                </jr:table>
+            </componentElement>
+        </band>
+    </title>
+</jasperReport>

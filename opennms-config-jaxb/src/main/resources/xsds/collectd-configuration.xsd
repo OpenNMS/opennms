@@ -197,6 +197,14 @@
 					<documentation>The name or identifier for this package.</documentation>
 				</annotation>
 			</attribute>
+      <attribute name="remote" type="boolean" use="optional" default="false" >
+        <annotation>
+          <documentation>
+            Boolean representing whether this is a package for a remote location.
+            If true, this package will be ignored by collectd.
+          </documentation>
+        </annotation>
+      </attribute>
 		</complexType>
 	</element>
 

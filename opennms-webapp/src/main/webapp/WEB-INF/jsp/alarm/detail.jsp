@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
+        org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication,
         org.apache.commons.configuration.Configuration,
         org.apache.commons.configuration.ConfigurationException,
@@ -98,6 +99,16 @@
     }
     
     List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) request.getAttribute("acknowledgments");
+
+	String eventLocation = null;
+	String nodeLocation = null;
+
+	if (alarm.getLastEvent() != null && alarm.getLastEvent().getDistPoller() != null) {
+	    eventLocation = alarm.getLastEvent().getDistPoller().getLocation();
+	}
+	if (alarm.getNode() != null && alarm.getNode().getLocation() != null) {
+	    nodeLocation = alarm.getNode().getLocation().getLocationName();
+	}
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -105,7 +116,7 @@
     <jsp:param name="headTitle" value="Detail" />
     <jsp:param name="headTitle" value="Alarms" />
     <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
-    <jsp:param name="breadcrumb" value="<%="Alarm " + alarm.getId()%>" />
+    <jsp:param name="breadcrumb" value='<%="Alarm " + alarm.getId()%>' />
 </jsp:include>
 
 <div class="panel panel-default">
@@ -170,6 +181,12 @@
             <% }%>
         </td>
     </tr> 
+    <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
+        <th class="col-md-1">Event Source Location</th>
+        <td class="col-md-3"><%= eventLocation == null? "&nbsp;" : eventLocation %>
+        <th class="col-md-1">Node Location</th>
+        <td class="col-md-3"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
+    </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th class="col-md-1">Count</th>
         <td class="col-md-3"><%=alarm.getCounter()%></td>
@@ -262,7 +279,7 @@
 				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
                 <div class="btn-group btn-group-sm">
-	            <form:input class="btn btn-default" type="submit" value="Save" />
+                <form:input class="btn btn-default" type="submit" value="Save" />
                 <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
                 </div>
 	         </form>
@@ -382,7 +399,7 @@
 <form class="form-inline" method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="${(!empty alarm.TTicketState) && (alarm.TTicketState != 'CREATE_FAILED')}" />
+    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
     <%-- Remedy Specific TroubleTicket - Start --%>
     <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
       <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
@@ -404,19 +421,19 @@
         <% }  %>
       </select>
     <% } %>
-    <%-- Remedy Specific TroubleTicket - Start --%>
+    <%-- Remedy Specific TroubleTicket - End --%>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="${(empty alarm.TTicketId)}"/>
+    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="${(empty alarm.TTicketState) || ((alarm.TTicketState != 'OPEN') && (alarm.TTicketState != 'CLOSE_FAILED')) }" />
+    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
 </form>
 
 </div>

@@ -3,39 +3,71 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features</name>
+  <name>OpenNMS :: Features</name>
   <modules>
+
+    <!-- ActiveMQ broker -->
+    <module>activemq</module>
+
+    <!-- AMQP Event Gateway and Alarm Northbounder -->
+    <module>amqp</module>
+
+    <!-- OpenNMS Provisioning API and implementations -->
+    <module>provisioning</module>
+
+    <!-- OpenNMS Polling API -->
+    <module>poller</module>
+
+    <!-- Events -->
+    <module>events</module>
+
+    <!-- Graphml -->
+    <module>graphml</module>
+
+    <!-- Executor factories -->
+    <module>executor-factory</module>
+
+    <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
-    <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
-    <module>ncs</module>
-    <module>poller</module>
-    <module>provisioning</module>
+    <module>wsman</module>
+
+    <!-- Discovery -->
+    <module>discovery</module>
+
+    <!-- OpenNMS Reporting API and implementations -->
     <module>reporting</module>
+
+    <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
-    <module>remote-poller-jnlp</module>
+    <module>remote-poller-jnlp</module> 
     <module>remote-poller-gwt</module>
-    <module>request-tracker</module>
-    <module>springframework-security</module>
-    <module>system-report</module>
+
+    <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
-    <module>geocoder</module>
-    <module>name-cutter</module>
+    <module>request-tracker</module>
 
-   <!-- OpenNMS OSGI Core -->
-   <module>opennms-osgi-core</module>
+    <!-- OpenNMS Resource CLI tool -->
+    <module>resource-cli</module>
 
-    <!-- Jmx config generator -->
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
+
+    <!-- OpenNMS OSGI Core -->
+    <module>opennms-osgi-core</module>
+
+    <!-- JMX config generator -->
     <module>jmx-config-generator</module>
     <module>vaadin-jmxconfiggenerator</module>
  
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
+    <module>mib-compiler</module>
     <module>vaadin-snmp-events-and-metrics</module>
 
     <!-- Near Real Time Graphing -->
@@ -48,24 +80,66 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
-    <!-- GWT UI plugins -->
-    <module>node-page-list</module>
-    <module>opennms-gwt-theme</module>
-    <module>gwt-bootstrap</module>
-    <module>gwt-suggestion-combobox</module>
-    <module>gwt-ksc-combobox</module>
-    <module>gwt-ksc-add</module>
-    <module>gwt-graph-resource-list</module>
-    <module>gwt-snmpselect-list</module>
-    <module>gwt-tableresources</module>
+    <!-- Measurements API -->
+    <module>measurements</module>
 
-    <!-- Notifications -->
+    <!-- Newts -->
+    <module>newts</module>
+    <module>newts-repository-converter</module>
+
+    <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
-      <module>vaadin-dashboard</module>
-      <module>vaadin-dashlets</module>
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
+
+    <!-- Generic Vaadin components -->
+    <module>vaadin-components</module>
+
+    <!-- Dashboard and dashlet UI elements -->
+    <module>vaadin-dashboard</module>
+    <module>vaadin-dashlets</module>
+
+    <!-- OpenNMS Vaadin Surveillance Views -->
+    <module>vaadin-surveillance-views</module>
+
+    <!-- Data Choices -->
+    <module>datachoices</module>
+
+    <!-- Other projects -->
+    <module>geocoder</module>
+    <module>geolocation</module>
+    <module>instrumentationLogReader</module>
+    <module>name-cutter</module>
+    <module>ncs</module>
+    <module>springframework-security</module>
+    <module>system-report</module>
+    <module>timeseries-evaluate</module>
+
+    <!-- Elasticsearch event-forwarder-->
+    <module>elasticsearch</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
+    
+    <!-- ReST Elasticsearch Integration -->
+    <module>opennms-es-rest</module>
+    
+    <!-- Alarm Change Notifier -->
+    <module>alarm-change-notifier</module>
+    
+    <!-- Internal Plugins Descriptor -->
+    <module>internal-plugins-descriptor</module>
+    
   </modules>
 </project>

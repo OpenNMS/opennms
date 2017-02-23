@@ -43,11 +43,10 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventWrapper;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.context.ApplicationEvent;
@@ -96,7 +95,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         
         Event expectedEvent = eventBuilder.getEvent();
         // Make sure the timestamps are synchronized
-        expectedEvent.setTime(EventConstants.formatToString(new Date(authEvent.getTimestamp())));
+        expectedEvent.setTime(new Date(authEvent.getTimestamp()));
         m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
         
         m_mocks.replayAll();

@@ -1,0 +1,15 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Sonicwall">
+    <group name="sonicwallFwStats" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8741.1.3.1.1" instance="0" alias="soniMaxConnCachEntr" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8741.1.3.1.2" instance="0" alias="sonCurrConnCachEntr" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.8741.1.3.1.3" instance="0" alias="sonicCurrentCPUUtil" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.8741.1.3.1.4" instance="0" alias="sonicCurrentRAMUtil" type="gauge32"/>
+    </group>
+
+    <systemDef name="Sonicwall Firewall Stats">
+        <sysoidMask>.1.3.6.1.4.1.8741.</sysoidMask>
+        <collect>
+            <includeGroup>sonicwallFwStats</includeGroup>
+        </collect>
+    </systemDef>
+</datacollection-group>

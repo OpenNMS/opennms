@@ -28,10 +28,14 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.ExternalResource;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import com.vaadin.server.Page;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.netmgt.dao.api.NodeDao;
 
 public class RrdGraphEntry extends Panel {
@@ -52,9 +56,9 @@ public class RrdGraphEntry extends Panel {
     private Button m_removeButton = new Button("Remove");
 
     /**
-     * the preview image
+     * create layout for storing the graph
      */
-    private Image m_previewImage = new Image();
+    private VerticalLayout m_graphLayout = new VerticalLayout();
 
     /**
      * labels for node and graph information
@@ -70,11 +74,6 @@ public class RrdGraphEntry extends Panel {
     int m_calendarDiff = 1;
 
     /**
-     * the rrd graph helper instance
-     */
-    private RrdGraphHelper m_rrdGraphHelper;
-
-    /**
      * Constrcutor for creating new instances of this class.
      *
      * @param nodeDao        the node dao instance to be used
@@ -88,7 +87,6 @@ public class RrdGraphEntry extends Panel {
          */
         this.m_x = x;
         this.m_y = y;
-        this.m_rrdGraphHelper = rrdGraphHelper;
 
         /**
          * setting up the buttons
@@ -128,6 +126,10 @@ public class RrdGraphEntry extends Panel {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
+        m_graphLayout.setSizeUndefined();
+        m_graphLayout.setWidth(200, Unit.PIXELS);
+        m_graphLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
         /**
          * adding the components
          */
@@ -135,7 +137,7 @@ public class RrdGraphEntry extends Panel {
         verticalLayout.addComponent(m_graphLabelComponent);
         verticalLayout.addComponent(m_changeButton);
         verticalLayout.addComponent(m_removeButton);
-        verticalLayout.addComponent(m_previewImage);
+        verticalLayout.addComponent(m_graphLayout);
 
         m_nodeLabelComponent.setSizeUndefined();
         m_graphLabelComponent.setSizeUndefined();
@@ -173,23 +175,32 @@ public class RrdGraphEntry extends Panel {
      * Updates the labels and buttons according to the properties set.
      */
     public void update() {
+        m_graphLayout.removeAllComponents();
         if (m_graphId == null) {
             m_nodeLabelComponent.setValue("No Rrd graph");
             m_graphLabelComponent.setValue("selected");
             m_changeButton.setCaption("Select Rrd graph");
-            m_previewImage.setVisible(false);
             m_removeButton.setVisible(false);
         } else {
-            m_previewImage.setSource(new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getGraphUrl(), 150, 50, m_calendarField, m_calendarDiff)));
-            m_previewImage.addStyleName("preview");
+            String graphName = RrdGraphHelper.getGraphNameFromQuery(m_graphUrl);
+            GraphContainer graph = new GraphContainer(graphName, m_resourceId);
+            graph.setTitle(m_graphLabel);
+            // Setup the time span
+            Calendar cal = new GregorianCalendar();
+            graph.setEnd(cal.getTime());
+            cal.add(m_calendarField, -m_calendarDiff);
+            graph.setStart(cal.getTime());
+            // Use all of the available width
+            graph.setWidthRatio(1.0d);
+            graph.setHeightRatio(0.2d);
+            m_graphLayout.addComponent(graph);
+
             m_graphLabelComponent.setValue(m_resourceTypeLabel + ": " + m_resourceLabel);
             m_nodeLabelComponent.setValue(getNodeLabel());
             m_changeButton.setCaption("Change Rrd graph");
-            m_previewImage.setVisible(true);
             m_removeButton.setVisible(true);
         }
     }
-
 
     public String getGraphId() {
         return m_graphId;

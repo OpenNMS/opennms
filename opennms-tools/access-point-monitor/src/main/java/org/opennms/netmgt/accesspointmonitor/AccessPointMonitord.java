@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.config.accesspointmonitor.Package;
@@ -46,10 +45,11 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -205,7 +205,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * getEventManager
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -217,7 +217,7 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
      * </p>
      * 
      * @param eventMgr
-     *            a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     *            a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

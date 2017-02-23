@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.dao.mock;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -40,13 +38,13 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
+import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.events.Constants;
-import org.opennms.netmgt.model.events.EventProcessor;
-import org.opennms.netmgt.model.events.EventProcessorException;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,16 +110,20 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
     }
 
     @Override
-    public void process(final Header eventHeader, final Event event) throws EventProcessorException {
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
+            for (Event event : eventLog.getEvents().getEvent()) {
+                process(event);
+            }
+        }
+    }
+
+    private void process(final Event event) throws EventProcessorException {
         LOG.debug("Writing event: {}", event);
         final OnmsEvent oe = new OnmsEvent();
         oe.setEventAutoAction((event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
         oe.setEventCorrelation((event.getCorrelation() != null) ? org.opennms.netmgt.dao.util.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
-        try {
-            oe.setEventCreateTime(EventConstants.parseToDate(event.getCreationTime()));
-        } catch (final ParseException e) {
-            throw new EventProcessorException(e);
-        }
+        oe.setEventCreateTime(event.getCreationTime());
         oe.setId(event.getDbid());
         oe.setEventDescr(event.getDescr());
         try {
@@ -136,7 +138,7 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
 
         if (event.getLogmsg() != null) {
             // set log message
-            oe.setEventLogMsg(Constants.format(event.getLogmsg().getContent(), 0));
+            oe.setEventLogMsg(EventDatabaseConstants.format(event.getLogmsg().getContent(), 0));
             final String logdest = event.getLogmsg().getDest();
             if (logdest.equals("logndisplay")) {
                 // if 'logndisplay' set both log and display column to yes
@@ -174,10 +176,10 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
             }
 
             oe.setEventOperAction(OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
-            oe.setEventOperActionMenuText(Constants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
+            oe.setEventOperActionMenuText(EventDatabaseConstants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
         }
         oe.setEventOperInstruct(event.getOperinstruct());
-        oe.setEventParms(Parameter.format(event));
+        oe.setEventParms(EventParameterUtils.format(event));
         oe.setEventPathOutage(event.getPathoutage());
         try {
             oe.setServiceType(m_serviceTypeDao.findByName(event.getService()));
@@ -186,15 +188,12 @@ public class MockEventWriter implements EventProcessor, InitializingBean {
         }
         oe.setSeverityLabel(event.getSeverity());
         oe.setEventSnmp(SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
-        oe.setEventSnmpHost(Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
+        oe.setEventSnmpHost(EventDatabaseConstants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
         oe.setEventSource(event.getSource());
-        try {
-            oe.setEventTime(EventConstants.parseToDate(event.getTime()));
-        } catch (final ParseException e) {
-            throw new EventProcessorException(e);
-        }
+        oe.setEventTime(event.getTime());
+
         if (event.getTticket() != null) {
-            oe.setEventTTicket(Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            oe.setEventTTicket(EventDatabaseConstants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             oe.setEventTTicketState(event.getTticket().getState().equals("on") ? 1 : 0);
         }
         oe.setEventUei(event.getUei());

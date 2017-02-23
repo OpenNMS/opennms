@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>14.0.3-SNAPSHOT</version>
+  <version>20.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -13,8 +13,8 @@
   </description>
   <licenses>
     <license>
-      <name>GNU General Public License</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <name>GNU Affero General Public License</name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
       <comments>
         This Maven metadata is provided for informational purposes only. For specific licensing 
         questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
@@ -36,6 +36,17 @@
     </notifiers>
   </ciManagement>
   <developers>
+    <developer>
+      <id>soleger</id>
+      <name>Seth Leger</name>
+      <email>seth@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Architect</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
     <developer>
       <id>brozow</id>
       <name>Matt Brozowski</name>
@@ -59,7 +70,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
- <mailingLists>
+  <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -90,9 +101,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
-    <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
-    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/master</url>
+    <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
+    <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
     <!-- new structure -->
@@ -106,7 +117,6 @@
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
@@ -115,6 +125,7 @@
     <module>opennms-config-tester</module>
     <module>opennms-dao-api</module>
     <module>opennms-dao</module>
+    <module>opennms-dao-minion</module>
     <module>opennms-dao-mock</module>
     <module>opennms-icmp</module>
     <module>opennms-javamail</module>
@@ -132,6 +143,7 @@
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
+    <module>opennms-webapp-rest</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
   </modules>
@@ -153,6 +165,11 @@
       </plugin>
       -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.4</version>
+      </plugin>
+      <plugin>
         <groupId>org.asciidoctor</groupId>
         <artifactId>asciidoctor-maven-plugin</artifactId>
         <version>${asciidoctorVersion}</version>
@@ -165,7 +182,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
+        <version>3.0.1</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -174,7 +191,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
+        <version>1.9.1</version>
       </plugin>
       <plugin>
         <groupId>org.dstovall</groupId>
@@ -196,7 +213,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -308,12 +325,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>2.8.2</version>
         <configuration>
           <deployAtEnd>false</deployAtEnd>
           <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
@@ -322,14 +339,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
+        <version>2.10</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>2.10.3</version>
         <configuration>
           <maxmemory>2g</maxmemory>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <failOnError>false</failOnError>
           <tags>
             <tag>
@@ -413,7 +431,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
+        <version>2.6</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
@@ -444,17 +462,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
+        <version>2.5.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <goals><goal>clean</goal></goals>
-          </execution>
-        </executions>
+        <version>2.6.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -473,8 +486,21 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <!--
+          CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
+          org.opennms.core.test.karaf.KarafTestCase classes are experiencing
+          the following bug in those versions (even thought it is claimed to
+          have been fixed in 2.19.1):
+
+          https://issues.apache.org/jira/browse/SUREFIRE-1193
+        -->
+        <version>2.18</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
+        <version>2.6</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
@@ -514,12 +540,12 @@
         <version>1.0-alpha-7</version>
       </plugin>
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
       </plugin>
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-jspc-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
       </plugin>
@@ -599,7 +625,7 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.mortbay.jetty</groupId>
+                  <groupId>org.eclipse.jetty</groupId>
                   <artifactId>jetty-jspc-maven-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
                   <goals>
@@ -702,6 +728,46 @@
                   <ignore/>
                 </action>
               </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.opennms.maven.plugins</groupId>
+                  <artifactId>features-maven-plugin</artifactId>
+                  <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                  <goals>
+                    <goal>generate-features-xml</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>com.vaadin</groupId>
+                  <artifactId>vaadin-maven-plugin</artifactId>
+                  <versionRange>[1.0.2,)</versionRange>
+                  <goals>
+                    <goal>resources</goal>
+                    <goal>update-widgetset</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <ignore></ignore>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>exec-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>java</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                    <execute></execute>
+                </action>
+              </pluginExecution>
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
@@ -712,10 +778,52 @@
         <version>2.2</version>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.6.201602180812</version>
+        <configuration>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <classDumpDir>${opennms.build.basedir}/target/jacoco/classes</classDumpDir>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <destFile>${opennms.build.basedir}/target/jacoco/jacoco.exec</destFile>
+          <!-- Append all .exec content to the same file -->
+          <append>true</append>
+          <includes>
+            <!-- All OpenNMS Java packages -->
+            <include>org/opennms/**</include>
+            <include>liquibase/ext/opennms/**</include>
+            <include>org/openoss/opennms/**</include>
+          </includes>
+          <excludes>
+            <!-- Spring CGLIB proxies -->
+            <exclude>**/*FastClassBySpringCGLIB*</exclude>
+            <exclude>**/*EnhancerBySpringCGLIB*</exclude>
+            <!-- CGLIB proxies -->
+            <exclude>**/*EnhancerByCGLIB*</exclude>
+            <!-- javassist proxies -->
+            <exclude>**/*_jvst*</exclude>
+            <!-- Unit test classes -->
+            <exclude>**/*Test.*</exclude>
+            <exclude>**/*TestCase.*</exclude>
+            <exclude>**/*IT.*</exclude>
+            <exclude>**/*ITCase.*</exclude>
+            <!-- Duplicate classes -->
+            <exclude>**/SnmpUtilsTest*</exclude>
+            <!-- Drools rules -->
+            <exclude>org/opennms/netmgt/correlation/drools/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Rule*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentImpactedEvent*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentResolvedEvent*</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -760,7 +868,7 @@
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
-             <tarLongFileMode>gnu</tarLongFileMode>
+             <tarLongFileMode>posix</tarLongFileMode>
            </configuration>
          </execution>
        </executions>
@@ -784,7 +892,7 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
-       <version>2.6</version>
+       <version>2.7</version>
        <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
@@ -798,22 +906,27 @@
         <inherited>false</inherited>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.8</version>
         <executions>
           <execution>
             <phase>validate</phase>
             <configuration>
-              <tasks>
-                <!-- I have to explicitly set Ant properties from Maven
-                     properties.  They aren't passed automatically, even
-                     when inheritAll="true" is used with <ant />.  -->
-                <ant target="java.check">
-                  <property name="java.vm.version" value="${java.vm.version}"/>
-                  <property name="java.version" value="${java.version}"/>
-                  <property name="java.home" value="${java.home}"/>
-                </ant>
+              <target>
+                <condition property="java.versionokay">
+                  <or>
+                    <!-- Don't forget to update the <fail> message below -->
+                    <contains string="${java.version}" substring="1.8."/>
+                    <contains string="${java.vm.version}" substring="1.8."/>
+                  </or>
+                </condition>
+                <fail unless="java.versionokay">You must use Java 1.8 to build!</fail>
                 <echo message="update policy is ${updatePolicy}"/>
-              </tasks>
+              </target>
+              <target>
+                <property name="opennms.build.basedir" location="." />
+                <mkdir dir="${opennms.build.basedir}/target/jacoco/classes" />
+                <echo message="base directory is ${opennms.build.basedir}" />
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -824,10 +937,10 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.3</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -835,7 +948,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.4</version>
         <executions>
           <execution>
             <goals>
@@ -849,7 +962,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
+          <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
+            <!-- Turn off queuing in the RRD output -->
+            <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>
             <mock.debug>${mock.debug}</mock.debug>
@@ -871,14 +987,51 @@
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
             <proxy.port>${proxy.port}</proxy.port>
+            <opennms.version>${project.version}</opennms.version>
+            <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>-Xmx1024m</argLine>
+          <rerunFailingTestsCount>1</rerunFailingTestsCount>
           <includes>
             <include>**/*Test.java</include>
-          </includes>          
+          </includes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <!-- Don't specify argLine here or it will override the argLine property value -->
+          <systemPropertyVariables>
+            <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
+            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+            <!-- <ssl.debug>true</ssl.debug> -->
+            <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
+          </systemPropertyVariables>
+          <!--
+            Configure failsafe to put reports in the surefire unit test directory so that 
+            Bamboo and Sonar tally the test results properly.
+ 
+            https://jira.atlassian.com/browse/BAM-15446
+          -->
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+          <rerunFailingTestsCount>1</rerunFailingTestsCount>
+          <skipITs>${skipITs}</skipITs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -911,11 +1064,39 @@
         <artifactId>sonar-maven-plugin</artifactId>
         <dependencies>
           <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>${postgresqlVersion}</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <!-- jacoco code coverage testing library -->
+      <!--
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-prepare-agent-integration</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent-integration</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
       </plugin>
     </plugins>
   </build>
@@ -938,9 +1119,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.4</version>
         <configuration>
-            <targetJdk>1.7</targetJdk>
+            <targetJdk>1.8</targetJdk>
             <rulesets>
                <!--
                <ruleset>/rulesets/basic-jsf.xml</ruleset>
@@ -993,7 +1174,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.5</version>
       </plugin>
 <!--
       <plugin>
@@ -1006,15 +1187,44 @@
   </reporting>
 
   <properties>
+    <!--
+      Surefire forked JVM arguments
+      @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
+
+      Use 1GB of heap for running tests.
+
+      Set java.security.egd so that entropy exhaustion doesn't cause
+      problematic pauses when starting MockSnmpAgent in unit tests.
+
+      Add target/endorsed as an endorsed API directory in case projects require it.
+    -->
+    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <skipITs>true</skipITs>
+
+    <!--
+      This is on by default now that root is not required for pinging.
+      If you have issues with this, see https://wiki.opennms.org/wiki/ICMP for enabling non-root ping.
+      However, we need to set the default in a profile (NMS-8838).
+    <runPingTests>true</runPingTests> -->
+
     <build.skip.tarball>false</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.15</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>2.15</maven.surefire.report.plugin.version>
-    <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
+    <!-- 
+      CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
+      org.opennms.core.test.karaf.KarafTestCase classes are experiencing
+      the following bug in those versions (even thought it is claimed to
+      have been fixed in 2.19.1):
+
+      https://issues.apache.org/jira/browse/SUREFIRE-1193
+    -->
+    <maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
+
+    <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
@@ -1034,7 +1244,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>14.0.3.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>20.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1098,71 +1308,118 @@
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
-    <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
-    <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
-    <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
+    <args4jVersion>2.32</args4jVersion>
+    <asmVersion>5.0.4</asmVersion>
+    <asciidoctorVersion>1.5.3</asciidoctorVersion>
+    <asciidoctorjVersion>1.5.4</asciidoctorjVersion>
+    <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <camelVersion>2.13.2</camelVersion>
+    <batikVersion>1.7</batikVersion>
+    <bsfVersion>2.4.0</bsfVersion>
+    <camelVersion>2.14.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
-    <commonsCodecVersion>1.9</commonsCodecVersion>
-    <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+    <commonsCodecVersion>1.10</commonsCodecVersion>
+    <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
+    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsCsvVersion>1.1</commonsCsvVersion>
+    <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
+    <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
+    <c3p0Version>0.9.5.2</c3p0Version>
+    <curatorVersion>3.2.1</curatorVersion>
+    <cxfVersion>3.1.7</cxfVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
-    <ecjVersion>4.2.2</ecjVersion>
+    <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
+    <ecjVersion>4.4.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
-    <groovyVersion>2.3.6</groovyVersion>
-    <guavaVersion>17.0</guavaVersion>
+    <groovyVersion>2.4.5</groovyVersion>
+    <guavaVersion>18.0</guavaVersion>
+    <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
+    <hikaricpVersion>2.5.1</hikaricpVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
+    <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jasperreportsVersion>5.6.1</jasperreportsVersion>
-    <jettyVersion>7.6.15.v20140411</jettyVersion>
-    <jrubyVersion>9.0.0.0</jrubyVersion>
-    <karafVersion>2.4.0</karafVersion>
-    <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
-    <felixVersion>2.3.0</felixVersion>
-    <liquibaseVersion>2.0.5</liquibaseVersion>
+    <jasperreportsVersion>6.3.0</jasperreportsVersion>
+    <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <jcifsVersion>1.3.14</jcifsVersion>
+    <jcommonVersion>1.0.23</jcommonVersion>
+    <jettyVersion>9.4.0.v20161208</jettyVersion>
+    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jinteropVersion>2.0.8</jinteropVersion>
+    <jldapVersion>4.3</jldapVersion>
+    <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jrubyVersion>9.0.4.0</jrubyVersion>
+    <jsoupVersion>1.7.2</jsoupVersion>
+    <karafVersion>2.4.3</karafVersion>
+    <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
+    <felixVersion>3.0.0</felixVersion>
+    <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
+    <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.1</log4j2Version>
-    <minaVersion>2.0.7</minaVersion>
-    <paxExamVersion>2.6.0</paxExamVersion>
-    <powermockVersion>1.5.5</powermockVersion>
+    <log4j2Version>2.5</log4j2Version>
+    <minaVersion>2.0.13</minaVersion>
+    <minionKarafVersion>4.0.5</minionKarafVersion>
+    <newtsVersion>1.4.2</newtsVersion>
+    <paxExamVersion>4.8.0</paxExamVersion>
+    <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
+    <protobufVersion>2.6.1</protobufVersion>
+    <postgresqlVersion>9.4.1211</postgresqlVersion>
+    <powermockVersion>1.6.4</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
-    <osgiVersion>4.3.1</osgiVersion>
-    <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
-    <slf4jVersion>1.7.7</slf4jVersion>
-    <springJaxbVersion>2.1.7</springJaxbVersion>
+    <osgiVersion>5.0.0</osgiVersion>
+    <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <owaspEncoderVersion>1.2</owaspEncoderVersion>
+    <quartzVersion>1.6.5</quartzVersion>
+    <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
+    <servletApiVersion>3.1.0</servletApiVersion>
+    <slf4jVersion>1.7.21</slf4jVersion>
+    <snmp4jVersion>2.4.3</snmp4jVersion>
+    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
+    <smackVersion>4.0.6</smackVersion>
+    <trackerVersion>0.7</trackerVersion>
+    <twitter4jVersion>3.0.6</twitter4jVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+    <wsdl4jVersion>1.6.3</wsdl4jVersion>
+    <wsmanVersion>1.2.2</wsmanVersion>
 
-    <springVersion>3.2.9.RELEASE_1</springVersion>
+    <springVersion>4.0.7.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.4</aspectjVersion>
-    <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
+    <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
+    <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
+    <springLdapVersion>${springSecurityVersion}</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>7.2.7</vaadinVersion>
+    <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
+    <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
+    <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
+    <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
+    <skipPdfGeneration>true</skipPdfGeneration>
+    <skipSignJar>true</skipSignJar>
 
+    <!-- moved here from opennms-pluginmanger -->
+    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.1</licencemanagerVersion>
+    <featuremanagerVersion>1.0.1</featuremanagerVersion>
   </properties>
 
   <profiles>
-
     <profile>
       <id>enable.snapshots</id>
       <activation>
@@ -1174,59 +1431,32 @@
           <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
-          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
       </repositories>
     </profile>
-
-    <profile>
-      <id>build.all</id>
-      <activation>
-        <property><name>build</name><value>all</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>build.extensions</id>
-      <activation>
-        <property><name>build</name><value>extensions</value></property>
-      </activation>
-      <modules>
-        <module>extensions</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>opt-local-rrdtool</id>
-      
       <activation>
         <file>
           <exists>/opt/local/bin/rrdtool</exists>
         </file>
       </activation>
-  
       <properties>
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>fink-rrdtool</id>
-
       <activation>
         <file>
           <exists>/sw/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-bin-rrdtool</id>
       <activation>
@@ -1234,12 +1464,10 @@
           <exists>/usr/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-bin-rrdtool</id>
       <activation>
@@ -1247,12 +1475,10 @@
           <exists>/usr/local/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
       <id>usr-local-rrdtool-bin-rrdtool</id>
       <activation>
@@ -1260,12 +1486,10 @@
           <exists>/usr/local/rrdtool/bin/rrdtool</exists>
         </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/usr/local/rrdtool/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <!--
          This is for the rrdtool package from Blastwave.org.
          See this for more information:
@@ -1279,32 +1503,29 @@
         <exists>/opt/csw/bin/rrdtool</exists>
       </file>
       </activation>
-
       <properties>
         <install.rrdtool.bin>/opt/csw/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
-
     <profile>
-      <id>build-tools</id>
-      <activation>
-        <property>
-          <name>tagging</name>
-        </property>
-      </activation>
+      <id>assemblies</id>
       <modules>
-        <module>extensions</module>
-        <module>opennms-tools</module>
+        <module>opennms-full-assembly</module>
       </modules>
     </profile>
-
     <profile>
       <id>build-bamboo</id>
       <modules>
         <module>opennms-full-assembly</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>run-expensive-tasks</id>
+      <properties>
+        <skipPdfGeneration>false</skipPdfGeneration>
+        <skipSignJar>false</skipSignJar>
+      </properties>
+    </profile>
     <profile>
       <id>smoke</id>
       <activation>
@@ -1319,7 +1540,6 @@
         <module>smoke-test</module>
       </modules>
     </profile>
-
     <profile>
       <id>jdk7+</id>
       <activation>
@@ -1335,7 +1555,7 @@
               <dependency>
               <groupId>com.sun</groupId>
               <artifactId>tools</artifactId>
-              <version>1.7</version>
+              <version>1.8</version>
               <scope>system</scope>
               <systemPath>${java.home}/../lib/tools.jar</systemPath>
               </dependency>
@@ -1344,8 +1564,18 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>default-runPingTests</id>
+      <activation>
+        <property>
+          <name>!runPingTests</name>
+        </property>
+      </activation>
+      <properties>
+        <runPingTests>true</runPingTests>
+      </properties>
+    </profile>
   </profiles>
-
   <dependencyManagement>
     <dependencies>
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
@@ -1354,6 +1584,13 @@
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun</groupId>
+        <artifactId>tools</artifactId>
+        <version>1.8</version>
+        <scope>system</scope>
+        <systemPath>${java.home}/../lib/tools.jar</systemPath>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -1419,6 +1656,26 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.rpc</groupId>
+        <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.sink</groupId>
+        <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.ipc.sink</groupId>
+        <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.runtime</artifactId>
         <version>${project.version}</version>
@@ -1435,6 +1692,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.snmp</groupId>
+        <artifactId>org.opennms.core.snmp.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
         <version>${project.version}</version>
@@ -1442,6 +1704,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.spring-web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1474,6 +1741,24 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.activemq</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.camel</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.collection</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1520,6 +1805,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.discovery</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.geocoder</groupId>
         <artifactId>org.opennms.features.geocoder.api</artifactId>
         <version>${project.version}</version>
@@ -1545,33 +1835,38 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-alarm-gui</artifactId>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.mib-compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-drools</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-alarm-gui</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-model</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-northbounder</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-persistence</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-northbounder</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
-        <artifactId>ncs-test</artifactId>
+        <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.ncs</groupId>
+        <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1613,8 +1908,38 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.daemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.syslog</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.traps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.collectors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.client-rpc</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1623,8 +1948,23 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.test-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.poller</groupId>
+        <artifactId>org.opennms.features.poller.shell</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1704,7 +2044,7 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.osgi.features.topology</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>vaadin</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1741,7 +2081,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-email</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-syslog</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-jms</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1896,6 +2251,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrrd2-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>pax-exam-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1904,12 +2265,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>quartz-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rxtx-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -1996,13 +2351,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-dao</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2010,13 +2358,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-mock</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2075,6 +2416,21 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-detectorclient-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-provision-command</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-requisition-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>drools-dependencies</artifactId>
         <version>${project.version}</version>
@@ -2114,6 +2470,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-icmp-best</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.icmp-jna</artifactId>
         <version>${project.version}</version>
@@ -2126,6 +2487,11 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-otrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>opennms-integration-otrs-31</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2145,7 +2511,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jersey-dependencies</artifactId>
+        <artifactId>cxf-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -2200,8 +2566,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>jmxconfiggenerator</artifactId>
+        <classifier>onejar</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2276,6 +2643,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.measurements</groupId>
+        <artifactId>org.opennms.features.measurements.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.measurements</groupId>
+        <artifactId>org.opennms.features.measurements.impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
         <version>${project.version}</version>
@@ -2303,12 +2680,6 @@
         <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-test</artifactId>
-        <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2379,6 +2750,18 @@
         <artifactId>opennms-vmware</artifactId>
         <version>${project.version}</version>
       </dependency>
+     <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>newts-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>smack-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>rancid-dependencies</artifactId>
@@ -2439,6 +2822,18 @@
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jmx-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>owasp-encoder-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
 
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
@@ -2486,6 +2881,12 @@
         <groupId>axis</groupId>
         <artifactId>axis</artifactId>
         <version>1.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>axis</groupId>
+            <artifactId>axis-wsdl4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>axis</groupId>
@@ -2500,27 +2901,32 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-svg-dom</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-swing</artifactId>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-transcoder</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>bsf</groupId>
@@ -2544,9 +2950,9 @@
         <version>2.2.2</version>
       </dependency>
       <dependency>
-        <groupId>c3p0</groupId>
+        <groupId>com.mchange</groupId>
         <artifactId>c3p0</artifactId>
-        <version>0.9.1.2</version>
+        <version>${c3p0Version}</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -2593,7 +2999,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.6</version>
+        <version>${commonsConfigurationVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -2609,7 +3015,7 @@
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
-        <version>2.1</version>
+        <version>${commonsDigesterVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -2629,6 +3035,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-osgi</artifactId>
+        <version>${httpcoreVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclientVersion}</version>
         <exclusions>
@@ -2639,6 +3050,28 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-osgi</artifactId>
+        <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient-osgi</artifactId>
+        <version>${httpasyncclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+     <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commonsIoVersion}</version>
@@ -2661,7 +3094,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.0.1</version>
+        <version>3.3</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -2732,6 +3165,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.10</version>
+      </dependency>
+      <dependency>
         <groupId>com.googlecode.concurrent-locks</groupId>
         <artifactId>concurrent-locks</artifactId>
         <version>1.0.0</version>
@@ -2755,29 +3193,59 @@
       <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-server</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-server</artifactId>
+	    <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-client-compiled</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-shared</artifactId>
+        <version>${vaadinVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.vaadin.external.google</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-client</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-shared-deps</artifactId>
+        <version>${vaadinSharedEpsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-themes</artifactId>
-	<version>${vaadinVersion}</version>
+	    <artifactId>vaadin-client-compiled</artifactId>
+	    <version>${vaadinVersion}</version>
       </dependency>
-
       <dependency>
-        <groupId>org.opennms.vaadin-extender</groupId>
-        <artifactId>service</artifactId>
-        <version>${vaadinExtenderVersion}</version>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-client</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-themes</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>contextmenu</artifactId>
+        <version>${vaadinAddonContextMenuVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>refresher</artifactId>
+        <version>${vaadinAddonRefresherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addon</groupId>
+        <artifactId>confirmdialog</artifactId>
+        <version>${vaadinAddonConfirmDialogVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.vaadin-components</groupId>
+        <artifactId>extender-service</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ognl</groupId>
@@ -2818,7 +3286,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>3.1</version>
+        <version>3.4</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2908,6 +3376,11 @@
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernateValidatorVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>9999.use-org-javassist-not-javassist</version>
@@ -2946,17 +3419,12 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
-        <version>1.2</version>
+        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
-        <version>2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -2970,6 +3438,16 @@
         <classifier>sources</classifier>
       </dependency>
       <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+        <version>99.99.99-exclude-and-use-javax.ws.rs-api-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>99.99.99-use-opennms-jaxb</version>
@@ -2980,8 +3458,18 @@
         <version>99.99.99-use-opennms-jaxb</version>
       </dependency>
       <dependency>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>99.99.99-exclude-and-use-org.apache.servicemix.bundles.jdom-instead</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-ajp</artifactId>
+        <artifactId>apache-jsp</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-annotations</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -3006,7 +3494,12 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-jsp</artifactId>
+        <artifactId>jetty-jmx</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>apache-jstl</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
@@ -3036,11 +3529,6 @@
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-websocket</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-xml</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
@@ -3050,9 +3538,25 @@
         <version>${jettyVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty.orbit</groupId>
-        <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
-        <version>1.2.0.v201112081803</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-rewrite</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-server</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <!-- Make sure that this version matches the version from Jetty -->
+      <dependency>
+        <groupId>org.apache.taglibs</groupId>
+        <artifactId>taglibs-standard-impl</artifactId>
+        <version>1.2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${servletApiVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.jcraft</groupId>
@@ -3060,14 +3564,9 @@
         <version>0.1.51</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jdt.core.compiler</groupId>
-        <artifactId>ecj</artifactId>
-        <version>4.2.2</version>
-      </dependency>
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-        <version>1.9.5</version>
+        <version>1.10.19</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3097,19 +3596,9 @@
       </exclusions>
       </dependency>
       <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smack</artifactId>
-        <version>3.0.4</version>
-      </dependency>
-      <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smackx</artifactId>
-        <version>3.0.4</version>
-      </dependency>
-      <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.1</version>
+        <version>${jodaTimeVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.skyscreamer</groupId>
@@ -3120,7 +3609,19 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.jayway.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>1.7.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3185,7 +3686,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.7.2</version>
+        <version>${jsoupVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.mina</groupId>
@@ -3200,7 +3701,7 @@
       <dependency>
         <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
-        <version>4.3</version>
+        <version>${jldapVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -3226,14 +3727,89 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-asm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-instrument</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-oxm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.rxtx</groupId>
-        <artifactId>rxtx</artifactId>
-        <version>2.2-pre2</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
@@ -3248,7 +3824,12 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1100-jdbc4</version>
+        <version>${postgresqlVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobufVersion}</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -3256,20 +3837,14 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>struts</groupId>
-        <artifactId>struts</artifactId>
-        <version>1.2.9</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
         <version>2.11</version>
+      </dependency>
+      <dependency>
+        <groupId>wsdl4j</groupId>
+        <artifactId>wsdl4j</artifactId>
+        <version>${wsdl4jVersion}</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -3300,7 +3875,7 @@
       <dependency>
         <groupId>org.krupczak</groupId>
         <artifactId>xmp</artifactId>
-        <version>1.30r1</version>
+        <version>1.40</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
@@ -3324,6 +3899,21 @@
         <artifactId>groovy-all</artifactId>
         <version>${groovyVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricpVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>${ecjVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.swrve</groupId>
+        <artifactId>rate-limited-logger</artifactId>
+        <version>${rateLimitedLoggerVersion}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <repositories>
@@ -3333,7 +3923,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -3350,7 +3940,7 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
 <!--
     <pluginRepository>
@@ -3365,7 +3955,7 @@
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -3383,7 +3973,7 @@
       <releases><enabled>true</enabled></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
   </pluginRepositories>

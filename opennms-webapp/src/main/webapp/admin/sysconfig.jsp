@@ -32,11 +32,11 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-		org.opennms.core.resource.Vault
-	"
 %>
-
+<%@page import="org.opennms.core.resource.Vault"%>
+<%@page import="org.opennms.core.spring.BeanUtils"%>
+<%@page import="org.opennms.netmgt.config.SyslogdConfigFactory"%>
+<%@page import="org.opennms.netmgt.config.TrapdConfigFactory"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="OpenNMS System Configuration" />
@@ -55,13 +55,31 @@
         }
 </script>
 
+<%
+   String trapPort = "Unknown";
+   try {
+       TrapdConfigFactory.init();
+       trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
+   } catch (Throwable e) {
+       // if factory can't be initialized, status is already 'Unknown'
+   }
+
+   String syslogPort = "Unknown";
+   try {
+       SyslogdConfigFactory syslogdConfig = BeanUtils.getBean("commonContext", "syslogdConfigFactory", SyslogdConfigFactory.class);
+       syslogPort = String.valueOf(syslogdConfig.getSyslogPort());
+   } catch (Throwable e) {
+       // if factory can't be initialized, status is already 'Unknown'
+   }
+%>
+
 <div class="row">
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">OpenNMS Configuration</h3>
       </div>
-      <table class="table">
+      <table class="table table-condensed">
         <tr>
           <th>OpenNMS Version:</th>
           <td><%=Vault.getProperty("version.display")%></td>
@@ -72,15 +90,11 @@
         </tr>
         <tr>
           <th>RRD store by group enabled?</th>
-          <td><%=Vault.getProperty("org.opennms.rrd.storeByGroup")%></td>
+          <td><%=(Boolean.valueOf(Vault.getProperty("org.opennms.rrd.storeByGroup")) ? "True" : "False")%></td>
         </tr>
         <tr>
           <th>RRD store by foreign source enabled?</th>
-          <td><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
-        </tr>
-        <tr>
-          <th>Web-Application Logfiles:</th>
-          <td><%=Vault.getProperty("opennms.webapplogs.dir")%></td>
+          <td><%=(Boolean.valueOf(Vault.getProperty("org.opennms.rrd.storeByForeignSource")) ? "True" : "False")%></td>
         </tr>
         <tr>
           <th>Reports directory:</th>
@@ -88,19 +102,27 @@
         </tr>
         <tr>
           <th>Jetty HTTP host:</th>
-          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.host")%></td>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.host") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.host")%></td>
         </tr>
         <tr>
           <th>Jetty HTTP port:</th>
-          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.port")%></td>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.port") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.port")%></td>
         </tr>
          <tr>
           <th>Jetty HTTPS host:</th>
-          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-host")%></td>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-host") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.https-host")%></td>
         </tr>
         <tr>
           <th>Jetty HTTPS port:</th>
-          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
+        </tr>
+        <tr>
+          <th>SNMP trap port:</th>
+          <td><%=trapPort%></td>
+        </tr>
+        <tr>
+          <th>Syslog port:</th>
+          <td><%=syslogPort%></td>
         </tr>
       </table>
     </div> <!-- panel -->
@@ -110,7 +132,7 @@
       <div class="panel-heading">
         <h3 class="panel-title">System Configuration</h3>
       </div>
-      <table class="table">
+      <table class="table table-condensed">
         <tr>
           <th>Server&nbsp;Time:</th>
           <td><%=new java.util.Date()%></td>

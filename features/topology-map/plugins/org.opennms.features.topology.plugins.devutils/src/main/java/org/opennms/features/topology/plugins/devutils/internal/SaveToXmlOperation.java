@@ -49,7 +49,7 @@ import org.opennms.features.topology.api.topo.WrappedVertex;
 public class SaveToXmlOperation implements Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+	public void execute(List<VertexRef> targets, OperationContext operationContext) {
 
 		GraphProvider graphProvider = operationContext.getGraphContainer().getBaseTopology();
 
@@ -84,8 +84,6 @@ public class SaveToXmlOperation implements Operation {
 		WrappedGraph graph = new WrappedGraph(graphProvider.getVertexNamespace(), vertices, edges);
 
 		JAXB.marshal(graph, new File("/tmp/saved-graph.xml"));
-
-		return null;
 	}
 
 	@Override

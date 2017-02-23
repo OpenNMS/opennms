@@ -106,8 +106,6 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
 
     /**
      * <p>close</p>
-     *
-     * @throws java.sql.SQLException if any.
      */
     @Override
     public void close() {
@@ -119,10 +117,9 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @param iface a {@link java.lang.Class} object.
      * @param <T> a T object.
      * @return a T object.
-     * @throws java.sql.SQLException if any.
      */
     @Override
-    public <T> T unwrap(final Class<T> iface) throws SQLException {
+    public <T> T unwrap(final Class<T> iface) {
         return null;  //TODO
     }
 
@@ -131,11 +128,10 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      *
      * @param iface a {@link java.lang.Class} object.
      * @return a boolean.
-     * @throws java.sql.SQLException if any.
      */
     @Override
-    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
-        return false;  //TODO
+    public boolean isWrapperFor(final Class<?> iface) {
+        return false; //TODO
     }
 
     protected static void validateJdbcUrl(String url) {

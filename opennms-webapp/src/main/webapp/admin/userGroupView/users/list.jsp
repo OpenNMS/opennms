@@ -127,6 +127,7 @@
    <div class="panel panel-default">
      <table class="table table-condensed table-bordered">
         <thead>
+          <tr>
           <th width="5%">Delete</th>
           <th width="5%">Modify</th>
           <th width="5%">Rename</th>
@@ -135,6 +136,7 @@
           <th width="15%">Email</th>
           <th width="15%">Pager Email</th>
           <th width="15%">XMPP Address</th>
+          </tr>
         </thead>
         <tbody>
         <% 
@@ -150,7 +152,7 @@
 	      String textPin = userFactory.getTextPin(userid);
          %>
          <tr id="user-<%= userid %>">
-          <% if (!curUser.getUserId().equals("admin")) { %>
+          <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
           </td>

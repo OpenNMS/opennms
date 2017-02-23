@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -235,6 +237,59 @@ public class DataCollectionConfigParserTest {
         }
     }
 
+    @Test
+    public void testsForNMS8030() throws Exception {
+        File home = new File("src/test/resources/NMS8030");
+        Assert.assertTrue(home.exists());
+        File configFile = new File(home, "etc/datacollection-config.xml");
+        DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
+        dao.setConfigResource(new FileSystemResource(configFile));
+        dao.setConfigDirectory(new File(home, "etc/datacollection").getAbsolutePath());
+        dao.setReloadCheckInterval(0l);
+        dao.afterPropertiesSet();
+
+        // Use case 1
+
+        Optional<SystemDef> systemDef = dao.getRootDataCollection().getSnmpCollections().stream()
+                .filter(sc -> sc.getName().equals("sample1"))
+                .flatMap(sc -> sc.getSystems().getSystemDefs().stream())
+                .filter(s -> s.getName().equals("Cisco Routers"))
+                .findFirst();
+        Assert.assertTrue(systemDef.isPresent());
+        Assert.assertEquals(5, systemDef.get().getCollect().getIncludeGroups().size());
+
+        // Use Case 2
+
+        Optional<Group> group = dao.getRootDataCollection().getSnmpCollections().stream()
+                .filter(sc -> sc.getName().equals("sample2"))
+                .flatMap(sc -> sc.getGroups().getGroups().stream())
+                .filter(s -> s.getName().equals("cisco-memory-pool"))
+                .findFirst();
+        Assert.assertTrue(group.isPresent());
+        Assert.assertEquals(3, group.get().getMibObjs().size());
+
+        // Use case 3
+
+        systemDef = dao.getRootDataCollection().getSnmpCollections().stream()
+                .filter(sc -> sc.getName().equals("sample2"))
+                .flatMap(sc -> sc.getSystems().getSystemDefs().stream())
+                .filter(s -> s.getName().equals("Cisco Routers"))
+                .findFirst();
+        Assert.assertTrue(systemDef.isPresent());
+        Assert.assertEquals(5, systemDef.get().getCollect().getIncludeGroups().size());
+
+        // Use Case 4
+
+        group = dao.getRootDataCollection().getSnmpCollections().stream()
+                .filter(sc -> sc.getName().equals("sample2"))
+                .flatMap(sc -> sc.getGroups().getGroups().stream())
+                .filter(s -> s.getName().equals("cisco-memory-pool"))
+                .findFirst();
+        Assert.assertTrue(group.isPresent());
+        Assert.assertEquals(3, group.get().getMibObjs().size());
+
+    }
+    
     private static File getDatacollectionDirectory() throws URISyntaxException {
         final File configFolder = new File("target/test-classes/org/opennms/netmgt/config/datacollection-config-parser-test/datacollection");
         Assert.assertTrue(configFolder.exists());

@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.api.KscReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -159,7 +159,7 @@ public class FormProcViewController extends AbstractController implements Initia
         } else if (Actions.Customize.toString().equals(reportAction)) { 
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.Exit.toString().equals(reportAction)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else {
             throw new IllegalArgumentException("Parameter action of '" + reportAction + "' is not supported.  Must be one of: Update, Customize, or Exit");
         }
@@ -197,7 +197,7 @@ public class FormProcViewController extends AbstractController implements Initia
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -206,7 +206,7 @@ public class FormProcViewController extends AbstractController implements Initia
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;

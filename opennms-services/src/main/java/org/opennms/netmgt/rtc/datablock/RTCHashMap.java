@@ -37,6 +37,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.rtc.NodeNotInCategoryException;
+import org.opennms.netmgt.rtc.RTCUtils;
+
 /**
  * The RTCHashMap has either a nodeid or a nodeid/ip as key and provides
  * convenience methods to add and remove 'RTCNodes' with these values - each key
@@ -49,7 +52,7 @@ import java.util.Map;
 // FIXME: 2011-05-18 Seth: OK it is less insane now... but still insane
 public class RTCHashMap {
 	
-    Map<RTCNodeKey,List<RTCNode>> m_map;
+    private final Map<RTCNodeKey,List<RTCNode>> m_map;
 	
     /**
      * constructor
@@ -60,8 +63,8 @@ public class RTCHashMap {
         m_map = new HashMap<RTCNodeKey,List<RTCNode>>(initialCapacity);
     }
 
-    private List<Long> getNodeIDs() {
-    	List<Long> nodes = new LinkedList<Long>();
+    private List<Integer> getNodeIDs() {
+    	List<Integer> nodes = new LinkedList<Integer>();
     	for (Iterator<RTCNodeKey> it = m_map.keySet().iterator(); it.hasNext();) {
 			RTCNodeKey key = it.next();
 			nodes.add(key.getNodeID());
@@ -77,7 +80,7 @@ public class RTCHashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    private void add(long nodeid, RTCNode rtcN) {
+    private void add(int nodeid, RTCNode rtcN) {
         RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
 
         List<RTCNode> nodesList = m_map.get(key);
@@ -103,7 +106,7 @@ public class RTCHashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    private void add(long nodeid, InetAddress inetAddress, RTCNode rtcN) {
+    private void add(int nodeid, InetAddress inetAddress, RTCNode rtcN) {
         RTCNodeKey key = new RTCNodeKey(nodeid, inetAddress, null);
 
         List<RTCNode> nodesList = m_map.get(key);
@@ -119,7 +122,7 @@ public class RTCHashMap {
         }
     }
     
-    private void add(long nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
+    private void add(int nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
         m_map.put(new RTCNodeKey(nodeid, ip, svcName), Collections.singletonList(rtcN));
     }
     
@@ -154,7 +157,7 @@ public class RTCHashMap {
      * @param rtcN
      *            the RTCNode to delete
      */
-    private void delete(long nodeid, RTCNode rtcN) {
+    private void delete(int nodeid, RTCNode rtcN) {
         RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
 
         List<RTCNode> nodesList = m_map.get(key);
@@ -173,7 +176,7 @@ public class RTCHashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    private void delete(long nodeid, InetAddress inetAddress, RTCNode rtcN) {
+    private void delete(int nodeid, InetAddress inetAddress, RTCNode rtcN) {
         RTCNodeKey key = new RTCNodeKey(nodeid, inetAddress, null);
 
         List<RTCNode> nodesList = m_map.get(key);
@@ -182,31 +185,9 @@ public class RTCHashMap {
         }
     }
     
-    private void delete(long nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
+    private void delete(int nodeid, InetAddress ip, String svcName, RTCNode rtcN) {
     	RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
     	m_map.remove(key);
-    }
-
-    /**
-     * Check if this IP has already been validated for this category
-     *
-     * @param nodeid
-     *            the node id whose interface is to be validated
-     * @param ip
-     *            the ip to be validated
-     * @param catLabel
-     *            the category whose rule this ip is to pass
-     * @return true if ip has already been validated, false otherwise
-     */
-    public boolean isIpValidated(long nodeid, InetAddress ip, String catLabel) {
-        for (RTCNode node : getRTCNodes(nodeid, ip)) {
-            if (node.belongsTo(catLabel)) {
-                return true;
-            }
-        }
-
-        return false;
-
     }
 
     /**
@@ -222,52 +203,31 @@ public class RTCHashMap {
      * @return the value(uptime) for the node
      */
     public double getValue(String catLabel, long curTime, long rollingWindow) {
-        // the value (uptime)
-        double value = 0.0;
-
         // total outage time
-        long outageTime = 0;
+        double outageTime = 0.0;
 
         // number of entries for this node
         int count = 0;
 
-        // downtime for a node
-        long downTime = 0;
-
         // get all nodes in the hashtable
-        for (Long key : getNodeIDs()) {
-            List<RTCNode> valList = getRTCNodes(key.longValue());
-            if (valList == null || valList.size() == 0)
+        for (Integer key : getNodeIDs()) {
+            List<RTCNode> valList = getRTCNodes(key);
+            if (valList == null || valList.size() == 0) {
                 continue;
-
-            for (RTCNode node : valList) {
-                downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                if (downTime < 0)
-                // node does not belong to category
-                // or RTCConstants.SERVICE_NOT_FOUND_VALUE
-                // or node / interface / service unmanaged
-                {
-                    continue;
-                }
-
-                outageTime += downTime;
-
-                count++;
-
             }
 
+            for (RTCNode node : valList) {
+                try {
+                    long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count++;
+                    outageTime += downTime;
+                } catch (NodeNotInCategoryException e) {
+                    continue;
+                }
+            }
         }
 
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
-        if (count > 0) {
-            value = 100 * (1 - (dOut / (dRoll * count)));
-        } else {
-            value = 100.0;
-        }
-
-        return value;
+        return RTCUtils.getOutagePercentage(outageTime, rollingWindow, count);
     }
 
     /**
@@ -284,48 +244,27 @@ public class RTCHashMap {
      *            the window for which value is to be calculated
      * @return the value(uptime) for the node
      */
-    public double getValue(long nodeid, String catLabel, long curTime, long rollingWindow) {
-        // the value (uptime)
-        double value = 0.0;
-
+    public double getValue(int nodeid, String catLabel, long curTime, long rollingWindow) {
         // total outage time
-        long outageTime = 0;
+        double outageTime = 0.0;
 
         // number of entries for this node
         int count = 0;
 
-        // downtime for a node
-        long downTime = 0;
-
         // get nodeslist
         for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.getNodeID() == nodeid) {
-                downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                if (downTime < 0)
-                // node does not belong to category
-                // or RTCConstants.SERVICE_NOT_FOUND_VALUE
-                // or node / interface / service unmanaged
-                {
+                try {
+                    long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count++;
+                    outageTime += downTime;
+                } catch (NodeNotInCategoryException e) {
                     continue;
                 }
-
-                outageTime += downTime;
-
-                count++;
-
             }
         }
 
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
-        if (count > 0) {
-            value = 100 * (1 - (dOut / (dRoll * count)));
-        } else {
-            value = 100.0;
-        }
-
-        return value;
+        return RTCUtils.getOutagePercentage(outageTime, rollingWindow, count);
     }
 
     /**
@@ -339,7 +278,7 @@ public class RTCHashMap {
      * @return the service count for the nodeid in the context of the specfied
      *         category
      */
-    public int getServiceCount(long nodeid, String catLabel) {
+    public int getServiceCount(int nodeid, String catLabel) {
         // the count
         int count = 0;
 
@@ -363,7 +302,7 @@ public class RTCHashMap {
      * @return the service down count for the nodeid in the context of the
      *         specfied category
      */
-    public int getServiceDownCount(long nodeid, String catLabel) {
+    public int getServiceDownCount(int nodeid, String catLabel) {
         // the count
         int count = 0;
 
@@ -391,26 +330,14 @@ public class RTCHashMap {
 		}
 		return nodes.get(0);
 	}
-	
-	/**
-	 * <p>getRTCNode</p>
-	 *
-	 * @param nodeid a long.
-	 * @param ipaddr a {@link java.lang.String} object.
-	 * @param svcname a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
-	 */
-	public RTCNode getRTCNode(long nodeid, InetAddress ipaddr, String svcname) {
-		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
-	}
-	
+
 	/**
 	 * <p>getRTCNodes</p>
 	 *
 	 * @param nodeid a long.
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<RTCNode> getRTCNodes(long nodeid) {
+	public List<RTCNode> getRTCNodes(int nodeid) {
 		RTCNodeKey key = new RTCNodeKey(nodeid, null, null);
 		List<RTCNode> nodes = m_map.get(key);
 		if (nodes == null) return Collections.emptyList();
@@ -424,7 +351,7 @@ public class RTCHashMap {
 	 * @param ip a {@link java.lang.String} object.
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<RTCNode> getRTCNodes(long nodeid, InetAddress ip) {
+	public List<RTCNode> getRTCNodes(int nodeid, InetAddress ip) {
 		RTCNodeKey key = new RTCNodeKey(nodeid, ip, null);
 		List<RTCNode> nodes = m_map.get(key);
 		if (nodes == null) return Collections.emptyList();
@@ -436,7 +363,7 @@ public class RTCHashMap {
 	 *
 	 * @param nodeid a long.
 	 */
-	public void deleteNode(long nodeid) {
+	public void deleteNode(int nodeid) {
 	    // Construct a new ArrayList to contain the members of this collection
 	    // to avoid running into a java.util.ConcurrentModificationException
 	    // on the Collections.unmodifiableList() view.

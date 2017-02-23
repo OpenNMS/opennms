@@ -8,11 +8,11 @@
   xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
-  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
@@ -22,21 +22,37 @@
   
   <bean id="localHostName" class="org.opennms.core.utils.InetAddressUtils" factory-method="getLocalHostName"/>
   
-  <!--  Instead of doing all of the work to create an EventIpcManagerDefaultImpl class
-        here including all of its dependencies, we create a late-initializing proxy here
-        and let eventd do the setup for the EventIpcManagerDefaultImpl and initialize
-        the proxy with a pointer to the "real" eventIpcManager. -->
-  <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.model.events.EventIpcManagerProxy">
-  	<qualifier value="standard" />
+  <!-- Expose the SOA interfaces for event IPC as Spring beans -->
+  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
+  <onmsgi:reference id="eventIpcBroadcaster" interface="org.opennms.netmgt.events.api.EventIpcBroadcaster"/>
+  <onmsgi:reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+  <onmsgi:reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy"/>
+  <onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+  <!-- Conditionally start a local ActiveMQ broker. -->
+  <bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/>
+
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false')}" />
+    <property name="userName" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.username', '')}" />
+    <property name="password" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.password', '')}" />
   </bean>
 
-  <onmsgi:service ref="eventIpcManager">
-	<onmsgi:interfaces>
-   		<value>org.opennms.netmgt.model.events.EventForwarder</value>
-   		<value>org.opennms.netmgt.model.events.EventIpcManager</value>
-  		<value>org.opennms.netmgt.model.events.EventProxy</value>
-  		<value>org.opennms.netmgt.model.events.EventSubscriptionService</value>
-  	</onmsgi:interfaces>
-  </onmsgi:service>
+  <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
+    init-method="start" destroy-method="stop">
+    <property name="maxConnections" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.max-connections', '8')}" />
+    <property name="idleTimeout" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.idle-timeout', '30000')}" />
+    <property name="connectionFactory" ref="jmsConnectionFactory" />
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="pooledConnectionFactory" />
+    <property name="concurrentConsumers" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.concurrent-consumers', '10')}" />
+  </bean>
+
+  <!-- activemq component to be used by spring applicationContext/camelContext  -->
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig" />
+  </bean>
 
 </beans>

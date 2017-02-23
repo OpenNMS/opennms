@@ -31,16 +31,30 @@ package org.opennms.netmgt.dao.mock;
 import java.util.UUID;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class MockDistPollerDao extends AbstractMockDao<OnmsDistPoller,String> implements DistPollerDao {
     @Override
     protected void generateId(final OnmsDistPoller dp) {
-        dp.setName(UUID.randomUUID().toString());
+        dp.setId(UUID.randomUUID().toString());
     }
 
     @Override
     protected String getId(final OnmsDistPoller dp) {
-        return dp == null? null : dp.getName();
+        return dp == null? null : dp.getId();
+    }
+
+    @Override
+    public OnmsDistPoller whoami() {
+        final OnmsDistPoller defaultDistPoller = get(DEFAULT_DIST_POLLER_ID);
+        if (defaultDistPoller != null) {
+            return defaultDistPoller;
+        }
+        final OnmsDistPoller whoami = new OnmsDistPoller();
+        whoami.setId(DEFAULT_DIST_POLLER_ID);
+        whoami.setLabel("localhost");
+        whoami.setLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+        return whoami;
     }
 }

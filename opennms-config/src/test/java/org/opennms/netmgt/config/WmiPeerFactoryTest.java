@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -36,6 +35,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -45,13 +45,10 @@ import org.exolab.castor.xml.ValidationException;
  *
  */
 public class WmiPeerFactoryTest extends TestCase {
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        WmiPeerFactory.init();
+    private WmiPeerFactory getFactory(String amiConfigXml) throws IOException {
+        WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
+        factory.afterPropertiesSet();
+        return factory;
     }
 
     /**
@@ -71,11 +68,11 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
     }
@@ -101,13 +98,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -129,13 +126,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -157,13 +154,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -185,13 +182,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         // No optimization should occur because the addresses have different scope IDs
         assertEquals(1, factory.getConfig().getDefinitionCount());
@@ -223,13 +220,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -262,13 +259,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(2, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -300,13 +297,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -336,13 +333,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(1, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -373,13 +370,13 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
         assertEquals(3, factory.getConfig().getDefinition(0).getRangeCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         assertEquals(0, factory.getConfig().getDefinition(0).getSpecificCount());
@@ -405,15 +402,15 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("obscurityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+        assertEquals("obscurityFTW!", factory.getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
     }
 
     /**
@@ -433,15 +430,15 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("obscure!=secure", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("obscure!=secure", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
     }
     
     /**
@@ -461,15 +458,15 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("clarityFTW!", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
+        assertEquals("clarityFTW!", factory.getAgentConfig(InetAddress.getByName("1.1.1.1")).getPassword());
     }
 
     /**
@@ -489,15 +486,15 @@ public class WmiPeerFactoryTest extends TestCase {
         "</wmi-config>\n" + 
         "";
 
-        WmiPeerFactory factory = new WmiPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        WmiPeerFactory factory = getFactory(amiConfigXml);
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
 
-        WmiPeerFactory.optimize();
+        factory.optimize();
 
         assertEquals(1, factory.getConfig().getDefinitionCount());
         
-        assertEquals("aVerySecureOne", WmiPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("aVerySecureOne", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
     }
 
 }

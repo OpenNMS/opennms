@@ -1,0 +1,48 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== LdapsMonitor
+
+The LDAPS monitor tests the response of an SSL-enabled LDAP server.
+The LDAPS monitor is an SSL-enabled extension of the LDAP monitor with a default TCP port value of 636.
+All LdapMonitor parameters apply, so please refer to <<poller-ldap-monitor,LdapMonitor's documentation>> for more information.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.LdapsMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the LdapsMonitor
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                | Required | Default value
+| `port`                 | The destination port where connections shall be attempted. | optional | `636`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+[source, xml]
+----
+<!-- LDAPS service at OpenNMS.org is on port 6636 -->
+<service name="LDAPS" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="6636"/>
+  <parameter key="version" value="3"/>
+  <parameter key="searchbase" value="dc=opennms,dc=org"/>
+  <parameter key="searchfilter" value="uid=ulf"/>
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="ldaps"/>
+  <parameter key="ds-name" value="ldaps"/>
+</service>
+
+<monitor service="LDAPS" class-name="org.opennms.netmgt.poller.monitors.LdapsMonitor" />
+----

@@ -78,7 +78,7 @@ public class ShowNCSPathOperation implements Operation {
     private NCSCriteriaServiceManager m_serviceManager;
     
     @Override
-    public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, final OperationContext operationContext) {
         //Get the current NCS criteria from here you can get the foreignIds foreignSource and deviceA and Z
         for (Criteria criterium : operationContext.getGraphContainer().getCriteria()) {
             try {
@@ -112,7 +112,7 @@ public class ShowNCSPathOperation implements Operation {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Field createField(Item item, Object propertyId, Component uiContext) {
+            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
                 String pid = (String) propertyId;
 
                 ComboBox select = new ComboBox();
@@ -237,7 +237,6 @@ public class ShowNCSPathOperation implements Operation {
         ncsPathPrompt.setContent(promptForm);
         mainWindow.addWindow(ncsPathPrompt);
         promptForm.getField("Device A").setValue(defaultVertRef.getId());
-        return null;
     }
 
     private Collection<VertexRef> getVertexRefsForNCSService( NCSServiceCriteria storedCriteria ) {
@@ -251,7 +250,6 @@ public class ShowNCSPathOperation implements Operation {
     }
 
     protected void highlightEdgePaths(NCSServicePath path, GraphProvider graphProvider) {
-        // TODO Auto-generated method stub
         Edge edge = graphProvider.getEdge("nodes", path.getEdges().iterator().next().getId());
         edge.setStyleName("ncsSetPath");
     }

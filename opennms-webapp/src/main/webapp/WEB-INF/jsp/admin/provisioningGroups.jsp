@@ -134,12 +134,12 @@
           Last Modified:
           <c:choose>
             <c:when test="${empty groups[foreignSourceName].dateStamp}">Never</c:when>
-            <c:otherwise>${groups[foreignSourceName].dateStamp}</c:otherwise>
+            <c:otherwise><fmt:formatDate value="${groups[foreignSourceName].date}" type="BOTH" /></c:otherwise>
           </c:choose><br />
           Last Synchronization Requested:
           <c:choose>
             <c:when test="${empty groups[foreignSourceName].lastImport}">Never</c:when>
-            <c:otherwise>${groups[foreignSourceName].lastImport}</c:otherwise>
+            <c:otherwise><fmt:formatDate value="${groups[foreignSourceName].lastImportAsDate}" type="BOTH" /></c:otherwise>
           </c:choose>
         </h5>
   	  </td>
@@ -158,7 +158,7 @@
             Last Modified:
   	        <c:choose>
   	          <c:when test="${empty foreignSources[foreignSourceName].dateStamp}">Never (default foreign source definition is in use)</c:when>
-  	          <c:otherwise>${foreignSources[foreignSourceName].dateStampAsDate}</c:otherwise>
+  	          <c:otherwise><fmt:formatDate value="${foreignSources[foreignSourceName].dateStampAsDate}" type="BOTH" /></c:otherwise>
   	        </c:choose>
   	      </h5>
   	    </c:when>

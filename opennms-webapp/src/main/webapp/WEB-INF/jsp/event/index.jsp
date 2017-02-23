@@ -47,7 +47,6 @@
   <jsp:param name="headTitle" value="Events" />
   <jsp:param name="location" value="event" />  
   <jsp:param name="breadcrumb" value="Events" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 </jsp:include>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

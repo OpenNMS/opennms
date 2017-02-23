@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor
 
 @XmlRootElement(name="group", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_name", "m_ifType", "m_mibObjects", "m_includeGroups"})
+@XmlType(propOrder={"m_name", "m_ifType", "m_mibObjects", "m_mibObjProperties", "m_includeGroups"})
 @ValidateUsing("datacollection-config.xsd")
 public class Group implements Serializable {
     private static final long serialVersionUID = -4798682461748675616L;
@@ -116,6 +116,9 @@ public class Group implements Serializable {
      */
     @XmlElement(name="includeGroup")
     private List<String> m_includeGroups = new ArrayList<String>();
+
+    @XmlElement(name="property")
+    private List<MibObjProperty> m_mibObjProperties = new ArrayList<MibObjProperty>();
 
     public Group() {
         super();
@@ -227,6 +230,14 @@ public class Group implements Serializable {
         return m_includeGroups.remove(includeGroup);
     }
 
+    public List<MibObjProperty> getProperties() {
+        return m_mibObjProperties;
+    }
+
+    public void setProperties(List<MibObjProperty> mibObjProperties) {
+        this.m_mibObjProperties = mibObjProperties;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -234,6 +245,7 @@ public class Group implements Serializable {
         result = prime * result + ((m_ifType == null) ? 0 : m_ifType.hashCode());
         result = prime * result + ((m_includeGroups == null) ? 0 : m_includeGroups.hashCode());
         result = prime * result + ((m_mibObjects == null) ? 0 : m_mibObjects.hashCode());
+        result = prime * result + ((m_mibObjProperties == null) ? 0 : m_mibObjProperties.hashCode());
         result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
         return result;
     }
@@ -271,6 +283,13 @@ public class Group implements Serializable {
         } else if (!m_mibObjects.equals(other.m_mibObjects)) {
             return false;
         }
+        if (m_mibObjProperties == null) {
+            if (other.m_mibObjProperties != null) {
+                return false;
+            }
+        } else if (!m_mibObjProperties.equals(other.m_mibObjProperties)) {
+            return false;
+        }
         if (m_name == null) {
             if (other.m_name != null) {
                 return false;
@@ -283,7 +302,7 @@ public class Group implements Serializable {
 
     @Override
     public String toString() {
-        return "Group [name=" + m_name + ", ifType=" + m_ifType + ", mibObjects=" + m_mibObjects + ", includeGroups=" + m_includeGroups + "]";
+        return "Group [name=" + m_name + ", ifType=" + m_ifType + ", mibObjects=" + m_mibObjects + ", includeGroups=" + m_includeGroups + ", mibObjProperties=" + m_mibObjProperties + "]";
     }
 
     public void visit(final DatacollectionConfigVisitor visitor) {

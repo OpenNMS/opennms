@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import java.io.File;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class TcaCollectionResource.
@@ -45,8 +43,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
  * <pre>
  * &lt;datacollection-group name="Juniper TCA"&gt;
  *    &lt;resourceType name="juniperTcaEntry" label="Juniper TCA Entry" resourceLabel="Peer ${index}"&gt;
- *     &lt;persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/&gt;
- *     &lt;storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/&gt;
+ *     &lt;persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/&gt;
+ *     &lt;storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/&gt;
  *   &lt;/resourceType&gt;
  * &lt;/datacollection-group&gt;
  * </pre>
@@ -113,14 +111,10 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInterfaceLabel() +"]";
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getResourceDir(org.opennms.netmgt.model.RrdRepository)
-	 */
-	@Override
-	public File getResourceDir(RrdRepository repository) {
-		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
-		return new File(repository.getRrdBaseDir(), resourcePath);
-	}
+    @Override
+    public ResourcePath getPath() {
+        return m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
+    }
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()

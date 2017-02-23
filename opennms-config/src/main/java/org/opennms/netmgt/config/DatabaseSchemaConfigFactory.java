@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
+import org.opennms.netmgt.filter.api.FilterParseException;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -63,7 +64,7 @@ import org.opennms.netmgt.config.filter.Table;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  */
-public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
+public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -404,4 +405,37 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
             getReadLock().unlock();
         }
     }
+
+
+    /**
+     * Validate that a column is in the schema, add it's table to a list of tables,
+     * and return the full table.column name of the column.
+     *
+     * @param tables
+     *            a list of tables to add the column's table to
+     * @param column
+     *            the column to add
+     *
+     * @return table.column string
+     *
+     * @exception FilterParseException
+     *                if the column is not found in the schema
+     */
+    public String addColumn(final List<Table> tables, final String column) throws FilterParseException {
+        getReadLock().lock();
+        try {
+            final Table table = findTableByVisibleColumn(column);
+            if(table == null) {
+                final String message = "Could not find the column '" + column +"' in filter rule";
+                throw new FilterParseException(message);
+            }
+            if (!tables.contains(table)) {
+                tables.add(table);
+            }
+            return table.getName() + "." + column;
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
 }

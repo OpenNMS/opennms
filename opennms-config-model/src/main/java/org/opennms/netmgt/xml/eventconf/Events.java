@@ -37,14 +37,17 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -100,7 +103,7 @@ public class Events implements Serializable {
 	
 	@XmlTransient
 	private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<String, Events>();
-	
+
 	@XmlTransient
 	private Partition m_partition;
 	
@@ -109,7 +112,10 @@ public class Events implements Serializable {
 	
 	@XmlTransient
 	private List<Event> m_nullPartitionedEvents;
-	
+
+	@XmlTransient
+	private Map<String, Event> m_eventsByUei = new HashMap<String, Event>();
+
         @XmlTransient
         private List<Event> m_wildcardEvents;
         
@@ -332,17 +338,51 @@ public class Events implements Serializable {
         }
 
 	}
-	
 
-	public void loadEventFiles(Resource configResource) throws IOException {
-		m_loadedEventFiles.clear();
-		
-		for(String eventFile : m_eventFiles) {
-			Resource eventResource = getRelative(configResource, eventFile);
-			Events events = JaxbUtils.unmarshal(Events.class, eventResource);
-			if (events.getEventCount() <= 0) {
-				throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
-			}
+    public Map<String, Long> loadEventFiles(Resource configResource) throws IOException {
+        Map<String, Long> lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+        loadEventFilesIfModified(configResource, lastModifiedEventFiles);
+        return lastModifiedEventFiles;
+    }
+
+    public void loadEventFilesIfModified(Resource configResource, Map<String, Long> lastModifiedEventFiles) throws IOException {
+        // Remove any event files that we're previously loaded, and no
+        // longer appear in the list of event files
+        for(Iterator<Map.Entry<String, Events>> it = m_loadedEventFiles.entrySet().iterator(); it.hasNext(); ) {
+            String eventFile = it.next().getKey();
+            if(!m_eventFiles.contains(eventFile)) {
+                // The event file was previously loaded and has been removed
+                // from the list of event files
+                it.remove();
+            }
+        }
+
+        // Conditionally load or reload the event files
+        for(String eventFile : m_eventFiles) {
+            Resource eventResource = getRelative(configResource, eventFile);
+            long lastModified = eventResource.lastModified();
+
+            // Determine whether or not the file should be loaded
+            boolean shouldLoadFile = true;
+            if (lastModifiedEventFiles.containsKey(eventFile)
+                    && lastModifiedEventFiles.get(eventFile) == lastModified) {
+                shouldLoadFile = false;
+                // If we opt out to load a particular file, it must
+                // be already loaded
+                assert(m_loadedEventFiles.containsKey(eventFile));
+            }
+
+            // Skip any files that don't need to be loaded
+            if (!shouldLoadFile) {
+                continue;
+            }
+
+            lastModifiedEventFiles.put(eventFile, lastModified);
+
+            Events events = JaxbUtils.unmarshal(Events.class, eventResource);
+            if (events.getEventCount() <= 0) {
+                throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
+            }
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
             }
@@ -350,9 +390,9 @@ public class Events implements Serializable {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
             }
 
-			m_loadedEventFiles.put(eventFile, events);
-		}
-	}
+            m_loadedEventFiles.put(eventFile, events);
+        }
+    }
 
 	public boolean isSecureTag(String tag) {
 		return m_global == null ? false : m_global.isSecureTag(tag);
@@ -379,28 +419,37 @@ public class Events implements Serializable {
 				}
 			}
 		}
-		
-		
 	}
-	
+
+
+
 	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		// Atempt to match the event definition by UEI
+		final String ueiToMatch = matchingEvent.getUei();
+		if (ueiToMatch != null) {
+			final Event matchedEvent = m_eventsByUei.get(ueiToMatch);
+			if (matchedEvent != null) {
+				return matchedEvent;
+			}
+		}
+
+		// If the UEI match failed, fallback to searching with the matchers through the partitions
 		String key = m_partition.group(matchingEvent);
-		SortedSet<Event> potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
+		Collection<Event> potentialMatches = m_nullPartitionedEvents;
 		if (key != null) {
 			List<Event> events = m_partitionedEvents.get(key);
 			if (events != null) {
+			    potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
 			    potentialMatches.addAll(events);
 			}
 		}
-			
-			
-		
+
 		for(Event event : potentialMatches) {
 			if (event.matches(matchingEvent)) {
 				return event;
 			}
 		}
-		
+
 		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
 			Events subEvents = loadedEvents.getValue();
 			Event event = subEvents.findFirstMatchingEvent(matchingEvent);
@@ -408,7 +457,7 @@ public class Events implements Serializable {
 				return event;
 			}
 		}
-		
+
 		return null;
 	}
 	
@@ -449,7 +498,7 @@ public class Events implements Serializable {
 	
 	public void initialize(Partition partition, EventOrdering eventOrdering) {
 	    
-	        m_ordering = eventOrdering;
+		m_ordering = eventOrdering;
 	    
 		for(Event event : m_events) {
 			event.initialize(m_ordering.next());
@@ -462,22 +511,52 @@ public class Events implements Serializable {
 			events.initialize(partition, m_ordering.subsequence());
 		}
 
+		indexEventsByUei();
+	}
+
+	private void indexEventsByUei() {
+		m_eventsByUei.clear();
+		final Set<String> filesProcessed = new HashSet<>();
+		indexEventsByUei(this, filesProcessed);
+	}
+
+	private void indexEventsByUei(Events eventFile, Set<String> filesProcessed) {
+		for(Event event : eventFile.m_events) {
+			final String uei = event.getUei();
+			if (uei == null) {
+				// Skip events with no UEI
+				continue;
+			}
+			// Don't overwrite existing keys, first one wins
+			m_eventsByUei.putIfAbsent(uei, event);
+		}
+
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			if (filesProcessed.contains(loadedEvents.getKey())) {
+				// We already processed this file, don't recurse - avoid stack overflows
+				continue;
+			}
+			filesProcessed.add(loadedEvents.getKey());
+			indexEventsByUei(loadedEvents.getValue(), filesProcessed);
+		}
 	}
 
 	public Events getLoadEventsByFile(String relativePath) {
 		return m_loadedEventFiles.get(relativePath);
 	}
 
-	public void addLoadedEventFile(String relativePath, Events events) {
-		m_eventFiles.add(relativePath);
-		m_loadedEventFiles.put(relativePath, events);
-	}
+    public void addLoadedEventFile(String relativePath, Events events) {
+        if (!m_eventFiles.contains(relativePath)) {
+            m_eventFiles.add(relativePath);
+        }
+        m_loadedEventFiles.put(relativePath, events);
+    }
 
 	public void removeLoadedEventFile(String relativePath) {
 		m_eventFiles.remove(relativePath);
 		m_loadedEventFiles.remove(relativePath);
 	}
-	
+
 	public void saveEvents(Resource resource) {
 		final StringWriter stringWriter = new StringWriter();
 		JaxbUtils.marshal(this, stringWriter);
@@ -528,7 +607,4 @@ public class Events implements Serializable {
 		
 		saveEvents(resource);
 	}
-
-
-
 }

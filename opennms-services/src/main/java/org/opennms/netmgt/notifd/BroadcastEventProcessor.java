@@ -45,7 +45,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
@@ -53,6 +52,7 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -63,16 +63,18 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>BroadcastEventProcessor class.</p>
@@ -84,11 +86,8 @@ import org.slf4j.LoggerFactory;
 public final class BroadcastEventProcessor implements EventListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
-    
-    /**
-     */
+
     private volatile Map<String, NoticeQueue> m_noticeQueues;
-    private volatile EventIpcManager m_eventManager;
     private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
     private volatile NotificationManager m_notificationManager;
     private volatile NotifdConfigManager m_notifdConfigManager;
@@ -96,6 +95,13 @@ public final class BroadcastEventProcessor implements EventListener {
     private volatile UserManager m_userManager;
     private volatile GroupManager m_groupManager;
     private volatile NotificationCommandManager m_notificationCommandManager;
+    private volatile EventConfDao m_eventConfDao;
+
+    @Autowired
+    private volatile EventIpcManager m_eventManager;
+
+    @Autowired
+    private volatile EventUtil m_eventUtil;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -143,7 +149,9 @@ public final class BroadcastEventProcessor implements EventListener {
         if (m_notificationCommandManager == null) {
             throw new IllegalStateException("property notificationCommandManager not set");
         }
-
+        if (m_eventUtil == null) {
+            throw new IllegalStateException("property eventUtil not set");
+        }
     }
 
     /**
@@ -349,7 +357,7 @@ public final class BroadcastEventProcessor implements EventListener {
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
             
-            AbstractEventUtil.getInstance().expandMapValues(parmMap, 
+            m_eventUtil.expandMapValues(parmMap,
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
@@ -664,7 +672,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         if (getGroupManager().hasGroup(targetName)) {
             count = getGroupManager().getGroup(targetName).getUserCount();
-        } else if (getUserManager().hasRole(targetName)) {
+        } else if (getUserManager().hasOnCallRole(targetName)) {
             count = getUserManager().countUsersWithRole(targetName);
         } else if (getUserManager().hasUser(targetName)) {
             count = 1;
@@ -698,7 +706,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    static Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
+    protected Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
         Map<String, String> paramMap = new HashMap<String, String>();
         
         NotificationManager.addNotificationParams(paramMap, notification);
@@ -714,23 +722,47 @@ public final class BroadcastEventProcessor implements EventListener {
         String numericMessage = NotificationManager.expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
         String subjectLine = NotificationManager.expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
         
-        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
+        Map<String, Map<String, String>> decodeMap = getVarbindsDecodeMap(event.getUei());
+        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap, decodeMap);
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
         paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
-        AbstractEventUtil.getInstance().expandMapValues(paramMap, event);
+        m_eventUtil.expandMapValues(paramMap, event);
 
         return Collections.unmodifiableMap(paramMap);
-        
     }
 
-    private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = AbstractEventUtil.getInstance().expandParms(value, event);
+    protected  Map<String, Map<String, String>> getVarbindsDecodeMap(String eventUei) {
+        if (m_eventConfDao == null) {
+            return null;
+        }
+        org.opennms.netmgt.xml.eventconf.Event event = m_eventConfDao.findByUei(eventUei);
+        if (event == null) {
+            return null;
+        }
+        if (event.getVarbindsdecodeCollection().isEmpty()) {
+            return null;
+        }
+        Map<String, Map<String, String>> decodeMap = new HashMap<String, Map<String, String>>();
+        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+            String paramId = vb.getParmid();
+            if (decodeMap.get(paramId) == null) {
+                decodeMap.put(paramId, new HashMap<String,String>());
+            }
+            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodeCollection()) {
+                decodeMap.get(paramId).put(d.getVarbindvalue(), d.getVarbinddecodedstring());
+            }
+        }
+        return decodeMap;
+    }
+
+    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap, Map<String, Map<String, String>> decodeMap) {
+        String result = m_eventUtil.expandParms(value, event, decodeMap);
         paramMap.put(key, (result == null ? value : result));
     }
 
@@ -772,7 +804,7 @@ public final class BroadcastEventProcessor implements EventListener {
             
             if (getGroupManager().hasGroup((targetName))) {
                 tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-            } else if (getUserManager().hasRole(targetName)) {
+            } else if (getUserManager().hasOnCallRole(targetName)) {
                 tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
             } else if (getUserManager().hasUser(targetName)) {
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
@@ -1065,7 +1097,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -1074,7 +1106,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
@@ -1208,4 +1240,15 @@ public final class BroadcastEventProcessor implements EventListener {
         m_noticeQueues = noticeQueues;
     }
 
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
+    }
+
+    public EventUtil getEventUtil() {
+        return m_eventUtil;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
+    }
 } // end class

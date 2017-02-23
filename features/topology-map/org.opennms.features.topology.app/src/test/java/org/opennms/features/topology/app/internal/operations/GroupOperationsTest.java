@@ -55,11 +55,11 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
+import org.opennms.features.topology.app.internal.TestOperationContext;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -67,41 +67,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class GroupOperationsTest {
-
-	private static class TestOperationContext implements OperationContext {
-
-		private final GraphContainer m_graphContainer;
-		private final UI m_window;
-
-		public TestOperationContext(GraphContainer graphContainer) {
-			m_graphContainer = graphContainer;
-			m_window = new UI() {
-				@Override
-				protected void init(VaadinRequest request) {
-				}};
-		}
-
-		@Override
-		public UI getMainWindow() {
-			return m_window;
-		}
-
-		@Override
-		public GraphContainer getGraphContainer() {
-			return m_graphContainer;
-		}
-
-		@Override
-		public boolean isChecked() {
-			return false;
-		}
-
-		@Override
-		public DisplayLocation getDisplayLocation() {
-			return DisplayLocation.MENUBAR;
-		}
-
-	}
 
 	private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
 		return new TestOperationContext(mockedContainer);
@@ -196,7 +161,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -256,7 +221,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -340,7 +305,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group2.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -392,7 +357,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Item");
+					Field<String> field = form.getField("Item");
 					field.setValue(vertex1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -446,7 +411,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Item");
+					Field<String> field = form.getField("Item");
 					field.setValue(vertex1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -493,7 +458,7 @@ public class GroupOperationsTest {
 			Component component = itr.next();
 			try {
 				Form form = (Form)component;
-				Field field = form.getField("Group Label");
+				Field<String> field = form.getField("Group Label");
 				field.setValue(newLabel);
 				// Make sure that the value was set, Vaadin will ignore the value
 				// if, for instance, the specified value is not in the Select list
@@ -532,7 +497,7 @@ public class GroupOperationsTest {
             Form form = getForm(getPrompt(context));
             
             
-            Field field = form.getField("Group");
+            Field<String> field = form.getField("Group");
             field.setValue(group1.getId());
             Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
             try {
@@ -567,7 +532,7 @@ public class GroupOperationsTest {
             Form form = getForm(getPrompt(context));
             
             // we try to add the group to itself. There is no selection
-            Field field = form.getField("Group");
+            Field<String> field = form.getField("Group");
             field.setValue(group1.getId());
             Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
             form.commit();
@@ -665,7 +630,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group Label");
+					Field<String> field = form.getField("Group Label");
 					field.setValue(m_topologyProvider.getParent(vertex1).getLabel());
 					// Make sure that the value was set
 					assertEquals(m_topologyProvider.getParent(vertex1).getLabel(), field.getValue());
@@ -712,7 +677,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group Label");
+					Field<String> field = form.getField("Group Label");
 					field.setValue("Oh noes a new name");
 					// Make sure that the value was set
 					assertEquals("Oh noes a new name", field.getValue());
@@ -811,7 +776,7 @@ public class GroupOperationsTest {
 	         Form form = getForm(getPrompt(context));
 	            
 	         // we try to add the group to itself. There is no selection
-	         Field field = form.getField("Group");
+	         Field<String> field = form.getField("Group");
 	         field.setValue(group1.getId());
 	         Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
 	         form.commit();

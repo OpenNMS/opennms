@@ -29,40 +29,34 @@
 package org.opennms.netmgt.correlation.drools;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 
 public class MockCorrelator implements CorrelationEngineRegistrar {
     
-	List<CorrelationEngine> m_engines = new LinkedList<CorrelationEngine>();
-
-	@Override
+    private final Map<String,CorrelationEngine> m_engines = new HashMap<>();
+    
+    @Override
     public void addCorrelationEngine(CorrelationEngine engine) {
-        m_engines.add(engine);
+        m_engines.put(engine.getName(), engine);
     }
     
     @Override
-	public void addCorrelationEngines(CorrelationEngine... engines) {
-    	m_engines.addAll(Arrays.asList(engines));
-	}
-
+    public void addCorrelationEngines(CorrelationEngine... engines) {
+        Arrays.stream(engines).forEach(engine -> m_engines.put(engine.getName(), engine));
+    }
     
-	@Override
+    @Override
     public CorrelationEngine findEngineByName(String name) {
-        for (CorrelationEngine engine : m_engines) {
-            if (name.equals(engine.getName())) {
-                return engine;
-            }
-        }
-        return null;
+        return m_engines.get(name);
     }
-
-	@Override
-    public List<CorrelationEngine> getEngines() {
-        return m_engines;
+    
+    @Override
+    public Collection<CorrelationEngine> getEngines() {
+        return m_engines.values();
     }
-
 }

@@ -33,13 +33,14 @@ dbSync()
     mkdir $SYNC_HOME/db
   fi
 
-  pg_dump -i -h $PRIMARY_NMS -U opennms opennms > $SYNC_HOME/db/opennms.sql
+  pg_dump -h $PRIMARY_NMS -U opennms -Fc -f $SYNC_HOME/db/opennms.pgdump opennms
 
   if [ $? -eq 0 ]
   then
     echo "Dropping and recreating $FAILOVER_DB Database locally..."
-    psql -U opennms template1 -c "DROP DATABASE $FAILOVER_DB;" 
-    psql -U opennms template1 -c "CREATE DATABASE $FAILOVER_DB ENCODING 'unicode';"
+    dropdb -U postgres -h localhost $FAILOVER_DB
+    createdb -U postgres -h localhost -O opennms -E utf8 $FAILOVER_DB
+    psql -U postgres -h localhost -c "GRANT ALL ON DATABASE $FAILOVER_DB TO opennms;"
   else
     exit 1
   fi
@@ -47,7 +48,7 @@ dbSync()
   if [ $? -eq 0 ]
   then
     echo "Importing data exported from $PRIMARY_NMS into recreated opennms_failover DB..."
-    psql -U opennms $FAILOVER_DB < $SYNC_HOME/db/opennms.sql
+    pg_restore -U postgres -h localhost -d $FAILOVER_DB $SYNC_HOME/db/opennms.pgdump
   else
     exit 1
   fi

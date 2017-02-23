@@ -34,5 +34,18 @@ import org.opennms.netmgt.model.OnmsDistPoller;
  * <p>DistPollerDao interface.</p>
  */
 public interface DistPollerDao extends OnmsDao<OnmsDistPoller, String> {
-    
+
+    public static final String DEFAULT_DIST_POLLER_ID = "00000000-0000-0000-0000-000000000000";
+
+    /**
+     * This function returns the {@link OnmsDistPoller} identity of the
+     * local system so that events and other objects can be associated with
+     * the local system.
+     * 
+     * @see https://en.wikipedia.org/wiki/Whoami
+     * 
+     * @return
+     */
+    OnmsDistPoller whoami();
+
 }

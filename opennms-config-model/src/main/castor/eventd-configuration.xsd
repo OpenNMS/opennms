@@ -88,11 +88,11 @@
         </simpleType>
       </attribute>
 
-      <attribute name="getNextEventID" type="string" use="required">
+      <attribute name="getNextEventID" type="string" use="optional">
         <annotation>
           <documentation>SQL query to get next value of the 'nodeNxtId'
           database sequence. This is used to make the access database
-          independant.</documentation>
+          independent.</documentation>
         </annotation>
       </attribute>
 

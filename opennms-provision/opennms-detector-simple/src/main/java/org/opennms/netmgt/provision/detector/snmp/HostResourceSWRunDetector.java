@@ -40,19 +40,16 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import antlr.StringUtils;
 
-@Component
 /**
  * <p>HostResourceSWRunDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class HostResourceSWRunDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSWRunDetector.class);
@@ -94,14 +91,9 @@ public class HostResourceSWRunDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         
         boolean status = false;
-
-        // Retrieve this interface's SNMP peer object
-        //
-        SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + address);
 
         // Get configuration parameters
         //
@@ -117,7 +109,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
         // Establish SNMP session with interface
         //
-        final String hostAddress = InetAddressUtils.str(address);
+        final String hostAddress = InetAddressUtils.str(agentConfig.getAddress());
 		try {
             LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 

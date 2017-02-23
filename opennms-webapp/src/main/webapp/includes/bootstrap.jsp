@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory
 	"%>
@@ -72,6 +73,7 @@
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <meta name="apple-itunes-app" content="app-id=968875097">
 
   <!-- Set GWT property to get browsers locale -->
   <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
@@ -86,30 +88,69 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.3.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+  <c:if test="${param.norequirejs != 'true' && param.usebackshift != 'true' }">
+    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.js"></script>
+  </c:if>
 
-    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
-        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
-    </c:if>
+    <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
+
     <c:if test="${param.storageAdmin == 'true'}">
       <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
     </c:if>
 
-    <c:if test="${param.enableSpringDojo == 'true'}">	
+    <c:if test="${param.enableSpringDojo == 'true'}">
       <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
+
+    <c:if test="${param.renderGraphs == 'true'}">
+      <!-- Graphing -->
+      <script type="text/javascript">
+        // Global scope
+        window.onmsGraphContainers = {
+          'engine': '<%= TimeSeries.getGraphEngine() %>',
+          'baseHref': '<%= baseHref %>'
+        };
+      </script>
+      <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
+    </c:if>
+
+<c:if test="${param.usebackshift == 'true'}">
+  <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
+  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
+</c:if>
+
+  <c:if test="${param.usegeomap == 'true'}">
+    <script type="text/javascript" src="<%= baseHref %>lib/leaflet/dist/leaflet-src.js" ></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/leaflet.markercluster/dist/leaflet.markercluster-src.js" ></script>
+    <script type="text/javascript" src="<%= baseHref %>geomap/js/geomap.js"></script>
+    <link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
+  </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
@@ -133,6 +174,9 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
+<c:if test="${param.ngapp != null}">
+  ng-app="${param.ngapp}"
+</c:if>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>

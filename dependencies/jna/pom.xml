@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jna-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JNA</name>
+  <name>OpenNMS :: Dependencies :: JNA</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JNA
@@ -18,12 +18,12 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>3.2.7-ONMS</version>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
-      <artifactId>platform</artifactId>
-      <version>3.2.7-ONMS</version>
+      <artifactId>jna-platform</artifactId>
+      <version>4.2.1</version>
     </dependency>
   </dependencies>
   <repositories>

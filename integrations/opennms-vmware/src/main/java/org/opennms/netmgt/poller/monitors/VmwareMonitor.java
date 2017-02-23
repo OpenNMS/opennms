@@ -45,6 +45,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,8 @@ public class VmwareMonitor extends AbstractServiceMonitor {
                 return PollStatus.unknown();
             }
         }
+
+        boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
 
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 
@@ -194,7 +197,11 @@ public class VmwareMonitor extends AbstractServiceMonitor {
             if ("poweredOn".equals(powerState)) {
                 serviceStatus = PollStatus.available();
             } else {
-                serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'");
+                if (ignoreStandBy && "standBy".equals(powerState)) {
+                    serviceStatus = PollStatus.up();
+                } else {
+                    serviceStatus = PollStatus.unavailable("The system's state is '" + powerState + "'");
+                }
             }
 
             vmwareViJavaAccess.disconnect();

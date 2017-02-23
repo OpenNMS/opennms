@@ -1,51 +1,59 @@
 <?xml version="1.0"?>
-
 <datacollection-group name="AKCP sensorProbe">
 
   <!-- AKCP sensorProbe -->
   <resourceType name="hhmsSensorArrayTemp" label="AKCP" resourceLabel="${spTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="hhmsSensorArrayHumid" label="AKCP" resourceLabel="${spHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
   <!-- AKCP securityProbe -->
   <resourceType name="secTempIndex" label="Temperature sensor" resourceLabel="(Index: ${secTempIdx}) Temperature: ${secTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secHumidityIndex" label="Humidity sensor" resourceLabel="(Index: ${secHumidityIdx}) Humidity: ${secHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="sec4to20maIndex" label="4 to 20mA sensor" resourceLabel="(Index: ${sec4to20maIdx}) 4 to 20mA: ${sec4to20maDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secDcVoltIndex" label="DC Voltage" resourceLabel="(Index: ${secDcVoltIdx}) DC Voltage: ${secDcVoltDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secAirflowIndex" label="Airflow" resourceLabel="(Index: ${secAirflowIdx}) Airflow: ${secAirflowDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secThermostatIndex" label="Thermostat" resourceLabel="(Index: ${secThermostatIdx}) Thermostat: ${secThermostatDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
   <!-- AKCP sensorProbe -->
   <group name = "akcp-sensor-temperature" ifType = "all">
     <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1" instance="hhmsSensorArrayTemp" alias="spTempDescr"  type="string" />
     <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.3" instance="hhmsSensorArrayTemp" alias="spTempDegree" type="gauge" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.7" instance="hhmsSensorArrayTemp" alias="spTempHWarn" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.8" instance="hhmsSensorArrayTemp" alias="spTempHCrit" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.9" instance="hhmsSensorArrayTemp" alias="spTempLWarn" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.10" instance="hhmsSensorArrayTemp" alias="spTempLCrit" type="integer" />
   </group>
+
   <group name = "akcp-sensor-humidity" ifType = "all">
     <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1" instance="hhmsSensorArrayHumid" alias="spHumidityDescr"   type="string"/>
     <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.3" instance="hhmsSensorArrayHumid" alias="spHumidityPercent" type="gauge"/>
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.7" instance="hhmsSensorArrayHumid" alias="spHumidityHWarn" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.8" instance="hhmsSensorArrayHumid" alias="spHumidityHCrit" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.9" instance="hhmsSensorArrayHumid" alias="spHumidityLWarn" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.10" instance="hhmsSensorArrayHumid" alias="spHumidityLCrit" type="integer" />
   </group>
 
   <!-- AKCP securityProbe -->

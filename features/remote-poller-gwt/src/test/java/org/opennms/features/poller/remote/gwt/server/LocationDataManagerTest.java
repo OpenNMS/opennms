@@ -43,8 +43,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.easymock.IArgumentMatcher;
 import org.junit.Before;
@@ -64,10 +64,11 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdate
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,7 +82,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 @ContextConfiguration(locations = {
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
@@ -95,6 +96,9 @@ import de.novanic.eventservice.service.EventExecutorService;
 public class LocationDataManagerTest implements InitializingBean {
     
     private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+    
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
     
     @Autowired
     private LocationMonitorDao m_locationMonitorDao;
@@ -127,7 +131,7 @@ public class LocationDataManagerTest implements InitializingBean {
     public void testHandleAllMonitoringLocationDefinitions() {
         LocationDefHandler handler = m_easyMockUtils.createMock(LocationDefHandler.class);
         handler.start(2880);
-        handler.handle(isA(OnmsMonitoringLocationDefinition.class));
+        handler.handle(isA(OnmsMonitoringLocation.class));
         expectLastCall().times(2880);
         handler.finish();
         
@@ -191,15 +195,15 @@ public class LocationDataManagerTest implements InitializingBean {
     }
     
     @Test
-    public void testGetSatusDetailsForLocation() {
+    public void testGetStatusDetailsForLocation() {
         
-        OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition("00002");
+        OnmsMonitoringLocation def = m_monitoringLocationDao.get("00002");
         
         m_locationDataService.getStatusDetailsForLocation(def);
     }
     
     @Test
-    public void testGetSatusDetailsForApplication() {
+    public void testGetStatusDetailsForApplication() {
         String appName = "Domain Controllers";
 
         int count = 100;

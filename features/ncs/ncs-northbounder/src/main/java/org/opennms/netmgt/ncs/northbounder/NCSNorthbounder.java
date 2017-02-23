@@ -32,35 +32,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
@@ -84,7 +71,6 @@ public class NCSNorthbounder extends AbstractNorthbounder {
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {
-
         //this is a safe call because the method returns -1 if it is already installed (by PageSequenceMonitor, etc.)
         java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
     }
@@ -115,7 +101,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 
         if(m_config.getAcceptableUeis() != null && m_config.getAcceptableUeis().size() != 0 && !m_config.getAcceptableUeis().contains(alarm.getUei())) return false;
 
-        Map<String, String> alarmParms = getParameterMap(alarm.getEventParms());
+        final Map<String, String> alarmParms = alarm.getParameters();
 
         // in order to determine the service we need to have the following parameters set in the events
         if (!alarmParms.containsKey(COMPONENT_TYPE)) return false;
@@ -145,40 +131,13 @@ public class NCSNorthbounder extends AbstractNorthbounder {
     private ServiceAlarm toServiceAlarm(NorthboundAlarm alarm) {
         AlarmType alarmType = alarm.getAlarmType();
 
-        Map<String, String> alarmParms = getParameterMap(alarm.getEventParms());
+        final Map<String, String> alarmParms = alarm.getParameters();
 
         String id = alarmParms.get(COMPONENT_FOREIGN_SOURCE)+":"+alarmParms.get(COMPONENT_FOREIGN_ID);
         String name = alarmParms.get(COMPONENT_NAME);
 
         return new ServiceAlarm(id, name, alarmType == AlarmType.PROBLEM ? "Down" : "Up");
     }
-
-    Map<String, String> getParameterMap(String parmString) {
-
-        Map<String, String> parmMap = new HashMap<String, String>();
-
-        String[] parms = parmString.split(";");
-
-        for(String parm : parms) {
-            if (parm.endsWith("(string,text)")) {
-                // we only include string valued keys in the map
-                parm = parm.substring(0, parm.length()-"(string,text)".length());
-
-                int eq = parm.indexOf('=');
-                if (0 < eq && eq < parm.length()) {
-                    String key = parm.substring(0, eq);
-                    String val = parm.substring(eq+1);
-                    parmMap.put(key, val);
-                }
-            }
-        }
-
-        return parmMap;
-
-    }
-
-
-
 
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
@@ -198,57 +157,61 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 
         int connectionTimeout = 3000;
         int socketTimeout = 3000;
-        Integer retryCount = Integer.valueOf(3);
+        Integer retryCount = 3;
 
         HttpVersion httpVersion = determineHttpVersion(m_config.getHttpVersion());        
-        String policy = CookiePolicy.BROWSER_COMPATIBILITY;
 
         URI uri = m_config.getURI();
+        System.err.println("uri = " + uri);
 
-        DefaultHttpClient client = new DefaultHttpClient(buildParams(httpVersion, connectionTimeout,
-                                                                     socketTimeout, policy, m_config.getVirtualHost()));
-
-        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
+        final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                .setSocketTimeout(socketTimeout)
+                .setConnectionTimeout(connectionTimeout)
+                .setRetries(retryCount)
+                .useBrowserCompatibleCookies()
+                .dontReuseConnections();
 
         if ("https".equals(uri.getScheme())) {
-            final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-            final Scheme https = registry.getScheme("https");
-
-            // Override the trust validation with a lenient implementation
-            SSLSocketFactory factory = null;
-
             try {
-                factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            } catch (Throwable e) {
-                throw new NorthbounderException(e);
+                clientWrapper.useRelaxedSSL("https");
+            } catch (final GeneralSecurityException e) {
+                throw new NorthbounderException("Failed to configure Relaxed SSL handling.", e);
             }
-
-            final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
-            // This will replace the existing "https" schema
-            registry.register(lenient);
         }
 
-        HttpEntityEnclosingRequestBase method = m_config.getMethod().getRequestMethod(uri);
+        final HttpEntityEnclosingRequestBase method = m_config.getMethod().getRequestMethod(uri);
 
+        if (m_config.getVirtualHost() != null && !m_config.getVirtualHost().trim().isEmpty()) {
+            method.setHeader(HTTP.TARGET_HOST, m_config.getVirtualHost());
+        }
+        if (m_config.getUserAgent() != null && !m_config.getUserAgent().trim().isEmpty()) {
+            method.setHeader(HTTP.USER_AGENT, m_config.getUserAgent());
+        }
+        method.setProtocolVersion(httpVersion);
         method.setEntity(entity);
 
-        method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, m_config.getUserAgent());
-
-        HttpResponse response = null;
+        CloseableHttpResponse response = null;
         try {
-            response = client.execute(method);
+            System.err.println("execute: " + method);
+            response = clientWrapper.execute(method);
         } catch (ClientProtocolException e) {
             throw new NorthbounderException(e);
         } catch (IOException e) {
             throw new NorthbounderException(e);
+        } finally {
+            IOUtils.closeQuietly(clientWrapper);
         }
 
         if (response != null) {
-            int code = response.getStatusLine().getStatusCode();
-            HttpResponseRange range = new HttpResponseRange("200-399");
-            if (!range.contains(code)) {
-                LOG.warn("response code out of range for uri: {}.  Expected {} but received {}", uri, range, code);
-                throw new NorthbounderException("response code out of range for uri:" + uri + ".  Expected " + range + " but received " + code);
+            try {
+                int code = response.getStatusLine().getStatusCode();
+                final HttpResponseRange range = new HttpResponseRange("200-399");
+                if (!range.contains(code)) {
+                    LOG.warn("response code out of range for uri: {}.  Expected {} but received {}", uri, range, code);
+                    throw new NorthbounderException("response code out of range for uri:" + uri + ".  Expected " + range + " but received " + code);
+                }
+            } finally {
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
 
@@ -290,18 +253,6 @@ public class NCSNorthbounder extends AbstractNorthbounder {
             httpVersion = HttpVersion.HTTP_1_1;
         }
         return httpVersion;
-    }
-
-    private HttpParams buildParams(HttpVersion protocolVersion, int connectionTimeout, int socketTimeout, String policy, String vHost) {
-        HttpParams parms = new BasicHttpParams();
-        parms.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, protocolVersion);
-        parms.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout);
-        parms.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, socketTimeout);
-        parms.setParameter(ClientPNames.COOKIE_POLICY, policy);
-        if (vHost != null) {
-            parms.setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(vHost, 8080));
-        }
-        return parms;
     }
 
     public NCSNorthbounderConfig getConfig() {

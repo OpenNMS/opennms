@@ -41,9 +41,7 @@ import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.topology.CdpInterface;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
-import org.opennms.netmgt.model.topology.NodeToNodeLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
@@ -149,9 +147,11 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     public List<CdpTopologyLink> findLinksForTopology() {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                Map<String, CdpTopologyLink> mapToLink = new HashMap<String,CdpTopologyLink>();
-                for (CdpTopologyLink link: convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list())){
+               List<CdpTopologyLink> alllinks = convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list());
+               for (CdpTopologyLink link: alllinks){
                     String sourcekey=link.getSrcNodeId()+link.getSrcIfName();
                     String targetkey=link.getTargetNodeId()+link.getTargetIfName();
                     if (mapToLink.containsKey(sourcekey)) {
@@ -180,16 +180,16 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                     }
                     mapToLink.put(sourcekey, link);
                     mapToLink.put(targetkey, link);
-                }
-                List<Integer> ids = new ArrayList<Integer>();
-                List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
-                for (CdpTopologyLink link: mapToLink.values()) {
+               }
+               List<Integer> ids = new ArrayList<Integer>();
+               List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
+               for (CdpTopologyLink link: mapToLink.values()) {
                     if (ids.contains(link.getSourceId()))
                         continue;
                     links.add(link);
                     ids.add(link.getSourceId());
-                }
-                return links;
+               }
+               return links;
             }
         });
     }
@@ -198,6 +198,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     public List<CdpTopologyLink> findLinksForTopologyByIds(final Integer... ids) {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
 
                 StringBuffer idList = new StringBuffer();
@@ -224,10 +225,17 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     }
 
     @Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",nodeId,now)) {
-			delete(link);
-		}
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+	for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",nodeId,now)) {
+	    delete(link);
 	}
-    
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? ",nodeId)) {
+            delete(link);
+        }
+    }
+
 }

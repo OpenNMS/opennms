@@ -41,9 +41,8 @@ public class AlarmTableCellStyleGenerator implements CellStyleGenerator {
     @Override
     public String getStyle(Table source, Object itemId, Object propertyId) {
         if (propertyId == null && source.getContainerProperty(itemId, "severityId") != null) {
-            StringBuffer retval = new StringBuffer();
             Integer severity = (Integer) source.getContainerProperty(itemId, "severityId").getValue();
-            Property prop = source.getContainerProperty(itemId, "acknowledged");
+            Property<?> prop = source.getContainerProperty(itemId, "acknowledged");
             Boolean acknowledged = false;
             if (prop != null) {
                 acknowledged = (Boolean) prop.getValue();

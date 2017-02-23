@@ -28,19 +28,13 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class SnmpWalker implements AutoCloseable {
 
-public abstract class SnmpWalker implements Closeable {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
-    
     protected abstract static class WalkerPduBuilder extends PduBuilder {
         protected WalkerPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
@@ -61,7 +55,9 @@ public abstract class SnmpWalker implements Closeable {
     private boolean m_error = false;
     private String m_errorMessage = "";
     private Throwable m_errorThrowable = null;
-    
+
+    private SnmpWalkCallback m_callback;
+
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepetitions, CollectionTracker tracker) {
         m_address = address;
         m_signal = new CountDownLatch(1);
@@ -72,6 +68,16 @@ public abstract class SnmpWalker implements Closeable {
         m_tracker.setMaxRepetitions(maxRepetitions);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
+    }
+
+    /**
+     * Sets an (optional) callback that will be triggered when the walk was successfully completed,
+     * or failed due to some error.
+     *
+     * @param callback the callback
+     */
+    public void setCallback(SnmpWalkCallback callback) {
+        m_callback = callback;
     }
 
     protected abstract WalkerPduBuilder createPduBuilder(int maxVarsPerPdu);
@@ -157,15 +163,22 @@ public abstract class SnmpWalker implements Closeable {
 
     private void finish() {
         signal();
-        try {
-            close();
-        } catch (IOException e) {
-            LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_address, e);
+        // Trigger the callback after the latch was decreased and the session was closed.
+        if (m_callback != null) {
+            Throwable t = null;
+            if (failed()) {
+                t = getErrorThrowable();
+                if (t == null) {
+                    // Not all of the failures provide an exception, so we generate one if necessary
+                    t = new Exception(getErrorMessage());
+                }
+            }
+            m_callback.complete(this, t);
         }
     }
 
     @Override
-    public abstract void close() throws IOException;
+    public abstract void close();
 
     public final String getName() {
         return m_name;
@@ -183,13 +196,14 @@ public abstract class SnmpWalker implements Closeable {
     public void waitFor() throws InterruptedException {
         m_signal.await();
     }
-    
-    public void waitFor(long timeout) throws InterruptedException {
-        if (m_signal.await(timeout, TimeUnit.MILLISECONDS)) {
-            // Everything completed on time
-        } else {
-            handleTimeout("Timeout of " + timeout + " expired while waiting for " + getClass().getSimpleName() + " to finish");
-        }
+
+    public boolean waitFor(long timeout) throws InterruptedException {
+        return m_signal.await(timeout, TimeUnit.MILLISECONDS);
+        /*
+         * NOTE: It is wrong to call handleTimeout here (which someone added). A timeout waiting for an agent respond
+         * is NOT the same as deciding you want to wait a while to see if the walker has finished and then do something
+         * else and then come back and potentially wait for another few millis.
+         */ 
     }
     
     // processErrors returns true if we need to retry the request and false otherwise

@@ -41,7 +41,6 @@ import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -54,7 +53,6 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
@@ -173,29 +171,21 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     @Override
     public InputStream getTemplateStream(String id) {
-        InputStream reportTemplateStream = null;
-
         try {
             String reportTemplateFolder = m_jrTemplateResource.getFile().getPath();
-
             for (JasperReportDefinition report : m_LocalJasperReports.getReportList()) {
                 if (id.equals(report.getId())) {
                     try {
-                        reportTemplateStream = new FileInputStream(
-                                new File(
-                                        reportTemplateFolder + "/" + report.getTemplate()));
+                        return new FileInputStream(new File(reportTemplateFolder + "/" + report.getTemplate()));
                     } catch (FileNotFoundException e) {
-                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder);
-
-                        //TODO indigo: Add e.message to error message
-                        e.printStackTrace();
+                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder, e);
                     }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage(), e);
         }
-        return reportTemplateStream;
+        return null;
     }
 
     /**

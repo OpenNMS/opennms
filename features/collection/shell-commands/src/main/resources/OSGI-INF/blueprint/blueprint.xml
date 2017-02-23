@@ -1,0 +1,44 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="mandatory"/>
+
+    <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient" availability="mandatory"/>
+
+    <reference id="serviceCollectorRegistry" interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry" availability="mandatory"/>
+
+    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="mandatory"/>
+
+    <bean id="collectorNameCompleter" class="org.opennms.netmgt.collection.commands.CollectorClassNameCompleter">
+        <property name="registry" ref="serviceCollectorRegistry" />
+    </bean>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="metrics/stress">
+            <action class="org.opennms.netmgt.collection.commands.StressCommand">
+                <property name="persisterFactory" ref="persisterFactory"/>
+            </action>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="collection/collect">
+            <action class="org.opennms.netmgt.collection.commands.CollectCommand">
+                <property name="locationAwareCollectorClient" ref="locationAwareCollectorClient"/>
+                <property name="collectionAgentFactory" ref="collectionAgentFactory"/>
+                <property name="serviceCollectorRegistry" ref="serviceCollectorRegistry"/>
+            </action>
+            <completers>
+                <ref component-id="collectorNameCompleter"/>
+                <null/>
+            </completers>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="collection/list-collectors">
+            <action class="org.opennms.netmgt.collection.commands.ListCollectors">
+              <property name="registry" ref="serviceCollectorRegistry"/>
+            </action>
+        </command>
+    </command-bundle>
+</blueprint>

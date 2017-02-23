@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,7 +57,7 @@
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTitle" value="Outages" />
   <jsp:param name="breadcrumb" value="<a href='outage/list'>Outages</a>" />
-  <jsp:param name="breadcrumb" value="<%="Outage " + outage.getId()%>" />
+  <jsp:param name="breadcrumb" value='<%="Outage " + outage.getId()%>' />
 </jsp:include>
 
 <div class="panel panel-default">
@@ -113,7 +113,7 @@
             <% } %>
           </td>
 
-          <th>Regained&nbsp;Service&nbsp;Event</td>
+          <th>Regained&nbsp;Service&nbsp;Event</th>
           <td>
             <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>
@@ -128,7 +128,7 @@
         </tr>
         <tr>
           <th>Service</th>
-          <td colspan="5">
+          <td>
             <% if( outage.getServiceName() != null ) { %>
               <% if( outage.getIpAddress() != null && outage.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -144,6 +144,22 @@
               &nbsp;
             <% } %>
           </td>
+          <th>Event Source Location</th>
+          <td>
+            <% if( outage.getEventLocation() != null ) { %>
+            <%=outage.getEventLocation()%>
+            <% } else { %>
+            &nbsp;
+            <% } %>
+          </td>
+          <th>Node Location</th>
+          <td>
+            <% if( outage.getLocation() != null ) { %>
+            <%=outage.getLocation()%>
+            <% } else { %>
+            &nbsp;
+            <% } %>
+          <td>
         </tr>
       </table>
 </div>

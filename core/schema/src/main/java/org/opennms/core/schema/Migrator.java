@@ -334,7 +334,7 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE USER " + migration.getDatabaseUser() + " WITH PASSWORD '" + migration.getDatabasePassword() + "' CREATEDB CREATEUSER");
+            st.execute("CREATE USER " + migration.getDatabaseUser() + " WITH PASSWORD '" + migration.getDatabasePassword() + "'");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {

@@ -34,9 +34,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -52,6 +48,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.StringUtils;
 
@@ -67,28 +64,12 @@ public class ConfigTesterTest {
         daoTestConfig.afterPropertiesSet();
         m_dataSource = new ConfigTesterDataSource();
         DataSourceFactory.setInstance(m_dataSource);
-    }
-
-    @After
-    public void done() {
-        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getInstance();
-
-        if (dataSource != null && dataSource.getConnectionGetAttempts().size() > 0) {
-            StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(writer);
-            for (SQLException e : dataSource.getConnectionGetAttempts()) {
-                e.printStackTrace(printWriter);
-            }
-            fail(dataSource.getConnectionGetAttempts().size()
-                 + " DataSource.getConnection attempts were made: \n"
-                 + writer.toString());
-        }
+        FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
     }
 
     @Test
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
-        assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
     }
 
     @Test
@@ -128,11 +109,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testCapsdConfiguration() {
-        testConfigFile("capsd-configuration.xml");
-    }
-
-    @Test
     public void testCategories() {
         testConfigFile("categories.xml");
     }
@@ -143,11 +119,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * Database access.
-     */
     public void testCollectdConfiguration() {
-        ignoreConfigFile("collectd-configuration.xml");
+        testConfigFile("collectd-configuration.xml");
     }
 
     @Test
@@ -173,6 +146,11 @@ public class ConfigTesterTest {
     @Test
     public void testDiscoveryConfiguration() {
         testConfigFile("discovery-configuration.xml");
+    }
+
+    @Test
+    public void testEmailNorthbounderConfiguration() {
+        testConfigFile("email-northbounder-configuration.xml");
     }
 
     @Test
@@ -221,6 +199,16 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testJmxConfig() {
+        testConfigFile("jmx-config.xml");
+    }
+
+    @Test
+    public void testJmsNorthbounderConfiguration() {
+        ignoreConfigFile("jms-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
     }
@@ -231,14 +219,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testLinkdConfiguration() {
-        ignoreConfigFile("linkd-configuration.xml");
-    }
-
-    @Test
     public void testEnLinkdConfiguration() {
         ignoreConfigFile("enlinkd-configuration.xml");
     }
@@ -246,16 +226,6 @@ public class ConfigTesterTest {
     @Test
     public void testLog4j2Config() {
         ignoreConfigFile("log4j2.xml");
-    }
-
-    @Test
-    public void testMagicUsers() {
-        testConfigFile("magic-users.properties");
-    }
-
-    @Test
-    public void testMap() {
-        testConfigFile("map.properties");
     }
 
     @Test
@@ -272,11 +242,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testModelImporter() {
-        testConfigFile("model-importer.properties");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 
@@ -284,14 +249,6 @@ public class ConfigTesterTest {
      */
     public void testModemConfig() {
         ignoreConfigFile("modemConfig.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
-     */
-    public void testMonitoringLocations() {
-        ignoreConfigFile("monitoring-locations.xml");
     }
 
     @Test
@@ -305,11 +262,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testNotifications() {
-        ignoreConfigFile("notifications.xml");
+        testConfigFile("notifications.xml");
     }
 
     @Test
@@ -322,6 +276,14 @@ public class ConfigTesterTest {
     @Ignore
     public void testNsclientDatacollectionConfig() {
         testConfigFile("nsclient-datacollection-config.xml");
+    }
+
+    /**
+     * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
+     */
+    @Test
+    public void testOpennmsActivemq() {
+        ignoreConfigFile("opennms-activemq.xml");
     }
 
     @Test
@@ -356,16 +318,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testPollerConfiguration() {
-        ignoreConfigFile("poller-configuration.xml");
+        testConfigFile("poller-configuration.xml");
     }
 
     @Test
@@ -463,6 +417,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testSnmpTrapNorthbounderConfiguration() {
+        testConfigFile("snmptrap-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testStatsdConfiguration() {
         testConfigFile("statsd-configuration.xml");
     }
@@ -483,11 +442,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testThreshdConfiguration() {
-        ignoreConfigFile("threshd-configuration.xml");
+        testConfigFile("threshd-configuration.xml");
     }
 
     @Test
@@ -508,6 +464,11 @@ public class ConfigTesterTest {
     @Test
     public void testTrapdConfiguration() {
         testConfigFile("trapd-configuration.xml");
+    }
+
+    @Test
+    public void testTrendConfiguration() {
+        ignoreConfigFile("trend-configuration.xml");
     }
 
     @Test
@@ -536,12 +497,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testXmlrpcdConfiguration() {
-        testConfigFile("xmlrpcd-configuration.xml");
-    }
-
-
-    @Test
     public void testVMwareCimDatacollectionConfig() {
         testConfigFile("vmware-cim-datacollection-config.xml");
     }
@@ -554,6 +509,12 @@ public class ConfigTesterTest {
     @Test
     public void testVMwareDatacollectionConfig() {
         testConfigFile("vmware-datacollection-config.xml");
+    }
+
+    @Test
+    public void testWSManConfigFiles() {
+        testConfigFile("wsman-config.xml");
+        testConfigFile("wsman-datacollection-config.xml");
     }
 
     @Test

@@ -147,7 +147,7 @@ public class Snmp4JAgentConfig {
      * TODO: This needs to be updated when the protocol flag is added to the SNMP Config
      * so that UDP or TCP can be used in v3 operations.
      */
-    private static Address convertAddress(InetAddress address, int port) {
+    public static Address convertAddress(InetAddress address, int port) {
         String transportAddress = address.getHostAddress();
         transportAddress += "/" + port;
         return new UdpAddress(transportAddress);
@@ -331,7 +331,7 @@ public class Snmp4JAgentConfig {
     }
 
     public Snmp createSnmpSession() throws IOException {
-        TransportMapping transport = new DefaultUdpTransportMapping();
+        TransportMapping<?> transport = new DefaultUdpTransportMapping();
         Snmp session = new Snmp(transport);
         
         if (isSnmpV3()) {

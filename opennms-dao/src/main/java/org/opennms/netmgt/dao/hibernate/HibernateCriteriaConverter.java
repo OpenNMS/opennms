@@ -147,7 +147,18 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 m_criteria.add(criterion);
             }
 
+            /*
+             * By implementing distinct() as a subquery, we lose the ability to sort the
+             * results on any of the aliased columns. See bug NMS-7830 for more details.
+             * 
+             * @see http://issues.opennms.org/browse/NMS-7830
+             */
             if (m_distinct) {
+                /*
+                 * This technique is documented in the comments at:
+                 * 
+                 * @see http://floledermann.blogspot.com/2007/10/solving-hibernate-criterias-distinct.html?showComment=1262701416137#c529514229952853263
+                 */
                 m_criteria.setProjection(Projections.distinct(Projections.id()));
 
                 final DetachedCriteria newCriteria = DetachedCriteria.forClass(m_class);

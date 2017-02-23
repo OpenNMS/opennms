@@ -34,7 +34,9 @@ import java.net.InetAddress;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -55,10 +57,10 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
 	private static final Logger LOG = LoggerFactory
 			.getLogger(JnaPingRequest.class);
 	
-    private static long s_nextTid = 1;
+    private static final AtomicLong s_nextTid = new AtomicLong(1);
 
-    public static synchronized final long getNextTID() {
-        return s_nextTid++;
+    public static final long getNextTID() {
+        return s_nextTid.getAndIncrement();
     }
 
     /**
@@ -226,10 +228,12 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      */
     public void send(final V4Pinger v4, final V6Pinger v6) {
         InetAddress addr = getAddress();
-        if (addr instanceof Inet4Address) {
+        if (addr instanceof Inet4Address && v4 != null) {
             send(v4, (Inet4Address)addr);
-        } else if (addr instanceof Inet6Address) {
+        } else if (addr instanceof Inet6Address && v6 != null) {
             send(v6, (Inet6Address)addr);
+        } else {
+            LOG.error("Cannot ping " + InetAddressUtils.str(addr) + ": No pinger found that can handle this address");
         }
     }
 

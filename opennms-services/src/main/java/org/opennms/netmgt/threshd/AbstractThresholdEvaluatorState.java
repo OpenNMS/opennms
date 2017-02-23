@@ -68,7 +68,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
      */
     protected Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource, Map<String,String> additionalParams) {
         if (resource == null) { // Still works, mimic old code when instance value is null.
-            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null);
+            resource = new CollectionResourceWrapper(date, 0, null, null, null, null, null, null);
         }
         String dsLabelValue = resource.getFieldValue(resource.getDsLabel());
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;

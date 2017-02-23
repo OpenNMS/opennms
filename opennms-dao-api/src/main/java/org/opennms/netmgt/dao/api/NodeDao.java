@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
@@ -70,7 +71,15 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return A String representing the provisioned label for the node.  Returns null if not found.
      */
     String getLabelForId(Integer id);
-    
+
+    /**
+     * Light weight call to simply get the node location without loading the entire node.
+     *
+     * @param id
+     * @return A String representing the provisioned label for the node.  Returns null if not found.
+     */
+    String getLocationForId(Integer id);
+
     /**
      * <p>findByLabel</p>
      *
@@ -78,14 +87,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     List<OnmsNode> findByLabel(String label);
-    
-    /**
-     * <p>findNodes</p>
-     *
-     * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-     * @return a {@link java.util.Collection} object.
-     */
-    List<OnmsNode> findNodes(OnmsDistPoller dp);
     
     /**
      * <p>getHierarchy</p>
@@ -103,6 +104,21 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
+    /**
+     * <p>getForeignIdsPerForeignSourceMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    Map<String, Set<String>> getForeignIdsPerForeignSourceMap();
+
+    /**
+     * <p>getForeignIdsPerForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
+    Set<String> getForeignIdsPerForeignSource(String foreignSource);
+
     /**
      * <p>findAllByVarCharAssetColumn</p>
      *
@@ -173,6 +189,8 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     OnmsNode findByForeignId(String foreignSource, String foreignId);
 
+    List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName);
+
     /**
      * <p>getNodeCountForForeignSource</p>
      *
@@ -229,9 +247,16 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 
+    /**
+     * Retrieves the number of nodes for each sysOid.
+     *
+     * @return a {@link java.util.Map} containing the number of nodes for each sysOid
+     */
+    Map<String, Long> getNumberOfNodesBySysOid();
+
     SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
-    
+
     Integer getNextNodeId (Integer nodeId);
-    
+
     Integer getPreviousNodeId (Integer nodeId);
 }

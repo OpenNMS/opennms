@@ -48,19 +48,21 @@ import org.opennms.netmgt.collectd.vmware.vijava.VmwareCollectionSet;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareMultiInstanceCollectionResource;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwareSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.vmware.vijava.Attrib;
 import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
 import org.opennms.netmgt.config.vmware.vijava.VmwareGroup;
 import org.opennms.netmgt.dao.VmwareDatacollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
@@ -75,7 +77,7 @@ import com.vmware.vim25.mo.ManagedEntity;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareCollector implements ServiceCollector {
+public class VmwareCollector extends AbstractLegacyServiceCollector {
 
     /**
      * logging for VMware data collection
@@ -208,7 +210,7 @@ public class VmwareCollector implements ServiceCollector {
 
         collectionSet.setCollectionTimestamp(new Date());
 
-        collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
+        collectionSet.setStatus(CollectionStatus.FAILED);
 
         VmwareViJavaAccess vmwareViJavaAccess = null;
 
@@ -311,7 +313,7 @@ public class VmwareCollector implements ServiceCollector {
                     final Attrib attrib = new Attrib();
                     attrib.setName(vmwareGroup.getResourceType() + "Name");
                     attrib.setAlias(vmwareGroup.getResourceType() + "Name");
-                    attrib.setType("String");
+                    attrib.setType(AttributeType.STRING);
 
                     for (String instance : instanceSet) {
                         final VmwareCollectionAttributeType attribType = new VmwareCollectionAttributeType(attrib, attribGroupType);
@@ -327,7 +329,7 @@ public class VmwareCollector implements ServiceCollector {
             }
         }
 
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
 
         vmwareViJavaAccess.disconnect();
 

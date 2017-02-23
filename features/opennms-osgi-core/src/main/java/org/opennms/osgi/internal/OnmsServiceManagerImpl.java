@@ -29,6 +29,14 @@
 package org.opennms.osgi.internal;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -41,13 +49,11 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
 public class OnmsServiceManagerImpl implements OnmsServiceManager {
     private static final Logger LOG = LoggerFactory.getLogger(OnmsServiceManagerImpl.class);
 
     // key: Service
-    private final Map<Object, ServiceRegistration> serviceRegistrations = Collections.synchronizedMap(new HashMap<Object, ServiceRegistration>());
+    private final Map<Object, ServiceRegistration<?>> serviceRegistrations = Collections.synchronizedMap(new HashMap<Object, ServiceRegistration<?>>());
     private final BundleContext bundleContext;
 
     public OnmsServiceManagerImpl(BundleContext bundleContext) {
@@ -56,13 +62,13 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     @Override
     public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext) {
-        registerAsService(serviceClass, serviceBean, applicationContext, new Properties());
+        registerAsService(serviceClass, serviceBean, applicationContext, new Hashtable<String,Object>());
     }
 
     @Override
-    public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties properties) {
+    public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Dictionary<String,Object> properties) {
         if (serviceBean == null || serviceClass == null) return;
-        ServiceRegistration serviceRegistration = bundleContext.registerService(serviceClass, serviceBean, (Dictionary) getProperties(applicationContext, properties));
+        ServiceRegistration<T> serviceRegistration = bundleContext.registerService(serviceClass, serviceBean, getProperties(applicationContext, properties));
         serviceRegistrations.put(serviceBean, serviceRegistration);
     }
 
@@ -73,24 +79,24 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
 
     @Override
     public <T> T getService(Class<T> clazz, VaadinApplicationContext applicationContext) {
-        List<T> services = getServices(clazz, applicationContext, new Properties());
+        List<T> services = getServices(clazz, applicationContext, new Hashtable<String,Object>());
         if (services.isEmpty()) return null;
         return services.get(0);
     }
 
     @Override
-    public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+    public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Hashtable<String,Object> additionalProperties) {
         if (additionalProperties == null) {
-            additionalProperties = new Properties();
+            additionalProperties = new Hashtable<String,Object>();
         }
         List<T> services = new ArrayList<T>();
         try {
-            ServiceReference[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
+            Collection<ServiceReference<T>> serviceReferences = bundleContext.getServiceReferences(clazz, getFilter(applicationContext, additionalProperties));
             if (serviceReferences != null) {
-                for (ServiceReference eachServiceReference : serviceReferences) {
-                    Object service = bundleContext.getService(eachServiceReference);
+                for (ServiceReference<T> eachServiceReference : serviceReferences) {
+                    T service = bundleContext.getService(eachServiceReference);
                     if (service == null) continue;
-                    services.add((T)service);
+                    services.add(service);
                 }
             }
         } catch (InvalidSyntaxException e) {
@@ -111,9 +117,9 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     public void sessionDestroyed(String sessionId) {
         final String sessionIdFilter = "(sessionId=%s)";
         try {
-            ServiceReference[] allServiceReferences = bundleContext.getAllServiceReferences(null, String.format(sessionIdFilter, sessionId));
+            ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(null, String.format(sessionIdFilter, sessionId));
             if (allServiceReferences != null) {
-                for (ServiceReference eachReference : allServiceReferences) {
+                for (ServiceReference<?> eachReference : allServiceReferences) {
                     Object service = bundleContext.getService(eachReference);
                     if (service == null) continue;
                     if (serviceRegistrations.get(service) == null) continue; // wrong bundleContext/OnmsServiceManager
@@ -135,7 +141,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         return newContext;
     }
 
-    private String getFilter(VaadinApplicationContext applicationContext, Properties additionalProperties) {
+    private String getFilter(VaadinApplicationContext applicationContext, Hashtable<String,Object> additionalProperties) {
         if (applicationContext == null && additionalProperties.isEmpty()) return null;
         String filter = "(&%s%s)";
         String sessionFilter = "(sessionId=%s)(uiId=%s)";
@@ -144,18 +150,18 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         return String.format(filter, sessionFilterString, additionalPropertiesFilterString);
     }
 
-    private String getAdditionalPropertiesString(Properties additionalProperties) {
+    private String getAdditionalPropertiesString(Hashtable<String,Object> additionalProperties) {
         String returnString = "";
         if (!additionalProperties.isEmpty()) {
-            for (Map.Entry<Object, Object> eachEntry : additionalProperties.entrySet()) {
+            for (Map.Entry<String, Object> eachEntry : additionalProperties.entrySet()) {
                 returnString += "("+ eachEntry.getKey() + "=" + eachEntry.getValue() +")";
             }
         }
         return returnString;
     }
 
-    private Properties getProperties(VaadinApplicationContext applicationContext, Properties properties) {
-        if (properties == null) properties = new Properties();
+    private Dictionary<String,Object> getProperties(VaadinApplicationContext applicationContext, Dictionary<String,Object> properties) {
+        if (properties == null) properties = new Hashtable<String,Object>();
         String sessionId = applicationContext.getSessionId();
         if (sessionId != null && !sessionId.isEmpty()) properties.put("sessionId", applicationContext.getSessionId());
         if (applicationContext.getUiId() > -1) properties.put("uiId", applicationContext.getUiId());

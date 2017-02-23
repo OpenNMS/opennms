@@ -79,6 +79,12 @@ public abstract class CastorUtils {
         }
     }
 
+    public static String marshal(final Object obj) throws MarshalException, ValidationException, IOException {
+        final StringWriter writer = new StringWriter();
+        marshal(obj, writer);
+        return writer.toString();
+    }
+
     private static void marshal(Object obj, Writer writer) throws IOException, MarshalException, ValidationException {
         Marshaller m = new Marshaller(writer);
         m.setSuppressNamespaces(true);
@@ -142,13 +148,13 @@ public abstract class CastorUtils {
          *   http://issues.opennms.org/browse/NMS-7291
          */
         u.setProperty(
-            "org.exolab.castor.sax.features",
-            "http://apache.org/xml/features/disallow-doctype-decl"
-        );
+                "org.exolab.castor.sax.features",
+                "http://apache.org/xml/features/disallow-doctype-decl"
+                );
         u.setProperty(
-            "org.exolab.castor.sax.features-to-disable",
-            "http://xml.org/sax/features/external-general-entities,http://xml.org/sax/features/external-parameter-entities,http://apache.org/xml/features/nonvalidating/load-external-dtd"
-        );
+                "org.exolab.castor.sax.features-to-disable",
+                "http://xml.org/sax/features/external-general-entities,http://xml.org/sax/features/external-parameter-entities,http://apache.org/xml/features/nonvalidating/load-external-dtd"
+                );
 
         return u;
     }
@@ -456,6 +462,10 @@ public abstract class CastorUtils {
         fileWriter.write(stringWriter.toString());
         fileWriter.flush();
         fileWriter.close();
+    }
+
+    public static void marshalViaString(Object config, Resource resource) throws MarshalException, ValidationException, IOException {
+        marshalViaString(config, resource.getFile());
     }
 
     // FIXME This is a funky way to duplicate an object - dj@opennms.org

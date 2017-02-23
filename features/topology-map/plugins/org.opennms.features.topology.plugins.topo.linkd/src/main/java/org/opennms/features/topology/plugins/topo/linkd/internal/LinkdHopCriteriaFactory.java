@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 
@@ -53,10 +52,7 @@ public class LinkdHopCriteriaFactory {
 	 * @return
 	 */
 	public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel) {
-	    
 		VertexHopCriteria criterion = new LinkdHopCriteria(nodeId, nodeLabel, m_nodeDao);
-//	    VertexHopCriteria criterion = new FocusNodeHopCriteria(nodeId, nodeLabel);
-		
 		return criterion;
 	}
 	

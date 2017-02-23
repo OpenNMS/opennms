@@ -32,24 +32,43 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.concurrent.Executors;
 
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
+import org.opennms.netmgt.collection.client.rpc.CollectorClientRpcModule;
+import org.opennms.netmgt.collection.client.rpc.LocationAwareCollectorClientImpl;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 public abstract class CollectorTestUtils {
+
+    static LocationAwareCollectorClient createLocationAwareCollectorClient() {
+        final DefaultServiceCollectorRegistry serviceCollectorRegistry = new DefaultServiceCollectorRegistry();
+        final CollectorClientRpcModule collectorClientRpcModule = new CollectorClientRpcModule();
+        collectorClientRpcModule.setServiceCollectorRegistry(serviceCollectorRegistry);
+        collectorClientRpcModule.setExecutor(Executors.newSingleThreadExecutor());
+        final MockRpcClientFactory rpcClientFactory = new MockRpcClientFactory();
+        final LocationAwareCollectorClientImpl locationAwareCollectorClient = new LocationAwareCollectorClientImpl(rpcClientFactory);
+        locationAwareCollectorClient.setRpcModule(collectorClientRpcModule);
+        locationAwareCollectorClient.afterPropertiesSet();
+        return locationAwareCollectorClient;
+    }
 
     static CollectionSpecification createCollectionSpec(String svcName, ServiceCollector svcCollector, String collectionName) {
         Package pkg = new Package();
@@ -64,51 +83,52 @@ public abstract class CollectorTestUtils {
         service.addParameter(collectionParm);
         pkg.addService(service);
 
-        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation());
+        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation(), createLocationAwareCollectorClient());
         return spec;
     }
 
-    public static void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
+    public static void persistCollectionSet(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+            CollectionSpecification spec, CollectionSet collectionSet) {
         RrdRepository repository=spec.getRrdRepository("default");
         System.err.println("repository = " + repository);
         ServiceParameters params = spec.getServiceParameters();
         System.err.println("service parameters = " + params);
-        BasePersister persister;
-        if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
-            persister=new GroupPersister(params, repository);
-        } else {
-            persister=new OneToOnePersister(params, repository);
-        }
+
+        RrdPersisterFactory persisterFactory = new RrdPersisterFactory();
+        persisterFactory.setRrdStrategy(rrdStrategy);
+        persisterFactory.setResourceStorageDao(resourceStorageDao);
+        CollectionSetVisitor persister = persisterFactory.createPersister(params, repository);
+
         System.err.println("persister = " + persister);
         collectionSet.visit(persister);
     }
 
-    public static void collectNTimes(CollectionSpecification spec, CollectionAgent agent, int numUpdates)
-    throws InterruptedException, CollectionException {
+    public static void collectNTimes(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+            CollectionSpecification spec, CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
+
         for(int i = 0; i < numUpdates; i++) {
-    
             // now do the actual collection
             CollectionSet collectionSet = spec.collect(agent);
-            assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-            
-            persistCollectionSet(spec, collectionSet);
-        
+            assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+
+            persistCollectionSet(rrdStrategy, resourceStorageDao, spec, collectionSet);
+
             System.err.println("COLLECTION "+i+" FINISHED");
-        
+
             //need a one second time elapse to update the RRD
             Thread.sleep(1010);
         }
     }
 
-    public static void failToCollectNTimes(CollectionSpecification spec, CollectionAgent agent, int numUpdates)
-    throws InterruptedException, CollectionException {
-        for(int i = 0; i < numUpdates; i++) {
+    public static void failToCollectNTimes(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+            CollectionSpecification spec, CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
 
+        for(int i = 0; i < numUpdates; i++) {
             // now do the actual collection
             CollectionSet collectionSet = spec.collect(agent);
-            assertEquals("collection status", ServiceCollector.COLLECTION_FAILED, collectionSet.getStatus());
+            assertEquals("collection status", CollectionStatus.FAILED, collectionSet.getStatus());
 
-            persistCollectionSet(spec, collectionSet);
+            persistCollectionSet(rrdStrategy, resourceStorageDao, spec, collectionSet);
 
             System.err.println("COLLECTION "+i+" FINISHED");
 
@@ -126,7 +146,7 @@ public abstract class CollectorTestUtils {
         return parent;
     }
 
-    public static String rrd(String file) {
-        return file + RrdUtils.getExtension();
+    public static String rrd(RrdStrategy<Object, Object> rrdStrategy, String file) {
+        return file + rrdStrategy.getDefaultFileExtension();
     }
 }

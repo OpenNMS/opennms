@@ -54,6 +54,8 @@ public class MSExchangeDetectorTest implements InitializingBean {
     private static String TEST_BANNER = "Microsoft Exchange";
 
     @Autowired
+    MSExchangeDetectorFactory m_detectorFactory;
+
     MSExchangeDetector m_detector;
 
     SimpleServer m_pop3Server;
@@ -63,7 +65,6 @@ public class MSExchangeDetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        m_detector.setTimeout(500);
     }
 
     @Before
@@ -91,8 +92,10 @@ public class MSExchangeDetectorTest implements InitializingBean {
         m_imapServer.init();
         m_imapServer.startServer();
 
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setPop3Port(110);
         m_detector.setImapPort(143);
+        m_detector.setTimeout(500);
     }
 
     @After

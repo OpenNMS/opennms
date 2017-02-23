@@ -10,6 +10,7 @@ To upgrade our container to use a new base Karaf version, follow these steps.
 1. Copy the new Karaf features.xml file into the container project:
         cp $KARAF_DIR/system/org/apache/karaf/assemblies/features/standard/$KARAF_VERSION/standard-$KARAF_VERSION-features.xml $SRC_DIR/container/karaf/src/main/filtered-resources/features/features.xml
 1. Restore the HTTP bridge changes to the features.xml file by making all of the changes between the OPENNMS CUSTOMIZATION comment blocks.
+1. Combine the Spring features from $KARAF_DIR/system/org/apache/karaf/assemblies/features/spring/$KARAF_VERSION/spring-$KARAF_VERSION-features.xml with the main features.xml file.
 1. Update $SRC_DIR/pom.xml with new value for <karafVersion/> property.
 
 See commit dea910701c3f48e367636b507fc575b59e70b843 for an example of an upgrade.

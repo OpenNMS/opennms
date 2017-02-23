@@ -15,8 +15,6 @@ opennms-jmx-config-generator
 opennms-ncs
 opennms-plugin-collector-juniper-tca
 opennms-plugin-provisioning-dns
-opennms-plugin-provisioning-link
-opennms-plugin-provisioning-map
 opennms-plugin-provisioning-rancid
 opennms-plugin-provisioning-snmp-asset
 opennms-plugin-protocol-cifs

@@ -45,7 +45,7 @@ import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.junit.runner.SeleniumComputer;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +83,12 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
     		try {
     	        
                 Map<String, Number> responseTimes = new HashMap<String, Number>();
-                responseTimes.put("response-time", Double.NaN);
+                responseTimes.put(PollStatus.PROPERTY_RESPONSE_TIME, Double.NaN);
                 
                 tracker.startAttempt();
                 Result result = runTest( getBaseUrl(parameters, svc), getTimeout(parameters), createGroovyClass( seleniumTestFilename ) );
                 double responseTime = tracker.elapsedTimeInMillis();
-                responseTimes.put("response-time", responseTime);
+                responseTimes.put(PollStatus.PROPERTY_RESPONSE_TIME, responseTime);
                 
                 if(result.wasSuccessful()) {
                     serviceStatus = PollStatus.available();

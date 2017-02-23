@@ -41,6 +41,7 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -57,7 +58,7 @@ public class ResourceTreeWalkerTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
     }
-    
+
     public void testAfterPropertiesSet() {
         ResourceTreeWalker walker = new ResourceTreeWalker();
         walker.setResourceDao(m_resourceDao);
@@ -131,8 +132,8 @@ public class ResourceTreeWalkerTest extends TestCase {
         
         MockResourceType resourceType = new MockResourceType();
         List<OnmsResource> resources = new ArrayList<OnmsResource>(2);
-        resources.add(new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0)));
-        resources.add(new OnmsResource("2", "Node Two", resourceType, new HashSet<OnmsAttribute>(0)));
+        resources.add(new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo")));
+        resources.add(new OnmsResource("2", "Node Two", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo")));
         expect(m_resourceDao.findTopLevelResources()).andReturn(resources);
         for (OnmsResource resource : resources) {
             m_visitor.visit(resource);
@@ -153,8 +154,8 @@ public class ResourceTreeWalkerTest extends TestCase {
         m_mocks.verifyAll();
         
         MockResourceType resourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", resourceType, new HashSet<OnmsAttribute>(0));
-        OnmsResource topResource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), Collections.singletonList(childResource));
+        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", resourceType, new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
+        OnmsResource topResource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), Collections.singletonList(childResource), new ResourcePath("foo"));
         expect(m_resourceDao.findTopLevelResources()).andReturn(Collections.singletonList(topResource));
         m_visitor.visit(topResource);
         m_visitor.visit(childResource);

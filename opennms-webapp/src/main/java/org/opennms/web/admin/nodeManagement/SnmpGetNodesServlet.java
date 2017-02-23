@@ -62,7 +62,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     private static final String SNMP_SERVICE_QUERY = "SELECT serviceid FROM service WHERE servicename = 'SNMP'";
 
-    private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) AND nodeid IN (SELECT nodeid FROM ipinterface Where ismanaged != 'D') ORDER BY nodelabel, nodeid";
+    private static final String NODE_QUERY = "SELECT DISTINCT node.nodeid, node.nodelabel FROM node, ipinterface, ifservices WHERE node.nodeid = ipinterface.nodeid AND ipinterface.id = ifservices.ipinterfaceid AND ifservices.serviceid = ? AND ipinterface.ismanaged != 'D' ORDER BY node.nodelabel, node.nodeid";
 
     /** {@inheritDoc} */
     @Override

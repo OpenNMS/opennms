@@ -1,0 +1,77 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+By default, the RMI port in the {opennms-product-name} server is disabled, for security reasons.  If you wish to enable it so you can access {opennms-product-name} through jconsole, remote-manage {opennms-product-name}, or use the remote poller over RMI, you will have to add some settings to the default {opennms-product-name} install.
+
+=== Enabling RMI
+
+To enable the RMI port in {opennms-product-name}, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
+
+[source, bash, options="nowrap", opennms.conf]
+----
+# Configure remote JMX
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
+
+# Listen on all interfaces
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
+# Accept remote RMI connections on this interface
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
+----
+
+This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {opennms-product-name} will accept connections on the RMI port, but not be able to complete a valid connection.
+
+Authentication will only be allowed for users that are in the `admin` role (i.e. `ROLE_ADMIN`), or the `jmx` role (i.e. `ROLE_JMX`).
+To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user in `users.xml`.
+To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`, and also the `ROLE_USER` role if is required to provide access to the WebUI.
+
+Make sure `$OPENNMS_HOME/etc/jmxremote.access` has the appropriate settings:
+
+[options="nowrap"]
+----
+admin   readwrite
+jmx     readonly
+----
+
+The possible types of access are:
+
+readwrite:: Allows retrieving JMX metrics as well as executing MBeans.
+readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
+
+=== Enabling SSL
+
+To enable SSL on the RMI port, you will need to have an existing keystore for the {opennms-product-name} server.  For information on configuring a keystore, please refer to the official _{opennms-product-name}_ Wiki article link:http://wiki.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
+
+You will need to change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {opennms-product-name} where your keystore is.
+
+[source, bash, options="nowrap", opennms.conf]
+----
+# Configure remote JMX
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=true"
+
+# Configure SSL Keystore
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djavax.net.ssl.keyStore=/opt/opennms/etc/opennms.keystore"
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djavax.net.ssl.keyStorePassword=changeit"
+
+# Listen on all interfaces
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
+# Accept remote RMI connections on this interface
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
+----
+
+=== Connecting to RMI over SSL
+
+Note that if you are using a self-signed or otherwise untrusted certificate, you will need to configure a _truststore_ on the client side when you attempt to connect over SSL-enabled RMI.  To create a truststore, follow the example in <<ga-operation-https-client,the HTTPS client instructions>> in the operator section of the manual.  You may then use the truststore to connect to your {opennms-product-name} RMI server.
+
+For example, when using `jconsole` to connect to the {opennms-product-name} RMI interface to get JVM statistics, you would run:
+
+[options="nowrap"]
+----
+jconsole -J-Djavax.net.ssl.trustStore=/path/to/opennms.truststore -J-Djavax.net.ssl.trustStorePassword=changeit
+----

@@ -1,5 +1,5 @@
 
-==== Map
+===== Map
 
 This _Dashlet_ displays the link:http://www.opennms.org/wiki/Geographical_Maps[geographical map].
 

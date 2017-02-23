@@ -105,13 +105,4 @@ public interface PollContext {
      */
     public boolean isServiceUnresponsiveEnabled();
 
-    /**
-     * <p>reparentOutages</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param oldNodeId a int.
-     * @param newNodeId a int.
-     */
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
-
 }

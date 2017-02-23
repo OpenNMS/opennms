@@ -35,52 +35,51 @@ import java.util.Map;
 import java.util.MissingFormatArgumentException;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.PropertiesUtils;
-
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpAssetAdapterConfig;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObj;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObjs;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
-/**
- */
 @EventListener(name="SnmpAssetProvisioningAdapter")
-public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
+public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpAssetProvisioningAdapter.class);
 
 	private NodeDao m_nodeDao;
 	private EventForwarder m_eventForwarder;
 	private SnmpAssetAdapterConfig m_config;
 	private SnmpAgentConfigFactory m_snmpConfigDao;
+	private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
 	/** 
 	 * Constant <code>NAME="SnmpAssetProvisioningAdapter"</code> 
@@ -142,14 +141,15 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		});
 
 		SnmpAgentConfig agentConfig = null;
-		agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
+        String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress, locationName);
 
 		final OnmsAssetRecord asset = node.getAssetRecord();
 		m_config.getReadLock().lock();
 		try {
 		    for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId())) {
     			try {
-    			    final String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+				final String value = fetchSnmpAssetString(m_locationAwareSnmpClient, agentConfig, locationName, field.getMibObjs(), field.getFormatString());
 				LOG.debug("doAdd: Setting asset field \" {} \" to value: {}", field.getName(), value);
     				// Use Spring bean-accessor classes to set the field value
     				final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
@@ -158,10 +158,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
     				} catch (final BeansException e) {
 					LOG.warn("doAdd: Could not set property \" {} \" on asset object {}", field.getName(), e.getMessage(), e);
     				}
-    			} catch (final MissingFormatArgumentException e) {
+    			} catch (final Throwable t) {
     				// This exception is thrown if the SNMP operation fails or an incorrect number of
     				// parameters is returned by the agent or because of a misconfiguration.
-				LOG.warn("doAdd: Could not set value for asset field \" {} \": {}", field.getName(), e.getMessage(), e);
+				LOG.warn("doAdd: Could not set value for asset field \" {} \": {}", field.getName(), t.getMessage(), t);
     			}
     		}
 		} finally {
@@ -172,7 +172,8 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		m_nodeDao.flush();
 	}
 
-	private static String fetchSnmpAssetString(final SnmpAgentConfig agentConfig, final MibObjs mibObjs, final String formatString) throws MissingFormatArgumentException {
+	private static String fetchSnmpAssetString(final LocationAwareSnmpClient locationAwareSnmpClient, final SnmpAgentConfig agentConfig,
+	        final String location, final MibObjs mibObjs, final String formatString) {
 
 	    final List<String> aliases = new ArrayList<String>();
 		final List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
@@ -180,21 +181,33 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			aliases.add(mibobj.getAlias());
 			objs.add(SnmpObjId.get(mibobj.getOid()));
 		}
+
 		// Fetch the values from the SNMP agent
-		final SnmpValue[] values = SnmpUtils.get(agentConfig, objs.toArray(new SnmpObjId[0]));
-		if (values.length == aliases.size()) {
+		final CompletableFuture<List<SnmpValue>> future = locationAwareSnmpClient.get(agentConfig, objs)
+		        .withLocation(location)
+		        .execute();
+
+		List<SnmpValue> values;
+		try {
+			values = future.get();
+		} catch (InterruptedException|ExecutionException e) {
+			// Propagate
+			throw new RuntimeException(e);
+		}
+
+		if (values.size() == aliases.size()) {
 			final Properties substitutions = new Properties();
 			boolean foundAValue = false;
-			for (int i = 0; i < values.length; i++) {
+			for (int i = 0; i < values.size(); i++) {
 				// If the value is a NO_SUCH_OBJECT or NO_SUCH_INSTANCE error, then skip it
-				if (values[i] == null || values[i].isError()) {
+				if (values.get(i) == null || values.get(i).isError()) {
 					// No value for this OID
 					continue;
 				}
 				foundAValue = true;
 				// Use trapd's SyntaxToEvent parser so that we format base64
 				// and MAC address values appropriately
-				Parm parm = SyntaxToEvent.processSyntax(aliases.get(i), values[i]);
+				Parm parm = SyntaxToEvent.processSyntax(aliases.get(i), values.get(i));
 				substitutions.setProperty(
 						aliases.get(i),
 						parm.getValue().getContent()
@@ -214,8 +227,8 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 			return PropertiesUtils.substitute(formatString, substitutions);
 		} else {
-			LOG.warn("fetchSnmpAssetString: Invalid number of SNMP parameters returned: {} != {}", aliases.size(), values.length);
-			throw new MissingFormatArgumentException("fetchSnmpAssetString: Invalid number of SNMP parameters returned: " + values.length + " != " + aliases.size());
+			LOG.warn("fetchSnmpAssetString: Invalid number of SNMP parameters returned: {} != {}", aliases.size(), values.size());
+			throw new MissingFormatArgumentException("fetchSnmpAssetString: Invalid number of SNMP parameters returned: " + values.size() + " != " + aliases.size());
 		}
 	}
 
@@ -252,14 +265,16 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			}
 		});
 
-		final SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
+
+        final String locationName = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        final SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress, locationName);
 
 		final OnmsAssetRecord asset = node.getAssetRecord();
 		m_config.getReadLock().lock();
 		try {
     		for (AssetField field : m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId())) {
     			try {
-    				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+    				String value = fetchSnmpAssetString(m_locationAwareSnmpClient, agentConfig, locationName, field.getMibObjs(), field.getFormatString());
     				LOG.debug("doUpdate: Setting asset field \" {} \" to value: {}", value, field.getName());
     				// Use Spring bean-accessor classes to set the field value
     				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
@@ -268,10 +283,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
     				} catch (BeansException e) {
 					LOG.warn("doUpdate: Could not set property \" {} \" on asset object: {}", field.getName(), e.getMessage(), e);
     				}
-    			} catch (MissingFormatArgumentException e) {
+    			} catch (Throwable t) {
     				// This exception is thrown if the SNMP operation fails or an incorrect number of
     				// parameters is returned by the agent or because of a misconfiguration.
-				LOG.warn("doUpdate: Could not set value for asset field \" {} \": {}", field.getName(), e.getMessage(), e);
+    			    LOG.warn("doUpdate: Could not set value for asset field \" {} \": {}", field.getName(), t.getMessage(), t);
     			}
     		}
 		} finally {
@@ -314,7 +329,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * <p>getEventForwarder</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+	 * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
 	 */
 	public EventForwarder getEventForwarder() {
 		return m_eventForwarder;
@@ -323,7 +338,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * <p>setEventForwarder</p>
 	 *
-	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+	 * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
 	 */
 	public void setEventForwarder(final EventForwarder eventForwarder) {
 		m_eventForwarder = eventForwarder;
@@ -355,6 +370,14 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 */
 	public void setSnmpAssetAdapterConfig(final SnmpAssetAdapterConfig mConfig) {
 		m_config = mConfig;
+	}
+
+	public void setLocationAwareSnmpClient(final LocationAwareSnmpClient locationAwareSnmpClient) {
+		m_locationAwareSnmpClient = locationAwareSnmpClient;
+	}
+
+	public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+		return m_locationAwareSnmpClient;
 	}
 
 	/**
@@ -430,11 +453,5 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 		LOG.debug("isReloadConfigEventTarget: Provisiond. {} was target of reload event: {}", isTarget, NAME);
 		return isTarget;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 }

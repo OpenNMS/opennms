@@ -16,7 +16,7 @@
 
     <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)"
                   resourceLabel="${ns-dskPath} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="ns-dskPath" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />
@@ -28,20 +28,20 @@
 
     <resourceType name="lmTempIndex" label="Hardware Sensors: Temperature (lmSensors MIB)" 
                   resourceLabel="${lms-tempdevice} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="lmFanIndex" label="Hardware Sensors: Fan (lmSensors MIB)"
                   resourceLabel="${lms-fandevice} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="lmVoltIndex" label="Hardware Sensors: Voltage (lmSensors MIB)"
                   resourceLabel="${lms-voltdevice} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Net-SNMP MIBs -->

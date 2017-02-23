@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Start of auto generated data from MIB: IPASIIP7880FR-TRAPS -->
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1000</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultboardStatusFalse</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultboardStatusFalse</event-label>
+        <descr>&lt;p&gt;Board Status OK&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultboardStatusFalse trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultboardStatusTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1001</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultboardStatusTrue</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultboardStatusTrue</event-label>
+        <descr>&lt;p&gt;Board Status Fault&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultboardStatusTrue trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1002</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputPresentAsii1False</event-label>
+        <descr>&lt;p&gt;ASI Input signal Present on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii1False trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1003</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputPresentAsii1True</event-label>
+        <descr>&lt;p&gt;ASI Input signal Not present on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii1True trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1004</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputPresentAsii2False</event-label>
+        <descr>&lt;p&gt;ASI Input signal Present on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii2False trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1005</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputPresentAsii2True</event-label>
+        <descr>&lt;p&gt;ASI Input signal Not present on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii2True trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1006</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputSyncErrorAsii1False</event-label>
+        <descr>&lt;p&gt;ASI Input sync OK on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputSyncErrorAsii1False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1007</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputSyncErrorAsii1True</event-label>
+        <descr>&lt;p&gt;ASI Input sync Error on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputSyncErrorAsii1True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1008</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputSyncErrorAsii2False</event-label>
+        <descr>&lt;p&gt;ASI Input sync OK on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputSyncErrorAsii2False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1009</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputSyncErrorAsii2True</event-label>
+        <descr>&lt;p&gt;ASI Input sync Error on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputSyncErrorAsii2True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1010</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputContinuityErrorAsii1False</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count OK on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputContinuityErrorAsii1False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1011</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputContinuityErrorAsii1True</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count Error on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputContinuityErrorAsii1True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1012</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputContinuityErrorAsii2False</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count OK on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputContinuityErrorAsii2False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1013</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultasiInputContinuityErrorAsii2True</event-label>
+        <descr>&lt;p&gt;ASI Input continuity count Error on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputContinuityErrorAsii2True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1014</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamMissingStream1False</event-label>
+        <descr>&lt;p&gt;Input Stream status Present on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultinputStreamMissingStream1False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1015</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamMissingStream1True</event-label>
+        <descr>&lt;p&gt;Input Stream status Not present on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultinputStreamMissingStream1True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1016</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamMissingStream2False</event-label>
+        <descr>&lt;p&gt;Input Stream status Present on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultinputStreamMissingStream2False trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1017</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamMissingStream2True</event-label>
+        <descr>&lt;p&gt;Input Stream status Not present on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultinputStreamMissingStream2True trap
+            received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
+            faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1018</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamCorrectedFECFramesStream1False
+        </event-label>
+        <descr>&lt;p&gt;Input stream corrected FEC frames Not Required on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamCorrectedFECFramesStream1False trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1019</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamCorrectedFECFramesStream1True</event-label>
+        <descr>&lt;p&gt;Input stream corrected FEC frames Required on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamCorrectedFECFramesStream1True trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1020</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamCorrectedFECFramesStream2False
+        </event-label>
+        <descr>&lt;p&gt;Input stream corrected FEC frames Not Required on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamCorrectedFECFramesStream2False trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1021</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamCorrectedFECFramesStream2True</event-label>
+        <descr>&lt;p&gt;Input stream corrected FEC frames Required on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamCorrectedFECFramesStream2True trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1022</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamUnCorrectedFECFramesStream1False
+        </event-label>
+        <descr>&lt;p&gt;Input stream uncorrected FEC frames None on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamUnCorrectedFECFramesStream1False trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1023</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamUnCorrectedFECFramesStream1True
+        </event-label>
+        <descr>&lt;p&gt;Input stream uncorrected FEC frames Uncorrected on Stream1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamUnCorrectedFECFramesStream1True trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1024</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamUnCorrectedFECFramesStream2False
+        </event-label>
+        <descr>&lt;p&gt;Input stream uncorrected FEC frames None on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamUnCorrectedFECFramesStream2False trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1025</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultinputStreamUnCorrectedFECFramesStream2True
+        </event-label>
+        <descr>&lt;p&gt;Input stream uncorrected FEC frames Uncorrected on Stream2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event:
+            faultinputStreamUnCorrectedFECFramesStream2True trap received ipasiipInstance=%parm[#1]%
+            faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1026</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii1False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultsdiInputPresentAsii1False</event-label>
+        <descr>&lt;p&gt;SDI Input signal Present on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii1False trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1027</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii1True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultsdiInputPresentAsii1True</event-label>
+        <descr>&lt;p&gt;SDI Input signal Not present on Asii1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii1True trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1028</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii2False</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultsdiInputPresentAsii2False</event-label>
+        <descr>&lt;p&gt;SDI Input signal Present on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii2False trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.187.5.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1029</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii2True</uei>
+        <event-label>IPASIIP7880FR-TRAPS defined trap event: faultsdiInputPresentAsii2True</event-label>
+        <descr>&lt;p&gt;SDI Input signal Not present on Asii2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ipasiipInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultExtraData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii2True trap received
+            ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>
+        <!-- End of auto generated data from MIB: IPASIIP7880FR-TRAPS -->

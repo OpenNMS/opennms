@@ -50,17 +50,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.provision.detector.jmx.MX4JDetector;
+import org.opennms.netmgt.provision.detector.jmx.MX4JDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml",
+                                "classpath:/test-spring-jmxconfig.xml"})
 public class MX4JDetectorTest implements InitializingBean {
 
     @Autowired
+    public MX4JDetectorFactory m_detectorFactory;
+    
     public MX4JDetector m_detector;
 
     public static MBeanServer m_beanServer;
@@ -69,6 +75,7 @@ public class MX4JDetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        this.m_detectorFactory.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass
@@ -79,13 +86,14 @@ public class MX4JDetectorTest implements InitializingBean {
 
     @Before
     public void setUp() throws IOException {
+        m_detector = m_detectorFactory.createDetector();
         assertNotNull(m_detector);
+        MockLogAppender.setupLogging();
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 
         m_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
         m_connectorServer.start();
-
         m_detector.setPort(9999);
         m_detector.setUrlPath("/server");
     }
@@ -104,6 +112,7 @@ public class MX4JDetectorTest implements InitializingBean {
     public void testDetectorSuccess() throws IOException{
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
@@ -111,6 +120,7 @@ public class MX4JDetectorTest implements InitializingBean {
         m_detector.setPort(9000);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
@@ -118,5 +128,7 @@ public class MX4JDetectorTest implements InitializingBean {
         m_detector.setUrlPath("wrongpath");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        // Do not assert this because an error is logged
+        //MockLogAppender.assertNoErrorOrGreater();
     }
 }

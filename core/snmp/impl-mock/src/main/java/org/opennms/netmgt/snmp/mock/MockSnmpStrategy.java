@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -129,6 +129,11 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     @Override
+    public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return CompletableFuture.completedFuture(get(agentConfig, oids));
+    }
+
+    @Override
     public SnmpValue getNext(final SnmpAgentConfig agentConfig, final SnmpObjId oid) {
         final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
         if (oidContainer == null) return null;
@@ -153,17 +158,17 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
+    public void registerForTraps(final TrapNotificationListener listener,  final InetAddress address, final int snmpTrapPort) throws IOException {
         LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
+    public void registerForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
         LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
+    public void registerForTraps(TrapNotificationListener listener, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
         LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
@@ -183,31 +188,26 @@ public class MockSnmpStrategy implements SnmpStrategy {
     @Override
     public SnmpV1TrapBuilder getV1TrapBuilder() {
     	throw new UnsupportedOperationException("Not yet implemented!");
-//        return new NullSnmpV1TrapBuilder();
     }
 
     @Override
     public SnmpTrapBuilder getV2TrapBuilder() {
     	throw new UnsupportedOperationException("Not yet implemented!");
-//        return new NullSnmpTrapBuilder();
     }
 
     @Override
     public SnmpV3TrapBuilder getV3TrapBuilder() {
     	throw new UnsupportedOperationException("Not yet implemented!");
-//        return new NullSnmpV3TrapBuilder();
     }
 
     @Override
     public SnmpV2TrapBuilder getV2InformBuilder() {
     	throw new UnsupportedOperationException("Not yet implemented!");
-//        return new NullSnmpV2TrapBuilder();
     }
 
     @Override
     public SnmpV3TrapBuilder getV3InformBuilder() {
     	throw new UnsupportedOperationException("Not yet implemented!");
-//        return new NullSnmpV3TrapBuilder();
     }
 
     @Override

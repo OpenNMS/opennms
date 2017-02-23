@@ -46,9 +46,8 @@ import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
@@ -60,8 +59,6 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public class XmpMonitor extends AbstractServiceMonitor {
-
-
 
     /**
      * The default port to use for XMP
@@ -142,11 +139,8 @@ public class XmpMonitor extends AbstractServiceMonitor {
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-
+        InetAddress ipaddr = svc.getAddress();
 
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
@@ -172,8 +166,8 @@ public class XmpMonitor extends AbstractServiceMonitor {
         if (parameters != null) {
             retry = ParameterMap.getKeyedInteger(parameters, "retry", protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY);
             timeout = ParameterMap.getKeyedInteger(parameters, "timeout", protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT);
-            port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", DEFAULT_AUTHEN_USER);
+            port = ParameterMap.getKeyedInteger(parameters, "port", protoConfig.hasPort() ? protoConfig.getPort() : DEFAULT_PORT);
+            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", (protoConfig.getAuthenUser() != null) ? protoConfig.getAuthenUser() : DEFAULT_AUTHEN_USER);
             requestType = ParameterMap.getKeyedString(parameters, "request-type", DEFAULT_REQUEST_TYPE);
             mib = ParameterMap.getKeyedString(parameters, "mib", DEFAULT_REQUEST_MIB);
             table = ParameterMap.getKeyedString(parameters, "table", DEFAULT_REQUEST_TABLE);

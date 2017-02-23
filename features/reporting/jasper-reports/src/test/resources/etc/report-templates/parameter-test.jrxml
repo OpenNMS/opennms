@@ -25,7 +25,6 @@
 	<parameter name="doubleParameter" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("99.99")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="longParameter" class="java.lang.Long" isForPrompting="false"/>
 	<title>
 		<band height="20" splitType="Stretch">
 			<staticText>

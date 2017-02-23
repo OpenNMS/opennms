@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.util;
 
 import java.util.List;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Operaction;
 
 /**
@@ -57,7 +57,7 @@ public abstract class OperatorAction {
         String text = opact.getContent();
         String state = opact.getState();
 
-        return Constants.escape(text, Constants.DB_ATTRIB_DELIM) + Constants.DB_ATTRIB_DELIM + state;
+        return EventDatabaseConstants.escape(text, EventDatabaseConstants.DB_ATTRIB_DELIM) + EventDatabaseConstants.DB_ATTRIB_DELIM + state;
 
     }
 
@@ -77,17 +77,17 @@ public abstract class OperatorAction {
 
         for (Operaction opact : opacts) {
             if (!first) {
-                buf.append(Constants.MULTIPLE_VAL_DELIM);
+                buf.append(EventDatabaseConstants.MULTIPLE_VAL_DELIM);
             } else {
                 first = false;
             }
 
-            buf.append(Constants.escape(format(opact), Constants.MULTIPLE_VAL_DELIM));
+            buf.append(EventDatabaseConstants.escape(format(opact), EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         }
 
         if (buf.length() >= sz) {
             buf.setLength(sz - 4);
-            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+            buf.append(EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR);
         }
 
         return buf.toString();

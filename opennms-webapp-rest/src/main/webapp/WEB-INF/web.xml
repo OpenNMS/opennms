@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="opennms-rest" version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
+
+  <display-name>OpenNMS REST</display-name>
+
+  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      <!--
+        We don't need the svclayer context in the WARMERGE because the main webapp
+        already defines all of the svclayer service beans.
+      -->
+      /WEB-INF/applicationContext-svclayer.xml
+
+      <!-- WARMERGE: begin contextConfigLocation -->
+      classpath*:/META-INF/opennms/component-service.xml
+      /WEB-INF/applicationContext-cxf-common.xml
+      <!-- WARMERGE: end contextConfigLocation -->
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>daoContext</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- Bootstrap listener to start up and shut down Spring's root WebApplicationContext. -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <!--
+  Not sure if this is needed since we still have a web.xml file.
+  <listener>
+    <listener-class>org.apache.cxf.jaxrs.servlet.sci.JaxrsServletContainerInitializer</listener-class>
+  </listener>
+  -->
+
+  <!-- WARMERGE: begin servlet -->
+  <!--  RESTful Web Services -->
+  <servlet>
+    <servlet-name>cxfRestServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/applicationContext-cxf-rest-v1.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>service-list-path</param-name>
+      <param-value>wadl-services</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>cxfRest2Servlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/applicationContext-cxf-rest-v2.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>service-list-path</param-name>
+      <param-value>wadl-services</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <!-- WARMERGE: end servlet -->
+
+  <!-- WARMERGE: begin servlet-mapping -->
+  <!-- Servlet mappings for REST Services -->
+  <servlet-mapping>
+    <servlet-name>cxfRestServlet</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cxfRest2Servlet</servlet-name>
+    <url-pattern>/api/v2/*</url-pattern>
+  </servlet-mapping>
+  <!-- WARMERGE: end servlet-mapping -->
+
+</web-app>

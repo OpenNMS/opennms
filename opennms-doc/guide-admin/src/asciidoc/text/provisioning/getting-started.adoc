@@ -1,0 +1,177 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Getting Started
+
+An NMS is of no use until it is setup for monitoring and entities are added to the system.
+{opennms-product-name} installs with a base configuration with a configuration that is sufficient get service level monitoring and performance management quickly up and running.
+As soon as managed entities are provisioned, the base configuration will automatically begin monitoring and reporting.
+
+Generally speaking, there are two methods of provisioning in {opennms-product-name}: _Auto Discovery_ and _Directed Discovery_.
+We'll start with _Auto Discovery_, but first, we should quickly review the configuration of SNMP so that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
+
+==== Provisioning the SNMP Configuration
+
+{opennms-product-name} requires SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enable performance data collection.
+Network topology is updated as nodes (a.k.a. devices or hosts) are provisioned.
+Navigate to the _Admin/Configure SNMP Community Names by IP address_ as shown below.
+
+.Configuring SNMP community names
+image:../images/provisioning/00029.png[]
+
+NOTE: Provisiond includes an option to add community information in the _Single Node_ provisioning interface.
+This, is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
+See the _Quick Node Add_ feature below for more details about this capability.
+
+This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
+These settings are optimized into the `snmp-configuration.xml` file.
+Optimization means that the minimal configuration possible will be written.
+Any IP addresses already configured that are eclipsed by this range will be removed.
+Here is the resulting configuration.
+
+[source, xml]
+.Sample snmp-config.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+
+<snmp-config
+xmlns="http://xmlns.opennms.org/xsd/config/snmp[http://xmlns.opennms.org/xsd/config/snmp]"
+port="161" retry="3" timeout="800" read-community="public"
+
+version="v1" max-vars-per-pdu="10">
+
+<definition retry="1" timeout="2000"
+
+read-community="public" version="v2c">
+
+<specific>10.12.23.32</specific>
+
+</definition>
+
+</snmp-config>
+----
+
+However, If an IP address is then configured that is within the range,
+the range will be split into two separate ranges and a specific entry will
+be added. For example, if a configuration was added through the same UI for
+the IP: 10.12.23.32 having the community name `public`, then the
+resulting configuration will be:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp"
+             port="161"
+             retry="3"
+             timeout="800"
+             read-community="public"
+             version="v1"
+             max-vars-per-pdu="10">
+
+    <definition retry="1" timeout="2000" read-community="YrusoNoz" version="v2c">
+        <range begin="10.1.1.1" end="10.12.23.31"/>
+        <range begin="10.12.23.33" end="10.254.254.254"/>
+    </definition>
+
+    <definition retry="1" timeout="2000" read-community="public" version="v2c">
+        <specific>10.12.23.32</specific>
+    </definition>
+</snmp-config>
+----
+
+NOTE: the bold IP addresses show where the range was split and the specific with community name "public" was added.
+
+Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
+Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP Interfaces, and Monitored IP based Services).
+We will then give an example of how to be more _directed_ and deliberate about your discovery by using _Provisioning Groups_.
+
+Automatically discovered entities are analyzed, persisted to the relational data store, and then managed based on the policies defined in the default foreign source definition.
+This is very similar to the way that entities were previously handled by the (now obsolete) Capsd daemon but with finer grained sense of control.
+
+==== Automatic Discovery
+
+Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.
+This functionality has been in OpenNMS since is 1.0 release, however, in 1.8, a few of the use cases have been updated with _Provisiond’s_ replacement of _Capsd_.
+
+===== Separation of Concerns
+
+Version 1.8 _Provisiond_ separates what was called _Capsd_ scanning in to 3 distinct phases: entity scanning, service detection, and node merging.
+These phases are now managed separately by Provisiond.
+Immediately following the import of a node entity, tasks are created for scanning a node to discover the node entity’s interfaces (SNMP and IP).
+As interfaces are found, they are persisted and tasks are scheduled for service detection of each IP interface.
+
+For auto discovered nodes, a node merging phase is scheduled;
+Nodes that have been directly provisioned will not be included in the node merging process.
+Merging will only occur when 2 automatically discovered nodes appear to be the same node.
+
+NOTE: the use case and redesign of node merging is still an outstanding issue with the 1.8.0 release
+
+==== Enhanced Directed Discovery
+
+This new form of provisioning first appears in OpenNMS with version 1.8 and the new Provisiond service.
+It combines the benefits of the Importer’s strictly controlled methodology of directed provisioning (from version 1.6) with OpenNMS’ robustly flexible auto discovery.
+_Enhanced Directed discovery_ begins with an enhanced version of the same import requisition used in directed provisioning and completes with a policy influenced persistence phase that sorts though the details of all the entities and services found during the entity and service scanning phase.
+
+If you are planning to use this form of provisioning, it important to understand the conceptual details of how _Provisiond_ manages entities it is _directed_ to provision.
+This knowledge will enable administrators and systems integrators to better plan, implement, and resolve any issues involved with this provisioning strategy.
+
+===== Understanding the Process
+
+There are 3 phases involved with directing entities to be discovered: import, node scan, and service scan.
+The import phase also has sub phases: marshal, audit, limited SNMP scan, and re-parent.
+
+====== Marshal and Audit Phases
+
+It is important to understand that the nodes requisitioned from each foreign source are managed as a complete set.
+Nodes defined in a requisition from the foreign source _CRM_ and _CMDB_, for example, will be managed separately from each other even if they should contain exactly the same node definitions.
+To {opennms-product-name}, these are individual entities and they are managed as a set.
+
+Requisitions are referenced via a URL.
+Currently, the URL can be specified as one of the following protocols: FILE, HTTP, HTTPS, and DNS.
+Each protocol has a protocol handler that is used to stream the XML from a _foreign source_, i.e. http://inv.corp.org/import.cgi?customer=acme or `file:/opt/opennms/etc/imports/acme.xml`.
+The DNS protocol is a special handler developed for Provisioning sets of nodes as a _foreign-source_ from a corporate DNS server.
+See DNS Protocol Handler for details.
+
+Upon the import request (either on schedule or on demand via an Event) the requisition is marshaled into Java objects for processing.
+The nodes defined in the requisition represent what {opennms-product-name} should have as the current set of managed entities from that foreign source.
+The audit phase determines for each node defined (or not defined) in the requisition which are to be processed as an _Add_, _Update_, or _Delete_ operation during the _Import Phase_.
+This determination is made by comparing the set foreign IDs of each node in the requisition set with the set of foreign IDs of currently managed entities in {opennms-product-name}.
+
+The intersection of the IDs from each set will become the Update operations, the extra set of foreign IDs that are in the requisition become the Add operations, and the extra set of foreign IDs from the managed entities become the Delete operations.
+This implies that the foreign IDs from each foreign source must be unique.
+
+Naturally, the first time an import request is processed from a foreign source there will be zero (0) node entities from the set of nodes currently being managed and each node defined in the requisition will become an Add Operation.
+If a requisition is processed with zero (0) node definitions, all the currently managed nodes from that foreign source will become Delete operations (all the nodes, interfaces, outages, alarms, etc. will be removed from {opennms-product-name}).
+
+When nodes are provisioned using the Provisioning Groups Web-UI, the requisitions are stored on the local file system and the file protocol handler is used to reference the requisition.
+Each Provisioning Group is a separate foreign source and unique foreign IDs are generated by the Web-UI.
+An MSP might use Provisioning Groups to define the set of nodes to be managed by customer name where each customer’s set of nodes are maintained in a separate Provisioning Group.
+
+====== Import Phase
+
+The import phase begins when Provisiond receives a request to import a requisition from a URL.
+The first step in this phase is to load the requisition and marshal all the node entities defined in the requisition into Java objects.
+
+If any syntactical or XML structural problems occur in the requisition, the entire import is abandoned and no import operations are completed.
+
+Once the requisition is marshaled, the requisition nodes are audited against the persisted node entities.
+The set of requisitioned nodes are compared with a subset of persisted nodes and this subset is generated from a database query using the foreign source defined in the requisition.
+The audit generates one of three operations for each requisition node: _insert_, _update_, _delete_ based on each requisitioned node’s foreign ID.
+Delete operations are created for any nodes that are not in the requisition but are in the DB subset, update operations are created for requisition nodes that match a persisted node from the subset (the intersection), and insert operations are created from the remaining requisition nodes (nodes in the requisition that are not in the DB subset).
+
+If a requisition node has an interface defined as the Primary SNMP interface, then during the update and insert operations the node will be scanned for minimal SNMP attribute information.
+This scan find the required node and SNMP interface details required for complete SNMP support of the node and only the IP interfaces defined in the requisition.
+
+NOTE: this not the same as Provisiond SNMP discovery scan phases: node scan and interface scan.
+
+====== Node Scan Phase
+
+Where directed discovery leaves off and enhanced directed discovery begins is that after all the operations have completed, directed discovery is finished and enhanced directed discovery takes off.
+The requisitioned nodes are scheduled for node scans where details about the node are discovered and interfaces that were not directly provisioned are also discovered.
+All physical (SNMP) and logical (IP) interfaces are discovered and persisted based on any _Provisioning Policies_ that may have been defined for the foreign source associated with the import requisition.
+
+====== Service Scan (detection) Phase
+
+Additionally, the new Provisiond enhanced directed discovery mechanism follows interface discovery with service detection on each IP interface entity.
+This is very similar to the Capsd plugin scanning found in all former releases of OpenNMS except that the foreign source definition is used to define what services should be detected on these interfaces found for nodes in the import requisition.

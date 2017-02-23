@@ -1,30 +1,33 @@
-<component>
+<component
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd"
+>
   <dependencySets>
     <!-- jar files -->
     <dependencySet>
       <unpack>false</unpack>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>/lib/</outputDirectory>
+      <outputDirectory>lib</outputDirectory>
       <includes>
         <include>org.opennms.protocols:org.opennms.protocols.nsclient:jar:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <!-- configuration files -->
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>org.opennms.protocols:org.opennms.protocols.nsclient:tar.gz:etc:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </component>

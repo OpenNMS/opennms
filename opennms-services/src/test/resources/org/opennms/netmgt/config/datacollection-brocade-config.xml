@@ -8,8 +8,8 @@
       <rra>RRA:MAX:0.5:12:8784</rra>
     </rrd>
     <resourceType name="brocadeFCPortIndex" label="Brocade Fibre Channel Port">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <groups>
       <!-- data from standard (mib-2) sources -->

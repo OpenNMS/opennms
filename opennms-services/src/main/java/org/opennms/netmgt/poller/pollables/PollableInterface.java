@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -126,6 +126,10 @@ public class PollableInterface extends PollableContainer {
      */
     public String getNodeLabel() {
         return getNode().getNodeLabel();
+    }
+
+    public String getNodeLocation() {
+        return getNode().getNodeLocation();
     }
 
     /**
@@ -286,16 +290,10 @@ public class PollableInterface extends PollableContainer {
             public void run() {
                 oldNode.resetStatusChanged();
                 newNode.resetStatusChanged();
-              
-                int oldNodeId = getNodeId();
-                String oldIp = getIpAddr();
-                int newNodeId = newNode.getNodeId();
                 
                 oldNode.removeMember(PollableInterface.this);
                 newNode.addMember(PollableInterface.this);
                 setNode(newNode);
-
-                getContext().reparentOutages(oldIp, oldNodeId, newNodeId);
                 
                 if (getCause() == null || getCause().equals(oldNode.getCause())) {
                     // the current interface outage is a node outage or no outage at all
@@ -336,7 +334,5 @@ public class PollableInterface extends PollableContainer {
         firstNode.withTreeLock(lockSecondNodeAndRun);
         
     }
-
-
 
 }

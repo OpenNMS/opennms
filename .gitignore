@@ -1,3 +1,5 @@
+.gitignore
+!/.gitignore
 \#*#
 *~
 .swp
@@ -20,4 +22,8 @@ build.properties
 .*launch
 nb-configuration.xml
 .idea
-features/topology-map/org.opennms.features.topology.app/www-test/
+dependency-reduced-pom.xml
+npm-debug.log
+/features/discovery/activemq-data
+/features/topology-map/org.opennms.features.topology.app/www-test/
+/opennms-alarms/jms-northbounder/activemq-data/

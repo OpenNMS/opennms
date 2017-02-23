@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      * @see org.opennms.netmgt.collection.support.AbstractCollectionAttribute#getNumericValue()
      */
     @Override
-    public String getNumericValue() {
+    public Number getNumericValue() {
         try {
             return parseNumber(m_value);
         } catch (Exception e) {
@@ -73,22 +74,22 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
                 LOG.warn("getNumericValue: the value '{}' is not parsable as a valid numeric value.", m_value);
             }
         }
-        return "U"; // Ignoring value from RRDtool/JRobin point of view.
+        return Double.NaN; // Ignoring value from RRDtool/JRobin point of view.
     }
 
     /**
      * Parses the number.
      *
      * @param number the number
-     * @return the string
+     * @return a {@link java.lang.Number} object.
      * @throws Exception the exception
      */
-    private String parseNumber(String number) throws Exception {
+    private Number parseNumber(String number) throws Exception {
         Double d = Double.parseDouble(number); // This covers negative and scientific notation numbers.
-        if (getAttributeType().getType().toLowerCase().startsWith("counter")) {
-            return Long.toString(d.longValue()); // Counter values must be integers
+        if (AttributeType.COUNTER.equals(getType())) {
+            return d.longValue(); // Counter values must be integers
         }
-        return d.toString();
+        return d;
     }
 
     /* (non-Javadoc)

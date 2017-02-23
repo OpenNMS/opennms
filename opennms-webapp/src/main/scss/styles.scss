@@ -5,14 +5,14 @@
               tables to make things a bit more readable. In general we should be removing HTML
               from event descriptions - need to fix this
  2006 Apr 25: Added table.wdth600
- 2005 Oct 01: More CSS work. -- DJ Gregor  
+ 2005 Oct 01: More CSS work. -- DJ Gregor
  2005 Sep 30: Hacked up heavily to use CSS for layout and markup.  Some code
               (particularly #nav bits) provided by Mike Huot. -- DJ Gregor
  2014 Nov 20: Converted to Scss for bootstrapification
- 
+
  */
 
-/* -------------------------------------------------- 
+/* --------------------------------------------------
     Table of Contents
 -----------------------------------------------------
 :: Reset & Standards
@@ -130,7 +130,6 @@ div {
 			border-top: 0;
 		}
 		h3 {
-			background-image: url(../images/headingbg.png);
 			background-repeat: repeat-x;
 			background-position: center center;
 			background-color: $color_green_leaf_approx;
@@ -258,7 +257,6 @@ h2 {
 }
 h3 {
 	@extend %extend_1;
-	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	background-color: $color_green_leaf_approx;
@@ -275,7 +273,6 @@ h3 {
 		color: $white;
 	}
 	&.o-box-header {
-		background-image: url(../images/headingbg.png);
 		background-repeat: repeat-x;
 		background-position: center center;
 		background-color: $color_green_leaf_approx;
@@ -504,7 +501,7 @@ table {
 	width: 100%;
 	margin-top: 0;
 	margin-bottom: 10px;
-    
+
     /*  --------------------------------------------------
         :: Onms Panel (the o-box)
     -------------------------------------------------- */
@@ -970,7 +967,6 @@ hr {
 
 /* Online Report Page Styles */
 #o-repository-title {
-	background-image: url(../images/headingbg.png);
 	background-repeat: repeat-x;
 	background-position: center center;
 	color: $white;

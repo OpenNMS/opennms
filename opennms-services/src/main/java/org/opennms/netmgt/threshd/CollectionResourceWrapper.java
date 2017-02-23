@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +38,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -70,7 +75,8 @@ public class CollectionResourceWrapper {
     private final RrdRepository m_repository;
     private final CollectionResource m_resource;
     private final Map<String, CollectionAttribute> m_attributes;
-    
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * Keeps track of both the Double value, and when it was collected, for the static cache of attributes
      * 
@@ -138,7 +144,10 @@ public class CollectionResourceWrapper {
      * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
-    public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
+    public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName,
+            RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes,
+            ResourceStorageDao resourceStorageDao) {
+
         if (collectionTimestamp == null) {
             throw new IllegalArgumentException(String.format("%s: Null collection timestamp when thresholding service %s on node %d (%s)", this.getClass().getSimpleName(), serviceName, nodeId, hostAddress));
         }
@@ -150,6 +159,7 @@ public class CollectionResourceWrapper {
         m_repository = repository;
         m_resource = resource;
         m_attributes = attributes;
+        m_resourceStorageDao = resourceStorageDao;
 
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
@@ -160,11 +170,10 @@ public class CollectionResourceWrapper {
                 m_iflabel = ((IfInfo) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
             } else if (resource instanceof LatencyCollectionResource) {
-                JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
                 String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
+                m_iflabel = IfLabelDaoImpl.getInstance().getIfLabel(getNodeId(), addr(ipAddress));
                 if (m_iflabel != null) { // See Bug 3488
-                    m_ifInfo.putAll(ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel));
+                    m_ifInfo.putAll(IfLabelDaoImpl.getInstance().getInterfaceInfoFromIfLabel(getNodeId(), m_iflabel));
                 } else {
                     LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(), getNodeId());
                 }
@@ -284,9 +293,9 @@ public class CollectionResourceWrapper {
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
-            String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            String[] parts = m_resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
                 parentResourceTypeName = "nodeSource";
                 parentResourceName = parts[1] + ":" + parts[2];
@@ -384,21 +393,15 @@ public class CollectionResourceWrapper {
             LOG.info("getAttributeValue: can't find attribute called {} on {}", ds, m_resource);
             return null;
         }
-        String numValue = m_attributes.get(ds).getNumericValue();
+        Number numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
             LOG.info("getAttributeValue: can't find numeric value for {} on {}", ds, m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
         String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
-        Double current = null;
-        try {
-            current = Double.parseDouble(numValue);
-        } catch (NumberFormatException e) {
-            LOG.error("{} does not have a numeric value: {}", id, numValue);
-            return null;
-        }
-        if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
+        Double current = numValue.doubleValue();
+        if (!AttributeType.COUNTER.equals(m_attributes.get(ds).getType())) {
             LOG.debug("getAttributeValue: id={}, value= {}", id, current);
             return current;
         } else {
@@ -486,12 +489,7 @@ public class CollectionResourceWrapper {
         } else if ("iflabel".equalsIgnoreCase(ds)) {
             return getIfLabel();
         } else if ("id".equalsIgnoreCase(ds)) {
-            try {
-                File resourceDirectory = m_resource.getResourceDir(m_repository);
-                return resourceDirectory.getName();
-            } catch (FileNotFoundException e) {
-                LOG.debug("getLabelValue: cannot find resource directory: " + e.getMessage(), e);
-            }
+            return m_resource.getPath().getName().toString();
         }
 
         try {
@@ -505,14 +503,12 @@ public class CollectionResourceWrapper {
                 }
             }
 
-            // Find value on saved string attributes
-            File resourceDirectory = m_resource.getResourceDir(m_repository);
-            retval = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
+            // Find values saved in string attributes
+            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath());
+            retval = m_resourceStorageDao.getStringAttribute(path, ds);
             if (retval != null) {
                 return retval;
             }
-        } catch (FileNotFoundException e) {
-            LOG.debug("getFieldValue: Can't find resource directory: " + e.getMessage(), e);
         } catch (Throwable e) {
             LOG.info("getFieldValue: Can't get value for attribute {} for resource {}.", ds, m_resource, e);
         }

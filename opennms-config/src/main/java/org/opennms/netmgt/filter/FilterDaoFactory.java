@@ -30,6 +30,7 @@ package org.opennms.netmgt.filter;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -51,7 +52,7 @@ public class FilterDaoFactory {
     /**
      * <p>getInstance</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public static FilterDao getInstance() {
         if (m_filterDao == null) {
@@ -64,7 +65,7 @@ public class FilterDaoFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public static void setInstance(final FilterDao filterDao) {
         LOG.debug("setInstance({})", filterDao);

@@ -28,9 +28,9 @@
 
 package org.opennms.features.topology.app.internal.ui;
 
-import com.vaadin.shared.AbstractComponentState;
-import com.vaadin.ui.AbstractComponent;
 import org.opennms.features.topology.app.internal.gwt.client.HudDisplayState;
+
+import com.vaadin.ui.AbstractComponent;
 
 public class HudDisplay extends AbstractComponent {
 

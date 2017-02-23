@@ -33,6 +33,7 @@ import java.io.IOException;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -54,7 +55,7 @@ public abstract class DataCollectionConfigFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @param instance a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public static void setInstance(DataCollectionConfigDao instance) {
         m_singleton = instance;

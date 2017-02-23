@@ -32,17 +32,14 @@ import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.RequestBuilder;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>JdbcStoredProcedureDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     
     private static final String DEFAULT_STORED_PROCEDURE = "isRunning";
@@ -54,7 +51,7 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     /**
      * <p>Constructor for JdbcStoredProcedureDetector.</p>
      */
-    protected JdbcStoredProcedureDetector(){
+    public JdbcStoredProcedureDetector(){
         super("JdbcStoredProcedureDetector", 3306);
         setSchema(DEFAULT_SCHEMA);
         setStoredProcedure(DEFAULT_STORED_PROCEDURE);

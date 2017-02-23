@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.svclayer.DistributedStatusService;
-import org.opennms.web.svclayer.support.DistributedStatusHistoryModel;
+import org.opennms.web.svclayer.model.DistributedStatusHistoryModel;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 

@@ -29,7 +29,7 @@
 package org.opennms.web.validator;
 
 import org.opennms.netmgt.dao.api.StatisticsReportDao;
-import org.opennms.web.command.StatisticsReportCommand;
+import org.opennms.web.svclayer.model.StatisticsReportCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.validation.Errors;

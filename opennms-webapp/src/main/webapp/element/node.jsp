@@ -48,13 +48,12 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
         org.opennms.web.element.*,
         org.opennms.web.navigate.*,
-        org.opennms.web.svclayer.ResourceService,
         org.springframework.util.StringUtils,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
@@ -66,9 +65,10 @@
 <%!private int m_telnetServiceId;
     private int m_sshServiceId;
     private int m_httpServiceId;
+    private int m_httpsServiceId;
     private int m_dellServiceId;
+    private int m_rdpServiceId;
     private int m_snmpServiceId;
-    private ResourceService m_resourceService;
 	private AssetModel m_model = new AssetModel();
 
 	public void init() throws ServletException {
@@ -91,19 +91,29 @@
         }
 
         try {
+            m_httpsServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTPS");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the HTTPS service ID", e);
+        }
+
+        try {
             m_dellServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Dell-OpenManage");
         } catch (Throwable e) {
             throw new ServletException("Could not determine the Dell-OpenManage service ID", e);
         }
 
         try {
+            m_rdpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("MS-RDP");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the Mirosoft Remote Desktop service ID", e);
+        }
+
+
+        try {
             m_snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
         } catch (Throwable e) {
             throw new ServletException("Could not determine the SNMP service ID", e);
         }
-
-		final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
 
 	public static String getStatusStringWithDefault(OnmsNode node_db) {
@@ -156,12 +166,15 @@
     nodeModel.put("label", node_db.getLabel());
     nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
+    nodeModel.put("location", node_db.getLocation().getLocationName());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_httpsServiceId, "HTTPS", "https://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_rdpServiceId, "Microsoft RDP", "rdp://", ":3389", getServletContext()));
     nodeModel.put("links", links);
 
     Asset asset = m_model.getAsset(nodeId);
@@ -176,10 +189,8 @@
     nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
     nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
 
-    nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
-    nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageManagerJdbcImpl.NO_CRITICAL_PATH);
+    nodeModel.put("criticalPath", PathOutageManagerDaoImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManagerDaoImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
@@ -201,8 +212,6 @@
     }
     
     nodeModel.put("status", getStatusStringWithDefault(node_db));
-    nodeModel.put("showIpRoute", NetworkElementFactory.getInstance(getServletContext()).isRouteInfoNode(nodeId));
-    nodeModel.put("showBridge", NetworkElementFactory.getInstance(getServletContext()).isBridgeNode(nodeId));
     nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
@@ -211,14 +220,6 @@
     nodeModel.put("sysContact", WebSecurityUtils.sanitizeString(node_db.getSysContact(), true));
     nodeModel.put("sysDescription", WebSecurityUtils.sanitizeString(node_db.getSysDescription()));
     
-    if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
-        nodeModel.put("parentResType", "nodeSource");
-    } else {
-        nodeModel.put("parentRes", Integer.toString(nodeId));
-        nodeModel.put("parentResType", "node");
-    }
-
     pageContext.setAttribute("model", nodeModel);
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -232,7 +233,7 @@
 	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
 	        renderedLinks.add(link.getName());
 	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
-	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%25nodeid%25", ""+nodeId) + "\">" + link.getName() + "</a>");
 	    }
 	}
 	
@@ -264,6 +265,7 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -271,6 +273,11 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
   <jsp:param name="enableExtJS" value="false"/>
+
+  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/app.js"></script>' />
 </jsp:include>
 
 <script type="text/javascript">
@@ -296,10 +303,10 @@ function confirmAssetEdit() {
 
 <h4>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPloc label label-default" title="Location: ${model.location}"><i class="fa fa-map-marker"></i>&nbsp;${model.location}</span></div>
   </c:if>
 </h4>
 
@@ -339,14 +346,12 @@ function confirmAssetEdit() {
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
 
-    <c:if test="${fn:length( model.intfs ) >= 10}">
-      <c:url var="intfAvailabilityLink" value="element/availability.jsp">
-        <c:param name="node" value="${model.id}"/>
-      </c:url>
-      <li>
-        <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
-      </li>
-    </c:if>
+    <c:url var="intfAvailabilityLink" value="element/availability.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
+    </li>
 
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
@@ -363,16 +368,16 @@ function confirmAssetEdit() {
       </li>
     </c:forEach>
     
-    <c:if test="${! empty model.resources}">
-      <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-        <c:param name="parentResourceType" value="${model.parentResType}"/>
-        <c:param name="parentResource" value="${model.parentRes}"/>
-        <c:param name="reports" value="all"/>
-      </c:url>
-      <li>
-        <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
-      </li>
-    </c:if>
+    <%-- TODO In order to show the following link only when there are metrics, an
+              inexpensive method has to be implemented on either ResourceService
+              or ResourceDao --%>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.jsp">
+      <c:param name="node" value="${model.id}"/>
+      <c:param name="reports" value="all"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
+    </li>
     
     <c:if test="${model.admin}">
       <c:url var="rescanLink" value="element/rescan.jsp">
@@ -510,17 +515,13 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <script type="text/javascript">
-    var nodeId = ${model.id}
-  </script>
-  <div id="interface-panel-gwt" class="panel panel-default">
+  <div id="onms-interfaces" class="panel panel-default">
     <div class="panel-heading">
-    	<h3 class="panel-title">Node Interfaces</h3>
+        <h3 class="panel-title">Node Interfaces</h3>
     </div>
-    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+    <onms-interfaces node="${model.id}"/>
   </div>
-	
+
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
     <div class="panel panel-default">
@@ -592,6 +593,10 @@ function confirmAssetEdit() {
         <td>${model.cdp.cdpGlobalDeviceId}</td>
       </tr>
       <tr>
+        <th>global device id format</th>
+        <td>${model.cdp.cdpGlobalDeviceIdFormat}</td>
+      </tr>
+      <tr>
         <th>global run</th>
         <td>${model.cdp.cdpGlobalRun}</td>
       </tr>
@@ -617,7 +622,7 @@ function confirmAssetEdit() {
   		 vlanid ${bridge.vlan}
   		</c:if>
   		<c:if test="${! empty bridge.vlanname}">
-  		  (${bridge.vlan})
+  		  (${bridge.vlanname})
   		</c:if>
     </h3>
     </div>

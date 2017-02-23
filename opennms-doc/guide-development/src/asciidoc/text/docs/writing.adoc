@@ -1,0 +1,306 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+[[gd-docs-writing]]
+=== Writing
+The following rules will help you to commit correctly formatted and prepared documentation for inclusion in the OpenNMS project.
+It is important that we maintain a level of consistency across all of our committers and the documentation they produce.
+
+When writing place a single sentence on each line.
+This makes it easy to move content around, and also easy to spot long, or fragmented, sentences.
+This will also allow us to assign comments on a sentence in GitHub which will facilitate easier merging.
+
+NOTE: Other than writing documentation, you can help out by providing comments on documentation, reviewing, suggesting improvements or reporting bugs.
+To do this head over to: http://issues.opennms.org/browse/NMS/component/10011[issue tracker for documentation]!
+
+[[gd-docs-conventions]]
+==== Conventions for text formatting
+
+The following conventions are used:
+
+* File names and path are written in \`poller-configuration.xml` they will be rendered in: `poller-configuration.xml`;
+* Names that indicate special attention, e.g. this configuration matches \*any* entry: this is rendered as: this configuration matches *any* entry;
+* \_Italics_ is rendered as _Italics_ and used for emphasis and indicate internal names and abbreviations;
+* \*Bold* is rendered as *Bold* and should be used sparingly, for strong emphasis only;
+* \+methodName()+ is rendered as +methodName()+ and is also used for literals,
+  (note: the content between the `+` signs _will_ be parsed);
+* \`command` is rendered as `command` (typically used for command-line or parts used in configuration files),
+  (note: the content between the +`+ signs _will not_ be parsed);
+* \`my/path/` is rendered as `my/path/` this is used for file names and paths;
+* \\``double quote'' (which is two grave accents to the left and two acute accents to the right) renders as ``double quote'';
+* \`single quote' (which is a single grave accent to the left and a single acute accent to the right) renders as `single quote'.
+
+[[gd-docs-gotchas]]
+==== Gotchas
+
+* Always leave a blank line at the top of the documents section.
+  It might be the title ends up in the last paragraph of the document;
+
+* Start in line 2 setting a relative path to the images directory to picture rendering on GitHub:
+
+[source]
+----
+// Allow image rendering
+:imagesdir: relative/path/to/images/dir
+----
+
+* Always leave a blank line at the end of documents;
+* As +{}+ are used for Asciidoc attributes, everything inside will be treated as an attribute.
+  To avoid this you have to escape the opening brace: +\\{+.
+  If you do not escape the opening brace, the braces and the text inside them will be removed without any warning being issued!;
+* Forcing line breaks can be achieved with ` +` at the end of the line followed by a line break.
+
+.Example in source force line break
+[source]
+----
+This is the first line +
+and this a forced 2nd line
+----
+
+.Rendered output with forced line break
+This is the first line +
+and this a forced 2nd line
+
+[[gd-docs-structure]]
+=== Headings and document structure
+
+Each document starts over with headings from level zero (the document title).
+Each document should have an id.
+In some cases sections in the document need to have id's as well, this depends on where they fit in the overall structure.
+If you wish to have a link to specific content that content has to have an id.
+A missing id in a mandatory place will cause the build to fail.
+
+To start a document:
+
+[source]
+----
+[[unique-id-verbose-is-ok]]
+= The Document Title
+----
+
+If you are including the document inside another document and you need to push the headings down to the right level in the output, the +leveloffset+ attribute is used.
+
+Subsequent headings in a document should use the following syntax:
+
+[source]
+----
+== Subheading
+
+... content here ...
+
+=== Subsubheading
+
+content here ...
+
+----
+
+[[gd-docs-links]]
+=== Links
+
+When you need to link to other parts of the manual you use the target id.
+To use a target id you follow this syntax:
+
+[source]
+----
+<<doc-guidelines-links>>
+----
+
+This will render as: <<doc-guidelines-links>>
+
+NOTE: To use the target id in you document simply write the target id in your text, for example:
+
+see \<<target-id>>
+
+this should suffice for most cases.
+
+If you need to link to another document with your own link text, then follow this procedure:
+
+[source]
+----
+<<target-id, link text that fits in the context>>
+----
+
+NOTE: Having lots of linked text may work well in a web context but is a distracting in print.
+      The documentation we are creating is intended for both mediums so be considerate of this in your usage.
+
+If you wish to use an external link, they are are added as:
+
+[source]
+----
+http://www.opennms.org/[Link text here]
+----
+
+This will render in the output as: http://www.opennms.org/[Link text here]
+
+For short links it may be beneficial not to use accompanying link text:
+
+[source]
+----
+http://www.opennms.org/
+----
+
+Which renders as: http://www.opennms.org/
+
+NOTE: It is acceptable to have a period trailing after the URL, it will not render as a part of the link.
+
+[[doc-guideline-admonitions-notes]]
+=== Admonitions and useful notes
+
+These are useful for defining specific sections, such as Notes, Tips and Important information.
+We encourage the use of them in the documentation as long as they are used appropriately.
+Choose from the following:
+
+.Source template for making a note for additional hints
+[source]
+----
+NOTE: This is my note.
+----
+
+This is how its rendered:
+
+NOTE: This is my note.
+
+.Source for giving a tip
+[source]
+----
+TIP: This is my tip.
+----
+
+This is how its rendered:
+
+TIP: This is my tip.
+
+.Source for giving a important hint
+[source]
+----
+IMPORTANT: This is my important hint.
+----
+
+This is how its rendered:
+
+IMPORTANT: This is my important hint.
+
+.Source for giving a caution
+[source]
+----
+CAUTION: This is my caution.
+----
+
+This is how its rendered:
+
+CAUTION: This is my caution.
+
+.Source for giving a warning
+[source]
+----
+WARNING: This is my warning.
+----
+
+This is how its rendered:
+
+WARNING: This is my warning.
+
+A multiline variation:
+
+[source]
+----
+TIP: Tiptext. +
+     Line 2.
+----
+
+Which is rendered as:
+
+TIP: Tiptext. +
+     Line 2.
+
+NOTE: Remember to write these in full caps. There is no easy manner in which to add new admonitions, do not create your own.
+
+[[gd-docs-attributes]]
+=== Attributes
+
+Common attributes you can use in documents:
+
+* \{opennms-version} - rendered as "{opennms-version}"
+
+These can substitute part of URLs that point to, for example, APIdocs or source code.
+Note that opennms-git-tag also handles the case of snapshot/master.
+
+Sample Asciidoc attributes which can be used:
+
+* \{docdir} - root directory of the documents
+* \{nbsp} - non-breaking space
+
+[[gd-docs-comments]]
+=== Comments
+
+There's a separate build that includes comments.
+When the comments are used they show up with a yellow background.
+This build doesn't run by default, but after a normal build, you can use `make annotated` to create a build yourself.
+You can use the resulting 'annotated' page to search for content as the full manual is a single page.
+
+To write a comment:
+
+[source]
+----
+// this is a comment
+----
+
+Comments are not visible in the standard build.
+Comment blocks won't be included in the output of any build.
+The syntax for a comment block is:
+
+[source]
+----
+////
+Note that includes in here will still be processed, but not make it into the output.
+That is, missing includes here will still break the build!
+////
+----
+
+[[gd-docs-tables]]
+=== Tables
+
+For representing structured information you can use tables.
+A table is constructed in the following manner:
+
+[source]
+----
+[options="header, autowidth"]
+|===
+| Parameter     | Description                | Required | Default value
+| `myFirstParm` | my first long description  | required | `myDefault`
+| `myScndParm`  | my second long description | required | `myDefault`
+|===
+----
+
+This is rendered as:
+
+[options="header, autowidth"]
+|===
+| Parameter     | Description                | Required | Default value
+| `myFirstParm` | my first long description  | required | `myDefault`
+| `myScndParm`  | my second long description | required | `myDefault`
+|===
+
+NOTE: Please align your columns in the AsciiDoc source in order to give better readability when editing in text view.
+      If you have a very long description, break at 120 characters and align the text to improve source readability.
+
+.Example in AsciiDoc source for very long table descriptions
+image::docs/01_long-table-formatting.png[]
+
+this is rendered as:
+
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                                 | Required | Default value
+| `basic-authentication` | Authentication credentials to perform basic authentication.
+                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945] section 11.1,
+                           without the Base64 encoding part. That's: be a string made of the concatenation of: +
+                           1- the user ID; +
+                           2- a colon; +
+                           3- the password. +
+                          `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-`
+| `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
+                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
+|===

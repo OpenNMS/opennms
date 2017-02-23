@@ -31,7 +31,7 @@ function runsql() {
 #
 function runSetup() {
   runsql "CREATE SEQUENCE $PG_TXID_SEQ;"
-  runsql "insert into events (eventid, eventuei, eventtime, eventsource, eventdpname, eventcreatetime, eventseverity, eventlog, eventdisplay) values (0, 'uei.opennms.org/internal/archivedEvent', now(), 'Script', 'localhost', now(), 1, 'N', 'N');"
+  runsql "insert into events (eventid, eventuei, eventtime, eventsource, eventcreatetime, eventseverity, eventlog, eventdisplay, systemid) values (0, 'uei.opennms.org/internal/archivedEvent', now(), 'Script', 'localhost', now(), 1, 'N', 'N', '00000000-0000-0000-0000-000000000000');"
   runsql "UPDATE $PG_ARCH_TABLE SET eventtime = now() WHERE eventid = 0";
   runsql "CREATE TABLE $PG_ARCH_TABLE (LIKE events);"
   runsql "ALTER TABLE $PG_ARCH_TABLE ADD COLUMN txid bigint;"
@@ -66,7 +66,7 @@ function runDbMaint() {
            SELECT eventid 
              FROM notifications 
             WHERE eventid = events.eventid)
-              AND eventtime < now() - interval '6 weeks');"
+              AND eventtime < now() - interval '6 weeks';"
 
   # Routine maintenance if autovacuum isn't running
   #runsql "VACUUM;"

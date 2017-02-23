@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.api;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * <p>CollectionAttribute interface.</p>
@@ -51,12 +52,11 @@ public interface CollectionAttribute extends CollectionVisitable, Persistable {
     String getStringValue();
     
     /**
-     * Get the numeric value of the attribute, as a String.  Assumes the underlying value is actually numeric, and will
-     * return null if it is not parseable.
+     * Get the numeric value of the attribute.
      *
-     * @return a string representation of the numeric value of this attribute
+     * @return a {@link java.lang.Number} object.
      */
-    String getNumericValue();
+    Number getNumericValue();
     
     /**
      * Gets the name of the attribute
@@ -86,11 +86,11 @@ public interface CollectionAttribute extends CollectionVisitable, Persistable {
      * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
      */
     CollectionAttributeType getAttributeType();
-    
+
     /**
-     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see {@link NumericAttributeType})
+     * <p>The type of metric that the attribute represents.</p>
      *
-     * @return type of value stored in this attribute (SNMP semantics)
+     * @return a {@link AttributeType} object.
      */
-    String getType();
+    AttributeType getType();
 }

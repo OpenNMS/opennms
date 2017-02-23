@@ -79,12 +79,16 @@ public class ServiceParameters {
         AUTH_PROTOCOL("auth-protocol"),
         PRIVACY_PASSPHRASE("privacy-passphrase"),
         PRIVACY_PROTOCOL("privacy-protocol"),
-        
+
         // JMX-specific parameters
         USE_MBEAN_NAME_FOR_RRDS("use-mbean-name-for-rrds"),
         FRIENDLY_NAME("friendly-name"),
 
-        PACKAGE_NAME("packageName");
+        PACKAGE_NAME("packageName"),
+
+        // Service level parameters set by collectd
+        SERVICE("SERVICE"),
+        SERVICE_INTERVAL("SERVICE_INTERVAL");
 
         private final String m_value;
 
@@ -128,7 +132,7 @@ public class ServiceParameters {
         return "domain: " + getDomain() + ", "
         + "storeByNodeID: " + getStoreByNodeID() + ", "
         + "storeByIfAlias: " + getStoreByIfAlias() + ", "
-        + "storFlagOverride: " + getStorFlagOverride() + ", "
+        + "storeFlagOverride: " + getStorFlagOverride() + ", "
         + "ifAliasComment: " + getIfAliasComment();
     }
 
@@ -298,5 +302,20 @@ public class ServiceParameters {
 
     public String getPackageName() {
         return ParameterMap.getKeyedString(getParameters(), ParameterName.PACKAGE_NAME.toString(), "unknown");
+    }
+
+    public Long getServiceInterval() {
+        // We use getKeyedString() instead of getKeyedLong() to avoid modifying the parameter map
+        final String intervalAsStr = ParameterMap.getKeyedString(getParameters(), ParameterName.SERVICE_INTERVAL.toString(), null);
+        if (intervalAsStr == null) {
+            return null;
+        }
+
+        try {
+            return Long.parseLong(intervalAsStr);
+        } catch (NumberFormatException nfe) {
+            // If an interval is set, it must be a valid long
+            throw new IllegalArgumentException("Invalid interval " + intervalAsStr, nfe);
+        }
     }
 }

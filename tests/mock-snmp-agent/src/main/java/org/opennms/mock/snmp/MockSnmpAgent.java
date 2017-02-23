@@ -290,7 +290,33 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
 
 
-    /** {@inheritDoc} */
+    /**
+     * <p>
+     * Note that this method can hang if your system entropy is not high enough.
+     * Here is a stack trace from a test running on JDK 1.8u40:</p>
+     * 
+     * <pre> 
+     * Thread [MockSnmpAgent-1657048932] (Suspended)
+     * owns: SecureRandom  (id=26)
+     * owns: SecureRandom  (id=27)
+     * owns: SecurityProtocols  (id=28)
+     * FileInputStream.readBytes(byte[], int, int) line: not available [native method]
+     * FileInputStream.read(byte[], int, int) line: 255
+     * NativeSeedGenerator(SeedGenerator$URLSeedGenerator).getSeedBytes(byte[]) line: 539
+     * SeedGenerator.generateSeed(byte[]) line: 144
+     * SecureRandom$SeederHolder.<clinit>() line: 203 [local variables unavailable]
+     * SecureRandom.engineNextBytes(byte[]) line: 221
+     * SecureRandom.nextBytes(byte[]) line: 468
+     * Salt.<init>() line: 54
+     * Salt.getInstance() line: 79
+     * PrivDES.<init>() line: 57
+     * SecurityProtocols.addDefaultProtocols() line: 155
+     * MockSnmpAgent.initMessageDispatcher() line: 306
+     * MockSnmpAgent(BaseAgent).init() line: 145
+     * MockSnmpAgent.run() line: 380
+     * Thread.run() line: 745
+     * </pre>
+     */
     @Override
     protected void initMessageDispatcher() {
         s_log.info("MockSnmpAgent: starting initMessageDispatcher()");
@@ -407,7 +433,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
 	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
-        for (final TransportMapping transportMapping : transportMappings) {
+        for (final TransportMapping<?> transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
@@ -641,12 +667,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     }
 
     public InetAddress getInetAddress() {
-        final TransportMapping mapping = transportMappings[0];
+        final TransportMapping<?> mapping = transportMappings[0];
         return ((MockUdpTransportMapping)mapping).getInetAddress();
     }
 
     public int getPort() {
-        final TransportMapping mapping = transportMappings[0];
+        final TransportMapping<?> mapping = transportMappings[0];
         return ((MockUdpTransportMapping)mapping).getPort();
     }
 

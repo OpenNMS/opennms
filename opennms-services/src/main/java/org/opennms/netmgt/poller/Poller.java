@@ -30,28 +30,29 @@ package org.opennms.netmgt.poller;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.sql.DataSource;
-
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.Querier;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -67,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -100,20 +102,34 @@ public class Poller extends AbstractServiceDaemon {
     private EventIpcManager m_eventMgr;
 
     @Autowired
-    private DataSource m_dataSource;
+    private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
+    private OutageDao m_outageDao;
 
     @Autowired
     private TransactionTemplate m_transactionTemplate;
 
+    @Autowired
+    private PersisterFactory m_persisterFactory;
 
+    @Autowired
+    private ResourceStorageDao m_resourceStorageDao;
+
+    @Autowired
+    private LocationAwarePollerClient m_locationAwarePollerClient;
+
+    public void setPersisterFactory(PersisterFactory persisterFactory) {
+        m_persisterFactory = persisterFactory;
+    }
+
+    public void setOutageDao(OutageDao outageDao) {
+        this.m_outageDao = outageDao;
+    }
 
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         this.m_monitoredServiceDao = monitoredServiceDao;
     }
-
 
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         m_transactionTemplate = transactionTemplate;
@@ -145,19 +161,11 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     /* Getters/Setters used for dependency injection */
-    /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
-     */
-    void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
 
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -271,6 +279,10 @@ public class Poller extends AbstractServiceDaemon {
         m_scheduler = scheduler;
     }
 
+    public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
+        m_locationAwarePollerClient = locationAwarePollerClient;
+    }
+
     /**
      * <p>onInit</p>
      */
@@ -364,12 +376,7 @@ public class Poller extends AbstractServiceDaemon {
             getEventProcessor().close();
         }
 
-        releaseServiceMonitors();
         setScheduler(null);
-    }
-
-    private void releaseServiceMonitors() {
-        getPollerConfig().releaseAllServiceMonitors();
     }
 
     /**
@@ -399,7 +406,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private void scheduleExistingServices() throws Exception {
-        scheduleMatchingServices(null);
+        scheduleServices();
 
         getNetwork().recalculateStatus();
         getNetwork().propagateInitialCause();
@@ -410,9 +417,6 @@ public class Poller extends AbstractServiceDaemon {
         //
         LOG.debug("scheduleExistingServices: dumping content of pollable network: ");
         getNetwork().dump();
-
-
-
     }
 
     /**
@@ -420,10 +424,11 @@ public class Poller extends AbstractServiceDaemon {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -434,7 +439,7 @@ public class Poller extends AbstractServiceDaemon {
             synchronized (getNetwork()) {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
-                    node = getNetwork().createNode(nodeId, nodeLabel);
+                    node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
                 }
             }
 
@@ -451,9 +456,12 @@ public class Poller extends AbstractServiceDaemon {
                             final Set<OnmsOutage> outages = service.getCurrentOutages();
                             final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
                             final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
+                            closeOutageIfSvcLostEventIsMissing(outage);
+
                             if (scheduleService(
-                                                service.getNodeId(), 
-                                                iface.getNode().getLabel(), 
+                                                service.getNodeId(),
+                                                iface.getNode().getLabel(),
+                                                iface.getNode().getLocation().getLocationName(),
                                                 InetAddressUtils.str(iface.getIpAddress()), 
                                                 service.getServiceName(), 
                                                 "A".equals(service.getStatus()), 
@@ -477,50 +485,39 @@ public class Poller extends AbstractServiceDaemon {
         }
     }
 
-    /**
-     * @deprecated Rewrite this function using the DAO calls instead of SQL.
-     * 
-     * @param criteria
-     * @return
-     */
-    private int scheduleMatchingServices(String criteria) {
-        String sql = "SELECT ifServices.nodeId AS nodeId, node.nodeLabel AS nodeLabel, ifServices.ipAddr AS ipAddr, " +
-                "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, ifServices.status as status, " +
-                "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +
-                "outages.ifLostService AS ifLostService, outages.ifRegainedService AS ifRegainedService " +
-                "FROM ifServices " +
-                "JOIN node ON ifServices.nodeId = node.nodeId " +
-                "JOIN service ON ifServices.serviceId = service.serviceId " +
-                "LEFT OUTER JOIN outages ON " +
-                "ifServices.nodeId = outages.nodeId AND " +
-                "ifServices.ipAddr = outages.ipAddr AND " +
-                "ifServices.serviceId = outages.serviceId AND " +
-                "ifRegainedService IS NULL " +
-                "LEFT OUTER JOIN events ON outages.svcLostEventId = events.eventid " +
-                "WHERE ifServices.status in ('A','N')" +
-                (criteria == null ? "" : " AND "+criteria);
+    private int scheduleServices() {
+        final Criteria criteria = new Criteria(OnmsMonitoredService.class);
+        criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
 
-
-        final AtomicInteger count = new AtomicInteger(0);
-
-        Querier querier = new Querier(m_dataSource, sql) {
+        return m_transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                if (scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
-                                    "A".equals(rs.getString("status")), (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
-                                    rs.getString("svcLostEventUei"))) {
-                    count.incrementAndGet();
+            public Integer doInTransaction(TransactionStatus arg0) {
+                final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+                for (OnmsMonitoredService service : services) {
+                    final OnmsIpInterface iface = service.getIpInterface();
+                    final Set<OnmsOutage> outages = service.getCurrentOutages();
+                    final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
+                    final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
+                    closeOutageIfSvcLostEventIsMissing(outage);
+
+                    scheduleService(
+                            service.getNodeId(),
+                            iface.getNode().getLabel(),
+                            iface.getNode().getLocation().getLocationName(),
+                            InetAddressUtils.str(iface.getIpAddress()),
+                            service.getServiceName(),
+                            "A".equals(service.getStatus()),
+                            event == null ? null : event.getId(),
+                            outage == null ? null : outage.getIfLostService(),
+                            event == null ? null : event.getEventUei()
+                            );
                 }
+                return services.size();
             }
-        };
-        querier.execute();
-
-
-        return count.get();
-
+        });
     }
 
-    private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date date, String svcLostUei) {
+    private boolean scheduleService(int nodeId, String nodeLabel, String nodeLocation, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date ifLostService, String svcLostUei) {
         // We don't want to adjust the management state of the service if we're
         // on a machine that uses multiple servers with access to the same database
         // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
@@ -551,8 +548,9 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
 
-        PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, getScheduler());
+        PollableService svc = getNetwork().createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
+                getScheduler(), m_persisterFactory, m_resourceStorageDao, m_locationAwarePollerClient);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {
@@ -561,17 +559,16 @@ public class Poller extends AbstractServiceDaemon {
             }
         }
 
-
-        if (svcLostEventId == null) 
+        if (svcLostEventId == null) {
             if (svc.getParent().getStatus().isUnknown()) {
                 svc.updateStatus(PollStatus.up());
             } else {
                 svc.updateStatus(svc.getParent().getStatus());
             }
-        else {
+        } else {
             svc.updateStatus(PollStatus.down());
 
-            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, date);
+            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, ifLostService);
 
             svc.setCause(cause);
 
@@ -581,6 +578,34 @@ public class Poller extends AbstractServiceDaemon {
 
         return true;
 
+    }
+
+    /**
+     * This method should be called before scheduling services with outstanding
+     * outages for the first time.
+     *
+     * If an outage is open, but has no lost service event, we will mark it as closed
+     * with the current timestamp. This can happen if the poller daemon is stopped after
+     * creating the outage record, but before the event was received back from the event bus.
+     *
+     * We close the outage immediately, as opposed to marking the service's initial state
+     * as down since we do not know the cause, and determining the cause from the current
+     * state of the database is error prone.
+     *
+     * Closing the outage immediately also prevents the daemon from creating
+     * duplicate outstanding outage records.
+     */
+    private void closeOutageIfSvcLostEventIsMissing(final OnmsOutage outage) {
+        if (outage == null || outage.getServiceLostEvent() != null || outage.getIfRegainedService() != null) {
+            // Nothing to do
+            return;
+        }
+
+        LOG.warn("Outage {} was left open without a lost service event. "
+                + "The outage will be closed.", outage);
+        final Date now = new Date();
+        outage.setIfRegainedService(now);
+        m_outageDao.update(outage);
     }
 
     Package findPackageForService(String ipAddr, String serviceName) {

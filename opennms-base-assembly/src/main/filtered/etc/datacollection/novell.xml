@@ -3,7 +3,7 @@
 
     <!-- Netware Resource Types -->
     <resourceType name="netwareDisk" label="Netware Disk" resourceLabel="${nwLabel}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="nwLabel" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />

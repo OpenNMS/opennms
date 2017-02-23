@@ -47,7 +47,7 @@ public class JaxbResourceConfiguration<T> implements ConfigurationResource<T> {
         m_class = clazz;
         m_resource = resource;
     }
-    
+
     protected Class<T> getClassType() {
         return m_class;
     }

@@ -30,35 +30,61 @@ package org.opennms.netmgt.model;
 
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.springframework.util.Assert;
 
 /**
  * <p>PrefabGraph class.</p>
  */
+@XmlRootElement(name = "prefab-graph")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
+
+    @XmlAttribute(name = "name")
     private String m_name;
 
+    @XmlAttribute(name = "title")
     private String m_title;
 
+    @XmlElement(name = "columns")
     private String[] m_columns;
-    
+
+    @XmlElement(name = "command")
     private String m_command;
 
+    @XmlElement(name = "externalValues")
     private String[] m_externalValues;
-    
+
+    @XmlElement(name = "propertiesValues")
     private String[] m_propertiesValues;
 
+    @XmlAttribute(name = "order")
     private int m_order;
 
+    @XmlElement(name = "types")
     private String[] m_types = new String[0];
 
+    @XmlAttribute(name = "description")
     private String m_description;
 
+    @XmlAttribute(name = "width")
     private Integer m_graphWidth;
 
+    @XmlAttribute(name = "height")
     private Integer m_graphHeight;
-    
+
+    @XmlElement(name = "suppress")
     private String[] m_suppress;
+
+    @SuppressWarnings("unused")
+    private PrefabGraph() {
+        throw new UnsupportedOperationException("No-arg constructor for JAXB.");
+    }
 
     /**
      * <p>Constructor for PrefabGraph.</p>

@@ -28,50 +28,46 @@
 
 package org.opennms.netmgt.jasper;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
-
+import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory;
-import org.opennms.netmgt.jasper.resource.ResourceQueryExecuterFactory;
-import org.opennms.netmgt.jasper.rrdtool.RrdtoolQueryExecutorFactory;
+import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
 public class OnmsQueryExecutorFactoryBundleTest {
 
     @Test
-    public void testPickCorrectStrategy() throws JRException {
-        OnmsQueryExecutorFactoryBundle executorBundle = new OnmsQueryExecutorFactoryBundle();
-        JRQueryExecuterFactory factory = executorBundle.getQueryExecuterFactory("jrobin");
-        assertTrue(JRobinQueryExecutorFactory.class == factory.getClass());
-        
-        factory = executorBundle.getQueryExecuterFactory("rrdtool");
-        assertTrue(RrdtoolQueryExecutorFactory.class == factory.getClass());
-        
-        factory = executorBundle.getQueryExecuterFactory("resourceQuery");
-        assertTrue(ResourceQueryExecuterFactory.class == factory.getClass());
-        
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy");
-        factory = executorBundle.getQueryExecuterFactory("jrobin");
-        assertTrue(RrdtoolQueryExecutorFactory.class == factory.getClass());
-        factory = executorBundle.getQueryExecuterFactory("rrdtool");
-        assertTrue(RrdtoolQueryExecutorFactory.class == factory.getClass());
-        
-        factory = executorBundle.getQueryExecuterFactory("resourceQuery");
-        assertTrue(ResourceQueryExecuterFactory.class == factory.getClass());
-        
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-        factory = executorBundle.getQueryExecuterFactory("jrobin");
-        assertTrue(JRobinQueryExecutorFactory.class == factory.getClass());
-        factory = executorBundle.getQueryExecuterFactory("rrdtool");
-        assertTrue(JRobinQueryExecutorFactory.class == factory.getClass());
-        
-        factory = executorBundle.getQueryExecuterFactory("resourceQuery");
-        assertTrue(ResourceQueryExecuterFactory.class == factory.getClass());
-        
-        factory = executorBundle.getQueryExecuterFactory("sql");
-        assertNull(factory);
+    public void verifyJrobinNotSupported() throws JRException {
+        verifyLanguage("jrobin", false, null);
     }
 
+    @Test
+    public void verifyResourceQueryNotSupported() throws JRException {
+        verifyLanguage("resourceQuery", false, null);
+    }
+
+    @Test
+    public void verifyRrdtoolNotSupported() throws JRException {
+        verifyLanguage("rrdtool", false, null);
+    }
+
+    @Test
+    public void verifySqlNotSupported() throws JRException {
+        verifyLanguage("sql", false, null);
+    }
+
+    @Test
+    public void verifyMeasurementSupported() throws JRException {
+        verifyLanguage("measurement", true, MeasurementExecutorFactory.class);
+    }
+
+    private static void verifyLanguage(String language, boolean supported, Class expectedFactoryClass) throws JRException {
+        final OnmsQueryExecutorFactoryBundle executorBundle = new OnmsQueryExecutorFactoryBundle();
+        final QueryExecuterFactory factory = executorBundle.getQueryExecuterFactory(language);
+        Assert.assertEquals(supported, factory != null);
+        if (supported) {
+            Assert.assertEquals(expectedFactoryClass, factory.getClass());
+        }
+    }
 }

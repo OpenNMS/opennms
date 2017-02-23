@@ -119,7 +119,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
 
             @Override
             public void run() {
-                LOG.info("{} initializing.", getLoggingPrefix());
+                LOG.info("{} starting.", getLoggingPrefix());
                 LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
                 setStatus(Fiber.STARTING);
@@ -144,7 +144,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
                 setStatus(Fiber.RUNNING);
 
                 LOG.debug("SPRING: context.classLoader= {}",  m_context.getClassLoader());
-                LOG.info("{} initialization complete.", getLoggingPrefix());
+                LOG.info("{} starting complete.", getLoggingPrefix());
             }
             
         });

@@ -1,0 +1,71 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== XmpMonitor
+
+The http://www.opennms.org/wiki/XMP[XMP] monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.
+The service is considered available when the session attempt succeeds and the agent returns its _sysObjectID_ without error.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.XmpMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+These parameters can be set in the _XMP_ service entry in _collectd-configuration.xml_ and will override settings from _xmp-config.xml_.
+Also, don't forget to add an entry in _response-graph.properties_ so that response values will be graphed.
+
+.Monitor specific parameters for the XmpMonitor
+[options="header, autowidth"]
+|===
+| Parameter     | Description                                            | Required | Default value
+| `timeout`     | Time in milliseconds to wait for a successful session. | optional | `5000`
+| `authenUser`  | The authenUser parameter for use with the XMP session. | optional | `xmpUser`
+| `port`        | TCP port to connect to for XMP session establishment   | optional | `5270`
+| `mib`         | Name of MIB to query                                   | optional | `core`
+| `object`      | Name of MIB object to query                            | optional | `sysObjectID`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+.Adding entry in collectd-configuration.xml
+[source, xml]
+----
+<service name="XMP" interval="300000" user-defined="false" status="on">
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="xmp"/>
+  <parameter key="ds-name" value="xmp"/>
+</service>
+<monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor"/>
+----
+
+.Add entry in response-graph.properties
+[source, bash]
+----
+reports=icmp, \
+xmp, \ . . . .
+
+report.xmp.name=XMP
+report.xmp.columns=xmp
+report.xmp.type=responseTime
+report.xmp.command=--title="XMP Response Time" \
+ --vertical-label="Seconds" \
+ DEF:rtMills={rrd1}:xmp:AVERAGE \
+ DEF:minRtMills={rrd1}:xmp:MIN \
+ DEF:maxRtMills={rrd1}:xmp:MAX \
+ CDEF:rt=rtMills,1000,/ \
+ CDEF:minRt=minRtMills,1000,/ \
+ CDEF:maxRt=maxRtMills,1000,/ \
+ LINE1:rt#0000ff:"Response Time" \
+ GPRINT:rt:AVERAGE:" Avg  \\: %8.2lf %s" \
+ GPRINT:rt:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:rt:MAX:"Max  \\: %8.2lf %s\\n"
+----

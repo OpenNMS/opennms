@@ -66,7 +66,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name="outage")
 @Entity
 @Table(name="outages")
-@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId join ipInterface on x.nodeid = ipInterface.nodeid join ifServices on ipInterface.id = ifServices.ipInterfaceId where ifServices.id = ifServiceId and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsOutage implements Serializable {
 
@@ -312,16 +312,81 @@ public class OnmsOutage implements Serializable {
     public void setSuppressedBy(String suppressorMan){
     	m_suppressedBy = suppressorMan;
     }
-    
-    
+
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     *
+     * @return a {@link OnmsNode} object.
+     */
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public OnmsNode getNode() {
+        return getMonitoredService().getIpInterface().getNode();
+    }
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     */
+    public void setNode(OnmsNode node) {
+        OnmsMonitoredService service = getMonitoredService();
+        if (service == null) {
+            service = new OnmsMonitoredService();
+            setMonitoredService(service);
+        }
+        OnmsIpInterface intf = service.getIpInterface();
+        if (intf == null) {
+            intf = new OnmsIpInterface();
+            service.setIpInterface(intf);
+        }
+        intf.setNode(node);
+    }
+
     /**
      * <p>getNodeId</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @XmlElement(name="nodeId")
     public Integer getNodeId(){
     	return getMonitoredService().getNodeId();
+    }
+
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="nodeLabel")
+    public String getNodeLabel(){
+        return getMonitoredService().getIpInterface().getNode().getLabel();
+    }
+
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="foreignSource")
+    public String getForeignSource(){
+        return getMonitoredService().getIpInterface().getNode().getForeignSource();
+    }
+
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="foreignId")
+    public String getForeignId(){
+        return getMonitoredService().getIpInterface().getNode().getForeignId();
     }
 
     /**
@@ -359,7 +424,33 @@ public class OnmsOutage implements Serializable {
     public Integer getServiceId() {
     	return getMonitoredService().getServiceId();
     }
-    
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     *
+     * @return a {@link OnmsServiceType} object.
+     */
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public OnmsServiceType getServiceType() {
+        return getMonitoredService().getServiceType();
+    }
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsServiceType} parameters.
+     */
+    public void setServiceType(OnmsServiceType type) {
+        OnmsMonitoredService service = getMonitoredService();
+        if (service == null) {
+            service = new OnmsMonitoredService();
+            setMonitoredService(service);
+        }
+        service.setServiceType(type);
+    }
+
     /**
      * <p>toString</p>
      *

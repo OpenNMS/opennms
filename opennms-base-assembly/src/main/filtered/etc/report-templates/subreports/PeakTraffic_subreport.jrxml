@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T17:04:31 -->
+<!-- 2015-08-24T15:39:30 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrafficSubReport" pageWidth="555" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="571815ec-7aa8-49bd-9b52-ee6a4a9ab2ac">
 	<property name="ireport.zoom" value="1.610510000000001"/>
 	<property name="ireport.x" value="0"/>
@@ -17,26 +17,26 @@
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(1291141800000L)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+	<parameter name="endDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="snmpifalias" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="snmpifname" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpifalias" class="java.lang.String"/>
+	<parameter name="snmpifname" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="snmpifdescr" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpifdescr" class="java.lang.String">
 		<defaultValueExpression><![CDATA["eth0"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="snmpphysaddr" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpphysaddr" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
+	<parameter name="nodeid" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[Integer.valueOf(14)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false">
@@ -49,35 +49,31 @@
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}, $P{interface})]]></defaultValueExpression>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}, $P{interface})]]></defaultValueExpression>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}, $P{interface})]]></defaultValueExpression>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifOutOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid}, $P{interface})]]></defaultValueExpression>
-	</parameter>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{ifInOctets_PATH}:$P{inOctets}:AVERAGE
-		DEF:yy=$P{ifOutOctets_PATH}:$P{outOctets}:AVERAGE
-		XPORT:xx:InOctets
-		XPORT:yy:OutOctets]]>
+	<queryString language="measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="InOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="OutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="InOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[InOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="OutOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[OutOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<variable name="ifInBits_Average" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{InOctets} * 8]]></variableExpression>

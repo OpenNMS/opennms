@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tools</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.m2e.extensions</groupId>
@@ -108,7 +108,7 @@
         </property>
       </activation>
       <properties>
-        <tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
+        <tycho.test.jvmArgs>-Xmx800m -XX:MaxMetaspaceSize=256m</tycho.test.jvmArgs>
       </properties>
     </profile>
     <profile>
@@ -120,7 +120,7 @@
         </property>
       </activation>
       <properties>
-        <tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
+        <tycho.test.jvmArgs>-Xmx800m -XX:MaxMetaspaceSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
       </properties>
       <build>
         <pluginManagement>

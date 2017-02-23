@@ -66,18 +66,32 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	}
 
 
+       @Override
+        public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port) {
+                return find("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? ", id,port);
+        }
+
 	@Override
 	public List<BridgeMacLink> findByMacAddress(String mac) {
 		return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
 	}
 
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (BridgeMacLink elem: find("from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",nodeId,now)) {
-			delete(elem);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        for (BridgeMacLink elem : find("from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
+                                       nodeId, now)) {
+            delete(elem);
+        }
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (BridgeMacLink elem : find("from BridgeMacLink rec where rec.node.id = ? ",
+                                       nodeId)) {
+            delete(elem);
+        }
+    }
 
 	private final static String SQL_GET_MAC_LINKS=
 	        "select mlink.id as source_id, "
@@ -96,14 +110,15 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "np.nodesyslocation as targetnodelocation, "
 	        + "np.nodetype as targetnodetype, "
 	        + "ntm.physaddress as target_mac,  "
-                + "ip.ifindex as target_ifindex, "
+                + "snmp.snmpifindex as target_ifindex, "
                 + "ip.ipaddr as target_ifname, "
-                + "ip.ifindex as target_bridgeport, "
+                + "snmp.snmpifindex as target_bridgeport, "
                 + "ip.id as target_id, "
                 + "mlink.bridgemaclinklastpolltime as lastPollTime "
 	        + "from bridgemaclink as mlink "
 	        + "left join ipnettomedia as ntm on mlink.macaddress = ntm.physaddress "
 	        + "left join ipinterface ip on ip.ipaddr = ntm.netaddress "
+                + "left join snmpinterface snmp on ip.snmpInterfaceId = snmp.id "
 	        + "left join node n on mlink.nodeid = n.nodeid "
 	        + "left join node np on ip.nodeid = np.nodeid "
 	        + "where ip.nodeid is not null "
@@ -176,6 +191,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
     public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes(){
         return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_MAC_LINKS).list());
             }
@@ -186,6 +202,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
     @Override
     public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes(){
         return  getHibernateTemplate().execute(new HibernateCallback<List<BridgeMacTopologyLink>>() {
+            @SuppressWarnings("unchecked")
             @Override
             public List<BridgeMacTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_BRIDGE_LINKS).list());

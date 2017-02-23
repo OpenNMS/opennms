@@ -40,8 +40,11 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -77,7 +80,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	public static final String TIMESYNC_STATUS = "timesyncStatus";
 
 	/** The Collection Status. */
-	private int m_status;
+	private CollectionStatus m_status;
 
 	/** The list of SNMP collection resources. */
 	private List<TcaCollectionResource> m_collectionResources;
@@ -88,8 +91,9 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	/** The Collection Agent. */
 	private SnmpCollectionAgent m_agent;
 
-	/** The RRD Repository. */
-	private RrdRepository m_rrdRepository;
+	private final RrdRepository m_repository;
+
+	private final ResourceStorageDao m_resourceStorageDao;
 
 	/**
 	 * Instantiates a new TCA collection set.
@@ -97,18 +101,19 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 * @param agent the agent
 	 * @param repository the repository
 	 */
-	public TcaCollectionSet(SnmpCollectionAgent agent, RrdRepository repository) {
-		m_status = ServiceCollector.COLLECTION_FAILED;
+	public TcaCollectionSet(SnmpCollectionAgent agent, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
+		m_status = CollectionStatus.FAILED;
 		m_collectionResources = new ArrayList<TcaCollectionResource>();
 		m_agent = agent;
-		m_rrdRepository = repository;
+		m_repository = repository;
+		m_resourceStorageDao = resourceStorageDao;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.config.collector.CollectionSet#getStatus()
 	 */
 	@Override
-	public int getStatus() {
+	public CollectionStatus getStatus() {
 		return m_status;
 	}
 
@@ -149,17 +154,18 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	protected void collect() throws CollectionException {
 		try {
 			TcaData tracker = new TcaData(m_agent.getAddress());
-			SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker);
-			walker.start();
-			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
+			try(SnmpWalker walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), "TcaCollector for " + m_agent.getHostAddress(), tracker)) {
+    			walker.start();
+    			LOG.debug("collect: successfully instantiated TCA Collector for {}", m_agent.getHostAddress());
 
-			walker.waitFor();
-			LOG.info("collect: node TCA query for address {} complete.", m_agent.getHostAddress());
+    			walker.waitFor();
+    			LOG.info("collect: node TCA query for address {} complete.", m_agent.getHostAddress());
 
-			verifySuccessfulWalk(walker);
+    			verifySuccessfulWalk(walker);
+			}
 			process(tracker);
 
-			m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+			m_status = CollectionStatus.SUCCEEDED;
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new CollectionWarning("Collection of node TCA data for interface " + m_agent.getHostAddress() + " interrupted: " + e, e);
@@ -218,7 +224,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 				timestamp = Long.parseLong(rawEntry[0]);
 				if (timestamp > lastTimestamp) {
 					TcaCollectionResource resource = new TcaCollectionResource(m_agent, entry.getPeerAddress());
-					resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
+					resource.setTimeKeeper(new ConstantTimeKeeper(new Date(timestamp * 1000)));
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_DELAY), rawEntry[1]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_JITTER), rawEntry[2]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, OUTBOUND_DELAY), rawEntry[3]);
@@ -261,8 +267,8 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 		File file = null;
 		long timestamp = 0;
 		try {
-			file  = resource.getResourceDir(m_rrdRepository);
-			String ts = ResourceTypeUtils.getStringProperty(resource.getResourceDir(m_rrdRepository), LAST_TIMESTAMP);
+		    ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, resource.getPath());
+			String ts = m_resourceStorageDao.getStringAttribute(path, LAST_TIMESTAMP);
 			if (ts != null)
 				timestamp = Long.parseLong(ts);
 		} catch (Exception e) {
@@ -279,6 +285,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 	 * @throws Exception the exception
 	 */
 	private void setLastTimestamp(TcaCollectionResource resource, long timestamp) throws Exception {
-		ResourceTypeUtils.updateStringProperty(resource.getResourceDir(m_rrdRepository), Long.toString(timestamp), LAST_TIMESTAMP);
+	    ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, resource.getPath());
+	    m_resourceStorageDao.setStringAttribute(path, LAST_TIMESTAMP, Long.toString(timestamp));
 	}
 }

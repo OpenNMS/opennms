@@ -39,7 +39,7 @@ import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 public class XmlStorageStrategy extends IndexStorageStrategy {
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.support.IndexStorageStrategy#getResourceNameFromIndex(org.opennms.netmgt.config.collector.CollectionResource)
+     * @see org.opennms.netmgt.collection.support.IndexStorageStrategy#getResourceNameFromIndex(org.opennms.netmgt.config.collector.CollectionResource)
      */
     @Override
     public String getResourceNameFromIndex(CollectionResource resource) {

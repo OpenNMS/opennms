@@ -1,0 +1,79 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Web based utility
+
+Complex _JMX_ data collection configurations can be generated from a web based tool.
+It collects all available _MBean Attributes_ or _Composite Data Attributes_ from a _JMX_ enabled Java application.
+
+The workflow of the tool is:
+
+. Connect with _JMX_ or _JMXMP_ against a _MBean Server_ provided of a _Java_ application
+. Retrieve all _MBean_ and _Composite Data_ from the application
+. Select specific _MBeans_ and _Composite Data_ objects which should be collected by _{opennms-product-name}_
+. Generate _JMX Collectd_ configuration file and _RRD graph_ definitions for _{opennms-product-name}_ as downloadable archive
+
+The following connection settings are supported:
+
+* Ability to connect to _MBean Server_ with _RMI_ based _JMX_
+* Authentication credentials for _JMX_ connection
+* Optional: JMXMP connection
+
+The web based configuration tool can be used in the _{opennms-product-name} Web Application_ in administration section _Admin -> JMX Configuration Generator_.
+
+===== Configure JMX Connection
+
+At the beginning the connection to an _MBean Server_ of a _Java_ application has to be configured.
+
+.JMX connection configuration window
+image::operation/jmx-config-generator/01-webui-connection.png[]
+
+* _Service name_: The name of the service to bind the _JMX_ data collection for _Collectd_
+* _Host_: IP address or _FQDN_ connecting to the _MBean Server_ to load _MBeans_ and _Composite Data_ into the generation tool
+* _Port_: Port to connect to the _MBean Server_
+* _Authentication_: Enable / Disable authentication for _JMX_ connection with username and password
+* _Skip non-number values_: Skip attributes with non-number values
+* _JMXMP_: Enable / Disable _JMX Messaging Protocol_ instead of using _JMX_ over _RMI_
+
+By clicking the arrow ( _>_ ) the _MBeans_ and _Composite Data_ will be retrieved with the given connection settings.
+The data is loaded into the _MBeans Configuration_ screen which allows to select metrics for the data collection configuration.
+
+===== Select MBeans and Composite
+
+The _MBeans Configuration_ section is used to assign the _MBean_ and _Composite Data attributes_ to _RRD domain_ specific data types and data source names.
+
+.Select MBeans or Composite Data for {opennms-product-name} data collection
+image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
+
+The left sidebar shows the tree with the _JMX Domain_, _MBeans_ and _Composite Data_ hierarchy retrieved from the _MBean Server_.
+To select or deselect all attributes use _Mouse right click -> select/deselect_.
+
+The right panel shows the _MBean Attributes_ with the _RRD_ specific mapping and allows to select or deselect specific _MBean Attriubtes_ or _Composite Data Attributes_ for the data collection configuration.
+
+.Configure MBean attributes for data collection configuration
+image::operation/jmx-config-generator/03-webui-mbean-details.png[]
+
+.Configure Composite attributes for data collection configuration
+image::operation/jmx-config-generator/04-webui-composite-details.png[]
+
+* _MBean Name_ or _Composite Alias_: Identifies the _MBean_ or the _Composite Data_ object
+* _Selected_: Enable/Disable the _MBean attribute_ or _Composite Member_ to be included in the data collection configuration
+* _Name_: Name of the _MBean attribute_ or _Composite Member_
+* _Alias_: the _data source name_ for persisting measurements in _RRD_ or _JRobin_ file
+* _Type_: _Gauge_ or _Counter_ data type for persisting measurements in _RRD_ or _JRobin_ file
+
+The _MBean Name_, _Composite Alias_ and _Name_ are validated against special characters.
+For the _Alias_ inputs are validated to be not longer then 19 characters and have to be unique in the data collection configuration.
+
+===== Download and include configuration
+
+The last step is generating the following configuration files for _{opennms-product-name}_:
+
+* _collectd-configuration.xml_: Generated sample configuration assigned to a service with a matching data collection group
+* _jmx-datacollection-config.xml_: Generated _JMX_ data collection configuration with the selected _MBeans_ and _Composite Data_
+* _snmp-graph.properties_: Generated default _RRD_ graph definition files for all selected metrics
+
+The content of the configuration files can be copy & pasted or can be downloaded as _ZIP archive_.
+
+NOTE: If the content of the configuration file exceeds 2,500 lines, the files can only be downloaded as _ZIP archive_.

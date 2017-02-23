@@ -1,0 +1,42 @@
+
+==== Scheduled Outages
+
+===== GETs (Reading Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                     | Description
+| `/sched-outages`              | to get a list of configured scheduled outages.
+| `/sched-outages/{outageName}` | to get the details of a specific outage.
+|===
+
+===== POSTs (Setting Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter        | Description
+| `/sched-outages` | to add a new outage (or update an existing one).
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                                        | Description
+| `/sched-outages/{outageName}/collectd/{package}` | to add a specific outage to a collectd's package.
+| `/sched-outages/{outageName}/pollerd/{package}`  | to add a specific outage to a pollerd's package.
+| `/sched-outages/{outageName}/threshd/{package}`  | to add a specific outage to a threshd's package.
+| `/sched-outages/{outageName}/notifd`             | to add a specific outage to the notifications.
+|===
+
+===== DELETEs (Removing Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                                        | Description
+| `/sched-outages/{outageName}`                    | to delete a specific outage.
+| `/sched-outages/{outageName}/collectd/{package}` | to remove a specific outage from a collectd's package.
+| `/sched-outages/{outageName}/pollerd/{package}`  | to remove a specific outage from a pollerd's package.
+| `/sched-outages/{outageName}/threshd/{package}`  | to remove a specific outage from a threshd's package.
+| `/sched-outages/{outageName}/notifd`             | to remove a specific outage from the notifications.
+|===

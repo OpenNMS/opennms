@@ -55,6 +55,9 @@ import org.slf4j.LoggerFactory;
  * {@link org.opennms.netmgt.config.CategoryFactory CategoryFactory}. The RTC
  * category updates are periodically sent from the RTC to the WebUI.
  * </p>
+ * 
+ * @deprecated This is awful... a 3rd Category model object that combines the other
+ * two model objects???? These all need to be merged into a single object.
  *
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
@@ -354,7 +357,7 @@ public class Category {
     @XmlElement(name="availability-class")
     public String getAvailClass() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
-            return "lightblue";
+            return "Indeterminate";
         } else {
             return CategoryUtil.getCategoryClass(this);
         }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.List;
 
+import org.opennms.core.xml.AbstractCastorConfigDao;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;

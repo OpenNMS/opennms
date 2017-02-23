@@ -1,0 +1,35 @@
+TRAP-TEST-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS ucdExperimental FROM UCD-SNMP-MIB;
+
+demoCommons OBJECT IDENTIFIER ::= { ucdExperimental 989 }
+demoTraps   OBJECT IDENTIFIER ::= { ucdExperimental 990 }
+demoNotifs  OBJECT IDENTIFIER ::= { ucdExperimental 991 }
+
+location OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE (0..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "Location"
+    ::= { demoCommons 1 }
+
+message OBJECT-TYPE
+    SYNTAX       OCTET STRING (SIZE (0..255))
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION  "Message"
+    ::= { demoCommons 2 }
+
+demoTrap TRAP-TYPE
+    ENTERPRISE   demoTraps
+    VARIABLES    { location, message }
+    DESCRIPTION  "Just a test notification"
+    ::= 17
+
+demoNotif NOTIFICATION-TYPE
+    OBJECTS      { location, message }
+    STATUS       current
+    DESCRIPTION  "Just a test notification"
+    ::= { demoNotifs 17 }
+
+END

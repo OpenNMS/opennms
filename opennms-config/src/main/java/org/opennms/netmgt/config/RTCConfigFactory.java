@@ -38,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -49,15 +50,8 @@ import org.opennms.netmgt.config.rtc.RTCConfiguration;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
-public final class RTCConfigFactory {
-    /**
-     * The singleton instance of this factory
-     */
-    private static RTCConfigFactory m_singleton = null;
+public final class RTCConfigFactory implements InitializingBean {
 
     /**
      * The config class loaded from the config file
@@ -65,17 +59,12 @@ public final class RTCConfigFactory {
     private RTCConfiguration m_config;
 
     /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    /**
      * Parse the rolling window in the properties file in the format <xx>h <yy>m
      * <zz>s into a long value of milliseconds
      * 
      * @return the rolling window as milliseconds
      */
-    private long parseRollingWindow(String rolling) throws IllegalArgumentException {
+    private static long parseRollingWindow(String rolling) throws IllegalArgumentException {
         String hrStr = null;
         String minStr = null;
         String secStr = null;
@@ -140,23 +129,10 @@ public final class RTCConfigFactory {
     }
 
     /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
+     * Default constructor.
      */
-    private RTCConfigFactory(String configFile) throws IOException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
-            unmarshal(stream);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
-        }
-    }
-    
+    public RTCConfigFactory() {}
+
     /**
      * <p>Constructor for RTCConfigFactory.</p>
      *
@@ -164,23 +140,13 @@ public final class RTCConfigFactory {
      * @throws java.io.IOException if any.
      */
     public RTCConfigFactory(InputStream stream) throws IOException {
-        unmarshal(stream);
+        m_config = unmarshal(stream);
     }
 
-    private void unmarshal(InputStream stream) throws IOException {
+    private static RTCConfiguration unmarshal(InputStream stream) throws IOException {
         try (InputStreamReader isr = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(RTCConfiguration.class, isr);
+            return JaxbUtils.unmarshal(RTCConfiguration.class, isr);
         }
-    }
-
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.RTCConfigFactory} object.
-     */
-    public static void setInstance(RTCConfigFactory instance) {
-        m_singleton = instance;
-        m_loaded = true;
     }
 
     /**
@@ -188,49 +154,22 @@ public final class RTCConfigFactory {
      * instance of this factory.
      *
      * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RTC_CONFIG_FILE_NAME);
-
-        setInstance(new RTCConfigFactory(cfgFile.getPath()));
-    }
-
-    /**
-     * Reload the config from the default config file
-     *
-     * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        m_loaded = false;
+    @Override
+    public void afterPropertiesSet() throws IOException {
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RTC_CONFIG_FILE_NAME);
 
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized RTCConfigFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-
-        return m_singleton;
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(configFile);
+            m_config = unmarshal(stream);
+        } finally {
+            if (stream != null) {
+                IOUtils.closeQuietly(stream);
+            }
+        }
     }
 
     /**
@@ -238,7 +177,7 @@ public final class RTCConfigFactory {
      *
      * @return the number of updater threads to be started
      */
-    public synchronized int getUpdaters() {
+    public int getUpdaters() {
         return m_config.getUpdaters();
     }
 
@@ -247,7 +186,7 @@ public final class RTCConfigFactory {
      *
      * @return the number of sender threads to be started
      */
-    public synchronized int getSenders() {
+    public int getSenders() {
         return m_config.getSenders();
     }
 
@@ -256,7 +195,7 @@ public final class RTCConfigFactory {
      *
      * @return the rolling window for which availability is to be computed
      */
-    public synchronized String getRollingWindowStr() {
+    public String getRollingWindowStr() {
         return m_config.getRollingWindow();
     }
 
@@ -265,7 +204,7 @@ public final class RTCConfigFactory {
      *
      * @return the rolling window for which availability is to be computed
      */
-    public synchronized long getRollingWindow() {
+    public long getRollingWindow() {
         return parseRollingWindow(m_config.getRollingWindow());
     }
 
@@ -274,7 +213,7 @@ public final class RTCConfigFactory {
      *
      * @return the max number of events after which data is to resent
      */
-    public synchronized int getMaxEventsBeforeResend() {
+    public int getMaxEventsBeforeResend() {
         return m_config.getMaxEventsBeforeResend();
     }
 
@@ -283,7 +222,7 @@ public final class RTCConfigFactory {
      *
      * @return the low threshold interval at which data is to be resent
      */
-    public synchronized String getLowThresholdIntervalStr() {
+    public String getLowThresholdIntervalStr() {
         return m_config.getLowThresholdInterval();
     }
 
@@ -292,7 +231,7 @@ public final class RTCConfigFactory {
      *
      * @return the low threshold interval at which data is to be resent
      */
-    public synchronized long getLowThresholdInterval() {
+    public long getLowThresholdInterval() {
         return parseRollingWindow(m_config.getLowThresholdInterval());
     }
 
@@ -301,7 +240,7 @@ public final class RTCConfigFactory {
      *
      * @return the high threshold interval at which data is to be resent
      */
-    public synchronized String getHighThresholdIntervalStr() {
+    public String getHighThresholdIntervalStr() {
         return m_config.getHighThresholdInterval();
     }
 
@@ -310,7 +249,7 @@ public final class RTCConfigFactory {
      *
      * @return the high threshold interval at which data is to be resent
      */
-    public synchronized long getHighThresholdInterval() {
+    public long getHighThresholdInterval() {
         return parseRollingWindow(m_config.getHighThresholdInterval());
     }
 
@@ -320,7 +259,7 @@ public final class RTCConfigFactory {
      *
      * @return the user refresh interval at which data is to be resent
      */
-    public synchronized String getUserRefreshIntervalStr() {
+    public String getUserRefreshIntervalStr() {
         return m_config.getUserRefreshInterval();
     }
 
@@ -330,7 +269,7 @@ public final class RTCConfigFactory {
      *
      * @return the user refresh interval at which data is to be resent
      */
-    public synchronized long getUserRefreshInterval() {
+    public long getUserRefreshInterval() {
         return parseRollingWindow(m_config.getUserRefreshInterval());
     }
 
@@ -342,7 +281,7 @@ public final class RTCConfigFactory {
      * @return the number of times posts are tried with errors before an URL is
      *         automatically unsubscribed
      */
-    public synchronized int getErrorsBeforeUrlUnsubscribe() {
+    public int getErrorsBeforeUrlUnsubscribe() {
         return m_config.getErrorsBeforeUrlUnsubscribe();
     }
 }

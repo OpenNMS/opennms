@@ -1,5 +1,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
+    <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory"/>
+
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command  name="onms/listnamespaces">
             <action class="org.opennms.features.topology.shell.BlueprintNamespaceShellCommand"/>
@@ -9,6 +11,16 @@
         </command>
         <command  name="topo/listoperations">
             <action class="org.opennms.features.topology.shell.OperationListShellCommand"/>
+        </command>
+        <command name="topo/delete-history">
+            <action class="org.opennms.features.topology.shell.DeleteHistoryCommand">
+                <property name="historyManager" ref="historyManager"/>
+            </action>
+        </command>
+        <command name="topo/show-history">
+            <action class="org.opennms.features.topology.shell.ShowHistoryCommand">
+                <property name="historyManager" ref="historyManager"/>
+            </action>
         </command>
     </command-bundle>
 

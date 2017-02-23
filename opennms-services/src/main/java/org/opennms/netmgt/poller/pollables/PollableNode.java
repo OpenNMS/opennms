@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableNode
@@ -107,9 +107,10 @@ public class PollableNode extends PollableContainer {
         }
 
     }
-    
+
     private final int m_nodeId;
     private String m_nodeLabel;
+    private final String m_nodeLocation;
     private final Lock m_lock = new Lock();
 
     /**
@@ -118,11 +119,13 @@ public class PollableNode extends PollableContainer {
      * @param network a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      */
-    public PollableNode(PollableNetwork network, int nodeId, String nodeLabel) {
+    public PollableNode(PollableNetwork network, int nodeId, String nodeLabel, String nodeLocation) {
         super(network, Scope.NODE);
         m_nodeId = nodeId;
         m_nodeLabel = nodeLabel;
+        m_nodeLocation = nodeLocation;
     }
 
     /**
@@ -143,13 +146,12 @@ public class PollableNode extends PollableContainer {
         return m_nodeLabel;
     }
 
-    /**
-     * <p>setNodeLabel</p>
-     *
-     * @param nodeLabel a {@link java.lang.String} object.
-     */
-    public void setNodeLabel(String nodeLabel) {
-        m_nodeLabel = nodeLabel;
+    public void setNodeLabel(String label) {
+        m_nodeLabel = label;
+    }
+
+    public String getNodeLocation() {
+        return m_nodeLocation;
     }
 
     /**

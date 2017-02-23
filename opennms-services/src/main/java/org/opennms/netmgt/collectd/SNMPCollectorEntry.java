@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * <P>
  * An instance of this class is created by calling the constructor and passing a
- * list of SnmpVarBind objects from an SNMP PDU response. This class extends
+ * list of SnmpVarBindDTO objects from an SNMP PDU response. This class extends
  * java.util.TreeMap which is used to store each of the collected data points
  * indexed by object identifier.
  * </P>

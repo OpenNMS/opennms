@@ -39,10 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
-import org.opennms.web.snmpinfo.SnmpInfo;
+import org.opennms.web.svclayer.model.SnmpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +104,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String firstIPAddress = request.getParameter("firstIPAddress");
 		String lastIPAddress = request.getParameter("lastIPAddress");
 		String ipAddress = request.getParameter("ipAddress");
+	    String location = request.getParameter("location");
 		LOG.debug("doPost: snmpInfo:{}, firstIpAddress:{}, lastIpAddress:{}", snmpInfo.toString(), firstIPAddress, lastIPAddress);
 
 		final SnmpConfigServletAction action = determineAction(request);
@@ -113,8 +114,9 @@ public class SnmpConfigServlet extends HttpServlet {
 			case GetConfigForIp:
 				request.setAttribute("snmpConfigForIp",
 						new SnmpInfo(
-								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress))));
+								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), location)));
 				request.setAttribute("firstIPAddress", ipAddress);
+				request.setAttribute("location", location);
 				break;
 			case Save:
 				boolean success = false;
@@ -179,6 +181,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String maxVarsPerPdu = request.getParameter("maxVarsPerPdu");
 		String maxRepetitions = request.getParameter("maxRepetitions");
 		String proxyHost = request.getParameter("proxyHost");
+		String location = request.getParameter("location");
 		
 		// v1/v2c specifics
 		String readCommunityString = request.getParameter("readCommunityString");
@@ -217,6 +220,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		if (!Strings.isNullOrEmpty(timeout)) snmpInfo.setTimeout(Integer.parseInt(timeout));
 		if (!Strings.isNullOrEmpty(version)) snmpInfo.setVersion(version);
 		if (!Strings.isNullOrEmpty(writeCommunityString)) snmpInfo.setWriteCommunity(writeCommunityString);
+	    if (!Strings.isNullOrEmpty(location)) snmpInfo.setLocation(location);
 
 		return snmpInfo;
 	}

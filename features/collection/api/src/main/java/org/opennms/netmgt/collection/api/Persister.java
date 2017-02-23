@@ -35,20 +35,20 @@ package org.opennms.netmgt.collection.api;
  * @author ranger
  * @version $Id: $
  */
-public interface Persister {
+public interface Persister extends CollectionSetVisitor {
 
     /**
      * <p>persistNumericAttribute</p>
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
-    public abstract void persistNumericAttribute(CollectionAttribute attribute);
+    public void persistNumericAttribute(CollectionAttribute attribute);
 
     /**
      * <p>persistStringAttribute</p>
      *
      * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      */
-    public abstract void persistStringAttribute(CollectionAttribute attribute);
+    public void persistStringAttribute(CollectionAttribute attribute);
 
 }

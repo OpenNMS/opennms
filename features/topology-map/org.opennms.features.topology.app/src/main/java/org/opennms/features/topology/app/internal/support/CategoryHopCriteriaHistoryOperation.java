@@ -49,7 +49,7 @@ public class CategoryHopCriteriaHistoryOperation implements HistoryOperation {
 
 	@Override
 	public void applyHistory(GraphContainer container, Map<String, String> settings) {
-		// Remove any existing {@link CategoryHopCriteria}
+		// Remove any existing CategoryHopCriteria
 		Set<CategoryHopCriteria> oldCriteria = Criteria.getCriteriaForGraphContainer(container, CategoryHopCriteria.class);
 		for (CategoryHopCriteria criterium : oldCriteria) {
 			container.removeCriteria(criterium);

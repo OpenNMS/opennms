@@ -1,0 +1,45 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-configure-opennms]]
+=== Configure {opennms-product-name}
+
+Once _Cassandra_ is installed, _{opennms-product-name}_ can be configured to use _Newts_.
+To enable and configure _Newts_, set the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
+
+.Configuration for _{opennms-product-name}_
+[source]
+----
+# Configure storage strategy
+org.opennms.rrd.storeByForeignSource=true
+org.opennms.timeseries.strategy=newts
+
+# Configure Newts time series storage connection
+org.opennms.newts.config.hostname=$ipaddress$
+org.opennms.newts.config.keyspace=newts
+org.opennms.newts.config.port=9042
+----
+
+NOTE: The `org.opennms.newts.config.hostname` property also accepts a comma separated list of hostnames and or IP addresses.
+
+Once _Newts_ has been enabled, you can initialize the _Newts_ schema in _Cassandra_ with the following:
+
+.Initialize Newts keyspace in Cassandra
+[source, bash]
+----
+${OPENNMS_HOME}/bin/newts init
+----
+
+Optionally, you can now connect to your _Cassandra_ cluster and verify that the keyspace has been properly initialized:
+
+.Verify if the keyspace is initialized with cqlsh
+[source, bash]
+----
+cqlsh
+use newts;
+describe table terms;
+describe table samples;
+----
+
+Restart _{opennms-product-name}_ to apply the changes.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:29:58 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2dff310-2fa9-4aa0-b409-ca62fd3a5835">
+<!-- 2015-09-10T17:12:58 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Response Time Charts" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2dff310-2fa9-4aa0-b409-ca62fd3a5835">
 	<property name="ireport.zoom" value="1.4641000000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -53,34 +53,32 @@
 	</style>
 	<style name="Surveillance_Category_Group" mode="Opaque" backcolor="#CCFFCC" hAlign="Left" vAlign="Middle" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<subDataset name="RRD_Dataset" uuid="4db04fe1-cb7c-4fc9-a192-94ad606e483c">
-		<parameter name="ds_IPv4_interface" class="java.lang.String">
-			<defaultValueExpression><![CDATA["127.0.0.1"]]></defaultValueExpression>
-		</parameter>
-		<parameter name="escapedInterface" class="java.lang.String">
-			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil.escapeColons($P{ds_IPv4_interface})]]></defaultValueExpression>
-		</parameter>
-		<parameter name="ds_startDate" class="java.util.Date" isForPrompting="false"/>
-		<parameter name="ds_endDate" class="java.util.Date" isForPrompting="false"/>
-		<parameter name="ds_rrdDir" class="java.lang.String">
-			<defaultValueExpression><![CDATA["/opt/share/rrd"]]></defaultValueExpression>
-		</parameter>
-		<parameter name="ds_nodelabel" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["localhost"]]></defaultValueExpression>
-		</parameter>
+	<subDataset name="Measurement_Dataset" uuid="4db04fe1-cb7c-4fc9-a192-94ad606e483c">
+		<parameter name="ds_ipv4_interface" class="java.lang.String"/>
+		<parameter name="ds_startDateTime" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="ds_endDateTime" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="ds_nodeid" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="ds_foreignsource" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="ds_foreignid" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="ds_categoryname" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["Servers"]]></defaultValueExpression>
 		</parameter>
-		<queryString language="jrobin">
-			<![CDATA[--start $P{ds_startDate} --end $P{ds_endDate}
-		DEF:xx=$P{ds_rrdDir}/response/$P{escapedInterface}/icmp.jrb:icmp:AVERAGE
-		XPORT:xx:IcmpLatency]]>
+		<parameter name="ds_nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{ds_nodeid}, $P{ds_foreignsource}, $P{ds_foreignid})]]></defaultValueExpression>
+		</parameter>
+		<parameter name="MEASUREMENT_URL" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="MEASUREMENT_USERNAME" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String" isForPrompting="false"/>
+		<queryString language="measurement">
+			<![CDATA[<query-request step="300000" start="$P{ds_startDateTime}" end="$P{ds_endDateTime}" maxrows="2000">
+  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="$P{ds_nodeResourceDescriptor}.responseTime[$P{ds_ipv4_interface}]"/>
+</query-request>]]>
 		</queryString>
-		<field name="Timestamp" class="java.util.Date">
-			<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+		<field name="timestamp" class="java.util.Date">
+			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 		<field name="IcmpLatency" class="java.lang.Double">
-			<fieldDescription><![CDATA[IcmpLatency]]></fieldDescription>
+			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 		<variable name="IcmpLatency_AVG" class="java.lang.Double" resetType="Group" resetGroup="IPv4_interface_group" calculation="Average">
 			<variableExpression><![CDATA[$F{IcmpLatency}]]></variableExpression>
@@ -93,10 +91,10 @@
 			<initialValueExpression><![CDATA[]]></initialValueExpression>
 		</variable>
 		<variable name="Hour" class="java.lang.Integer" resetType="Group" resetGroup="IPv4_interface_group">
-			<variableExpression><![CDATA[Integer.valueOf($F{Timestamp}.getHours())]]></variableExpression>
+			<variableExpression><![CDATA[Integer.valueOf($F{timestamp}.getHours())]]></variableExpression>
 		</variable>
 		<group name="IPv4_interface_group">
-			<groupExpression><![CDATA[$P{ds_IPv4_interface}]]></groupExpression>
+			<groupExpression><![CDATA[$P{ds_ipv4_interface}]]></groupExpression>
 		</group>
 		<group name="hour_group">
 			<groupExpression><![CDATA[$V{Hour}]]></groupExpression>
@@ -124,20 +122,36 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String">
+		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
+		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
+		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
 		<![CDATA[SELECT
 	categories.categoryname,
 	node.nodelabel,
-	ifservices.ipaddr
+	node.nodeid,
+	node.foreignsource,
+	node.foreignid,
+	ipinterface.ipaddr
 FROM
 	node
 JOIN
+	ipinterface
+ON
+	(node.nodeid = ipinterface.nodeId)
+JOIN
 	ifservices
 ON
-	(ifservices.nodeid = node.nodeid)
+	(ifservices.ipinterfaceid = ipinterface.id)
 JOIN
 	service
 ON
@@ -156,11 +170,14 @@ WHERE
 ORDER BY
 	categories.categoryname,
 	node.nodelabel,
-	ifservices.ipaddr]]>
+	ipinterface.ipaddr]]>
 	</queryString>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="ipaddr" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignsource" class="java.lang.String"/>
+	<field name="foreignid" class="java.lang.String"/>
 	<group name="surveillance_category_group" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		<groupHeader>
@@ -269,24 +286,39 @@ ORDER BY
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="RRD_Dataset" uuid="0eb11904-02e2-4075-a2c9-f24e506f66fe">
-							<datasetParameter name="ds_startDate">
-								<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+						<datasetRun subDataset="Measurement_Dataset" uuid="3efcb7cb-1fdd-4a2f-b0f1-05d84eaa728d">
+							<datasetParameter name="MEASUREMENT_PASSWORD">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></datasetParameterExpression>
 							</datasetParameter>
-							<datasetParameter name="ds_endDate">
-								<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+							<datasetParameter name="MEASUREMENT_URL">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
 							</datasetParameter>
-							<datasetParameter name="ds_rrdDir">
-								<datasetParameterExpression><![CDATA[$P{rrdDir}]]></datasetParameterExpression>
+							<datasetParameter name="MEASUREMENT_USERNAME">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></datasetParameterExpression>
 							</datasetParameter>
-							<datasetParameter name="ds_IPv4_interface">
+							<datasetParameter name="ds_endDateTime">
+								<datasetParameterExpression><![CDATA[$P{endDate}.getTime()]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_ipv4_interface">
 								<datasetParameterExpression><![CDATA[$F{ipaddr}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_nodeid">
+								<datasetParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_startDateTime">
+								<datasetParameterExpression><![CDATA[$P{startDate}.getTime()]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_foreignsource">
+								<datasetParameterExpression><![CDATA[$F{foreignsource}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_foreignid">
+								<datasetParameterExpression><![CDATA[$F{foreignid}]]></datasetParameterExpression>
 							</datasetParameter>
 						</datasetRun>
 					</dataset>
 					<categorySeries>
-						<seriesExpression><![CDATA[$P{ds_IPv4_interface}]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{Timestamp}]]></categoryExpression>
+						<seriesExpression><![CDATA[$P{ds_ipv4_interface}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{timestamp}]]></categoryExpression>
 						<valueExpression><![CDATA[$F{IcmpLatency}/new Double("1000")]]></valueExpression>
 						<labelExpression><![CDATA["ICMP response time"]]></labelExpression>
 					</categorySeries>

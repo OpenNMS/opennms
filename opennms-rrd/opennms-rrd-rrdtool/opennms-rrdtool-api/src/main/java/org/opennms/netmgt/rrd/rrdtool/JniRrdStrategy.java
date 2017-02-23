@@ -28,27 +28,16 @@
 
 package org.opennms.netmgt.rrd.rrdtool;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdGraphDetails;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -64,11 +53,8 @@ import org.springframework.util.FileCopyUtils;
  * @author ranger
  * @version $Id: $
  */
-public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand ,StringBuffer> {
+public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.CreateCommand ,StringBuffer> {
     private static final Logger LOG = LoggerFactory.getLogger(JniRrdStrategy.class);
-	
-	private static final String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
-	private static final String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
     private Properties m_configurationProperties;
     
@@ -83,13 +69,16 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
 			this.filename = filename;
 			this.parameter = parameter;
 		}
-		
-            @Override
+
+		@Override
 		public String toString() {
 			return OPERATION + " " + filename + " " + parameter;
 		}
-		
-    }
+
+		public String getPath() {
+			return filename;
+		}
+	}
 
     /**
      * <p>getConfigurationProperties</p>
@@ -101,7 +90,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
-        @Override
+    @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         this.m_configurationProperties = configurationParameters;
     }
@@ -114,7 +103,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * @param rrd a {@link java.lang.StringBuffer} object.
      * @throws java.lang.Exception if any.
      */
-        @Override
+    @Override
     public void closeFile(StringBuffer rrd) throws Exception {
         String command = rrd.toString();
         String[] results = Interface.launch(command);
@@ -124,7 +113,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
-        @Override
+    @Override
     public CreateCommand createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
         if (!f.exists()) {
@@ -133,8 +122,8 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
             }
         }
 
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
-        
+        String fileName = directory + File.separator + rrdName + getDefaultFileExtension();
+
         if (new File(fileName).exists()) {
             LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
             return null;
@@ -172,20 +161,21 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * @param createCommand a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-        @Override
+    @Override
     public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
         if (createCommand == null) {
             LOG.debug("createRRD: skipping RRD file");
             return;
         }
+        LOG.debug("createRRD: creating RRD file ", createCommand.getPath());
         LOG.debug("Executing: rrdtool {}", createCommand.toString());
         Interface.launch(createCommand.toString());
         
-        String filenameWithoutExtension = createCommand.filename.replace(RrdUtils.getExtension(), "");
+        String filenameWithoutExtension = createCommand.filename.replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
         
-        RrdUtils.createMetaDataFile(
-            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+        RrdMetaDataUtils.createMetaDataFile(
+            new File(filenameWithoutExtension.substring(0, lastIndexOfSeparator)),
             filenameWithoutExtension.substring(lastIndexOfSeparator),
             attributeMappings
         );
@@ -198,7 +188,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * not provide files that may be open, this constructs the beginning portion
      * of the rrd command to update the file.
      */
-        @Override
+    @Override
     public StringBuffer openFile(String fileName) throws Exception {
         return new StringBuffer("update " + fileName);
     }
@@ -213,7 +203,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * possibility of getting performance benefit by doing more than one write
      * per open. The updates are all performed at once in the closeFile method.
      */
-        @Override
+    @Override
     public void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
         rrd.append(' ');
         rrd.append(data);
@@ -234,13 +224,13 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * Fetches the last value directly from the rrd file using the JNI
      * Interface.
      */
-        @Override
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         return fetchLastValue(rrdFile, ds, "AVERAGE", interval);
     }
 
     /** {@inheritDoc} */
-        @Override
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) {
         /*
          * Generate rrd_fetch() command through jrrd JNI interface in order to
@@ -322,7 +312,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
-        @Override
+    @Override
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // Generate rrd_fetch() command through jrrd JNI interface in order to
         // retrieve
@@ -412,157 +402,5 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         
         return null;
     }
-    
-    /**
-     * {@inheritDoc}
-     *
-     * Executes the given graph command as process with workDir as the current
-     * directory. The output stream of the command (a PNG image) is copied to a
-     * the InputStream returned from the method.
-     */
-        @Override
-    public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
-        byte[] byteArray = createGraphAsByteArray(command, workDir);
-        return new ByteArrayInputStream(byteArray);
-    }
 
-    private byte[] createGraphAsByteArray(String command, File workDir) throws IOException, RrdException {
-        String[] commandArray = StringUtils.createCommandArray(command);
-        Process process;
-        try {
-             process = Runtime.getRuntime().exec(commandArray, null, workDir);
-        } catch (IOException e) {
-            IOException newE = new IOException("IOException thrown while executing command '" + command + "' in " + workDir.getAbsolutePath() + ": " + e);
-            newE.initCause(e);
-            throw newE;
-        }
-        
-        // this closes the stream when its finished
-        byte[] byteArray = FileCopyUtils.copyToByteArray(process.getInputStream());
-        
-        // this close the stream when its finished
-        String errors = FileCopyUtils.copyToString(new InputStreamReader(process.getErrorStream()));
-        
-        // one particular warning message that originates in libart should be ignored
-        if (errors.length() > 0 && errors.contains(IGNORABLE_LIBART_WARNING_STRING)) {
-        	LOG.debug("Ignoring libart warning message in rrdtool stderr stream: {}", IGNORABLE_LIBART_WARNING_STRING);
-        	errors = errors.replaceAll(IGNORABLE_LIBART_WARNING_REGEX, "");
-        }
-        if (errors.length() > 0) {
-            throw new RrdException(errors);
-        }
-        return byteArray;
-    }
-
-    /**
-     * No stats are kept for this implementation.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-        @Override
-    public String getStats() {
-        return "";
-    }
-    
-    // These offsets work perfectly for ranger@ with rrdtool 1.2.23 and Firefox
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphLeftOffset() {
-        return 65;
-    }
-    
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphRightOffset() {
-        return -30;
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphTopOffsetWithText() {
-        return -75;
-    }
-
-    /**
-     * <p>getDefaultFileExtension</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-        @Override
-    public String getDefaultFileExtension() {
-        return ".rrd";
-    }
-    
-    /** {@inheritDoc} */
-        @Override
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
-        // Creating Temp PNG File
-        File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
-        command = command.replaceFirst("graph - ", "graph " + pngFile.getAbsolutePath() + " ");
-
-        int width;
-        int height;
-        String[] printLines;
-        InputStream pngStream;
-
-        try {
-            // Executing RRD Command
-            InputStream is = createGraph(command, workDir);
-            
-            // Processing Command Output
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            
-            try {
-                String line = null;
-                if ((line = reader.readLine()) == null) {
-                    throw new IOException("No output from the createGraph() command");
-                }
-                String[] s = line.split("x");
-                width = Integer.parseInt(s[0]);
-                height = Integer.parseInt(s[1]);
-                
-                List<String> printLinesList = new ArrayList<String>();
-                
-                while ((line = reader.readLine()) != null) {
-                    printLinesList.add(line);
-                }
-                
-                printLines = printLinesList.toArray(new String[printLinesList.size()]);
-
-            } finally {
-                reader.close();
-            }
-
-            // Creating PNG InputStream
-            byte[] byteArray = FileCopyUtils.copyToByteArray(pngFile);
-            pngStream = new ByteArrayInputStream(byteArray);
-        } catch (Throwable e) {
-            throw new RrdException("Can't execute command " + command, e);
-        } finally {
-            if (!pngFile.delete()) {
-            	LOG.warn("Could not delete file: {}", pngFile.getPath());
-            }
-        }
-
-        // Creating Graph Details
-        return new JniGraphDetails(width, height, printLines, pngStream);
-    }
-
-    /** {@inheritDoc} */
-        @Override
-    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
-        // no need to do anything since this strategy doesn't queue
-    }
 }

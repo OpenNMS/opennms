@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.dao.api.RrdDao;
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -38,6 +40,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.Supplier;
+
 /**
  * <p>RrdStatisticAttributeVisitor class.</p>
  *
@@ -46,11 +52,91 @@ import org.springframework.util.Assert;
  */
 public class RrdStatisticAttributeVisitor implements AttributeVisitor, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(RrdStatisticAttributeVisitor.class);
-    private RrdDao m_rrdDao;
+
+    private MeasurementFetchStrategy m_fetchStrategy;
+
     private String m_consolidationFunction;
     private Long m_startTime;
     private Long m_endTime;
     private AttributeStatisticVisitor m_statisticVisitor;
+
+    private interface Aggregator {
+        double getValue();
+        void aggregate(final double v);
+    }
+
+    private enum Aggregators implements Supplier<Aggregator> {
+        AVERAGE(() -> new Aggregator() {
+            private int count = 0;
+            private double sum = 0;
+
+            @Override
+            public double getValue() {
+                return this.count != 0
+                       ? this.sum / this.count
+                       : Double.NaN;
+            }
+
+            @Override
+            public void aggregate(final double v) {
+                this.count++;
+                this.sum += v;
+            }
+        }),
+
+        MIN(() -> new Aggregator(){
+            private double min = Double.POSITIVE_INFINITY;
+
+            @Override
+            public double getValue() {
+                return this.min;
+            }
+
+            @Override
+            public void aggregate(final double v) {
+                        this.min = Math.min(this.min, v);
+                    }
+        }),
+
+        MAX(() -> new Aggregator(){
+            private double max = Double.NEGATIVE_INFINITY;
+
+            @Override
+            public double getValue() {
+                return this.max;
+            }
+
+            @Override
+            public void aggregate(final double v) {
+                this.max = Math.max(this.max, v);
+                    } 
+        }),
+
+        LAST(() -> new Aggregator () {
+            private double v = Double.NaN;
+
+            @Override
+            public double getValue() {
+                return this.v;
+            }
+
+            @Override
+            public void aggregate(final double v) {
+                        this.v = v;
+                    }
+        });
+
+        private final Supplier<Aggregator> delegate;
+
+        Aggregators(final Supplier<Aggregator> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Aggregator get() {
+            return this.delegate.get();
+        }
+    }
     
     /** {@inheritDoc} */
     @Override
@@ -59,8 +145,49 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
             // Nothing to do if we can't cast to an RrdGraphAttribute
             return;
         }
-        
-        double statistic = m_rrdDao.getPrintValue(attribute, m_consolidationFunction, m_startTime, m_endTime);
+
+        final Source source = new Source();
+        source.setLabel("result");
+        source.setResourceId(attribute.getResource().getId());
+        source.setAttribute(attribute.getName());
+        source.setAggregation(m_consolidationFunction.toUpperCase());
+
+        final FetchResults results;
+        try {
+            results = m_fetchStrategy.fetch(m_startTime,
+                                            m_endTime,
+                                            1,
+                                            0,
+                                            null,
+                                            null,
+                                            Collections.singletonList(source),
+                                            false);
+        } catch (final Exception e) {
+            LOG.warn("Failed to fetch statistic: {}", source, e);
+            return;
+        }
+
+        if (results == null) {
+            LOG.warn("No statistic found: {}", source);
+            return;
+        }
+
+        final double[] statistics = results.getColumns().get(source.getLabel());
+        if (statistics == null || statistics.length == 0) {
+            LOG.warn("Statistic is empty: {}", source);
+            return;
+        }
+
+        final Aggregator aggregator = Aggregators.valueOf(m_consolidationFunction.toUpperCase()).get();
+
+        Arrays.stream(statistics)
+                .filter(v -> (! Double.isNaN(v)))
+                .forEach(v -> {
+                    LOG.debug("Aggregating: {}", v);
+                    aggregator.aggregate(v);
+                });
+
+        double statistic = aggregator.getValue();
         
         LOG.debug("The value of {} is {}", attribute, statistic);
         
@@ -86,29 +213,19 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
+        Assert.state(m_fetchStrategy != null, "property fetchStrategy must be set to a non-null value");
         Assert.state(m_consolidationFunction != null, "property consolidationFunction must be set to a non-null value");
         Assert.state(m_startTime != null, "property startTime must be set to a non-null value");
         Assert.state(m_endTime != null, "property endTime must be set to a non-null value");
         Assert.state(m_statisticVisitor != null, "property statisticVisitor must be set to a non-null value");
     }
 
-    /**
-     * <p>getRrdDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public RrdDao getRrdDao() {
-        return m_rrdDao;
+    public MeasurementFetchStrategy getFetchStrategy() {
+        return m_fetchStrategy;
     }
 
-    /**
-     * <p>setRrdDao</p>
-     *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public void setRrdDao(RrdDao rrdDao) {
-        m_rrdDao = rrdDao;
+    public void setFetchStrategy(MeasurementFetchStrategy fetchStrategy) {
+        m_fetchStrategy = fetchStrategy;
     }
 
     /**

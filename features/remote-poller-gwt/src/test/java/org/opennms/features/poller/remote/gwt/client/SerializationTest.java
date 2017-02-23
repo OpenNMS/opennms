@@ -212,7 +212,7 @@ public class SerializationTest {
 	private GWTLocationMonitor getMonitor() {
 		GWTLocationMonitor monitor = new GWTLocationMonitor();
 		monitor.setDefinitionName("blah");
-		monitor.setId(1);
+		monitor.setId(Integer.toString(1));
 		monitor.setLastCheckInTime(new Date());
 		monitor.setName("foo");
 		monitor.setStatus("STARTED");

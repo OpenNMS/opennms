@@ -43,23 +43,22 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,14 +68,15 @@ import org.springframework.util.Assert;
 public class NodeScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
-    private Integer m_nodeId;
-    private String m_foreignSource;
-    private String m_foreignId;
-    private Date m_scanStamp;
-    private ProvisionService m_provisionService;
-    private EventForwarder m_eventForwarder;
-    private SnmpAgentConfigFactory m_agentConfigFactory;
-    private DefaultTaskCoordinator m_taskCoordinator;
+    private final Integer m_nodeId;
+    private final String m_foreignSource;
+    private final String m_foreignId;
+    private final OnmsMonitoringLocation m_location;
+    private final Date m_scanStamp;
+    private final ProvisionService m_provisionService;
+    private final EventForwarder m_eventForwarder;
+    private final SnmpAgentConfigFactory m_agentConfigFactory;
+    private final TaskCoordinator m_taskCoordinator;
 
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
@@ -90,15 +90,17 @@ public class NodeScan implements Scan {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
-     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final DefaultTaskCoordinator taskCoordinator) {
+    public NodeScan(final Integer nodeId, final String foreignSource, final String foreignId, final OnmsMonitoringLocation location, final ProvisionService provisionService, final EventForwarder eventForwarder, final SnmpAgentConfigFactory agentConfigFactory, final TaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_location = location;
         m_scanStamp = new Date();
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
@@ -132,6 +134,14 @@ public class NodeScan implements Scan {
      */
     public Integer getNodeId() {
         return m_nodeId;
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
+    private String getLocationName() {
+        return m_location == null ? null : m_location.getLocationName();
     }
 
     /**
@@ -189,9 +199,9 @@ public class NodeScan implements Scan {
     /**
      * <p>getTaskCoordinator</p>
      *
-     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public DefaultTaskCoordinator getTaskCoordinator() {
+    public TaskCoordinator getTaskCoordinator() {
         return m_taskCoordinator;
     }
 
@@ -276,6 +286,8 @@ public class NodeScan implements Scan {
 
                     final Task t = createTask();
                     t.schedule();
+                    // NMS-5593 shows 10 provisioning threads all waiting on these
+                    // latches which is probably exhausting the thread pool
                     t.waitFor();
 
                     LOG.info("Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
@@ -303,7 +315,7 @@ public class NodeScan implements Scan {
                 abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
             } else {
                 for(final OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
+                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
                 }
             }
         } else {
@@ -330,12 +342,15 @@ public class NodeScan implements Scan {
     /**
      * AgentScan
      *
+     * TODO: Make this static
+     * 
      * @author brozow
      */
     public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProgress {
 
-        private InetAddress m_agentAddress;
-        private String m_agentType;
+        private final InetAddress m_agentAddress;
+        private final String m_agentType;
+
 
         public AgentScan(final Integer nodeId, final OnmsNode node, final InetAddress agentAddress, final String agentType) {
             super(nodeId, node);
@@ -530,46 +545,41 @@ public class NodeScan implements Scan {
             } else {
                 Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 
-                final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
-
-                final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "IP address tables", tracker);
-                walker.start();
-
                 try {
-                    walker.waitFor();
+                    String locationName = node.getLocation()== null ? null : node.getLocation().getLocationName();
+                    final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress(), locationName);
+                    m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, tracker)
+                        .withDescription("IP address tables")
+                        .withLocation(getLocationName())
+                        .execute()
+                        .get();
 
-                    if (walker.timedOut()) {
-                        abort("Aborting node scan : Agent timed out while scanning the IP address tables");
-                    }
-                    else if (walker.failed()) {
-                        abort("Aborting node scan : Agent failed while scanning the IP address tables : " + walker.getErrorMessage());
-                    } else {
+                    // After processing the SNMP provided interfaces then we need to scan any that
+                    // were provisioned but missing from the ip table
+                    for(final InetAddress ipAddr : provisionedIps) {
+                        final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddr);
 
-                        // After processing the SNMP provided interfaces then we need to scan any that 
-                        // were provisioned but missing from the ip table
-                        for(final InetAddress ipAddr : provisionedIps) {
-                            final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddr);
+                        if (iface != null) {
+                            iface.setIpLastCapsdPoll(getScanStamp());
+                            iface.setIsManaged("M");
 
-                            if (iface != null) {
-                                iface.setIpLastCapsdPoll(getScanStamp());
-                                iface.setIsManaged("M");
-
-                                currentPhase.add(ipUpdater(currentPhase, iface), "write");
-                            }
+                            currentPhase.add(ipUpdater(currentPhase, iface), "write");
                         }
-
-                        LOG.debug("Finished phase {}", currentPhase);
-
                     }
+
+                    LOG.debug("Finished phase {}", currentPhase);
+                } catch (ExecutionException e) {
+                    abort("Aborting node scan : Agent failed while scanning the IP address tables : " + e.getMessage());
                 } catch (final InterruptedException e) {
-                    abort("Aborting node scan : Scan thread failed while waiting for the IP address tables");
+                abort("Aborting node scan : Scan thread failed while waiting for the IP address tables");
                 }
             }
         }
 
         public void detectPhysicalInterfaces(final BatchTask currentPhase) {
             if (isAborted()) { return; }
-            final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+            String locationName = getLocation()== null ? null : getLocation().getLocationName();
+            final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress(), locationName);
             Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 
             final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
@@ -602,21 +612,15 @@ public class NodeScan implements Scan {
                 }
             };
 
-            final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
-            walker.start();
-
             try {
-                walker.waitFor();
-
-                if (walker.timedOut()) {
-                    abort("Aborting node scan : Agent timed out while scanning the interfaces table");
-                }
-                else if (walker.failed()) {
-                    abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
-                }
-                else {
-                    LOG.debug("Finished phase {}", currentPhase);
-                }
+                m_provisionService.getLocationAwareSnmpClient().walk(agentConfig, physIfTracker)
+                    .withDescription("ifTable/ifXTable")
+                    .withLocation(getLocationName())
+                    .execute()
+                    .get();
+                LOG.debug("Finished phase {}", currentPhase);
+            } catch (ExecutionException e) {
+                abort("Aborting node scan : Agent failed while scanning the interfaces table: " + e.getMessage());
             } catch (final InterruptedException e) {
                 abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
                 Thread.currentThread().interrupt();
@@ -626,7 +630,7 @@ public class NodeScan implements Scan {
         @Override
         public void run(final ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
-                                            new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
+                                            new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), getLocation(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                                             new RunInBatch() {
                                                 @Override
                                                 public void run(final BatchTask phase) {
@@ -661,6 +665,9 @@ public class NodeScan implements Scan {
         }
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class NoAgentScan extends BaseAgentScan implements NeedsContainer {
 
 
@@ -749,10 +756,13 @@ public class NodeScan implements Scan {
 
     }
 
+    /**
+     * TODO: Make this static
+     */
     public class BaseAgentScan {
 
-        private OnmsNode m_node;
-        private Integer m_nodeId;
+        private final OnmsNode m_node;
+        private final Integer m_nodeId;
 
         private BaseAgentScan(final Integer nodeId, final OnmsNode node) {
             m_nodeId = nodeId;
@@ -804,7 +814,7 @@ public class NodeScan implements Scan {
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
             getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
             if (iface.isManaged()) {
-                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
+                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getLocation(), getProvisionService()));
             }
         }
 
@@ -831,6 +841,7 @@ public class NodeScan implements Scan {
         .append("foreign source", m_foreignSource)
         .append("foreign id", m_foreignId)
         .append("node id", m_nodeId)
+        .append("location", m_location.getLocationName())
         .append("aborted", m_aborted)
         .append("provision service", m_provisionService)
         .toString();

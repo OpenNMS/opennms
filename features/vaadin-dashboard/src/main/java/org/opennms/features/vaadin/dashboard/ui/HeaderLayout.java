@@ -28,16 +28,22 @@
 
 package org.opennms.features.vaadin.dashboard.ui;
 
-import com.vaadin.data.Property;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
 import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
+
+import com.vaadin.data.Property;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.UI;
 
 /**
  * The top heading layout for the wallboard view.
@@ -59,15 +65,17 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
          * Setting up the layout
          */
         addStyleName("header");
-        setMargin(true);
+        setMargin(new MarginInfo(false,true,false,false));
         setSpacing(true);
         setWidth("100%");
+        setHeight(64, Unit.PIXELS);
 
         /**
          * Adding the logo
          */
-        Link link = new Link(null, new ExternalResource("/opennms/index.jsp"));
-        link.setIcon(new ThemeResource("img/logo.png"));
+        Label link = new Label();
+        link.setContentMode(ContentMode.HTML);
+        link.setValue("<a href=\"/opennms/index.jsp\" id=\"onmslogo\"></a>");
         addComponent(link);
         setExpandRatio(link, 1.0f);
 

@@ -6,54 +6,64 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>14.0.3-SNAPSHOT</version>
+        <version>20.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features JMX Config Generator</name>
+    <name>OpenNMS :: Features :: JMX Config Generator</name>
     <url>http://www.opennms.org</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-        <args4j.version>2.0.16</args4j.version>
-        <commons.io.version>1.3.2</commons.io.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <commons.lang3.version>3.1</commons.lang3.version>
         <velocity.version>1.7</velocity.version>
-        <commons.collections.version>3.2.1</commons.collections.version>
-        <slf4j.version>1.6.6</slf4j.version>
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/filtered</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
+            <!-- don't generate this, because we need to have some dependencies scoped differently
+                 between the features and the onejar maven plugin -->
+            <!--
             <plugin>
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>guava</feature>
+                        <feature>commons-io</feature>
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
-                        <bundle>wrap:mvn:args4j/args4j/${args4j.version}</bundle>
+                        <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
                         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-                        <bundle>wrap:mvn:commons-io/commons-io/${commons.io.version}</bundle>
-                        <bundle>mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
-                        <bundle>mvn:commons-collections/commons-collections/${commons.collections.version}</bundle>
-                        <bundle>mvn:org.slf4j/slf4j-jdk14/${slf4j.version}</bundle>
-                        <bundle>mvn:ch.qos.logback/logback-core/1.0.6</bundle>
+                        <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
                     </bundles>
                 </configuration>
             </plugin>
+            -->
+
+            <!-- We need this to generate the JmxConfig.xml data model for the config generator tool.
+            The one defined by opennms-config cannot be used, because it describes the whole config file.
+            We only need a sub set of the overall schema, which makes it easier to program.
+            However the subset defined in "jmx-datacollection.config.xsd" must be compatible with the one
+            defined in opennms-config. -->
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.8.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -71,90 +81,76 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-features-xml</id>
+                        <phase>package</phase>
+                        <goals><goal>attach-artifact</goal></goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.outputDirectory}/features.xml</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- We generate a big onejar.jar file to make Deployment easier -->
+            <plugin>
+                <groupId>org.dstovall</groupId>
+                <artifactId>onejar-maven-plugin</artifactId>
+                <version>1.4.4</version>
                 <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <filename>${project.artifactId}-${project.version}-onejar.jar</filename>
+                    <mainClass>org.opennms.features.jmxconfiggenerator.Starter</mainClass>
                 </configuration>
             </plugin>
         </plugins>
-        <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>
-        									org.opennms.maven.plugins
-        								</groupId>
-        								<artifactId>
-        									features-maven-plugin
-        								</artifactId>
-        								<versionRange>
-        									[1.0.1,)
-        								</versionRange>
-        								<goals>
-        									<goal>
-        										generate-features-xml
-        									</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
-        </pluginManagement>
     </build>
-    
     <dependencies>
-
-        <!-- OpenNMS Tools -->
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.name-cutter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
-            <version>${args4j.version}</version>
+            <version>${args4jVersion}</version>
         </dependency>
-
-        <!-- JMXMP -->
         <dependency>
             <groupId>org.jvnet.opendmk</groupId>
             <artifactId>jmxremote_optional</artifactId>
             <version>${jmxremote.optional.version}</version>
-            <scope>provided</scope>
         </dependency>
-
-        <!-- Helpers -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons.lang3.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -165,18 +161,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-
     </dependencies>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>onejar-maven-plugin.googlecode.com</id>
+            <url>http://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

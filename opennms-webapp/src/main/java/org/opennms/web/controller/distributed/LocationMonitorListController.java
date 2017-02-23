@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.DistributedPollerService;
-import org.opennms.web.svclayer.LocationMonitorListModel;
+import org.opennms.web.svclayer.model.LocationMonitorListModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;

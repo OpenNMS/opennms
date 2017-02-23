@@ -1,0 +1,7 @@
+org.opennms.netmgt.measurements.filters.impl.ChompFactory
+org.opennms.netmgt.measurements.filters.impl.HWForecastFactory
+org.opennms.netmgt.measurements.filters.impl.OutlierFilterFactory
+org.opennms.netmgt.measurements.filters.impl.TrendLineFactory
+org.opennms.netmgt.measurements.filters.impl.JEXLFactory
+org.opennms.netmgt.measurements.filters.impl.PercentileFactory
+org.opennms.netmgt.measurements.filters.impl.DerivativeFactory

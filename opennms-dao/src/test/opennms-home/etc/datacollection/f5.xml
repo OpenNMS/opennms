@@ -3,20 +3,20 @@
      
     <resourceType name="ltmPoolStatName" label="F5 LTM Pool Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmPoolStatName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
      
     <resourceType name="ltmVSStatName" label="F5 LTM Virtual Server Stats (F5 BigIP MIB)"
                   resourceLabel="${ltmVSStatName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
      
     <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)"
                   resourceLabel="${f5ifName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!--  F5 MIBs -->

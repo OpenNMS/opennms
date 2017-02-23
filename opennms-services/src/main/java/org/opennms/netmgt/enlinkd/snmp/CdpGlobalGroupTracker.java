@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
@@ -60,31 +61,67 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 	//
 	public final static	String	CDP_GLOBAL_RUN	= "cdpGlobalRun";
 	public final static	String	CDP_GLOBAL_DEVICEID	= "cdpGlobalDeviceId";
+        public final static     String  CDP_GLOBAL_DEVICEID_FORMAT     = "cdpGlobalDeviceIdFormat";
 	
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
-		
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,".1.3.6.1.4.1.9.9.23.1.3.1"),
 		/**
-		 * <P>The MAC address used by this bridge when it must
-		 * be referred to in a unique fashion. It is
-		 * recommended that this be the numerically smallest
-		 *  MAC address of all ports that belong to this
-		 *  bridge. However it is only required to be unique.
-		 *  When concatenated with dot1dStpPriority a unique
-		 *  BridgeIdentifier is formed which is used in the
-		 *  Spanning Tree Protocol.</P>
+		 * cdpGlobalRun OBJECT-TYPE
+		 * SYNTAX     TruthValue
+		 * MAX-ACCESS read-write
+                 * STATUS     current
+                 * DESCRIPTION            
+                 *        "An indication of whether the Cisco Discovery Protocol
+                 *        is currently running.  Entries in cdpCacheTable are
+                 *        deleted when CDP is disabled."
+                 *    DEFVAL     { true }
+                 *    ::= { cdpGlobal 1 }
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,".1.3.6.1.4.1.9.9.23.1.3.4")
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,".1.3.6.1.4.1.9.9.23.1.3.1"),
+
+		/**
+		 * cdpGlobalDeviceId OBJECT-TYPE
+                 *    SYNTAX     DisplayString
+                 *    MAX-ACCESS read-only
+                 *    STATUS     current
+                 *    DESCRIPTION        "The device ID advertised by this device. The format of this
+                 *         device id is characterized by the value of 
+                 *         cdpGlobalDeviceIdFormat object."
+                 *    ::= { cdpGlobal 4 }
+		 */
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,".1.3.6.1.4.1.9.9.23.1.3.4"),
+
+		/**
+                 * cdpGlobalDeviceIdFormat  OBJECT-TYPE
+                 *    SYNTAX     INTEGER { 
+                 *                 serialNumber(1), 
+                 *                 macAddress(2),
+                 *                 other(3) 
+                 *               } 
+                 *    MAX-ACCESS read-write
+                 *    STATUS     current
+                 *    DESCRIPTION        "An indication of the format of Device-Id contained in the
+                 *        corresponding instance of cdpGlobalDeviceId. User can only
+                 *        specify the formats that the device is capable of as
+                 *        denoted in cdpGlobalDeviceIdFormatCpb object.
+                 *        
+                 *        serialNumber(1) indicates that the value of cdpGlobalDeviceId 
+                 *        object is in the form of an ASCII string contain the device
+                 *        serial number. 
+                 *        
+                 *        macAddress(2) indicates that the value of cdpGlobalDeviceId 
+                 *        object is in the form of Layer 2 MAC address.
+                 *
+                 *        other(3) indicates that the value of cdpGlobalDeviceId object
+                 *        is in the form of a platform specific ASCII string contain
+                 *        info that identifies the device. For example: ASCII string
+                 *        contains serialNumber appended/prepened with system name." 
+                 *    ::= { cdpGlobal 7 }
+                 *
+		 */
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID_FORMAT,".1.3.6.1.4.1.9.9.23.1.3.7")
 
 	};
 
-	/**
-	 * <P>The SYSTEM_OID is the object identifier that represents the
-	 * root of the system information in the MIB forest. Each of the
-	 * system elements can be retrieved by adding their specific index
-	 * to the string, and an additional Zero(0) to signify the single 
-	 * instance item.</P>
-	 */
     private SnmpStore m_store;
 	
 	/**
@@ -139,10 +176,21 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
     	return m_store.getInt32(CDP_GLOBAL_RUN);
     }
     
+    public Integer getCdpGlobalDeviceFormat() {
+        return m_store.getInt32(CDP_GLOBAL_DEVICEID_FORMAT);
+    }
+    
     public CdpElement getCdpElement() {
     	CdpElement cdpElement = new CdpElement();
     	cdpElement.setCdpGlobalRun(TruthValue.get(getCdpGlobalRun()));
     	cdpElement.setCdpGlobalDeviceId(getCdpDeviceId());
+    	if (getCdpGlobalDeviceFormat() != null) {
+    	    try {
+    	        cdpElement.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.get(getCdpGlobalDeviceFormat()));
+    	    } catch (IllegalArgumentException e) {
+    	        LOG.info("setCdpGlobalDeviceIdFormat not supported: ", e.getLocalizedMessage());
+    	    }
+    	}    	
     	return cdpElement;
     }
         
