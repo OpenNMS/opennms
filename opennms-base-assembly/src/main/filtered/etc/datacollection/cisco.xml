@@ -1020,7 +1020,7 @@
         </collect>
       </systemDef>
 
-      <systemDef name="Cisco Adaptive Security Appliance 5585-X Security Services Processor-60">
+      <systemDef name="Cisco ASA 5585-X Security Services Processor-60">
         <sysoid>.1.3.6.1.4.1.9.1.1201</sysoid>
         <collect>
           <includeGroup>cisco-pix</includeGroup>
