@@ -6,7 +6,7 @@
 
 Release 19.0.1 is the latest stable release of OpenNMS.
 
-For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
+For a high-level overview of what's changed in OpenNMS 19, see _link:http://docs.opennms.org/opennms/releases/19.0.1/releasenotes/#releasenotes-19[What's New in OpenNMS 19]_.
 
 The codename for 19.0.1 is _TBD_.
 
@@ -19,7 +19,8 @@ If you are using the _OpenNMS-JVM_ service to monitor JMX metrics on the OpenNMS
 ==== Release 19.0.0
 
 Release 19.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and new features, most notably support for all major OpenNMS polling and collection features in the Minion.
-For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
+
+For a high-level overview of what's changed in OpenNMS 19, see _link:http://docs.opennms.org/opennms/releases/19.0.1/releasenotes/#releasenotes-19[What's New in OpenNMS 19]_.
 
 The codename for 19.0.0 is _link:https://en.wikipedia.org/wiki/Ice_hockey[Ice Hockey]_.
 
