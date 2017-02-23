@@ -71,7 +71,7 @@ public class NewPasswordActionServlet extends HttpServlet {
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
 
-        if (!request.isUserInRole(Authentication.ROLE_ADMIN) && user.getRoleCollection().contains(Authentication.ROLE_READONLY)) {
+        if (!request.isUserInRole(Authentication.ROLE_ADMIN) && user.getRoles().contains(Authentication.ROLE_READONLY)) {
             throw new ServletException("User " + user.getUserId() + " is read-only");
         }
 
@@ -80,7 +80,7 @@ public class NewPasswordActionServlet extends HttpServlet {
             dispatcher.forward(request, response);
         } else {
             final Password pass = new Password();
-            pass.setContent(userFactory.encryptedPassword(newPassword, true));
+            pass.setEncryptedPassword(userFactory.encryptedPassword(newPassword, true));
             pass.setSalt(true);
             user.setPassword(pass);
 
