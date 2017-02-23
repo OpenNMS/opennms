@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.service;
 
 import static org.opennms.netmgt.events.api.EventConstants.PARAM_TOPOLOGY_NAMESPACE;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.events.api.EventConstants;
@@ -38,7 +39,13 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
+import com.google.common.collect.Lists;
+
 public class TopologyServiceEventListener implements EventListener {
+
+    // The UEIs this listener is interested in
+    private static final List<String> UEI_LIST =
+            Lists.newArrayList(EventConstants.RELOAD_TOPOLOGY_UEI, EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI);
 
     private final DefaultTopologyService topologyService;
 
@@ -76,10 +83,10 @@ public class TopologyServiceEventListener implements EventListener {
     }
 
     public void init() {
-        eventIpcManager.addEventListener(this);
+        eventIpcManager.addEventListener(this, UEI_LIST);
     }
 
     public void destroy() {
-        eventIpcManager.removeEventListener(this);
+        eventIpcManager.removeEventListener(this, UEI_LIST);
     }
 }
