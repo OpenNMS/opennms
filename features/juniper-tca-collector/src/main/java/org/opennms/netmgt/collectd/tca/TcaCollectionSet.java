@@ -42,6 +42,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -222,7 +223,7 @@ public class TcaCollectionSet extends AbstractCollectionSet {
 				timestamp = Long.parseLong(rawEntry[0]);
 				if (timestamp > lastTimestamp) {
 					TcaCollectionResource resource = new TcaCollectionResource(m_agent, entry.getPeerAddress());
-					resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
+					resource.setTimeKeeper(new ConstantTimeKeeper(new Date(timestamp * 1000)));
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_DELAY), rawEntry[1]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, INBOUND_JITTER), rawEntry[2]);
 					resource.setAttributeValue(new TcaCollectionAttributeType(attribGroupType, entryObjId, OUTBOUND_DELAY), rawEntry[3]);
