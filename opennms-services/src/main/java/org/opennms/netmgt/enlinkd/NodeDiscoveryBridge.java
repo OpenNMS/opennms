@@ -72,7 +72,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     }
 
     protected void runCollection() {
-        LOG.info("run: start: node discovery operations for bridge: '{}'",
+        LOG.info("run: start discovery operations for node: [{}]",
                  getNodeId());
         final Date now = new Date();
 
@@ -85,12 +85,13 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         String community = getPeer().getReadCommunity();
         for (Entry<Integer, String> entry : vlanmap.entrySet()) {
-            LOG.debug("run: cisco vlan collection setting peer communitY for VLAN {}",
-                      entry.getKey());
+            LOG.debug("run: node [{}] cisco vtp: setting peer community for VLAN {}",
+            		 getNodeId(),
+                      entry.getValue());
             SnmpAgentConfig peer = getPeer();
             if (entry.getKey() != null)
                 peer.setReadCommunity(community + "@" + entry.getKey());
-            LOG.debug("run: Bridge Linkd node scan : ready to walk dot1d basedata on {}, vlan {}, vlanname {}.",
+            LOG.debug("run: walking dot1d basedata on node [{}}, vlan [{}], vlanname {}.",
                       getNodeId(), entry.getKey(), entry.getValue());
 
             BridgeElement bridge = getDot1dBridgeBase(peer);
@@ -99,20 +100,21 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 bridge.setVlanname(entry.getValue());
                 m_linkd.getQueryManager().store(getNodeId(), bridge);
             } else {
-                LOG.debug("run: Bridge Linkd node scan : no dot1d data found on {}, vlan {}, vlanname {}. skipping other operations",
+                LOG.debug("run: no dot1d data found on node [{}], vlan [{}], vlanname {}. skipping other operations",
                           getNodeId(), entry.getKey(), entry.getValue());
                 continue;
             }
 
             Map<Integer,Integer> vlanbridgetoifindex = walkDot1dBasePortTable(peer);
-            LOG.debug("run: found on node: '{}' vlan: '{}', bridge ifindex map {}",
+            LOG.debug("run: found on node: [{}] vlan: [{}], bridge ifindex map {}",
                       getNodeId(), entry.getValue(), vlanbridgetoifindex);
             if (!isValidStpBridgeId(bridge.getStpDesignatedRoot())) {
-                LOG.info("run: invalid Stp designated root: spanning tree not supported on: {}",
+                LOG.info("run: node [{}]: invalid designated root: spanning tree not supported.",
                          getNodeId());
             } else if (bridge.getBaseBridgeAddress().equals(getBridgeAddressFromStpBridgeId(bridge.getStpDesignatedRoot()))) {
-                LOG.info("run: designated root of spanning tree is itself on bridge {}, on: {}",
-                         bridge.getStpDesignatedRoot(), getNodeId());
+                LOG.info("run: node [{}]: designated root {} is itself. Skipping store.",
+                		 getNodeId(),
+                         bridge.getStpDesignatedRoot());
             } else {
                 for (BridgeStpLink stplink: walkSpanningTree(peer,
                                  bridge.getBaseBridgeAddress())) {
@@ -127,17 +129,17 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             bft = walkDot1dTpFdp(entry.getKey(), bridgeifindex, bft, peer);
         }
 		
-        LOG.debug("run: found on node: '{}' bridge ifindex map {}",
+        LOG.debug("run: node [{}]: bridge ifindex map {}",
                   getNodeId(), bridgeifindex);
         bft = walkDot1qTpFdb(getPeer(),bridgeifindex, bft);
-        LOG.debug("run: bridge: '{}' bft size {}", getNodeId(), bft.size());
+        LOG.debug("run: node [{}] bft {}", getNodeId(), bft);
 
         if (bft.size() > 0) {
-            LOG.debug("run: updating topology bridge: '{}'", getNodeId());
+            LOG.debug("run: node [{}]: updating topology", getNodeId());
         	m_linkd.getQueryManager().store(getNodeId(), bft);
         	m_linkd.scheduleBridgeTopologyDiscovery(getNodeId());
         }
-        LOG.debug("run: reconciling bridge: '{}' time {}", getNodeId(), now);
+        LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
         m_linkd.collectedBft(getNodeId());
         m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
         LOG.info("run: end: node discovery operations for bridge: '{}'",
@@ -170,21 +172,21 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         BridgeElement bridge = dot1dbase.getBridgeElement();
         if (bridge.getBaseBridgeAddress() == null) {
-            LOG.info("run: base bridge address is null: bridge mib not supported on: {}",
+            LOG.info("run: node [{}]: base bridge address is null. BRIDGE_MIB not supported.",
                      getNodeId());
             return null;
         }
 
         if (!isValidBridgeAddress(bridge.getBaseBridgeAddress())) {
-            LOG.info("run: bridge not supported, base address identifier {} is not valid on: {}",
-                     dot1dbase.getBridgeAddress(), getNodeId());
+            LOG.info("run: node [{}]: base bridge address {} is not valid on. BRIDGE_MIB not supported",
+            		getNodeId(),dot1dbase.getBridgeAddress());
             return null;
         }
 
         if (bridge.getBaseNumPorts() == null
                 || bridge.getBaseNumPorts().intValue() == 0) {
-            LOG.info("run: bridge {} has 0 port active, on: {}",
-                     dot1dbase.getBridgeAddress(), getNodeId());
+            LOG.info("run: node [{}]: base bridge address {}: has 0 port active. BRIDGE_MIB not supported",
+            		getNodeId(),dot1dbase.getBridgeAddress());
             return null;
         }
         LOG.info("run: bridge {} has is if type {}, on: {}",
@@ -193,8 +195,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                  getNodeId());
 
         if (bridge.getBaseType() == BridgeDot1dBaseType.DOT1DBASETYPE_SOURCEROUTE_ONLY) {
-            LOG.info("run: {}: source route only type bridge, on: {}",
-                     dot1dbase.getBridgeAddress(), getNodeId());
+            LOG.info("run: node [{}]: base bridge address {}: is source route bridge only. BRIDGE_MIB not supported",
+            		getNodeId(),dot1dbase.getBridgeAddress());
             return null;
         }
         return bridge;
@@ -227,12 +229,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         }
 
         if (vtpStatus.getVtpVersion() == null) {
-            LOG.info("run: cisco vtp mib not supported, on: {}", getNodeId());
+            LOG.info("run: node [{}]: cisco vtp mib not supported.", getNodeId());
             return vlanmap;
         }
 
-        LOG.info("run: cisco vtp mib supported, on: {}", getNodeId());
-        LOG.info("run: walking cisco vtp, on: {}", getNodeId());
+        LOG.info("run: node [{}]: cisco vtp mib supported.", getNodeId());
+        LOG.debug("run: node [{}]: walking cisco vtp.", getNodeId());
 
         trackerName = "ciscoVtpVlan";
         final CiscoVtpVlanTableTracker ciscoVtpVlanTableTracker = new CiscoVtpVlanTableTracker() {
@@ -301,17 +303,26 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
 
+        	
             @Override
             public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
                 BridgeMacLink link = row.getLink();
+                LOG.debug("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}",
+                		getNodeId(),
+                        row.getDot1dTpFdbAddress(), vlan,
+                        row.getDot1dTpFdbPort(),
+                        link.getBridgePortIfIndex(),
+                        link.getBridgeDot1qTpFdbStatus());
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
-                    LOG.warn("processDot1dTpFdbRow: row has null status. mac {}: vlan {}: on port {}",
+                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {}. row has null status. ",
+                    		getNodeId(),
                              row.getDot1dTpFdbAddress(), vlan,
                              row.getDot1dTpFdbPort());
                     return;
                 }
                 if (link.getBridgePort() == null) {
-                    LOG.warn("processDot1dTpFdbRow: row has null bridge port.  mac {}: vlan {}: on port {} status {}",
+                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} status {}. row has null bridge port.  ",
+                    		getNodeId(),
                              row.getDot1dTpFdbAddress(), vlan,
                              row.getDot1dTpFdbPort(),
                              link.getBridgeDot1qTpFdbStatus());
@@ -319,7 +330,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
                 if (link.getMacAddress() == null
                         || !isValidBridgeAddress(link.getMacAddress())) {
-                    LOG.warn("processDot1dTpFdbRow: row has invalid mac. mac {}: vlan {}: on port {} ifindex {} status {}",
+                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row has invalid mac.",
+                    		getNodeId(),
                              row.getDot1dTpFdbAddress(), vlan,
                              row.getDot1dTpFdbPort(),
                              link.getBridgePortIfIndex(),
@@ -330,7 +342,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
                 if (!bridgeifindex.containsKey(link.getBridgePort())
                         && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
-                    LOG.warn("processDot1dTpFdbRow: row has invalid bridge port no ifindex found. mac {}: vlan {}: on port {} ifindex {} status {}",
+                    LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row has invalid bridge port. no ifindex found. ",
+                    		getNodeId(),
                              row.getDot1dTpFdbAddress(), vlan,
                              row.getDot1dTpFdbPort(),
                              link.getBridgePortIfIndex(),
@@ -338,7 +351,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                     return;
                 }
                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
-                LOG.info("processDot1dTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",
+                LOG.info("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
+                		getNodeId(),
                          link.getMacAddress(), link.getVlan(),
                          link.getBridgePort(), link.getBridgePortIfIndex(),
                          link.getBridgeDot1qTpFdbStatus());
@@ -379,14 +393,23 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             @Override
             public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
                 BridgeMacLink link = row.getLink();
+                LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}.",
+                		getNodeId(),
+                        row.getDot1qTpFdbAddress(),
+                        row.getDot1qTpFdbPort(),
+                        link.getBridgePortIfIndex(),
+                        link.getBridgeDot1qTpFdbStatus());
+
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
-                    LOG.warn("processDot1qTpFdbRow: row has null status. mac {}: on port {}",
+                    LOG.warn("processDot1qTpFdbRow: node [{}]: mac {}: on port {}. row has null status.",
+                    		getNodeId(),
                              row.getDot1qTpFdbAddress(),
                              row.getDot1qTpFdbPort());
                     return;
                 }
                 if (link.getBridgePort() == null) {
-                    LOG.warn("processDot1qTpFdbRow: row has null bridge port.  mac {}: on port {} status {}",
+                    LOG.warn("processDot1qTpFdbRow: node [{}]: mac {}: on port {} status {}. row has null bridge port.",
+                    		getNodeId(),
                              row.getDot1qTpFdbAddress(),
                              row.getDot1qTpFdbPort(),
                              link.getBridgeDot1qTpFdbStatus());
@@ -394,7 +417,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
                 if (link.getMacAddress() == null
                         || !isValidBridgeAddress(link.getMacAddress())) {
-                    LOG.warn("processDot1qTpFdbRow: row has invalid mac. mac {}: on port {} ifindex {} status {}",
+                    LOG.warn("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. row has invalid mac.",
+                    		getNodeId(),
                              row.getDot1qTpFdbAddress(),
                              row.getDot1qTpFdbPort(),
                              link.getBridgePortIfIndex(),
@@ -403,7 +427,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
                 if (!bridgeifindex.containsKey(link.getBridgePort())
                         && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
-                    LOG.warn("processDot1qTpFdbRow: row has invalid bridgeport no ifindex found. mac {}: on port {} ifindex {} status {}",
+                    LOG.warn("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}. row has invalid bridgeport. No ifindex found.",
+                    		getNodeId(),
                              row.getDot1qTpFdbAddress(),
                              row.getDot1qTpFdbPort(),
                              link.getBridgePortIfIndex(),
@@ -412,7 +437,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
 
                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
-                LOG.info("processDot1qTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",
+                LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
+                		getNodeId(),
                          link.getMacAddress(), link.getVlan(),
                          link.getBridgePort(), link.getBridgePortIfIndex(),
                          link.getBridgeDot1qTpFdbStatus());
