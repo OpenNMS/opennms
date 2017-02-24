@@ -680,7 +680,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             JAXB.marshal(builder.getEvent(), outputStream);
-            sendPost("/rest/events", new String(outputStream.toByteArray()));
+            sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
         }
         Thread.sleep(5000); // Wait to allow the event to be processed
 
