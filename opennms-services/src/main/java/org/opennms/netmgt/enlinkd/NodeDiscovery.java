@@ -258,17 +258,6 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
     /**
      * <p>
-     * getReadCommunity
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    public String getReadCommunity() {
-        return getPeer().getReadCommunity();
-    }
-
-    /**
-     * <p>
      * getPeer
      * </p>
      * 
@@ -276,17 +265,6 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      */
     public SnmpAgentConfig getPeer() {
         return m_linkd.getSnmpAgentConfig(getTarget());
-    }
-
-    /**
-     * <p>
-     * getPort
-     * </p>
-     * 
-     * @return a int.
-     */
-    public int getPort() {
-        return getPeer().getPort();
     }
 
     /**
