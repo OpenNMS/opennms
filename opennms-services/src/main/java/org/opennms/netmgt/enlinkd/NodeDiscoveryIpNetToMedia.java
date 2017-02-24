@@ -77,9 +77,21 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 		IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
 		    public void processIpNetToMediaRow(final IpNetToMediaRow row) {
 		    	IpNetToMedia macep = row.getIpNetToMedia();
-		    	if (macep.getPhysAddress() != null && 
-		    	        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
-		    		m_linkd.getQueryManager().store(getNodeId(),macep);
+	    		LOG.debug("processIpNetToMediaRow: mediatype {} mac address {} and ip {}", macep.getIpNetToMediaType(),
+	    				macep.getPhysAddress(), str(macep.getNetAddress()));
+		    	if (macep.getPhysAddress() == null) {
+		    		LOG.warn("processIpNetToMediaRow: found null mac address for {} skipping store", macep);
+		    	} else if (macep.getNetAddress() == null) {
+			    		LOG.warn("processIpNetToMediaRow: found null ip address for {} skipping store", macep);
+		    	} else if (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC ||
+		    			macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC) {
+		    		m_linkd.getQueryManager().store(getNodeId(),macep);		    		
+		    	} else {
+		    		LOG.warn("processIpNetToMediaRow: mediatype {} mac address {} and ip {} skipping store", macep.getIpNetToMediaType(),
+		    				macep.getPhysAddress(), str(macep.getNetAddress()));
+		    		
+		    	}
+
 		    }
 		};
 		
@@ -108,9 +120,10 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 
 	@Override
 	public String getInfo() {
-        return "ReadyRunnable IpNetToMediaLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
+        return "ReadyRunnable IpNetToMediaLinkNodeDiscovery" 
+        		+ " node=" + getNodeId()
+        		+ " ip=" + str(getTarget())
+        		+ " package=" + getPackageName();
 	}
 
 	@Override
