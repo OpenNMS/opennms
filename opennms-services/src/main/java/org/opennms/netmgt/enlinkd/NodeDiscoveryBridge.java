@@ -17,7 +17,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidStpBridgeId;
 import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
@@ -478,13 +477,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                       e);
         }
         return stplinks;
-    }
-
-    @Override
-    public String getInfo() {
-        return "ReadyRunnable BridgeLinkNodeDiscovery" + " ip="
-                + str(getTarget()) + " port=" + getPort() + " community="
-                + getReadCommunity() + " package=" + getPackageName();
     }
 
     @Override

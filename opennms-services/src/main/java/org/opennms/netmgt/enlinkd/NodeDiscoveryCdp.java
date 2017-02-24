@@ -135,15 +135,8 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable CdpLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
-		return "CdpLinksDiscovery";
+		return "CdpLinkDiscovery";
 	}
 
 }

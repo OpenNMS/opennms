@@ -663,11 +663,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     }
 
     @Override
-    public String getInfo() {
-        return "ReadyRunnable DiscoveryBridgeTopology" + " node=" + getNodeId();
-    }
-
-    @Override
     public String getName() {
         return "DiscoveryBridgeTopology";
     }

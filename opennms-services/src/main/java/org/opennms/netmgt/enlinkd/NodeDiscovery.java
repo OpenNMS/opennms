@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
@@ -294,7 +296,12 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getInfo();
+	public String getInfo() {
+        return  getName()  
+        		+ " node=" + getNodeId()
+        		+ " ip=" + str(getTarget())
+        		+ " package=" + getPackageName();
+	}
 
     /**
      * <p>

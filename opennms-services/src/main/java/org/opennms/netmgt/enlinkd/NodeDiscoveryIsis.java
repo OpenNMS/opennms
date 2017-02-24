@@ -169,12 +169,6 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable:IsisLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
 		return "IsisLinkDiscovery";
 	}

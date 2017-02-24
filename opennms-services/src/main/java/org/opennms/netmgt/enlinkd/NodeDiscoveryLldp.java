@@ -147,12 +147,6 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable:LldpLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
 		return "LldpLinkDiscovery";
 	}

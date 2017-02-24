@@ -190,12 +190,6 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable:OspfLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
 		return "OspfLinkDiscovery";
 	}
