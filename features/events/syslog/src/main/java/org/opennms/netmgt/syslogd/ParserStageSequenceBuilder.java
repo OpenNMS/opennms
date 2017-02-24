@@ -45,15 +45,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class can be used to parse {@link ByteBuffer} objects into tokens.
- * As each token is completed, the value can be used to invoke a {@link BiConsumer}
- * method to dynamically construct objects such as OpenNMS events from the tokens.
+ * <p>This class is used to construct a sequence of {@link ParserStage} objects
+ * that can parse {@link ByteBuffer} objects into tokens.</p>
+ * 
+ * <p>As each token is completed, the value can be used to invoke a {@link BiConsumer}
+ * method to dynamically construct objects such as OpenNMS events from the tokens.</p>
  * 
  * @author Seth
  */
-public class BufferParser {
+public class ParserStageSequenceBuilder {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BufferParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ParserStageSequenceBuilder.class);
 
 	/**
 	 * The state of the entire parse operation. This state
@@ -86,7 +88,7 @@ public class BufferParser {
 	/**
 	 * The state of an individual {@link ParserStage} operation.
 	 */
-	public static class ParserStageState {
+	private static class ParserStageState {
 		public final ByteBuffer buffer;
 
 		private final StringBuffer accumulatedValue;
@@ -120,107 +122,105 @@ public class BufferParser {
 		}
 	}
 
-	public static class ParserStageSequenceBuilder {
-		final List<ParserStage> m_stages = new ArrayList<>();
+	final List<ParserStage> m_stages = new ArrayList<>();
 
-		final Stack<Boolean> m_optional = new Stack<>();
-		final Stack<Boolean> m_terminal = new Stack<>();
+	final Stack<Boolean> m_optional = new Stack<>();
+	final Stack<Boolean> m_terminal = new Stack<>();
 
-		public List<ParserStage> getStages() {
-			return Collections.unmodifiableList(m_stages);
+	public List<ParserStage> getStages() {
+		return Collections.unmodifiableList(m_stages);
+	}
+
+	public ParserStageSequenceBuilder optional() {
+		m_optional.push(true);
+		return this;
+	}
+
+	public ParserStageSequenceBuilder terminal() {
+		m_terminal.push(true);
+		return this;
+	}
+
+	private boolean getOptional() {
+		try {
+			return m_optional.pop();
+		} catch (EmptyStackException e) {
+			return false;
 		}
+	}
 
-		public ParserStageSequenceBuilder optional() {
-			m_optional.push(true);
-			return this;
+	private boolean getTerminal() {
+		try {
+			return m_terminal.pop();
+		} catch (EmptyStackException e) {
+			return false;
 		}
+	}
 
-		public ParserStageSequenceBuilder terminal() {
-			m_terminal.push(true);
-			return this;
-		}
+	private void addStage(ParserStage stage) {
+		stage.setOptional(getOptional());
+		stage.setTerminal(getTerminal());
+		System.out.println(stage.toString());
+		m_stages.add(stage);
+	}
 
-		private boolean getOptional() {
-			try {
-				return m_optional.pop();
-			} catch (EmptyStackException e) {
-				return false;
-			}
-		}
+	public ParserStageSequenceBuilder whitespace() {
+		addStage(new MatchWhitespace());
+		return this;
+	}
 
-		private boolean getTerminal() {
-			try {
-				return m_terminal.pop();
-			} catch (EmptyStackException e) {
-				return false;
-			}
-		}
+	public ParserStageSequenceBuilder character(char character) {
+		addStage(new MatchChar(character));
+		return this;
+	}
 
-		private void addStage(ParserStage stage) {
-			stage.setOptional(getOptional());
-			stage.setTerminal(getTerminal());
-			System.out.println(stage.toString());
-			m_stages.add(stage);
-		}
+	public ParserStageSequenceBuilder string(BiConsumer<ParserState, String> consumer) {
+		addStage(new MatchAny(consumer, Integer.MAX_VALUE));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder whitespace() {
-			addStage(new MatchWhitespace());
-			return this;
-		}
+	public ParserStageSequenceBuilder integer(BiConsumer<ParserState, Integer> consumer) {
+		addStage(new MatchInteger(consumer));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder character(char character) {
-			addStage(new MatchChar(character));
-			return this;
-		}
+	public ParserStageSequenceBuilder month(BiConsumer<ParserState, Integer> consumer) {
+		addStage(new MatchMonth(consumer));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder string(BiConsumer<ParserState, String> consumer) {
-			addStage(new MatchAny(consumer, Integer.MAX_VALUE));
-			return this;
-		}
+	public ParserStageSequenceBuilder stringUntil(String ends, BiConsumer<ParserState,String> consumer) {
+		addStage(new MatchStringUntil(consumer, ends));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder integer(BiConsumer<ParserState, Integer> consumer) {
-			addStage(new MatchInteger(consumer));
-			return this;
-		}
+	public ParserStageSequenceBuilder stringUntilWhitespace(BiConsumer<ParserState,String> consumer) {
+		addStage(new MatchStringUntil(consumer, MatchUntil.WHITESPACE));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder month(BiConsumer<ParserState, Integer> consumer) {
-			addStage(new MatchMonth(consumer));
-			return this;
-		}
+	public ParserStageSequenceBuilder stringUntilChar(char end, BiConsumer<ParserState,String> consumer) {
+		addStage(new MatchStringUntil(consumer, end));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder stringUntil(String ends, BiConsumer<ParserState,String> consumer) {
-			addStage(new MatchStringUntil(consumer, ends));
-			return this;
-		}
+	public ParserStageSequenceBuilder intUntilWhitespace(BiConsumer<ParserState,Integer> consumer) {
+		addStage(new MatchIntegerUntil(consumer, MatchUntil.WHITESPACE));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder stringUntilWhitespace(BiConsumer<ParserState,String> consumer) {
-			addStage(new MatchStringUntil(consumer, MatchUntil.WHITESPACE));
-			return this;
-		}
+	public ParserStageSequenceBuilder stringBetweenDelimiters(char start, char end, BiConsumer<ParserState,String> consumer) {
+		addStage(new MatchChar(start));
+		addStage(new MatchStringUntil(consumer, end));
+		addStage(new MatchChar(end));
+		return this;
+	}
 
-		public ParserStageSequenceBuilder stringUntilChar(char end, BiConsumer<ParserState,String> consumer) {
-			addStage(new MatchStringUntil(consumer, end));
-			return this;
-		}
-
-		public ParserStageSequenceBuilder intUntilWhitespace(BiConsumer<ParserState,Integer> consumer) {
-			addStage(new MatchIntegerUntil(consumer, MatchUntil.WHITESPACE));
-			return this;
-		}
-
-		public ParserStageSequenceBuilder stringBetweenDelimiters(char start, char end, BiConsumer<ParserState,String> consumer) {
-			addStage(new MatchChar(start));
-			addStage(new MatchStringUntil(consumer, end));
-			addStage(new MatchChar(end));
-			return this;
-		}
-
-		public ParserStageSequenceBuilder intBetweenDelimiters(char start, char end, BiConsumer<ParserState,Integer> consumer) {
-			addStage(new MatchChar(start));
-			addStage(new MatchIntegerUntil(consumer, end));
-			addStage(new MatchChar(end));
-			return this;
-		}
+	public ParserStageSequenceBuilder intBetweenDelimiters(char start, char end, BiConsumer<ParserState,Integer> consumer) {
+		addStage(new MatchChar(start));
+		addStage(new MatchIntegerUntil(consumer, end));
+		addStage(new MatchChar(end));
+		return this;
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class BufferParser {
 	 * @param <R> Type of the value that can be emitted by this stage to the
 	 * {@link BiConsumer} consumer.
 	 */
-	public static abstract class AbstractParserStage<R> implements ParserStage {
+	private static abstract class AbstractParserStage<R> implements ParserStage {
 
 		private boolean m_optional = false;
 		private boolean m_terminal = false;
@@ -423,7 +423,7 @@ public class BufferParser {
 	/**
 	 * Match any whitespace character.
 	 */
-	public static class MatchWhitespace extends AbstractParserStage<Void> {
+	static class MatchWhitespace extends AbstractParserStage<Void> {
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
 			// TODO: Make this more efficient
@@ -438,7 +438,7 @@ public class BufferParser {
 	/**
 	 * Match a single character.
 	 */
-	public static class MatchChar extends AbstractParserStage<Void> {
+	static class MatchChar extends AbstractParserStage<Void> {
 		private final char m_char;
 		MatchChar(char c) {
 			super();
@@ -481,7 +481,7 @@ public class BufferParser {
 	 * 
 	 * TODO: This only works if the initial character is unique, fix it!
 	 */
-	public static class MatchMonth extends AbstractParserStage<Integer> {
+	static class MatchMonth extends AbstractParserStage<Integer> {
 		final static char[][] MONTHS = new char[][] {
 			"Jan".toCharArray(),
 			"jan".toCharArray(),
@@ -555,7 +555,7 @@ public class BufferParser {
 	/**
 	 * Match any sequence of characters.
 	 */
-	public static class MatchAny extends AbstractParserStage<String> {
+	static class MatchAny extends AbstractParserStage<String> {
 		private final int m_length;
 
 		public MatchAny() {
@@ -601,7 +601,7 @@ public class BufferParser {
 	/**
 	 * Match a string terminated by a character in a list of end tokens.
 	 */
-	public static abstract class MatchUntil<R> extends AbstractParserStage<R> {
+	static abstract class MatchUntil<R> extends AbstractParserStage<R> {
 		public static final String WHITESPACE = "\\s";
 
 		private final char[] m_end;
@@ -644,7 +644,7 @@ public class BufferParser {
 		}
 	}
 
-	public static class MatchStringUntil extends MatchUntil<String> {
+	static class MatchStringUntil extends MatchUntil<String> {
 		public MatchStringUntil(BiConsumer<ParserState,String> consumer, char end) {
 			super(consumer, end);
 		}
@@ -659,7 +659,7 @@ public class BufferParser {
 		}
 	}
 
-	public static class MatchIntegerUntil extends MatchUntil<Integer> {
+	static class MatchIntegerUntil extends MatchUntil<Integer> {
 		public MatchIntegerUntil(BiConsumer<ParserState,Integer> consumer, char end) {
 			super(consumer, end);
 		}
@@ -687,7 +687,7 @@ public class BufferParser {
 	/**
 	 * Match an integer.
 	 */
-	public static class MatchInteger extends AbstractParserStage<Integer> {
+	static class MatchInteger extends AbstractParserStage<Integer> {
 		MatchInteger(BiConsumer<ParserState,Integer> consumer) {
 			super(consumer);
 		}

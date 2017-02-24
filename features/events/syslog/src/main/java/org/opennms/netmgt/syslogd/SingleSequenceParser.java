@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.syslogd.BufferParser.ParserStage;
-import org.opennms.netmgt.syslogd.BufferParser.ParserState;
+import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserStage;
+import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserState;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

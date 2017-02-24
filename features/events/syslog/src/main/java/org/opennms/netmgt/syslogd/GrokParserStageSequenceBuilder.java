@@ -30,8 +30,7 @@ package org.opennms.netmgt.syslogd;
 
 import java.util.List;
 
-import org.opennms.netmgt.syslogd.BufferParser.ParserStageSequenceBuilder;
-import org.opennms.netmgt.syslogd.BufferParser.ParserStage;
+import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserStage;
 
 public abstract class GrokParserStageSequenceBuilder {
 
