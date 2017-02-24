@@ -85,8 +85,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         String community = getPeer().getReadCommunity();
         for (Entry<Integer, String> entry : vlanmap.entrySet()) {
-            LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
-                      community, entry.getKey());
+            LOG.debug("run: cisco vlan collection setting peer communitY for VLAN {}",
+                      entry.getKey());
             SnmpAgentConfig peer = getPeer();
             if (entry.getKey() != null)
                 peer.setReadCommunity(community + "@" + entry.getKey());
