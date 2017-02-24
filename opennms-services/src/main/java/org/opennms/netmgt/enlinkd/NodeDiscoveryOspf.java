@@ -77,7 +77,10 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
     	String trackerName = "ospfGeneralGroup";
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, ospfGeneralGroup);
 
         walker.start();
@@ -99,17 +102,23 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         }
         
         if (ospfGeneralGroup.getOspfRouterId() == null ) {
-            LOG.info( "ospf mib not supported on: {}", str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: address {}. ospf mib not supported",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         } 
 
         if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
-            LOG.info( "ospf not supported, ospf identifier 0.0.0.0 is not valid on: {}", str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: address {}. ospf identifier 0.0.0.0 is not valid",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         } 
 
         if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
-            LOG.info( "ospf status disabled on: {}", str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: address {}. ospf status: disabled",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         }
         
@@ -126,7 +135,10 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         	}
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfNbrTableTracker);
         walker.start();
         
@@ -163,7 +175,10 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfIfTableTracker);
         walker.start();
         
