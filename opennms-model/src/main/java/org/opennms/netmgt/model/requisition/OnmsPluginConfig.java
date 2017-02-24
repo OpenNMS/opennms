@@ -62,11 +62,10 @@ public abstract class OnmsPluginConfig implements Serializable {
     // TODO MVR
     private static final long serialVersionUID = 4307231598310473690L;
 
-    // TODO MVR das muss anders...
     @Id
     @Column(name="id")
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @SequenceGenerator(name="foreignSourceSequence", sequenceName="foreignsourcenxtid")
+    @GeneratedValue(generator="foreignSourceSequence")
     private Long id;
 
     @Column(name="name", nullable=false)

@@ -56,8 +56,8 @@ public class OnmsRequisitionNode {
 
     @Id
     @Column(name="id")
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @SequenceGenerator(name="requisitionNodeSequence", sequenceName="requisitionnodenxtid")
+    @GeneratedValue(generator="requisitionNodeSequence")
     private Integer id;
 
     @Column(name="foreignid") // TODO MVR unique in requisition

@@ -65,11 +65,10 @@ import org.opennms.netmgt.model.PrimaryType;
 @Table(name = "requisition_node_interfaces")
 public class OnmsRequisitionInterface {
 
-    // TODO MVR das muss anders...
     @Id
     @Column(name="id")
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @SequenceGenerator(name="requisitionInterfaceSequence", sequenceName="requisitioninterfacenxtid")
+    @GeneratedValue(generator="requisitionInterfaceSequence")
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "ipInterface")

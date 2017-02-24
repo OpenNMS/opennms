@@ -58,8 +58,8 @@ public class OnmsRequisitionMonitoredService {
     // TODO MVR das muss anders
     @Id
     @Column(nullable=false)
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
+    @SequenceGenerator(name="requisitionServiceSequence", sequenceName="requisitionservicenxtid")
+    @GeneratedValue(generator="requisitionServiceSequence")
     private Long id;
 
     @ElementCollection
