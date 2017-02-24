@@ -30,8 +30,6 @@ package org.opennms.netmgt.syslogd;
 
 import java.util.List;
 
-import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserStage;
-
 public abstract class GrokParserStageSequenceBuilder {
 
 	private static enum GrokState {

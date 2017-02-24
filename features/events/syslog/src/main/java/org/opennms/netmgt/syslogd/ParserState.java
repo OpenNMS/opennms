@@ -29,46 +29,39 @@
 package org.opennms.netmgt.syslogd;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
- * This class uses a single {@link ParserStage} sequence to parse an incoming
- * {@link ByteBuffer} message.
+ * The state of the entire parse operation. This state
+ * should include all of the finished tokens generated
+ * by {@link ParserStage} operations.
  */
-public class SingleSequenceParser implements ByteBufferParser<Event> {
+public class ParserState {
+	private final ByteBuffer buffer;
 
-	private final List<ParserStage> m_stages;
+	// TODO: Replace with a strategy
+	public final EventBuilder builder;
 
-	public SingleSequenceParser(List<ParserStage> stages) {
-		m_stages = Collections.unmodifiableList(stages);
+	public ParserState(ByteBuffer input) {
+		this(input, new EventBuilder());
+	}
+
+	public ParserState(ByteBuffer input, EventBuilder builder) {
+		this.buffer = input;
+		this.builder = builder;
+	}
+
+	public ByteBuffer getBuffer() {
+		// TODO: See if this slows anything down
+		return buffer.asReadOnlyBuffer();
 	}
 
 	@Override
-	public CompletableFuture<Event> parse(ByteBuffer incoming) {
-
-		// Put all mutable parts of the parse operation into a state object
-		final ParserState state = new ParserState(incoming, new EventBuilder());
-
-		CompletableFuture<ParserState> future = CompletableFuture.completedFuture(state);
-
-		// Apply each parse stage to the message
-		for (ParserStage stage : m_stages) {
-			future = future.thenApply(stage::apply);
-		}
-
-		//future.exceptionally(e -> { /* DO SOMETHING */ return null; });
-
-		return future.thenApply(s -> {
-			if (s == null) {
-				return null;
-			} else {
-				return s.builder.getEvent();
-			}
-		});
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("builder", builder)
+			.toString();
 	}
 }

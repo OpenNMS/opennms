@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,34 +55,6 @@ import org.slf4j.LoggerFactory;
 public class ParserStageSequenceBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ParserStageSequenceBuilder.class);
-
-	/**
-	 * The state of the entire parse operation. This state
-	 * should include all of the finished tokens generated
-	 * by {@link ParserStage} operations.
-	 */
-	public static class ParserState {
-		private final ByteBuffer buffer;
-
-		// TODO: Replace with a strategy
-		public final EventBuilder builder;
-
-		public ParserState(ByteBuffer input) {
-			this(input, new EventBuilder("uei.opennms.org/test", ParserState.class.getSimpleName()));
-		}
-
-		public ParserState(ByteBuffer input, EventBuilder builder) {
-			this.buffer = input;
-			this.builder = builder;
-		}
-
-		@Override
-		public String toString() {
-			return new ToStringBuilder(this)
-				.append("builder", builder)
-				.toString();
-		}
-	}
 
 	/**
 	 * The state of an individual {@link ParserStage} operation.
@@ -224,57 +195,6 @@ public class ParserStageSequenceBuilder {
 	}
 
 	/**
-	 * An individual stage of the token parser. A parser is composed of
-	 * a sequence of {@link ParserStage} objects.
-	 */
-	public static interface ParserStage {
-
-		public static enum AcceptResult {
-			/**
-			 * Continue the parsing process.
-			 */
-			CONTINUE,
-			/**
-			 * Complete the parsing stage and consider the current
-			 * character as already consumed.
-			 */
-			COMPLETE_AFTER_CONSUMING,
-			/**
-			 * Complete the parsing stage and reset the position of the
-			 * buffer so that the next stage can consume the current
-			 * character.
-			 */
-			COMPLETE_WITHOUT_CONSUMING,
-			/**
-			 * Cancel the parsing process due to a failure to parse
-			 * based on the current rules for this stage.
-			 */
-			CANCEL
-		}
-
-		/**
-		 * Mark the stage as optional.
-		 * 
-		 * @param optional
-		 */
-		void setOptional(boolean optional);
-
-		/**
-		 * Mark the stage as terminal, ie. it handles a buffer
-		 * underflow as successful completion instead of failure.
-		 * 
-		 * @param terminal
-		 */
-		void setTerminal(boolean terminal);
-
-		/**
-		 * Process the state for this stage and return it so
-		 * that the next stage can continue processing.
-		 */
-		ParserState apply(ParserState state);
-	}
-
-	/**
 	 * This base class handles most of the statefulness of each {@link ParserStage}.
 	 * 
 	 * @param <R> Type of the value that can be emitted by this stage to the
@@ -326,7 +246,7 @@ public class ParserStageSequenceBuilder {
 			// Create a new state for the current ParserStage.
 			// Use ByteBuffer.duplicate() to create a buffer with marks
 			// and positions that only this stage will use.
-			ParserStageState stageState = new ParserStageState(state.buffer.duplicate()); 
+			ParserStageState stageState = new ParserStageState(state.getBuffer().duplicate()); 
 
 			while(true) {
 				stageState.buffer.mark();

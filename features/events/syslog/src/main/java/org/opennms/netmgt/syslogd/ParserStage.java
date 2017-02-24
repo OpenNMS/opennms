@@ -28,47 +28,53 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-
 /**
- * This class uses a single {@link ParserStage} sequence to parse an incoming
- * {@link ByteBuffer} message.
+ * An individual stage of the token parser. A parser is composed of
+ * a sequence of {@link ParserStage} objects.
  */
-public class SingleSequenceParser implements ByteBufferParser<Event> {
+public interface ParserStage {
 
-	private final List<ParserStage> m_stages;
-
-	public SingleSequenceParser(List<ParserStage> stages) {
-		m_stages = Collections.unmodifiableList(stages);
+	public static enum AcceptResult {
+		/**
+		 * Continue the parsing process.
+		 */
+		CONTINUE,
+		/**
+		 * Complete the parsing stage and consider the current
+		 * character as already consumed.
+		 */
+		COMPLETE_AFTER_CONSUMING,
+		/**
+		 * Complete the parsing stage and reset the position of the
+		 * buffer so that the next stage can consume the current
+		 * character.
+		 */
+		COMPLETE_WITHOUT_CONSUMING,
+		/**
+		 * Cancel the parsing process due to a failure to parse
+		 * based on the current rules for this stage.
+		 */
+		CANCEL
 	}
 
-	@Override
-	public CompletableFuture<Event> parse(ByteBuffer incoming) {
+	/**
+	 * Mark the stage as optional.
+	 * 
+	 * @param optional
+	 */
+	void setOptional(boolean optional);
 
-		// Put all mutable parts of the parse operation into a state object
-		final ParserState state = new ParserState(incoming, new EventBuilder());
+	/**
+	 * Mark the stage as terminal, ie. it handles a buffer
+	 * underflow as successful completion instead of failure.
+	 * 
+	 * @param terminal
+	 */
+	void setTerminal(boolean terminal);
 
-		CompletableFuture<ParserState> future = CompletableFuture.completedFuture(state);
-
-		// Apply each parse stage to the message
-		for (ParserStage stage : m_stages) {
-			future = future.thenApply(stage::apply);
-		}
-
-		//future.exceptionally(e -> { /* DO SOMETHING */ return null; });
-
-		return future.thenApply(s -> {
-			if (s == null) {
-				return null;
-			} else {
-				return s.builder.getEvent();
-			}
-		});
-	}
+	/**
+	 * Process the state for this stage and return it so
+	 * that the next stage can continue processing.
+	 */
+	ParserState apply(ParserState state);
 }

@@ -48,8 +48,6 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchChar;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchMonth;
-import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserStage;
-import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.ParserState;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
