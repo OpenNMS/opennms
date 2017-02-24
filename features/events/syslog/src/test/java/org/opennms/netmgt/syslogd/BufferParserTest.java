@@ -28,9 +28,14 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,13 +48,20 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.BufferParser.BufferParserFactory;
+import org.opennms.netmgt.syslogd.BufferParser.MatchChar;
 import org.opennms.netmgt.syslogd.BufferParser.MatchMonth;
 import org.opennms.netmgt.syslogd.BufferParser.ParserStage;
 import org.opennms.netmgt.syslogd.BufferParser.ParserState;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BufferParserTest {
+
+	private final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
 
 	private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
 
@@ -108,11 +120,11 @@ public class BufferParserTest {
 			.stringUntilWhitespace(null) // Original time zone
 			.whitespace()
 			.character('%')
-			.stringUntilChar('-', (s,v) -> { /* TODO: Set facility */ })
+			.stringUntilChar('-', (s,v) -> { s.builder.addParam("facility", v); })
 			.character('-')
-			.stringUntilChar('-', (s,v) -> { /* TODO: Set severity */ })
+			.stringUntilChar('-', (s,v) -> { s.builder.addParam("severity", v); })
 			.character('-')
-			.stringUntilChar(':', (s,v) -> { /* TODO: Set mnemonic */ })
+			.stringUntilChar(':', (s,v) -> { s.builder.addParam("mnemonic", v); })
 			.character(':')
 			.whitespace()
 			.terminal().string((s,v) -> { s.builder.setLogMessage(v); })
@@ -168,6 +180,7 @@ public class BufferParserTest {
 		for (int i = 0; i < iterations; i++) {
 			ConvertToEvent convertToEvent = new ConvertToEvent(
 				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				9999,
 				abc, 
@@ -182,8 +195,7 @@ public class BufferParserTest {
 
 	@Test
 	public void testMatchMonth() {
-		ParserState state = new ParserState();
-		state.buffer = ByteBuffer.wrap("Oct".getBytes());
+		ParserState state = new ParserState(ByteBuffer.wrap("Oct".getBytes()));
 
 		ParserStage stage = new MatchMonth((s,v) -> { System.out.println(v); });
 		stage.apply(state);
@@ -194,4 +206,106 @@ public class BufferParserTest {
 		GrokParserFactory.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 	}
 
+	@Test
+	public void testParserStages() throws InterruptedException, ExecutionException {
+		ParserStage a = new MatchChar('a');
+		ParserStage b = new MatchChar('b');
+		ParserStage c = new MatchChar('c');
+		ParserStage d = new MatchChar('d');
+
+//		c.setTerminal(true);
+		d.setTerminal(true);
+
+//		RadixTree<ParserStage> tree = new RadixTreeImpl<>();
+//		tree.addChildren(new ParserStage[] { a, c });
+//		tree.addChildren(new ParserStage[] { b, d });
+
+
+//		ParserStageCompletableFutureVisitor visitor = new ParserStageCompletableFutureVisitor();
+//		visitor.visit(tree);
+//
+//		System.out.println(visitor.stages);
+//
+//		ParserState state = visitor.getParserFunction().apply();
+//		System.out.println(state);
+
+		ParserState state = new ParserState(ByteBuffer.wrap("bc".getBytes()), new EventBuilder("uei.opennms.org/test", this.getClass().getSimpleName()));
+
+		final List<CompletableFuture<ParserState>> futures = new ArrayList<>();
+
+		// Top of future tree is parser state
+		final CompletableFuture<ParserState> parent = CompletableFuture.completedFuture(state);
+
+		// Iterate over children
+		{
+			CompletableFuture<ParserState> current = parent.thenApply(a::apply);
+			// If children.length > 0
+			// recurse(current)
+			// else 
+			futures.add(current);
+		}
+
+		{
+			CompletableFuture<ParserState> current = parent.thenApply(b::apply);
+			// If children.length > 0
+			{
+//				List<CompletableFuture<ParserState>> futures2 = new ArrayList<>();
+//				futures.add(current.thenApply(a::apply));
+//				futures.add(current.thenApply(b::apply));
+				futures.add(current.thenApply(c::apply));
+				futures.add(current.thenApply(d::apply));
+//				CompletableFuture<ParserState> root = firstNonNullResult(futures2);
+//				//System.out.println(root.join().builder.getEvent());
+//				futures.add(root);
+			}
+			// else 
+//			futures.add(current);
+		}
+
+		{
+			CompletableFuture<ParserState> current = parent.thenApply(c::apply);
+			// If children.length > 0
+			// recurse(current)
+			// else 
+			futures.add(current);
+		}
+
+		CompletableFuture<ParserState> root = firstNonNullResult(futures);
+		assertNotNull("One pattern should match", root.join());
+	}
+
+	public static <T> CompletableFuture<T> firstNonNullResult(List<? extends CompletionStage<T>> futures) {
+
+		CompletableFuture<T> parent = new CompletableFuture<>();
+
+		CompletableFuture.allOf(
+			futures.stream().map(
+				s -> s.thenAccept(t -> {
+					System.out.println("VALUE " + t);
+					// After each stage completes, if its result is non-null
+					// then complete the parent future
+					if (t != null) {
+						if (!parent.complete(t)) {
+							LOG.warn("More than one future completed with a non-null result");
+						}
+					}
+				})
+			).toArray(
+				CompletableFuture<?>[]::new
+			)
+		).exceptionally(ex -> {
+			// If all futures complete exceptionally, mark this future as exceptional as well
+//			parent.completeExceptionally(ex);
+			parent.complete(null);
+			return null;
+		}).thenAccept(v -> {
+			// If the parent isn't complete yet, then all children returned null so just
+			// complete with null
+			if (parent.complete(null)) {
+				LOG.debug("All futures completed with a null result");
+			}
+		});
+
+		return parent;
+	}	
 }

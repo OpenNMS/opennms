@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +42,8 @@ import java.util.function.BiConsumer;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class can be used to parse {@link ByteBuffer} objects into tokens.
@@ -53,17 +54,77 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class BufferParser {
 
+	private static final Logger LOG = LoggerFactory.getLogger(BufferParser.class);
+
 	/**
-	 * TODO: Make the fields in this a little
-	 * more elegant.
+	 * The state of the entire parse operation. This state
+	 * should include all of the finished tokens generated
+	 * by {@link ParserStage} operations.
 	 */
 	public static class ParserState {
-		public ByteBuffer buffer;
-		public EventBuilder builder;
-		public StringBuffer accumulatedValue;
-		public AtomicInteger accumulatedSize;
+		private final ByteBuffer buffer;
+
+		// TODO: Replace with a strategy
+		public final EventBuilder builder;
+
+		public ParserState(ByteBuffer input) {
+			this(input, new EventBuilder("uei.opennms.org/test", ParserState.class.getSimpleName()));
+		}
+
+		public ParserState(ByteBuffer input, EventBuilder builder) {
+			this.buffer = input;
+			this.builder = builder;
+		}
+
+//		public void setBuffer(ByteBuffer buffer) {
+//			System.out.println(String.format("SETTING BUFFER, OLD POSITION: %s, NEW POSITION: %s", this.buffer.position(), buffer.position()));
+//			this.buffer = buffer;
+//		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("builder", builder)
+				.toString();
+		}
+	}
+
+	/**
+	 * The state of an individual {@link ParserStage} operation.
+	 */
+	public static class ParserStageState {
+		public final ByteBuffer buffer;
+
+		private final StringBuffer accumulatedValue;
+		private final AtomicInteger accumulatedSize;
+
+		// Only used by MatchMonth
 		public int index = -1;
 		public int charIndex = -1;
+
+		public ParserStageState(ByteBuffer input) {
+			buffer = input;
+//			System.out.println("BUFFER POSITION: " + buffer.position());
+			accumulatedValue = new StringBuffer();
+			accumulatedSize = new AtomicInteger();
+		}
+
+		public void accumulate(char c) {
+			accumulatedValue.append(c);
+			accumulatedSize.incrementAndGet();
+		}
+
+		public int getAccumulatedSize() {
+			return accumulatedSize.get();
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("accumulatedValue", accumulatedValue.toString())
+				.append("accumulatedSize", accumulatedSize.get())
+				.toString();
+		}
 	}
 
 	public static class BufferParserFactory {
@@ -167,9 +228,7 @@ public class BufferParser {
 		public CompletableFuture<Event> parse(ByteBuffer incoming, ExecutorService executor) {
 
 			// Put all mutable parts of the parse operation into a state object
-			final ParserState state = new ParserState();
-			state.buffer = incoming;
-			state.builder = new EventBuilder();
+			final ParserState state = new ParserState(incoming, new EventBuilder("uei.opennms.org/test", this.getClass().getSimpleName()));
 
 			CompletableFuture<ParserState> future = CompletableFuture.completedFuture(state);
 
@@ -283,91 +342,102 @@ public class BufferParser {
 			m_terminal = terminal;
 		}
 
-		public abstract AcceptResult acceptChar(ParserState state, char c);
+		public abstract AcceptResult acceptChar(ParserStageState state, char c);
 
-		public final ParserState apply(ParserState state) {
-			// Reset the accumulator state if necessary
-			if (m_resultConsumer != null) {
-				state.accumulatedValue = new StringBuffer();
-				state.accumulatedSize = new AtomicInteger(0);
-			}
+		public final ParserState apply(final ParserState state) {
+			// Create a new state for the current ParserStage.
+			// Use ByteBuffer.duplicate() to create a buffer with marks
+			// and positions that only this stage will use.
+			ParserStageState stageState = new ParserStageState(state.buffer.duplicate()); 
 
 			while(true) {
-				state.buffer.mark();
+				stageState.buffer.mark();
 
 				char c;
 				try {
-					c = (char)state.buffer.get();
+					c = (char)stageState.buffer.get();
 				} catch (BufferUnderflowException e) {
 					if (m_terminal) {
 						if (m_resultConsumer != null) {
-							m_resultConsumer.accept(state, getValue(state));
+							m_resultConsumer.accept(state, getValue(stageState));
 						}
-						// Reset any local state if necessary
-						reset(state);
-						return state;
+
+//						// Reset any local state if necessary
+//						reset(stageState);
+
+						return new ParserState(stageState.buffer, state.builder);
 					} else if (m_optional) {
-						// TODO: Should we reset the buffer here?
-						state.buffer.reset();
-						// Reset any local state if necessary
-						reset(state);
-						return state;
+//						// TODO: Should we reset the buffer here? It probably
+//						// doesn't matter since we're at the end of the buffer.
+//						stageState.buffer.reset();
+
+//						// Reset any local state if necessary
+//						reset(stageState);
+
+						return new ParserState(stageState.buffer, state.builder);
 					} else {
-						throw new CancellationException(getClass().getSimpleName() + " reached end of buffer, match failed");
+						// Reached end of buffer, match failed
+						return null;
 					}
 				}
 
-				switch (acceptChar(state, c)) {
+				switch (acceptChar(stageState, c)) {
 					case CONTINUE:
 						continue;
 					case COMPLETE_AFTER_CONSUMING:
 						if (m_resultConsumer != null) {
-							m_resultConsumer.accept(state, getValue(state));
+							m_resultConsumer.accept(state, getValue(stageState));
 						}
-						// Reset any local state if necessary
-						reset(state);
-						return state;
+
+//						// Reset any local state if necessary
+//						reset(stageState);
+
+						return new ParserState(stageState.buffer, state.builder);
 					case COMPLETE_WITHOUT_CONSUMING:
-						// Put the char back on the deque
-						//m_incoming.putFirst(c);
-						state.buffer.reset();
 						if (m_resultConsumer != null) {
-							m_resultConsumer.accept(state, getValue(state));
+							m_resultConsumer.accept(state, getValue(stageState));
 						}
+
 						// Reset any local state if necessary
-						reset(state);
-						return state;
+						reset(stageState);
+
+						// Move the mark back before the current character
+						stageState.buffer.reset();
+
+						return new ParserState(stageState.buffer, state.builder);
 					case CANCEL:
 						if (m_optional) {
-							state.buffer.reset();
+							stageState.buffer.reset();
+
 							// Reset any local state if necessary
-							reset(state);
-							return state;
+							reset(stageState);
+
+							return new ParserState(stageState.buffer, state.builder);
 						} else {
-							throw new CancellationException(getClass().getSimpleName() + " match failed");
+							// Match failed
+							return null;
 						}
 				}
 			}
 		}
 
-		public void reset(ParserState state) {
+		public void reset(ParserStageState state) {
 			// Do nothing by default
 		}
 
-		protected static void accumulate(ParserState state, char c) {
-			state.accumulatedValue.append(c);
-			state.accumulatedSize.incrementAndGet();
+		protected static void accumulate(ParserStageState state, char c) {
+			state.accumulate(c);
 		}
 
-		protected static int accumulatedSize(ParserState state) {
-			return state.accumulatedSize.get();
+		protected static int getAccumulatedSize(ParserStageState state) {
+			return state.getAccumulatedSize();
 		}
 
-		protected static String accumulatedValue(ParserState state) {
+		protected static String getAccumulatedValue(ParserStageState state) {
 			return state.accumulatedValue.toString();
 		}
 
-		protected R getValue(ParserState state) {
+		protected R getValue(ParserStageState state) {
 			return null;
 		}
 	}
@@ -377,7 +447,7 @@ public class BufferParser {
 	 */
 	public static class MatchWhitespace extends AbstractParserStage<Void> {
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			// TODO: Make this more efficient
 			if ("".equals(String.valueOf(c).trim())) {
 				return AcceptResult.CONTINUE;
@@ -398,10 +468,12 @@ public class BufferParser {
 		}
 
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			if (c == m_char) {
+//				System.out.println("ACCEPT " + m_char);
 				return AcceptResult.COMPLETE_AFTER_CONSUMING;
 			} else {
+//				System.out.println("CANCEL " + m_char);
 				return AcceptResult.CANCEL;
 			}
 		}
@@ -452,7 +524,7 @@ public class BufferParser {
 		}
 
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			if (state.index >= 0) {
 				if (c == MONTHS[state.index][state.charIndex]) {
 					if (state.charIndex == 2) {
@@ -478,12 +550,12 @@ public class BufferParser {
 		}
 		
 		@Override
-		public Integer getValue(ParserState state) {
+		public Integer getValue(ParserStageState state) {
 			return state.index;
 		}
 
 		@Override
-		public void reset(ParserState state) {
+		public void reset(ParserStageState state) {
 			super.reset(state);
 			state.charIndex = -1;
 			state.index = -1;
@@ -514,9 +586,9 @@ public class BufferParser {
 		}
 
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			accumulate(state, c);
-			if (accumulatedSize(state) >= m_length) {
+			if (getAccumulatedSize(state) >= m_length) {
 				return AcceptResult.COMPLETE_AFTER_CONSUMING;
 			} else {
 				return AcceptResult.CONTINUE;
@@ -524,8 +596,8 @@ public class BufferParser {
 		}
 		
 		@Override
-		public String getValue(ParserState state) {
-			return accumulatedValue(state);
+		public String getValue(ParserStageState state) {
+			return getAccumulatedValue(state);
 		}
 
 		@Override
@@ -559,7 +631,7 @@ public class BufferParser {
 		}
 
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			for (char end : m_end) {
 				if (end == c) {
 					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
@@ -592,8 +664,8 @@ public class BufferParser {
 		}
 
 		@Override
-		public String getValue(ParserState state) {
-			return accumulatedValue(state);
+		public String getValue(ParserStageState state) {
+			return getAccumulatedValue(state);
 		}
 	}
 
@@ -607,9 +679,9 @@ public class BufferParser {
 		}
 
 		@Override
-		public Integer getValue(ParserState state) {
+		public Integer getValue(ParserStageState state) {
 			// Trim the leading zeros from this value
-			String value = accumulatedValue(state);
+			String value = getAccumulatedValue(state);
 			while (value.startsWith("0")) {
 				value = value.substring(1);
 			}
@@ -631,13 +703,13 @@ public class BufferParser {
 		}
 
 		@Override
-		public AcceptResult acceptChar(ParserState state, char c) {
+		public AcceptResult acceptChar(ParserStageState state, char c) {
 			if (c >= '0' && c <= '9') {
 				accumulate(state, c);
 				return AcceptResult.CONTINUE;
 			} else {
 				// If any characters were accumulated, complete
-				if (accumulatedSize(state) > 0) {
+				if (getAccumulatedSize(state) > 0) {
 					return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 				} else {
 					return AcceptResult.CANCEL;
@@ -646,9 +718,9 @@ public class BufferParser {
 		}
 
 		@Override
-		public Integer getValue(ParserState state) {
+		public Integer getValue(ParserStageState state) {
 			// Trim the leading zeros from this value
-			String value = accumulatedValue(state);
+			String value = getAccumulatedValue(state);
 			while (value.startsWith("0")) {
 				value = value.substring(1);
 			}
