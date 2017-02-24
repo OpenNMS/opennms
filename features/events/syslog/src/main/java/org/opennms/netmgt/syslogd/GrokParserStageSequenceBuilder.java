@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.opennms.netmgt.syslogd.BufferParser.BufferParserFactory;
+import java.util.List;
 
-public abstract class GrokParserFactory {
+import org.opennms.netmgt.syslogd.BufferParser.ParserStageSequenceBuilder;
+import org.opennms.netmgt.syslogd.BufferParser.ParserStage;
+
+public abstract class GrokParserStageSequenceBuilder {
 
 	private static enum GrokState {
 		TEXT,
@@ -47,9 +50,9 @@ public abstract class GrokParserFactory {
 		MONTH
 	}
 
-	public static BufferParserFactory parseGrok(String grok) {
+	public static List<ParserStage> parseGrok(String grok) {
 		GrokState state = GrokState.TEXT;
-		BufferParserFactory factory = new BufferParserFactory();
+		ParserStageSequenceBuilder factory = new ParserStageSequenceBuilder();
 
 		StringBuffer pattern = new StringBuffer();
 		StringBuffer semantic = new StringBuffer();
@@ -161,7 +164,7 @@ public abstract class GrokParserFactory {
 			}
 		}
 
-		// If we are in the process of ending a pattern, then wrap it up with bow
+		// If we are in the process of ending a pattern, then tie it up with a bow
 		if (state == GrokState.END_PATTERN) {
 			final String patternString = pattern.toString();
 			final String semanticString = semantic.toString();
@@ -187,6 +190,6 @@ public abstract class GrokParserFactory {
 			}
 		}
 
-		return factory;
+		return factory.getStages();
 	}
 }

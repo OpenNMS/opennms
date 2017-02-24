@@ -31,17 +31,16 @@ package org.opennms.netmgt.syslogd;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +75,6 @@ public class BufferParser {
 			this.builder = builder;
 		}
 
-//		public void setBuffer(ByteBuffer buffer) {
-//			System.out.println(String.format("SETTING BUFFER, OLD POSITION: %s, NEW POSITION: %s", this.buffer.position(), buffer.position()));
-//			this.buffer = buffer;
-//		}
-
 		@Override
 		public String toString() {
 			return new ToStringBuilder(this)
@@ -104,7 +98,6 @@ public class BufferParser {
 
 		public ParserStageState(ByteBuffer input) {
 			buffer = input;
-//			System.out.println("BUFFER POSITION: " + buffer.position());
 			accumulatedValue = new StringBuffer();
 			accumulatedSize = new AtomicInteger();
 		}
@@ -127,18 +120,22 @@ public class BufferParser {
 		}
 	}
 
-	public static class BufferParserFactory {
+	public static class ParserStageSequenceBuilder {
 		final List<ParserStage> m_stages = new ArrayList<>();
 
 		final Stack<Boolean> m_optional = new Stack<>();
 		final Stack<Boolean> m_terminal = new Stack<>();
 
-		public BufferParserFactory optional() {
+		public List<ParserStage> getStages() {
+			return Collections.unmodifiableList(m_stages);
+		}
+
+		public ParserStageSequenceBuilder optional() {
 			m_optional.push(true);
 			return this;
 		}
 
-		public BufferParserFactory terminal() {
+		public ParserStageSequenceBuilder terminal() {
 			m_terminal.push(true);
 			return this;
 		}
@@ -166,82 +163,63 @@ public class BufferParser {
 			m_stages.add(stage);
 		}
 
-		public BufferParserFactory whitespace() {
+		public ParserStageSequenceBuilder whitespace() {
 			addStage(new MatchWhitespace());
 			return this;
 		}
 
-		public BufferParserFactory character(char character) {
+		public ParserStageSequenceBuilder character(char character) {
 			addStage(new MatchChar(character));
 			return this;
 		}
 
-		public BufferParserFactory string(BiConsumer<ParserState, String> consumer) {
+		public ParserStageSequenceBuilder string(BiConsumer<ParserState, String> consumer) {
 			addStage(new MatchAny(consumer, Integer.MAX_VALUE));
 			return this;
 		}
 
-		public BufferParserFactory integer(BiConsumer<ParserState, Integer> consumer) {
+		public ParserStageSequenceBuilder integer(BiConsumer<ParserState, Integer> consumer) {
 			addStage(new MatchInteger(consumer));
 			return this;
 		}
 
-		public BufferParserFactory month(BiConsumer<ParserState, Integer> consumer) {
+		public ParserStageSequenceBuilder month(BiConsumer<ParserState, Integer> consumer) {
 			addStage(new MatchMonth(consumer));
 			return this;
 		}
 
-		public BufferParserFactory stringUntil(String ends, BiConsumer<ParserState,String> consumer) {
+		public ParserStageSequenceBuilder stringUntil(String ends, BiConsumer<ParserState,String> consumer) {
 			addStage(new MatchStringUntil(consumer, ends));
 			return this;
 		}
 
-		public BufferParserFactory stringUntilWhitespace(BiConsumer<ParserState,String> consumer) {
+		public ParserStageSequenceBuilder stringUntilWhitespace(BiConsumer<ParserState,String> consumer) {
 			addStage(new MatchStringUntil(consumer, MatchUntil.WHITESPACE));
 			return this;
 		}
 
-		public BufferParserFactory stringUntilChar(char end, BiConsumer<ParserState,String> consumer) {
+		public ParserStageSequenceBuilder stringUntilChar(char end, BiConsumer<ParserState,String> consumer) {
 			addStage(new MatchStringUntil(consumer, end));
 			return this;
 		}
 
-		public BufferParserFactory intUntilWhitespace(BiConsumer<ParserState,Integer> consumer) {
+		public ParserStageSequenceBuilder intUntilWhitespace(BiConsumer<ParserState,Integer> consumer) {
 			addStage(new MatchIntegerUntil(consumer, MatchUntil.WHITESPACE));
 			return this;
 		}
 
-		public BufferParserFactory stringBetweenDelimiters(char start, char end, BiConsumer<ParserState,String> consumer) {
+		public ParserStageSequenceBuilder stringBetweenDelimiters(char start, char end, BiConsumer<ParserState,String> consumer) {
 			addStage(new MatchChar(start));
 			addStage(new MatchStringUntil(consumer, end));
 			addStage(new MatchChar(end));
 			return this;
 		}
 
-		public BufferParserFactory intBetweenDelimiters(char start, char end, BiConsumer<ParserState,Integer> consumer) {
+		public ParserStageSequenceBuilder intBetweenDelimiters(char start, char end, BiConsumer<ParserState,Integer> consumer) {
 			addStage(new MatchChar(start));
 			addStage(new MatchIntegerUntil(consumer, end));
 			addStage(new MatchChar(end));
 			return this;
-		}
-
-		public CompletableFuture<Event> parse(ByteBuffer incoming, ExecutorService executor) {
-
-			// Put all mutable parts of the parse operation into a state object
-			final ParserState state = new ParserState(incoming, new EventBuilder("uei.opennms.org/test", this.getClass().getSimpleName()));
-
-			CompletableFuture<ParserState> future = CompletableFuture.completedFuture(state);
-
-			// Apply each parse stage to the message
-			for (ParserStage stage : m_stages) {
-				future = future.thenApply(stage::apply);
-			}
-
-			//future.exceptionally(e -> { /* DO SOMETHING */ return null; });
-
-			return future.thenApply(s -> {
-				return s.builder.getEvent();
-			});
 		}
 	}
 
@@ -467,6 +445,10 @@ public class BufferParser {
 			m_char = c;
 		}
 
+		public char getChar() {
+			return m_char;
+		}
+
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
 			if (c == m_char) {
@@ -476,6 +458,14 @@ public class BufferParser {
 //				System.out.println("CANCEL " + m_char);
 				return AcceptResult.CANCEL;
 			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) return true;
+			if (!(o instanceof MatchChar)) return false;
+			MatchChar other = (MatchChar)o;
+			return Objects.equals(m_char, other.getChar());
 		}
 
 		@Override

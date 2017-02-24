@@ -29,16 +29,13 @@
 package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -49,11 +46,10 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.syslogd.BufferParser.BufferParserFactory;
 import org.opennms.netmgt.syslogd.BufferParser.MatchChar;
 import org.opennms.netmgt.syslogd.BufferParser.MatchMonth;
 import org.opennms.netmgt.syslogd.BufferParser.ParserStage;
+import org.opennms.netmgt.syslogd.BufferParser.ParserStageSequenceBuilder;
 import org.opennms.netmgt.syslogd.BufferParser.ParserState;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -61,13 +57,13 @@ import org.slf4j.LoggerFactory;
 
 public class BufferParserTest {
 
-	private final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
+	final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
 
-	private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
+//	private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
 
-	//private final ExecutorService m_executor = new ExecutorFactoryCassandraSEPImpl().newExecutor("StagedParser", "StageExecutor");
+//	private final ExecutorService m_executor = new ExecutorFactoryCassandraSEPImpl().newExecutor("StagedParser", "StageExecutor");
 
-	//private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+//	private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 	@Test
 	public void testMe() throws Exception {
@@ -86,11 +82,12 @@ public class BufferParserTest {
 		AtomicReference<Integer> minute = new AtomicReference<>();
 		AtomicReference<Integer> second = new AtomicReference<>();
 
-		BufferParserFactory grokFactory = GrokParserFactory.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 		//BufferParserFactory grokFactory = parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		ByteBufferParser<Event> grokParser = new SingleSequenceParser(grokStages);
 
 		// SyslogNG format
-		BufferParserFactory factory = new BufferParserFactory()
+		List<ParserStage> parserStages = new ParserStageSequenceBuilder()
 			.intBetweenDelimiters('<', '>', (s,v) -> { facility.set(SyslogFacility.getFacilityForCode(v)); })
 			.whitespace()
 			.month((s,v) -> month.set(v))
@@ -128,68 +125,103 @@ public class BufferParserTest {
 			.character(':')
 			.whitespace()
 			.terminal().string((s,v) -> { s.builder.setLogMessage(v); })
+			.getStages()
 			;
+		ByteBufferParser<Event> parser = new SingleSequenceParser(parserStages);
+
+		RadixTreeParser radixParser = new RadixTreeParser();
+		radixParser.teach(grokStages.toArray(new ParserStage[0]));
 
 		int iterations = 100000;
 
-		CompletableFuture<Event> event = null;
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < iterations; i++) {
-			event = factory.parse(incoming.asReadOnlyBuffer(), m_executor);
-			event.whenComplete((e, ex) -> {
-				if (ex == null) {
-					//System.out.println(e.toString());
-				} else {
-					ex.printStackTrace();
-				}
-			});
+		{
+			CompletableFuture<Event> event = null;
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < iterations; i++) {
+				event = radixParser.parse(incoming.asReadOnlyBuffer());
+				event.whenComplete((e, ex) -> {
+					if (ex == null) {
+						//System.out.println(e.toString());
+					} else {
+						ex.printStackTrace();
+					}
+				});
+			}
+			// Wait for the last future to complete
+			try {
+				event.get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("RADIX: " + (end - start) + "ms");
 		}
-		// Wait for the last future to complete
-		try {
-			event.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		long end = System.currentTimeMillis();
-		System.out.println("NEW: " + (end - start) + "ms");
 
-		start = System.currentTimeMillis();
-		for (int i = 0; i < iterations; i++) {
-			event = grokFactory.parse(incoming.asReadOnlyBuffer(), m_executor);
-			event.whenComplete((e, ex) -> {
-				if (ex == null) {
-					//System.out.println(e.toString());
-				} else {
-					ex.printStackTrace();
-				}
-			});
+		{
+			CompletableFuture<Event> event = null;
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < iterations; i++) {
+				event = parser.parse(incoming.asReadOnlyBuffer());
+				event.whenComplete((e, ex) -> {
+					if (ex == null) {
+						//System.out.println(e.toString());
+					} else {
+						ex.printStackTrace();
+					}
+				});
+			}
+			// Wait for the last future to complete
+			try {
+				event.get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("NEW: " + (end - start) + "ms");
 		}
-		// Wait for the last future to complete
-		try {
-			event.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		end = System.currentTimeMillis();
-		System.out.println("GROK: " + (end - start) + "ms");
 
-		InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-syslogng-configuration.xml");
-		SyslogdConfig config = new SyslogdConfigFactory(stream);
-
-		start = System.currentTimeMillis();
-		for (int i = 0; i < iterations; i++) {
-			ConvertToEvent convertToEvent = new ConvertToEvent(
-				DistPollerDao.DEFAULT_DIST_POLLER_ID,
-				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
-				InetAddressUtils.ONE_TWENTY_SEVEN,
-				9999,
-				abc, 
-				config
-			);
-			Event convertedEvent = convertToEvent.getEvent();
+		{
+			CompletableFuture<Event> event = null;
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < iterations; i++) {
+				event = grokParser.parse(incoming.asReadOnlyBuffer());
+				event.whenComplete((e, ex) -> {
+					if (ex == null) {
+						//System.out.println(e.toString());
+					} else {
+						ex.printStackTrace();
+					}
+				});
+			}
+			// Wait for the last future to complete
+			try {
+				event.get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("GROK: " + (end - start) + "ms");
 		}
-		end = System.currentTimeMillis();
-		System.out.println("OLD: " + (end - start) + "ms");
+
+		{
+			InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-syslogng-configuration.xml");
+			SyslogdConfig config = new SyslogdConfigFactory(stream);
+
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < iterations; i++) {
+				ConvertToEvent convertToEvent = new ConvertToEvent(
+    				DistPollerDao.DEFAULT_DIST_POLLER_ID,
+    				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+    				InetAddressUtils.ONE_TWENTY_SEVEN,
+    				9999,
+    				abc, 
+    				config
+				);
+				Event convertedEvent = convertToEvent.getEvent();
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("OLD: " + (end - start) + "ms");
+		}
 
 	}
 
@@ -203,7 +235,7 @@ public class BufferParserTest {
 
 	@Test
 	public void testGrokParser() {
-		GrokParserFactory.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 	}
 
 	@Test
@@ -213,99 +245,21 @@ public class BufferParserTest {
 		ParserStage c = new MatchChar('c');
 		ParserStage d = new MatchChar('d');
 
-//		c.setTerminal(true);
+		c.setTerminal(true);
 		d.setTerminal(true);
 
-//		RadixTree<ParserStage> tree = new RadixTreeImpl<>();
-//		tree.addChildren(new ParserStage[] { a, c });
-//		tree.addChildren(new ParserStage[] { b, d });
+		RadixTreeParser treeParser = new RadixTreeParser();
+		treeParser.teach(new ParserStage[] { a });
+		treeParser.teach(new ParserStage[] { b, c });
+		treeParser.teach(new ParserStage[] { b, a, d });
+		treeParser.teach(new ParserStage[] { b, d });
+		treeParser.teach(new ParserStage[] { c });
 
+		System.out.println(treeParser.toString());
 
-//		ParserStageCompletableFutureVisitor visitor = new ParserStageCompletableFutureVisitor();
-//		visitor.visit(tree);
-//
-//		System.out.println(visitor.stages);
-//
-//		ParserState state = visitor.getParserFunction().apply();
-//		System.out.println(state);
-
-		ParserState state = new ParserState(ByteBuffer.wrap("bc".getBytes()), new EventBuilder("uei.opennms.org/test", this.getClass().getSimpleName()));
-
-		final List<CompletableFuture<ParserState>> futures = new ArrayList<>();
-
-		// Top of future tree is parser state
-		final CompletableFuture<ParserState> parent = CompletableFuture.completedFuture(state);
-
-		// Iterate over children
-		{
-			CompletableFuture<ParserState> current = parent.thenApply(a::apply);
-			// If children.length > 0
-			// recurse(current)
-			// else 
-			futures.add(current);
-		}
-
-		{
-			CompletableFuture<ParserState> current = parent.thenApply(b::apply);
-			// If children.length > 0
-			{
-//				List<CompletableFuture<ParserState>> futures2 = new ArrayList<>();
-//				futures.add(current.thenApply(a::apply));
-//				futures.add(current.thenApply(b::apply));
-				futures.add(current.thenApply(c::apply));
-				futures.add(current.thenApply(d::apply));
-//				CompletableFuture<ParserState> root = firstNonNullResult(futures2);
-//				//System.out.println(root.join().builder.getEvent());
-//				futures.add(root);
-			}
-			// else 
-//			futures.add(current);
-		}
-
-		{
-			CompletableFuture<ParserState> current = parent.thenApply(c::apply);
-			// If children.length > 0
-			// recurse(current)
-			// else 
-			futures.add(current);
-		}
-
-		CompletableFuture<ParserState> root = firstNonNullResult(futures);
+		CompletableFuture<Event> root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
 		assertNotNull("One pattern should match", root.join());
+		root = treeParser.parse(ByteBuffer.wrap("bbd".getBytes()));
+		assertNull("No pattern should match", root.join());
 	}
-
-	public static <T> CompletableFuture<T> firstNonNullResult(List<? extends CompletionStage<T>> futures) {
-
-		CompletableFuture<T> parent = new CompletableFuture<>();
-
-		CompletableFuture.allOf(
-			futures.stream().map(
-				s -> s.thenAccept(t -> {
-					System.out.println("VALUE " + t);
-					// After each stage completes, if its result is non-null
-					// then complete the parent future
-					if (t != null) {
-						if (!parent.complete(t)) {
-							LOG.warn("More than one future completed with a non-null result");
-						}
-					}
-				})
-			).toArray(
-				CompletableFuture<?>[]::new
-			)
-		).exceptionally(ex -> {
-			// If all futures complete exceptionally, mark this future as exceptional as well
-//			parent.completeExceptionally(ex);
-			parent.complete(null);
-			return null;
-		}).thenAccept(v -> {
-			// If the parent isn't complete yet, then all children returned null so just
-			// complete with null
-			if (parent.complete(null)) {
-				LOG.debug("All futures completed with a null result");
-			}
-		});
-
-		return parent;
-	}	
 }
