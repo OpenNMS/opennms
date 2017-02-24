@@ -12,7 +12,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -566,11 +565,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                         schedule();
                         return;
                     }
-                    NodeDiscoveryBridgeTopology ndbt = new NodeDiscoveryBridgeTopology(m_linkd, m_linkd.getNode(curNodeId));
-                    ndbt.setDomain(domain);
-                    ndbt.clearTopologyForBridge(domain.getBridge(curNodeId));
+                    domain.clearTopologyForBridge(domain.getBridge(curNodeId));
                     m_linkd.getQueryManager().store(domain,now);
-                    m_linkd.getQueryManager().save(domain.getRootBridgeId(), ndbt.getRootBridgeBFT());
+                    m_linkd.getQueryManager().save(domain.getRootBridgeId(), domain.getRootBFT());
                     domain.removeBridge(curNodeId);
                     domain.releaseLock(this);
                 }
@@ -680,7 +677,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         for (Bridge xBridge: m_notYetParsedBFTMap.keySet()) {
             LOG.info("calculate: bridge: {} has an updated bft. Clear bridge topology", xBridge.getId());
-            clearTopologyForBridge(xBridge);
+            m_domain.clearTopologyForBridge(xBridge);
         }        
 
         Bridge electedRoot = electRootBridge();
@@ -744,7 +741,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         List<Map<Integer,List<BridgeMacLink>>> throughSets=new ArrayList<Map<Integer,List<BridgeMacLink>>>();
         Map<Integer,List<BridgeMacLink>> bftSets=new HashMap<Integer,List<BridgeMacLink>>();
         for (Bridge yBridge: m_domain.getBridgeOnSharedSegment(topSegment)) {
-            bftSets.put(yBridge.getId(), getBFT(yBridge));
+            bftSets.put(yBridge.getId(), m_domain.getBFT(yBridge));
         }
         
         for (Bridge yBridge: m_domain.getBridgeOnSharedSegment(topSegment)) {
@@ -947,144 +944,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.info("calculate: elected root bridge: {}, is new root bridge with old bft",
                      electedRoot.getId());
             m_domain.hierarchySetUp(electedRoot);
-            m_rootBridgeBFT =getBFT(electedRoot);
+            m_rootBridgeBFT =m_domain.getBFT(electedRoot);
             LOG.debug("calculate: set bft for root bridge {}  size:  {}",
                            electedRoot.getId(), m_rootBridgeBFT.size());
         }
         
-    }
-    
-    public void clearTopologyForBridge(Bridge bridge) {
-        if (bridge.isRootBridge()) {
-            LOG.debug("calculate: clearTopologyForBridge: bridge {}, is root bridge. setting up a new hierarchy before clean",
-                      bridge.getId());
-            for (SharedSegment segment: m_domain.getSharedSegmentOnTopologyForBridge(bridge.getId())) {
-                Integer newRootId = segment.getFirstNoDesignatedBridge();
-                if (newRootId == null)
-                    continue;
-                Bridge newRootBridge=null;
-                for (Bridge curBridge: m_domain.getBridges()) {
-                    if (curBridge.getId().intValue() == newRootId.intValue()) {
-                        newRootBridge=curBridge;
-                        break;
-                    }
-                }
-                if (newRootBridge == null)
-                    continue;
-                m_rootBridgeBFT = getBFT(newRootBridge);
-                m_domain.hierarchySetUp(newRootBridge);
-                break;
-            }
-        }
-        LOG.debug("calculate: clearTopologyForBridge: bridge {}, bridge root port {}",
-                  bridge.getId(), bridge.getRootPort());
-        //all the topology will be merged with the segment for bridge designated port
-        SharedSegment topsegment = m_domain.getSharedSegment(bridge.getId(), bridge.getRootPort());
-        if (topsegment != null) {
-            LOG.debug("calculate: clearTopologyForBridge: removing bridge {}: top segment nodes {}, macs {}, designated {}, port {}",
-                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment(),
-                      topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
-            topsegment.removeBridge(bridge.getId());
-            LOG.debug("calculate: clearTopologyForBridge: removed bridge {}: top segment nodes {}, macs {}, designated {}, port {}",
-                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment(),
-                      topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
-        } else {
-            LOG.debug("calculate: clearTopologyForBridge {}: no top segment found",
-                      bridge.getId());
-        }
-
-        for (SharedSegment segment: m_domain.removeSharedSegmentOnTopologyForBridge(bridge.getId())) {
-            LOG.debug("calculate: clearTopologyForBridge merging bridge {} on top for segment: nodes {}, macs {}, designated {}, port {}",
-                      bridge.getId(),segment.getBridgeIdsOnSegment(),segment.getMacsOnSegment(),
-                      segment.getDesignatedBridge(),segment.getDesignatedPort());
-            if (topsegment != null)
-                topsegment.mergeBridge(segment,bridge.getId());
-        }        
-
-    }
-
-    public List<BridgeMacLink> getBFT(Bridge bridge) {
-        LOG.debug("calculate: getBFT: bridge: {}, bridge root port {}",
-                  bridge.getId(), bridge.getRootPort());
-
-        Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
-        Integer bridgeId = bridge.getId();
-        List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
-        OnmsNode node=new OnmsNode();
-        node.setId(bridgeId);
-        for (SharedSegment segment: m_domain.getTopology()) {
-            
-            Set<String> macs = segment.getMacsOnSegment();
-            
-            if (macs == null || macs.isEmpty())
-                continue;
-            Integer bridgeport = goUp(segment,bridge,0);
-            LOG.info("calculate: getBFT: bridge: {}, assigning macs {} to port {}", bridgeId,macs, bridgeport );
-            if (!bft.containsKey(bridgeport))
-                bft.put(bridgeport, new HashSet<String>());
-            bft.get(bridgeport).addAll(macs);
-       }
-            
-        for (Integer bridgePort: bft.keySet()) {
-            for (String mac: bft.get(bridgePort)) {
-                BridgeMacLink link = new BridgeMacLink();
-                link.setNode(node);
-                link.setBridgePort(bridgePort);
-                link.setMacAddress(mac);
-                link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-                links.add(link);
-            }
-        }
-        return links;
-    }
-
-    private Integer goUp(SharedSegment down,Bridge bridge, int level) {
-        if (level == 30) {
-            LOG.warn("calculate: level {}: bridge: {}, too many iteration on topology exiting.....",level,bridge.getId());
-            m_domain.clearTopology();
-            return -1;
-        }
-        LOG.debug("calculate: goUp: level: {}, checking up segment designated bridge {}, designated port {}, bridge {}, with root port {}",
-                  level,down.getDesignatedBridge(),down.getDesignatedPort(), bridge.getId(), bridge.getRootPort());
-            Integer upBridgeId = down.getDesignatedBridge();
-            // if segment is on the bridge then...
-            if (upBridgeId.intValue() == bridge.getId().intValue()) {
-                LOG.debug("calculate: goUp: level: {}, return bridge {}, designated port {}",
-                          level,down.getDesignatedBridge(),down.getDesignatedPort());
-                return down.getDesignatedPort();
-            }
-            // if segment is a root segment add mac on port
-            if (upBridgeId.intValue() == m_domain.getRootBridgeId().intValue()) {
-                LOG.debug("calculate: goUp: level: {}, got root bridge, returning bridge {}, root port {}",
-                          level,bridge.getId(),bridge.getRootPort());
-                return bridge.getRootPort();
-            }
-            // iterate until you got it
-            Bridge upBridge = null;
-            for (Bridge cbridge: m_domain.getBridges()) {
-                if (cbridge.getId().intValue() == bridge.getId().intValue())
-                    continue;
-                LOG.debug("calculate: goUp: level: {}, searching bridge {}, parsing bridge {}",
-                          level,down.getDesignatedBridge(),cbridge.getId());
-                if (cbridge.getId().intValue() == upBridgeId.intValue()) {
-                    LOG.debug("calculate: goUp: level: {}, searching bridge {}, found bridge {}, with root port {}",
-                              level,down.getDesignatedBridge(),cbridge.getId(), cbridge.getRootPort());
-                    upBridge=cbridge;
-                    break;
-                }
-            }
-            if (upBridge == null) {
-                LOG.debug("calculate: goUp: level: {}, searching bridge {}, no bridge found!!!",
-                          level,down.getDesignatedBridge());
-                return null;
-            }
-            SharedSegment up = m_domain.getSharedSegment(upBridge.getId(),upBridge.getRootPort());
-            if (up == null) {
-                LOG.debug("calculate: goUp: level: {}, no shared segment found on bridge {}, root port {}!!!",
-                          level,down.getDesignatedBridge());
-                return null;
-            }
-        return goUp(up, bridge,++level);
     }    
 }
 
