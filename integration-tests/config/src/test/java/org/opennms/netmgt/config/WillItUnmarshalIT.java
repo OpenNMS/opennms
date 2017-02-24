@@ -271,10 +271,10 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
