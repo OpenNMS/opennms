@@ -115,12 +115,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         LOG.info("init: Loading nodes.....");
         m_nodes = m_queryMgr.getSnmpNodeList();
+        Assert.notNull(m_nodes);
         LOG.info("init: Nodes loaded.");
         LOG.info("init: Loading Bridge Topology.....");
         m_queryMgr.loadBridgeTopology();
         LOG.info("init: Bridge Topology loaded.");
+        for (BroadcastDomain domain: m_queryMgr.getAllBroadcastDomains()) {
+        	LOG.debug("init: Found BroadcastDomain with bridges {} and macs", domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
+        }
 
-        Assert.notNull(m_nodes);
         scheduleCollection();
         LOG.info("init: ENHANCED LINKD INITIALIZED");
     }

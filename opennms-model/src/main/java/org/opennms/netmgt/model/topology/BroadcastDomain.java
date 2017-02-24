@@ -376,8 +376,6 @@ public class BroadcastDomain {
         return goUp(up, bridge,++level);
     }    
 
-
-
     public void clear() {
         m_topology.clear();
         m_bridges.clear();
