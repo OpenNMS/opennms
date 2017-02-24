@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,7 +93,9 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         }
         
         if (isisSysObject.getIsisSysId() == null ) {
-            LOG.info( "Is-Is mib not supported on: {}", str(getPeer().getAddress()));
+            LOG.info( "run: node[{}]: address {}. Is-Is mib not supported ", 
+            		getNodeId(),
+            		getPrimaryIpAddressString());
             return;
         }
         
