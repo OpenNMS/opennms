@@ -118,6 +118,8 @@ public class Category {
     protected Category(String categoryName) {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
         m_categoryDef.setLabel(categoryName);
+        m_categoryDef.setNormalThreshold(0d);
+        m_categoryDef.setWarningThreshold(0d);
         m_rtcCategory = null;
         m_lastUpdated = null;
     }
@@ -156,7 +158,7 @@ public class Category {
      */
     @XmlAttribute(name="name")
     public String getName() {
-        return m_categoryDef.getLabel();
+        return m_categoryDef == null? null : m_categoryDef.getLabel();
     }
 
     /**
@@ -166,7 +168,7 @@ public class Category {
      */
     @XmlAttribute(name="normal-threshold")
     public double getNormalThreshold() {
-        return m_categoryDef.getNormal();
+        return m_categoryDef == null? null : m_categoryDef.getNormalThreshold();
     }
 
     /**
@@ -178,7 +180,7 @@ public class Category {
      */
     @XmlAttribute(name="warning-threshold")
     public double getWarningThreshold() {
-        return m_categoryDef.getWarning();
+        return m_categoryDef == null? null : m_categoryDef.getWarningThreshold();
     }
 
     /**
@@ -188,7 +190,7 @@ public class Category {
      */
     @XmlElement(name="comment")
     public String getComment() {
-        return m_categoryDef.getComment();
+        return m_categoryDef == null? null : m_categoryDef.getComment();
     }
 
     /**

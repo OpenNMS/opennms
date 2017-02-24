@@ -194,7 +194,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
