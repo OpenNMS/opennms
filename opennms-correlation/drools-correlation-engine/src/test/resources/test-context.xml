@@ -13,11 +13,14 @@
 
     <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
     	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="metricRegistry" ref="metricRegistry" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
     	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
     	<property name="configurationDirectory" ref="droolsCorrelationEngineBuilderConfigurationDirectory"/>
     </bean>
 
     <bean name="correlator" class="org.opennms.netmgt.correlation.drools.MockCorrelator" />
+
+	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
 </beans>

@@ -55,6 +55,10 @@ import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * <p>DroolsCorrelationEngine class.</p>
  *
@@ -71,13 +75,24 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
+
+    private final Meter m_eventsMeter;
     
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+        super();
+        this.m_name = name;
+        final Gauge<Integer> size = () -> { return getMemorySize(); };
+        metricRegistry.register(MetricRegistry.name(name, "working-memory-size"), size);
+        m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
 	LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
+        m_eventsMeter.mark();
 	LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
@@ -210,15 +225,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     	return m_workingMemory;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-    
     /**
      * <p>getName</p>
      *
