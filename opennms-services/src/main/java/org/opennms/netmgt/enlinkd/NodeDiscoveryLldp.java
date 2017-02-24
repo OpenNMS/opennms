@@ -75,7 +75,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
 
     	String trackerName = "lldpLocalGroup";
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, lldpLocalGroup);
         walker.start();
 
@@ -126,7 +126,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         	}
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, lldpRemTable);
         walker.start();
         

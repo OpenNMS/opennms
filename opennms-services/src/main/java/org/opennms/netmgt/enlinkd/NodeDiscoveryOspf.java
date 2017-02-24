@@ -77,7 +77,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
     	String trackerName = "ospfGeneralGroup";
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, ospfGeneralGroup);
 
         walker.start();
@@ -126,7 +126,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         	}
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfNbrTableTracker);
         walker.start();
         
@@ -163,7 +163,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
         };
 
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         walker = SnmpUtils.createWalker(getPeer(), trackerName, ospfIfTableTracker);
         walker.start();
         

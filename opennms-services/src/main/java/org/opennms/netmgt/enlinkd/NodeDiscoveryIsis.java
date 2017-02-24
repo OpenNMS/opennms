@@ -70,7 +70,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
     	String trackerName = "isisSysObjectCollection";
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisSysObject);
 
         walker.start();
@@ -106,7 +106,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         		links.add(row.getIsisLink());
         	}
         };
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisISAdjTableTracker);
 
         walker.start();
@@ -141,7 +141,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         	}
         };
 		
-        LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+        LOG.info( "run: collecting {} on: {}",trackerName, str(getPrimaryIpAddress()));
         walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisCircTableTracker);
 
         walker.start();
