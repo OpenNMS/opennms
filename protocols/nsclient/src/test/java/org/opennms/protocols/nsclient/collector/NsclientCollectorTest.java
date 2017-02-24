@@ -127,7 +127,8 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("port", getServer().getLocalPort());
         NSClientCollector collector = getCollector(parameters);
-        CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
+        parameters.putAll(collector.getRuntimeAttributes(m_collectionAgent, parameters));
+        CollectionSet collectionSet = collector.collect(m_collectionAgent, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
         CountResourcesVisitor visitor = new CountResourcesVisitor();
         collectionSet.visit(visitor);
@@ -136,7 +137,6 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
 
     private NSClientCollector getCollector(Map<String, Object> parameters) {
         NSClientCollector collector = new NSClientCollector();
-        collector.initialize(m_collectionAgent, parameters);
         return collector;
     }
 
