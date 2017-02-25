@@ -197,10 +197,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
@@ -288,12 +288,12 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
         assertNotNull(nodeBbd);
         assertEquals(nodeAbd, nodeBbd);
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertNotNull(nodeCbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());
@@ -387,10 +387,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());
@@ -486,10 +486,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());

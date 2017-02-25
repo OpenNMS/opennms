@@ -687,7 +687,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             }
         }
 
-        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+        for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
             printSharedSegment(segment);
         }
         
@@ -945,7 +945,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             }
         }
 
-        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+        for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
             printSharedSegment(segment);
         }
 
@@ -1202,7 +1202,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             }
         }
 
-        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+        for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
             printSharedSegment(segment);
         }
 

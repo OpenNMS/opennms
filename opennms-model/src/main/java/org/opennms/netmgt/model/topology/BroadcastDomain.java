@@ -240,11 +240,14 @@ public class BroadcastDomain {
         }
     }
     
-    public void clearTopologyForBridge(Bridge bridge) {
+    public void clearTopologyForBridge(Integer bridgeId) {
+    	Bridge bridge = getBridge(bridgeId);
+    	if (bridge == null)
+    		return;
         if (bridge.isRootBridge()) {
             LOG.debug("clearTopologyForBridge: clearTopologyForBridge: bridge {}, is root bridge. setting up a new hierarchy before clean",
                       bridge.getId());
-            for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridge.getId())) {
+            for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
                 if (newRootId == null)
                     continue;
@@ -288,11 +291,11 @@ public class BroadcastDomain {
 
     }
 
-    public List<BridgeMacLink> getRootBFT() {
-    	return getBFT(getRootBridge());
+    public List<BridgeMacLink> calculateRootBFT() {
+    	return calculateBFT(getRootBridge());
     }
     
-    public List<BridgeMacLink> getBFT(Bridge bridge) {
+    public List<BridgeMacLink> calculateBFT(Bridge bridge) {
         LOG.debug("calculate: getBFT: bridge: {}, bridge root port {}",
                   bridge.getId(), bridge.getRootPort());
 
