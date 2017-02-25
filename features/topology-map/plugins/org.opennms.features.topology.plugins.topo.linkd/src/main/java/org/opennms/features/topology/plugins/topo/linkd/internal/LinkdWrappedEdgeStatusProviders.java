@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import org.opennms.features.topology.plugins.topo.linkd.internal.providers.AbstractLinkdTopologyProvider;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
