@@ -91,13 +91,13 @@ public class BundleContextHistoryManagerTest  {
         if (new File(DATA_FILE_NAME).exists()) {
             new File(DATA_FILE_NAME).delete();
         }
-        
+
     	bundleContextMock = EasyMock.createNiceMock(BundleContext.class);
     	graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
         graphMock = EasyMock.createNiceMock(Graph.class);
-    	
-        displayableVertices = new ArrayList<Vertex>();
-        selectedLayout = new DefaultLayout(graphContainerMock);
+
+        displayableVertices = new ArrayList<>();
+        selectedLayout = new DefaultLayout();
 
         historyManager = new BundleContextHistoryManager(bundleContextMock);
         historyManager.onBind(new CircleLayoutOperation());

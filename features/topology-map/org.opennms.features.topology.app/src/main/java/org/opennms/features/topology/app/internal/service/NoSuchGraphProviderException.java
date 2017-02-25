@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="group")
-public class WrappedGroup extends WrappedVertex {
-
-	public List<WrappedVertex> members = new ArrayList<WrappedVertex>();
-
-	/**
-	 * No-arg constructor for JAXB.
-	 */
-	public WrappedGroup() {
-		super();
-		group = true;
-	}
-
-	public WrappedGroup(Vertex vertex) {
-		super(vertex);
-	}
-
-        @Override
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
-		super.afterUnmarshal(u, parent);
-	}
+public class NoSuchGraphProviderException extends NoSuchProviderException {
+    public NoSuchGraphProviderException(String metaTopologyId, String namespace) {
+        super(String.format("No GraphProvider with namespace '%s' in MetaTopolgyProvider with id '%s' found.", metaTopologyId, namespace));
+    }
 }

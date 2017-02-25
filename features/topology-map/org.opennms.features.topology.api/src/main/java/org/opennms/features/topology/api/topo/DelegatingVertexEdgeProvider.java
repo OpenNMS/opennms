@@ -46,6 +46,9 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	public DelegatingVertexEdgeProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
 		m_vertexProvider = vertexProvider;
 		m_edgeProvider = edgeProvider;
+		if (!m_edgeProvider.getNamespace().equals(edgeProvider.getNamespace())) {
+			throw new IllegalStateException("Namespace of edge and vertex provider must match");
+		}
 	}
 
 	protected final SimpleVertexProvider getSimpleVertexProvider() {
@@ -71,7 +74,12 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
         return m_vertexProvider.getVertexTotalCount();
     }
 
-    @Override
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeProvider.getEdgeTotalCount();
+	}
+
+	@Override
 	public final boolean contributesTo(String namespace) {
 		return m_vertexProvider.contributesTo(namespace);
 	}
@@ -92,8 +100,8 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final String getVertexNamespace() {
-		return m_vertexProvider.getVertexNamespace();
+	public final String getNamespace() {
+		return m_vertexProvider.getNamespace();
 	}
 
 	@Override
@@ -164,11 +172,6 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	@Override
 	public final Edge getEdge(EdgeRef reference) {
 		return m_edgeProvider.getEdge(reference);
-	}
-
-	@Override
-	public final String getEdgeNamespace() {
-		return m_edgeProvider.getEdgeNamespace();
 	}
 
 	@Override

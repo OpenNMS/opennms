@@ -380,7 +380,7 @@ public class CdpLink implements Serializable {
         .append("cdpCacheIfIndex", m_cdpCacheIfIndex)
         .append("cdpCacheDeviceIndex", m_cdpCacheDeviceIndex)
         .append("cdpInterfaceName", m_cdpInterfaceName)
-        .append("cdpCacheAddressType", CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()))
+        .append("cdpCacheAddressType", m_cdpCacheAddressType != null ? CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()) : m_cdpCacheAddressType)
         .append("cdpCacheAddress", m_cdpCacheAddress)
         .append("cdpCacheVersion", m_cdpCacheVersion)
         .append("cdpCachedeviceId", m_cdpCacheDeviceId)

@@ -31,9 +31,9 @@ package org.opennms.features.topology.api.browsers;
 import java.util.Collection;
 import java.util.Set;
 
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
@@ -56,10 +56,10 @@ public abstract class AbstractSelectionLinkGenerator implements Table.ColumnGene
         fireVertexUpdatedEvent(Lists.newArrayList(vertexRef));
     }
 
-    private GraphProvider getGraphProvider() {
+    private TopologyServiceClient getGraphProvider() {
         UI ui = UI.getCurrent();
         if (ui instanceof WidgetContext) {
-            return ((WidgetContext) ui).getGraphContainer().getBaseTopology();
+            return ((WidgetContext) ui).getGraphContainer().getTopologyServiceClient();
         }
         return null;
     }

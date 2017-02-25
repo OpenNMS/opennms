@@ -64,11 +64,11 @@ public class HierarchyLayoutAlgorithmTest {
 
         // Mock ALL the things
         final GraphContainer mockGraphContainer = Mockito.mock(GraphContainer.class);
-        final DefaultLayout layout = new DefaultLayout(mockGraphContainer);
+        final DefaultLayout layout = new DefaultLayout();
         final TestGraph testGraph = new TestGraph(layout, vertices, edges);
         Mockito.when(mockGraphContainer.getGraph()).thenReturn(testGraph);
 
         // Update layouts and ensure no exception is thrown
-        new HierarchyLayoutAlgorithm().updateLayout(mockGraphContainer);
+        new HierarchyLayoutAlgorithm().updateLayout(testGraph);
     }
 }

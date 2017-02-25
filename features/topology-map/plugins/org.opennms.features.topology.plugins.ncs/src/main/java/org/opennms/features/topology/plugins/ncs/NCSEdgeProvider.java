@@ -28,9 +28,13 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.Lists;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -45,6 +49,7 @@ import org.opennms.netmgt.model.ncs.NCSComponent.NodeIdentification;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
@@ -237,7 +242,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getEdgeNamespace() {
+	public String getNamespace() {
 		return "ncs";
 	}
 	
@@ -307,6 +312,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 	@Override
 	public void clearEdges() {
 		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public int getEdgeTotalCount() {
+		return getEdges().size();
 	}
 
 }

@@ -33,7 +33,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 
 import org.apache.commons.collections15.Transformer;
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -45,10 +45,10 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
     private static final Logger LOG = LoggerFactory.getLogger(AbstractLayoutAlgorithm.class);
 
 	@Override
-	public abstract void updateLayout(GraphContainer graphContainer);
+	public abstract void updateLayout(Graph graph);
 
-	protected static Dimension selectLayoutSize(GraphContainer g) {
-	    int vertexCount = g.getGraph().getDisplayVertices().size();
+	protected static Dimension selectLayoutSize(Graph graph) {
+	    int vertexCount = graph.getDisplayVertices().size();
 
 	    double height = 1.5*Math.sqrt(vertexCount)*ELBOW_ROOM;
 	    double width = height*16.0/9.0;

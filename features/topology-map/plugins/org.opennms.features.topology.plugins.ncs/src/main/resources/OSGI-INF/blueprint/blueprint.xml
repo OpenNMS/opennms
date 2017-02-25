@@ -75,9 +75,6 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	
 	<bean id="ncsPathEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider"/>
 
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsPathEdgeProvider" />
-
     <!--NCS Edge Status Provider-->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 

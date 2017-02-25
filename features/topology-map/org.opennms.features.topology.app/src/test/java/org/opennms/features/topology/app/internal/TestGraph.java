@@ -30,13 +30,18 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
  * Graph for test purposes.
@@ -62,6 +67,11 @@ public class TestGraph implements Graph {
     }
 
     @Override
+    public void setLayout(Layout layout) {
+        this.layout = layout;
+    }
+
+    @Override
     public Collection<Vertex> getDisplayVertices() {
         return Collections.unmodifiableList(vertices);
     }
@@ -79,6 +89,16 @@ public class TestGraph implements Graph {
     @Override
     public Vertex getVertexByKey(String vertexKey) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<VertexRef, Status> getVertexStatus() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public Map<EdgeRef, Status> getEdgeStatus() {
+        return new HashMap<>();
     }
 
     @Override

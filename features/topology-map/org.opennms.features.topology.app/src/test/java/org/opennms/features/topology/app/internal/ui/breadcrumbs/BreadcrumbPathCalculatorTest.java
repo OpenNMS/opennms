@@ -5,23 +5,28 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.DefaultTopologyServiceClient;
+import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class BreadcrumbPathCalculatorTest {
 
-    private MetaTopologyProvider metaTopologyProvider;
+    private TopologyServiceClient topologyServiceClient;
 
     @Before
     public void setUp() {
@@ -53,7 +58,8 @@ public class BreadcrumbPathCalculatorTest {
         oppositesMap.put(new DefaultVertexRef("layer2", "B2"), Lists.newArrayList(new DefaultVertexRef("layer3", "C1")));
         oppositesMap.put(new DefaultVertexRef("layer2", "B3"), Lists.newArrayList(new DefaultVertexRef("layer3", "C3")));
 
-        metaTopologyProvider = new MetaTopologyProvider() {
+        MetaTopologyProvider metaTopologyProvider = new MetaTopologyProvider() {
+
             @Override
             public GraphProvider getDefaultGraphProvider() {
                 return layer1;
@@ -73,7 +79,7 @@ public class BreadcrumbPathCalculatorTest {
             public GraphProvider getGraphProviderBy(String namespace) {
                 return getGraphProviders()
                         .stream()
-                        .filter(p -> p.getVertexNamespace().equals(namespace))
+                        .filter(p -> p.getNamespace().equals(namespace))
                         .findFirst().orElse(null);
             }
 
@@ -81,30 +87,41 @@ public class BreadcrumbPathCalculatorTest {
             public BreadcrumbStrategy getBreadcrumbStrategy() {
                 return BreadcrumbStrategy.NONE;
             }
+
+            @Override
+            public String getId() {
+                return getGraphProviders().stream().map(g -> g.getNamespace()).collect(Collectors.joining(":"));
+            }
         };
+        DefaultTopologyService topologyService = new DefaultTopologyService();
+        topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+        DefaultTopologyServiceClient client = new DefaultTopologyServiceClient(topologyService);
+        client.setMetaTopologyId(metaTopologyProvider.getId());
+        client.setNamespace(metaTopologyProvider.getDefaultGraphProvider().getNamespace());
+        topologyServiceClient = client;
     }
 
     @Test
     public void testFindPathByVertex() throws IOException {
         // Verify elements, which are not available
-        Assert.assertEquals(Lists.newArrayList(), findPath(metaTopologyProvider, new DefaultVertexRef("nope", "nope", "I do not exist")));
-        Assert.assertEquals(Lists.newArrayList(), findPath(metaTopologyProvider, new DefaultVertexRef("layer3", "C6")));
+        Assert.assertEquals(Lists.newArrayList(), findPath(topologyServiceClient, new DefaultVertexRef("nope", "nope", "I do not exist")));
+        Assert.assertEquals(Lists.newArrayList(), findPath(topologyServiceClient, new DefaultVertexRef("layer3", "C6")));
 
         // Verify the path to A2 (very simple)
         Assert.assertEquals(
                 Lists.newArrayList(new DefaultVertexRef("layer1", "A2")),
-                findPath(metaTopologyProvider, new DefaultVertexRef("layer1", "A2")));
+                findPath(topologyServiceClient, new DefaultVertexRef("layer1", "A2")));
         // Verify the path to B3
         Assert.assertEquals(
                 Lists.newArrayList(new DefaultVertexRef("layer1", "A1"), new DefaultVertexRef("layer2", "B3")),
-                findPath(metaTopologyProvider, new DefaultVertexRef("layer2", "B3")));
+                findPath(topologyServiceClient, new DefaultVertexRef("layer2", "B3")));
         // Verify the path to C5 (should not include C5, as we merge vertices on the same namespace)
         Assert.assertEquals(
                 Lists.newArrayList(new DefaultVertexRef("layer1", "A2"), new DefaultVertexRef("layer2", "B2"), new DefaultVertexRef("layer3", "C1")),
-                findPath(metaTopologyProvider, new DefaultVertexRef("layer3", "C5")));
+                findPath(topologyServiceClient, new DefaultVertexRef("layer3", "C5")));
     }
 
-    private static List<VertexRef> findPath(MetaTopologyProvider metaTopologyProvider, VertexRef vertexToFind) {
-        return BreadcrumbPathCalculator.findPath(BreadcrumbPathCalculator.getIncomingEdgeMap(metaTopologyProvider), vertexToFind);
+    private static List<VertexRef> findPath(TopologyServiceClient topologyServiceClient, VertexRef vertexToFind) {
+        return BreadcrumbPathCalculator.findPath(BreadcrumbPathCalculator.getIncomingEdgeMap(topologyServiceClient), vertexToFind);
     }
 }

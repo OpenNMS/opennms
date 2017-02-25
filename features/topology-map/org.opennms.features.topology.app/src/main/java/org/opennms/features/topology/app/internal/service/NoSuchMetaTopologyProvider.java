@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.topo;
+package org.opennms.features.topology.app.internal.service;
 
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="vertex")
-public class WrappedLeafVertex extends WrappedVertex {
-
-	/**
-	 * No-arg constructor for JAXB.
-	 */
-	public WrappedLeafVertex() {
-		super();
-		group = false;
-	}
-
-	public WrappedLeafVertex(Vertex vertex) {
-		super(vertex);
-	}
-
-        @Override
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
-		super.afterUnmarshal(u, parent);
-	}
+public class NoSuchMetaTopologyProvider extends NoSuchProviderException {
+    public NoSuchMetaTopologyProvider(String metaTopologyId) {
+        super(String.format("No MetaTopologyProvider with id '%s' found.", metaTopologyId));
+    }
 }
