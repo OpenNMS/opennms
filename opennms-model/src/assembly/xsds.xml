@@ -10,11 +10,8 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>src/main/castor</directory>
+      <directory>src/main/resources/xsds</directory>
       <outputDirectory>xsds</outputDirectory>
-      <includes>
-        <include>*.xsd</include>
-      </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
