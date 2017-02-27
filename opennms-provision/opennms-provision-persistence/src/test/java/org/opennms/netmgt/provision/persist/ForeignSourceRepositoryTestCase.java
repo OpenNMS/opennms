@@ -38,12 +38,12 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/testForeignSourceContext.xml"
-})
+// TODO MVR this can be removed from my point of view
+//@ContextConfiguration(locations={
+//        "classpath:/testForeignSourceContext.xml"
+//})
 @JUnitConfigurationEnvironment
 public abstract class ForeignSourceRepositoryTestCase implements InitializingBean {
     @Override

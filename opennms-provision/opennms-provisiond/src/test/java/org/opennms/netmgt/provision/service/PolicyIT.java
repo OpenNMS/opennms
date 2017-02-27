@@ -50,10 +50,10 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,7 @@ public class PolicyIT {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
+        final ForeignSourceService mfsr = new MockForeignSourceService();
         final OnmsForeignSource fs = new OnmsForeignSource();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
@@ -121,7 +121,8 @@ public class PolicyIT {
         fs.addPolicy(policy2);
 
         mfsr.putDefaultForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
+        m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
     }
 
     @Test

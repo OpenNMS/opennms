@@ -46,6 +46,8 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.servlet.MissingParameterException;
@@ -120,16 +122,11 @@ public class NodeLabelChangeServlet extends HttpServlet {
             final String newNodeLabel = newLabel.getLabel();
             boolean managedByProvisiond = node.getForeignSource() != null && node.getForeignId() != null;
             if (managedByProvisiond) {
-                // TODO MVR make this work, but this does not make sense at all ...
-//                WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-//                final TransactionTemplate transactionTemplate = beanFactory.getBean(TransactionTemplate.class);
-//                final RequisitionAccessService requisitionService = beanFactory.getBean(RequisitionAccessService.class);
-//                transactionTemplate.execute(status -> {
-//                    MultivaluedMap<String, String> params = new MultivaluedHashMap<String, String>();
-//                    params.putSingle("node-label", newNodeLabel);
-//                    requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
-//                    return requisitionService.getNode(node.getForeignSource(), node.getForeignId());
-//                });
+                WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+                final RequisitionService requisitionService = beanFactory.getBean(RequisitionService.class);
+                OnmsRequisitionNode requisitionNode = requisitionService.getRequisition(node.getForeignSource()).getNode(node.getForeignId());
+                requisitionNode.setNodeLabel(newNodeLabel);
+                requisitionService.saveOrUpdateNode(requisitionNode);
             }
 
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);

@@ -38,7 +38,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.joda.time.Duration;
 import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.LegacyForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class EditForeignSourceController {
     public static final String COMMAND_NAME = "foreignSourceEditForm";
 
     @Autowired
-    private ForeignSourceService m_foreignSourceService;
+    private LegacyForeignSourceService m_foreignSourceService;
 
     //private static final Map<String,Set<String>> m_pluginParameters = new HashMap<String,Set<String>>();
 

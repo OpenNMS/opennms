@@ -51,8 +51,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,12 +97,13 @@ public class Nms5414IT extends ProvisioningITCase {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final MockForeignSourceRepository mfsr = new MockForeignSourceRepository();
+        final ForeignSourceService mfsr = new MockForeignSourceService();
         final OnmsForeignSource fs = new OnmsForeignSource();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         mfsr.putDefaultForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
+        m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
     }
 
     @Test

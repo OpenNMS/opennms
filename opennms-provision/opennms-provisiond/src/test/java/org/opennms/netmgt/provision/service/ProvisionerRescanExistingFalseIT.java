@@ -57,12 +57,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,8 +118,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
 
     protected EventAnticipator m_eventAnticipator;
 
-    private ForeignSourceRepository m_foreignSourceRepository;
-
     private OnmsForeignSource m_foreignSource;
 
     @Override
@@ -157,10 +154,11 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         snmpDetector.addParameter("retries", "0");
 		m_foreignSource.addDetector(snmpDetector);
 
-        m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.save(m_foreignSource);
+        ForeignSourceService foreignSourceService = new MockForeignSourceService();
+        foreignSourceService.saveForeignSource(m_foreignSource);
 
-        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+        m_provisionService.setForeignSourceService(foreignSourceService);
+        m_provisionService.setRequisitionService(new MockRequisitionService());
         
         m_scheduledExecutor.pause();
     }

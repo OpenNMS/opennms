@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -72,6 +73,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
     /** The foreign source service. */
     @Autowired
+    @Qualifier("default")
     protected ForeignSourceService m_foreignSourceService;
 
     /** The provisioning service. */

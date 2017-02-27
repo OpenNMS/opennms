@@ -47,7 +47,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;

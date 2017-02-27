@@ -36,7 +36,7 @@ import org.opennms.netmgt.model.requisition.OnmsRequisition;
 /**
  * This should not be used anymore and is deprecated.
  *
- * @deprecated Use {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} instead for now.
+ * @deprecated Use {@link org.opennms.netmgt.provision.persist.ForeignSourceService} or {@link org.opennms.netmgt.provision.persist.RequisitionService} instead for now.
  */
 @Deprecated
 public interface ManualProvisioningService {

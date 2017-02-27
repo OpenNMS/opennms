@@ -35,7 +35,7 @@ import java.util.TreeSet;
 
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.LegacyForeignSourceService;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,7 +57,7 @@ public class ProvisioningGroupsController {
     private ManualProvisioningService m_provisioningService;
 
     @Autowired
-    private ForeignSourceService m_foreignSourceService;
+    private LegacyForeignSourceService m_foreignSourceService;
 
     public static class GroupAction {
         private String m_groupName;

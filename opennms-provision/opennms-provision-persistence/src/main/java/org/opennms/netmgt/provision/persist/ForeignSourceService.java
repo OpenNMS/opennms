@@ -36,31 +36,25 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
 
 public interface ForeignSourceService {
 
-    void setDeployedForeignSourceRepository(ForeignSourceRepository repo);
+    String DEFAULT_FOREIGNSOURCE_NAME = "default";
 
-    void setPendingForeignSourceRepository(ForeignSourceRepository repo);
+    Set<String> getActiveForeignSourceNames();
+
+    int getForeignSourceCount();
 
     Set<OnmsForeignSource> getAllForeignSources();
 
     OnmsForeignSource getForeignSource(String name);
 
-    OnmsForeignSource saveForeignSource(String name, OnmsForeignSource fs);
+    void saveForeignSource(OnmsForeignSource foreignSource);
 
-    OnmsForeignSource cloneForeignSource(String name, String target);
+    OnmsForeignSource getDefaultForeignSource();
+
+    void putDefaultForeignSource(OnmsForeignSource foreignSource);
+
+    void resetDefaultForeignSource();
 
     void deleteForeignSource(String name);
-
-    OnmsForeignSource deletePath(String foreignSourceName, String dataPath);
-
-    OnmsForeignSource addParameter(String foreignSourceName, String dataPath);
-
-    OnmsForeignSource addDetectorToForeignSource(String foreignSource, String name);
-
-    OnmsForeignSource deleteDetector(String foreignSource, String name);
-
-    OnmsForeignSource addPolicyToForeignSource(String foreignSource, String name);
-
-    OnmsForeignSource deletePolicy(String foreignSource, String name);
 
     Map<String,String> getDetectorTypes();
 

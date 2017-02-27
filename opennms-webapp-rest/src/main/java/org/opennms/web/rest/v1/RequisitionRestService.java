@@ -54,14 +54,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
-import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -76,7 +76,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
-import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,13 +140,7 @@ public class RequisitionRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionRestService.class);
 
     @Autowired
-    private RequisitionAccessService m_accessService;
-
-    @Autowired
-    private ForeignSourceRepositoryFactory m_foreignSourceRepositoryFactory;
-
-    @Autowired
-    private GenericPersistenceAccessor persistenceAccessor;
+    private RequisitionService requisitionService;
 
     /**
      * get a plain text numeric string of the number of deployed requisitions
@@ -158,7 +151,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
     public String getDeployedCount() {
-        return Integer.toString(m_accessService.getDeployedCount());
+        return Integer.toString(requisitionService.getDeployedCount());
     }
 
     /**
@@ -170,7 +163,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("deployed/stats")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public DeployedStats getDeployedStats() {
-        return m_accessService.getDeployedStats();
+        return requisitionService.getDeployedStats();
     }
 
     /**
@@ -182,19 +175,22 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("deployed/stats/{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public DeployedRequisitionStats getDeployedStats(@PathParam("foreignSource") final String foreignSource) {
-        return m_accessService.getDeployedStats(foreignSource);
+        return requisitionService.getDeployedStats(foreignSource);
     }
 
     /**
      * get a plain text with the current selected foreign source repository strategy
-     * 
+     *
      * @return the current strategy.
      */
     @GET
     @Path("repositoryStrategy")
     @Produces(MediaType.TEXT_PLAIN)
     public String getForeignSourceRepositoryStrategy() {
-        return m_foreignSourceRepositoryFactory.getRepositoryStrategy().toString();
+        // TODO MVR decide what to do
+        // This is no longer configurable.
+        // We may remove this resource after all
+        return "database";
     }
 
     /**
@@ -221,7 +217,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCollection getRequisitions() throws ParseException {
         return new RequisitionCollection(
-                m_accessService.getRequisitions().stream()
+                requisitionService.getRequisitions().stream()
                         .map(r -> toRestModel(r))
                         .collect(Collectors.toList()));
     }
@@ -441,7 +437,6 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceRequisition(@Context final UriInfo uriInfo, final Requisition requisition) {
         try {
             requisition.validate();
@@ -451,14 +446,7 @@ public class RequisitionRestService extends OnmsRestService {
         }
 
         debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
-
-        // Remove existing requisition and persist afterwards
-        OnmsRequisition persistedRequisition = m_accessService.getRequisition(requisition.getForeignSource());
-        if (persistedRequisition != null) {
-            m_accessService.deleteRequisition(persistedRequisition.getForeignSource());
-        }
-        persistedRequisition = toPersistenceModel(requisition);
-        m_accessService.save(persistedRequisition); // TODO MVR name it save
+        requisitionService.saveOrUpdateRequisition(toPersistenceModel(requisition));
         return Response.accepted().header("Location", getRedirectUri(uriInfo, requisition.getForeignSource())).build();
     }
 
@@ -472,18 +460,12 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Path("{foreignSource}/nodes")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, RequisitionNode node) {
         debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
 
-        OnmsRequisition requisition = loadRequisition(foreignSource);
-        OnmsRequisitionNode persistedNode = requisition.getNode(node.getForeignId());
-        if (persistedNode != null) {
-            requisition.removeNode(persistedNode);
-            persistenceAccessor.delete(persistedNode);
-        }
-        requisition.addNode(toPersistenceModel(node));
-        m_accessService.save(requisition);
+        // TODO MVR move to service layer
+        final OnmsRequisition persistedRequisition = loadRequisition(foreignSource);
+        requisitionService.saveOrUpdateNode(persistedRequisition, toPersistenceModel(node));
         return Response.accepted().header("Location", getRedirectUri(uriInfo, node.getForeignId())).build();
     }
 
@@ -498,19 +480,11 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
         debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
 
-        OnmsRequisitionNode node = loadNode(foreignSource, foreignId);
-        OnmsRequisitionInterface entity = node.getInterface(iface.getIpAddr());
-        if (entity != null) {
-            node.removeInterface(entity);
-            persistenceAccessor.delete(entity);
-        }
-        entity = toPersistenceModel(iface);
-        node.addInterface(entity);
-        m_accessService.save(node.getRequisition());
+        final OnmsRequisitionNode parentNode = loadNode(foreignSource, foreignId);
+        requisitionService.saveOrUpdateInterface(parentNode, toPersistenceModel(iface));
         return Response.accepted().header("Location", getRedirectUri(uriInfo, iface.getIpAddr())).build();
     }
 
@@ -526,19 +500,11 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceService(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
         debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
 
-        OnmsRequisitionInterface iface = loadInterface(foreignSource, foreignId, ipAddress);
-        OnmsRequisitionMonitoredService persistedEntity = iface.getMonitoredService(service.getServiceName());
-        if (persistedEntity != null) {
-            iface.removeMonitoredService(persistedEntity);
-            persistenceAccessor.delete(persistedEntity);
-        }
-        persistedEntity = toPersistenceModel(service);
-        iface.addMonitoredService(persistedEntity);
-        m_accessService.save(persistedEntity.getIpInterface().getNode().getRequisition());
+        OnmsRequisitionInterface persistedInterface = loadInterface(foreignSource, foreignId, ipAddress);
+        requisitionService.saveOrUpdateService(persistedInterface, toPersistenceModel(service));
         return Response.accepted().header("Location", getRedirectUri(uriInfo, service.getServiceName())).build();
     }
 
@@ -553,13 +519,12 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/categories")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceNodeCategory(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
         debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
 
         OnmsRequisitionNode requisitionNode = loadNode(foreignSource, foreignId);
         requisitionNode.addCategory(category.getName());
-        m_accessService.save(requisitionNode.getRequisition());
+        requisitionService.saveOrUpdateRequisition(requisitionNode.getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo, category.getName())).build();
     }
 
@@ -574,13 +539,12 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/assets")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response addOrReplaceNodeAssetParameter(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
         debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
 
         OnmsRequisitionNode requisitionNode = loadNode(foreignSource, foreignId);
         requisitionNode.addAsset(asset.getName(), asset.getValue());
-        m_accessService.save(requisitionNode.getRequisition());
+        requisitionService.saveOrUpdateRequisition(requisitionNode.getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo, asset.getName())).build();
     }
 
@@ -592,11 +556,13 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @PUT
     @Path("{foreignSource}/import")
-    @Transactional
     public Response importRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
         debug("importRequisition: Importing requisition for foreign source %s", foreignSource);
-        m_accessService.importRequisition(foreignSource, rescanExisting);
-        return Response.accepted().header("Location", uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
+        ImportRequest importRequest = new ImportRequest("Web").withRescanExisting(rescanExisting).withForeignSource(foreignSource);
+        requisitionService.triggerImport(importRequest);
+        return Response.accepted().header("Location", uriInfo.getBaseUriBuilder()
+                .path(this.getClass()).path(this.getClass(), "getRequisition")
+                .build(importRequest.getForeignSource())).build();
     }
 
     /**
@@ -609,13 +575,11 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
+    // TODO MVR make deprecated use saveOrReplaceRequisition instead
     public Response updateRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
-        // TODO MVR implement update....
-//        final Requisition requisition = toRestModel(loadRequisition(foreignSource));
-//        updateRequisition(requisition, params);
-//        final OnmsRequisition mergedRequisition = transformToPersistenceModel(requisition);
-//        m_accessService.addOrReplaceRequisition(mergedRequisition);
+        final Requisition requisition = toRestModel(loadRequisition(foreignSource));
+        updateRequisition(requisition, params);
+        requisitionService.saveOrUpdateRequisition(toPersistenceModel(requisition));
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -630,13 +594,11 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
+    // TODO MVR make deprecated use saveOrReplaceNode instead
     public Response updateNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
-        // TODO MVR implement update....
-//        RequisitionNode node = toRestModel(loadNode(foreignSource, foreignId));
-//        updateNode(foreignSource, node, params);
-//        OnmsRequisitionNode mergedNode = transformToPersistenceModel(foreignSource, node);
-//        m_accessService.addOrReplaceNode(foreignSource, mergedNode);
+        RequisitionNode node = toRestModel(loadNode(foreignSource, foreignId));
+        updateNode(foreignSource, node, params);
+        requisitionService.saveOrUpdateNode(loadRequisition(foreignSource), toPersistenceModel(node));
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -652,13 +614,11 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
+    // TODO MVR make deprecated use saveOrReplaceNode instead
     public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
-        // TODO MVR implement update....
-//        RequisitionInterface iface = toRestModel(loadInterface(foreignSource, foreignId, ipAddress));
-//        updateInterface(foreignSource, foreignId, iface, params);
-//        OnmsRequisitionInterface mergedInterface = transformToPersistenceModel(foreignSource, foreignId, iface);
-//        m_accessService.addOrReplaceInterface(foreignSource, foreignId, mergedInterface);
+        RequisitionInterface iface = toRestModel(loadInterface(foreignSource, foreignId, ipAddress));
+        updateInterface(foreignSource, foreignId, iface, params);
+        requisitionService.saveOrUpdateInterface(loadNode(foreignSource, foreignId), toPersistenceModel(iface));
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -670,10 +630,9 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}")
-    @Transactional
     public Response deletePendingRequisition(@PathParam("foreignSource") final String foreignSource) {
         // TODO MVR before this was "deletePendingRequisition" but there is no pending anymore, what should we do about it?
-        m_accessService.deleteRequisition(foreignSource);
+        requisitionService.deleteRequisition(foreignSource);
         return Response.accepted().build();
     }
 
@@ -685,9 +644,8 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("deployed/{foreignSource}")
-    @Transactional
     public Response deleteDeployedRequisition(@PathParam("foreignSource") final String foreignSource) {
-        m_accessService.deleteRequisition(foreignSource);
+        requisitionService.deleteRequisition(foreignSource);
         return Response.accepted().build();
     }
 
@@ -700,11 +658,10 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}")
-    @Transactional
     public Response deleteNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) {
         OnmsRequisitionNode node = loadNode(foreignSource, foreignId);
         node.getRequisition().removeNode(node);
-        m_accessService.save(node.getRequisition());
+        requisitionService.saveOrUpdateRequisition(node.getRequisition());
         return Response.accepted().build();
     }
 
@@ -718,11 +675,10 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
-    @Transactional
     public Response deleteInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") String ipAddress) {
         OnmsRequisitionInterface iface = loadInterface(foreignSource, foreignId, ipAddress);
         iface.getNode().removeInterface(iface);
-        m_accessService.save(iface.getNode().getRequisition());
+        requisitionService.saveOrUpdateRequisition(iface.getNode().getRequisition());
         return Response.accepted().build();
     }
 
@@ -737,11 +693,10 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
-    @Transactional
     public Response deleteInterfaceService(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") final String service) {
         OnmsRequisitionMonitoredService entity = loadService(foreignSource, foreignId, ipAddress, service);
         entity.getIpInterface().removeMonitoredService(entity);
-        m_accessService.save(entity.getIpInterface().getNode().getRequisition());
+        requisitionService.saveOrUpdateRequisition(entity.getIpInterface().getNode().getRequisition());
         return Response.accepted().build();
     }
 
@@ -755,11 +710,10 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
-    @Transactional
     public Response deleteCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) {
         OnmsRequisitionNode node = loadNode(foreignSource, foreignId);
         node.removeCategory(category);
-        m_accessService.save(node.getRequisition());
+        requisitionService.saveOrUpdateRequisition(node.getRequisition());
         return Response.accepted().build();
     }
 
@@ -773,11 +727,10 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
-    @Transactional
     public Response deleteAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) {
         OnmsRequisitionNode node = loadNode(foreignSource, foreignId);
         node.getAssets().remove(parameter);
-        m_accessService.save(node.getRequisition());
+        requisitionService.saveOrUpdateRequisition(node.getRequisition());
         return Response.accepted().build();
     }
 
@@ -786,7 +739,7 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     private OnmsRequisition loadRequisition(String foreignSource) {
-        OnmsRequisition requisition = m_accessService.getRequisition(foreignSource);
+        OnmsRequisition requisition = requisitionService.getRequisition(foreignSource);
         if (requisition == null) {
             throw getException(Status.NOT_FOUND, "Requisition '{}' not found.", foreignSource);
         }

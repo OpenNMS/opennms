@@ -51,8 +51,9 @@ import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.RequisitionService;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,8 +80,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private MessageConsumerManager messageConsumerManager;
 
     @Autowired
-    @Qualifier("deployed") // TODO MVR replace all @Qualifier("deployed") with @Qualifier("database") or use @Qualifier("deployed") instead (-:
-    private ForeignSourceRepository deployedForeignSourceRepository;
+    private RequisitionService requisitionService;
+
+    @Autowired
+    @Qualifier("default")
+    private ForeignSourceService foreignSourceService;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -167,30 +171,30 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         // Remove the node from the previous requisition, if location has changed
         if (!Objects.equals(prevForeignSource, nextForeignSource)) {
-            final OnmsRequisition prevRequisition = this.deployedForeignSourceRepository.getRequisition(prevForeignSource);
+            final OnmsRequisition prevRequisition = this.requisitionService.getRequisition(prevForeignSource);
             if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
                 prevRequisition.removeNode(minion.getId());
                 prevRequisition.updateLastUpdated();
 
-                deployedForeignSourceRepository.save(prevRequisition);
+                requisitionService.saveOrUpdateRequisition(prevRequisition);
 
                 alteredForeignSources.add(prevForeignSource);
             }
         }
 
-        OnmsRequisition nextRequisition = deployedForeignSourceRepository.getRequisition(nextForeignSource);
+        OnmsRequisition nextRequisition = requisitionService.getRequisition(nextForeignSource);
         if (nextRequisition == null) {
             nextRequisition = new OnmsRequisition(nextForeignSource);
             nextRequisition.updateLastUpdated();
 
             // We have to save the requisition before we can alter the according foreign source definition
-            deployedForeignSourceRepository.save(nextRequisition);
+            requisitionService.saveOrUpdateRequisition(nextRequisition);
 
             // Remove all policies and detectors from the foreign source
-            final OnmsForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
+            final OnmsForeignSource foreignSource = foreignSourceService.getForeignSource(nextForeignSource);
             foreignSource.setDetectors(Collections.emptyList());
             foreignSource.setPolicies(Collections.emptyList());
-            deployedForeignSourceRepository.save(foreignSource);
+            foreignSourceService.saveForeignSource(foreignSource);
 
             alteredForeignSources.add(nextForeignSource);
         }
@@ -214,13 +218,13 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
             nextRequisition.addNode(requisitionNode);
             nextRequisition.setLastUpdate(new Date());
-            deployedForeignSourceRepository.save(nextRequisition);
+            requisitionService.saveOrUpdateRequisition(nextRequisition);
 
             alteredForeignSources.add(nextForeignSource);
         }
 
         for (final String alteredForeignSource : alteredForeignSources) {
-            deployedForeignSourceRepository.triggerImport(
+            requisitionService.triggerImport(
                     new ImportRequest("Web").withForeignSource(alteredForeignSource));
         }
     }

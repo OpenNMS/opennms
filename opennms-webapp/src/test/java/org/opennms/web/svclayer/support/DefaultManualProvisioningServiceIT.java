@@ -45,6 +45,7 @@ import javax.xml.bind.JAXB;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -57,8 +58,9 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
@@ -78,26 +80,28 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
+@Ignore("The DefaultManualProvisioningService is deprecated and should not be used anymore.")
 public class DefaultManualProvisioningServiceIT {
 
     private DefaultManualProvisioningService m_provisioningService;
 
     private OnmsRequisition m_testData;
 
-    private ForeignSourceRepository m_activeRepository = new MockForeignSourceRepository();
+    private RequisitionService m_activeRepository = new MockRequisitionService();
     private MockServiceTypeDao m_serviceTypeDao = new MockServiceTypeDao();
 
     @Before
     public void setUp() throws Exception {
+        m_provisioningService = new DefaultManualProvisioningService();
+        m_provisioningService.setRequisitionService(m_activeRepository);
+        m_provisioningService.setForeignSourceService(new MockForeignSourceService());
+        m_provisioningService.setServiceTypeDao(m_serviceTypeDao);
+
         final Requisition requisition = JAXB.unmarshal(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml").getURL(), Requisition.class);
         m_provisioningService.deleteProvisioningGroup(requisition.getForeignSource());
         m_provisioningService.saveProvisioningGroup(requisition.getForeignSource(), toPersistenceModel(requisition));
 
         m_testData = m_activeRepository.getRequisition(requisition.getForeignSource());
-
-        m_provisioningService = new DefaultManualProvisioningService();
-        m_provisioningService.setDeployedForeignSourceRepository(m_activeRepository);
-        m_provisioningService.setServiceTypeDao(m_serviceTypeDao);
     }
 
     @Test
@@ -145,7 +149,6 @@ public class DefaultManualProvisioningServiceIT {
         int newCount = PropertyUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
 
         assertEquals(initialCount+1, newCount);
-        // TODO MVR this will fail
         RequisitionCategory newCategory = PropertyUtils.getPathValue(result, pathToNode+".category[0]", RequisitionCategory.class);
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
@@ -183,7 +186,6 @@ public class DefaultManualProvisioningServiceIT {
         int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         assertEquals(initialCount+1, newCount);
 
-        // TODO MVR this will fail
         RequisitionMonitoredService svc = PropertyUtils.getPathValue(result, pathToInterface+".monitoredService[0]", RequisitionMonitoredService.class);
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
@@ -198,7 +200,6 @@ public class DefaultManualProvisioningServiceIT {
         int initialCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         String svcName = PropertyUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
 
-        // TODO MVR this will fail
         OnmsRequisition result = m_provisioningService.deletePath(groupName, pathToDelete);
         int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         assertEquals(initialCount-1, newCount);

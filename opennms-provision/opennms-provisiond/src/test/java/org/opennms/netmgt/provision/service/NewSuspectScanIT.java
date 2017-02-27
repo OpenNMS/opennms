@@ -68,13 +68,13 @@ import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
 import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockForeignSourceService;
+import org.opennms.netmgt.provision.persist.MockRequisitionService;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +138,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
     @Autowired
     private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
-    private ForeignSourceRepository m_foreignSourceRepository;
+    private RequisitionService m_requisitionService;
 
     private OnmsForeignSource m_foreignSource;
 
@@ -177,10 +177,12 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         detector.addParameter("retries", "0");
         m_foreignSource.addDetector(detector);
 
-        m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.putDefaultForeignSource(m_foreignSource);
+        ForeignSourceService foreignSourceService = new MockForeignSourceService();
+        foreignSourceService.putDefaultForeignSource(m_foreignSource);
+        m_provisionService.setForeignSourceService(foreignSourceService);
 
-        m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+        m_requisitionService = new MockRequisitionService();
+        m_provisionService.setRequisitionService(m_requisitionService);
 
         m_provisioner.start();
     }
@@ -361,7 +363,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
         // HZN-960: Verify that the location name was properly set on the node in the requisition
-        final OnmsRequisition requisition = m_foreignSourceRepository.getRequisition(foreignSource);
+        final OnmsRequisition requisition = m_requisitionService.getRequisition(foreignSource);
         final List<OnmsRequisitionNode> requisitionNodes = requisition.getNodes();
         assertEquals(1, requisitionNodes.size());
 

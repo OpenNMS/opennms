@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

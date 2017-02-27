@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Objects;
 

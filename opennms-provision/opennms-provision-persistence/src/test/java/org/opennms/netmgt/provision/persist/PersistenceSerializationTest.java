@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
     private List<OnmsForeignSource> fsw = new ArrayList<>();
-    private MockForeignSourceRepository fsr;
+    private MockForeignSourceService fsr;
     private Marshaller m;
     private JAXBContext c;
     private OnmsForeignSource fs;
@@ -89,8 +89,8 @@ public class PersistenceSerializationTest {
 
         fa = new FileAnticipator();
 
-        fsr = new MockForeignSourceRepository();
-        fsr.save(new OnmsForeignSource("cheese"));
+        fsr = new MockForeignSourceService();
+        fsr.saveForeignSource(new OnmsForeignSource("cheese"));
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
@@ -120,7 +120,7 @@ public class PersistenceSerializationTest {
         fs.setPolicies(policies);
 
         fsw.clear();
-        fsw.addAll(fsr.getForeignSources());
+        fsw.addAll(fsr.getAllForeignSources());
         c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
         m = c.createMarshaller();
 

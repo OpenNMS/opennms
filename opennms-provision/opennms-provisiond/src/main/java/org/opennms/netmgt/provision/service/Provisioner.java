@@ -59,7 +59,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.RequisitionImportContext;

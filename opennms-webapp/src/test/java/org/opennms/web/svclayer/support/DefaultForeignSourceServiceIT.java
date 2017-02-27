@@ -34,18 +34,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.provision.persist.DefaultForeignSourceService;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,20 +59,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultForeignSourceServiceIT {
 
     @Autowired
-    @Qualifier("database")
-    private ForeignSourceRepository repository;
-
     private ForeignSourceService m_service;
-
-    @Before
-    public void setUp() {
-        m_service = new DefaultForeignSourceService();
-        m_service.setDeployedForeignSourceRepository(repository);
-    }
 
     @Test
     public void integrationTest() throws Exception {
-        assertTrue(repository.getForeignSources().isEmpty());
+        assertTrue(m_service.getAllForeignSources().isEmpty());
 
         assertEquals(0, m_service.getAllForeignSources().size());
 
@@ -88,14 +75,15 @@ public class DefaultForeignSourceServiceIT {
 
         // modify it and save
         fs.setDetectors(new ArrayList<>());
-        m_service.saveForeignSource("test", fs);
+        m_service.saveForeignSource(fs);
 
         // now it shouln't be marked as default, since we've saved a modified version
         fs = m_service.getForeignSource("test");
         assertFalse(fs.isDefault());
 
         // we like it so much, let's make it the default!
-        m_service.saveForeignSource("default", fs);
+        fs.setName("default");
+        m_service.saveForeignSource(fs);
         fs = m_service.getForeignSource("monkey");
         assertTrue(fs.isDefault());
     }

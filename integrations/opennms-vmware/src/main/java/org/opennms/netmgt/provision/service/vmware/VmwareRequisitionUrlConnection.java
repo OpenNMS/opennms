@@ -54,11 +54,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
@@ -1007,10 +1005,10 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         Requisition curReq = null;
         try {
             // TODO MVR danach suchen ...
-            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-            if (repository != null) {
-                // curReq = repository.getRequisition(m_foreignSource); // TODO MVR implement/FIX me
-            }
+//            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
+//            if (repository != null) {
+//                 curReq = repository.getRequisition(m_foreignSource); // TODO MVR implement/FIX me
+//            }
         } catch (Exception e) {
             logger.warn("Can't retrieve requisition {}", m_foreignSource);
         }

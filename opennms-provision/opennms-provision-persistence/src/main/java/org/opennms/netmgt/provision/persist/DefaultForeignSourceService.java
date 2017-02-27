@@ -28,30 +28,34 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.Collections;
+import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toPersistenceModel;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.ForeignSourceDao;
 import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 
 public class DefaultForeignSourceService implements ForeignSourceService, InitializingBean {
     
@@ -61,8 +65,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     private ServiceRegistry m_serviceRegistry;
     
     @Autowired
-    @Qualifier("database")
-    private ForeignSourceRepository m_foreignSourceRepository;
+    protected ForeignSourceDao foreignSourceDao;
     
     private static Map<String,String> m_detectors;
     private static Map<String,String> m_policies;
@@ -74,142 +77,62 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     @Override
-    public void setDeployedForeignSourceRepository(ForeignSourceRepository repo) {
-        m_foreignSourceRepository = repo;
+    public Set<String> getActiveForeignSourceNames() {
+        return getAllForeignSources().stream().map(fs -> fs.getName()).collect(Collectors.toSet());
     }
 
     @Override
-    public void setPendingForeignSourceRepository(ForeignSourceRepository repo) {
-        throw new UnsupportedOperationException("määäh"); // TODO MVR ...
+    public int getForeignSourceCount() {
+        return foreignSourceDao.countAll();
     }
 
     @Override
     public Set<OnmsForeignSource> getAllForeignSources() {
-        return Collections.unmodifiableSet(m_foreignSourceRepository.getForeignSources());
+        return new HashSet<>(foreignSourceDao.findAll());
     }
 
     @Override
     public OnmsForeignSource getForeignSource(String name) {
-        return m_foreignSourceRepository.getForeignSource(name);
+        return foreignSourceDao.get(name);
     }
 
     @Override
-    public OnmsForeignSource saveForeignSource(String name, OnmsForeignSource fs) {
-        normalizePluginConfigs(fs);
-        m_foreignSourceRepository.save(fs);
-        return fs;
+    public void saveForeignSource(OnmsForeignSource foreignSource) {
+        validate(foreignSource);
+        normalizePluginConfigs(foreignSource);
+        foreignSource.updateDateStamp();
+        foreignSourceDao.save(foreignSource);
+    }
+
+    @Override
+    public OnmsForeignSource getDefaultForeignSource() {
+        OnmsForeignSource defaultForeignSource = foreignSourceDao.get(DEFAULT_FOREIGNSOURCE_NAME);
+        if (defaultForeignSource != null) {
+            return defaultForeignSource;
+        }
+        // No default foreign source exists in the database, load from disk
+        ForeignSource foreignSource = JaxbUtils.unmarshal(ForeignSource.class, new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml"));
+        foreignSource.setDefault(true);
+        return toPersistenceModel(foreignSource);
+    }
+
+    @Override
+    public void putDefaultForeignSource(OnmsForeignSource foreignSource) {
+        foreignSource.setName(DEFAULT_FOREIGNSOURCE_NAME); // overwrite name
+        foreignSource.setDefault(true);
+        saveForeignSource(foreignSource);
+    }
+
+    @Override
+    public void resetDefaultForeignSource() {
+        foreignSourceDao.delete(DEFAULT_FOREIGNSOURCE_NAME);
     }
 
     @Override
     public void deleteForeignSource(String name) {
-        if (name.equals(ForeignSourceRepository.DEFAULT_FOREIGNSOURCE_NAME)) {
-            m_foreignSourceRepository.resetDefaultForeignSource();
-            m_foreignSourceRepository.resetDefaultForeignSource();
-        } else {
-            OnmsForeignSource fs = getForeignSource(name);
-            m_foreignSourceRepository.delete(fs);
-        }
+        foreignSourceDao.delete(name);
     }
 
-    @Override
-    public OnmsForeignSource cloneForeignSource(String name, String target) {
-        OnmsForeignSource fs = getForeignSource(name);
-        fs.setDefault(false);
-        fs.setName(target);
-        m_foreignSourceRepository.save(fs); // TODO MVR verify that this clones the foreign source
-        return m_foreignSourceRepository.getForeignSource(target);
-    }
-
-    @Override
-    public OnmsForeignSource addParameter(String foreignSourceName, String pathToAdd) {
-
-//        OnmsForeignSource fs = getForeignSource(foreignSourceName);
-//        PropertyPath path = new PropertyPath(pathToAdd);
-//        Object obj = path.getValue(fs);
-//
-//        try {
-//            MethodUtils.invokeMethod(obj, "addParameter", new Object[] { "key", "value" });
-//        } catch (NoSuchMethodException e) {
-//            throw new IllegalArgumentException("Unable to call addParameter on object of type " + obj.getClass(), e);
-//        } catch (IllegalAccessException e) {
-//            throw new IllegalArgumentException("unable to access property "+pathToAdd, e);
-//        } catch (InvocationTargetException e) {
-//            throw new IllegalArgumentException("an execption occurred adding a parameter to "+pathToAdd, e);
-//        }
-//
-//        m_pendingForeignSourceRepository.save(fs);
-//        return fs;
-        // TODO MVR implement me
-        return null;
-    }
-
-    @Override
-    public OnmsForeignSource deletePath(String foreignSourceName, String pathToDelete) {
-//        ForeignSource fs = getForeignSource(foreignSourceName);
-//        PropertyPath path = new PropertyPath(pathToDelete);
-//
-//        Object objToDelete = path.getValue(fs);
-//        Object parentObject = path.getParent() == null ? fs : path.getParent().getValue(fs);
-//
-//        String propName = path.getPropertyName();
-//        String methodSuffix = Character.toUpperCase(propName.charAt(0))+propName.substring(1);
-//        String methodName = "delete"+methodSuffix;
-//
-//        try {
-//            MethodUtils.invokeMethod(parentObject, methodName, new Object[] { objToDelete });
-//        } catch (NoSuchMethodException e) {
-//            throw new IllegalArgumentException("Unable to find method "+methodName+" on object of type "+parentObject.getClass()+" with argument " + objToDelete, e);
-//        } catch (IllegalAccessException e) {
-//            throw new IllegalArgumentException("unable to access property "+pathToDelete, e);
-//        } catch (InvocationTargetException e) {
-//            throw new IllegalArgumentException("an execption occurred deleting "+pathToDelete, e);
-//        }
-//
-//        m_pendingForeignSourceRepository.save(fs);
-//        return fs;
-        // TODO MVR implement me
-        return null;
-    }
-
-    @Override
-    public OnmsForeignSource addDetectorToForeignSource(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        DetectorPluginConfig pc = new DetectorPluginConfig(name, "unknown");
-        fs.addDetector(pc);
-        m_foreignSourceRepository.save(fs);
-        return fs;
-    }
-
-    @Override
-    public OnmsForeignSource deleteDetector(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        fs.removeDetector(name);
-        m_foreignSourceRepository.save(fs);
-        return fs;
-    }
-    
-    @Override
-    public OnmsForeignSource addPolicyToForeignSource(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        PolicyPluginConfig pc = new PolicyPluginConfig(name, "unknown");
-        fs.addPolicy(pc);
-        m_foreignSourceRepository.save(fs);
-        return fs;
-    }
-
-    @Override
-    public OnmsForeignSource deletePolicy(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        fs.removePolicy(name);
-        m_foreignSourceRepository.save(fs);
-        return fs;
-    }
-
-    /**
-     * <p>getDetectorTypes</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
     @Override
     public Map<String, String> getDetectorTypes() {
         if (m_detectors == null) {
@@ -227,7 +150,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 detectors.put(serviceName, className);
             }
 
-            m_detectors = new LinkedHashMap<String,String>();
+            m_detectors = new LinkedHashMap<>();
             for (Entry<String,String> e : detectors.entrySet()) {
                 m_detectors.put(e.getValue(), e.getKey());
             }
@@ -235,11 +158,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
         return m_detectors;
     }
-    /**
-     * <p>getPolicyTypes</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
+
     @Override
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
@@ -255,7 +174,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 policies.put(policyName, p.getClass().getName());
             }
 
-            m_policies = new LinkedHashMap<String,String>();
+            m_policies = new LinkedHashMap<>();
             for (Entry<String,String> e : policies.entrySet()) {
                 m_policies.put(e.getValue(), e.getKey());
             }
@@ -264,11 +183,6 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return m_policies;
     }
 
-    /**
-     * <p>getWrappers</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
     @Override
     public Map<String,PluginWrapper> getWrappers() {
         if (m_wrappers == null && m_policies != null && m_detectors != null) {
@@ -320,6 +234,11 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 }
             }
         }
+    }
+
+    private void validate(OnmsForeignSource foreignSource) {
+        // TODO MVR
+//        throw new UnsupportedOperationException("TODO MVR implement me");
     }
 
 }

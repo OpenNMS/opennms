@@ -32,18 +32,22 @@
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.Map,
   java.util.TreeMap,
-  org.opennms.web.api.Util,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
-  org.opennms.netmgt.config.discovery.*,
-  org.opennms.netmgt.dao.api.*,
-  org.opennms.netmgt.model.monitoringLocations.*,
-  org.springframework.web.context.WebApplicationContext,
-  org.springframework.web.context.support.WebApplicationContextUtils,
-  org.opennms.web.svclayer.api.RequisitionAccessService,
-  org.opennms.web.admin.discovery.DiscoveryServletConstants,
-  org.opennms.web.admin.discovery.ActionDiscoveryServlet"
+  org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
+  org.opennms.netmgt.config.discovery.ExcludeRange,
+  org.opennms.netmgt.config.discovery.IncludeRange,
+  org.opennms.netmgt.config.discovery.IncludeUrl,
+  org.opennms.netmgt.config.discovery.Specific,
+  org.opennms.netmgt.dao.api.MonitoringLocationDao,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
+  org.opennms.netmgt.model.requisition.OnmsRequisition,
+  org.opennms.netmgt.provision.persist.RequisitionService"
 %>
-<%@ page import="org.opennms.netmgt.model.requisition.OnmsRequisition" %>
+<%@ page import="org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@ page import="org.opennms.web.admin.discovery.DiscoveryServletConstants" %>
+<%@ page import="org.opennms.web.api.Util" %>
+<%@ page import="org.springframework.web.context.WebApplicationContext" %>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -148,7 +152,7 @@ for (OnmsMonitoringLocation location : locationDao.findAll()) {
 }
 
 // Map of primary key to label (which in this case are the same too)
-RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+RequisitionService reqAccessService = context.getBean(RequisitionService.class);
 Map<String,String> foreignsources = new TreeMap<String,String>();
 for (OnmsRequisition requisition : reqAccessService.getRequisitions()) {
   foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());

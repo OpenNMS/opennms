@@ -124,7 +124,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="importFileDirectory" value="${importer.requisition.dir}"/>
   </bean>
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+    <!--<property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>--> <!-- TODO MVR -->
     <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
@@ -132,8 +132,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="pollerConfig" ref="pollerConfig"/>
   </bean>
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
+    <qualifier value="default"/>
       <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
-      <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+      <!--<property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/> --> <!-- TODO MVR -->
   </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
@@ -279,6 +280,5 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
-  <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

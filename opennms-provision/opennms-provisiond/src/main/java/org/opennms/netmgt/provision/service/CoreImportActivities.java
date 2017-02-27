@@ -38,8 +38,8 @@ import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.requisition.OnmsRequisition;
 import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ImportRequest;
+import org.opennms.netmgt.provision.persist.RequisitionService;
+import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -50,7 +50,6 @@ import org.opennms.netmgt.provision.service.operations.RequisitionImportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
@@ -69,8 +68,7 @@ public class CoreImportActivities {
     private TransactionOperations m_transactionOperations;
 
     @Autowired
-    @Qualifier("database")
-    private ForeignSourceRepository m_foreignSourceRepository;
+    private RequisitionService requisitionService;
 
     @Autowired
     private OnmsRequisitionDao requisitionDao;
@@ -93,17 +91,16 @@ public class CoreImportActivities {
                 final OnmsRequisition requisitionToImport = provider.getRequisition();
 
                 info("Importing requisition {}", requisitionToImport.getName());
-                OnmsRequisition persistedEntity = m_foreignSourceRepository.getRequisition(requisitionToImport.getName());
+                OnmsRequisition persistedEntity = requisitionService.getRequisition(requisitionToImport.getName());
                 if (persistedEntity != null) {
                     info("Requisition is already persisted. Updating.");
                     // we once imported, update these values, everything else will be overwritten
                     requisitionToImport.setLastImport(persistedEntity.getLastImport());
                     requisitionToImport.setLastUpdate(persistedEntity.getLastUpdate());
-                    m_foreignSourceRepository.delete(persistedEntity);
-                    m_foreignSourceRepository.save(requisitionToImport);
+                    requisitionService.saveOrUpdateRequisition(requisitionToImport);
                 } else {
                     info("Requisition is new. Persisting.");
-                    m_foreignSourceRepository.save(requisitionToImport);
+                    requisitionService.saveOrUpdateRequisition(requisitionToImport);
                 }
                 context.setForeignSource(requisitionToImport.getName());
                 debug("Finished requisition import.");
@@ -130,7 +127,7 @@ public class CoreImportActivities {
         }
 
         return m_transactionOperations.execute(status -> {
-            final OnmsRequisition requisition = m_foreignSourceRepository.getRequisition(ri.getForeignSource());
+            final OnmsRequisition requisition = requisitionService.getRequisition(ri.getForeignSource());
 
             info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", requisition, EventConstants.PARM_IMPORT_RESCAN_EXISTING, ri.isRescanExisting());
 
@@ -212,7 +209,7 @@ public class CoreImportActivities {
         m_transactionOperations.execute(status -> {
             LOG.info("Running relate phase");
 
-            final OnmsRequisition requisition = m_foreignSourceRepository.getRequisition(ri.getForeignSource());
+            final OnmsRequisition requisition = requisitionService.getRequisition(ri.getForeignSource());
             requisition.getNodes().forEach(nodeReq -> {
                 LOG.debug("Scheduling relate of node {}", nodeReq);
                 currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));

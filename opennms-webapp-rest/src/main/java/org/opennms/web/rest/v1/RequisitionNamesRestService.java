@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.web.svclayer.api.RequisitionAccessService;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +54,7 @@ public class RequisitionNamesRestService extends OnmsRestService {
 
     /** The m_access service. */
     @Autowired
-    private RequisitionAccessService m_accessService;
+    private RequisitionService m_accessService;
 
     /**
      * The Class RequisitionCollection.

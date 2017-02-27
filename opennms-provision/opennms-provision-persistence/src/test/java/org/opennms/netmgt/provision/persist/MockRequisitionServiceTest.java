@@ -38,36 +38,25 @@ import javax.xml.bind.JAXB;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
 
-public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
+public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
 
-    private ForeignSourceRepository m_foreignSourceRepository;
+    private RequisitionService m_foreignSourceRepository;
 
     @Before
     public void setUp() {
-        m_foreignSourceRepository = new MockForeignSourceRepository();
+        m_foreignSourceRepository = new MockRequisitionService();
         m_defaultForeignSourceName = "imported:";
     }
 
     private OnmsRequisition createRequisition() throws Exception {
         OnmsRequisition requisition = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
-        m_foreignSourceRepository.save(requisition);
+        m_foreignSourceRepository.saveOrUpdateRequisition(requisition);
         return requisition;
-    }
-
-    private OnmsForeignSource createForeignSource(String foreignSource) throws Exception {
-        OnmsForeignSource fs = new OnmsForeignSource(foreignSource);
-        fs.addDetector(new DetectorPluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
-        fs.addPolicy(new PolicyPluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
-        m_foreignSourceRepository.save(fs);
-        return fs;
     }
 
     @Test
@@ -76,16 +65,6 @@ public class MockForeignSourceRepositoryTest extends ForeignSourceRepositoryTest
         OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         assertEquals("number of nodes visited", 2, r.getNodes().size());
         assertEquals("node name matches", "apknd", r.getNodes().get(0).getNodeLabel());
-    }
-
-    @Test
-    public void testForeignSource() throws Exception {
-        createRequisition();
-        OnmsForeignSource foreignSource = createForeignSource(m_defaultForeignSourceName);
-        List<OnmsForeignSource> foreignSources = new ArrayList<>(m_foreignSourceRepository.getForeignSources());
-        assertEquals("number of foreign sources", 1, foreignSources.size());
-        assertEquals("getAll() foreign source name matches", m_defaultForeignSourceName, foreignSources.get(0).getName());
-        assertEquals("get() returns the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName));
     }
 
     /**

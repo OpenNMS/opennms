@@ -69,8 +69,10 @@
     </bean>
 
     <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-        <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
-        <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+        <qualifier value="default"/>
+    </bean>
+    <bean name="legacyForeignSourceService" class="org.opennms.netmgt.provision.persist.LegacyForeignSourceServiceImpl">
+        <qualifier value="legacy"/>
     </bean>
 
     <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">

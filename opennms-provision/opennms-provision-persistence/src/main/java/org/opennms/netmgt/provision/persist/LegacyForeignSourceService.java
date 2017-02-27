@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,38 +28,23 @@
 
 package org.opennms.netmgt.provision.persist;
 
-/**
- * A factory for creating ForeignSourceRepository objects.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
- */
-public interface ForeignSourceRepositoryFactory {
+import org.opennms.netmgt.model.requisition.OnmsForeignSource;
 
-    /**
-     * Gets the pending repository.
-     *
-     * @return the pending repository
-     */
-    ForeignSourceRepository getPendingRepository();
+public interface LegacyForeignSourceService extends ForeignSourceService {
 
-    /**
-     * Gets the deployed repository.
-     *
-     * @return the deployed repository
-     */
-    ForeignSourceRepository getDeployedRepository();
+    OnmsForeignSource saveForeignSource(String name, OnmsForeignSource fs);
 
-    /**
-     * Gets the repository strategy.
-     *
-     * @return the repository strategy
-     */
-    FactoryStrategy getRepositoryStrategy();
+    OnmsForeignSource cloneForeignSource(String name, String target);
 
-    /**
-     * Sets the repository strategy.
-     *
-     * @param strategy the new repository strategy
-     */
-    void setRepositoryStrategy(FactoryStrategy strategy);
+    OnmsForeignSource deletePath(String foreignSourceName, String dataPath);
+
+    OnmsForeignSource addParameter(String foreignSourceName, String dataPath);
+
+    OnmsForeignSource addDetectorToForeignSource(String foreignSource, String name);
+
+    OnmsForeignSource deleteDetector(String foreignSource, String name);
+
+    OnmsForeignSource addPolicyToForeignSource(String foreignSource, String name);
+
+    OnmsForeignSource deletePolicy(String foreignSource, String name);
 }
