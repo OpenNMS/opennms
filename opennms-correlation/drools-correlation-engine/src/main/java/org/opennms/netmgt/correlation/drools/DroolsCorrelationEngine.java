@@ -79,10 +79,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private final Meter m_eventsMeter;
     
     public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
-        super();
         this.m_name = name;
-        final Gauge<Integer> size = () -> { return getMemorySize(); };
-        metricRegistry.register(MetricRegistry.name(name, "working-memory-size"), size);
+        final Gauge<Long> memorySize = () -> { return getWorkingMemory().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "working-memory-size"), memorySize);
+        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
         m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
     }
 
