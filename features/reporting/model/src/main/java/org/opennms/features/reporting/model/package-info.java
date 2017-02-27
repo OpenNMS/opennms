@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,45 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/database-reports",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/database-reports")
+    }
+)
+package org.opennms.features.reporting.model;
 
-import java.util.List;
-
-import org.opennms.features.reporting.model.Report;
-
-/**
- * <p>DatabaseReportConfigDao interface.</p>
- */
-public interface DatabaseReportConfigDao {
-    
-    /**
-     * <p>getReports</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    List <Report> getReports();
-    
-    /**
-     * <p>getOnlineReports</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    List <Report> getOnlineReports();
-    
-    /**
-     * <p>getReportService</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    String getReportService(String id);
-    
-    /**
-     * <p>getDisplayName</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    String getDisplayName(String id);
-    
-}
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

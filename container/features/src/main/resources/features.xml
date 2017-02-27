@@ -622,6 +622,7 @@
       <feature>opennms-model</feature>
       <feature>opennms-config-api</feature>
 
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
     </feature>
 
