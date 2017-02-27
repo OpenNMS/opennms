@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.requisition;
+package org.opennms.netmgt.model.foreignsource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name="foreignsource")
-public class OnmsForeignSource implements Serializable {
+public class ForeignSourceEntity implements Serializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OnmsForeignSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceEntity.class);
 
     // TODO MVR serialVersionUid neu generieren
     private static final long serialVersionUID = -1903289015976502808L;
@@ -68,25 +68,25 @@ public class OnmsForeignSource implements Serializable {
     private long scanInterval = TimeUnit.DAYS.convert(1, TimeUnit.MILLISECONDS);
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "foreignSource")
-    private List<OnmsPluginConfig> plugins = new ArrayList<>();
+    private List<PluginConfigEntity> plugins = new ArrayList<>();
 
     @Column(name="isdefault", nullable = false)
     private boolean m_default;
 
-    public OnmsForeignSource() {
+    public ForeignSourceEntity() {
 
     }
 
-    public OnmsForeignSource(final String name) {
+    public ForeignSourceEntity(final String name) {
         setName(name);
     }
 
-    public OnmsForeignSource(OnmsForeignSource input) {
+    public ForeignSourceEntity(ForeignSourceEntity input) {
         setName(input.getName());
         setDefault(input.isDefault());
         setScanInterval(input.getScanInterval());
-        setDetectors(input.getDetectors().stream().map(d -> new DetectorPluginConfig(d)).collect(Collectors.toList()));
-        setPolicies(input.getPolicies().stream().map(p -> new PolicyPluginConfig(p)).collect(Collectors.toList()));
+        setDetectors(input.getDetectors().stream().map(d -> new DetectorPluginConfigEntity(d)).collect(Collectors.toList()));
+        setPolicies(input.getPolicies().stream().map(p -> new PolicyPluginConfigEntity(p)).collect(Collectors.toList()));
     }
 
     public String getName() {
@@ -113,38 +113,38 @@ public class OnmsForeignSource implements Serializable {
         this.scanInterval = scanInterval;
     }
 
-    public void setPlugins(List<OnmsPluginConfig> plugins) {
+    public void setPlugins(List<PluginConfigEntity> plugins) {
         this.plugins = plugins;
     }
 
-    public List<OnmsPluginConfig> getPlugins() {
+    public List<PluginConfigEntity> getPlugins() {
         return plugins;
     }
 
-    public List<DetectorPluginConfig> getDetectors() {
+    public List<DetectorPluginConfigEntity> getDetectors() {
         return plugins.stream()
-                .filter(p -> p instanceof DetectorPluginConfig)
-                .map(p -> (DetectorPluginConfig) p)
+                .filter(p -> p instanceof DetectorPluginConfigEntity)
+                .map(p -> (DetectorPluginConfigEntity) p)
                 .collect(Collectors.toList());
     }
 
-    public void setDetectors(List<DetectorPluginConfig> detectors) {
+    public void setDetectors(List<DetectorPluginConfigEntity> detectors) {
         plugins.removeAll(getDetectors());
         plugins.addAll(detectors);
     }
 
-    public void addDetector(DetectorPluginConfig detector) {
+    public void addDetector(DetectorPluginConfigEntity detector) {
         addPlugin(detector);
     }
 
-    public DetectorPluginConfig getDetector(final String detector) {
+    public DetectorPluginConfigEntity getDetector(final String detector) {
         return getDetectors().stream()
                 .filter(d -> d.getName().equals(detector))
                 .findFirst()
                 .orElse(null);
     }
 
-    public boolean removeDetector(final DetectorPluginConfig detector) {
+    public boolean removeDetector(final DetectorPluginConfigEntity detector) {
         return plugins.remove(detector);
     }
 
@@ -164,30 +164,30 @@ public class OnmsForeignSource implements Serializable {
         this.m_default = defaultValue;
     }
 
-    public void addPolicy(PolicyPluginConfig policy) {
+    public void addPolicy(PolicyPluginConfigEntity policy) {
         addPlugin(policy);
     }
 
-    public List<PolicyPluginConfig> getPolicies() {
+    public List<PolicyPluginConfigEntity> getPolicies() {
         return plugins.stream()
-                .filter(p -> p instanceof PolicyPluginConfig)
-                .map(p -> (PolicyPluginConfig) p)
+                .filter(p -> p instanceof PolicyPluginConfigEntity)
+                .map(p -> (PolicyPluginConfigEntity) p)
                 .collect(Collectors.toList());
     }
 
-    public void setPolicies(List<PolicyPluginConfig> policies) {
+    public void setPolicies(List<PolicyPluginConfigEntity> policies) {
         plugins.removeAll(getPolicies());
         plugins.addAll(policies);
     }
 
-    public PolicyPluginConfig getPolicy(final String policy) {
+    public PolicyPluginConfigEntity getPolicy(final String policy) {
         return getPolicies().stream()
                 .filter(p -> p.getName().equals(policy))
                 .findFirst()
                 .orElse(null);
     }
 
-    public boolean removePolicy(final PolicyPluginConfig policy) {
+    public boolean removePolicy(final PolicyPluginConfigEntity policy) {
         return plugins.remove(policy);
     }
 
@@ -199,13 +199,13 @@ public class OnmsForeignSource implements Serializable {
         this.date = new Date();
     }
 
-    public OnmsPluginConfig getPlugin(String name, PluginType type) {
+    public PluginConfigEntity getPlugin(String name, PluginConfigType type) {
         return getPlugins().stream()
                 .filter(p -> p.getName().equals(name) && type.isInstance(p))
                 .findFirst().orElse(null);
     }
 
-    public void addPlugin(OnmsPluginConfig pluginConfig) {
+    public void addPlugin(PluginConfigEntity pluginConfig) {
         if (!plugins.contains(pluginConfig)) {
             pluginConfig.setForeignSource(this);
             plugins.add(pluginConfig);
@@ -224,8 +224,8 @@ public class OnmsForeignSource implements Serializable {
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (!(obj instanceof OnmsForeignSource)) return false;
-        final OnmsForeignSource other = (OnmsForeignSource) obj;
+        if (!(obj instanceof ForeignSourceEntity)) return false;
+        final ForeignSourceEntity other = (ForeignSourceEntity) obj;
         if (getName() != null) {
             return getName().equals(other.getName());
         }

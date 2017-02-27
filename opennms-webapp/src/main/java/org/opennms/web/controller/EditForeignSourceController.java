@@ -37,7 +37,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.joda.time.Duration;
 import org.opennms.core.spring.PropertyPath;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.LegacyForeignSourceService;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
@@ -78,7 +78,7 @@ public class EditForeignSourceController {
         private String m_action;
 
         @NotNull @Valid
-        private OnmsForeignSource m_formData;
+        private ForeignSourceEntity m_formData;
 
         @NotNull
         private String m_currentNode;
@@ -98,10 +98,10 @@ public class EditForeignSourceController {
         public void setForeignSourceName(String foreignSourceName) {
             m_foreignSourceName = foreignSourceName;
         }
-        public OnmsForeignSource getFormData() {
+        public ForeignSourceEntity getFormData() {
             return m_formData;
         }
-        public void setFormData(OnmsForeignSource importData) {
+        public void setFormData(ForeignSourceEntity importData) {
             m_formData = importData;
         }
         public static String getDefaultFormPath() {
@@ -189,19 +189,19 @@ public class EditForeignSourceController {
     }
 
     private void doAddDetector(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.addDetectorToForeignSource(treeCmd.getForeignSourceName(), "New Detector");
+        ForeignSourceEntity fs = m_foreignSourceService.addDetectorToForeignSource(treeCmd.getForeignSourceName(), "New Detector");
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".detectors["+ (fs.getDetectors().size()-1) +"]");
     }
 
     private void doAddPolicy(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.addPolicyToForeignSource(treeCmd.getForeignSourceName(), "New Policy");
+        ForeignSourceEntity fs = m_foreignSourceService.addPolicyToForeignSource(treeCmd.getForeignSourceName(), "New Policy");
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".policies["+ (fs.getPolicies().size()-1) +"]");
     }
 
     private void doAddParameter(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        ForeignSourceEntity fs = m_foreignSourceService.addParameter(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
         PropertyPath path = new PropertyPath(treeCmd.getDataPath());
         PluginConfig obj = (PluginConfig)path.getValue(fs);
@@ -210,7 +210,7 @@ public class EditForeignSourceController {
     }
 
     private void doSave(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
+        ForeignSourceEntity fs = m_foreignSourceService.saveForeignSource(treeCmd.getForeignSourceName(), treeCmd.getFormData());
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode("");
     }
@@ -220,13 +220,13 @@ public class EditForeignSourceController {
     }
 
     private void doCancel(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
+        ForeignSourceEntity fs = m_foreignSourceService.getForeignSource(treeCmd.getForeignSourceName());
         treeCmd.setFormData(fs);
         treeCmd.setCurrentNode("");
     }
 
     private void doDelete(TreeCommand treeCmd) {
-        OnmsForeignSource fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
+        ForeignSourceEntity fs = m_foreignSourceService.deletePath(treeCmd.getForeignSourceName(), treeCmd.getDataPath());
         treeCmd.setFormData(fs);
     }
 
@@ -242,7 +242,7 @@ public class EditForeignSourceController {
         if (foreignSourceName == null) {
             throw new IllegalArgumentException("foreignSourceName required");
         }
-        OnmsForeignSource fs = m_foreignSourceService.getForeignSource(foreignSourceName);
+        ForeignSourceEntity fs = m_foreignSourceService.getForeignSource(foreignSourceName);
         formCommand.setFormData(fs);
         return formCommand;
     }

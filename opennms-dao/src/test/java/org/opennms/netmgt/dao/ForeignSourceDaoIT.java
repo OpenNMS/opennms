@@ -38,9 +38,9 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.ForeignSourceDao;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
-import org.opennms.netmgt.model.requisition.PluginType;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,18 +66,18 @@ public class ForeignSourceDaoIT {
     @Transactional
     public void createForeignSource() {
         Date date = new Date();
-        OnmsForeignSource foreignSource = new OnmsForeignSource();
+        ForeignSourceEntity foreignSource = new ForeignSourceEntity();
         foreignSource.setDefault(true);
         foreignSource.setName("custom foreign source");
         foreignSource.setScanInterval(1234);
         foreignSource.setDate(date);
 
-        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginType.Detector, "name", "class", null));
-        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginType.Policy, "name", "class", null));
+        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginConfigType.Detector, "name", "class", null));
+        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginConfigType.Policy, "name", "class", null));
         foreignSourceDao.save(foreignSource);
         foreignSourceDao.flush();
 
-        OnmsForeignSource received = foreignSourceDao.get(foreignSource.getName());
+        ForeignSourceEntity received = foreignSourceDao.get(foreignSource.getName());
         Assert.assertNotNull(received);
         Assert.assertEquals(Boolean.TRUE, received.isDefault());
         Assert.assertEquals("custom foreign source", received.getName());
@@ -92,8 +92,8 @@ public class ForeignSourceDaoIT {
         // - remove elements in existing hierarchy
     }
 
-    private static OnmsPluginConfig createPluginConfig(OnmsForeignSource parent, PluginType pluginType, String name, String pluginClass, Map<String, String> parameters) {
-        OnmsPluginConfig pc = pluginType.newInstance();
+    private static PluginConfigEntity createPluginConfig(ForeignSourceEntity parent, PluginConfigType pluginConfigType, String name, String pluginClass, Map<String, String> parameters) {
+        PluginConfigEntity pc = pluginConfigType.newInstance();
         pc.setForeignSource(parent);
         pc.setName(name);
         pc.setPluginClass(pluginClass);

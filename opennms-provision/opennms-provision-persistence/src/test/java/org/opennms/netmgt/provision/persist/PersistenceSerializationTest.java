@@ -54,20 +54,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
-    private List<OnmsForeignSource> fsw = new ArrayList<>();
+    private List<ForeignSourceEntity> fsw = new ArrayList<>();
     private MockForeignSourceService fsr;
     private Marshaller m;
     private JAXBContext c;
-    private OnmsForeignSource fs;
+    private ForeignSourceEntity fs;
     private FileAnticipator fa;
 
     static private class TestOutputResolver extends SchemaOutputResolver {
@@ -90,31 +90,31 @@ public class PersistenceSerializationTest {
         fa = new FileAnticipator();
 
         fsr = new MockForeignSourceService();
-        fsr.saveForeignSource(new OnmsForeignSource("cheese"));
+        fsr.saveForeignSource(new ForeignSourceEntity("cheese"));
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
         fs.setDate(DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00").toGregorianCalendar().getTime());
 
-        List<DetectorPluginConfig> detectors = new ArrayList<>();
-        final DetectorPluginConfig detector = new DetectorPluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
+        List<DetectorPluginConfigEntity> detectors = new ArrayList<>();
+        final DetectorPluginConfigEntity detector = new DetectorPluginConfigEntity("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
         detector.addParameter("sharpness", "mild");
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        List<PolicyPluginConfig> policies = new ArrayList<>();
-        PolicyPluginConfig policy = new PolicyPluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
+        List<PolicyPluginConfigEntity> policies = new ArrayList<>();
+        PolicyPluginConfigEntity policy = new PolicyPluginConfigEntity("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
         policies.add(policy);
-        policy = new PolicyPluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
+        policy = new PolicyPluginConfigEntity("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy");
         policies.add(policy);
-        policy = new PolicyPluginConfig("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
+        policy = new PolicyPluginConfigEntity("10-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy");
         policy.addParameter("ipaddress", "~^10\\..*$");
         policies.add(policy);
-        policy = new PolicyPluginConfig("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        policy = new PolicyPluginConfigEntity("cisco-snmp-interfaces", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
         policy.addParameter("ifdescr", "~^(?i:LEC).*$");
         policies.add(policy);
         fs.setPolicies(policies);

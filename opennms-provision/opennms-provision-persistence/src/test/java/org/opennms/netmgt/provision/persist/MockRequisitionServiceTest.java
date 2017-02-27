@@ -38,7 +38,7 @@ import javax.xml.bind.JAXB;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
 
@@ -53,8 +53,8 @@ public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase 
         m_defaultForeignSourceName = "imported:";
     }
 
-    private OnmsRequisition createRequisition() throws Exception {
-        OnmsRequisition requisition = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
+    private RequisitionEntity createRequisition() throws Exception {
+        RequisitionEntity requisition = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
         m_foreignSourceRepository.saveOrUpdateRequisition(requisition);
         return requisition;
     }
@@ -62,7 +62,7 @@ public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase 
     @Test
     public void testRequisition() throws Exception {
         createRequisition();
-        OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        RequisitionEntity r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         assertEquals("number of nodes visited", 2, r.getNodes().size());
         assertEquals("node name matches", "apknd", r.getNodes().get(0).getNodeLabel());
     }
@@ -75,7 +75,7 @@ public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase 
     // TODO MVR remove this
     public void testBeanWrapperAccess() throws Exception {
         createRequisition();
-        OnmsRequisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        RequisitionEntity r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         List<String> categories = new ArrayList<>(r.getNodes().get(0).getCategories());
         assertEquals("AC", categories.get(0));
         assertEquals("UK", categories.get(1));

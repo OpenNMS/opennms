@@ -26,29 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.requisition;
+package org.opennms.netmgt.model.foreignsource;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+public enum PluginConfigType {
 
-@Entity
-@DiscriminatorValue(value="detector")
-public class DetectorPluginConfig extends OnmsPluginConfig {
+    Policy {
+        @Override
+        public PluginConfigEntity newInstance() {
+            return new PolicyPluginConfigEntity();
+        }
 
-    public DetectorPluginConfig() {
+        @Override
+        public boolean isInstance(PluginConfigEntity f) {
+            return f instanceof PolicyPluginConfigEntity;
+        }
+    },
+    Detector {
+        @Override
+        public PluginConfigEntity newInstance() {
+            return new DetectorPluginConfigEntity();
+        }
 
-    }
+        @Override
+        public boolean isInstance(PluginConfigEntity f) {
+            return f instanceof DetectorPluginConfigEntity;
+        }
+    };
 
-    public DetectorPluginConfig(DetectorPluginConfig pc) {
-        super(pc);
-    }
+    public abstract PluginConfigEntity newInstance();
 
-    public DetectorPluginConfig(String name, String pluginClass) {
-        super(name, pluginClass);
-    }
-
-    @Override
-    public PluginType getType() {
-        return PluginType.Detector;
-    }
+    public abstract boolean isInstance(PluginConfigEntity f);
 }

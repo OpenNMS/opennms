@@ -26,34 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.requisition;
+package org.opennms.netmgt.dao.api;
 
-public enum PluginType {
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 
-    Policy {
-        @Override
-        public OnmsPluginConfig newInstance() {
-            return new PolicyPluginConfig();
-        }
+public interface RequisitionDao extends OnmsDao<RequisitionEntity, String> {
 
-        @Override
-        public boolean isInstance(OnmsPluginConfig f) {
-            return f instanceof PolicyPluginConfig;
-        }
-    },
-    Detector {
-        @Override
-        public OnmsPluginConfig newInstance() {
-            return new DetectorPluginConfig();
-        }
+    RequisitionEntity getByForeignSource(String foreignSource);
 
-        @Override
-        public boolean isInstance(OnmsPluginConfig f) {
-            return f instanceof DetectorPluginConfig;
-        }
-    };
+    RequisitionNodeEntity getNode(String foreignSource, String foreignId);
 
-    public abstract OnmsPluginConfig newInstance();
+    RequisitionInterfaceEntity getIpInterface(String foreignSource, String foreignId, String ipAddress);
 
-    public abstract boolean isInstance(OnmsPluginConfig f);
+    RequisitionMonitoredServiceEntity getService(String foreignSource, String foreignId, String ipAddress, String serviceName);
 }

@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionImplementationTest;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -105,7 +105,7 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
     public void testCreateSimpleForeignSource() {
         runTest(
                 fsr -> {
-                    OnmsForeignSource fs = fsr.getForeignSource("blah");
+                    ForeignSourceEntity fs = fsr.getForeignSource("blah");
                     fs.setDefault(false);
                     fsr.saveForeignSource(fs);
                     fs = fsr.getForeignSource("blah");
@@ -120,10 +120,10 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
     public void testForeignSourceWithSpace() {
         runTest(
                 fsr -> {
-                    final OnmsForeignSource fs = fsr.getForeignSource("foo bar");
+                    final ForeignSourceEntity fs = fsr.getForeignSource("foo bar");
                     fs.setDefault(false);
                     fsr.saveForeignSource(fs);
-                    final OnmsForeignSource saved = fsr.getForeignSource("foo bar");
+                    final ForeignSourceEntity saved = fsr.getForeignSource("foo bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
                 },
@@ -135,10 +135,10 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
     public void testForeignSourceWithSlash() {
         runTest(
                 fsr -> {
-                    final OnmsForeignSource fs = fsr.getForeignSource("foo/bar");
+                    final ForeignSourceEntity fs = fsr.getForeignSource("foo/bar");
                     fs.setDefault(false);
                     fsr.saveForeignSource(fs);
-                    final OnmsForeignSource saved = fsr.getForeignSource("foo/bar");
+                    final ForeignSourceEntity saved = fsr.getForeignSource("foo/bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
                 },

@@ -80,14 +80,14 @@ import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
@@ -766,7 +766,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public OnmsNode getRequisitionedNode(final String foreignSource, final String foreignId) {
-        final OnmsRequisitionNode requisitionNode = requisitionService.getRequisition(foreignSource).getNode(foreignId);
+        final RequisitionNodeEntity requisitionNode = requisitionService.getRequisition(foreignSource).getNode(foreignId);
         final OnmsNode node = new OnmsNodeBuilder().buildNode(requisitionNode);
 
         // fill in real database categories
@@ -996,7 +996,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
         final String effectiveForeignSource = actualForeignSource == null ? "default" : actualForeignSource;
         try {
-            final OnmsForeignSource fs = foreignSourceService.getForeignSource(effectiveForeignSource);
+            final ForeignSourceEntity fs = foreignSourceService.getForeignSource(effectiveForeignSource);
 
             final Duration scanInterval = Duration.millis(fs.getScanInterval());
 
@@ -1170,8 +1170,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
-    public List<DetectorPluginConfig> getDetectorsForForeignSource(final String foreignSourceName) {
-        final OnmsForeignSource foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
+    public List<DetectorPluginConfigEntity> getDetectorsForForeignSource(final String foreignSourceName) {
+        final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
         return foreignSource.getDetectors();
     }
@@ -1204,16 +1204,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @return a {@link java.util.List} object.
      */
     public <T> List<T> getPluginsForForeignSource(final Class<T> pluginClass, final String foreignSourceName) {
-        final OnmsForeignSource foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
+        final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
 
-        final List<PolicyPluginConfig> configs = foreignSource.getPolicies();
+        final List<PolicyPluginConfigEntity> configs = foreignSource.getPolicies();
         if (configs == null) {
             return Collections.emptyList(); 
         }
 
         final List<T> plugins = new ArrayList<T>(configs.size());
-        for(final OnmsPluginConfig config : configs) {
+        for(final PluginConfigEntity config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
                 LOG.trace("Configured plugin is not appropropriate for policy class {}: {}", pluginClass, config);
@@ -1380,17 +1380,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private boolean createUpdateRequisition(final String addrString, final OnmsNode node, final String locationName, String m_foreignSource) {
         LOG.debug("Creating/Updating requisition {} for newSuspect {}...", m_foreignSource, addrString);
         try {
-            OnmsRequisition r = null;
+            RequisitionEntity r = null;
             if (m_foreignSource != null) {
                 r = requisitionService.getRequisition(m_foreignSource);
                 if (r == null) {
-                    r = new OnmsRequisition(m_foreignSource);
+                    r = new RequisitionEntity(m_foreignSource);
                 }
             }
 
-            OnmsRequisitionNode rn = new OnmsRequisitionNode();
+            RequisitionNodeEntity rn = new RequisitionNodeEntity();
 
-            OnmsRequisitionInterface iface = new OnmsRequisitionInterface();
+            RequisitionInterfaceEntity iface = new RequisitionInterfaceEntity();
             iface.setDescription("disc-if");
             iface.setIpAddress(addrString);
             iface.setManaged(true);

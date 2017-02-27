@@ -35,12 +35,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
+import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RequisitionDaoIT {
 
     @Autowired
-    private OnmsRequisitionDao requisitionDao;
+    private RequisitionDao requisitionDao;
 
     @Test
     @Transactional
@@ -67,12 +67,12 @@ public class RequisitionDaoIT {
         // create
         Date lastUpdate = new Date();
         Date lastImport = new Date();
-        OnmsRequisition requisition = new OnmsRequisition();
+        RequisitionEntity requisition = new RequisitionEntity();
         requisition.setName("dummy");
         requisition.setLastUpdate(lastUpdate);
         requisition.setLastImport(lastImport);
 
-        OnmsRequisitionNode node = new OnmsRequisitionNode();
+        RequisitionNodeEntity node = new RequisitionNodeEntity();
         node.setRequisition(requisition);
         node.setCity("Frankfurt");
         node.setBuilding("H1");
@@ -86,7 +86,7 @@ public class RequisitionDaoIT {
         node.addCategory("node-category-1");
         node.setRequisition(requisition);
 
-        OnmsRequisitionInterface nodeInterface = new OnmsRequisitionInterface();
+        RequisitionInterfaceEntity nodeInterface = new RequisitionInterfaceEntity();
         nodeInterface.setIpAddress("127.0.0.1");
         nodeInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         nodeInterface.setDescription("some description");
@@ -94,7 +94,7 @@ public class RequisitionDaoIT {
         nodeInterface.setManaged(true);
         nodeInterface.setNode(node);
 
-        OnmsRequisitionMonitoredService interfaceService = new OnmsRequisitionMonitoredService();
+        RequisitionMonitoredServiceEntity interfaceService = new RequisitionMonitoredServiceEntity();
         interfaceService.setServiceName("SSH");
         interfaceService.addCategory("service-category-1");
         interfaceService.setIpInterface(nodeInterface);
@@ -109,7 +109,7 @@ public class RequisitionDaoIT {
         requisitionDao.flush(); // force validation
 
         // validate
-        OnmsRequisition readRequisition = requisitionDao.get("dummy");
+        RequisitionEntity readRequisition = requisitionDao.get("dummy");
         Assert.assertNotNull(readRequisition);
         Assert.assertEquals(lastUpdate, readRequisition.getLastUpdate());
         Assert.assertEquals(lastImport, readRequisition.getLastImport());
@@ -117,7 +117,7 @@ public class RequisitionDaoIT {
         Assert.assertEquals("dummy", readRequisition.getForeignSource());
         Assert.assertEquals(1, readRequisition.getNodes().size());
 
-        OnmsRequisitionNode readNode = readRequisition.getNode("1234");
+        RequisitionNodeEntity readNode = readRequisition.getNode("1234");
         Assert.assertTrue("No node id set", readNode.getId() > 0);
         Assert.assertNotNull(readNode);
         Assert.assertEquals(node.getBuilding(), readNode.getBuilding());
@@ -133,7 +133,7 @@ public class RequisitionDaoIT {
         Assert.assertEquals(1 + 2, readNode.getAssets().size()); // city and building + custom asset
         Assert.assertEquals(1, readNode.getInterfaces().size());
 
-        OnmsRequisitionInterface readInterface = readNode.getInterface("127.0.0.1");
+        RequisitionInterfaceEntity readInterface = readNode.getInterface("127.0.0.1");
         Assert.assertNotNull(readInterface);
         Assert.assertTrue("No interface id set", readInterface.getId() > 0);
         Assert.assertEquals(nodeInterface.getIpAddress(), readInterface.getIpAddress());
@@ -143,7 +143,7 @@ public class RequisitionDaoIT {
         Assert.assertEquals(1, readInterface.getCategories().size());
         Assert.assertEquals(1, readInterface.getMonitoredServices().size());
 
-        OnmsRequisitionMonitoredService readService = readInterface.getMonitoredService("SSH");
+        RequisitionMonitoredServiceEntity readService = readInterface.getMonitoredService("SSH");
         Assert.assertNotNull(readService);
         Assert.assertTrue("No service id set", readService.getId() > 0);
         Assert.assertEquals(interfaceService.getServiceName(), readService.getServiceName());

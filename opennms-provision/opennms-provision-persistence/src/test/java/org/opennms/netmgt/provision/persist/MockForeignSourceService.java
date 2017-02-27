@@ -35,13 +35,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.springframework.util.Assert;
 
 public class MockForeignSourceService implements ForeignSourceService {
 
-    private final Map<String,OnmsForeignSource> m_foreignSources = new HashMap<>();
+    private final Map<String,ForeignSourceEntity> m_foreignSources = new HashMap<>();
 
     @Override
     public Set<String> getActiveForeignSourceNames() {
@@ -56,14 +56,14 @@ public class MockForeignSourceService implements ForeignSourceService {
     }
 
     @Override
-    public Set<OnmsForeignSource> getAllForeignSources() {
+    public Set<ForeignSourceEntity> getAllForeignSources() {
         return new HashSet<>(m_foreignSources.values());
     }
 
     @Override
-    public OnmsForeignSource getForeignSource(final String foreignSourceName) {
+    public ForeignSourceEntity getForeignSource(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
-        final OnmsForeignSource foreignSource = m_foreignSources.get(foreignSourceName);
+        final ForeignSourceEntity foreignSource = m_foreignSources.get(foreignSourceName);
         if (foreignSource == null) {
             return getDefaultForeignSource();
         }
@@ -71,7 +71,7 @@ public class MockForeignSourceService implements ForeignSourceService {
     }
 
     @Override
-    public void saveForeignSource(final OnmsForeignSource foreignSource) {
+    public void saveForeignSource(final ForeignSourceEntity foreignSource) {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
 
@@ -87,8 +87,8 @@ public class MockForeignSourceService implements ForeignSourceService {
     }
 
     @Override
-    public OnmsForeignSource getDefaultForeignSource() {
-        final OnmsForeignSource fs = getForeignSource("default");
+    public ForeignSourceEntity getDefaultForeignSource() {
+        final ForeignSourceEntity fs = getForeignSource("default");
         if (fs == null) {
             // TODO MVR map... this is duplicated code, we may re-use this anyways ...
 //            fs = JAXB.unmarshal(ForeignSource.class, new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml"));
@@ -99,7 +99,7 @@ public class MockForeignSourceService implements ForeignSourceService {
     }
 
     @Override
-    public void putDefaultForeignSource(final OnmsForeignSource foreignSource) {
+    public void putDefaultForeignSource(final ForeignSourceEntity foreignSource) {
         Objects.requireNonNull(foreignSource);
         foreignSource.setDefault(true);
         foreignSource.setName("default");

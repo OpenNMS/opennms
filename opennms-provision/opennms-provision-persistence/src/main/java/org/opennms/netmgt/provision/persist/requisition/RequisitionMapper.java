@@ -2,14 +2,14 @@ package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 
 public class RequisitionMapper {
 
-    public static RequisitionNode toRestModel(OnmsRequisitionNode input) {
+    public static RequisitionNode toRestModel(RequisitionNodeEntity input) {
         if (input == null) {
             return null;
         }
@@ -28,7 +28,7 @@ public class RequisitionMapper {
         return node;
     }
 
-    public static Requisition toRestModel(OnmsRequisition input) {
+    public static Requisition toRestModel(RequisitionEntity input) {
         if (input == null) {
             return null;
         }
@@ -44,7 +44,7 @@ public class RequisitionMapper {
         return requisition;
     }
 
-    public static RequisitionInterface toRestModel(OnmsRequisitionInterface input) {
+    public static RequisitionInterface toRestModel(RequisitionInterfaceEntity input) {
         if (input == null) {
             return null;
         }
@@ -59,7 +59,7 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static RequisitionMonitoredService toRestModel(OnmsRequisitionMonitoredService input) {
+    public static RequisitionMonitoredService toRestModel(RequisitionMonitoredServiceEntity input) {
         if (input == null) {
             return null;
         }
@@ -69,11 +69,11 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static OnmsRequisition toPersistenceModel(Requisition input) {
+    public static RequisitionEntity toPersistenceModel(Requisition input) {
         if (input == null) {
             return null;
         }
-        OnmsRequisition output = new OnmsRequisition();
+        RequisitionEntity output = new RequisitionEntity();
         output.setForeignSource(input.getForeignSource());
         output.setLastUpdate(input.getDate());
         output.setLastImport(input.getLastImportAsDate());
@@ -82,11 +82,11 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static OnmsRequisitionNode toPersistenceModel(RequisitionNode input) {
+    public static RequisitionNodeEntity toPersistenceModel(RequisitionNode input) {
         if (input == null) {
             return null;
         }
-        OnmsRequisitionNode output = new OnmsRequisitionNode();
+        RequisitionNodeEntity output = new RequisitionNodeEntity();
         output.setCity(input.getCity());
         output.setBuilding(input.getBuilding());
         output.setForeignId(input.getForeignId());
@@ -102,11 +102,11 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static OnmsRequisitionInterface toPersistenceModel(RequisitionInterface input) {
+    public static RequisitionInterfaceEntity toPersistenceModel(RequisitionInterface input) {
         if (input == null) {
             return null;
         }
-        OnmsRequisitionInterface output = new OnmsRequisitionInterface();
+        RequisitionInterfaceEntity output = new RequisitionInterfaceEntity();
         output.setDescription(input.getDescr());
         output.setIpAddress(input.getIpAddr());
         output.setManaged(input.isManaged());
@@ -118,11 +118,11 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static OnmsRequisitionMonitoredService toPersistenceModel(RequisitionMonitoredService input) {
+    public static RequisitionMonitoredServiceEntity toPersistenceModel(RequisitionMonitoredService input) {
         if (input == null) {
             return null;
         }
-        OnmsRequisitionMonitoredService output = new OnmsRequisitionMonitoredService();
+        RequisitionMonitoredServiceEntity output = new RequisitionMonitoredServiceEntity();
         output.setServiceName(input.getServiceName());
         output.setCategories(input.getCategories().stream().map(c -> c.getName()).collect(Collectors.toSet()));
         return output;

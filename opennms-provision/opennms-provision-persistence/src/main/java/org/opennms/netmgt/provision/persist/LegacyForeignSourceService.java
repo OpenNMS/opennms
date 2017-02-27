@@ -28,23 +28,23 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 
 public interface LegacyForeignSourceService extends ForeignSourceService {
 
-    OnmsForeignSource saveForeignSource(String name, OnmsForeignSource fs);
+    ForeignSourceEntity saveForeignSource(String name, ForeignSourceEntity fs);
 
-    OnmsForeignSource cloneForeignSource(String name, String target);
+    ForeignSourceEntity cloneForeignSource(String name, String target);
 
-    OnmsForeignSource deletePath(String foreignSourceName, String dataPath);
+    ForeignSourceEntity deletePath(String foreignSourceName, String dataPath);
 
-    OnmsForeignSource addParameter(String foreignSourceName, String dataPath);
+    ForeignSourceEntity addParameter(String foreignSourceName, String dataPath);
 
-    OnmsForeignSource addDetectorToForeignSource(String foreignSource, String name);
+    ForeignSourceEntity addDetectorToForeignSource(String foreignSource, String name);
 
-    OnmsForeignSource deleteDetector(String foreignSource, String name);
+    ForeignSourceEntity deleteDetector(String foreignSource, String name);
 
-    OnmsForeignSource addPolicyToForeignSource(String foreignSource, String name);
+    ForeignSourceEntity addPolicyToForeignSource(String foreignSource, String name);
 
-    OnmsForeignSource deletePolicy(String foreignSource, String name);
+    ForeignSourceEntity deletePolicy(String foreignSource, String name);
 }

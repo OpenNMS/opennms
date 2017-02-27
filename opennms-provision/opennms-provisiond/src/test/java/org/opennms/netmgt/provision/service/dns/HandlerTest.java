@@ -42,7 +42,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.service.ResourceRequisitionProvider;
 import org.springframework.core.io.UrlResource;
 
@@ -68,7 +68,7 @@ public class HandlerTest {
         
         URL url = new URL(DNS_URL);
         UrlResource resource = new UrlResource(url);
-        OnmsRequisition r = new ResourceRequisitionProvider(resource).getRequisition();
+        RequisitionEntity r = new ResourceRequisitionProvider(resource).getRequisition();
         
         Assert.assertTrue("Number of nodes in Model Import > 1", 1 == r.getNodes().size());
         Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(r.getNodes().get(0).getNodeLabel()));

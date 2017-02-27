@@ -30,20 +30,20 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
 public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService implements LegacyForeignSourceService {
 
     @Override
-    public OnmsForeignSource saveForeignSource(String name, OnmsForeignSource fs) {
+    public ForeignSourceEntity saveForeignSource(String name, ForeignSourceEntity fs) {
         saveForeignSource(fs);
         return getForeignSource(fs.getName());
     }
 
     @Override
-    public OnmsForeignSource cloneForeignSource(String name, String target) {
+    public ForeignSourceEntity cloneForeignSource(String name, String target) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(target);
         if (name.equals(target)) {
@@ -53,7 +53,7 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
             throw new IllegalArgumentException("ForeignSource with name '" + target + "' already exists. Cannot clone");
         }
         // TODO MVR clone (this does not clone..)
-        final OnmsForeignSource foreignSource = getForeignSource(name);
+        final ForeignSourceEntity foreignSource = getForeignSource(name);
         foreignSource.setDefault(false);
         foreignSource.setName(target);
         saveForeignSource(foreignSource);
@@ -61,9 +61,9 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
     }
 
     @Override
-    public OnmsForeignSource addParameter(String foreignSourceName, String pathToAdd) {
+    public ForeignSourceEntity addParameter(String foreignSourceName, String pathToAdd) {
 
-//        OnmsForeignSource fs = getForeignSource(foreignSourceName);
+//        ForeignSourceEntity fs = getForeignSource(foreignSourceName);
 //        PropertyPath path = new PropertyPath(pathToAdd);
 //        Object obj = path.getValue(fs);
 //
@@ -84,7 +84,7 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
     }
 
     @Override
-    public OnmsForeignSource deletePath(String foreignSourceName, String pathToDelete) {
+    public ForeignSourceEntity deletePath(String foreignSourceName, String pathToDelete) {
 //        ForeignSource fs = getForeignSource(foreignSourceName);
 //        PropertyPath path = new PropertyPath(pathToDelete);
 //
@@ -112,34 +112,34 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
     }
 
     @Override
-    public OnmsForeignSource addDetectorToForeignSource(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        DetectorPluginConfig pc = new DetectorPluginConfig(name, "unknown");
+    public ForeignSourceEntity addDetectorToForeignSource(String foreignSource, String name) {
+        ForeignSourceEntity fs = getForeignSource(foreignSource);
+        DetectorPluginConfigEntity pc = new DetectorPluginConfigEntity(name, "unknown");
         fs.addDetector(pc);
         saveForeignSource(fs);
         return fs;
     }
 
     @Override
-    public OnmsForeignSource deleteDetector(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
+    public ForeignSourceEntity deleteDetector(String foreignSource, String name) {
+        ForeignSourceEntity fs = getForeignSource(foreignSource);
         fs.removeDetector(name);
         saveForeignSource(fs);
         return fs;
     }
 
     @Override
-    public OnmsForeignSource addPolicyToForeignSource(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
-        PolicyPluginConfig pc = new PolicyPluginConfig(name, "unknown");
+    public ForeignSourceEntity addPolicyToForeignSource(String foreignSource, String name) {
+        ForeignSourceEntity fs = getForeignSource(foreignSource);
+        PolicyPluginConfigEntity pc = new PolicyPluginConfigEntity(name, "unknown");
         fs.addPolicy(pc);
         saveForeignSource(fs);
         return fs;
     }
 
     @Override
-    public OnmsForeignSource deletePolicy(String foreignSource, String name) {
-        OnmsForeignSource fs = getForeignSource(foreignSource);
+    public ForeignSourceEntity deletePolicy(String foreignSource, String name) {
+        ForeignSourceEntity fs = getForeignSource(foreignSource);
         fs.removePolicy(name);
         saveForeignSource(fs);
         return fs;

@@ -38,7 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class DefaultForeignSourceServiceIT {
         assertEquals(0, m_service.getAllForeignSources().size());
 
         // create a new foreign source
-        OnmsForeignSource fs = m_service.getForeignSource("test");
+        ForeignSourceEntity fs = m_service.getForeignSource("test");
 
         // test doesn't exist, so it should tell us that it's based on the default foreign source
         assertTrue(fs.isDefault());

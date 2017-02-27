@@ -35,9 +35,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
 public class MockForeignSourceTest extends ForeignSourceRepositoryTestCase {
 
@@ -48,18 +48,18 @@ public class MockForeignSourceTest extends ForeignSourceRepositoryTestCase {
         m_foreignSourceRepository = new MockForeignSourceService();
     }
 
-    private OnmsForeignSource createForeignSource(String foreignSource) throws Exception {
-        OnmsForeignSource fs = new OnmsForeignSource(foreignSource);
-        fs.addDetector(new DetectorPluginConfig("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
-        fs.addPolicy(new PolicyPluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
+    private ForeignSourceEntity createForeignSource(String foreignSource) throws Exception {
+        ForeignSourceEntity fs = new ForeignSourceEntity(foreignSource);
+        fs.addDetector(new DetectorPluginConfigEntity("HTTP", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
+        fs.addPolicy(new PolicyPluginConfigEntity("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.saveForeignSource(fs);
         return fs;
     }
 
     @Test
     public void testForeignSource() throws Exception {
-        OnmsForeignSource foreignSource = createForeignSource("imported:");
-        List<OnmsForeignSource> foreignSources = new ArrayList<>(m_foreignSourceRepository.getAllForeignSources());
+        ForeignSourceEntity foreignSource = createForeignSource("imported:");
+        List<ForeignSourceEntity> foreignSources = new ArrayList<>(m_foreignSourceRepository.getAllForeignSources());
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", "imported:", foreignSources.get(0).getName());
         assertEquals("get() returns the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource("imported:"));

@@ -58,11 +58,10 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
-import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -131,9 +130,9 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
 
     @Before
     public void setUp() throws Exception {
-        final OnmsForeignSource fs = new OnmsForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
-        fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         final ForeignSourceService mfsr = new MockForeignSourceService();
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceService(mfsr);

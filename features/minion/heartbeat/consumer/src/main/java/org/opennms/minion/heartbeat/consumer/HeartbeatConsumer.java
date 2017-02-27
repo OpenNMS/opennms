@@ -46,11 +46,11 @@ import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -171,7 +171,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         // Remove the node from the previous requisition, if location has changed
         if (!Objects.equals(prevForeignSource, nextForeignSource)) {
-            final OnmsRequisition prevRequisition = this.requisitionService.getRequisition(prevForeignSource);
+            final RequisitionEntity prevRequisition = this.requisitionService.getRequisition(prevForeignSource);
             if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
                 prevRequisition.removeNode(minion.getId());
                 prevRequisition.updateLastUpdated();
@@ -182,16 +182,16 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             }
         }
 
-        OnmsRequisition nextRequisition = requisitionService.getRequisition(nextForeignSource);
+        RequisitionEntity nextRequisition = requisitionService.getRequisition(nextForeignSource);
         if (nextRequisition == null) {
-            nextRequisition = new OnmsRequisition(nextForeignSource);
+            nextRequisition = new RequisitionEntity(nextForeignSource);
             nextRequisition.updateLastUpdated();
 
             // We have to save the requisition before we can alter the according foreign source definition
             requisitionService.saveOrUpdateRequisition(nextRequisition);
 
             // Remove all policies and detectors from the foreign source
-            final OnmsForeignSource foreignSource = foreignSourceService.getForeignSource(nextForeignSource);
+            final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(nextForeignSource);
             foreignSource.setDetectors(Collections.emptyList());
             foreignSource.setPolicies(Collections.emptyList());
             foreignSourceService.saveForeignSource(foreignSource);
@@ -199,16 +199,16 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             alteredForeignSources.add(nextForeignSource);
         }
 
-        OnmsRequisitionNode requisitionNode = nextRequisition.getNode(minion.getId());
+        RequisitionNodeEntity requisitionNode = nextRequisition.getNode(minion.getId());
         if (requisitionNode == null) {
-            final OnmsRequisitionMonitoredService requisitionMonitoredService = new OnmsRequisitionMonitoredService();
+            final RequisitionMonitoredServiceEntity requisitionMonitoredService = new RequisitionMonitoredServiceEntity();
             requisitionMonitoredService.setServiceName("Minion-Heartbeat");
 
-            final OnmsRequisitionInterface requisitionInterface = new OnmsRequisitionInterface();
+            final RequisitionInterfaceEntity requisitionInterface = new RequisitionInterfaceEntity();
             requisitionInterface.setIpAddress("127.0.0.1");
             requisitionInterface.addMonitoredService(requisitionMonitoredService);
 
-            requisitionNode = new OnmsRequisitionNode();
+            requisitionNode = new RequisitionNodeEntity();
             requisitionNode.setNodeLabel(minion.getId());
             requisitionNode.setForeignId(minion.getLabel() != null
                                          ? minion.getLabel()

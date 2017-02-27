@@ -37,13 +37,13 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
+import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -54,7 +54,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service access to {@link OnmsRequisition}s.
+ * Service access to {@link RequisitionEntity}s.
  *
  * @author mvrueden
  */
@@ -63,7 +63,7 @@ public class DefaultRequisitionService implements RequisitionService {
     private Logger LOG = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private OnmsRequisitionDao requisitionDao;
+    private RequisitionDao requisitionDao;
 
     @Autowired
     private NodeDao nodeDao;
@@ -73,7 +73,7 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional(readOnly = true)
-    public OnmsRequisition getRequisition(String foreignSource) {
+    public RequisitionEntity getRequisition(String foreignSource) {
         return requisitionDao.get(foreignSource);
     }
 
@@ -85,7 +85,7 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateRequisition(OnmsRequisition input) {
+    public void saveOrUpdateRequisition(RequisitionEntity input) {
         validate(input);
         mergeWithExisting(input);
         input.updateLastUpdated();
@@ -94,7 +94,7 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateNode(OnmsRequisition parentPersistedRequisition, OnmsRequisitionNode nodeToUpdateOrReplace) {
+    public void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace) {
         mergeWithExisting(parentPersistedRequisition, nodeToUpdateOrReplace);
         parentPersistedRequisition.updateLastUpdated();
         requisitionDao.saveOrUpdate(parentPersistedRequisition);
@@ -102,7 +102,7 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateInterface(OnmsRequisitionNode parentPersistedNode, OnmsRequisitionInterface interfaceToUpdateOrReplace) {
+    public void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace) {
         mergeWithExisting(parentPersistedNode, interfaceToUpdateOrReplace);
         parentPersistedNode.getRequisition().updateLastUpdated();
         requisitionDao.saveOrUpdate(parentPersistedNode.getRequisition());
@@ -110,7 +110,7 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateService(OnmsRequisitionInterface parentPersistedInterface, OnmsRequisitionMonitoredService serviceToUpdateOrReplace) {
+    public void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace) {
         mergeWithExisting(parentPersistedInterface, serviceToUpdateOrReplace);
         parentPersistedInterface.getNode().getRequisition().updateLastUpdated();
         requisitionDao.saveOrUpdate(parentPersistedInterface.getNode().getRequisition());
@@ -118,18 +118,18 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateNode(OnmsRequisitionNode requisitionNode) {
+    public void saveOrUpdateNode(RequisitionNodeEntity requisitionNode) {
         requisitionNode.getRequisition().updateLastUpdated();
         requisitionDao.saveOrUpdate(requisitionNode.getRequisition());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Set<OnmsRequisition> getRequisitions() {
+    public Set<RequisitionEntity> getRequisitions() {
         return new HashSet<>(requisitionDao.findAll());
     }
 
-    private void validate(OnmsRequisition requisition) {
+    private void validate(RequisitionEntity requisition) {
 //        // TODO MVR
 //        throw new UnsupportedOperationException("TODO MVR implement me");
     }
@@ -177,7 +177,7 @@ public class DefaultRequisitionService implements RequisitionService {
     @Transactional(readOnly = true)
     public DeployedRequisitionStats getDeployedStats(String foreignSource) {
         final DeployedRequisitionStats deployedStats = new DeployedRequisitionStats();
-        final OnmsRequisition fs = getRequisition(foreignSource);
+        final RequisitionEntity fs = getRequisition(foreignSource);
         deployedStats.setForeignSource(foreignSource);
         deployedStats.setLastImported(fs.getLastImport());
         deployedStats.addAll(nodeDao.getForeignIdsPerForeignSource(foreignSource));
@@ -190,8 +190,8 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     // Merge input requisition with existing persisted requisition
-    private void mergeWithExisting(OnmsRequisition input) {
-        final OnmsRequisition persistedRequisition = getRequisition(input.getForeignSource());
+    private void mergeWithExisting(RequisitionEntity input) {
+        final RequisitionEntity persistedRequisition = getRequisition(input.getForeignSource());
         if (persistedRequisition != null) {
             input.getNodes().stream().forEach(n -> {
                 mergeWithExisting(persistedRequisition, n);
@@ -200,8 +200,8 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     // Merge input node with existing persisted node
-    private void mergeWithExisting(OnmsRequisition parentPersistedRequisition, OnmsRequisitionNode input) {
-        final OnmsRequisitionNode persistedNode = parentPersistedRequisition.getNode(input.getForeignId());
+    private void mergeWithExisting(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity input) {
+        final RequisitionNodeEntity persistedNode = parentPersistedRequisition.getNode(input.getForeignId());
         if (persistedNode != null) {
             input.setId(persistedNode.getId());
             input.getInterfaces().stream().forEach(i -> {
@@ -213,8 +213,8 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     // Merge input interface with existing persisted interface
-    private void mergeWithExisting(OnmsRequisitionNode parentPersistedNode, OnmsRequisitionInterface input) {
-        final OnmsRequisitionInterface persistedInterface = parentPersistedNode.getInterface(input.getIpAddress());
+    private void mergeWithExisting(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity input) {
+        final RequisitionInterfaceEntity persistedInterface = parentPersistedNode.getInterface(input.getIpAddress());
         if (persistedInterface != null) {
             input.setId(persistedInterface.getId());
             input.getMonitoredServices().stream().forEach(s -> {
@@ -226,8 +226,8 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     // Merge input service with existing persisted service
-    private void mergeWithExisting(OnmsRequisitionInterface persistedInterface, OnmsRequisitionMonitoredService input) {
-        final OnmsRequisitionMonitoredService persistedService = persistedInterface.getMonitoredService(input.getServiceName());
+    private void mergeWithExisting(RequisitionInterfaceEntity persistedInterface, RequisitionMonitoredServiceEntity input) {
+        final RequisitionMonitoredServiceEntity persistedService = persistedInterface.getMonitoredService(input.getServiceName());
         if (persistedService != null) {
             input.setId(persistedService.getId());
         } else {

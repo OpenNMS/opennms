@@ -26,29 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.requisition;
+package org.opennms.netmgt.model.foreignsource;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue(value="policy")
-public class PolicyPluginConfig extends OnmsPluginConfig {
+public class PolicyPluginConfigEntity extends PluginConfigEntity {
 
-    public PolicyPluginConfig() {
+    public PolicyPluginConfigEntity() {
 
     }
 
-    public PolicyPluginConfig(PolicyPluginConfig pc) {
+    public PolicyPluginConfigEntity(PolicyPluginConfigEntity pc) {
         super(pc);
     }
 
-    public PolicyPluginConfig(String name, String pluginClass) {
+    public PolicyPluginConfigEntity(String name, String pluginClass) {
         super(name, pluginClass);
     }
 
     @Override
-    public PluginType getType() {
-        return PluginType.Policy;
+    public PluginConfigType getType() {
+        return PluginConfigType.Policy;
     }
 }

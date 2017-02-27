@@ -30,10 +30,10 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.Set;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -41,26 +41,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface RequisitionService {
 
-    OnmsRequisition getRequisition(String foreignSource);
+    RequisitionEntity getRequisition(String foreignSource);
 
     void deleteRequisition(String foreignSource);
 
     // TODO MVR merge vs save
-    void saveOrUpdateRequisition(OnmsRequisition input);
+    void saveOrUpdateRequisition(RequisitionEntity input);
 
     // TODO MVR merge vs save
-    void saveOrUpdateNode(OnmsRequisition parentPersistedRequisition, OnmsRequisitionNode nodeToUpdateOrReplace);
+    void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace);
 
     // TODO MVR merge vs save
-    void saveOrUpdateInterface(OnmsRequisitionNode parentPersistedNode, OnmsRequisitionInterface interfaceToUpdateOrReplace);
+    void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace);
 
     // TODO MVR merge vs save
-    void saveOrUpdateService(OnmsRequisitionInterface parentPersistedInterface, OnmsRequisitionMonitoredService serviceToUpdateOrReplace);
+    void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace);
 
     // TODO MVR merge vs save
-    void saveOrUpdateNode(OnmsRequisitionNode requisitionNode);
+    void saveOrUpdateNode(RequisitionNodeEntity requisitionNode);
 
-    Set<OnmsRequisition> getRequisitions();
+    Set<RequisitionEntity> getRequisitions();
 
     void triggerImport(ImportRequest importRequest);
 

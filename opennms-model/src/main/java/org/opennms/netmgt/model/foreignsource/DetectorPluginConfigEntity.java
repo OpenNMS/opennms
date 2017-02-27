@@ -26,21 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.foreignsource;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-// TODO MVR umbenenen
-public interface OnmsRequisitionDao extends OnmsDao<OnmsRequisition, String> {
+@Entity
+@DiscriminatorValue(value="detector")
+public class DetectorPluginConfigEntity extends PluginConfigEntity {
 
-    OnmsRequisition getByForeignSource(String foreignSource);
+    public DetectorPluginConfigEntity() {
 
-    OnmsRequisitionNode getNode(String foreignSource, String foreignId);
+    }
 
-    OnmsRequisitionInterface getIpInterface(String foreignSource, String foreignId, String ipAddress);
+    public DetectorPluginConfigEntity(DetectorPluginConfigEntity pc) {
+        super(pc);
+    }
 
-    OnmsRequisitionMonitoredService getService(String foreignSource, String foreignId, String ipAddress, String serviceName);
+    public DetectorPluginConfigEntity(String name, String pluginClass) {
+        super(name, pluginClass);
+    }
+
+    @Override
+    public PluginConfigType getType() {
+        return PluginConfigType.Detector;
+    }
 }

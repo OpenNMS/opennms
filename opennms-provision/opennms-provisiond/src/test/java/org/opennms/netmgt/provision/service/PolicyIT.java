@@ -48,9 +48,9 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockRequisitionService;
@@ -99,16 +99,16 @@ public class PolicyIT {
     public void setUp() {
         MockLogAppender.setupLogging();
         final ForeignSourceService mfsr = new MockForeignSourceService();
-        final OnmsForeignSource fs = new OnmsForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
-        fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
 
-        PolicyPluginConfig policy1 = new PolicyPluginConfig("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
+        PolicyPluginConfigEntity policy1 = new PolicyPluginConfigEntity("poll-trunk-1", "org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy");
         policy1.addParameter("ifDescr", "~^.*Trunk 1.*$");
         policy1.addParameter("action", "ENABLE_POLLING");
         policy1.addParameter("matchBehavior", "ANY_PARAMETER");
 
-        PolicyPluginConfig policy2 = new PolicyPluginConfig("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
+        PolicyPluginConfigEntity policy2 = new PolicyPluginConfigEntity("poll-vlan-600", "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy");
         policy2.addParameter("ipAddress", "~^10\\.102\\..*$");
         policy2.addParameter("action", "ENABLE_SNMP_POLL");
         policy2.addParameter("matchBehavior", "ANY_PARAMETER");

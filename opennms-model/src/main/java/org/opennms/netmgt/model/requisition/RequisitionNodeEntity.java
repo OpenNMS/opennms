@@ -52,7 +52,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="requisition_nodes")
-public class OnmsRequisitionNode {
+public class RequisitionNodeEntity {
 
     @Id
     @Column(name="id")
@@ -71,10 +71,10 @@ public class OnmsRequisitionNode {
 
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="foreignsource")
-    private OnmsRequisition requisition;
+    private RequisitionEntity requisition;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="node")
-    protected List<OnmsRequisitionInterface> interfaces = new ArrayList<>();
+    protected List<RequisitionInterfaceEntity> interfaces = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
@@ -108,11 +108,11 @@ public class OnmsRequisitionNode {
         this.id = id;
     }
 
-    public OnmsRequisition getRequisition() {
+    public RequisitionEntity getRequisition() {
         return requisition;
     }
 
-    public void setRequisition(OnmsRequisition requisition) {
+    public void setRequisition(RequisitionEntity requisition) {
         this.requisition = requisition;
     }
 
@@ -186,15 +186,15 @@ public class OnmsRequisitionNode {
         return parentNodeLabel;
     }
 
-    public List<OnmsRequisitionInterface> getInterfaces() {
+    public List<RequisitionInterfaceEntity> getInterfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(List<OnmsRequisitionInterface> interfaces) {
+    public void setInterfaces(List<RequisitionInterfaceEntity> interfaces) {
         this.interfaces = interfaces;
     }
 
-    public void addInterface(OnmsRequisitionInterface newInterface) {
+    public void addInterface(RequisitionInterfaceEntity newInterface) {
         Objects.requireNonNull(newInterface);
         if (!interfaces.contains(newInterface)) {
             newInterface.setNode(this);
@@ -202,13 +202,13 @@ public class OnmsRequisitionNode {
         }
     }
 
-    public void removeInterface(OnmsRequisitionInterface iface) {
+    public void removeInterface(RequisitionInterfaceEntity iface) {
         if (interfaces.remove(iface)) {
             iface.setNode(null); // remove parent relationship
         }
     }
 
-    public OnmsRequisitionInterface getInterface(String ipAddress) {
+    public RequisitionInterfaceEntity getInterface(String ipAddress) {
         return this.interfaces.stream()
                 .filter(i -> i.getIpAddress().equals(ipAddress))
                 .findFirst().orElse(null);
@@ -273,9 +273,9 @@ public class OnmsRequisitionNode {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof OnmsRequisitionNode)) return false;
+        if (!(obj instanceof RequisitionNodeEntity)) return false;
         if (getId() != null) {
-            final OnmsRequisitionNode other = (OnmsRequisitionNode) obj;
+            final RequisitionNodeEntity other = (RequisitionNodeEntity) obj;
             return getId().equals(other.getId());
         }
         return super.equals(obj);

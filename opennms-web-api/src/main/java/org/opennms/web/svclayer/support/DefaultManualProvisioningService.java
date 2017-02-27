@@ -52,11 +52,11 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -128,11 +128,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
+    public RequisitionEntity addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
         m_writeLock.lock();
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
-            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
+            final RequisitionNodeEntity node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNodeEntity.class);
             node.addCategory(categoryName);
 
             requisitionService.saveOrUpdateRequisition(group);
@@ -143,11 +143,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition addAssetFieldToNode(final String groupName, final String pathToNode, final String assetName, final String assetValue) {
+    public RequisitionEntity addAssetFieldToNode(final String groupName, final String pathToNode, final String assetName, final String assetValue) {
         m_writeLock.lock();
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
-            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
+            final RequisitionNodeEntity node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNodeEntity.class);
             node.addAsset(assetName, assetValue);
 
             requisitionService.saveOrUpdateRequisition(group);
@@ -158,12 +158,12 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition addInterfaceToNode(final String groupName, final String pathToNode, final String ipAddr) {
+    public RequisitionEntity addInterfaceToNode(final String groupName, final String pathToNode, final String ipAddr) {
         m_writeLock.lock();
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
             Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
-            final OnmsRequisitionNode node = PropertyUtils.getPathValue(group, pathToNode, OnmsRequisitionNode.class);
+            final RequisitionNodeEntity node = PropertyUtils.getPathValue(group, pathToNode, RequisitionNodeEntity.class);
             Assert.notNull(node, "Node should not be Null and pathToNode: " + pathToNode);
 
             PrimaryType snmpPrimary = PrimaryType.PRIMARY;
@@ -171,7 +171,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
                 snmpPrimary = PrimaryType.SECONDARY;
             }
 
-            final OnmsRequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
+            final RequisitionInterfaceEntity iface = createInterface(ipAddr, snmpPrimary);
             node.addInterface(iface);
 
             requisitionService.saveOrUpdateRequisition(group);
@@ -181,8 +181,8 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
-    private OnmsRequisitionInterface createInterface(final String ipAddr, final PrimaryType snmpPrimary) {
-        final OnmsRequisitionInterface iface = new OnmsRequisitionInterface();
+    private RequisitionInterfaceEntity createInterface(final String ipAddr, final PrimaryType snmpPrimary) {
+        final RequisitionInterfaceEntity iface = new RequisitionInterfaceEntity();
         iface.setIpAddress(ipAddr);
         iface.setStatus(1);
         iface.setSnmpPrimary(snmpPrimary);
@@ -190,13 +190,13 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition addNewNodeToGroup(final String groupName, final String nodeLabel) {
+    public RequisitionEntity addNewNodeToGroup(final String groupName, final String nodeLabel) {
         m_writeLock.lock();
 
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
 
-            final OnmsRequisitionNode node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
+            final RequisitionNodeEntity node = createNode(nodeLabel, String.valueOf(System.currentTimeMillis()));
             node.setBuilding(groupName);
             group.addNode(node);
 
@@ -207,23 +207,23 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
-    private OnmsRequisitionNode createNode(final String nodeLabel, final String foreignId) {
-        final OnmsRequisitionNode node = new OnmsRequisitionNode();
+    private RequisitionNodeEntity createNode(final String nodeLabel, final String foreignId) {
+        final RequisitionNodeEntity node = new RequisitionNodeEntity();
         node.setNodeLabel(nodeLabel);
         node.setForeignId(foreignId);
         return node;
     }
 
     @Override
-    public OnmsRequisition addServiceToInterface(final String groupName, final String pathToInterface, final String serviceName) {
+    public RequisitionEntity addServiceToInterface(final String groupName, final String pathToInterface, final String serviceName) {
         m_writeLock.lock();
 
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
 
-            final OnmsRequisitionInterface iface = PropertyUtils.getPathValue(group, pathToInterface, OnmsRequisitionInterface.class);
+            final RequisitionInterfaceEntity iface = PropertyUtils.getPathValue(group, pathToInterface, RequisitionInterfaceEntity.class);
 
-            final OnmsRequisitionMonitoredService monSvc = createService(serviceName);
+            final RequisitionMonitoredServiceEntity monSvc = createService(serviceName);
             iface.addMonitoredService(monSvc);
 
             requisitionService.saveOrUpdateRequisition(group);
@@ -234,7 +234,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition getProvisioningGroup(final String name) {
+    public RequisitionEntity getProvisioningGroup(final String name) {
         m_readLock.lock();
         try {
             return requisitionService.getRequisition(name);
@@ -244,7 +244,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition saveProvisioningGroup(final String groupName, final OnmsRequisition group) {
+    public RequisitionEntity saveProvisioningGroup(final String groupName, final RequisitionEntity group) {
         m_writeLock.lock();
         try {
             trimWhitespace(group);
@@ -261,7 +261,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_readLock.lock();
         try {
             final Set<String> names = new TreeSet<>();
-            for (final OnmsRequisition r : requisitionService.getRequisitions()) {
+            for (final RequisitionEntity r : requisitionService.getRequisitions()) {
                 names.add(r.getForeignSource());
             }
             return names;
@@ -271,10 +271,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition createProvisioningGroup(final String name) {
+    public RequisitionEntity createProvisioningGroup(final String name) {
         m_writeLock.lock();
         try {
-            final OnmsRequisition group = new OnmsRequisition();
+            final RequisitionEntity group = new RequisitionEntity();
             group.setForeignSource(name);
 
             requisitionService.saveOrUpdateRequisition(group);
@@ -284,8 +284,8 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
-    private OnmsRequisitionMonitoredService createService(final String serviceName) {
-        final OnmsRequisitionMonitoredService svc = new OnmsRequisitionMonitoredService();
+    private RequisitionMonitoredServiceEntity createService(final String serviceName) {
+        final RequisitionMonitoredServiceEntity svc = new RequisitionMonitoredServiceEntity();
         svc.setServiceName(serviceName);
         return svc;
     }
@@ -302,11 +302,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public OnmsRequisition deletePath(final String groupName, final String pathToDelete) {
+    public RequisitionEntity deletePath(final String groupName, final String pathToDelete) {
         m_writeLock.lock();
 
         try {
-            final OnmsRequisition group = getProvisioningGroup(groupName);
+            final RequisitionEntity group = getProvisioningGroup(groupName);
 
             final PropertyPath path = new PropertyPath(pathToDelete);
 
@@ -335,11 +335,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
     @Override
-    public Collection<OnmsRequisition> getAllGroups() {
+    public Collection<RequisitionEntity> getAllGroups() {
         m_readLock.lock();
 
         try {
-            final Collection<OnmsRequisition> groups = new LinkedList<>();
+            final Collection<RequisitionEntity> groups = new LinkedList<>();
 
             for(final String groupName : getProvisioningGroupNames()) {
                 groups.add(getProvisioningGroup(groupName));
@@ -367,7 +367,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_writeLock.lock();
 
         try {
-            OnmsRequisition group = requisitionService.getRequisition(groupName);
+            RequisitionEntity group = requisitionService.getRequisition(groupName);
             if (group != null) {
                 group.setNodes(new ArrayList<>());
                 requisitionService.saveOrUpdateRequisition(group);
@@ -414,7 +414,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_readLock.lock();
         try {
             final SortedSet<String> serviceNames = new TreeSet<>();
-            final OnmsForeignSource pendingForeignSource = foreignSourceService.getForeignSource(groupName);
+            final ForeignSourceEntity pendingForeignSource = foreignSourceService.getForeignSource(groupName);
             serviceNames.addAll(pendingForeignSource.getDetectorNames());
 
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
@@ -448,8 +448,8 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     /**
      * Removes leading and trailing whitespace from fields that should not have any
      */
-    private void trimWhitespace(OnmsRequisition req) {
-        for (OnmsRequisitionNode node : req.getNodes()) {
+    private void trimWhitespace(RequisitionEntity req) {
+        for (RequisitionNodeEntity node : req.getNodes()) {
             if (node.getForeignId() != null) {
                 node.setForeignId(node.getForeignId().trim());
             }
@@ -459,7 +459,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             if (node.getParentForeignId() != null) {
                 node.setParentForeignId(node.getParentForeignId().trim());
             }
-            for (OnmsRequisitionInterface intf : node.getInterfaces()) {
+            for (RequisitionInterfaceEntity intf : node.getInterfaces()) {
                 if (intf.getIpAddress() != null) {
                     intf.setIpAddress(intf.getIpAddress().trim());
                 }

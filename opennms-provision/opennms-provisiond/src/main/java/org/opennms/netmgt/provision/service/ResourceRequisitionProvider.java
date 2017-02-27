@@ -39,7 +39,7 @@ import java.util.Objects;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class ResourceRequisitionProvider implements RequisitionProvider {
     }
 
     @Override
-    public OnmsRequisition getRequisition() throws IOException {
+    public RequisitionEntity getRequisition() throws IOException {
         Requisition requisition = JAXB.unmarshal(this.resource.getInputStream(), Requisition.class);
         return toPersistenceModel(requisition);
     }

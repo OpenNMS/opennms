@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 
 public interface ForeignSourceService {
@@ -42,15 +42,15 @@ public interface ForeignSourceService {
 
     int getForeignSourceCount();
 
-    Set<OnmsForeignSource> getAllForeignSources();
+    Set<ForeignSourceEntity> getAllForeignSources();
 
-    OnmsForeignSource getForeignSource(String name);
+    ForeignSourceEntity getForeignSource(String name);
 
-    void saveForeignSource(OnmsForeignSource foreignSource);
+    void saveForeignSource(ForeignSourceEntity foreignSource);
 
-    OnmsForeignSource getDefaultForeignSource();
+    ForeignSourceEntity getDefaultForeignSource();
 
-    void putDefaultForeignSource(OnmsForeignSource foreignSource);
+    void putDefaultForeignSource(ForeignSourceEntity foreignSource);
 
     void resetDefaultForeignSource();
 

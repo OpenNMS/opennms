@@ -53,7 +53,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -85,7 +85,7 @@ public class DefaultManualProvisioningServiceIT {
 
     private DefaultManualProvisioningService m_provisioningService;
 
-    private OnmsRequisition m_testData;
+    private RequisitionEntity m_testData;
 
     private RequisitionService m_activeRepository = new MockRequisitionService();
     private MockServiceTypeDao m_serviceTypeDao = new MockServiceTypeDao();
@@ -116,7 +116,7 @@ public class DefaultManualProvisioningServiceIT {
     public void testGetProvisioningGroup() {
         String name = "matt:";
 
-        OnmsRequisition actual = m_provisioningService.getProvisioningGroup(name);
+        RequisitionEntity actual = m_provisioningService.getProvisioningGroup(name);
         assertEquals(m_testData, actual);
         assertEquals(toRestModel(m_testData), toRestModel(actual));
     }
@@ -128,7 +128,7 @@ public class DefaultManualProvisioningServiceIT {
 
         int initialCount = m_testData.getNodes().size();
 
-        OnmsRequisition result = m_provisioningService.addNewNodeToGroup(groupName, nodeLabel);
+        RequisitionEntity result = m_provisioningService.addNewNodeToGroup(groupName, nodeLabel);
 
         int newCount = result.getNodes().size();
 
@@ -144,7 +144,7 @@ public class DefaultManualProvisioningServiceIT {
 
         int initialCount = PropertyUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class);
 
-        OnmsRequisition result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
+        RequisitionEntity result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
 
         int newCount = PropertyUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
 
@@ -162,7 +162,7 @@ public class DefaultManualProvisioningServiceIT {
 
         int initialCount = PropertyUtils.getPathValue(m_testData, pathToNode+".interfaceCount", int.class);
 
-        OnmsRequisition result = m_provisioningService.addInterfaceToNode(groupName, pathToNode, ipAddr);
+        RequisitionEntity result = m_provisioningService.addInterfaceToNode(groupName, pathToNode, ipAddr);
 
         int newCount = PropertyUtils.getPathValue(result, pathToNode+".interfaceCount", int.class);
 
@@ -181,7 +181,7 @@ public class DefaultManualProvisioningServiceIT {
 
         int initialCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
 
-        OnmsRequisition result = m_provisioningService.addServiceToInterface(groupName, pathToInterface, serviceName);
+        RequisitionEntity result = m_provisioningService.addServiceToInterface(groupName, pathToInterface, serviceName);
 
         int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         assertEquals(initialCount+1, newCount);
@@ -200,7 +200,7 @@ public class DefaultManualProvisioningServiceIT {
         int initialCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         String svcName = PropertyUtils.getPathValue(m_testData, pathToDelete+".serviceName", String.class);
 
-        OnmsRequisition result = m_provisioningService.deletePath(groupName, pathToDelete);
+        RequisitionEntity result = m_provisioningService.deletePath(groupName, pathToDelete);
         int newCount = PropertyUtils.getPathValue(m_testData, pathToInterface+".monitoredServiceCount", int.class);
         assertEquals(initialCount-1, newCount);
 

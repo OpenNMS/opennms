@@ -38,7 +38,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
@@ -97,10 +96,10 @@ import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
@@ -192,7 +191,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Autowired
     private RequisitionService requisitionService;
 
-    private OnmsForeignSource m_foreignSource;
+    private ForeignSourceEntity m_foreignSource;
 
     private MockSnmpDataProvider m_mockSnmpDataProvider;
 
@@ -233,11 +232,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         m_provisioner.start();
 
-        m_foreignSource = new OnmsForeignSource();
+        m_foreignSource = new ForeignSourceEntity();
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1).getMillis());
 
-        final PolicyPluginConfig policy = new PolicyPluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
+        final PolicyPluginConfigEntity policy = new PolicyPluginConfigEntity("setCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "TestCategory");
         policy.addParameter("label", "localhost");
         m_foreignSource.addPolicy(policy);
@@ -245,15 +244,15 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_foreignSourceService = new MockForeignSourceService();
         m_foreignSourceService.saveForeignSource(m_foreignSource);
 
-        final OnmsForeignSource emptyForeignSource = new OnmsForeignSource();
+        final ForeignSourceEntity emptyForeignSource = new ForeignSourceEntity();
         emptyForeignSource.setName("empty");
         emptyForeignSource.setScanInterval(Duration.standardDays(1).getMillis());
         m_foreignSourceService.saveForeignSource(emptyForeignSource);
 
-        final OnmsForeignSource snmpForeignSource = new OnmsForeignSource();
+        final ForeignSourceEntity snmpForeignSource = new ForeignSourceEntity();
         snmpForeignSource.setName("snmp");
         snmpForeignSource.setScanInterval(Duration.standardDays(1).getMillis());
-        final DetectorPluginConfig snmpDetector = new DetectorPluginConfig("SNMP", SnmpDetector.class.getName());
+        final DetectorPluginConfigEntity snmpDetector = new DetectorPluginConfigEntity("SNMP", SnmpDetector.class.getName());
         snmpForeignSource.addDetector(snmpDetector);
         m_foreignSourceService.saveForeignSource(snmpForeignSource);
 
@@ -274,7 +273,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testVisit() throws Exception {
-        final OnmsRequisition requisition = new ResourceRequisitionProvider(new ClassPathResource("/NewFile2.xml")).getRequisition();
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new ClassPathResource("/NewFile2.xml")).getRequisition();
         requisitionService.saveOrUpdateRequisition(requisition);
         verifyBasicImportCounts(requisition);
     }
@@ -368,7 +367,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
             })
     })
     public void testDnsVisit() throws IOException {
-        final OnmsRequisition requisition = new ResourceRequisitionProvider(new UrlResource("dns://localhost:9153/opennms.com")).getRequisition();
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new UrlResource("dns://localhost:9153/opennms.com")).getRequisition();
         requisitionService.saveOrUpdateRequisition(requisition);
 
         verifyDnsImportCounts(requisition);
@@ -600,9 +599,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
     })
     public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
-        final OnmsForeignSource fs = new OnmsForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("matt:");
-        fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         m_foreignSourceService.putDefaultForeignSource(fs);
 
         importFromResource("classpath:/requisition_then_scanv6.xml", Boolean.TRUE.toString());
@@ -1648,8 +1647,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testRequisitionedCategoriesWithPolicies() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        final OnmsForeignSource fs = m_foreignSourceService.getForeignSource("empty");
-        final PolicyPluginConfig policy = new PolicyPluginConfig("addDumbCategory", NodeCategorySettingPolicy.class.getName());
+        final ForeignSourceEntity fs = m_foreignSourceService.getForeignSource("empty");
+        final PolicyPluginConfigEntity policy = new PolicyPluginConfigEntity("addDumbCategory", NodeCategorySettingPolicy.class.getName());
         policy.addParameter("category", "Dumb");
         policy.addParameter("label", "test");
         fs.addPolicy(policy);
@@ -1871,7 +1870,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         return node;
     }
 
-    private static void verifyDnsImportCounts(OnmsRequisition requisition) {
+    private static void verifyDnsImportCounts(RequisitionEntity requisition) {
         // 1 for "opennms.com", 1 for "www.opennms.com"
         assertEquals(2, requisition.getNodes().size());
         assertEquals(0, requisition.getNodes().stream().mapToInt(n -> n.getCategories().size()).sum());
@@ -1889,7 +1888,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
                 ).sum());
     }
 
-    private static void verifyBasicImportCounts(OnmsRequisition requisition) {
+    private static void verifyBasicImportCounts(RequisitionEntity requisition) {
         assertEquals(1, requisition.getNodes().size());
         assertEquals(3, requisition.getNodes().stream().mapToInt(n -> n.getCategories().size()).sum());
         assertEquals(4, requisition.getNodes().stream().mapToInt(n -> n.getInterfaces().size()).sum());

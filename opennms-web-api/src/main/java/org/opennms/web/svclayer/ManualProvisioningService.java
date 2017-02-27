@@ -31,7 +31,7 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 
 /**
  * This should not be used anymore and is deprecated.
@@ -43,29 +43,29 @@ public interface ManualProvisioningService {
     
     Collection<String> getProvisioningGroupNames();
     
-    OnmsRequisition getProvisioningGroup(String name);
+    RequisitionEntity getProvisioningGroup(String name);
 
-    OnmsRequisition createProvisioningGroup(String name);
+    RequisitionEntity createProvisioningGroup(String name);
 
     Collection<String> getServiceTypeNames(String groupName);
 
-    OnmsRequisition saveProvisioningGroup(String groupName, OnmsRequisition groupData);
+    RequisitionEntity saveProvisioningGroup(String groupName, RequisitionEntity groupData);
 
-    OnmsRequisition addNewNodeToGroup(String groupName, String nodeLabel);
+    RequisitionEntity addNewNodeToGroup(String groupName, String nodeLabel);
 
-    OnmsRequisition addCategoryToNode(String groupName, String pathToNode, String categoryName);
+    RequisitionEntity addCategoryToNode(String groupName, String pathToNode, String categoryName);
 
-    OnmsRequisition addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
+    RequisitionEntity addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
 
-    OnmsRequisition addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
+    RequisitionEntity addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
 
-    OnmsRequisition addServiceToInterface(String groupName, String pathToInterface, String serviceName);
+    RequisitionEntity addServiceToInterface(String groupName, String pathToInterface, String serviceName);
 
-    OnmsRequisition deletePath(String groupName, String pathToDelete);
+    RequisitionEntity deletePath(String groupName, String pathToDelete);
     
     void importProvisioningGroup(String groupName);
 
-    Collection<OnmsRequisition> getAllGroups();
+    Collection<RequisitionEntity> getAllGroups();
 
     void deleteProvisioningGroup(String groupName);
 

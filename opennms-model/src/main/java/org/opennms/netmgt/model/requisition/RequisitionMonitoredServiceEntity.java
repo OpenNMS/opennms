@@ -53,7 +53,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="requisition_node_interface_services")
-public class OnmsRequisitionMonitoredService {
+public class RequisitionMonitoredServiceEntity {
 
     // TODO MVR das muss anders
     @Id
@@ -75,7 +75,7 @@ public class OnmsRequisitionMonitoredService {
 
     @ManyToOne(optional = false)
     @JoinColumn(name="interface_id")
-    private OnmsRequisitionInterface ipInterface;
+    private RequisitionInterfaceEntity ipInterface;
 
 
     public Long getId() {
@@ -90,10 +90,10 @@ public class OnmsRequisitionMonitoredService {
         this.categories = categories;
     }
 
-    public OnmsRequisitionMonitoredService() {
+    public RequisitionMonitoredServiceEntity() {
     }
 
-    public OnmsRequisitionMonitoredService(String serviceName) {
+    public RequisitionMonitoredServiceEntity(String serviceName) {
         this.serviceName = serviceName;
     }
 
@@ -117,11 +117,11 @@ public class OnmsRequisitionMonitoredService {
         serviceName = value;
     }
 
-    public OnmsRequisitionInterface getIpInterface() {
+    public RequisitionInterfaceEntity getIpInterface() {
         return ipInterface;
     }
 
-    public void setIpInterface(OnmsRequisitionInterface ipInterface) {
+    public void setIpInterface(RequisitionInterfaceEntity ipInterface) {
         this.ipInterface = ipInterface;
     }
 
@@ -137,9 +137,9 @@ public class OnmsRequisitionMonitoredService {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof OnmsRequisitionMonitoredService)) return false;
+        if (!(obj instanceof RequisitionMonitoredServiceEntity)) return false;
         if (getId() != null) {
-            final OnmsRequisitionMonitoredService other = (OnmsRequisitionMonitoredService) obj;
+            final RequisitionMonitoredServiceEntity other = (RequisitionMonitoredServiceEntity) obj;
             return getId().equals(other.getId());
         }
         return super.equals(obj);

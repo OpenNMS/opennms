@@ -35,7 +35,7 @@ import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +43,12 @@ class DetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRunner.class);
 
     private final ProvisionService m_service;
-    private final OnmsPluginConfig m_detectorConfig;
+    private final PluginConfigEntity m_detectorConfig;
     private final Integer m_nodeId;
     private final InetAddress m_address;
     private final OnmsMonitoringLocation m_location;
 
-    public DetectorRunner(ProvisionService service, OnmsPluginConfig detectorConfig, Integer nodeId, InetAddress address, OnmsMonitoringLocation location) {
+    public DetectorRunner(ProvisionService service, PluginConfigEntity detectorConfig, Integer nodeId, InetAddress address, OnmsMonitoringLocation location) {
         m_service = service;
         m_detectorConfig = detectorConfig;
         m_nodeId = nodeId;

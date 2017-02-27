@@ -33,57 +33,57 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
-import org.opennms.netmgt.model.requisition.PluginType;
-import org.opennms.netmgt.model.requisition.PolicyPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigType;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
 // TODO MVR verify license headers
 public class ForeignSourceMapper {
 
     // Attention, this does not merge with existing data in the database. Use with caution
-    public static OnmsForeignSource toPersistenceModel(ForeignSource input) {
+    public static ForeignSourceEntity toPersistenceModel(ForeignSource input) {
         if (input == null) {
             return null;
         }
-        OnmsForeignSource output = new OnmsForeignSource();
+        ForeignSourceEntity output = new ForeignSourceEntity();
         output.setName(input.getName());
         output.setScanInterval(input.getScanInterval().getMillis());
         output.setDate(input.getDateStampAsDate());
         output.setDefault(input.isDefault());
         input.getDetectors()
                 .stream()
-                .map(d -> (DetectorPluginConfig) toPersistenceModel(d, PluginType.Detector))
+                .map(d -> (DetectorPluginConfigEntity) toPersistenceModel(d, PluginConfigType.Detector))
                 .collect(Collectors.toList())
                 .forEach(p -> output.addPlugin(p));
         input.getPolicies()
                 .stream()
-                .map(d -> (PolicyPluginConfig) toPersistenceModel(d, PluginType.Policy))
+                .map(d -> (PolicyPluginConfigEntity) toPersistenceModel(d, PluginConfigType.Policy))
                 .forEach(p -> output.addPlugin(p));
         return output;
     }
 
     // Be careful when using, as there is no merging with existing database entities
-    public static <T extends OnmsPluginConfig> T toPersistenceModel(PluginConfig input, PluginType type) {
+    public static <T extends PluginConfigEntity> T toPersistenceModel(PluginConfig input, PluginConfigType type) {
         if (input == null) {
             return null;
         }
-        OnmsPluginConfig output = type.newInstance();
+        PluginConfigEntity output = type.newInstance();
         output.setName(input.getName());
         output.setPluginClass(input.getPluginClass());
         output.setParameters(input.getParameters().stream().collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue())));
         return (T) output;
     }
 
-    public static List<ForeignSource> toRestModel(Collection<OnmsForeignSource> input) {
+    public static List<ForeignSource> toRestModel(Collection<ForeignSourceEntity> input) {
         if (input == null) {
             return null;
         }
         return input.stream().map(it -> toRestModel(it)).collect(Collectors.toList());
     }
 
-    public static ForeignSource toRestModel(OnmsForeignSource input) {
+    public static ForeignSource toRestModel(ForeignSourceEntity input) {
         if (input == null) {
             return null;
         }
@@ -97,7 +97,7 @@ public class ForeignSourceMapper {
         return output;
     }
 
-    public static PluginConfig toRestModel(OnmsPluginConfig input) {
+    public static PluginConfig toRestModel(PluginConfigEntity input) {
         if (input == null) {
             return null;
         }

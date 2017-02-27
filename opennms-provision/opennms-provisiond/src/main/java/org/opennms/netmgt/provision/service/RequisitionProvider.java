@@ -30,12 +30,12 @@ package org.opennms.netmgt.provision.service;
 
 import java.io.IOException;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 
 /**
  * Provides a requisition.
  */
 interface RequisitionProvider {
 
-    OnmsRequisition getRequisition() throws IOException;
+    RequisitionEntity getRequisition() throws IOException;
 }

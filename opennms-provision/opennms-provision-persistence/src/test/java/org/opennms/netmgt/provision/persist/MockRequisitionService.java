@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -44,15 +44,15 @@ import org.springframework.util.Assert;
 
 // TODO MVR implement
 public class MockRequisitionService implements RequisitionService {
-    private final Map<String,OnmsRequisition> m_requisitions = new HashMap<>();
+    private final Map<String,RequisitionEntity> m_requisitions = new HashMap<>();
 
     @Override
-    public Set<OnmsRequisition> getRequisitions() {
+    public Set<RequisitionEntity> getRequisitions() {
         return new TreeSet<>(m_requisitions.values());
     }
 
     @Override
-    public OnmsRequisition getRequisition(final String foreignSourceName) {
+    public RequisitionEntity getRequisition(final String foreignSourceName) {
         Assert.notNull(foreignSourceName);
         return m_requisitions.get(foreignSourceName);
     }
@@ -63,7 +63,7 @@ public class MockRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void saveOrUpdateRequisition(final OnmsRequisition requisition) {
+    public void saveOrUpdateRequisition(final RequisitionEntity requisition) {
         Assert.notNull(requisition);
         Assert.notNull(requisition.getForeignSource());
 
@@ -71,22 +71,22 @@ public class MockRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void saveOrUpdateNode(OnmsRequisition parentPersistedRequisition, OnmsRequisitionNode nodeToUpdateOrReplace) {
+    public void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace) {
         // not implemented
     }
 
     @Override
-    public void saveOrUpdateInterface(OnmsRequisitionNode parentPersistedNode, OnmsRequisitionInterface interfaceToUpdateOrReplace) {
+    public void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace) {
         // not implemented
     }
 
     @Override
-    public void saveOrUpdateService(OnmsRequisitionInterface parentPersistedInterface, OnmsRequisitionMonitoredService serviceToUpdateOrReplace) {
+    public void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace) {
         // not implemented
     }
 
     @Override
-    public void saveOrUpdateNode(OnmsRequisitionNode requisitionNode) {
+    public void saveOrUpdateNode(RequisitionNodeEntity requisitionNode) {
         // not implemented
     }
 

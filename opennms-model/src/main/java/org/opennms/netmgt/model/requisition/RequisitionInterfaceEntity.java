@@ -63,7 +63,7 @@ import org.opennms.netmgt.model.PrimaryType;
 
 @Entity
 @Table(name = "requisition_node_interfaces")
-public class OnmsRequisitionInterface {
+public class RequisitionInterfaceEntity {
 
     @Id
     @Column(name="id")
@@ -72,7 +72,7 @@ public class OnmsRequisitionInterface {
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "ipInterface")
-    protected List<OnmsRequisitionMonitoredService> monitoredServices = new ArrayList<>();
+    protected List<RequisitionMonitoredServiceEntity> monitoredServices = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
@@ -101,7 +101,7 @@ public class OnmsRequisitionInterface {
 
     @ManyToOne(optional = false)
     @JoinColumn(name="node_id")
-    private OnmsRequisitionNode node;
+    private RequisitionNodeEntity node;
 
     public Long getId() {
         return id;
@@ -123,17 +123,17 @@ public class OnmsRequisitionInterface {
         return ipAddress;
     }
 
-    public List<OnmsRequisitionMonitoredService> getMonitoredServices() {
+    public List<RequisitionMonitoredServiceEntity> getMonitoredServices() {
         return monitoredServices;
     }
 
-    public void setMonitoredServices(List<OnmsRequisitionMonitoredService> services) {
+    public void setMonitoredServices(List<RequisitionMonitoredServiceEntity> services) {
         Objects.requireNonNull(services);
         monitoredServices = services;
     }
 
-    public OnmsRequisitionMonitoredService getMonitoredService(String service) {
-        for (OnmsRequisitionMonitoredService svc : monitoredServices) {
+    public RequisitionMonitoredServiceEntity getMonitoredService(String service) {
+        for (RequisitionMonitoredServiceEntity svc : monitoredServices) {
             if (svc.getServiceName().equals(service)) {
                 return svc;
             }
@@ -141,7 +141,7 @@ public class OnmsRequisitionInterface {
         return null;
     }
 
-    public void removeMonitoredService(OnmsRequisitionMonitoredService service) {
+    public void removeMonitoredService(RequisitionMonitoredServiceEntity service) {
         if (monitoredServices.remove(service)) {
             service.setIpInterface(null); // remove parent relationship
         }
@@ -151,7 +151,7 @@ public class OnmsRequisitionInterface {
         removeMonitoredService(getMonitoredService(service));
     }
 
-    public void addMonitoredService(OnmsRequisitionMonitoredService service) {
+    public void addMonitoredService(RequisitionMonitoredServiceEntity service) {
         Objects.requireNonNull(service);
         if (!monitoredServices.contains(service)) {
             service.setIpInterface(this);
@@ -207,11 +207,11 @@ public class OnmsRequisitionInterface {
         categories.add(category);
     }
 
-    public OnmsRequisitionNode getNode() {
+    public RequisitionNodeEntity getNode() {
         return node;
     }
 
-    public void setNode(OnmsRequisitionNode node) {
+    public void setNode(RequisitionNodeEntity node) {
         this.node = node;
     }
 
@@ -227,9 +227,9 @@ public class OnmsRequisitionInterface {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof OnmsRequisitionInterface)) return false;
+        if (!(obj instanceof RequisitionInterfaceEntity)) return false;
         if (getId() != null) {
-            final OnmsRequisitionInterface other = (OnmsRequisitionInterface) obj;
+            final RequisitionInterfaceEntity other = (RequisitionInterfaceEntity) obj;
             return getId().equals(other.getId());
         }
         return super.equals(obj);

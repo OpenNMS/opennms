@@ -44,8 +44,8 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -81,9 +81,9 @@ public class MultipleImportIT extends ProvisioningITCase {
     public void setUp() {
         MockLogAppender.setupLogging();
         final ForeignSourceService foreignSourceService = new MockForeignSourceService();
-        final OnmsForeignSource foreignSource = new OnmsForeignSource();
+        final ForeignSourceEntity foreignSource = new ForeignSourceEntity();
         foreignSource.setName("default");
-        foreignSource.addDetector(new DetectorPluginConfig("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
+        foreignSource.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
         foreignSourceService.putDefaultForeignSource(foreignSource);
         m_provisioner.getProvisionService().setForeignSourceService(foreignSourceService);
     }

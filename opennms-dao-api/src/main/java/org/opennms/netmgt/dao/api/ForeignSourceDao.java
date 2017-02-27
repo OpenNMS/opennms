@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 
-public interface ForeignSourceDao extends OnmsDao<OnmsForeignSource, String> {
+public interface ForeignSourceDao extends OnmsDao<ForeignSourceEntity, String> {
 }

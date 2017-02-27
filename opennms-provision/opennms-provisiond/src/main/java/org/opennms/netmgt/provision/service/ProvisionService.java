@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
@@ -204,7 +204,7 @@ public interface ProvisionService {
 
     NodeScanSchedule getScheduleForNode(int nodeId, boolean force);
     
-    List<DetectorPluginConfig> getDetectorsForForeignSource(String foreignSource);
+    List<DetectorPluginConfigEntity> getDetectorsForForeignSource(String foreignSource);
 
     List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
     

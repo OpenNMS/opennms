@@ -39,10 +39,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,11 +181,11 @@ public class ImportOperationsManager {
         return m_rescanExisting;
     }
 
-    public void auditNodes(OnmsRequisition requisition) {
-        for (OnmsRequisitionNode node : requisition.getNodes()) {
+    public void auditNodes(RequisitionEntity requisition) {
+        for (RequisitionNodeEntity node : requisition.getNodes()) {
             final SaveOrUpdateOperation importOperation = foundNode(node.getForeignId(), node.getNodeLabel(), node.getLocation(), node.getBuilding(), node.getCity());
 
-            for (OnmsRequisitionInterface eachInterface : node.getInterfaces()) {
+            for (RequisitionInterfaceEntity eachInterface : node.getInterfaces()) {
                 importOperation.foundInterface(
                         eachInterface.getIpAddress().trim(),
                         eachInterface.getDescription(),
@@ -193,7 +193,7 @@ public class ImportOperationsManager {
                         eachInterface.isManaged(),
                         eachInterface.getStatus());
 
-                for (OnmsRequisitionMonitoredService eachService : eachInterface.getMonitoredServices()) {
+                for (RequisitionMonitoredServiceEntity eachService : eachInterface.getMonitoredServices()) {
                     importOperation.foundMonitoredService(eachService.getServiceName());
                 }
             }

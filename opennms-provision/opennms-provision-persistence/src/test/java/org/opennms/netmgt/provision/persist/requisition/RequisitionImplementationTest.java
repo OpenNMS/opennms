@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
         runTest(
                 fsr -> {
                     try {
-                        OnmsRequisition req = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
+                        RequisitionEntity req = toPersistenceModel(JAXB.unmarshal(new ClassPathResource("/requisition-test.xml").getURL(), Requisition.class));
                         fsr.saveOrUpdateRequisition(req);
                         req = fsr.getRequisition("imported:");
                         assertNotNull(req);
@@ -101,10 +101,10 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testRequisitionWithSpace() {
         runTest(
                 fsr -> {
-                    final OnmsRequisition req = new OnmsRequisition("foo bar");
+                    final RequisitionEntity req = new RequisitionEntity("foo bar");
                     req.setLastUpdate(new Date(0));
                     fsr.saveOrUpdateRequisition(req);
-                    final OnmsRequisition saved = fsr.getRequisition("foo bar");
+                    final RequisitionEntity saved = fsr.getRequisition("foo bar");
                     assertNotNull(saved);
                     assertEquals(req, saved);
                 },
@@ -116,7 +116,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     public void testRequisitionWithSlash() {
         runTest(
                 fsr -> {
-                    final OnmsRequisition req = new OnmsRequisition("foo/bar");
+                    final RequisitionEntity req = new RequisitionEntity("foo/bar");
                     req.setForeignSource("foo/bar");
                     fsr.saveOrUpdateRequisition(req);
                 },

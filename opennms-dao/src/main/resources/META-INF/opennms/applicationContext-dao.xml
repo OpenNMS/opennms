@@ -552,10 +552,10 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
 
-  <bean id="requisitionDao" class="org.opennms.netmgt.dao.hibernate.OnmsRequistionDaoHibernate">
+  <bean id="requisitionDao" class="org.opennms.netmgt.dao.hibernate.RequistionDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsRequisitionDao" ref="requisitionDao" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionDao" ref="requisitionDao" />
 
   <bean id="foreignSourceDao" class="org.opennms.netmgt.dao.hibernate.OnmsForeignSourceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

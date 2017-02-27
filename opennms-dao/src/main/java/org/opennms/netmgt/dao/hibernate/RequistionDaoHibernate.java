@@ -30,38 +30,38 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Optional;
 
-import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.dao.api.RequisitionDao;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 
-public class OnmsRequistionDaoHibernate extends AbstractDaoHibernate<OnmsRequisition, String> implements OnmsRequisitionDao {
-    public OnmsRequistionDaoHibernate() {
-        super(OnmsRequisition.class);
+public class RequistionDaoHibernate extends AbstractDaoHibernate<RequisitionEntity, String> implements RequisitionDao {
+    public RequistionDaoHibernate() {
+        super(RequisitionEntity.class);
     }
 
     @Override
-    public OnmsRequisition getByForeignSource(String foreignSource) {
+    public RequisitionEntity getByForeignSource(String foreignSource) {
         return get(foreignSource); // ForeignSource and requisitionName are identical
     }
 
     @Override
-    public OnmsRequisitionNode getNode(String foreignSource, String foreignId) {
+    public RequisitionNodeEntity getNode(String foreignSource, String foreignId) {
         return Optional.ofNullable(get(foreignSource))
                 .map(req -> req.getNode(foreignId))
                 .orElse(null);
     }
 
     @Override
-    public OnmsRequisitionInterface getIpInterface(String foreignSource, String foreignId, String ipAddress) {
+    public RequisitionInterfaceEntity getIpInterface(String foreignSource, String foreignId, String ipAddress) {
         return Optional.ofNullable(getNode(foreignSource, foreignId))
                 .map(node -> node.getInterface(ipAddress))
                 .orElse(null);
     }
 
     @Override
-    public OnmsRequisitionMonitoredService getService(String foreignSource, String foreignId, String ipAddress, String serviceName) {
+    public RequisitionMonitoredServiceEntity getService(String foreignSource, String foreignId, String ipAddress, String serviceName) {
         return Optional.ofNullable(getIpInterface(foreignSource, foreignId, ipAddress))
                 .map(iface -> iface.getMonitoredService(serviceName))
                 .orElse(null);

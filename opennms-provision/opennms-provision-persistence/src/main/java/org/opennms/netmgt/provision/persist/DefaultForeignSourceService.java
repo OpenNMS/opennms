@@ -43,8 +43,8 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.ForeignSourceDao;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
@@ -87,17 +87,17 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     @Override
-    public Set<OnmsForeignSource> getAllForeignSources() {
+    public Set<ForeignSourceEntity> getAllForeignSources() {
         return new HashSet<>(foreignSourceDao.findAll());
     }
 
     @Override
-    public OnmsForeignSource getForeignSource(String name) {
+    public ForeignSourceEntity getForeignSource(String name) {
         return foreignSourceDao.get(name);
     }
 
     @Override
-    public void saveForeignSource(OnmsForeignSource foreignSource) {
+    public void saveForeignSource(ForeignSourceEntity foreignSource) {
         validate(foreignSource);
         normalizePluginConfigs(foreignSource);
         foreignSource.updateDateStamp();
@@ -105,8 +105,8 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     @Override
-    public OnmsForeignSource getDefaultForeignSource() {
-        OnmsForeignSource defaultForeignSource = foreignSourceDao.get(DEFAULT_FOREIGNSOURCE_NAME);
+    public ForeignSourceEntity getDefaultForeignSource() {
+        ForeignSourceEntity defaultForeignSource = foreignSourceDao.get(DEFAULT_FOREIGNSOURCE_NAME);
         if (defaultForeignSource != null) {
             return defaultForeignSource;
         }
@@ -117,7 +117,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     @Override
-    public void putDefaultForeignSource(OnmsForeignSource foreignSource) {
+    public void putDefaultForeignSource(ForeignSourceEntity foreignSource) {
         foreignSource.setName(DEFAULT_FOREIGNSOURCE_NAME); // overwrite name
         foreignSource.setDefault(true);
         saveForeignSource(foreignSource);
@@ -207,16 +207,16 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return m_wrappers;
     }
 
-    private void normalizePluginConfigs(OnmsForeignSource fs) {
-        for (OnmsPluginConfig pc : fs.getDetectors()) {
+    private void normalizePluginConfigs(ForeignSourceEntity fs) {
+        for (PluginConfigEntity pc : fs.getDetectors()) {
             normalizePluginConfig(pc);
         }
-        for (OnmsPluginConfig pc : fs.getPolicies()) {
+        for (PluginConfigEntity pc : fs.getPolicies()) {
             normalizePluginConfig(pc);
         }
     }
 
-    private void normalizePluginConfig(final OnmsPluginConfig pc) {
+    private void normalizePluginConfig(final PluginConfigEntity pc) {
         if (m_wrappers.containsKey(pc.getPluginClass())) {
             final PluginWrapper w = m_wrappers.get(pc.getPluginClass());
             if (w != null) {
@@ -236,7 +236,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
     }
 
-    private void validate(OnmsForeignSource foreignSource) {
+    private void validate(ForeignSourceEntity foreignSource) {
         // TODO MVR
 //        throw new UnsupportedOperationException("TODO MVR implement me");
     }

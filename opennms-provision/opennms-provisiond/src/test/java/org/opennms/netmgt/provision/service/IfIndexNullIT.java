@@ -47,8 +47,8 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockRequisitionService;
@@ -95,9 +95,9 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     public void setUp() {
         MockLogAppender.setupLogging();
         final ForeignSourceService mfsr = new MockForeignSourceService();
-        final OnmsForeignSource fs = new OnmsForeignSource();
+        final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
-        fs.addDetector(new DetectorPluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
+        fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceService(mfsr);
         m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());

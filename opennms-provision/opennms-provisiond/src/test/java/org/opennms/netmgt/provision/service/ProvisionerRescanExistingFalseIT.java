@@ -55,8 +55,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.requisition.DetectorPluginConfig;
-import org.opennms.netmgt.model.requisition.OnmsForeignSource;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
@@ -118,7 +118,7 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
 
     protected EventAnticipator m_eventAnticipator;
 
-    private OnmsForeignSource m_foreignSource;
+    private ForeignSourceEntity m_foreignSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -140,16 +140,16 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
         
-        m_foreignSource = new OnmsForeignSource();
+        m_foreignSource = new ForeignSourceEntity();
         m_foreignSource.setName("noRescanOnImport");
         m_foreignSource.setScanInterval(Duration.standardDays(1).getMillis());
 
-        final DetectorPluginConfig icmpDetector = new DetectorPluginConfig("ICMP", IcmpDetector.class.getName());
+        final DetectorPluginConfigEntity icmpDetector = new DetectorPluginConfigEntity("ICMP", IcmpDetector.class.getName());
         icmpDetector.addParameter("timeout", "500");
         icmpDetector.addParameter("retries", "0");
         m_foreignSource.addDetector(icmpDetector);
 
-        final DetectorPluginConfig snmpDetector = new DetectorPluginConfig("SNMP", SnmpDetector.class.getName());
+        final DetectorPluginConfigEntity snmpDetector = new DetectorPluginConfigEntity("SNMP", SnmpDetector.class.getName());
         snmpDetector.addParameter("timeout", "500");
         snmpDetector.addParameter("retries", "0");
 		m_foreignSource.addDetector(snmpDetector);

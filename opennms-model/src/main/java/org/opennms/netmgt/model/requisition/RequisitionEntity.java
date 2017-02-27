@@ -56,8 +56,8 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name="requisition")
-public class OnmsRequisition implements Serializable {
-    private static final Logger LOG = LoggerFactory.getLogger(OnmsRequisition.class);
+public class RequisitionEntity implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionEntity.class);
 
     // TODO MVR ...
     private static final long serialVersionUID = 1629774241824443273L;
@@ -67,7 +67,7 @@ public class OnmsRequisition implements Serializable {
     protected String name;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "requisition")
-    protected List<OnmsRequisitionNode> nodes = new ArrayList<>();
+    protected List<RequisitionNodeEntity> nodes = new ArrayList<>();
 
     @Column(name="date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -77,18 +77,18 @@ public class OnmsRequisition implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     protected Date lastImport;
     
-    public OnmsRequisition() {
+    public RequisitionEntity() {
     }
 
     // requisistionName or foreignSource name (they were something different in the past, but are now the same (mvrueden: 2017-02-18)
-    public OnmsRequisition(final String requisitionName) {
+    public RequisitionEntity(final String requisitionName) {
         name = requisitionName;
         lastUpdate = new Date();
         lastImport = new Date();
     }
 
-    public OnmsRequisitionNode getNode(String foreignId) {
-        for (OnmsRequisitionNode n : nodes) {
+    public RequisitionNodeEntity getNode(String foreignId) {
+        for (RequisitionNodeEntity n : nodes) {
             if (n.getForeignId().equals(foreignId)) {
                 LOG.debug("returning node '{}' for foreign id '{}'", n, foreignId);
                 return n;
@@ -97,7 +97,7 @@ public class OnmsRequisition implements Serializable {
         return null;
     }
 
-    public void removeNode(OnmsRequisitionNode node) {
+    public void removeNode(RequisitionNodeEntity node) {
         if (nodes.remove(node)) {
             node.setRequisition(null); // remove parent relationship
         }
@@ -107,15 +107,15 @@ public class OnmsRequisition implements Serializable {
         removeNode(getNode(foreignId));
     }
 
-    public List<OnmsRequisitionNode> getNodes() {
+    public List<RequisitionNodeEntity> getNodes() {
         return nodes;
     }
 
-    public void setNodes(final List<OnmsRequisitionNode> nodes) {
+    public void setNodes(final List<RequisitionNodeEntity> nodes) {
         this.nodes = Objects.requireNonNull(nodes);
     }
 
-    public void addNode(final OnmsRequisitionNode node) {
+    public void addNode(final RequisitionNodeEntity node) {
         Objects.requireNonNull(node);
         if (!nodes.contains(node)) {
             node.setRequisition(this);
@@ -167,8 +167,8 @@ public class OnmsRequisition implements Serializable {
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (!(obj instanceof OnmsRequisition)) return false;
-        final OnmsRequisition other = (OnmsRequisition) obj;
+        if (!(obj instanceof RequisitionEntity)) return false;
+        final RequisitionEntity other = (RequisitionEntity) obj;
         if (getName() != null) {
             return getName().equals(other.getName());
         }

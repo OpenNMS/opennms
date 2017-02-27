@@ -30,8 +30,8 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.dao.api.OnmsRequisitionDao;
-import org.opennms.netmgt.model.requisition.OnmsRequisition;
+import org.opennms.netmgt.dao.api.RequisitionDao;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 
 import com.google.common.base.MoreObjects;
 
@@ -39,15 +39,15 @@ class DatabaseRequisitionProvider implements RequisitionProvider {
 
     private final String requisitionName;
 
-    private final OnmsRequisitionDao requisitionDao;
+    private final RequisitionDao requisitionDao;
 
-    DatabaseRequisitionProvider(OnmsRequisitionDao requisitionDao, String requisitionName) {
+    DatabaseRequisitionProvider(RequisitionDao requisitionDao, String requisitionName) {
         this.requisitionName = Objects.requireNonNull(requisitionName);
         this.requisitionDao = Objects.requireNonNull(requisitionDao);
     }
 
     @Override
-    public OnmsRequisition getRequisition() {
+    public RequisitionEntity getRequisition() {
         return requisitionDao.get(requisitionName);
     }
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.requisition;
+package org.opennms.netmgt.model.foreignsource;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -56,8 +56,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="foreignsource_plugins")
 @DiscriminatorColumn(name="type")
-// TODO MVR rename
-public abstract class OnmsPluginConfig implements Serializable {
+public abstract class PluginConfigEntity implements Serializable {
 
     // TODO MVR
     private static final long serialVersionUID = 4307231598310473690L;
@@ -86,9 +85,9 @@ public abstract class OnmsPluginConfig implements Serializable {
     @ManyToOne(optional=false)
     @JoinColumn(name="foreignsource")
     // TODO MVR ensure that this is set, on save (add guards, when a plugin config points to another element than defined in the foreign source)
-    private OnmsForeignSource foreignSource;
+    private ForeignSourceEntity foreignSource;
 
-    protected OnmsPluginConfig() {
+    protected PluginConfigEntity() {
     }
 
     /**
@@ -97,12 +96,12 @@ public abstract class OnmsPluginConfig implements Serializable {
      * @param name the human-readable name of the plugin
      * @param clazz the name of the plugin's java class
      */
-    protected OnmsPluginConfig(String name, String clazz) {
+    protected PluginConfigEntity(String name, String clazz) {
         setName(name);
         setPluginClass(clazz);
     }
 
-    protected OnmsPluginConfig(OnmsPluginConfig pluginConfig) {
+    protected PluginConfigEntity(PluginConfigEntity pluginConfig) {
         setName(pluginConfig.getName());
         setPluginClass(pluginConfig.getPluginClass());
         setParameters(pluginConfig.getParameters());
@@ -149,15 +148,15 @@ public abstract class OnmsPluginConfig implements Serializable {
         return parameters.get(key);
     }
 
-    public void setForeignSource(OnmsForeignSource foreignSource) {
+    public void setForeignSource(ForeignSourceEntity foreignSource) {
         this.foreignSource = foreignSource;
     }
 
-    public OnmsForeignSource getForeignSource() {
+    public ForeignSourceEntity getForeignSource() {
         return foreignSource;
     }
 
-    public abstract PluginType getType();
+    public abstract PluginConfigType getType();
 
     @Override
     public int hashCode() {
@@ -171,8 +170,8 @@ public abstract class OnmsPluginConfig implements Serializable {
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (!(obj instanceof OnmsPluginConfig)) return false;
-        final OnmsPluginConfig other = (OnmsPluginConfig) obj;
+        if (!(obj instanceof PluginConfigEntity)) return false;
+        final PluginConfigEntity other = (PluginConfigEntity) obj;
         if (getId() != null) {
             return getId().equals(other.getName());
         }

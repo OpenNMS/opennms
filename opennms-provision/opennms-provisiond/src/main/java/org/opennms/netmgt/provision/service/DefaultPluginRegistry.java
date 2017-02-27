@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.OnmsPolicy;
@@ -118,7 +118,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     /** {@inheritDoc} */
     @Override
-    public <T> T getPluginInstance(Class<T> pluginClass, OnmsPluginConfig pluginConfig) {
+    public <T> T getPluginInstance(Class<T> pluginClass, PluginConfigEntity pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {
             return null;

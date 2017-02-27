@@ -46,7 +46,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
@@ -124,7 +124,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
             if (managedByProvisiond) {
                 WebApplicationContext beanFactory = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
                 final RequisitionService requisitionService = beanFactory.getBean(RequisitionService.class);
-                OnmsRequisitionNode requisitionNode = requisitionService.getRequisition(node.getForeignSource()).getNode(node.getForeignId());
+                RequisitionNodeEntity requisitionNode = requisitionService.getRequisition(node.getForeignSource()).getNode(node.getForeignId());
                 requisitionNode.setNodeLabel(newNodeLabel);
                 requisitionService.saveOrUpdateNode(requisitionNode);
             }

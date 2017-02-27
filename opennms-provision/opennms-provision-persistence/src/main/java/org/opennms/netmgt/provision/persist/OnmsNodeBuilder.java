@@ -32,9 +32,9 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionInterface;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionMonitoredService;
-import org.opennms.netmgt.model.requisition.OnmsRequisitionNode;
+import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class OnmsNodeBuilder  {
 
     private static Logger LOG = LoggerFactory.getLogger(OnmsNodeBuilder.class);
 
-    public OnmsNode buildNode(OnmsRequisitionNode requisitionNode) {
+    public OnmsNode buildNode(RequisitionNodeEntity requisitionNode) {
         final NetworkBuilder bldr = new NetworkBuilder();
         final NetworkBuilder.NodeBuilder nodeBldr = bldr.addNode(requisitionNode.getNodeLabel());
         nodeBldr.setLabelSource(OnmsNode.NodeLabelSource.USER);
@@ -56,7 +56,7 @@ public class OnmsNodeBuilder  {
         for (final String nodeCategory : requisitionNode.getCategories()) {
             bldr.addCategory(nodeCategory);
         }
-        for(final OnmsRequisitionInterface ifaceReq : requisitionNode.getInterfaces()) {
+        for(final RequisitionInterfaceEntity ifaceReq : requisitionNode.getInterfaces()) {
             final String ipAddr = ifaceReq.getIpAddress();
             if (ipAddr == null || "".equals(ipAddr)) {
                 bldr.clearInterface();
@@ -68,7 +68,7 @@ public class OnmsNodeBuilder  {
             ifBldr.setIsManaged(ifaceReq.getStatus() == 3 ? "U" : "M");
             ifBldr.setIsSnmpPrimary(ifaceReq.getSnmpPrimary().getCode());
 
-            for(OnmsRequisitionMonitoredService monSvcReq : ifaceReq.getMonitoredServices()) {
+            for(RequisitionMonitoredServiceEntity monSvcReq : ifaceReq.getMonitoredServices()) {
                 bldr.addService(monSvcReq.getServiceName());
             }
         }

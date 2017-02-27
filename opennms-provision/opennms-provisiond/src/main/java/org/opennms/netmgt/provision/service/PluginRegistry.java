@@ -30,13 +30,13 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.requisition.OnmsPluginConfig;
+import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 
 public interface PluginRegistry {
 
     <T> Collection<T> getAllPlugins(Class<T> pluginClass);
 
-    <T> T getPluginInstance(Class<T> pluginClass, OnmsPluginConfig pluginConfig);
+    <T> T getPluginInstance(Class<T> pluginClass, PluginConfigEntity pluginConfig);
     
 
 }
