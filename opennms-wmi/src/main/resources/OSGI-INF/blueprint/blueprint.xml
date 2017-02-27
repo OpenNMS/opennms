@@ -12,4 +12,12 @@
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.wmi.WmiDetectorFactory" />
 	</service>
+
+    <bean id="wmiCollector" class="org.opennms.netmgt.collectd.WmiCollector" />
+    <service ref="wmiCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+        <service-properties>
+           <entry key="type" value="org.opennms.netmgt.collectd.WmiCollector" />
+        </service-properties>
+    </service>
+
 </blueprint>
