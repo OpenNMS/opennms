@@ -384,7 +384,7 @@ public abstract class Bootstrap {
         }
 
         // Otherwise, attempt to infer the path from the location of this code-base
-        File opennmsHome = findOpenNMSHome();
+        File opennmsHome = findOpenNMSHomeUsingJarPath();
         if (opennmsHome == null) {
             System.err.println("Could not determine OpenNMS home "
                     + "directory.  Use \"-Dopennms.home=...\" "
