@@ -42,15 +42,16 @@ import org.graphdrawing.graphml.GraphmlType;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
-import org.opennms.web.rest.support.graphml.GraphmlRepository;
-import org.opennms.web.rest.support.graphml.GraphmlRepositoryImpl;
+import org.opennms.features.graphml.service.GraphmlRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Path("graphml")
 public class GraphMLRestService {
 
-    private GraphmlRepository graphmlRepository = new GraphmlRepositoryImpl();
+    @Autowired
+    private GraphmlRepository graphmlRepository;
 
     @POST
     @Path("{graph-name}")

@@ -7,9 +7,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
-  <artifactId>opennms-topology-runtime-graphml</artifactId>
-  <name>OpenNMS :: Features :: Topology :: Features :: GraphML</name>
-  <description>GraphML runtime and plugins for the OpenNMS topology web app.</description>
+  <artifactId>opennms-topology-runtime-asset</artifactId>
+  <name>OpenNMS :: Features :: Topology :: Features :: Asset</name>
+  <description>Asset runtime and plugins for the OpenNMS topology web app.</description>
   <packaging>pom</packaging>
   <build>
     <plugins>
@@ -21,6 +21,7 @@
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
           <features>
+            <feature>opennms-topology-runtime-graphml</feature>
             <feature>opennms-topology-runtime-base</feature>
           </features>
         </configuration>
@@ -38,19 +39,8 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>graphml</artifactId>
+      <artifactId>asset</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <!-- At the moment this is provided by the system bundle -->
-    <!--<dependency>-->
-      <!--<groupId>org.opennms.features</groupId>-->
-      <!--<artifactId>org.opennms.features.graphml</artifactId>-->
-      <!--<version>${project.version}</version>-->
-    <!--</dependency>-->
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>${groovyVersion}</version>
     </dependency>
   </dependencies>
 </project>

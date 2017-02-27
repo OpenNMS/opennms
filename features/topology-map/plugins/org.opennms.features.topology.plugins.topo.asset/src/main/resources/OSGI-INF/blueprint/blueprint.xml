@@ -1,0 +1,44 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+    ">
+
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="assetPluginConfigProperties" persistent-id="org.opennms.plugins.graphml.asset" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="assetLayers" value="asset-region,asset-building,asset-rack" />
+            <cm:property name="preferredLayout" value="Grid Layout" />
+            <cm:property name="providerId" value="asset"/>
+            <cm:property name="label" value="Asset Provider"/>
+            <cm:property name="breadcrumbStrategy" value="SHORTEST_PATH_TO_ROOT"/>
+            <cm:property name="writeAssetListDebugFile"  value="true" /> <!-- TODO MVR -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="graphmlRepository" interface="org.opennms.features.graphml.service.GraphmlRepository" availability="mandatory"/>
+
+    <bean id="generatorConfig" class="org.opennms.features.topology.plugins.topo.asset.GeneratorConfig">
+        <property name="label" value="${label}"/>
+        <property name="assetLayers" value="${assetLayers}"/>
+        <property name="providerId" value="${providerId}"/>
+        <property name="preferredLayout" value="${preferredLayout}"/>
+        <property name="breadcrumbStrategy" value="${breadcrumbStrategy}"/>
+    </bean>
+
+    <bean id="assetGraphmlProvder" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
+        <argument ref="graphmlRepository"/>
+        <argument ref="eventIpcManager" />
+        <argument ref="nodeDao" />
+        <argument ref="generatorConfig" />
+    </bean>
+
+</blueprint>
+
+
+
