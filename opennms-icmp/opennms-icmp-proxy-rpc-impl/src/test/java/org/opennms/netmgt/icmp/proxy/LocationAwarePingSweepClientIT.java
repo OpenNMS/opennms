@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -118,6 +119,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      * @throws UnknownHostException
      */
     @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void canPingViaLocalhost() throws InterruptedException, ExecutionException, UnknownHostException {
         CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10")).execute();
@@ -132,6 +134,7 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
      * @throws UnknownHostException
      */
     @Test
+    @IfProfileValue(name="runPingTests", value="true")
     public void canPingViaRemoteLocation() throws InterruptedException, ExecutionException, UnknownHostException {
         final CompletableFuture<PingSweepSummary> future = client.sweep()
                 .withRange(InetAddress.getByName("127.0.0.1"), InetAddress.getByName("127.0.0.10"))

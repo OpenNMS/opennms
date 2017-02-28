@@ -99,6 +99,6 @@ public class RrdSummaryControllerTest {
         Summary summary = (Summary)mv.getModel().get("summary");
 
         // Verify the response
-        assertEquals(0, summary.getResourceCount());
+        assertEquals(0, summary.getResources().size());
     }
 }
