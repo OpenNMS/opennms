@@ -316,10 +316,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
 
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
@@ -383,18 +379,6 @@
                         </artifact>
                     </artifacts>
                 </configuration>
-            </execution>
-            <execution>
-              <id>add-source</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>add-source</goal>
-              </goals>
-              <configuration>
-                <sources>
-                  <source>${project.build.directory}/generated-sources/castor</source>
-                </sources>
-              </configuration>
             </execution>
         </executions>
       </plugin>
