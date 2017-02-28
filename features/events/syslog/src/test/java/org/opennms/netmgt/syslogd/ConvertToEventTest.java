@@ -103,4 +103,26 @@ public class ConvertToEventTest {
             fail("Message Parsing failed: " + e.getMessage());
         }
     }
+
+    @Test
+    public void testNms5984() throws MarshalException, ValidationException, IOException {
+
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-nms5984-configuration.xml");
+        SyslogdConfig config = new SyslogdConfigFactory(stream);
+
+        try {
+            ConvertToEvent convertToEvent = new ConvertToEvent(
+                DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+                InetAddressUtils.ONE_TWENTY_SEVEN,
+                9999,
+                "<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!", 
+                config
+            );
+            LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
+        } catch (MessageDiscardedException e) {
+            LOG.error("Message Parsing failed", e);
+            fail("Message Parsing failed: " + e.getMessage());
+        }
+    }
 }
