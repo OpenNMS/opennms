@@ -25,7 +25,7 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `password` | Database password                                                  | required | `empty string`
 | `query`    | The SQL query to run                                               | required | `-`
 | `action`   | What evaluation action to perform                                  | required | `row_count`
-| `column`   | The result column to evaluate against                              | optional | `-`
+| `column`   | The result column to evaluate against                              | required | `-`
 | `operator` | Operator to use for the evaluation                                 | required | `>=`
 | `operand`  | The operand to compare against the SQL query result                | required | depends on the action
 | `message`  | The message to use if the service is down.
