@@ -104,6 +104,7 @@ import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockRequisitionService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -197,6 +198,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     private ForeignSourceService m_foreignSourceService;
 
+    @Autowired
+    private RequisitionMerger requisitionMerger;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -273,7 +277,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testVisit() throws Exception {
-        final RequisitionEntity requisition = new ResourceRequisitionProvider(new ClassPathResource("/NewFile2.xml")).getRequisition();
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new ClassPathResource("/NewFile2.xml"), requisitionMerger).getRequisition();
         requisitionService.saveOrUpdateRequisition(requisition);
         verifyBasicImportCounts(requisition);
     }
@@ -367,7 +371,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
             })
     })
     public void testDnsVisit() throws IOException {
-        final RequisitionEntity requisition = new ResourceRequisitionProvider(new UrlResource("dns://localhost:9153/opennms.com")).getRequisition();
+        final RequisitionEntity requisition = new ResourceRequisitionProvider(new UrlResource("dns://localhost:9153/opennms.com"), requisitionMerger).getRequisition();
         requisitionService.saveOrUpdateRequisition(requisition);
 
         verifyDnsImportCounts(requisition);

@@ -33,16 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.springframework.util.Assert;
 
-// TODO MVR implement
 public class MockRequisitionService implements RequisitionService {
     private final Map<String,RequisitionEntity> m_requisitions = new HashMap<>();
 
@@ -71,28 +69,12 @@ public class MockRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace) {
-        // not implemented
-    }
-
-    @Override
-    public void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace) {
-        // not implemented
-    }
-
-    @Override
-    public void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace) {
-        // not implemented
-    }
-
-    @Override
-    public void saveOrUpdateNode(RequisitionNodeEntity requisitionNode) {
-        // not implemented
-    }
-
-    @Override
-    public void triggerImport(ImportRequest web) {
-        // TODO MVR send event
+    public void triggerImport(ImportRequest request) {
+        try {
+            EventIpcManagerFactory.getIpcManager().send(request.toReloadEvent());
+        } catch (EventProxyException e) {
+            throw new RuntimeException("Could not send event", e);
+        }
     }
 
     @Override

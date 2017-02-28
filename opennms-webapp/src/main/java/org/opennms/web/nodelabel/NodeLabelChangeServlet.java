@@ -126,7 +126,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
                 final RequisitionService requisitionService = beanFactory.getBean(RequisitionService.class);
                 RequisitionNodeEntity requisitionNode = requisitionService.getRequisition(node.getForeignSource()).getNode(node.getForeignId());
                 requisitionNode.setNodeLabel(newNodeLabel);
-                requisitionService.saveOrUpdateNode(requisitionNode);
+                requisitionService.saveOrUpdateRequisition(requisitionNode.getRequisition());
             }
 
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);

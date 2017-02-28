@@ -256,7 +256,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 202, "/nodes/4244/categories/New%20Category");
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 404);
         xml = sendRequest(GET, base + "/New%20Category", 404);
     }
     

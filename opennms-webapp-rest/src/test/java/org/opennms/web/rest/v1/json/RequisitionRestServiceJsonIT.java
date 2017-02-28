@@ -364,7 +364,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         category = new JSONObject();
         category.put("name", "New Category");
 
-        sendPost(base, category.toString(), 202, "/nodes/4244/categories/New%20Category");
+        sendPost(base, category.toString(), 404);
         json = sendRequest(GET, base + "/New%20Category", 404);
     }
 

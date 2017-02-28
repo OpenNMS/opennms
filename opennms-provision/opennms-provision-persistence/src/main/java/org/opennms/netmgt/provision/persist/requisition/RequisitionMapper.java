@@ -7,6 +7,11 @@ import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 
+/**
+ * Simply converts between types. Does not merge with persisted entities.
+ *
+ * @see RequisitionMerger
+ */
 public class RequisitionMapper {
 
     public static RequisitionNode toRestModel(RequisitionNodeEntity input) {
@@ -82,7 +87,7 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static RequisitionNodeEntity toPersistenceModel(RequisitionNode input) {
+    private static RequisitionNodeEntity toPersistenceModel(RequisitionNode input) {
         if (input == null) {
             return null;
         }
@@ -102,7 +107,7 @@ public class RequisitionMapper {
         return output;
     }
 
-    public static RequisitionInterfaceEntity toPersistenceModel(RequisitionInterface input) {
+    private static RequisitionInterfaceEntity toPersistenceModel(RequisitionInterface input) {
         if (input == null) {
             return null;
         }
@@ -111,14 +116,14 @@ public class RequisitionMapper {
         output.setIpAddress(input.getIpAddr());
         output.setManaged(input.isManaged());
         output.setSnmpPrimary(input.getSnmpPrimary());
-        output.setStatus(input.getStatus()); // TODO MVR wofür wird dieser verwendet?
+        output.setStatus(input.getStatus());
         output.setCategories(input.getCategories().stream().map(c -> c.getName()).collect(Collectors.toSet()));
 
         input.getMonitoredServices().stream().map(s -> toPersistenceModel(s)).forEach(s -> output.addMonitoredService(s));
         return output;
     }
 
-    public static RequisitionMonitoredServiceEntity toPersistenceModel(RequisitionMonitoredService input) {
+    private static RequisitionMonitoredServiceEntity toPersistenceModel(RequisitionMonitoredService input) {
         if (input == null) {
             return null;
         }

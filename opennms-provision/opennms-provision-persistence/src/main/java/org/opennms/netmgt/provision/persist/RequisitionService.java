@@ -31,9 +31,6 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Set;
 
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -45,20 +42,7 @@ public interface RequisitionService {
 
     void deleteRequisition(String foreignSource);
 
-    // TODO MVR merge vs save
     void saveOrUpdateRequisition(RequisitionEntity input);
-
-    // TODO MVR merge vs save
-    void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace);
-
-    // TODO MVR merge vs save
-    void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace);
-
-    // TODO MVR merge vs save
-    void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace);
-
-    // TODO MVR merge vs save
-    void saveOrUpdateNode(RequisitionNodeEntity requisitionNode);
 
     Set<RequisitionEntity> getRequisitions();
 

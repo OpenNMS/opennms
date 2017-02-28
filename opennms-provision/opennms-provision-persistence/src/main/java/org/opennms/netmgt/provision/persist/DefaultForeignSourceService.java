@@ -67,9 +67,9 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     @Autowired
     protected ForeignSourceDao foreignSourceDao;
     
-    private static Map<String,String> m_detectors;
-    private static Map<String,String> m_policies;
-    private static Map<String, PluginWrapper> m_wrappers;
+    private Map<String,String> m_detectors;
+    private Map<String,String> m_policies;
+    private Map<String, PluginWrapper> m_wrappers;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -93,7 +93,13 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
     @Override
     public ForeignSourceEntity getForeignSource(String name) {
-        return foreignSourceDao.get(name);
+        ForeignSourceEntity foreignSourceEntity = foreignSourceDao.get(name);
+        if (foreignSourceEntity == null) {
+            foreignSourceEntity = getDefaultForeignSource();
+            foreignSourceEntity.setName(name);
+            foreignSourceEntity.setDefault(false);
+        }
+        return foreignSourceEntity;
     }
 
     @Override
@@ -101,7 +107,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         validate(foreignSource);
         normalizePluginConfigs(foreignSource);
         foreignSource.updateDateStamp();
-        foreignSourceDao.save(foreignSource);
+        foreignSourceDao.saveOrUpdate(foreignSource);
     }
 
     @Override
@@ -125,12 +131,14 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
     @Override
     public void resetDefaultForeignSource() {
-        foreignSourceDao.delete(DEFAULT_FOREIGNSOURCE_NAME);
+        deleteForeignSource(DEFAULT_FOREIGNSOURCE_NAME);
     }
 
     @Override
     public void deleteForeignSource(String name) {
-        foreignSourceDao.delete(name);
+        if (name != null && foreignSourceDao.get(name) != null) {
+            foreignSourceDao.delete(name);
+        }
     }
 
     @Override
@@ -185,21 +193,21 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
     @Override
     public Map<String,PluginWrapper> getWrappers() {
-        if (m_wrappers == null && m_policies != null && m_detectors != null) {
-            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size() + m_detectors.size());
-            for (String key : m_policies.keySet()) {
+        if (m_wrappers == null) {
+            m_wrappers = new HashMap<>(getPolicyTypes().size() + getDetectorTypes().size());
+            for (String key : getPolicyTypes().keySet()) {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     LOG.warn("unable to wrap {}", key, e);
                 }
             }
-            for (String key : m_detectors.keySet()) {
+            for (String key : getDetectorTypes().keySet()) {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     LOG.warn("unable to wrap {}", key, e);
                 }
             }
@@ -217,8 +225,8 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     private void normalizePluginConfig(final PluginConfigEntity pc) {
-        if (m_wrappers.containsKey(pc.getPluginClass())) {
-            final PluginWrapper w = m_wrappers.get(pc.getPluginClass());
+        if (getWrappers().containsKey(pc.getPluginClass())) {
+            final PluginWrapper w = getWrappers().get(pc.getPluginClass());
             if (w != null) {
                 final Map<String,String> parameters = pc.getParameters();
                 final Map<String,Set<String>> required = w.getRequiredItems();

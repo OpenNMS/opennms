@@ -93,7 +93,6 @@ public class ImportRequest {
     }
 
     public ImportRequest withRescanExisting(String rescanExisting) {
-        Objects.requireNonNull(rescanExisting);
         this.rescanExisting = rescanExisting;
         return this;
     }

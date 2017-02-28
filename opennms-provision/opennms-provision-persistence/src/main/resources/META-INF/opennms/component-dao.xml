@@ -24,6 +24,8 @@
 		<property name="ignoreUnresolvablePlaceholders" value="true"/>
 	</bean>
 
+	<bean id="foreignSourceMerger" class="org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger"/>
+	<bean id="requisitionMerger" class="org.opennms.netmgt.provision.persist.requisition.RequisitionMerger"/>
 	<bean id="requisitionService" class="org.opennms.netmgt.provision.persist.DefaultRequisitionService"/>
 	<bean id="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
 		<qualifier value="default"/>

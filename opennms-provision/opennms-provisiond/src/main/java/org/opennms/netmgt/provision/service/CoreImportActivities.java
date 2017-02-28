@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -73,6 +74,9 @@ public class CoreImportActivities {
     @Autowired
     private RequisitionDao requisitionDao;
 
+    @Autowired
+    private RequisitionMerger requisitionMerger;
+
     public CoreImportActivities(final ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
@@ -91,17 +95,8 @@ public class CoreImportActivities {
                 final RequisitionEntity requisitionToImport = provider.getRequisition();
 
                 info("Importing requisition {}", requisitionToImport.getName());
-                RequisitionEntity persistedEntity = requisitionService.getRequisition(requisitionToImport.getName());
-                if (persistedEntity != null) {
-                    info("Requisition is already persisted. Updating.");
-                    // we once imported, update these values, everything else will be overwritten
-                    requisitionToImport.setLastImport(persistedEntity.getLastImport());
-                    requisitionToImport.setLastUpdate(persistedEntity.getLastUpdate());
-                    requisitionService.saveOrUpdateRequisition(requisitionToImport);
-                } else {
-                    info("Requisition is new. Persisting.");
-                    requisitionService.saveOrUpdateRequisition(requisitionToImport);
-                }
+                requisitionToImport.updateLastImported();
+                requisitionService.saveOrUpdateRequisition(requisitionToImport);
                 context.setForeignSource(requisitionToImport.getName());
                 debug("Finished requisition import.");
             } catch (final Throwable t) {
@@ -115,7 +110,7 @@ public class CoreImportActivities {
         if (request.getForeignSource() != null) {
             return new DatabaseRequisitionProvider(requisitionDao, request.getForeignSource());
         } else {
-            return new ResourceRequisitionProvider(request.getUrl());
+            return new ResourceRequisitionProvider(request.getUrl(), requisitionMerger);
         }
     }
 

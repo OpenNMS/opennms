@@ -58,6 +58,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -129,7 +130,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("foreignSourceRestService")
 @Path("foreignSources")
-@Transactional
 public class ForeignSourceRestService extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceRestService.class);
@@ -137,6 +137,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Autowired
     @Qualifier("default")
     private ForeignSourceService foreignSourceService;
+
+    @Autowired
+    private ForeignSourceMerger foreignSourceMerger;
 
     /**
      * <p>getDefaultForeignSource</p>
@@ -146,6 +149,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("default")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSource getDefaultForeignSource() {
         readLock();
         try {
@@ -155,47 +159,34 @@ public class ForeignSourceRestService extends OnmsRestService {
         }
     }
 
-    /**
-     * Returns all the deployed foreign sources
-     *
-     * @return Collection of OnmsForeignSources (ready to be XML-ified)
-     */
     @GET
     @Path("deployed")
+    @Transactional(readOnly = true)
+    // There is no difference between deployd and pending anymore.
+    // Keep this for backwards compatibility for now.
     public ForeignSourceCollection getDeployedForeignSources() {
-        readLock();
-        try {
-            return new ForeignSourceCollection(toRestModel(foreignSourceService.getAllForeignSources()));
-        } finally {
-            readUnlock();
-        }
+        return getForeignSources();
     }
 
-    /**
-     * returns a plaintext string being the number of pending foreign sources
-     *
-     * @return a int.
-     */
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
+    @Transactional(readOnly = true)
+    // There is no difference between deployd and pending anymore.
+    // Keep this for backwards compatibility for now.
     public String getDeployedCount() {
-        readLock();
-        try {
-            return Integer.toString(foreignSourceService.getForeignSourceCount());
-        } finally {
-            readUnlock();
-        }
+        return getTotalCount();
     }
 
     /**
-     * Returns the union of deployed and pending foreign sources
+     * Returns all foreign sources
      *
      * @return Collection of OnmsForeignSources (ready to be XML-ified)
      * @throws java.text.ParseException if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSourceCollection getForeignSources() {
         readLock();
         try {
@@ -215,6 +206,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
+    @Transactional(readOnly = true)
     public String getTotalCount() {
         readLock();
         try {
@@ -233,6 +225,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -252,6 +245,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/detectors")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DetectorCollection getDetectors(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -275,6 +269,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/detectors/{detector}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DetectorWrapper getDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
         readLock();
         try {
@@ -298,6 +293,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/policies")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public PolicyCollection getPolicies(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -319,6 +315,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/policies/{policy}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public PolicyWrapper getPolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
         readLock();
         try {
@@ -415,13 +412,15 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response updateForeignSource(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
         writeLock();
         try {
-            ForeignSourceEntity fs = loadForeignSource(foreignSource);
             LOG.debug("updateForeignSource: updating foreign source {}", foreignSource);
             
             if (params.isEmpty()) return Response.notModified().build();
 
+            ForeignSourceEntity fsEntity = loadForeignSource(foreignSource);
+            ForeignSource fsDto = toRestModel(fsEntity);
+
             boolean modified = false;
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fsDto);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -433,9 +432,10 @@ public class ForeignSourceRestService extends OnmsRestService {
                 }
             }
             if (modified) {
+                fsEntity = foreignSourceMerger.createOrMerge(fsDto);
+
                 LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
-                fs.updateDateStamp();
-                foreignSourceService.saveForeignSource(fs);
+                foreignSourceService.saveForeignSource(fsEntity);
                 return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
             } else {
                 return Response.notModified().build();
@@ -457,7 +457,6 @@ public class ForeignSourceRestService extends OnmsRestService {
     public Response deletePendingForeignSource(@PathParam("foreignSource") final String foreignSource) {
         writeLock();
         try {
-            ForeignSourceEntity fs = loadForeignSource(foreignSource);
             LOG.debug("deletePendingForeignSource: deleting foreign source {}", foreignSource);
             foreignSourceService.deleteForeignSource(foreignSource);
             return Response.accepted().build();
@@ -466,29 +465,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         }
     }
 
-    /**
-     * <p>deleteDeployedForeignSource</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.Response} object.
-     */
     @DELETE
     @Path("deployed/{foreignSource}")
     @Transactional
+    // there is no difference between deployed and pending anymore. Keep this for backwards compatibility for now
     public Response deleteDeployedForeignSource(@PathParam("foreignSource") final String foreignSource) {
-        writeLock();
-        try {
-            ForeignSourceEntity fs = loadForeignSource(foreignSource);
-            LOG.debug("deleteDeployedForeignSource: deleting foreign source {}", foreignSource);
-            if ("default".equals(foreignSource)) {
-                foreignSourceService.resetDefaultForeignSource();
-            } else {
-                foreignSourceService.deleteForeignSource(foreignSource);
-            }
-            return Response.accepted().build();
-        } finally {
-            writeUnlock();
-        }
+        return deletePendingForeignSource(foreignSource);
     }
 
     /**
@@ -546,10 +528,6 @@ public class ForeignSourceRestService extends OnmsRestService {
     }
 
     private ForeignSourceEntity loadForeignSource(final String foreignSourceName) {
-        final ForeignSourceEntity entity = this.foreignSourceService.getForeignSource(foreignSourceName);
-        if (entity == null) {
-            getException(Status.NOT_FOUND, "Foreign source definition '{}' not found.", foreignSourceName);
-        }
-        return entity;
+        return foreignSourceService.getForeignSource(foreignSourceName);
     }
 }

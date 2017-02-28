@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toPersistenceModel;
 import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toRestModel;
 
 import java.text.ParseException;
@@ -58,6 +57,7 @@ import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
@@ -141,6 +141,9 @@ public class RequisitionRestService extends OnmsRestService {
 
     @Autowired
     private RequisitionService requisitionService;
+
+    @Autowired
+    private RequisitionMerger requisitionMerger;
 
     /**
      * get a plain text numeric string of the number of deployed requisitions
@@ -385,12 +388,12 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public String getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
+    public RequisitionCategory getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
         RequisitionNodeEntity node = loadNode(foreignSource, foreignId);
         if (!node.getCategories().contains(category)) {
             throw getException(Status.NOT_FOUND, "Category {} on node with Foreign ID '{}' and Foreign source '{}' not found.", category, foreignId, foreignSource);
         }
-        return category;
+        return new RequisitionCategory(category);
     }
 
     /**
@@ -446,7 +449,7 @@ public class RequisitionRestService extends OnmsRestService {
         }
 
         debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
-        requisitionService.saveOrUpdateRequisition(toPersistenceModel(requisition));
+        requisitionService.saveOrUpdateRequisition(requisitionMerger.mergeOrCreate(requisition));
         return Response.accepted().header("Location", getRedirectUri(uriInfo, requisition.getForeignSource())).build();
     }
 
@@ -463,9 +466,10 @@ public class RequisitionRestService extends OnmsRestService {
     public Response addOrReplaceNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, RequisitionNode node) {
         debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
 
-        // TODO MVR move to service layer
-        final RequisitionEntity persistedRequisition = loadRequisition(foreignSource);
-        requisitionService.saveOrUpdateNode(persistedRequisition, toPersistenceModel(node));
+        RequisitionEntity persistedRequisition = loadRequisition(foreignSource);
+        requisitionMerger.mergeOrCreate(persistedRequisition, node);
+
+        requisitionService.saveOrUpdateRequisition(persistedRequisition);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, node.getForeignId())).build();
     }
 
@@ -484,7 +488,8 @@ public class RequisitionRestService extends OnmsRestService {
         debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
 
         final RequisitionNodeEntity parentNode = loadNode(foreignSource, foreignId);
-        requisitionService.saveOrUpdateInterface(parentNode, toPersistenceModel(iface));
+        requisitionMerger.mergeOrCreate(parentNode, iface);
+        requisitionService.saveOrUpdateRequisition(parentNode.getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo, iface.getIpAddr())).build();
     }
 
@@ -504,7 +509,8 @@ public class RequisitionRestService extends OnmsRestService {
         debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
 
         RequisitionInterfaceEntity persistedInterface = loadInterface(foreignSource, foreignId, ipAddress);
-        requisitionService.saveOrUpdateService(persistedInterface, toPersistenceModel(service));
+        requisitionMerger.mergeOrCreate(persistedInterface, service);
+        requisitionService.saveOrUpdateRequisition(persistedInterface.getNode().getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo, service.getServiceName())).build();
     }
 
@@ -577,9 +583,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     // TODO MVR make deprecated use saveOrReplaceRequisition instead
     public Response updateRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
-        final Requisition requisition = toRestModel(loadRequisition(foreignSource));
+        final RequisitionEntity requisitionEntity = loadRequisition(foreignSource);
+        final Requisition requisition = toRestModel(requisitionEntity);
         updateRequisition(requisition, params);
-        requisitionService.saveOrUpdateRequisition(toPersistenceModel(requisition));
+        requisitionMerger.mergeOrCreate(requisition);
+
+        requisitionService.saveOrUpdateRequisition(requisitionEntity);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -596,9 +605,11 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     // TODO MVR make deprecated use saveOrReplaceNode instead
     public Response updateNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
-        RequisitionNode node = toRestModel(loadNode(foreignSource, foreignId));
+        RequisitionNodeEntity persistedEntity = loadNode(foreignSource, foreignId);
+        RequisitionNode node = toRestModel(persistedEntity);
         updateNode(foreignSource, node, params);
-        requisitionService.saveOrUpdateNode(loadRequisition(foreignSource), toPersistenceModel(node));
+        requisitionMerger.mergeOrCreate(persistedEntity.getRequisition(), node);
+        requisitionService.saveOrUpdateRequisition(persistedEntity.getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -616,9 +627,11 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     // TODO MVR make deprecated use saveOrReplaceNode instead
     public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
-        RequisitionInterface iface = toRestModel(loadInterface(foreignSource, foreignId, ipAddress));
+        RequisitionInterfaceEntity persistedInterface = loadInterface(foreignSource, foreignId, ipAddress);
+        RequisitionInterface iface = toRestModel(persistedInterface);
         updateInterface(foreignSource, foreignId, iface, params);
-        requisitionService.saveOrUpdateInterface(loadNode(foreignSource, foreignId), toPersistenceModel(iface));
+        requisitionMerger.mergeOrCreate(persistedInterface.getNode(), iface);
+        requisitionService.saveOrUpdateRequisition(persistedInterface.getNode().getRequisition());
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -660,8 +673,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}")
     public Response deleteNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) {
         RequisitionNodeEntity node = loadNode(foreignSource, foreignId);
+        RequisitionEntity parentRequisition = node.getRequisition();
         node.getRequisition().removeNode(node);
-        requisitionService.saveOrUpdateRequisition(node.getRequisition());
+        requisitionService.saveOrUpdateRequisition(parentRequisition);
         return Response.accepted().build();
     }
 
@@ -677,8 +691,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     public Response deleteInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") String ipAddress) {
         RequisitionInterfaceEntity iface = loadInterface(foreignSource, foreignId, ipAddress);
+        RequisitionEntity parentRequisition = iface.getNode().getRequisition();
         iface.getNode().removeInterface(iface);
-        requisitionService.saveOrUpdateRequisition(iface.getNode().getRequisition());
+        requisitionService.saveOrUpdateRequisition(parentRequisition);
         return Response.accepted().build();
     }
 
@@ -695,8 +710,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     public Response deleteInterfaceService(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") final String service) {
         RequisitionMonitoredServiceEntity entity = loadService(foreignSource, foreignId, ipAddress, service);
+        RequisitionEntity parentRequisition = entity.getIpInterface().getNode().getRequisition();
         entity.getIpInterface().removeMonitoredService(entity);
-        requisitionService.saveOrUpdateRequisition(entity.getIpInterface().getNode().getRequisition());
+        requisitionService.saveOrUpdateRequisition(parentRequisition);
         return Response.accepted().build();
     }
 
@@ -770,7 +786,6 @@ public class RequisitionRestService extends OnmsRestService {
         return monitoredService;
     }
 
-    // TODO MVR ...
     private static void updateRequisition(Requisition requisition, final MultivaluedMap<String,String> params) {
         LOG.debug("updateRequisition: Updating requisition with foreign source {}", requisition.getForeignSource());
         if (params.isEmpty()) return;
@@ -778,7 +793,6 @@ public class RequisitionRestService extends OnmsRestService {
         LOG.debug("updateRequisition: Requisition with foreign source {} updated", requisition);
     }
 
-    // TODO MVR ...
     private static void updateNode(String foreignSource, RequisitionNode node, final MultivaluedMap<String,String> params) {
         LOG.debug("updateNode: Updating node with foreign source {} and foreign id {}", foreignSource, node.getForeignId());
         if (params.isEmpty()) return;
@@ -786,7 +800,6 @@ public class RequisitionRestService extends OnmsRestService {
         LOG.debug("updateNode: Node with foreign source {} and foreign id {} updated", foreignSource, node.getForeignId());
     }
 
-    // TODO MVR ...
     private static void updateInterface(final String foreignSource, final String foreignId, RequisitionInterface iface, MultivaluedMap<String,String> params) {
         LOG.debug("updateInterface: Updating interface {} on node {}/{}", iface.getIpAddr(), foreignSource, foreignId);
         if (params.isEmpty()) return;

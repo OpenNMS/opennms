@@ -39,7 +39,10 @@ import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.PluginConfigType;
 import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
-// TODO MVR verify license headers
+/**
+ * Simply converts rest and persistence objects.
+ * No merging with existing entities is performed.
+ */
 public class ForeignSourceMapper {
 
     // Attention, this does not merge with existing data in the database. Use with caution

@@ -41,9 +41,6 @@ import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
 import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
@@ -80,58 +77,23 @@ public class DefaultRequisitionService implements RequisitionService {
     @Override
     @Transactional
     public void deleteRequisition(String foreignSource) {
-        requisitionDao.delete(foreignSource);
+        if (foreignSource != null && requisitionDao.get(foreignSource) != null) {
+            requisitionDao.delete(foreignSource);
+        }
     }
 
     @Override
     @Transactional
     public void saveOrUpdateRequisition(RequisitionEntity input) {
         validate(input);
-        mergeWithExisting(input);
         input.updateLastUpdated();
         requisitionDao.saveOrUpdate(input);
-    }
-
-    @Override
-    @Transactional
-    public void saveOrUpdateNode(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity nodeToUpdateOrReplace) {
-        mergeWithExisting(parentPersistedRequisition, nodeToUpdateOrReplace);
-        parentPersistedRequisition.updateLastUpdated();
-        requisitionDao.saveOrUpdate(parentPersistedRequisition);
-    }
-
-    @Override
-    @Transactional
-    public void saveOrUpdateInterface(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity interfaceToUpdateOrReplace) {
-        mergeWithExisting(parentPersistedNode, interfaceToUpdateOrReplace);
-        parentPersistedNode.getRequisition().updateLastUpdated();
-        requisitionDao.saveOrUpdate(parentPersistedNode.getRequisition());
-    }
-
-    @Override
-    @Transactional
-    public void saveOrUpdateService(RequisitionInterfaceEntity parentPersistedInterface, RequisitionMonitoredServiceEntity serviceToUpdateOrReplace) {
-        mergeWithExisting(parentPersistedInterface, serviceToUpdateOrReplace);
-        parentPersistedInterface.getNode().getRequisition().updateLastUpdated();
-        requisitionDao.saveOrUpdate(parentPersistedInterface.getNode().getRequisition());
-    }
-
-    @Override
-    @Transactional
-    public void saveOrUpdateNode(RequisitionNodeEntity requisitionNode) {
-        requisitionNode.getRequisition().updateLastUpdated();
-        requisitionDao.saveOrUpdate(requisitionNode.getRequisition());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Set<RequisitionEntity> getRequisitions() {
         return new HashSet<>(requisitionDao.findAll());
-    }
-
-    private void validate(RequisitionEntity requisition) {
-//        // TODO MVR
-//        throw new UnsupportedOperationException("TODO MVR implement me");
     }
 
     @Override
@@ -156,11 +118,11 @@ public class DefaultRequisitionService implements RequisitionService {
     @Transactional(readOnly = true)
     public DeployedStats getDeployedStats() {
         final DeployedStats deployedStats = new DeployedStats();
-        final Map<String,Date> lastImportedMap = new HashMap<String,Date>();
+        final Map<String, Date> lastImportedMap = new HashMap<String, Date>();
         getRequisitions().forEach(r -> {
             lastImportedMap.put(r.getForeignSource(), r.getLastImport());
         });
-        Map<String,Set<String>> map = nodeDao.getForeignIdsPerForeignSourceMap();
+        Map<String, Set<String>> map = nodeDao.getForeignIdsPerForeignSourceMap();
         map.entrySet().forEach(e -> {
             DeployedRequisitionStats stats = new DeployedRequisitionStats();
             stats.setForeignSource(e.getKey());
@@ -184,54 +146,12 @@ public class DefaultRequisitionService implements RequisitionService {
         return deployedStats;
     }
 
-
     private EventProxy getEventProxy() {
         return eventProxy;
     }
 
-    // Merge input requisition with existing persisted requisition
-    private void mergeWithExisting(RequisitionEntity input) {
-        final RequisitionEntity persistedRequisition = getRequisition(input.getForeignSource());
-        if (persistedRequisition != null) {
-            input.getNodes().stream().forEach(n -> {
-                mergeWithExisting(persistedRequisition, n);
-            });
-        }
-    }
-
-    // Merge input node with existing persisted node
-    private void mergeWithExisting(RequisitionEntity parentPersistedRequisition, RequisitionNodeEntity input) {
-        final RequisitionNodeEntity persistedNode = parentPersistedRequisition.getNode(input.getForeignId());
-        if (persistedNode != null) {
-            input.setId(persistedNode.getId());
-            input.getInterfaces().stream().forEach(i -> {
-                mergeWithExisting(persistedNode, i);
-            });
-        } else {
-            parentPersistedRequisition.addNode(input);
-        }
-    }
-
-    // Merge input interface with existing persisted interface
-    private void mergeWithExisting(RequisitionNodeEntity parentPersistedNode, RequisitionInterfaceEntity input) {
-        final RequisitionInterfaceEntity persistedInterface = parentPersistedNode.getInterface(input.getIpAddress());
-        if (persistedInterface != null) {
-            input.setId(persistedInterface.getId());
-            input.getMonitoredServices().stream().forEach(s -> {
-                mergeWithExisting(persistedInterface, s);
-            });
-        } else {
-            parentPersistedNode.addInterface(input);
-        }
-    }
-
-    // Merge input service with existing persisted service
-    private void mergeWithExisting(RequisitionInterfaceEntity persistedInterface, RequisitionMonitoredServiceEntity input) {
-        final RequisitionMonitoredServiceEntity persistedService = persistedInterface.getMonitoredService(input.getServiceName());
-        if (persistedService != null) {
-            input.setId(persistedService.getId());
-        } else {
-            persistedInterface.addMonitoredService(input);
-        }
+    private void validate(RequisitionEntity requisition) {
+//        // TODO MVR
+//        throw new UnsupportedOperationException("TODO MVR implement me");
     }
 }

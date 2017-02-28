@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toPersistenceModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,6 +38,7 @@ import java.util.Objects;
 import javax.xml.bind.JAXB;
 
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,9 @@ public class ResourceRequisitionProvider implements RequisitionProvider {
 
     private final Resource resource;
 
-    public ResourceRequisitionProvider(String urlString) throws MalformedURLException, URISyntaxException {
+    private final RequisitionMerger requisitionMerger;
+
+    public ResourceRequisitionProvider(String urlString, RequisitionMerger requisitionMerger) throws MalformedURLException, URISyntaxException {
         URL url = new URL(urlString);
         if ("file".equals(url.getProtocol())) {
             final File file = new File(url.toURI());
@@ -73,16 +74,18 @@ public class ResourceRequisitionProvider implements RequisitionProvider {
         } else {
             resource = new UrlResource(url);
         }
+        this.requisitionMerger = Objects.requireNonNull(requisitionMerger);
     }
 
-    public ResourceRequisitionProvider(Resource resource) {
+    public ResourceRequisitionProvider(Resource resource, RequisitionMerger requisitionMerger) {
         this.resource = Objects.requireNonNull(resource);
+        this.requisitionMerger = Objects.requireNonNull(requisitionMerger);
     }
 
     @Override
     public RequisitionEntity getRequisition() throws IOException {
         Requisition requisition = JAXB.unmarshal(this.resource.getInputStream(), Requisition.class);
-        return toPersistenceModel(requisition);
+        return requisitionMerger.mergeOrCreate(requisition);
     }
 
     @Override

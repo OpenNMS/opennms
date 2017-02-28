@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -40,17 +41,17 @@ import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="categories")
 @JsonRootName("categories")
-public class RequisitionCategoryCollection extends JaxbListWrapper<String> {
+public class RequisitionCategoryCollection extends JaxbListWrapper<RequisitionCategory> {
     private static final long serialVersionUID = 1L;
 
     public RequisitionCategoryCollection() { super(); }
     public RequisitionCategoryCollection(final Collection<? extends String> categories) {
-        super(categories);
+        super(categories.stream().map(c -> new RequisitionCategory(c)).collect(Collectors.toList()));
     }
 
     @XmlElement(name="category")
     @JsonProperty("category")
-    public List<String> getObjects() {
+    public List<RequisitionCategory> getObjects() {
         return super.getObjects();
     }
 }

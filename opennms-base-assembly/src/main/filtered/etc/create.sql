@@ -2468,6 +2468,9 @@ CREATE TABLE topo_layout_vertex_positions (
 --# Foreign Source tables
 --##################################################################
 
+--# install: foreignSourceNxtId id foreignsource_plugins
+CREATE SEQUENCE foreignSourceNxtId MINVALUE 1;
+
 -- ForeignSource table
 CREATE TABLE foreignsource (
   name text NOT NULL,
@@ -2502,6 +2505,15 @@ CREATE TABLE foreignsource_plugin_parameters (
 --##################################################################
 --# Requisition tables
 --##################################################################
+
+--# install: requisitionNodeNxtId id requisition_nodes
+CREATE SEQUENCE requisitionNodeNxtId MINVALUE 1;
+
+--# install: requisitionInterfaceNxtId id requisition_node_interfaces
+CREATE SEQUENCE requisitionInterfaceNxtId MINVALUE 1;
+
+--# install: requisitionServiceNxtId id requisition_node_interface_services
+CREATE SEQUENCE requisitionServiceNxtId MINVALUE 1;
 
 CREATE TABLE requisition (
   name text NOT NULL,
