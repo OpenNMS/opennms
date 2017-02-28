@@ -37,6 +37,7 @@ import java.util.concurrent.CompletionStage;
 import org.opennms.core.collections.RadixTree;
 import org.opennms.core.collections.RadixTreeImpl;
 import org.opennms.core.collections.RadixTreeNode;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -87,6 +88,14 @@ public class RadixTreeParser implements ByteBufferParser<Event> {
 	@Override
 	public CompletableFuture<Event> parse(ByteBuffer incoming) {
 		ParserState state = new ParserState(incoming, new EventBuilder());
+
+// TODO
+//		state.builder.setDistPoller(systemId);
+		state.builder.setLogDest("logndisplay");
+		state.builder.setSource(Syslogd.LOG4J_CATEGORY);
+		// Set event host
+		state.builder.setHost(InetAddressUtils.getLocalHostName());
+
 
 		// TODO: Use better collection than ArrayList?
 		final List<CompletableFuture<ParserState>> finishedFutures = new ArrayList<>();

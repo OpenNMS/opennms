@@ -29,6 +29,9 @@
 package org.opennms.netmgt.syslogd;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+
+import org.opennms.netmgt.model.events.EventBuilder;
 
 public abstract class GrokParserStageSequenceBuilder {
 
@@ -50,9 +53,9 @@ public abstract class GrokParserStageSequenceBuilder {
 	/**
 	 * This enum contains all well-known syslog message fields.
 	 */
-	public static enum SemanticTerm {
+	public static enum SemanticType {
 		/**
-		 * Facility-priority integer
+		 * Facility-priority integer.
 		 * 
 		 * @see RFC 3164: PRI
 		 * @see RFC 5424: PRIVAL
@@ -60,7 +63,7 @@ public abstract class GrokParserStageSequenceBuilder {
 		facilityPriority,
 
 		/**
-		 * Version
+		 * Version.
 		 * 
 		 * @see RFC 5424: VERSION
 		 */
@@ -84,13 +87,6 @@ public abstract class GrokParserStageSequenceBuilder {
 		 * @see RFC 5424: DATE-FULLYEAR
 		 */
 		month,
-
-		/**
-		 * 3-character en_us month.
-		 * 
-		 * @see RFC 3164
-		 */
-		monthString,
 
 		/**
 		 * 2-digit day of month (1-31).
@@ -133,7 +129,7 @@ public abstract class GrokParserStageSequenceBuilder {
 		second,
 
 		/**
-		 * 1- to 6-digit fractional second value converted to nanoseconds.
+		 * 1- to 6-digit fractional second value.
 		 * Note that the maximum resolution of this value is microseconds
 		 * but we are storing the value in nanoseconds since nanosecond 
 		 * resolution is more prevalent in the Java time APIs.
@@ -142,7 +138,7 @@ public abstract class GrokParserStageSequenceBuilder {
 		 * 
 		 * @see RFC 5424: TIME-SECFRAC
 		 */
-		nanosecond,
+		secondFraction,
 
 		/**
 		 * String timezone value.
@@ -231,6 +227,147 @@ SNMP-only:
 //		public EventBuilder setSpecific(int specific);
 */
 
+	/**
+	 * This function maps {@link SemanticType} values of type int to {@link EventBuilder}
+	 * calls.
+	 * 
+	 * @param semanticString
+	 * @return
+	 */
+	private static BiConsumer<ParserState,Integer> semanticIntegerToEventBuilder(String semanticString) {
+		SemanticType semanticType = null;
+		try {
+			semanticType = SemanticType.valueOf(semanticString);
+		} catch (IllegalArgumentException e) {
+			// Leave semanticType == null
+		}
+
+		if (semanticType == null) {
+			return (s,v) -> {
+				s.builder.setParam(semanticString, v);
+			};
+		} else {
+			switch(semanticType) {
+			case day:
+				// TODO
+				return NOOP_INT;
+			case facilityPriority:
+				return (s,v) -> {
+					String facilityTxt = SyslogFacility.getFacilityForCode(v).toString();
+					String priorityTxt = SyslogSeverity.getSeverityForCode(v).toString();
+
+					s.builder.setParam("service", facilityTxt);
+					s.builder.setParam("severity", priorityTxt);
+					s.builder.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+				};
+			case hour:
+				// TODO
+				return NOOP_INT;
+			case minute:
+				// TODO
+				return NOOP_INT;
+			case month:
+				// TODO
+				return NOOP_INT;
+			case processId:
+				// processId can be an integer or string
+				return (s,v) -> {
+					s.builder.setParam("processid", v);
+				};
+			case second:
+				// TODO
+				return NOOP_INT;
+			case secondFraction:
+				// TODO
+				return NOOP_INT;
+			case version:
+				// Unique to this parser
+				return (s,v) -> {
+					s.builder.setParam("syslogversion", v);
+				};
+			case year:
+				// TODO
+				return NOOP_INT;
+			default:
+				throw new IllegalArgumentException(String.format("Semantic type %s does not have an integer value", semanticString));
+			}
+		}
+
+	}
+
+	private static final BiConsumer<ParserState,String> NOOP = (s,v) -> {};
+	private static final BiConsumer<ParserState,Integer> NOOP_INT = (s,v) -> {};
+
+	/**
+	 * This function maps {@link SemanticType} values of type String to {@link EventBuilder}
+	 * calls.
+	 * 
+	 * @param semanticString
+	 * @return
+	 */
+	private static BiConsumer<ParserState,String> semanticStringToEventBuilder(String semanticString) {
+		SemanticType semanticType = null;
+		try {
+			semanticType = SemanticType.valueOf(semanticString);
+		} catch (IllegalArgumentException e) {
+			// Leave semanticType == null
+		}
+
+		if (semanticType == null) {
+			return (s,v) -> {
+				s.builder.setParam(semanticString, v);
+			};
+		} else {
+			switch(semanticType) {
+			case hostname:
+				// TODO
+				return NOOP;
+			case message:
+				return (s,v) -> {
+					s.builder.setLogMessage(v);
+					// Using parms provides configurability.
+					s.builder.setParam("syslogmessage", v);
+				};
+			case messageId:
+				// Unique to this parser
+				return (s,v) -> {
+					s.builder.setParam("messageid", v);
+				};
+			case processId:
+				// processId can be an integer or string
+				return (s,v) -> {
+					s.builder.setParam("processid", v);
+				};
+			case processName:
+				return (s,v) -> {
+					s.builder.setParam("process", v);
+				};
+			case timezone:
+				// TODO
+				return NOOP;
+			default:
+				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));
+			}
+		}
+	}
+
+//	bldr.addParam("timestamp", message.getSyslogFormattedDate());
+//	bldr.setTime(message.getDate());
+
+//	final InetAddress hostAddress = message.getHostAddress();
+//	if (hostAddress != null) {
+//		// Set nodeId
+//		InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
+//		if (cache != null) {
+//			int nodeId = cache.getNodeId(location, hostAddress);
+//			if (nodeId > 0) {
+//				bldr.setNodeid(nodeId);
+//			}
+//		}
+//
+//		bldr.setInterface(hostAddress);
+//	}
+
 	public static List<ParserStage> parseGrok(String grok) {
 		GrokState state = GrokState.TEXT;
 		ParserStageSequenceBuilder factory = new ParserStageSequenceBuilder();
@@ -291,27 +428,22 @@ SNMP-only:
 			case END_PATTERN:
 				final String patternString = pattern.toString();
 				final String semanticString = semantic.toString();
-				System.out.println(semanticString);
+
 				GrokPattern patternType = GrokPattern.valueOf(patternString);
+
 				switch(c) {
 				case ' ':
 					switch(patternType) {
 					case STRING:
-						factory.stringUntilWhitespace((s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
 						factory.whitespace();
 						break;
 					case INTEGER:
-						factory.intUntilWhitespace((s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.intUntilWhitespace(semanticIntegerToEventBuilder(semanticString));
 						factory.whitespace();
 						break;
 					case MONTH:
-						factory.monthString((s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.monthString(semanticIntegerToEventBuilder(semanticString));
 						factory.whitespace();
 						break;
 					}
@@ -319,21 +451,15 @@ SNMP-only:
 				default:
 					switch(patternType) {
 					case STRING:
-						factory.stringUntil(String.valueOf(c), (s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
 						factory.character(c);
 						break;
 					case INTEGER:
-						factory.integer((s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.integer(semanticIntegerToEventBuilder(semanticString));
 						factory.character(c);
 						break;
 					case MONTH:
-						factory.monthString((s,v) -> {
-							s.builder.addParam(semanticString, v);
-						});
+						factory.monthString(semanticIntegerToEventBuilder(semanticString));
 						factory.character(c);
 						break;
 					}
@@ -349,24 +475,18 @@ SNMP-only:
 		if (state == GrokState.END_PATTERN) {
 			final String patternString = pattern.toString();
 			final String semanticString = semantic.toString();
-			System.out.println(semanticString);
+
 			GrokPattern patternType = GrokPattern.valueOf(patternString);
 
 			switch(patternType) {
 			case STRING:
-				factory.terminal().string((s,v) -> {
-					s.builder.addParam(semanticString, v);
-				});
+				factory.terminal().string(semanticStringToEventBuilder(semanticString));
 				break;
 			case INTEGER:
-				factory.terminal().integer((s,v) -> {
-					s.builder.addParam(semanticString, v);
-				});
+				factory.terminal().integer(semanticIntegerToEventBuilder(semanticString));
 				break;
 			case MONTH:
-				factory.terminal().monthString((s,v) -> {
-					s.builder.addParam(semanticString, v);
-				});
+				factory.terminal().monthString(semanticIntegerToEventBuilder(semanticString));
 				break;
 			}
 		}
