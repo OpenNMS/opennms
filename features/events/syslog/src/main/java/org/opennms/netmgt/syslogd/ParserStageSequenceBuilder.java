@@ -31,6 +31,7 @@ package org.opennms.netmgt.syslogd;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -38,8 +39,12 @@ import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.collections.RadixTree;
+import org.opennms.core.collections.RadixTreeImpl;
+import org.opennms.core.collections.RadixTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +71,7 @@ public class ParserStageSequenceBuilder {
 		private final AtomicInteger accumulatedSize;
 
 		// Only used by MatchMonth
-		public int index = -1;
-		public int charIndex = -1;
+		public RadixTreeNode<CharacterWithValue> currentNode = null; 
 
 		public ParserStageState(ByteBuffer input) {
 			buffer = input;
@@ -155,7 +159,7 @@ public class ParserStageSequenceBuilder {
 		return this;
 	}
 
-	public ParserStageSequenceBuilder month(BiConsumer<ParserState, Integer> consumer) {
+	public ParserStageSequenceBuilder monthString(BiConsumer<ParserState, Integer> consumer) {
 		addStage(new MatchMonth(consumer));
 		return this;
 	}
@@ -353,6 +357,15 @@ public class ParserStageSequenceBuilder {
 				return AcceptResult.COMPLETE_WITHOUT_CONSUMING;
 			}
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchWhitespace)) return false;
+			// TODO: Compare consumers?
+			return true;
+		}
 	}
 
 	/**
@@ -382,6 +395,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public boolean equals(Object o) {
+			if (o == null) return false;
 			if (o == this) return true;
 			if (!(o instanceof MatchChar)) return false;
 			MatchChar other = (MatchChar)o;
@@ -397,37 +411,81 @@ public class ParserStageSequenceBuilder {
 	}
 
 	/**
-	 * Match a month.
-	 * 
-	 * TODO: This only works if the initial character is unique, fix it!
+	 * Immutable char/int pair.
+	 */
+	private static class CharacterWithValue {
+		private final char character;
+		private final int value;
+
+		public static CharacterWithValue[] toArray(String string, Integer value) {
+			return string.chars().mapToObj(c -> new CharacterWithValue((char)c, value)).collect(Collectors.toList()).toArray(new CharacterWithValue[0]);
+		}
+
+		private CharacterWithValue(Character character, Integer value) {
+			this.character = character;
+			this.value = value;
+		}
+
+		public char getCharacter() {
+			return character;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof CharacterWithValue)) return false;
+			CharacterWithValue other = (CharacterWithValue)o;
+			return Objects.equals(character, other.getCharacter());
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this)
+				.append("character", character)
+				.append("value", value)
+				.toString();
+		}
+	}
+
+	/**
+	 * Match a 3-character en_us month string as specified in syslog RFC 3164.
+	 * This {@link ParserStage} uses a {@link RadixTree} internally to match
+	 * possible strings.
 	 */
 	static class MatchMonth extends AbstractParserStage<Integer> {
-		final static char[][] MONTHS = new char[][] {
-			"Jan".toCharArray(),
-			"jan".toCharArray(),
-			"Feb".toCharArray(),
-			"feb".toCharArray(),
-			"Mar".toCharArray(),
-			"mar".toCharArray(),
-			"Apr".toCharArray(),
-			"apr".toCharArray(),
-			"May".toCharArray(),
-			"may".toCharArray(),
-			"Jun".toCharArray(),
-			"jun".toCharArray(),
-			"Jul".toCharArray(),
-			"jul".toCharArray(),
-			"Aug".toCharArray(),
-			"aug".toCharArray(),
-			"Sep".toCharArray(),
-			"sep".toCharArray(),
-			"Oct".toCharArray(),
-			"oct".toCharArray(),
-			"Nov".toCharArray(),
-			"nov".toCharArray(),
-			"Dec".toCharArray(),
-			"dec".toCharArray()
-		};
+		private static final RadixTree<CharacterWithValue> MONTH_STRINGS = new RadixTreeImpl<>();
+
+		static {
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Jan", 1));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("jan", 1));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Feb", 2));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("feb", 2));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Mar", 3));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("mar", 3));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Apr", 4));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("apr", 4));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("May", 5));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("may", 5));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Jun", 6));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("jun", 6));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Jul", 7));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("jul", 7));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Aug", 8));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("aug", 8));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Sep", 9));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("sep", 9));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Oct", 10));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("oct", 10));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Nov", 11));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("nov", 11));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("Dec", 12));
+			MONTH_STRINGS.addChildren(CharacterWithValue.toArray("dec", 12));
+		}
 
 		public MatchMonth(BiConsumer<ParserState,Integer> consumer) {
 			super(consumer);
@@ -435,40 +493,45 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
-			if (state.index >= 0) {
-				if (c == MONTHS[state.index][state.charIndex]) {
-					if (state.charIndex == 2) {
+			if (state.currentNode == null) {
+				state.currentNode = MONTH_STRINGS;
+			}
+
+			for (RadixTreeNode<CharacterWithValue> child : state.currentNode.getChildren()) {
+				if (child.getContent().getCharacter() == c) {
+					state.currentNode = child;
+
+					// If the child is a leaf node, then complete this stage
+					if (child.getChildren().isEmpty()) {
 						return AcceptResult.COMPLETE_AFTER_CONSUMING;
 					} else {
-						state.charIndex++;
 						return AcceptResult.CONTINUE;
 					}
-				} else {
-					return AcceptResult.CANCEL;
 				}
 			}
-			for (int i = 0; i < MONTHS.length; i++) {
-				if (c == MONTHS[i][0]) {
-					state.index = i;
-					state.charIndex = 1;
-					return AcceptResult.CONTINUE;
-				} else {
-					continue;
-				}
-			}
+			// No children matched, cancel the stage
 			return AcceptResult.CANCEL;
 		}
-		
+
 		@Override
 		public Integer getValue(ParserStageState state) {
-			return state.index;
+			return state.currentNode.getContent().getValue();
 		}
 
 		@Override
 		public void reset(ParserStageState state) {
 			super.reset(state);
-			state.charIndex = -1;
-			state.index = -1;
+			// Reset the radix tree node
+			state.currentNode = null;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchMonth)) return false;
+			// TODO: Compare consumers?
+			return true;
 		}
 	}
 
@@ -495,6 +558,10 @@ public class ParserStageSequenceBuilder {
 			m_length = length;
 		}
 
+		public int getLength() {
+			return m_length;
+		}
+
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
 			accumulate(state, c);
@@ -516,6 +583,15 @@ public class ParserStageSequenceBuilder {
 				.append("length", m_length)
 				.toString();
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchAny)) return false;
+			MatchAny other = (MatchAny)o;
+			return Objects.equals(m_length, other.getLength());
+		}
 	}
 
 	/**
@@ -530,6 +606,14 @@ public class ParserStageSequenceBuilder {
 		MatchUntil(BiConsumer<ParserState,R> consumer, char end) {
 			super(consumer);
 			m_end = new char[] { end };
+		}
+
+		public char[] getEnd() {
+			return m_end;
+		}
+
+		public boolean isEndOnWhitespace() {
+			return m_endOnwhitespace;
 		}
 
 		MatchUntil(BiConsumer<ParserState,R> consumer, String end) {
@@ -562,6 +646,17 @@ public class ParserStageSequenceBuilder {
 				.append("endOnWhitespace", m_endOnwhitespace)
 				.toString();
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchUntil)) return false;
+			MatchUntil<?> other = (MatchUntil<?>)o;
+			// TODO: Compare consumers?
+			return Arrays.equals(m_end, other.getEnd()) &&
+					Objects.equals(m_endOnwhitespace, other.isEndOnWhitespace());
+		}
 	}
 
 	static class MatchStringUntil extends MatchUntil<String> {
@@ -576,6 +671,15 @@ public class ParserStageSequenceBuilder {
 		@Override
 		public String getValue(ParserStageState state) {
 			return getAccumulatedValue(state);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchStringUntil)) return false;
+			// TODO: Compare consumers?
+			return super.equals(o);
 		}
 	}
 
@@ -601,6 +705,15 @@ public class ParserStageSequenceBuilder {
 			} else {
 				return Integer.parseInt(value);
 			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchIntegerUntil)) return false;
+			// TODO: Compare consumers?
+			return super.equals(o);
 		}
 	}
 
@@ -640,6 +753,16 @@ public class ParserStageSequenceBuilder {
 			} else {
 				return Integer.parseInt(value);
 			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (o == this) return true;
+			if (!(o instanceof MatchInteger)) return false;
+			MatchInteger other = (MatchInteger)o;
+			// TODO: Compare consumers?
+			return true;
 		}
 	}
 }

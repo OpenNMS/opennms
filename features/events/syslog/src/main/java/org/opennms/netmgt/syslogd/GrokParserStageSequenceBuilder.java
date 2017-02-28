@@ -47,6 +47,190 @@ public abstract class GrokParserStageSequenceBuilder {
 		MONTH
 	}
 
+	/**
+	 * This enum contains all well-known syslog message fields.
+	 */
+	public static enum SemanticTerm {
+		/**
+		 * Facility-priority integer
+		 * 
+		 * @see RFC 3164: PRI
+		 * @see RFC 5424: PRIVAL
+		 */
+		facilityPriority,
+
+		/**
+		 * Version
+		 * 
+		 * @see RFC 5424: VERSION
+		 */
+		version,
+
+		/**
+		 * 4-digit year.
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3339
+		 * @see RFC 5424: DATE-FULLYEAR
+		 */
+		year,
+
+		/**
+		 * 2-digit month (1-12).
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3164
+		 * @see RFC 3339
+		 * @see RFC 5424: DATE-FULLYEAR
+		 */
+		month,
+
+		/**
+		 * 3-character en_us month.
+		 * 
+		 * @see RFC 3164
+		 */
+		monthString,
+
+		/**
+		 * 2-digit day of month (1-31).
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3164
+		 * @see RFC 3339
+		 * @see RFC 5424: DATE-MDAY
+		 */
+		day,
+
+		/**
+		 * 2-digit hour of day (0-23).
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3164
+		 * @see RFC 3339
+		 * @see RFC 5424: TIME-HOUR
+		 */
+		hour,
+
+		/**
+		 * 2-digit minute (0-59).
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3164
+		 * @see RFC 3339
+		 * @see RFC 5424: TIME-MINUTE
+		 */
+		minute,
+
+		/**
+		 * 2-digit second (0-59).
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3164
+		 * @see RFC 3339
+		 * @see RFC 5424: TIME-SECOND
+		 */
+		second,
+
+		/**
+		 * 1- to 6-digit fractional second value converted to nanoseconds.
+		 * Note that the maximum resolution of this value is microseconds
+		 * but we are storing the value in nanoseconds since nanosecond 
+		 * resolution is more prevalent in the Java time APIs.
+		 * 
+		 * TODO: Change this to microseconds?
+		 * 
+		 * @see RFC 5424: TIME-SECFRAC
+		 */
+		nanosecond,
+
+		/**
+		 * String timezone value.
+		 * 
+		 * @see ISO-8601
+		 * @see RFC 3339
+		 * @see RFC 5424: TIME-OFFSET
+		 */
+		timezone,
+
+		/**
+		 * String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
+		 * 
+		 * @see RFC 5424: HOSTNAME
+		 */
+		hostname,
+
+		/**
+		 * String process name.
+		 * 
+		 * @see RFC 5424: APP-NAME
+		 */
+		processName,
+
+		/**
+		 * String process name.
+		 * 
+		 * @see RFC 5424: PROCID
+		 */
+		processId,
+
+		/**
+		 * String message ID.
+		 * 
+		 * @see RFC 5424: MSGID
+		 */
+		messageId,
+
+		/*
+		facility, // Cisco
+		priority, // Cisco
+		mnemonic, // Cisco
+		*/
+
+		/*
+		structuredData, // RFC5424 STRUCTURED-DATA
+		*/
+
+		/**
+		 * Remaining string message.
+		 */
+		message
+	}
+
+/*
+Relevant EventBuilder fields:
+//		public EventBuilder setAlarmData(AlarmData alarmData);
+		public EventBuilder setDescription(String descr);
+//		public EventBuilder setDistPoller(String distPoller);
+		public EventBuilder setHost(String hostname);
+//		public EventBuilder setIfIndex(int ifIndex);
+		public EventBuilder setInterface(InetAddress ipAddress);
+//		public EventBuilder setIpInterface(OnmsIpInterface iface);
+		public EventBuilder setLogDest(String dest);
+		public EventBuilder setLogMessage(String content);
+//		public EventBuilder setMasterStation(String masterStation);
+//		public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService);
+//		public EventBuilder setNode(OnmsNode node);
+//		public EventBuilder setNodeid(long nodeid);
+		public EventBuilder setParam(String parmName, String val);
+		public EventBuilder setParms(List<Parm> parms);
+//		public EventBuilder setService(String serviceName);
+		public EventBuilder setSeverity(String severity);
+//		public EventBuilder setSource(String source);
+		public EventBuilder setTime(Date date);
+		public EventBuilder setUei(String uei);
+//		public EventBuilder setUuid(String uuid);
+
+SNMP-only:
+//		public EventBuilder setCommunity(String community);
+//		public EventBuilder setEnterpriseId(String enterprise);
+//		public EventBuilder setGeneric(int generic);
+//		public EventBuilder setSnmpHost(String snmpHost);
+//		public EventBuilder setSnmpTimeStamp(long timeStamp);
+//		public EventBuilder setSnmpVersion(String version);
+//		public EventBuilder setSpecific(int specific);
+*/
+
 	public static List<ParserStage> parseGrok(String grok) {
 		GrokState state = GrokState.TEXT;
 		ParserStageSequenceBuilder factory = new ParserStageSequenceBuilder();
@@ -125,7 +309,7 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.whitespace();
 						break;
 					case MONTH:
-						factory.month((s,v) -> {
+						factory.monthString((s,v) -> {
 							s.builder.addParam(semanticString, v);
 						});
 						factory.whitespace();
@@ -147,7 +331,7 @@ public abstract class GrokParserStageSequenceBuilder {
 						factory.character(c);
 						break;
 					case MONTH:
-						factory.month((s,v) -> {
+						factory.monthString((s,v) -> {
 							s.builder.addParam(semanticString, v);
 						});
 						factory.character(c);
@@ -180,7 +364,7 @@ public abstract class GrokParserStageSequenceBuilder {
 				});
 				break;
 			case MONTH:
-				factory.terminal().month((s,v) -> {
+				factory.terminal().monthString((s,v) -> {
 					s.builder.addParam(semanticString, v);
 				});
 				break;
