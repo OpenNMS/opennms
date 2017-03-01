@@ -54,13 +54,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMapper;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
@@ -1002,17 +1006,18 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
     }
 
     protected Requisition getExistingRequisition() {
-        Requisition curReq = null;
         try {
-            // TODO MVR danach suchen ...
-//            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-//            if (repository != null) {
-//                 curReq = repository.getRequisition(m_foreignSource); // TODO MVR implement/FIX me
-//            }
+            RequisitionService requisitionService = BeanUtils.getBean("daoContext", "requisitionService", RequisitionService.class);
+            if (requisitionService != null) {
+                 RequisitionEntity requisitionEntity = requisitionService.getRequisition(m_foreignSource);
+                 if (requisitionEntity != null) {
+                     return RequisitionMapper.toRestModel(requisitionEntity);
+                 }
+            }
         } catch (Exception e) {
             logger.warn("Can't retrieve requisition {}", m_foreignSource);
         }
-        return curReq;
+        return null;
     }
 
     private RequisitionInterface getRequisitionInterface(RequisitionNode node, String ipAddr) {
