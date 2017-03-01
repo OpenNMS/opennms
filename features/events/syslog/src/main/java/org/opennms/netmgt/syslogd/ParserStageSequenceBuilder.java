@@ -742,8 +742,17 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public Integer getValue(ParserStageState state) {
-			// Trim the leading zeros from this value
-			String value = getAccumulatedValue(state);
+			return trimAndConvert(getAccumulatedValue(state));
+		}
+
+		/**
+		 * Trim the leading zeros from the {@link String} and
+		 * convert what is left to an integer.
+		 * 
+		 * @param value
+		 * @return
+		 */
+		public static int trimAndConvert(String value) {
 			while (value.startsWith("0")) {
 				value = value.substring(1);
 			}

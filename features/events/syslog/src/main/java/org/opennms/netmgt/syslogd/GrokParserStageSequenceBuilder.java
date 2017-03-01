@@ -29,9 +29,11 @@
 package org.opennms.netmgt.syslogd;
 
 import java.util.List;
+import java.util.TimeZone;
 import java.util.function.BiConsumer;
 
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchInteger;
 
 public abstract class GrokParserStageSequenceBuilder {
 
@@ -129,12 +131,10 @@ public abstract class GrokParserStageSequenceBuilder {
 		second,
 
 		/**
-		 * 1- to 6-digit fractional second value.
+		 * 1- to 6-digit fractional second value as a string.
 		 * Note that the maximum resolution of this value is microseconds
 		 * but we are storing the value in nanoseconds since nanosecond 
 		 * resolution is more prevalent in the Java time APIs.
-		 * 
-		 * TODO: Change this to microseconds?
 		 * 
 		 * @see RFC 5424: TIME-SECFRAC
 		 */
@@ -249,8 +249,9 @@ SNMP-only:
 		} else {
 			switch(semanticType) {
 			case day:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setDayOfMonth(v);
+				};
 			case facilityPriority:
 				return (s,v) -> {
 					String facilityTxt = SyslogFacility.getFacilityForCode(v).toString();
@@ -261,33 +262,35 @@ SNMP-only:
 					s.builder.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
 				};
 			case hour:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setHourOfDay(v);
+				};
 			case minute:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setMinute(v);
+				};
 			case month:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setMonth(v);
+				};
 			case processId:
 				// processId can be an integer or string
 				return (s,v) -> {
 					s.builder.setParam("processid", v);
 				};
 			case second:
-				// TODO
-				return NOOP_INT;
-			case secondFraction:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setSecond(v);
+				};
 			case version:
 				// Unique to this parser
 				return (s,v) -> {
 					s.builder.setParam("syslogversion", v);
 				};
 			case year:
-				// TODO
-				return NOOP_INT;
+				return (s,v) -> {
+					s.builder.setYear(v);
+				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have an integer value", semanticString));
 			}
@@ -296,7 +299,6 @@ SNMP-only:
 	}
 
 	private static final BiConsumer<ParserState,String> NOOP = (s,v) -> {};
-	private static final BiConsumer<ParserState,Integer> NOOP_INT = (s,v) -> {};
 
 	/**
 	 * This function maps {@link SemanticType} values of type String to {@link EventBuilder}
@@ -342,31 +344,44 @@ SNMP-only:
 				return (s,v) -> {
 					s.builder.setParam("process", v);
 				};
+			case secondFraction:
+				return (s,v) -> {
+					// Convert the fraction value into a millisecond value since that
+					// is the best resolution that EventBuilder can handle
+					switch(v.length()) {
+					case 1:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) * 100);
+						break;
+					case 2:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) * 10);
+						break;
+					case 3:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v));
+						break;
+					case 4:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 10);
+						break;
+					case 5:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 100);
+						break;
+					case 6:
+						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 1000);
+						break;
+					}
+				};
 			case timezone:
-				// TODO
-				return NOOP;
+				return (s,v) -> {
+					// TODO: Make sure this works for all variants
+					s.builder.setTimeZone(TimeZone.getTimeZone(v));
+				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));
 			}
 		}
 	}
 
+//	TODO: Figure out how to add a timestamp parm to the event
 //	bldr.addParam("timestamp", message.getSyslogFormattedDate());
-//	bldr.setTime(message.getDate());
-
-//	final InetAddress hostAddress = message.getHostAddress();
-//	if (hostAddress != null) {
-//		// Set nodeId
-//		InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
-//		if (cache != null) {
-//			int nodeId = cache.getNodeId(location, hostAddress);
-//			if (nodeId > 0) {
-//				bldr.setNodeid(nodeId);
-//			}
-//		}
-//
-//		bldr.setInterface(hostAddress);
-//	}
 
 	public static List<ParserStage> parseGrok(String grok) {
 		GrokState state = GrokState.TEXT;
