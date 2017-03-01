@@ -48,7 +48,6 @@ import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.core.RuleBaseFactory;
 import org.drools.core.WorkingMemory;
 import org.kie.api.conf.EventProcessingOption;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
@@ -80,8 +79,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     
     public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
         this.m_name = name;
-        final Gauge<Long> memorySize = () -> { return getWorkingMemory().getFactCount(); };
-        metricRegistry.register(MetricRegistry.name(name, "working-memory-size"), memorySize);
+        final Gauge<Long> factCount = () -> { return getWorkingMemory().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
         final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
         metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
         m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
