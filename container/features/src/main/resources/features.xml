@@ -1011,6 +1011,15 @@
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
     
+    <feature name="opennms-vmware" description="OpenNMS :: Integrations :: VMware Integration" version="${project.version}">
+      <feature>opennms-provisioning</feature>
+
+      <bundle>wrap:mvn:com.toastcoders/yavijava/6.0.03</bundle>
+      <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17</bundle>
+      <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17</bundle>
+      <bundle>mvn:org.opennms/opennms-vmware/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-poller-monitors-core" description="OpenNMS :: Poller :: Monitors :: Core" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-http</feature>
