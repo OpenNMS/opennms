@@ -33,6 +33,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+	    java.util.*,
 		org.opennms.web.api.Util,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.netmgt.config.*,
@@ -158,21 +159,21 @@
     
     public String getGroupInterval(Path path, String group, int index)
     {
-        Target[] targets = null;
+        List<Target> targets = null;
         
         if (index==-1)
         {
-            targets = path.getTarget();
+            targets = path.getTargets();
         }
         else
         {
-            targets = path.getEscalate(index).getTarget();
+            targets = path.getEscalates().get(index).getTargets();
         }
         
-        for (int i = 0; i < targets.length; i++)
-        {
-            if (group.equals(targets[i].getName()))
-                return targets[i].getInterval();
+        for (final Target t : targets) {
+            if (group.equals(t.getName())) {
+                return t.getInterval();
+            }
         }
         
         return null;
