@@ -343,7 +343,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
-            foreignSourceService.saveForeignSource(toPersistenceModel(foreignSource));
+            foreignSourceService.saveForeignSource(foreignSourceMerger.createOrMerge(foreignSource));
             return Response.accepted().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();

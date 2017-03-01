@@ -88,7 +88,7 @@ public class RequisitionNodeEntity {
             name = "requisition_node_assets",
             joinColumns=@JoinColumn(name = "node_id", referencedColumnName = "id"))
     @MapKeyColumn(name = "key", unique = true)
-    @Column(name = "value", unique = true, nullable = false)
+    @Column(name = "value", nullable = false)
     private Map<String, String> assets = new HashMap<>();
 
     @Column(name="parent_foreignsource")

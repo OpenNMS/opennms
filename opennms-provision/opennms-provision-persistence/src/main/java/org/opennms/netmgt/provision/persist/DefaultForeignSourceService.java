@@ -107,6 +107,9 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         validate(foreignSource);
         normalizePluginConfigs(foreignSource);
         foreignSource.updateDateStamp();
+        if (DEFAULT_FOREIGNSOURCE_NAME.equals(foreignSource.getName())) {
+            foreignSource.setDefault(true);
+        }
         foreignSourceDao.saveOrUpdate(foreignSource);
     }
 
@@ -122,6 +125,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return toPersistenceModel(foreignSource);
     }
 
+    // TODO MVR this is not really needed anymore
     @Override
     public void putDefaultForeignSource(ForeignSourceEntity foreignSource) {
         foreignSource.setName(DEFAULT_FOREIGNSOURCE_NAME); // overwrite name

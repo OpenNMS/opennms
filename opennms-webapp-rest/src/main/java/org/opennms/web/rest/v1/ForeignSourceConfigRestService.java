@@ -95,9 +95,6 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         Assert.notNull(m_foreignSourceService, "ForeignSourceService is required.");
         Assert.notNull(m_provisioningService, "ManualProvisioningService is required.");
         // The following is required, otherwise getWrappers() throws a NPE
-        // TODO MVR why is this? maybe with the new way of things this is obsolete
-        m_foreignSourceService.getPolicyTypes();
-        m_foreignSourceService.getDetectorTypes();
     }
 
     /**

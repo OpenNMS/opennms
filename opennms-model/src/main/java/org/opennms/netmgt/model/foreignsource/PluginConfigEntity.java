@@ -136,8 +136,7 @@ public abstract class PluginConfigEntity implements Serializable {
     }
 
     public void setParameters(Map<String, String> parameters) {
-        parameters.clear();
-        parameters.putAll(parameters);
+        this.parameters = parameters;
     }
 
     public void addParameter(String key, String value) {
@@ -173,7 +172,7 @@ public abstract class PluginConfigEntity implements Serializable {
         if (!(obj instanceof PluginConfigEntity)) return false;
         final PluginConfigEntity other = (PluginConfigEntity) obj;
         if (getId() != null) {
-            return getId().equals(other.getName());
+            return getId().equals(other.getId());
         }
         return super.equals(obj);
     }

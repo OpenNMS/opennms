@@ -31,8 +31,8 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.api.ForeignSourceDao;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 
-public class OnmsForeignSourceDaoHibernate extends AbstractDaoHibernate<ForeignSourceEntity, String> implements ForeignSourceDao {
-    public OnmsForeignSourceDaoHibernate() {
+public class ForeignSourceDaoHibernate extends AbstractDaoHibernate<ForeignSourceEntity, String> implements ForeignSourceDao {
+    public ForeignSourceDaoHibernate() {
         super(ForeignSourceEntity.class);
     }
 }

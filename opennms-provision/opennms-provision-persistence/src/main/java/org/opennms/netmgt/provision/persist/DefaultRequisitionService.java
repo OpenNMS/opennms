@@ -109,6 +109,7 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getDeployedCount() {
         return getRequisitions().size();
     }
