@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -121,7 +122,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	String foreignSource = request.getParameter("specificforeignsource");
         	String location = request.getParameter("specificlocation");
         	Specific newSpecific = new Specific();
-        	newSpecific.setContent(ipAddr);
+        	newSpecific.setAddress(ipAddr);
 
         	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
@@ -204,7 +205,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
             String location = request.getParameter("iulocation");
 
             IncludeUrl iu = new IncludeUrl();
-            iu.setContent(url);
+            iu.setUrl(url);
             if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
@@ -260,7 +261,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	DiscoveryConfigFactory dcf=null;
         	try{
         			StringWriter configString = new StringWriter();
-        			config.marshal(configString);
+        			JaxbUtils.marshal(config, configString);
         			LOG.debug(configString.toString().trim());
         		dcf = DiscoveryConfigFactory.getInstance();
             	        dcf.saveConfiguration(config);

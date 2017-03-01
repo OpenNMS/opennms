@@ -238,8 +238,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Specific Addresses</h3>
       </div>
-      <%if(currConfig.getSpecificCount()>0){
-            Specific[] specs = currConfig.getSpecific();
+      <%if(currConfig.getSpecifics().size()>0){
+            Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
       %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
@@ -252,9 +252,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr class="text-center">
-					  <td><%=specs[i].getContent()%></td>
-					  <td><%=specs[i].hasTimeout() ? "" + specs[i].getTimeout() : "<i>Use Default</i>" %></td>
-					  <td><%=specs[i].hasRetries() ? "" + specs[i].getRetries() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getAddress()%></td>
+					  <td><%=specs[i].getTimeout() == null ? "" + specs[i].getTimeout() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getRetries() == null ? "" + specs[i].getRetries() : "<i>Use Default</i>" %></td>
 					  <td><%=(specs[i].getForeignSource() != null) ? specs[i].getForeignSource() : "<i>Use Default</i>" %></td>
 					  <td><%=(specs[i].getLocation() != null) ? specs[i].getLocation() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
@@ -279,8 +279,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Include URLs</h3>
       </div>
-			    <%if(currConfig.getIncludeUrlCount()>0){
-			        IncludeUrl[] urls = currConfig.getIncludeUrl();
+			    <%if(currConfig.getIncludeUrls().size()>0){
+			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
@@ -293,9 +293,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr class="text-center">
-					  <td><%=urls[i].getContent()%></td>
-					  <td><%=urls[i].hasTimeout() ? "" + urls[i].getTimeout() : "<i>Use Default</i>" %></td>
-					  <td><%=urls[i].hasRetries() ? "" + urls[i].getRetries() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getUrl()%></td>
+					  <td><%=urls[i].getTimeout() == null ? "" + urls[i].getTimeout() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getRetries() == null ? "" + urls[i].getRetries() : "<i>Use Default</i>" %></td>
 					  <td><%=(urls[i].getForeignSource() != null) ? urls[i].getForeignSource() : "<i>Use Default</i>" %></td>
 					  <td><%=(urls[i].getLocation() != null) ? urls[i].getLocation() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
@@ -320,8 +320,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Include Ranges</h3>
       </div>
-				    <%if(currConfig.getIncludeRangeCount()>0){
-					    IncludeRange[] irange = currConfig.getIncludeRange();
+				    <%if(currConfig.getIncludeRanges().size()>0){
+					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
 				    %>
 					    <table class="table table-bordered table-condensed">
 					      <tr>
@@ -339,8 +339,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 						 <tr class="text-center">
 						  <td><%=irange[i].getBegin()%></td>
 						  <td><%=irange[i].getEnd()%></td>
-						  <td><%=(irange[i].hasTimeout()) ? "" + irange[i].getTimeout() : "<i>Use Default</i>" %></td>
-						  <td><%=(irange[i].hasRetries()) ? "" + irange[i].getRetries() : "<i>Use Default</i>" %></td>
+						  <td><%=(irange[i].getTimeout() != null) ? "" + irange[i].getTimeout() : "<i>Use Default</i>" %></td>
+						  <td><%=(irange[i].getRetries() != null) ? "" + irange[i].getRetries() : "<i>Use Default</i>" %></td>
 						  <td><%=(irange[i].getForeignSource() != null) ? irange[i].getForeignSource() : "<i>Use Default</i>" %></td>
 						  <td><%=(irange[i].getLocation() != null) ? irange[i].getLocation() : "<i>Use Default</i>" %></td>
 						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
@@ -365,8 +365,8 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Exclude Ranges</h3>
       </div>
-			    <%if(currConfig.getExcludeRangeCount()>0){
-				    ExcludeRange[] irange = currConfig.getExcludeRange();
+			    <%if(currConfig.getExcludeRanges().size()>0){
+				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
