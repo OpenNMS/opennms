@@ -32,13 +32,13 @@ Once you are sure everything is correctly configured you can activate the _EIF_ 
 [source, shell]
 ----
 ssh admin@localhost -p 8101
-features:install opennms-eif-adapter
+features:install eif-adapter
 ----
 
 You can check the routes status with the `camel:*` commands and/or inspect the log with `log:tail` for any obvious errors.
 The feature has a trace level logging that can be used to trace operations.
 
-NOTE: http://karaf.apache.org/manual/latest/users-guide/console.html[documentation] on using the _OSGi_ console embedded in _OpenNMS_ and the relative http://camel.apache.org/karaf.html[camel commands].
+NOTE: http://karaf.apache.org/manual/latest/#_using_the_console[documentation] on using the _OSGi_ console embedded in _OpenNMS_ and the relative http://camel.apache.org/karaf.html[camel commands].
 
 You should now be able to configure your EIF forwarders to send to this destination, and their events will be translated into OpenNMS Events and written to the _event bus_.
 

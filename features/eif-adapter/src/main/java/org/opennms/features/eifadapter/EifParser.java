@@ -102,10 +102,9 @@ public class EifParser {
             // Add the translated event to the list
             translatedEvents.add(
                     new EventBuilder("uei.opennms.org/vendor/IBM/EIF/"+eifClass,"eif").
-                            setDescription(eifSlotMap.get("msg"))
-                            .setNodeid(nodeId).
-                            setSeverity(EifSeverity.valueOf(eifSlotMap.get("severity")).toOnmsSeverity().getLabel())
-                            .setParms(parmList).getEvent());
+                            setNodeid(nodeId).
+                            setSeverity(EifSeverity.valueOf(eifSlotMap.get("severity")).toOnmsSeverity().getLabel()).
+                            setParms(parmList).getEvent());
 
         }
 

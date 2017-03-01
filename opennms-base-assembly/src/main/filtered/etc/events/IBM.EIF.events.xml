@@ -3,8 +3,11 @@
 		<uei>uei.opennms.org/vendor/IBM/EIF/OMEGAMON_BASE</uei>
 		<event-label>IBM: Event received through the EIF adapter</event-label>
 		<descr>
-		</descr>
-&lt;p&gt;Converted IBM Tivoli Monitoring Event&lt;/p&gt;&lt;table&gt;
+&lt;p&gt;Converted IBM Event Integration Facility Event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	msg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[msg]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
 	cms_hostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
@@ -68,24 +71,24 @@
 		</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			IBM: EIF Event received&lt;br&gt;
-			cms_hostname=%parm[cms_hostname];
-			cms_port=%parm[cms_port];
-			integration_type=%parm[integration_type];
-			master_reset_flag=%parm[master_reset_flag];
-			appl_label=%parm[appl_label];
-			situation_name=%parm[situation_name];
-			situation_origin=%parm[situation_origin];
-			situation_displayitem=%parm[situation_displayitem];
-			situation_time=%parm[situation_time];
-			situation_status=%parm[situation_status];
-			situation_eventdata=%parm[situation_eventdata];
-			situation_type=%parm[situation_type];
-			situation_thrunode=%parm[situation_thrunode];
-			situation_group=%parm[situation_group];
-			situation_fullname=%parm[situation_fullname];
+			cms_hostname=%parm[cms_hostname]%;
+			cms_port=%parm[cms_port]%;
+			integration_type=%parm[integration_type]%;
+			master_reset_flag=%parm[master_reset_flag]%;
+			appl_label=%parm[appl_label]%;
+			situation_name=%parm[situation_name]%;
+			situation_origin=%parm[situation_origin]%;
+			situation_displayitem=%parm[situation_displayitem]%;
+			situation_time=%parm[situation_time]%;
+			situation_status=%parm[situation_status]%;
+			situation_eventdata=%parm[situation_eventdata]%;
+			situation_type=%parm[situation_type]%;
+			situation_thrunode=%parm[situation_thrunode]%;
+			situation_group=%parm[situation_group]%;
+			situation_fullname=%parm[situation_fullname]%;
 			&lt;/p&gt;
 		</logmsg>
-		<severity></severity>
+		<severity>Indeterminate</severity>
 	</event>
 </events>
 
