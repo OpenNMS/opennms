@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.core.xml.AbstractCastorConfigDao;
-import org.opennms.netmgt.config.databaseReports.DatabaseReports;
-import org.opennms.netmgt.config.databaseReports.Report;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.features.reporting.model.LocalReports;
+import org.opennms.features.reporting.model.Report;
 import org.opennms.netmgt.dao.api.DatabaseReportConfigDao;
 
-public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
+public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalReports, List<Report>>
         implements DatabaseReportConfigDao {
-    
+
     /**
      * <p>Constructor for DefaultDatabaseReportConfigDao.</p>
      */
     public DefaultDatabaseReportConfigDao() {
-        super(DatabaseReports.class, "Database Report Configuration");
+        super(LocalReports.class, "Database Report Configuration");
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<Report> translateConfig(DatabaseReports castorConfig) {
-        return Collections.unmodifiableList(castorConfig.getReportCollection());
+    public List<Report> translateConfig(LocalReports reports) {
+        return Collections.unmodifiableList(reports.getReportList());
     }
-    
-    
+
     /** {@inheritDoc} */
     @Override
     public String getReportService(String name) {
@@ -115,7 +114,6 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
     public List<Report> getOnlineReports() {
         
         List<Report> onlineReports = new ArrayList<Report>();
-        
         for(Report report : getContainer().getObject()) {
             if (report.isOnline()) {
                 onlineReports.add(report);
