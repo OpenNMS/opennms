@@ -213,7 +213,7 @@ public class ConvertToEvent {
 
         bldr.addParam("severity", "" + priorityTxt);
 
-        bldr.addParam("timestamp", message.getSyslogFormattedDate());
+        bldr.addParam("timestamp", message.getRfc3164FormattedDate());
 
         if (message.getProcessName() != null) {
             bldr.addParam("process", message.getProcessName());
@@ -246,9 +246,6 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        final String fullText = message.getFullText();
-        final String matchedText = message.getMatchedMessage();
-
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
         for (final UeiMatch uei : ueiMatch) {
             final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
@@ -259,16 +256,18 @@ public class ConvertToEvent {
 
             if (messageMatchesUeiListEntry) {
                 if (uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(config.getDiscardUei(), bldr, matchedText, uei)) {
+                    if (matchSubstring(message.getMessage(), uei, bldr, config.getDiscardUei())) {
                         break;
                     }
                 } else if ((uei.getMatch().getType().startsWith("regex"))) {
-                    if (matchRegex(message, uei, bldr, config.getDiscardUei())) {
+                    if (matchRegex(message.getMessage(), uei, bldr, config.getDiscardUei())) {
                         break;
                     }
                 }
             }
         }
+
+        final String fullText = message.asRfc3164Message();
 
         // Time to verify if we need to hide the message
         final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages().getHideMatchCollection());
@@ -361,7 +360,7 @@ public class ConvertToEvent {
      * @return
      * @throws MessageDiscardedException
      */
-    private static boolean matchSubstring(final String discardUei, final EventBuilder bldr, String message, final UeiMatch uei) throws MessageDiscardedException {
+    private static boolean matchSubstring(String message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
         final boolean traceEnabled = LOG.isTraceEnabled();
         if (message.contains(uei.getMatch().getExpression())) {
             if (discardUei.equals(uei.getUei())) {
@@ -391,7 +390,7 @@ public class ConvertToEvent {
      * @return
      * @throws MessageDiscardedException
      */
-    private static boolean matchRegex(final SyslogMessage message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
+    private static boolean matchRegex(final String message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
         final boolean traceEnabled = LOG.isTraceEnabled();
         final String expression = uei.getMatch().getExpression();
         final Pattern msgPat = getPattern(expression);
@@ -400,13 +399,7 @@ public class ConvertToEvent {
             return false;
         } 
 
-        final String text;
-        if (message.getMatchedMessage() != null) {
-            text = message.getMatchedMessage();
-        } else {
-            text = message.getFullText();
-        }
-        final Matcher msgMat = msgPat.matcher(text);
+        final Matcher msgMat = msgPat.matcher(message);
 
         // If the message matches the regex
         if ((msgMat != null) && (msgMat.find())) {
@@ -448,7 +441,7 @@ public class ConvertToEvent {
             return true;
         }
 
-        if (traceEnabled) LOG.trace("Message portion '{}' did not regex-match pattern '{}'", text, expression);
+        if (traceEnabled) LOG.trace("Message portion '{}' did not regex-match pattern '{}'", message, expression);
         return false;
     }
 
