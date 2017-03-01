@@ -72,7 +72,8 @@ public class CollectorListTest {
             "org.opennms.netmgt.collectd.JMXSecureCollector",
             "org.opennms.netmgt.collectd.MX4JCollector",
             "org.opennms.netmgt.collectd.VmwareCimCollector",
-            "org.opennms.netmgt.collectd.VmwareCollector")
+            "org.opennms.netmgt.collectd.VmwareCollector",
+            "org.opennms.netmgt.collectd.WmiCollector")
             .build();
 
     private ImmutableSet<String> expectedMinionCollectors = ImmutableSet.<String> builder().add(
@@ -81,7 +82,6 @@ public class CollectorListTest {
             .build();
 
     private ImmutableSet<String> expectedOpenNMSCollectors = ImmutableSet.<String> builder().add(
-            "org.opennms.netmgt.collectd.WmiCollector",
             "org.opennms.netmgt.collectd.WsManCollector",
             "org.opennms.protocols.xml.collector.XmlCollector",
             "org.opennms.netmgt.collectd.SnmpCollector")
