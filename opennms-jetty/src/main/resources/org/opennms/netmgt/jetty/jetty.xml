@@ -64,6 +64,7 @@
     <Set name="TrustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
     <Set name="TrustStoreType"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoretype" default="JKS" /></Set>
     <Set name="TrustStoreProvider"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoreprovider" /></Set>
+    <Set name="certAlias"><SystemProperty name="org.opennms.netmgt.jetty.https-cert-alias" /></Set>
     <Set name="useCipherSuitesOrder"><Property name="jetty.sslContext.useCipherSuitesOrder" default="true"/></Set>
     <Set name="sslSessionCacheSize"><Property name="jetty.sslContext.sslSessionCacheSize" default="-1"/></Set>
     <Set name="sslSessionTimeout"><Property name="jetty.sslContext.sslSessionTimeout" default="-1"/></Set>

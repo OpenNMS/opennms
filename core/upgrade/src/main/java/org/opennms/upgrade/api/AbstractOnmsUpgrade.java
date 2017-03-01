@@ -48,11 +48,10 @@ import java.util.zip.ZipOutputStream;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
@@ -308,14 +307,8 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
         }
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            DataSourceConfiguration dsc = null;
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(cfgFile);
-                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            }
+            final DataSourceConfiguration dsc = JaxbUtils.unmarshal(DataSourceConfiguration.class, cfgFile);
+
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
                     dataSource = new SimpleDataSource(jds);

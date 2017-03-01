@@ -160,10 +160,10 @@ public class AvailabilityReportFullIT implements InitializingBean {
             Category category = categories.getCategory(0);
 
             // basic test
-            Assert.assertEquals("category node count", 2, category.getNodeCount());
-            Assert.assertEquals("category ip address count", 3,
+            Assert.assertEquals("category node count", Integer.valueOf(2), category.getNodeCount());
+            Assert.assertEquals("category ip address count", Integer.valueOf(3),
                          category.getIpaddrCount());
-            Assert.assertEquals("category service count", 3, category.getServiceCount());
+            Assert.assertEquals("category service count", Integer.valueOf(3), category.getServiceCount());
 
             Section section = getSectionByName(category,
                                                "LastMonthsDailyAvailability");
@@ -203,10 +203,10 @@ public class AvailabilityReportFullIT implements InitializingBean {
             Assert.assertEquals("category count", 1, categories.getCategoryCount());
             Category category = categories.getCategory(0);
 
-            Assert.assertEquals("category node count", 2, category.getNodeCount());
-            Assert.assertEquals("category ip address count", 3,
+            Assert.assertEquals("category node count", Integer.valueOf(2), category.getNodeCount());
+            Assert.assertEquals("category ip address count", Integer.valueOf(3),
                          category.getIpaddrCount());
-            Assert.assertEquals("category service count", 3, category.getServiceCount());
+            Assert.assertEquals("category service count", Integer.valueOf(3), category.getServiceCount());
 
             // Section calSection = getSectionByName(category, "LastMonthsDailyAvailability");
 
@@ -232,31 +232,31 @@ public class AvailabilityReportFullIT implements InitializingBean {
             Assert.assertNotNull("day 0,5 object", day);
             Assert.assertEquals("day 0,5 percentage value", oneHundred, day.getPctValue(), 0);
             Assert.assertTrue("day 0,5 visibility", day.getVisible());
-            Assert.assertEquals("day 0,5 date", 1,day.getDate());
+            Assert.assertEquals("day 0,5 date", Integer.valueOf(1),day.getDate());
 
             day = getCalSectionDay(category,"LastMonthsDailyAvailability",0,6);
             Assert.assertNotNull("day 0,6 object", day);
             Assert.assertEquals("day 0,6 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
             Assert.assertTrue("day 0,6 visibility", day.getVisible());
-            Assert.assertEquals("day 0,6 date", 2,day.getDate());
+            Assert.assertEquals("day 0,6 date", Integer.valueOf(2),day.getDate());
 
             day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,0);
             Assert.assertNotNull("day 1,0 object", day);
             Assert.assertEquals("day 1,0 percentage value", 97.2454, fourDec(day.getPctValue()), 0);
             Assert.assertTrue("day 1,0 visibility", day.getVisible());
-            Assert.assertEquals("day 1,0 date", 3,day.getDate());
+            Assert.assertEquals("day 1,0 date", Integer.valueOf(3),day.getDate());
 
             day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,1);
             Assert.assertNotNull("day 1,1 object", day);
             Assert.assertEquals("day 1,1 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
             Assert.assertTrue("day 1,1 visibility", day.getVisible());
-            Assert.assertEquals("day 1,1 date", 4,day.getDate());
+            Assert.assertEquals("day 1,1 date", Integer.valueOf(4),day.getDate());
 
             day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,2);
             Assert.assertNotNull("day 1,2 object", day);
             Assert.assertEquals("day 1,2 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
             Assert.assertTrue("day 1,2 visibility", day.getVisible());
-            Assert.assertEquals("day 1,2 date", 5,day.getDate());
+            Assert.assertEquals("day 1,2 date", Integer.valueOf(5),day.getDate());
             
         } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);

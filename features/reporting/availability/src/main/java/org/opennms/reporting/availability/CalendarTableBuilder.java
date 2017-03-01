@@ -142,7 +142,7 @@ public class CalendarTableBuilder {
 		    for (dayInLastMonth = 0; dayInLastMonth < m_firstDay; dayInLastMonth++) {
 		    	m_days[dayInLastMonth] = new Day();
 		    	m_days[dayInLastMonth].setVisible(false);
-				m_days[dayInLastMonth].setPctValue(0);
+				m_days[dayInLastMonth].setPctValue(0.0);
 			}
 			
 	        /**
@@ -161,7 +161,7 @@ public class CalendarTableBuilder {
 	            m_days[dayInThisMonth] = new Day();
 	        	m_days[dayInThisMonth].setDate(date);
 	        	m_days[dayInThisMonth].setVisible(true);
-				m_days[dayInThisMonth].setPctValue(0);
+				m_days[dayInThisMonth].setPctValue(0.0);
 				dayInThisMonth++;
 				date++;
 	            m_workingCalendar.add(Calendar.DATE, 1);
@@ -176,7 +176,7 @@ public class CalendarTableBuilder {
 	        for (dayInNextMonth = dayInThisMonth; dayInNextMonth < 42; dayInNextMonth++) {
 	        	m_days[dayInNextMonth] =  new Day();
 	            m_days[dayInNextMonth].setVisible(false);
-				m_days[dayInNextMonth].setPctValue(0);
+				m_days[dayInNextMonth].setPctValue(0.0);
 			}
 	        
 	        

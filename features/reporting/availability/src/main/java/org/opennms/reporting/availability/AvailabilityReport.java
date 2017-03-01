@@ -42,11 +42,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.slf4j.Logger;
@@ -206,21 +204,16 @@ public class AvailabilityReport extends Object {
     /**
      * This when invoked marshals the report XML from the castor classes.
      *
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public void marshalReport() throws ValidationException, MarshalException,
-    IOException, Exception {
+    public void marshalReport() throws IOException, Exception {
 
         File file = new File(ConfigFileConstants.getHome()
                              + "/share/reports/AvailReport.xml");
         try {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-            Marshaller marshaller = new Marshaller(fileWriter);
-            marshaller.setSuppressNamespaces(true);
-            marshaller.marshal(m_report);
+            JaxbUtils.marshal(m_report, fileWriter);
             LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             fileWriter.close();
         } catch (Throwable e) {
