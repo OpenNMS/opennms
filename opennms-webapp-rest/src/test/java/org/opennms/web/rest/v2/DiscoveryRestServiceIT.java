@@ -90,28 +90,28 @@ public class DiscoveryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     public void checkConfiguration(final DiscoveryConfiguration discoveryConfiguration) {
         assertNotNull(discoveryConfiguration);
-        assertEquals(200, discoveryConfiguration.getChunkSize());
-        assertEquals(6, discoveryConfiguration.getRetries());
-        assertEquals(4000, discoveryConfiguration.getTimeout());
+        assertEquals(200, discoveryConfiguration.getChunkSize().intValue());
+        assertEquals(6, discoveryConfiguration.getRetries().intValue());
+        assertEquals(4000, discoveryConfiguration.getTimeout().intValue());
         assertEquals("My-ForeignSource", discoveryConfiguration.getForeignSource());
         assertEquals("My-Location", discoveryConfiguration.getLocation());
-        assertNotNull(discoveryConfiguration.getSpecificCollection());
-        assertEquals(1, discoveryConfiguration.getSpecificCollection().size());
-        assertEquals(3, discoveryConfiguration.getSpecific(0).getRetries());
-        assertEquals(2000, discoveryConfiguration.getSpecific(0).getTimeout());
-        assertEquals("192.0.2.1", discoveryConfiguration.getSpecific(0).getContent());
-        assertNotNull(discoveryConfiguration.getIncludeRangeCollection());
-        assertEquals(1, discoveryConfiguration.getIncludeRangeCollection().size());
-        assertEquals(3, discoveryConfiguration.getIncludeRange(0).getRetries());
-        assertEquals(2000, discoveryConfiguration.getIncludeRange(0).getTimeout());
+        assertNotNull(discoveryConfiguration.getSpecifics());
+        assertEquals(1, discoveryConfiguration.getSpecifics().size());
+        assertEquals(3, discoveryConfiguration.getSpecific(0).getRetries().intValue());
+        assertEquals(2000, discoveryConfiguration.getSpecific(0).getTimeout().intValue());
+        assertEquals("192.0.2.1", discoveryConfiguration.getSpecific(0).getAddress());
+        assertNotNull(discoveryConfiguration.getIncludeRanges());
+        assertEquals(1, discoveryConfiguration.getIncludeRanges().size());
+        assertEquals(3, discoveryConfiguration.getIncludeRange(0).getRetries().intValue());
+        assertEquals(2000, discoveryConfiguration.getIncludeRange(0).getTimeout().intValue());
         assertEquals("192.0.2.128", discoveryConfiguration.getIncludeRange(0).getBegin());
         assertEquals("192.0.2.254", discoveryConfiguration.getIncludeRange(0).getEnd());
-        assertNotNull(discoveryConfiguration.getExcludeRangeCollection());
-        assertEquals(1, discoveryConfiguration.getExcludeRangeCollection().size());
+        assertNotNull(discoveryConfiguration.getExcludeRanges());
+        assertEquals(1, discoveryConfiguration.getExcludeRanges().size());
         assertEquals("192.0.2.0", discoveryConfiguration.getExcludeRange(0).getBegin());
         assertEquals("192.0.2.63", discoveryConfiguration.getExcludeRange(0).getEnd());
-        assertNotNull(discoveryConfiguration.getIncludeUrlCollection());
-        assertEquals(0, discoveryConfiguration.getIncludeUrlCollection().size());
+        assertNotNull(discoveryConfiguration.getIncludeUrls());
+        assertEquals(0, discoveryConfiguration.getIncludeUrls().size());
     }
 
     @Test
