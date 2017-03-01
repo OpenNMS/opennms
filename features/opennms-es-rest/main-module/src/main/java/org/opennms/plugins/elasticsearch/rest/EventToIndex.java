@@ -117,10 +117,13 @@ public class EventToIndex implements AutoCloseable {
 	public static final String INITIAL_SEVERITY_TEXT="initialseverity_text";
 	public static final String SEVERITY_TEXT="severity_text";
 	public static final String SEVERITY="severity";
+	public static final String FIRST_EVENT_TIME="firsteventtime";
 	public static final String EVENT_PARAMS="eventparms";
 	public static final String ALARM_ACK_TIME="alarmacktime";
 	public static final String ALARM_ACK_USER="alarmackuser";
+	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
 	public static final String ALARM_CLEAR_TIME="alarmcleartime";
+	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
 	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
 	// uei definitions of memo change events
@@ -792,15 +795,41 @@ public class EventToIndex implements AutoCloseable {
 			Calendar alarmClearCal=Calendar.getInstance();
 			alarmClearCal.setTime(event.getTime());
 			body.put(ALARM_CLEAR_TIME, DatatypeConverter.printDateTime(alarmClearCal));
+			// duration time from alarm raise to clear
+			try{
+				Date alarmclearDate = event.getTime();
+				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
+				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
+				Date alarmCreationDate=alarmCreationCal.getTime();
+				//duration in milliseconds
+				Long duration = alarmclearDate.getTime() - alarmCreationDate.getTime();
+				body.put(ALARM_CLEAR_DURATION, duration.toString());
+			} catch (Exception e){
+				LOG.error("problem calculating alarm clear duration for event "+event.getDbid(), e);
+			}
 		}
 
-		// set alarm deleted time if an alarm clear event
+		// set alarm deleted time if an alarm delete event
 		if(ALARM_DELETED_EVENT.equals(event.getUei())){
 			Calendar alarmDeletionCal=Calendar.getInstance();
 			alarmDeletionCal.setTime(event.getTime());
-			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));
+			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));			
 		}
-
+		
+		//  calculate duration from alarm raise to acknowledge
+		if(ALARM_ACKNOWLEDGED_EVENT.equals(event.getUei())){
+			try{
+				Date alarmAckDate = event.getTime();
+				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
+				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
+				Date alarmCreationDate=alarmCreationCal.getTime();
+				//duration in milliseconds
+				Long duration = alarmAckDate.getTime() - alarmCreationDate.getTime();
+				body.put(ALARM_ACK_DURATION, duration.toString());
+			} catch (Exception e){
+				LOG.error("problem calculating alarm acknowledge duration for event "+event.getDbid(), e);
+			}
+		}
 
 		// remove ack if not in parameters i,e alarm not acknowleged
 		if(parmsMap.get(ALARM_ACK_TIME)==null || "".equals(parmsMap.get(ALARM_ACK_TIME)) ){
@@ -853,7 +882,7 @@ public class EventToIndex implements AutoCloseable {
 
 			// try to parse firsteventtime but if not able then use current date
 			try{
-				alarmCreationTime = alarmValues.get("firsteventtime").toString();
+				alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
 				alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
 			} catch (Exception e){
 				LOG.error("using current Date() for @timestamp because problem creating date from alarmchange event "+event.getDbid()

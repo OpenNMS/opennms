@@ -57,6 +57,12 @@
                },
                "hour":{
                   "type":"long"
+               },
+               "p_severity":{
+                  "type":"long"
+               },
+               "p_oldseverity ":{
+                  "type":"long"
                }
             },
             "_all":{

@@ -34,7 +34,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +139,39 @@ public class NodeCacheImpl implements NodeCache {
             }
         }
         body.put("categories", categories.toString());
+
+		//assetRecord.
+		OnmsAssetRecord assetRecord= node.getAssetRecord() ;
+		if(assetRecord!=null){
+
+			//geolocation
+			OnmsGeolocation gl = assetRecord.getGeolocation();
+			if (gl !=null){
+				body.put("asset-latitude", (gl.getLatitude()!=null ? gl.getLatitude().toString() : null));
+				body.put("asset-longitude", (gl.getLatitude()!=null ? gl.getLongitude().toString() : null));
+			}
+
+			//assetRecord
+			body.put("asset-region", assetRecord.getRegion());
+			body.put("asset-building", assetRecord.getBuilding());
+			body.put("asset-floor",  assetRecord.getFloor());
+			body.put("asset-room",   assetRecord.getRoom());
+			body.put("asset-rack",  assetRecord.getRack());
+			body.put("asset-slot",  assetRecord.getSlot());
+			body.put("asset-port",  assetRecord.getPort());
+			body.put("asset-category",  assetRecord.getCategory());
+			body.put("asset-displaycategory",  assetRecord.getDisplayCategory());
+			body.put("asset-notifycategory",  assetRecord.getNotifyCategory());
+			body.put("asset-pollercategory",   assetRecord.getPollerCategory());
+			body.put("asset-thresholdcategory",   assetRecord.getThresholdCategory());
+			body.put("asset-managedobjecttype",   assetRecord.getManagedObjectType());
+			body.put("asset-managedobjectinstance", assetRecord.getManagedObjectInstance());
+			body.put("asset-manufacturer", assetRecord.getManufacturer());
+			body.put("asset-vendor", assetRecord.getVendor());
+			body.put("asset-modelnumber", assetRecord.getModelNumber());
+
+		}
+
     }
 
     /* getters and setters */
