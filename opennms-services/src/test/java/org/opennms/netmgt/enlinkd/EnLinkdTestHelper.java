@@ -168,59 +168,9 @@ public abstract class EnLinkdTestHelper {
 
     public static void printBridgeTopology(List<SharedSegment> shareds) {
         for (SharedSegment shared: shareds)
-            printSharedSegment(shared);
+            System.err.println(shared.printTopology());
     }
-    
-    public static void printSharedSegment(SharedSegment shared) {
-        System.err.println("");
-        System.err.println("------shared Segment-----");
-        System.err.println("designated bridge: " + shared.getDesignatedBridge());
-        System.err.println("designated port: " + shared.getDesignatedPort());
-        System.err.println("macs on segment: " + shared.getMacsOnSegment());
-        System.err.println("bridge ids on segment: " + shared.getBridgeIdsOnSegment());
-        for (BridgeBridgeLink blink:  shared.getBridgeBridgeLinks())
-            printBridgeBridgeLink(blink);
-        for (BridgeMacLink mlink: shared.getBridgeMacLinks()) 
-            printBridgeMacLink(mlink);
-        System.err.println("------shared Segment-----");
-    }
-
-    public static void printBridgeMacLink(BridgeMacLink mlink) {
-        System.err.println("------BridgeMacLink-----");
-        System.err.println("Create time: " + mlink.getBridgeMacLinkCreateTime());
-        System.err.println("Last poll time: " + mlink.getBridgeMacLinkLastPollTime());
-        System.err.println("nodeid: " + mlink.getNode().getId());
-        System.err.println("bridgeport: " + mlink.getBridgePort());
-        System.err.println("ifindex: " + mlink.getBridgePortIfIndex());
-        System.err.println("mac: " + mlink.getMacAddress());
-        System.err.println("status: " + BridgeDot1qTpFdbStatus.getTypeString(mlink.getBridgeDot1qTpFdbStatus().getValue()));
-        System.err.println("------BridgeMacLink-----");
         
-    }
-
-    public static void printStoredBridgeMacLink(BridgeMacLink mlink) {
-        System.err.println("------BridgeMacLink-----");
-        System.err.println("Create time: " + mlink.getBridgeMacLinkCreateTime());
-        System.err.println("Last poll time: " + mlink.getBridgeMacLinkLastPollTime());
-        System.err.println("nodeid: " + mlink.getNode().getId());
-        System.err.println("bridgeport: " + mlink.getBridgePort());
-        System.err.println("ifindex: " + mlink.getBridgePortIfIndex());
-        System.err.println("mac: " + mlink.getMacAddress());
-        System.err.println("------BridgeMacLink-----");
-        
-    }
-
-
-    
-    public static void printBridgeBridgeLink(BridgeBridgeLink blink) {
-        System.err.println("------BridgeBridgeLink-----");
-        System.err.println("nodeid: " + blink.getNode().getId());
-        System.err.println("bridgeport: " + blink.getBridgePort());
-        System.err.println("designatednodeid: " + blink.getDesignatedNode().getId());
-        System.err.println("designatedbridgeport: " + blink.getDesignatedPort());
-        System.err.println("------BridgeBridgeLink-----");        
-    }
-    
     public List<BridgeMacLink> addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac, List<BridgeMacLink> bft) {
         BridgeMacLink link = new BridgeMacLink();
         link.setNode(node);
@@ -1085,7 +1035,7 @@ public abstract class EnLinkdTestHelper {
         public void checkDEFG(List<SharedSegment> shsegs) {
             assertEquals(8, shsegs.size());
             for (SharedSegment shared: shsegs) {
-                printSharedSegment(shared);
+                System.err.println(shared.printTopology());
                 if (shared.noMacsOnSegment()) {
                     assertEquals(2, shared.getBridgeIdsOnSegment().size());
                     assertEquals(true, shared.getBridgeIdsOnSegment().contains(nodeGId));
@@ -1185,7 +1135,7 @@ public abstract class EnLinkdTestHelper {
             //printBridgeTopology(shsegs);
             assertEquals(14, shsegs.size());
             for (SharedSegment shared: shsegs) {
-                printSharedSegment(shared);
+                System.err.println(shared.printTopology());
                 if (shared.noMacsOnSegment()) {
                     assertEquals(2, shared.getBridgeIdsOnSegment().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
@@ -1442,7 +1392,7 @@ public abstract class EnLinkdTestHelper {
     public void check2nodeTopology(List<SharedSegment> shsegs, boolean revertedbblink) {
         assertEquals(5, shsegs.size());
         for (SharedSegment shared: shsegs) {
-            printSharedSegment(shared);
+            System.err.println(shared.printTopology());
             assertTrue(!shared.noMacsOnSegment());
             Set<Integer> nodeidsOnSegment = shared.getBridgeIdsOnSegment();
             List<BridgeMacLink> links = shared.getBridgeMacLinks();

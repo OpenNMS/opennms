@@ -337,7 +337,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         
         assertEquals(59,links.size());
         for (BridgeMacLink link: links) {
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
             if (BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF ==  link.getBridgeDot1qTpFdbStatus())
                 continue;
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
@@ -353,7 +353,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(maclink.getBridgePort());
                 assertNotNull(maclink.getNode());
                 assertNotNull(maclink.getMacAddress());
-                printStoredBridgeMacLink(maclink);
+                System.err.println(maclink.printTopology());
         }
 
         
@@ -438,7 +438,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(maclink.getBridgePort());
                 assertNotNull(maclink.getNode());
                 assertNotNull(maclink.getMacAddress());
-                printStoredBridgeMacLink(maclink);
+                System.err.println(maclink.printTopology());
         }
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
@@ -476,7 +476,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
             assertNotNull(link.getBridgePortIfIndex());
             assertNotNull(link.getMacAddress());
             assertEquals(null, link.getBridgeDot1qTpFdbStatus());
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
@@ -605,7 +605,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(maclink.getBridgePort());
                 assertNotNull(maclink.getNode());
                 assertNotNull(maclink.getMacAddress());
-                printStoredBridgeMacLink(maclink);
+                System.err.println(maclink.printTopology());
         }
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
@@ -641,7 +641,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
                 assertNotNull(maclink.getBridgePort());
                 assertNotNull(maclink.getNode());
                 assertNotNull(maclink.getMacAddress());
-                printStoredBridgeMacLink(maclink);
+                System.err.println(maclink.printTopology());
     	}
 
     	for (String mac: macsonbbport) {

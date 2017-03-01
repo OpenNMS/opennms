@@ -121,7 +121,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         m_queryMgr.loadBridgeTopology();
         LOG.info("init: Bridge Topology loaded.");
         for (BroadcastDomain domain: m_queryMgr.getAllBroadcastDomains()) {
-        	LOG.debug("init: Found BroadcastDomain with bridges {} and macs", domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
+        	LOG.debug("init: Found BroadcastDomain with bridges {} and macs {}", domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
+        	LOG.debug("init: Found BroadcastDomain with topology {}", domain.printTopology());
         }
 
         scheduleCollection();

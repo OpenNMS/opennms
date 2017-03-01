@@ -386,5 +386,26 @@ public class BroadcastDomain {
         m_topology.clear();
         m_bridges.clear();
     }
+    
+    public String printTopology() {
+    	StringBuffer strbfr = new StringBuffer();
+    	if (hasRootBridge())
+    		return printTopologyLevel(0);
+    	for (SharedSegment shared: getTopology())
+    		strbfr.append(shared.printTopology());
+    	return strbfr.toString();
+    }
+    
+    public String printTopologyLevel(int level) {
+    	StringBuffer strbfr = new StringBuffer();
+    	strbfr.append(level);
+    	if (hasLevel(level+1))
+    		strbfr.append(printTopologyLevel(level+1));
+    	return strbfr.toString();
+    }
+    
+    public boolean hasLevel(int level) {
+    	return false;
+    }
 
 }

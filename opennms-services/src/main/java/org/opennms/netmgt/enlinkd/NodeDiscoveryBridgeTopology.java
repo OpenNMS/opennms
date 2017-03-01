@@ -83,7 +83,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Set<String> ymacs = new HashSet<String>();
         public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT, Bridge yBridge, List<BridgeMacLink> yBFT) {
             super();
-            LOG.debug("BridgeTopologyHelper:search simple connection. node [{}]: bft size {}. node[{}]: bft size {}.",
+            LOG.debug("BridgeTopologyHelper:search simple connection. node [{}, bft size {}] - node[{}, bft size {}].",
                       xBridge.getId(),
                       xBFT.size(),
                       yBridge.getId(),

@@ -112,7 +112,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(topology.bftA.size(), links.size());
         for (BridgeMacLink link: links) {
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
     }
     
@@ -209,7 +209,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         List<SharedSegment> nodeASegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeA.getId());
         assertEquals(2, nodeASegments.size());
         for (SharedSegment segment: nodeASegments) {
-            printSharedSegment(segment);
+        	System.err.println(segment.printTopology());
         }
     }    
     

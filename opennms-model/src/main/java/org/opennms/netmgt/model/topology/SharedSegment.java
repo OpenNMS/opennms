@@ -377,4 +377,29 @@ public class SharedSegment {
         }
         bridgePortsOnNode.add(bridgePort.getBridgePort().intValue());
     }
+    
+    public String printTopology() {
+    	StringBuffer strbfr = new StringBuffer();
+            strbfr.append("\n");
+            strbfr.append("------shared Segment-----\n");
+            strbfr.append("bridge ids on segment: ");
+            strbfr.append(getBridgeIdsOnSegment());
+            strbfr.append("\n");
+            strbfr.append("designated bridge: ");
+            strbfr.append(getDesignatedBridge());
+            strbfr.append("\n");
+            strbfr.append("designated port: ");
+            strbfr.append(getDesignatedPort());
+            strbfr.append("\n");
+            strbfr.append("macs on segment: ");
+            strbfr.append(getMacsOnSegment());
+            strbfr.append("\n");
+            for (BridgeBridgeLink blink:  getBridgeBridgeLinks())
+            	strbfr.append(blink.printTopology());
+            for (BridgeMacLink mlink: getBridgeMacLinks()) 
+            	strbfr.append(mlink.printTopology());
+            strbfr.append("------shared Segment-----");
+            
+            return strbfr.toString();    	
+    }
 }

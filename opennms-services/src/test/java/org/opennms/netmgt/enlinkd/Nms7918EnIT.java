@@ -155,7 +155,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         
         assertEquals(34, links.size());
         for (BridgeMacLink link: links) {
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
@@ -204,7 +204,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
         
         
@@ -224,7 +224,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(34,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         
@@ -261,7 +261,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         
         assertEquals(31, links.size());
         for (BridgeMacLink link: links) {
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
@@ -310,7 +310,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(31,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
         
         
@@ -330,7 +330,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(31,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         
@@ -367,7 +367,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         
         assertEquals(40, links.size());;
         for (BridgeMacLink link: links) {
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
@@ -415,7 +415,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(40,m_bridgeMacLinkDao.countAll());
         
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
         
         
@@ -437,7 +437,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(40,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
 
         
@@ -492,7 +492,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
 
 
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
-            printBridgeBridgeLink(bblink);
+            System.err.println(bblink.printTopology());
             assertNotNull(bblink);
             assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
             assertEquals(2, bblink.getDesignatedPort().intValue());
@@ -512,7 +512,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(1, link.getBridgePort().intValue());
             assertEquals(1001, link.getBridgePortIfIndex().intValue());
@@ -523,7 +523,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(2, link.getBridgePort().intValue());
             assertEquals(1002, link.getBridgePortIfIndex().intValue());
@@ -534,7 +534,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(1003, link.getBridgePortIfIndex().intValue());
@@ -545,7 +545,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(4, link.getBridgePort().intValue());
             assertEquals(1004, link.getBridgePortIfIndex().intValue());
@@ -556,7 +556,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(3, link.getBridgePortIfIndex().intValue());
@@ -568,7 +568,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(23, link.getBridgePort().intValue());
             assertEquals(23, link.getBridgePortIfIndex().intValue());
@@ -579,7 +579,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(11, link.getBridgePort().intValue());
             assertEquals(1011, link.getBridgePortIfIndex().intValue());
@@ -590,7 +590,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(19, link.getBridgePort().intValue());
             assertEquals(1019, link.getBridgePortIfIndex().intValue());
@@ -601,7 +601,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(24, link.getBridgePort().intValue());
             assertEquals(1024, link.getBridgePortIfIndex().intValue());
@@ -613,7 +613,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (samasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(3, link.getBridgePort().intValue());
@@ -632,7 +632,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -651,7 +651,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -670,7 +670,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(3, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -688,11 +688,11 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         }
 
         for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
-            printSharedSegment(segment);
+            System.err.println(segment.printTopology());
         }
         
         for (SharedSegment segment : m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, samasw01.getId())) {
-            printSharedSegment(segment);
+            System.err.println(segment.printTopology());
         }
 
     }
@@ -751,7 +751,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(91,m_bridgeMacLinkDao.countAll());
 
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
-            printBridgeBridgeLink(bblink);
+            System.err.println(bblink.printTopology());
             assertNotNull(bblink);
             assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
             assertEquals(2, bblink.getDesignatedPort().intValue());
@@ -770,7 +770,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(1, link.getBridgePort().intValue());
             assertEquals(1001, link.getBridgePortIfIndex().intValue());
@@ -781,7 +781,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(2, link.getBridgePort().intValue());
             assertEquals(1002, link.getBridgePortIfIndex().intValue());
@@ -792,7 +792,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(1003, link.getBridgePortIfIndex().intValue());
@@ -803,7 +803,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(4, link.getBridgePort().intValue());
             assertEquals(1004, link.getBridgePortIfIndex().intValue());
@@ -814,7 +814,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(3, link.getBridgePortIfIndex().intValue());
@@ -826,7 +826,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(23, link.getBridgePort().intValue());
             assertEquals(23, link.getBridgePortIfIndex().intValue());
@@ -837,7 +837,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(11, link.getBridgePort().intValue());
             assertEquals(1011, link.getBridgePortIfIndex().intValue());
@@ -848,7 +848,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(19, link.getBridgePort().intValue());
             assertEquals(1019, link.getBridgePortIfIndex().intValue());
@@ -859,7 +859,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(24, link.getBridgePort().intValue());
             assertEquals(1024, link.getBridgePortIfIndex().intValue());
@@ -871,7 +871,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (samasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(3, link.getBridgePort().intValue());
@@ -890,7 +890,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -909,7 +909,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -928,7 +928,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(3, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -946,7 +946,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         }
 
         for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
-            printSharedSegment(segment);
+            System.err.println(segment.printTopology());
         }
 
     }
@@ -1008,7 +1008,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(91,m_bridgeMacLinkDao.countAll());
 
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
-            printBridgeBridgeLink(bblink);
+            System.err.println(bblink.printTopology());
             assertNotNull(bblink);
             assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
             assertEquals(2, bblink.getDesignatedPort().intValue());
@@ -1027,7 +1027,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(1, link.getBridgePort().intValue());
             assertEquals(1001, link.getBridgePortIfIndex().intValue());
@@ -1038,7 +1038,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(2, link.getBridgePort().intValue());
             assertEquals(1002, link.getBridgePortIfIndex().intValue());
@@ -1049,7 +1049,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(1003, link.getBridgePortIfIndex().intValue());
@@ -1060,7 +1060,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(asw01.getId(), link.getNode().getId());
             assertEquals(4, link.getBridgePort().intValue());
             assertEquals(1004, link.getBridgePortIfIndex().intValue());
@@ -1071,7 +1071,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(3, link.getBridgePort().intValue());
             assertEquals(3, link.getBridgePortIfIndex().intValue());
@@ -1083,7 +1083,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(samasw01.getId(), link.getNode().getId());
             assertEquals(23, link.getBridgePort().intValue());
             assertEquals(23, link.getBridgePortIfIndex().intValue());
@@ -1094,7 +1094,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(11, link.getBridgePort().intValue());
             assertEquals(1011, link.getBridgePortIfIndex().intValue());
@@ -1105,7 +1105,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(19, link.getBridgePort().intValue());
             assertEquals(1019, link.getBridgePortIfIndex().intValue());
@@ -1116,7 +1116,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
-            printStoredBridgeMacLink(link);
+            System.err.println(link.printTopology());
             assertEquals(stcasw01.getId(), link.getNode().getId());
             assertEquals(24, link.getBridgePort().intValue());
             assertEquals(1024, link.getBridgePortIfIndex().intValue());
@@ -1128,7 +1128,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (samasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(3, link.getBridgePort().intValue());
@@ -1147,7 +1147,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -1166,7 +1166,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(2, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -1185,7 +1185,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(3, links.size());
             for (BridgeMacLink link:  links) {
-                printStoredBridgeMacLink(link);
+                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 if (stcasw01.getId().intValue() == link.getNode().getId()) {
                     assertEquals(11, link.getBridgePort().intValue());
@@ -1203,7 +1203,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         }
 
         for (SharedSegment segment: m_linkd.getQueryManager().getBroadcastDomain(samasw01.getId()).getTopology()) {
-            printSharedSegment(segment);
+            System.err.println(segment.printTopology());
         }
 
     }
