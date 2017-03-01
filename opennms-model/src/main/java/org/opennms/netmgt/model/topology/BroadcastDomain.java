@@ -292,7 +292,10 @@ public class BroadcastDomain {
     }
 
     public List<BridgeMacLink> calculateRootBFT() {
-    	return calculateBFT(getRootBridge());
+    	Bridge root = getRootBridge();
+    	if (root == null)
+    		return null;
+    	return calculateBFT(root);
     }
     
     public List<BridgeMacLink> calculateBFT(Bridge bridge) {

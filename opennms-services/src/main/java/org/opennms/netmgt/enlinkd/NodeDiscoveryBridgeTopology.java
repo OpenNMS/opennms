@@ -117,7 +117,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (!cond1X || !cond1Y) {
                 Set<String> commonlearnedmacs = new HashSet<String>(xmactoport.keySet()); 
                 commonlearnedmacs.retainAll(new HashSet<String>(ymactoport.keySet()));
-                LOG.debug("BridgeTopologyHelper: common (learned mac) size: {} for X: {}, Y: {}",commonlearnedmacs.size(),xBridge.getId(),yBridge.getId());
+                LOG.debug("BridgeTopologyHelper: bridges [{},{}]common (learned mac) size: '{}'",xBridge.getId(),yBridge.getId(),commonlearnedmacs.size());
                 if (cond1X && !cond1Y) 
                     condition2BridgeX(commonlearnedmacs);
                 if (!cond1X && cond1Y)
@@ -129,8 +129,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 if (m_xy == null || m_xy == null)
                     return;
             }    
-            LOG.debug("BridgeTopologyHelper: found port m_xy: {} on X: {}", m_xy, xBridge.getId());
-            LOG.debug("BridgeTopologyHelper: found port m_yx: {} on Y: {}", m_yx, yBridge.getId());
+            LOG.debug("BridgeTopologyHelper: simple connection [{}, port {}] - [port {}  {}]", 
+            		xBridge.getId(), 
+            		m_xy,
+            		yBridge.getId()
+            		, m_yx);
             
             BridgeMacLink xylink = null;
             BridgeMacLink yxlink = null;
@@ -676,7 +679,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 	        // not root bridge defined (this mean no calculation yet done...
 	        // so checking the best into not parsed
 	        int size=0;
-	        if (m_domain.calculateRootBFT() != null )
+	        if (m_domain.getTopology() != null && m_domain.calculateRootBFT() != null )
 	            size = m_domain.calculateRootBFT().size();
 	        
 	        Bridge rootBridge = null;
@@ -713,11 +716,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         List<BridgeMacLink> rootBft = m_notYetParsedBFTMap.remove(electedRoot);
 
-        if (m_domain.getRootBridge().getId() == electedRoot.getId() && rootBft == null) {
+        if (m_domain.hasRootBridge() && m_domain.getRootBridge().getId() == electedRoot.getId() && rootBft == null) {
             LOG.info("calculate: node [{}]: elected root bridge: [{}], old root bridge. no updated bft",
                     getNodeId(), 
             		electedRoot.getId());
-        } else if (m_domain.getRootBridge().getId() == electedRoot.getId()) {
+        } else if (m_domain.hasRootBridge() && m_domain.getRootBridge().getId() == electedRoot.getId()) {
             LOG.info("calculate: node [{}]: elected root bridge: [{}], old root bridge. updated bft",
                     getNodeId(), 
                      electedRoot.getId());
