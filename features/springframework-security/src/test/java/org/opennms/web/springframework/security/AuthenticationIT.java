@@ -44,7 +44,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.model.OnmsUser;
@@ -83,9 +83,9 @@ public class AuthenticationIT implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
-        Userinfo users = CastorUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("src/test/resources/org/opennms/web/springframework/security/users.xml")));
+        Userinfo users = JaxbUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("src/test/resources/org/opennms/web/springframework/security/users.xml")));
         assertNotNull(users);
-        m_userManager.saveUsers(users.getUsers().getUserCollection());
+        m_userManager.saveUsers(users.getUsers().getUsers());
     }
 
     @Test

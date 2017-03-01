@@ -86,10 +86,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private User getBackingUser(String name) {
         try {
             return m_userManager.getUser(name);
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }
@@ -98,10 +94,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private Collection<User> getBackingUsers() {
         try {
             return m_userManager.getUsers().values();
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }
@@ -144,11 +136,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
                 webUsers.add(getWebUser(user));
             }
             return webUsers;
-            
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }

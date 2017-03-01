@@ -133,7 +133,7 @@ public class UserFactory extends UserManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void reload() throws IOException, FileNotFoundException {
         // Form the complete filename for the config file
         //
         m_usersConfFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
@@ -196,7 +196,7 @@ public class UserFactory extends UserManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void doUpdate() throws IOException, FileNotFoundException {
         if (isUpdateNeeded()) {
             reload();
         }
