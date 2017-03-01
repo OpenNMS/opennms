@@ -57,7 +57,7 @@ public class ImportRequest {
 
     public ImportRequest(Event event, String systemRescanParameter) {
         this.source = event.getSource();
-        this.url = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESOURCE);
+        this.url = EventUtils.getParm(event, EventConstants.PARM_URL);
         this.foreignSource = EventUtils.getParm(event, EventConstants.PARM_IMPORT_FOREIGN_SOURCE);
         this.rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING, systemRescanParameter);
     }
