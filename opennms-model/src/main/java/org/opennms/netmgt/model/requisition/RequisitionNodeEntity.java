@@ -62,7 +62,7 @@ public class RequisitionNodeEntity {
     @GeneratedValue(generator="requisitionNodeSequence")
     private Integer id;
 
-    @Column(name="foreignid") // TODO MVR unique in requisition
+    @Column(name="foreignid")
     private String foreignId;
 
     @Column(name="nodelabel")
@@ -163,7 +163,6 @@ public class RequisitionNodeEntity {
         this.foreignId = foreignId;
     }
 
-    // TODO MVR should be replaced by getRequisition()
     public String getForeignSource() {
         // TODO MVR verify that this actually works
         return getRequisition().getForeignSource();
@@ -240,14 +239,6 @@ public class RequisitionNodeEntity {
         assets.remove(key);
     }
 
-    //    public List<OnmsRequisitionAsset> getAssets() {
-//        return assets;
-//    }
-//
-//    public void setAssets(List<OnmsRequisitionAsset> assets) {
-//        this.assets = assets;
-//    }
-
     public Set<String> getCategories() {
         return categories;
     }
@@ -283,17 +274,4 @@ public class RequisitionNodeEntity {
         }
         return super.equals(obj);
     }
-
-//    @Override
-//    public String toString() {
-//        return "RequisitionNode [interfaces=" + m_interfaces
-//                + ", categories=" + m_categories + ", assets=" + m_assets
-//                + ", building=" + building + ", city=" + city
-//                + ", foreignId=" + foreignId + ", nodeLabel=" + nodeLabel
-//                + ", parentForeignSource=" + parentForeignSource
-//                + ", parentForeignId=" + parentForeignId
-//                + ", parentNodeLabel=" + parentNodeLabel
-//                + ", location=" + location + "]";
-//    }
-
 }

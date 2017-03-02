@@ -50,8 +50,6 @@ public interface ForeignSourceService {
 
     ForeignSourceEntity getDefaultForeignSource();
 
-    void putDefaultForeignSource(ForeignSourceEntity foreignSource);
-
     void resetDefaultForeignSource();
 
     void deleteForeignSource(String name);

@@ -577,11 +577,13 @@ public class RequisitionRestService extends OnmsRestService {
      * @param foreignSource a {@link java.lang.String} object.
      * @param params a {@link org.opennms.web.rest.support.MultivaluedMapImpl} object.
      * @return a {@link javax.ws.rs.core.Response} object.
+     *
+     * @deprecated This is a very cost intensive operation. Please use {@link #addOrReplaceRequisition(UriInfo, Requisition)} instead.
      */
     @PUT
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    // TODO MVR make deprecated use saveOrReplaceRequisition instead
+    @Deprecated
     public Response updateRequisition(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
         final RequisitionEntity requisitionEntity = loadRequisition(foreignSource);
         final Requisition requisition = toRestModel(requisitionEntity);
@@ -599,11 +601,13 @@ public class RequisitionRestService extends OnmsRestService {
      * @param foreignId a {@link java.lang.String} object.
      * @param params a {@link org.opennms.web.rest.support.MultivaluedMapImpl} object.
      * @return a {@link javax.ws.rs.core.Response} object.
+     *
+     * @deprecated This is a very cost intensive operation. Please use {@link #addOrReplaceNode(UriInfo, String, RequisitionNode)} instead.
      */
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    // TODO MVR make deprecated use saveOrReplaceNode instead
+    @Deprecated
     public Response updateNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
         RequisitionNodeEntity persistedEntity = loadNode(foreignSource, foreignId);
         RequisitionNode node = toRestModel(persistedEntity);
@@ -621,11 +625,13 @@ public class RequisitionRestService extends OnmsRestService {
      * @param ipAddress a {@link java.lang.String} object.
      * @param params a {@link org.opennms.web.rest.support.MultivaluedMapImpl} object.
      * @return a {@link javax.ws.rs.core.Response} object.
+     *
+     * @deprecated This is a very cost intensive operation. Please use {@link #addOrReplaceInterface(UriInfo, String, String, RequisitionInterface)} instead.
      */
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    // TODO MVR make deprecated use saveOrReplaceNode instead
+    @Deprecated
     public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         RequisitionInterfaceEntity persistedInterface = loadInterface(foreignSource, foreignId, ipAddress);
         RequisitionInterface iface = toRestModel(persistedInterface);

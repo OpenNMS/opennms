@@ -43,6 +43,4 @@ public interface GenericPersistenceAccessor {
 
     List findMatching(Criteria criteria);
 
-    // TODO MVR remove
-    <T> void delete(T entity);
 }

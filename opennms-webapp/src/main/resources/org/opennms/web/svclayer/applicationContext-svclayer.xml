@@ -124,8 +124,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="importFileDirectory" value="${importer.requisition.dir}"/>
   </bean>
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <!--<property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>--> <!-- TODO MVR -->
-    <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
@@ -133,8 +131,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
     <qualifier value="default"/>
-      <!--<property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>--> <!-- TODO MVR -->
-      <!--<property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/> --> <!-- TODO MVR -->
   </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">

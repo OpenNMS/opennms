@@ -94,7 +94,7 @@ public class ForeignSourceMapper {
         output.setName(input.getName());
         output.setDefault(input.isDefault());
         output.setScanInterval(Duration.millis(input.getScanInterval()));
-        output.setDateStamp(null); // TODO MVR
+        output.setDate(input.getDate());
         output.setDetectors(input.getDetectors().stream().map(d -> toRestModel(d)).collect(Collectors.toList()));
         output.setPolicies(input.getPolicies().stream().map(p -> toRestModel(p)).collect(Collectors.toList()));
         return output;

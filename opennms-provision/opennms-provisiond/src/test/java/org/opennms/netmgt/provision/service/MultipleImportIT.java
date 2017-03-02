@@ -84,7 +84,7 @@ public class MultipleImportIT extends ProvisioningITCase {
         final ForeignSourceEntity foreignSource = new ForeignSourceEntity();
         foreignSource.setName("default");
         foreignSource.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
-        foreignSourceService.putDefaultForeignSource(foreignSource);
+        foreignSourceService.saveForeignSource(foreignSource);
         m_provisioner.getProvisionService().setForeignSourceService(foreignSourceService);
     }
 

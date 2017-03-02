@@ -98,7 +98,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        mfsr.putDefaultForeignSource(fs);
+        mfsr.saveForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceService(mfsr);
         m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
     }

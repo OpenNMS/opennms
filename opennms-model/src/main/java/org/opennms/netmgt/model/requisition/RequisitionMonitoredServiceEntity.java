@@ -55,7 +55,6 @@ import javax.persistence.Table;
 @Table(name="requisition_node_interface_services")
 public class RequisitionMonitoredServiceEntity {
 
-    // TODO MVR das muss anders
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name="requisitionServiceSequence", sequenceName="requisitionservicenxtid")
@@ -76,7 +75,6 @@ public class RequisitionMonitoredServiceEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name="interface_id")
     private RequisitionInterfaceEntity ipInterface;
-
 
     public Long getId() {
         return id;

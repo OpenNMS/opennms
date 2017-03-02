@@ -84,7 +84,6 @@ public abstract class PluginConfigEntity implements Serializable {
 
     @ManyToOne(optional=false)
     @JoinColumn(name="foreignsource")
-    // TODO MVR ensure that this is set, on save (add guards, when a plugin config points to another element than defined in the foreign source)
     private ForeignSourceEntity foreignSource;
 
     protected PluginConfigEntity() {

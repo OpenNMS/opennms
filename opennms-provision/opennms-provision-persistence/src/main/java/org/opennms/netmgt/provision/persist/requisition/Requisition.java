@@ -260,41 +260,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    // TODO MVR remove
-//    /**
-//     * <p>visit</p>
-//     *
-//     * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
-//     */
-//    public void visit(final RequisitionVisitor visitor) {
-//        updateNodeCacheIfNecessary();
-//
-//        if (visitor == null) {
-//            LOG.warn("no visitor specified!");
-//            return;
-//        }
-//
-//        visitor.visitModelImport(this);
-//
-//        for (final OnmsNodeRequisition nodeReq : m_nodeReqs.values()) {
-//            nodeReq.visit(visitor);
-//        }
-//
-//        visitor.completeModelImport(this);
-//    }
-
-    // TODO MVR remove
-//    /**
-//     * <p>getNodeRequistion</p>
-//     *
-//     * @param foreignId a {@link java.lang.String} object.
-//     * @return a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
-//     */
-//    public OnmsNodeRequisition getNodeRequistion(final String foreignId) {
-//        updateNodeCacheIfNecessary();
-//        return m_nodeReqs.get(foreignId);
-//    }
-
     @XmlTransient
     public int getNodeCount() {
         return (m_nodes == null) ? 0 : m_nodes.size();

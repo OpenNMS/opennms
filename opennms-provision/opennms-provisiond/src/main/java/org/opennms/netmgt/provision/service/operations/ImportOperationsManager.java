@@ -94,7 +94,9 @@ public class ImportOperationsManager {
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city) {
         final Integer nodeId = processForeignId(foreignId);
         final UpdateOperation updateOperation;
-        if (m_rescanExisting) { //Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) { // TODO MVR revert "dbonly" changes to m_rescanExisting
+        // TODO MVR there should not be any NullUpdateOperation, but the rescanExisting should determine if rescan is acteually happening
+        // TODO MVR  "dbonly" changes to m_rescanExisting
+        if (m_rescanExisting) { //Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
             updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
         } else {
             updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);

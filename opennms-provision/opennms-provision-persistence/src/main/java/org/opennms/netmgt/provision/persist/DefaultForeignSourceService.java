@@ -125,14 +125,6 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return toPersistenceModel(foreignSource);
     }
 
-    // TODO MVR this is not really needed anymore
-    @Override
-    public void putDefaultForeignSource(ForeignSourceEntity foreignSource) {
-        foreignSource.setName(DEFAULT_FOREIGNSOURCE_NAME); // overwrite name
-        foreignSource.setDefault(true);
-        saveForeignSource(foreignSource);
-    }
-
     @Override
     public void resetDefaultForeignSource() {
         deleteForeignSource(DEFAULT_FOREIGNSOURCE_NAME);

@@ -606,7 +606,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("matt:");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        m_foreignSourceService.putDefaultForeignSource(fs);
+        m_foreignSourceService.saveForeignSource(fs);
 
         importFromResource("classpath:/requisition_then_scanv6.xml", Boolean.TRUE.toString());
 

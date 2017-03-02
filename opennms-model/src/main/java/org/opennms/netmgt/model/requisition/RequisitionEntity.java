@@ -82,7 +82,6 @@ public class RequisitionEntity implements Serializable {
     public RequisitionEntity() {
     }
 
-    // requisistionName or foreignSource name (they were something different in the past, but are now the same (mvrueden: 2017-02-18)
     public RequisitionEntity(final String requisitionName) {
         name = requisitionName;
         lastUpdate = new Date();

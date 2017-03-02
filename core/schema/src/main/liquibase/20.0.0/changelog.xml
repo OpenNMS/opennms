@@ -83,7 +83,6 @@
             <column name="id" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <!-- TODO MVR building and city should be in the assets -->
             <column name="foreignid" type="text">
                 <constraints nullable="false"/>
             </column>

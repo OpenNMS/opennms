@@ -154,6 +154,18 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public Date getDateStampAsDate() {
         return m_dateStamp == null ? null : m_dateStamp.toGregorianCalendar().getTime();
     }
+
+    // TODO MVR verify if we need @XmlTransient or not
+    public void setDate(Date date) {
+        final GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        try {
+            setDateStamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+        } catch (final DatatypeConfigurationException e) {
+            LOG.warn("Failed to turn {} into an XML date.", date);
+        }
+    }
+
     /**
      * <p>setDateStamp</p>
      *

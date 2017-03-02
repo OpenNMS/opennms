@@ -178,7 +178,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         m_foreignSource.addDetector(detector);
 
         ForeignSourceService foreignSourceService = new MockForeignSourceService();
-        foreignSourceService.putDefaultForeignSource(m_foreignSource);
+        foreignSourceService.saveForeignSource(m_foreignSource);
         m_provisionService.setForeignSourceService(foreignSourceService);
 
         m_requisitionService = new MockRequisitionService();

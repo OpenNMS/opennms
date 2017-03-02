@@ -28,15 +28,21 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toPersistenceModel;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.xml.bind.JAXB;
+
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.support.PluginWrapper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 
 public class MockForeignSourceService implements ForeignSourceService {
@@ -75,9 +81,9 @@ public class MockForeignSourceService implements ForeignSourceService {
         Assert.notNull(foreignSource);
         Assert.notNull(foreignSource.getName());
 
-        // TODO MVR ??
-//        validate(foreignSource);
-
+        if (foreignSource.getName().equals("default")) {
+            foreignSource.setDefault(true);
+        }
         m_foreignSources.put(foreignSource.getName(), foreignSource);
     }
 
@@ -90,21 +96,15 @@ public class MockForeignSourceService implements ForeignSourceService {
     public ForeignSourceEntity getDefaultForeignSource() {
         final ForeignSourceEntity fs = getForeignSource("default");
         if (fs == null) {
-            // TODO MVR map... this is duplicated code, we may re-use this anyways ...
-//            fs = JAXB.unmarshal(ForeignSource.class, new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml"));
-//            fs.setDefault(true);
-            return fs;
+            try {
+                ForeignSource defaultFs = JAXB.unmarshal(new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml").getInputStream(), ForeignSource.class);
+                defaultFs.setDefault(true);
+                return toPersistenceModel(defaultFs);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not load default foreign source", e);
+            }
         }
         return fs;
-    }
-
-    @Override
-    public void putDefaultForeignSource(final ForeignSourceEntity foreignSource) {
-        Objects.requireNonNull(foreignSource);
-        foreignSource.setDefault(true);
-        foreignSource.setName("default");
-
-        saveForeignSource(foreignSource);
     }
 
     @Override

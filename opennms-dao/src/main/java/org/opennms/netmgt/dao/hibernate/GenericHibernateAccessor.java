@@ -74,8 +74,4 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
         return getHibernateTemplate().execute(callback);
     }
 
-    @Override
-    public <T> void delete(T entity) {
-        getHibernateTemplate().delete(entity);
-    }
 }

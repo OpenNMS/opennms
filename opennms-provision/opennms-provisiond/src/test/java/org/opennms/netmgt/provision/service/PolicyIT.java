@@ -120,7 +120,7 @@ public class PolicyIT {
 
         fs.addPolicy(policy2);
 
-        mfsr.putDefaultForeignSource(fs);
+        mfsr.saveForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceService(mfsr);
         m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
     }
