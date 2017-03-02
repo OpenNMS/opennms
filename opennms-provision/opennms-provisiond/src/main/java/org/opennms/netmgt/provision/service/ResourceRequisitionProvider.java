@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.Objects;
 
 import javax.xml.bind.JAXB;
+import javax.xml.bind.ValidationException;
 
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
@@ -85,6 +86,11 @@ public class ResourceRequisitionProvider implements RequisitionProvider {
     @Override
     public RequisitionEntity getRequisition() throws IOException {
         Requisition requisition = JAXB.unmarshal(this.resource.getInputStream(), Requisition.class);
+        try {
+            requisition.validate();
+        } catch (ValidationException e) {
+            throw new IOException("Provided requisition " + requisition.getForeignSource() + " is not valid", e);
+        }
         return requisitionMerger.mergeOrCreate(requisition);
     }
 
