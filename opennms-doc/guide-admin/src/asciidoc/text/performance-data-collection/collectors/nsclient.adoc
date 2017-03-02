@@ -22,3 +22,4 @@ The _NSClientCollector_ is used to collect performance data over _HTTP_ from _NS
 |===
 | Parameter              | Description                                                                     | Required | Default value
 | `collection`           | The name of the _NSClient Collection_ to use                                    | optional | default
+|===
