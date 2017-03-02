@@ -28,10 +28,6 @@
 
 package org.opennms.core.utils;
 
-import javax.swing.filechooser.FileSystemView;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
@@ -44,6 +40,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Pattern;
+
+import javax.swing.filechooser.FileSystemView;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 public abstract class StringUtils {
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
@@ -304,5 +309,56 @@ public abstract class StringUtils {
 
         // There are extra characters at the tail of A, that don't show up in B
         return false;
+    }
+
+    /**
+     * This is a quick and dirty parser for String representations
+     * of decimal integers. It should be up to 2X faster than
+     * {@link Integer#parseInt(String)}.
+     * 
+     * @param value Positive or negative decimal string value
+     * @return Integer representing the string value
+     */
+    public static int parseDecimalInt(String value) {
+        final int length = value.length();
+
+        if (value == null || length < 1) {
+            throw new NumberFormatException("Null or empty value");
+        }
+
+        try {
+            int sign = -1;
+            int i = 0;
+
+            if (value.charAt(0) == '-') {
+                if (length == 1) {
+                    throw new NumberFormatException("No digits in value: " + value);
+                }
+                sign = 1;
+                i = 1;
+            }
+
+            int retval = 0;
+            int oldValue;
+            int digit;
+
+            for (; i < length; i++) {
+                oldValue = retval;
+                digit = (value.charAt(i) - '0');
+                if (digit < 0 || digit > 9) {
+                    throw new NumberFormatException("Invalid digit: " + value.charAt(i));
+                }
+                retval = (retval * 10) - digit;
+                // If the negative value overflows to positive, then throw an exception
+                if (retval > oldValue) {
+                    throw new NumberFormatException(sign == -1 ? "Overflow" : "Underflow");
+                }
+            }
+            return sign * retval;
+        } catch (Exception e) {
+            NumberFormatException nfe = new NumberFormatException("Could not parse integer value: " + value);
+            nfe.initCause(e);
+            throw nfe;
+        }
     }
 }

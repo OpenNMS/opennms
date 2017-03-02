@@ -31,6 +31,7 @@ package org.opennms.core.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.time.ZoneId;
@@ -177,5 +178,68 @@ public class StringUtilsTest {
     
     private void assertArrayEquals(String[] expected, String[] actual) {
         assertEquals(Arrays.asList(expected), Arrays.asList(actual));
+    }
+
+    @Test
+    public void testParseDecimalInteger() {
+        for (String value : new String[] {
+            "1234",
+            "-444",
+            "-0",
+            "0",
+            "0000",
+            String.valueOf(Integer.MAX_VALUE),
+            String.valueOf(Integer.MIN_VALUE)
+        }) {
+            assertEquals(Integer.parseInt(value), StringUtils.parseDecimalInt(value));
+        }
+    }
+
+    @Test
+    public void testParseDecimalIntegerInvalidValues() {
+        for (String value : new String[] {
+            "12F4",
+            String.valueOf(Integer.MAX_VALUE) + "0",
+            String.valueOf(Integer.MIN_VALUE) + "0",
+            "-"
+        }) {
+            try {
+                StringUtils.parseDecimalInt(value);
+                fail("Value should have thrown NumberFormatException: " + value);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void testParseDecimalIntegerSpeed() {
+        final int WARM_UP = 1000000;
+        final int TEST_SPEED = 50000000;
+        for (int iterations : new int[] {WARM_UP, TEST_SPEED}) {
+            for (String value : new String[] {
+                    "1234",
+                    "-444",
+                    String.valueOf(Integer.MAX_VALUE),
+                    String.valueOf(Integer.MIN_VALUE)
+            }) {
+                long start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    Integer.parseInt(value);
+                }
+                long parseIntTime = System.nanoTime() - start;
+
+                start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    StringUtils.parseDecimalInt(value);
+                }
+                long parseDecimalIntTime = System.nanoTime() - start;
+
+                if (iterations == TEST_SPEED) {
+                    System.out.println("Results: " + parseDecimalIntTime + " ?<= " + parseIntTime);
+                    assertTrue("StringUtils.parseDecimalInt() is slower: " + parseDecimalIntTime + " > " + parseIntTime, parseDecimalIntTime <= parseIntTime);
+                }
+            }
+        }
     }
 }
