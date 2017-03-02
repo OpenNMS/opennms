@@ -2535,6 +2535,7 @@ CREATE TABLE requisition_nodes (
   CONSTRAINT fk_requisition_nodes_requisition FOREIGN KEY (foreignsource)
   REFERENCES requisition (name) ON DELETE CASCADE
 );
+CREATE INDEX requisition_nodes_requisition ON requisition_nodes (foreignsource);
 
 CREATE TABLE requisition_node_assets (
   key text NOT NULL,
@@ -2544,6 +2545,7 @@ CREATE TABLE requisition_node_assets (
   CONSTRAINT fk_requisition_node_assets_requisition_nodes FOREIGN KEY (node_id)
   REFERENCES requisition_nodes (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_assets_node_id ON requisition_node_assets (node_id);
 
 CREATE TABLE requisition_node_categories (
   name text NOT NULL,
@@ -2552,6 +2554,7 @@ CREATE TABLE requisition_node_categories (
   CONSTRAINT fk_requisition_node_categories_requisition_nodes FOREIGN KEY (node_id)
   REFERENCES requisition_nodes (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_categories_node_id ON requisition_node_categories (node_id);
 
 CREATE TABLE requisition_node_interfaces (
   id integer NOT NULL,
@@ -2565,6 +2568,7 @@ CREATE TABLE requisition_node_interfaces (
   CONSTRAINT fk_requisition_node_interfaces_requisition_nodes FOREIGN KEY (node_id)
   REFERENCES requisition_nodes (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_interfaces_node_id ON requisition_node_interfaces (node_id);
 
 CREATE TABLE requisition_node_interface_categories (
   name text NOT NULL,
@@ -2573,6 +2577,7 @@ CREATE TABLE requisition_node_interface_categories (
   CONSTRAINT fk_requisition_node_interface_categories_requisition_node_inter FOREIGN KEY (interface_id)
   REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_interface_categories_interface_id ON requisition_node_interface_services (interface_id);
 
 CREATE TABLE requisition_node_interface_services (
   id integer NOT NULL,
@@ -2582,6 +2587,7 @@ CREATE TABLE requisition_node_interface_services (
   CONSTRAINT fk_requisition_node_interface_services_requisition_node_interfa FOREIGN KEY (interface_id)
   REFERENCES requisition_node_interfaces (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_interface_services_interface_id ON requisition_node_interface_services (interface_id);
 
 CREATE TABLE requisition_node_interface_service_categories (
   name text NOT NULL,
@@ -2590,3 +2596,4 @@ CREATE TABLE requisition_node_interface_service_categories (
   CONSTRAINT fk_requisition_node_interface_service_categories_requisition_no FOREIGN KEY (service_id)
   REFERENCES requisition_node_interface_services (id) ON DELETE CASCADE
 );
+CREATE INDEX requisition_node_interface_service_categories_service_id ON requisition_node_interface_service_categories (service_id);

@@ -51,6 +51,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.BatchSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,7 @@ public class RequisitionEntity implements Serializable {
     protected String name;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "requisition")
+    @BatchSize(size=250)
     protected List<RequisitionNodeEntity> nodes = new ArrayList<>();
 
     @Column(name="date")

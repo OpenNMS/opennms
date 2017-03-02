@@ -50,6 +50,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
+
 @Entity
 @Table(name="requisition_nodes")
 public class RequisitionNodeEntity {
@@ -74,6 +76,7 @@ public class RequisitionNodeEntity {
     private RequisitionEntity requisition;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="node")
+    @BatchSize(size=250)
     protected List<RequisitionInterfaceEntity> interfaces = new ArrayList<>();
 
     @ElementCollection
