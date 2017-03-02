@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.mock;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import org.opennms.netmgt.config.NotificationCommandManager;
-
-/**
- * @author david hustace <david@opennms.org>
- */
-
-public class MockNotificationCommandManager extends NotificationCommandManager {
-
-    public MockNotificationCommandManager(String xmlString) throws IOException {
-        try {
-            parseXML(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            // This will never happen; all JVMs support UTF-8
-        }
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/notifications",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/notifications")
     }
+)
+package org.opennms.netmgt.config.notifications;
 
-    @Override
-    public void update() throws Exception {
-        
-    }
-}
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

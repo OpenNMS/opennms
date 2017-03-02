@@ -28,19 +28,20 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract NotificationCommandManager class.</p>
@@ -59,11 +60,13 @@ public abstract class NotificationCommandManager {
      * Populate the internal list of notification commands from an XML file.
      *
      * @param reader contains the XML file to be parsed
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    protected void parseXML(InputStream reader) throws MarshalException, ValidationException {
-        NotificationCommands config = CastorUtils.unmarshal(NotificationCommands.class, reader);
+    protected void parseXML(InputStream stream) throws IOException {
+        final NotificationCommands config;
+        try (final Reader reader = new InputStreamReader(stream)) {
+            config = JaxbUtils.unmarshal(NotificationCommands.class, reader);
+        }
 
         Map<String, Command> commands = new HashMap<String, Command>();
         for (Command curCommand : getCommandsFromConfig(config)) {
