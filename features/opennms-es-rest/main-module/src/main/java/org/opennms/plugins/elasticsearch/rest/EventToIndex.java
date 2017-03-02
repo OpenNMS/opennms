@@ -771,6 +771,7 @@ public class EventToIndex implements AutoCloseable {
 				}
 			} else if((SEVERITY.equals(key) && value!=null)){ 
 				try{
+					body.put(SEVERITY,value);
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
 					body.put(SEVERITY_TEXT,label);
