@@ -195,11 +195,11 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, Impl.JAXB);
-        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.JAXB);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
@@ -227,7 +227,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.JAXB);
@@ -258,7 +258,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);

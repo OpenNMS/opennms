@@ -50,7 +50,7 @@
             final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
             final UserManager userFactory = webAppContext.getBean("userManager", org.opennms.netmgt.config.UserManager.class);
        		User user = userFactory.getUser(userid);
-       		if (!user.getRoleCollection().contains(Authentication.ROLE_READONLY)) {
+       		if (!user.getRoles().contains(Authentication.ROLE_READONLY)) {
        		    canEdit = true;
        		}
 	    } catch (Throwable e) {

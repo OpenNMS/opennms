@@ -969,7 +969,7 @@ public final class BroadcastEventProcessor implements EventListener {
     
     boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
         boolean retVal = false;
-        for (Contact c : user.getContactCollection()) {
+        for (Contact c : user.getContacts()) {
             if (contactType.equalsIgnoreCase(c.getType())) {
                 if (allowEmpty || ! "".equals(c.getInfo())) {
                     retVal = true;

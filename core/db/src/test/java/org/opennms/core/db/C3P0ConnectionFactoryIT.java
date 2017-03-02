@@ -40,7 +40,7 @@ import java.sql.Statement;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
@@ -156,7 +156,7 @@ public class C3P0ConnectionFactoryIT extends TestCase {
         }
 
         final StringWriter sw = new StringWriter();
-        CastorUtils.marshalWithTranslatedExceptions(config, sw);
+        JaxbUtils.marshal(config, sw);
         final String configString = sw.toString();
 
         InputStream stream = new ByteArrayInputStream(configString.getBytes());

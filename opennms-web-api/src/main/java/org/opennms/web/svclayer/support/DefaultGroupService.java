@@ -181,10 +181,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
                     onmsUser = m_userDao.getOnmsUser(eachUser);
                     if (onmsUser == null) continue;
                     userCollection.add(onmsUser);
-                } catch (MarshalException e) {
-                    Log.error("could not load user", e); //ignore
-                } catch (ValidationException e) {
-                    Log.error("could not load user", e); //ignore
                 } catch (IOException e) {
                     Log.error("could not load user", e); //ignore
                 }
@@ -199,10 +195,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         if (group != null && group.getUserCollection().contains(userName)) {
             try {
                 return m_userDao.getOnmsUser(userName);
-            } catch (MarshalException e) {
-                Log.error("could not load user", e); //ignore
-            } catch (ValidationException e) {
-                Log.error("could not load user", e); //ignore
             } catch (IOException e) {
                 Log.error("could not load user", e); //ignore
             }
@@ -234,10 +226,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         if (userName != null) {
             try {
                 return m_userDao.hasUser(userName);
-            } catch (MarshalException e) {
-                Log.error("could not load user", e); //ignore
-            } catch (ValidationException e) {
-                Log.error("could not load user", e); //ignore
             } catch (IOException e) {
                 Log.error("could not load user", e); //ignore
             }

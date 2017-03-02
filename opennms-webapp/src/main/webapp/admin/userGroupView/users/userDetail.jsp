@@ -88,7 +88,7 @@
             Security Roles:
           </th>
           <td width="75%">
-            <%=org.apache.commons.lang.StringUtils.join(user.getRoleCollection().toArray(new String[user.getRoleCollection().size()]), "<br/>")%>
+            <%=org.apache.commons.lang.StringUtils.join(user.getRoles().toArray(new String[user.getRoles().size()]), "<br/>")%>
           </td>
         </tr>
         <tr>
@@ -226,7 +226,7 @@
           </tr>
         </thead>
 
-			<% Collection<String> dutySchedules = user.getDutyScheduleCollection(); %>
+			<% Collection<String> dutySchedules = user.getDutySchedules(); %>
                         <%
                                 for (String dutySchedule : dutySchedules) {
                                         DutySchedule tmp = new DutySchedule(dutySchedule);
