@@ -54,5 +54,22 @@ public class Bridge {
             return false;
         return true;
     }
+    
+    public String printTopology() {
+    	StringBuffer strbfr = new StringBuffer();
+        strbfr.append("------ bridge -----\n");
+        strbfr.append("nodeid: ");
+        strbfr.append(m_id);
+        strbfr.append("\n");
+               strbfr.append("isrootbridge: ");
+        strbfr.append(m_isRootBridge);
+        strbfr.append("\n");
+        strbfr.append("root port: ");
+        strbfr.append(m_rootPort);
+        strbfr.append("\n");
+        strbfr.append("------ bridge -----\n");
+        return strbfr.toString();
+
+    }
 
 }

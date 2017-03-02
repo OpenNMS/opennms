@@ -380,8 +380,7 @@ public class SharedSegment {
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-            strbfr.append("\n");
-            strbfr.append("------shared Segment-----\n");
+            strbfr.append("------shared segment-----\n");
             strbfr.append("bridge ids on segment: ");
             strbfr.append(getBridgeIdsOnSegment());
             strbfr.append("\n");
@@ -398,7 +397,7 @@ public class SharedSegment {
             	strbfr.append(blink.printTopology());
             for (BridgeMacLink mlink: getBridgeMacLinks()) 
             	strbfr.append(mlink.printTopology());
-            strbfr.append("------shared Segment-----");
+            strbfr.append("------shared segment-----\n");
             
             return strbfr.toString();    	
     }

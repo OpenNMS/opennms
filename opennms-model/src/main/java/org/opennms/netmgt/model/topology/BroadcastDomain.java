@@ -389,23 +389,55 @@ public class BroadcastDomain {
     
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-    	if (hasRootBridge())
-    		return printTopologyLevel(0);
-    	for (SharedSegment shared: getTopology())
-    		strbfr.append(shared.printTopology());
+        strbfr.append("\n------broadcast domain-----\n");
+        strbfr.append("bridge node ids: ");
+        strbfr.append(getBridgeNodesOnDomain());
+        strbfr.append("\n");
+        strbfr.append("macs: ");
+        strbfr.append(getMacsOnDomain());
+        strbfr.append("\n");
+    	if (hasRootBridge()) {
+    		Set<Integer> rootids = new HashSet<Integer>();
+    		rootids.add(getRootBridgeId());
+    		strbfr.append("rootbridge: ");
+    		strbfr.append(getRootBridgeId());
+    		strbfr.append("\n");
+    		strbfr.append(printTopologyFromLevel(rootids,0));
+    	} else {
+    		for (SharedSegment shared: getTopology())
+			strbfr.append(shared.printTopology());
+    	}
+        strbfr.append("------broadcast domain-----\n");
     	return strbfr.toString();
     }
     
-    public String printTopologyLevel(int level) {
+    public String printTopologyFromLevel(Set<Integer> bridgeIds, int level) {
+    	Set<Integer> bridgesDownLevel = new HashSet<Integer>();
     	StringBuffer strbfr = new StringBuffer();
+        strbfr.append("\n------level ");
     	strbfr.append(level);
-    	if (hasLevel(level+1))
-    		strbfr.append(printTopologyLevel(level+1));
+        strbfr.append(" -----\n");
+
+        strbfr.append("level bridge node id: ");
+        strbfr.append(bridgeIds);
+        strbfr.append("\n");
+        for (Integer bridgeid : bridgeIds) {
+        	strbfr.append(getBridge(bridgeid).printTopology());
+        	for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeid)) {
+        		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
+        			strbfr.append(segment.printTopology());
+        			bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
+        		}
+        	}
+        }
+        
+        strbfr.append("------level ");
+    	strbfr.append(level);
+        strbfr.append(" -----\n");
+        bridgesDownLevel.removeAll(bridgeIds);
+    	if (!bridgesDownLevel.isEmpty())
+    		strbfr.append(printTopologyFromLevel(bridgesDownLevel,level+1));
     	return strbfr.toString();
     }
     
-    public boolean hasLevel(int level) {
-    	return false;
-    }
-
 }

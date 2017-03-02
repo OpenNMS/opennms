@@ -290,25 +290,31 @@ public class BridgeMacLink {
 	public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
 
-        strbfr.append("\n");
-        strbfr.append("------BridgeMacLink-----");
+        strbfr.append("------BridgeMacLink-----\n");
         strbfr.append("Create time: ");
         strbfr.append(getBridgeMacLinkCreateTime());
+        strbfr.append("\n");
         strbfr.append("Last poll time: ");
         strbfr.append(getBridgeMacLinkLastPollTime());
+        strbfr.append("\n");
         strbfr.append("nodeid: ");
         strbfr.append(getNode().getId());
+        strbfr.append("\n");
         strbfr.append("bridgeport: ");
         strbfr.append(getBridgePort());
+        strbfr.append("\n");
         strbfr.append("ifindex: ");
         strbfr.append(getBridgePortIfIndex());
+        strbfr.append("\n");
         strbfr.append("mac: ");
         strbfr.append(getMacAddress());
+        strbfr.append("\n");
         if (getBridgeDot1qTpFdbStatus() != null) {
         	strbfr.append("status: ");
         	strbfr.append(BridgeDot1qTpFdbStatus.getTypeString(getBridgeDot1qTpFdbStatus().getValue()));
+            strbfr.append("\n");
         }
-        strbfr.append("------BridgeMacLink-----");	        
+        strbfr.append("------BridgeMacLink-----\n");	        
         return strbfr.toString();
 	}
 	
