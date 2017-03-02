@@ -214,7 +214,7 @@
             </column>
         </createTable>
         <addPrimaryKey tableName="requisition_node_interface_service_categories" columnNames="service_id,name" constraintName="requisition_node_interface_service_categories_pkey"/>
-        <addForeignKeyConstraint constraintName="fk_requisition_node_interface_service_categories_requisition_node_services"
+        <addForeignKeyConstraint constraintName="fk_req_node_iface_service_categories_req_nodes"
                                  baseTableName="requisition_node_interface_service_categories" baseColumnNames="service_id"
                                  referencedTableName="requisition_node_interface_services" referencedColumnNames="id" onDelete="CASCADE"/>
         <createIndex tableName="requisition_node_interface_service_categories" indexName="requisition_node_interface_service_categories_service_id" unique="false">
