@@ -347,9 +347,7 @@ public class Provisioner implements SpringServiceDaemon {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         RequisitionImportContext context = new RequisitionImportContext();
         context.setImportRequest(importRequest);
-        context.setRescanExisting(importRequest.getRescanExisting());
         doImport.setAttribute("context", context);
-        doImport.setAttribute("rescanExisting", importRequest.getRescanExisting());
         doImport.trigger();
         doImport.waitFor();
         final RequisitionImportContext ri = doImport.findAttributeByType(RequisitionImportContext.class);

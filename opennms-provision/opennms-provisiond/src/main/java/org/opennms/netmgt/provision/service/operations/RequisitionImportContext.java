@@ -72,12 +72,7 @@ public class RequisitionImportContext {
         return false;
     }
 
-    public void setRescanExisting(String rescanExisting) {
-        // TODO MVR verify that this was changed correctly
-        this.rescanExisting = rescanExisting == null || Boolean.valueOf(rescanExisting) || rescanExisting.equalsIgnoreCase("dbonly");
-    }
-
     public boolean isRescanExisting() {
-        return rescanExisting;
+        return importRequest.getRescanExisting() == null || Boolean.valueOf(importRequest.getRescanExisting());
     }
 }
