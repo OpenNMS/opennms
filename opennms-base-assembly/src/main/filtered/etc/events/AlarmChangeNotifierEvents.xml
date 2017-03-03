@@ -141,7 +141,7 @@
     
     &lt;p&gt;Alarm Suppressed until %parm[suppresseduntil]%&lt;p&gt;
     
-    &lt;p&gt;Alarm Suppressed by user %parm[alarmackuser]%&lt;p&gt;
+    &lt;p&gt;Alarm Suppressed by user %parm[suppresseduser]%&lt;p&gt;
     
     &lt;p&gt;New Alarm Values&lt;p&gt;
     &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
