@@ -30,8 +30,6 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -122,9 +120,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         messageLog.getLocation(),
                         messageLog.getSourceAddress(),
                         messageLog.getSourcePort(),
-                        // Decode the packet content as ASCII
-                        // TODO: Support more character encodings?
-                        StandardCharsets.US_ASCII.decode(message.getBytes()).toString(),
+                        message.getBytes(),
                         syslogdConfig
                     );
                 events.addEvent(re.getEvent());

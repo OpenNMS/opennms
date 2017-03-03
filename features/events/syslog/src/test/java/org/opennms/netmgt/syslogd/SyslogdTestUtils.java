@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 /**
  * This class provides utility methods for the Syslogd tests.
  */
@@ -43,5 +46,9 @@ public abstract class SyslogdTestUtils {
          * missing anticipated events, etc.
          */
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
+    }
+
+    public static ByteBuffer toByteBuffer(String string) {
+        return ByteBuffer.wrap(string.getBytes(StandardCharsets.US_ASCII));
     }
 }

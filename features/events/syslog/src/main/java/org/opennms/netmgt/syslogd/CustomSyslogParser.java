@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +51,7 @@ public class CustomSyslogParser extends SyslogParser {
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
 
-    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
+    public CustomSyslogParser(final SyslogdConfig config, final ByteBuffer text) throws SyslogParserException {
         super(config, text);
 
         final String forwardingRegexp = config.getForwardingRegexp();
@@ -62,12 +64,12 @@ public class CustomSyslogParser extends SyslogParser {
     }
 
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         LOG.debug("Message parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
 
-        String message = getText();
+        String message = SyslogParser.fromByteBuffer(getText());
 
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');

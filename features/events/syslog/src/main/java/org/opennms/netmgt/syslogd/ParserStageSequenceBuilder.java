@@ -45,6 +45,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.collections.RadixTree;
 import org.opennms.core.collections.RadixTreeImpl;
 import org.opennms.core.collections.RadixTreeNode;
+import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +136,6 @@ public class ParserStageSequenceBuilder {
 	private void addStage(ParserStage stage) {
 		stage.setOptional(getOptional());
 		stage.setTerminal(getTerminal());
-		System.out.println(stage.toString());
 		m_stages.add(stage);
 	}
 
@@ -385,10 +385,8 @@ public class ParserStageSequenceBuilder {
 		@Override
 		public AcceptResult acceptChar(ParserStageState state, char c) {
 			if (c == m_char) {
-//				System.out.println("ACCEPT " + m_char);
 				return AcceptResult.COMPLETE_AFTER_CONSUMING;
 			} else {
-//				System.out.println("CANCEL " + m_char);
 				return AcceptResult.CANCEL;
 			}
 		}
@@ -703,7 +701,7 @@ public class ParserStageSequenceBuilder {
 			if ("".equals(value)) {
 				return 0;
 			} else {
-				return Integer.parseInt(value);
+				return StringUtils.parseDecimalInt(value);
 			}
 		}
 
@@ -760,7 +758,7 @@ public class ParserStageSequenceBuilder {
 			if ("".equals(value)) {
 				return 0;
 			} else {
-				return Integer.parseInt(value);
+				return StringUtils.parseDecimalInt(value);
 			}
 		}
 

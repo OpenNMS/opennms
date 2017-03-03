@@ -39,7 +39,6 @@ import org.opennms.core.collections.RadixTreeImpl;
 import org.opennms.core.collections.RadixTreeNode;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Seth
  */
-public class RadixTreeParser implements ByteBufferParser<Event> {
+public class RadixTreeParser implements ByteBufferParser<EventBuilder> {
 
 	final static Logger LOG = LoggerFactory.getLogger(RadixTreeParser.class);
 
@@ -86,7 +85,7 @@ public class RadixTreeParser implements ByteBufferParser<Event> {
 	}
 
 	@Override
-	public CompletableFuture<Event> parse(ByteBuffer incoming) {
+	public CompletableFuture<EventBuilder> parse(ByteBuffer incoming) {
 		ParserState state = new ParserState(incoming, new EventBuilder());
 
 // TODO
@@ -110,7 +109,7 @@ public class RadixTreeParser implements ByteBufferParser<Event> {
 			if (s == null) {
 				return null;
 			} else {
-				return s.builder.getEvent();
+				return s.builder;
 			}
 		});
 	}
@@ -159,7 +158,7 @@ public class RadixTreeParser implements ByteBufferParser<Event> {
 					// then complete the parent future
 					if (t != null) {
 						if (!parent.complete(t)) {
-							LOG.warn("More than one future completed with a non-null result");
+							LOG.trace("More than one future completed with a non-null result");
 						}
 					}
 				})

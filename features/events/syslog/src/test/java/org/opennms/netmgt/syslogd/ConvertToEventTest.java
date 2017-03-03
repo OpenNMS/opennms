@@ -29,6 +29,7 @@
 package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -91,12 +92,12 @@ public class ConvertToEventTest {
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length,
                                                 InetAddress.getLocalHost(),
                                                 SyslogClient.PORT);
-        String data = StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(pkt.getData())).toString();
+        ByteBuffer data = ByteBuffer.wrap(pkt.getData());
 
         // ConvertToEvent takes 4 parameter
         // @param addr The remote agent's address.
         // @param port The remote agent's port
-        // @param data The XML data in US-ASCII encoding.
+        // @param data The XML data in {@link StandardCharsets#US_ASCII} encoding.
         // @param len The length of the XML data in the buffer
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
@@ -126,7 +127,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                "<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet", 
+                SyslogdTestUtils.toByteBuffer("<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet"), 
                 config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
@@ -148,7 +149,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                "<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!", 
+                SyslogdTestUtils.toByteBuffer("<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!"), 
                 config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
@@ -277,7 +278,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                syslog,
+                ByteBuffer.wrap(syslog.getBytes(StandardCharsets.US_ASCII)),
                 config
             );
             Event event = convert.getEvent();
@@ -336,5 +337,36 @@ public class ConvertToEventTest {
             }
         }
         return true;
+    }
+
+    @Test
+    public void testTrimTrailingNulls() {
+        ByteBuffer allNulls = ByteBuffer.wrap(new byte[] { 0, 0, 0, 0, 0 });
+        ByteBuffer allNullsTrimmed = ConvertToEvent.trimTrailingNulls(allNulls);
+
+        allNulls.position(3);
+
+        // Make sure that the original buffer's position and limit is unchanged
+        assertEquals(3, allNulls.position());
+        assertEquals(5, allNulls.limit());
+        assertEquals(2, allNulls.remaining());
+
+        assertEquals(0, allNullsTrimmed.position());
+        assertEquals(0, allNullsTrimmed.limit());
+        assertEquals(0, allNullsTrimmed.remaining());
+
+        ByteBuffer middleByte = ByteBuffer.wrap(new byte[] { 0, 0, 4, 0, 0 });
+        ByteBuffer middleByteTrimmed = ConvertToEvent.trimTrailingNulls(middleByte);
+
+        middleByte.position(3);
+
+        // Make sure that the original buffer's position and limit is unchanged
+        assertEquals(3, middleByte.position());
+        assertEquals(5, middleByte.limit());
+        assertEquals(2, middleByte.remaining());
+
+        assertEquals(0, middleByteTrimmed.position());
+        assertEquals(3, middleByteTrimmed.limit());
+        assertEquals(3, middleByteTrimmed.remaining());
     }
 }

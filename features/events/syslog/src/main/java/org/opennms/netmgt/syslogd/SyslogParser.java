@@ -29,6 +29,9 @@
 package org.opennms.netmgt.syslogd;
 
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,7 +41,11 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +59,7 @@ public class SyslogParser {
     private static final String datePattern="((19|20)\\d{2})-([1-9]|0[1-9]|1[0-2])-(0[1-9]|[1-9]|[12][0-9]|3[01])";
     private Matcher m_matcher = null;
     private final SyslogdConfig m_config;
-    private final String m_text;
+    private final ByteBuffer m_text;
     private Boolean m_found = null;
     private Boolean m_matched = null;
     private boolean m_traceEnabled = false;
@@ -69,12 +76,12 @@ public class SyslogParser {
         }
     );
 
-    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
+    public static SyslogParser getParserInstance(SyslogdConfig config, ByteBuffer text) throws MessageDiscardedException {
         Class<? extends SyslogParser> parserClass = PARSER_CLASSES.getUnchecked(config.getParser());
 
         final SyslogParser retval;
         try {
-            Constructor<? extends SyslogParser> m = parserClass.getConstructor(SyslogdConfig.class, String.class);
+            Constructor<? extends SyslogParser> m = parserClass.getConstructor(SyslogdConfig.class, ByteBuffer.class);
             retval = (SyslogParser)m.newInstance(config, text);
         } catch (final Exception ex) {
             LOG.debug("Unable to get parser for class '{}'", parserClass.getName(), ex);
@@ -84,14 +91,18 @@ public class SyslogParser {
         return retval;
     }
 
-    protected SyslogParser(final SyslogdConfig config, final String text) {
+    protected static String fromByteBuffer(ByteBuffer buffer) {
+        return StandardCharsets.US_ASCII.decode(buffer).toString();
+    }
+
+    protected SyslogParser(final SyslogdConfig config, final ByteBuffer text) {
         if (config == null) {
             throw new IllegalArgumentException("Config argument to SyslogParser must not be null");
         } else if (text == null) {
             throw new IllegalArgumentException("Text argument to SyslogParser must not be null");
         }
         m_config = config;
-        m_text = text;
+        m_text = text.duplicate();
         m_traceEnabled = LOG.isTraceEnabled();
     }
 
@@ -119,7 +130,8 @@ public class SyslogParser {
         return m_config;
     }
 
-    protected String getText() {
+    protected ByteBuffer getText() {
+        m_text.rewind();
         return m_text;
     }
 
@@ -133,22 +145,89 @@ public class SyslogParser {
     }
 
     /* override this to parse data from the matcher */
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         final SyslogMessage message = new SyslogMessage();
         message.setMessage(getMatcher().group().trim());
         return message;
     }
 
+    public EventBuilder parseToEventBuilder(String systemId, String location) throws SyslogParserException {
+        return toEventBuilder(parse(), systemId, location);
+    }
+
     protected Matcher getMatcher() {
         if (m_matcher == null) {
-            m_matcher = getPattern().matcher(m_text);
+            m_matcher = getPattern().matcher(SyslogParser.fromByteBuffer(getText()));
         }
         return m_matcher;
     }
 
+    public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location) {
+        if (message == null) {
+            return null;
+        }
+
+        // Build a basic event out of the syslog message
+        final String priorityTxt = message.getSeverity().toString();
+        final String facilityTxt = message.getFacility().toString();
+
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
+
+
+        // Set constant values in EventBuilder
+
+        // Set monitoring system
+        bldr.setDistPoller(systemId);
+        // Set event host
+        bldr.setHost(InetAddressUtils.getLocalHostName());
+        // Set default event destination to logndisplay
+        bldr.setLogDest("logndisplay");
+
+
+        // Set values from SyslogMessage in the EventBuilder
+
+        bldr.addParam("hostname", message.getHostName());
+
+        final InetAddress hostAddress = message.getHostAddress();
+        if (hostAddress != null) {
+            // Set nodeId
+            InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
+            if (cache != null) {
+                int nodeId = cache.getNodeId(location, hostAddress);
+                if (nodeId > 0) {
+                    bldr.setNodeid(nodeId);
+                }
+            }
+
+            bldr.setInterface(hostAddress);
+        }
+
+        bldr.setTime(message.getDate());
+
+        bldr.setLogMessage(message.getMessage());
+        // Using parms provides configurability.
+        bldr.addParam("syslogmessage", message.getMessage());
+
+        bldr.addParam("severity", priorityTxt);
+
+        bldr.addParam("timestamp", message.getRfc3164FormattedDate());
+
+        if (message.getProcessName() != null) {
+            bldr.addParam("process", message.getProcessName());
+        }
+
+        bldr.addParam("service", facilityTxt);
+
+        if (message.getProcessId() != null) {
+            bldr.addParam("processid", message.getProcessId().toString());
+        }
+
+        return bldr;
+    }
+
     protected static Date parseDate(final String dateString) {
         try {
-            // Date pattern has been crearted and checked inside if loop instead of 
+            // Date pattern has been created and checked inside if loop instead of 
             // parsing date inside the exception class.
             if (dateString.matches(datePattern)) {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);

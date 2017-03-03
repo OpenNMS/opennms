@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,7 +56,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
 
     private static final Pattern m_dateWithOffset = Pattern.compile("^(.*[\\-\\+]\\d\\d):?(\\d\\d)$");
 
-    public Rfc5424SyslogParser(final SyslogdConfig config, final String text) {
+    public Rfc5424SyslogParser(final SyslogdConfig config, final ByteBuffer text) {
         super(config, text);
     }
 
@@ -65,7 +66,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
     }
 
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
                 LOG.trace("'{}' did not match '{}'", m_rfc5424Pattern, getText());

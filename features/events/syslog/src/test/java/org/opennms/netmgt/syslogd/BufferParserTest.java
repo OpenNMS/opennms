@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchChar;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchMonth;
 import org.opennms.netmgt.xml.event.Event;
@@ -96,6 +97,7 @@ public class BufferParserTest {
 			.character(':')
 			.integer((s,v) -> { s.builder.setSecond(v); })
 			.whitespace()
+			// TODO: This is not correct
 			.stringUntilWhitespace((s,v) -> { s.builder.setHost(v); })
 			.whitespace()
 			.stringUntil("\\s[:", (s,v) -> { s.builder.addParam("processName", v); })
@@ -120,7 +122,11 @@ public class BufferParserTest {
 			.stringUntilChar(':', (s,v) -> { s.builder.addParam("mnemonic", v); })
 			.character(':')
 			.whitespace()
-			.terminal().string((s,v) -> { s.builder.setLogMessage(v); })
+			.terminal().string((s,v) -> {
+				s.builder.setLogMessage(v);
+				// Using parms provides configurability.
+				s.builder.setParam("syslogmessage", v);
+			 })
 			.getStages()
 			;
 		ByteBufferParser<Event> parser = new SingleSequenceParser(parserStages);
@@ -153,7 +159,7 @@ public class BufferParserTest {
 		int iterations = 100000;
 
 		{
-			CompletableFuture<Event> event = null;
+			CompletableFuture<EventBuilder> event = null;
 			Event lastEvent = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
@@ -168,7 +174,7 @@ public class BufferParserTest {
 			}
 			// Wait for the last future to complete
 			try {
-				lastEvent = event.get();
+				lastEvent = event.get().getEvent();
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
@@ -230,12 +236,12 @@ public class BufferParserTest {
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				ConvertToEvent convertToEvent = new ConvertToEvent(
-    				DistPollerDao.DEFAULT_DIST_POLLER_ID,
-    				MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
-    				InetAddressUtils.ONE_TWENTY_SEVEN,
-    				9999,
-    				abc, 
-    				config
+					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+					InetAddressUtils.ONE_TWENTY_SEVEN,
+					9999,
+					incoming, 
+					config
 				);
 				Event convertedEvent = convertToEvent.getEvent();
 			}
@@ -243,6 +249,25 @@ public class BufferParserTest {
 			System.out.println("OLD: " + (end - start) + "ms");
 		}
 
+		{
+			InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-radix-configuration.xml");
+			SyslogdConfig config = new SyslogdConfigFactory(stream);
+
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < iterations; i++) {
+				ConvertToEvent convertToEvent = new ConvertToEvent(
+					DistPollerDao.DEFAULT_DIST_POLLER_ID,
+					MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+					InetAddressUtils.ONE_TWENTY_SEVEN,
+					9999,
+					incoming, 
+					config
+				);
+				Event convertedEvent = convertToEvent.getEvent();
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("RADIX CONVERT: " + (end - start) + "ms");
+		}
 	}
 
 	@Test
@@ -320,7 +345,7 @@ public class BufferParserTest {
 
 		System.out.println(treeParser.toString());
 
-		CompletableFuture<Event> root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
+		CompletableFuture<EventBuilder> root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
 		assertNotNull("One pattern should match", root.join());
 		root = treeParser.parse(ByteBuffer.wrap("bbd".getBytes()));
 		assertNull("No pattern should match", root.join());

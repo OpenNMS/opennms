@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ public class JuniperSyslogParser extends SyslogParser {
     //                                                                PRI         TIMESTAMP                                          HOST      PROCESS/ID          MESSAGE
     private static final Pattern m_juniperPattern = Pattern.compile("^<(\\d+)>\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+(\\S+)\\s+(\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
 
-    public JuniperSyslogParser(final SyslogdConfig config, final String text) {
+    public JuniperSyslogParser(final SyslogdConfig config, final ByteBuffer text) {
         super(config, text);
     }
 
@@ -52,7 +53,7 @@ public class JuniperSyslogParser extends SyslogParser {
     }
     
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
                 LOG.trace("'{}' did not match '{}', falling back to the custom parser", m_juniperPattern, getText());
