@@ -276,4 +276,8 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
     protected void setBuilder(PersistOperationBuilder builder) {
         m_builder = builder;
     }
+
+    protected PersistOperationBuilder getBuilder() {
+        return m_builder;
+    }
 }

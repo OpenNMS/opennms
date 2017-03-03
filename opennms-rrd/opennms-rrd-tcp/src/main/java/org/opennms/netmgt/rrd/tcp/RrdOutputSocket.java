@@ -87,6 +87,23 @@ public class RrdOutputSocket {
     }
 
     /**
+     * <p>addData</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param data a {@link java.lang.String} object.
+     */
+    public void addData(String filename, String owner, Long timestamp, List<Double> values) {
+        m_messages.addMessage(PerformanceDataReading.newBuilder()
+                .setPath(filename)
+                .setOwner(owner)
+                .setTimestamp(timestamp).
+                addAllValue(values)
+        );
+        m_messageCount++;
+    }
+
+    /**
      * <p>writeData</p>
      */
     public void writeData() {
