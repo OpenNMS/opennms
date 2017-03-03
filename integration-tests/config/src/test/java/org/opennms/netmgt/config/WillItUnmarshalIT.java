@@ -199,7 +199,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, Impl.JAXB);
-        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.JAXB);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
@@ -227,7 +227,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, Impl.JAXB);

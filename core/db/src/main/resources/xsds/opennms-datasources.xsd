@@ -8,7 +8,7 @@
       opennms-database.xsd,v 1.4 2006/03/13 10:52:11 mhuot Exp $</documentation>
   </annotation>
 
-  <element name="data-source-configuration" >
+  <element name="datasource-configuration" >
     <annotation>
       <documentation>
         Top Level element for opennms-datasources.xml... a list of data sources

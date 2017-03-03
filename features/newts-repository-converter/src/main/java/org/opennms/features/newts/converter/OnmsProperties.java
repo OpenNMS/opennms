@@ -32,10 +32,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
@@ -82,14 +81,8 @@ public abstract class OnmsProperties {
             registerProperties(mainProperties);
 
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            DataSourceConfiguration dsc = null;
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(cfgFile);
-                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            }
+            final DataSourceConfiguration dsc = JaxbUtils.unmarshal(DataSourceConfiguration.class, cfgFile);
+
             boolean found = false;
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
