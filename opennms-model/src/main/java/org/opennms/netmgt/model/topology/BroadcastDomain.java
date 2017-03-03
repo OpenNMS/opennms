@@ -404,17 +404,15 @@ public class BroadcastDomain {
     
     public static String printTopologyBFT(List<BridgeMacLink> bft) {
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("\n------ bridge forwarding table  -----\n");
     	for (BridgeMacLink link: bft) {
             strbfr.append("nodeid:[");
             strbfr.append(link.getNode().getId());
             strbfr.append("]:");
             strbfr.append(link.getMacAddress());
-            strbfr.append(":bridgeport: ");
+            strbfr.append(":bridgeport:");
             strbfr.append(link.getBridgePort());
             strbfr.append("\n");
     	}
-        strbfr.append("------ bridge forwarding table  -----");
         return strbfr.toString();
     }
 

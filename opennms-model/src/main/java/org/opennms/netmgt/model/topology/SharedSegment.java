@@ -280,13 +280,7 @@ public class SharedSegment {
         indexMacLinks();
     }
     
-    public void removeMacs(Map<Integer,List<BridgeMacLink>> throughset) {
-        Set<String> mactoberemoved = new HashSet<String>();
-        for (Integer port: throughset.keySet()) {
-            for (BridgeMacLink link: throughset.get(port))
-                mactoberemoved.add(link.getMacAddress());
-        }
-
+    public void removeMacs(Set<String> mactoberemoved) {
         List<BridgeMacLink> curlist = new ArrayList<BridgeMacLink>();
         for (BridgeMacLink link: m_macLinksOnSegment) {
             if (mactoberemoved.contains(link.getMacAddress()))
