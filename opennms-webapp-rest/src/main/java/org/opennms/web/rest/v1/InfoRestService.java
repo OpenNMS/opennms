@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
@@ -22,11 +21,11 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
- ******************************************************************************
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.rest.v1;
 
 import java.io.IOException;
