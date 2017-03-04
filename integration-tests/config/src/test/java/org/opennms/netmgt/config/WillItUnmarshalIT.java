@@ -260,7 +260,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
