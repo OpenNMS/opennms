@@ -283,6 +283,11 @@
       <parameter key="port" value="3389" />
       <parameter key="timeout" value="3000" />
     </service>
+    <service name="ActiveMQ" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="brokerURL" value="tcp://localhost:61616" />
+    </service>
     <service name="Minion-Heartbeat" interval="30000" user-defined="false" status="on">
       <parameter key="period" value="30000" /> <!-- Service interval should be same as period -->
     </service>
@@ -356,4 +361,5 @@
   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
   <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
 </poller-configuration>
