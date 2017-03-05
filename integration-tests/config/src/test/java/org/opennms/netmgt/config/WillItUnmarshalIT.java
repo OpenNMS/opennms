@@ -195,7 +195,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, Impl.JAXB);
@@ -258,9 +258,9 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);

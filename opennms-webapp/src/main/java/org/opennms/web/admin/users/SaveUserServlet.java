@@ -63,7 +63,7 @@ public class SaveUserServlet extends HttpServlet {
         if (user != null) {
             UserManager userFactory = UserFactory.getInstance();
             User newUser = (User) user.getAttribute("user.modifyUser.jsp");
-            if (newUser.getRoleCollection().contains(Authentication.ROLE_READONLY) && !request.isUserInRole(Authentication.ROLE_ADMIN)) {
+            if (newUser.getRoles().contains(Authentication.ROLE_READONLY) && !request.isUserInRole(Authentication.ROLE_ADMIN)) {
                 throw new ServletException("Error: user " + newUser.getUserId() + " is read-only!");
             }
 

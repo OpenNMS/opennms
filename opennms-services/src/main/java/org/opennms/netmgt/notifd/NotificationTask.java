@@ -288,10 +288,6 @@ public class NotificationTask extends Thread {
                 }
             } catch (IOException e) {
                 LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (MarshalException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (ValidationException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
             }
         } else {
             // remove all the related notices that have yet to be sent

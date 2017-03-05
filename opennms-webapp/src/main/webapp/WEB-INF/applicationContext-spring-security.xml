@@ -32,6 +32,8 @@
 
     <!-- Allow Minions to access the configuration endpoints -->
     <intercept-url pattern="/rest/config/**" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN"/>
+    <!-- Allow Minions to access the server info -->
+    <intercept-url pattern="/rest/info" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>

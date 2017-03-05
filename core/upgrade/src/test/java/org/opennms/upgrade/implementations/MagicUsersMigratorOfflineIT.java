@@ -36,7 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.web.api.Authentication;
@@ -143,38 +143,38 @@ public class MagicUsersMigratorOfflineIT {
      * @throws Exception the exception
      */
     private void validateMigration() throws Exception {
-        Userinfo userInfo = CastorUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("target/home/etc/users.xml")));
+        Userinfo userInfo = JaxbUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("target/home/etc/users.xml")));
 
         final User rtc = getUser(userInfo, "rtc");
         Assert.assertNotNull(rtc);
-        Assert.assertEquals(1, rtc.getRoleCount());
-        Assert.assertTrue(rtc.getRoleCollection().contains(Authentication.ROLE_RTC));
+        Assert.assertEquals(1, rtc.getRoles().size());
+        Assert.assertTrue(rtc.getRoles().contains(Authentication.ROLE_RTC));
 
         final User admin = getUser(userInfo, "admin");
         Assert.assertNotNull(admin);
-        Assert.assertEquals(1, admin.getRoleCount());
-        Assert.assertTrue(admin.getRoleCollection().contains(Authentication.ROLE_ADMIN));
+        Assert.assertEquals(1, admin.getRoles().size());
+        Assert.assertTrue(admin.getRoles().contains(Authentication.ROLE_ADMIN));
 
         final User jmx = getUser(userInfo, "jmx_operator");
         Assert.assertNotNull(jmx);
-        Assert.assertEquals(1, admin.getRoleCount());
-        Assert.assertTrue(jmx.getRoleCollection().contains(Authentication.ROLE_JMX));
+        Assert.assertEquals(1, admin.getRoles().size());
+        Assert.assertTrue(jmx.getRoles().contains(Authentication.ROLE_JMX));
 
         final User agalue = getUser(userInfo, "agalue");
         Assert.assertNotNull(agalue);
-        Assert.assertEquals(2, agalue.getRoleCount());
-        Assert.assertTrue(agalue.getRoleCollection().contains(Authentication.ROLE_USER));
-        Assert.assertTrue(agalue.getRoleCollection().contains("ROLE_MEASUREMENTS"));
+        Assert.assertEquals(2, agalue.getRoles().size());
+        Assert.assertTrue(agalue.getRoles().contains(Authentication.ROLE_USER));
+        Assert.assertTrue(agalue.getRoles().contains("ROLE_MEASUREMENTS"));
 
         final User operator = getUser(userInfo, "operator");
         Assert.assertNotNull(operator);
-        Assert.assertEquals(0, operator.getRoleCount());
+        Assert.assertEquals(0, operator.getRoles().size());
 
         final User manager = getUser(userInfo, "manager");
         Assert.assertNotNull(manager);
-        Assert.assertEquals(2, manager.getRoleCount());
-        Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_USER));
-        Assert.assertTrue(manager.getRoleCollection().contains(Authentication.ROLE_READONLY));
+        Assert.assertEquals(2, manager.getRoles().size());
+        Assert.assertTrue(manager.getRoles().contains(Authentication.ROLE_USER));
+        Assert.assertTrue(manager.getRoles().contains(Authentication.ROLE_READONLY));
     }
 
     /**
@@ -185,7 +185,7 @@ public class MagicUsersMigratorOfflineIT {
      * @return the user
      */
     private User getUser(Userinfo userInfo, String username) {
-        for (final User user : userInfo.getUsers().getUserCollection()) {
+        for (final User user : userInfo.getUsers().getUsers()) {
             if (user.getUserId().equals(username)) {
                 return user;
             }

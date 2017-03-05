@@ -223,7 +223,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         long expectedTime = startTime;
         for (int i = 0; i < users.length; i++) {
             User user = m_userManager.getUser(users[i]);
-            Contact[] contacts = user.getContact();
+            Contact[] contacts = user.getContacts().toArray(new Contact[0]);
             for (int j = 0; j < contacts.length; j++) {
                 Contact contact = contacts[j];
                 if ("email".equals(contact.getType())) {

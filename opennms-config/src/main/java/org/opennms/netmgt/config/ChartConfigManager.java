@@ -30,12 +30,10 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 
 /**
@@ -52,14 +50,14 @@ public abstract class ChartConfigManager {
      * <p>parseXml</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public synchronized static void parseXml(InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_configuration = CastorUtils.unmarshal(ChartConfiguration.class, stream);
+    public synchronized static void parseXml(InputStream stream) throws IOException {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            m_configuration = JaxbUtils.unmarshal(ChartConfiguration.class, reader);
+        }
     }
-    
+
     /**
      * <p>saveXml</p>
      *
@@ -71,34 +69,27 @@ public abstract class ChartConfigManager {
     /**
      * <p>saveCurrent</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
+    public synchronized void saveCurrent() throws IOException {
         // Marshal to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_configuration, stringWriter);
-        String xml = stringWriter.toString();
+        String xml =  JaxbUtils.marshal(m_configuration);
         saveXml(xml);
         update();
     }
-
 
     /**
      * <p>getConfiguration</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @return a {@link org.opennms.netmgt.config.charts.ChartConfiguration} object.
      */
-    public ChartConfiguration getConfiguration() throws IOException, MarshalException, ValidationException {
+    public ChartConfiguration getConfiguration() throws IOException {
         return m_configuration;
     }
-    
+
     /**
      * <p>setConfiguration</p>
      *
@@ -111,10 +102,8 @@ public abstract class ChartConfigManager {
     /**
      * <p>update</p>
      *
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
      */
-    protected abstract void update() throws IOException, MarshalException, ValidationException;
+    protected abstract void update() throws IOException;
 
 }

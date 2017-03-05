@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.support;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.topology.persistence.api.VertexRefEntity;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
 public class LayoutManager {
@@ -121,7 +121,7 @@ public class LayoutManager {
                 .sorted(Comparator.comparing(VertexRef::getNamespace).thenComparing(VertexRef::getId))
                 .map(v -> String.format("%s:%s", v.getNamespace(), v.getId()))
                 .collect(Collectors.joining(","));
-        return Hashing.sha256().hashString(vertexKey, Charsets.UTF_8).toString();
+        return Hashing.sha256().hashString(vertexKey, StandardCharsets.UTF_8).toString();
     }
 
     public static VertexRefEntity toVertexRefEntity(VertexRef vertexRef) {
