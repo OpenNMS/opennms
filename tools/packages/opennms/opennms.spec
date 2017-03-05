@@ -932,7 +932,7 @@ for prefix in lib lib64; do
 		SYSTEMDDIR="/usr/$prefix/systemd/system"
 		printf -- "- installing service into $SYSTEMDDIR... "
 		install -d -m 755 "$SYSTEMDDIR"
-		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		install -m 644 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
 		echo "done"
 	fi
 done
