@@ -35,7 +35,6 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.http.client.utils.URIBuilder;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
@@ -77,10 +76,10 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
         URI uri = null;
         try {
             uri = new URI(brokerURL);
-            LOG.info("using brokerURL: {}", uri);
+            LOG.debug("using brokerURL: {}", uri);
             if (useNodeLabel) {
                 uri = new URI(uri.getScheme(), uri.getUserInfo(), svc.getNodeLabel(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-                LOG.info("using updated brokerURL: {}", uri);
+                LOG.debug("using updated brokerURL: {}", uri);
             }
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("broker URL cannot be parsed");
@@ -102,31 +101,24 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
             timeoutTracker.startAttempt();
             status = PollStatus.unknown("polling never attempted");
             try {
-                LOG.debug("creating connection");
-
                 connection = connectionFactory.createConnection();
                 status = PollStatus.unresponsive("connected, no session");
-                LOG.debug("creating non-transacted, auto-acknowledge session");
+                session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                connection.start();
+                status = PollStatus.available(timeoutTracker.elapsedTimeInMillis());
+                break;
+            } catch (JMSException ex) {
+                LOG.debug("Received a JMSException while connecting to the remote ActiveMQ Broker", ex);
+            } finally {
                 try {
-                    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                    LOG.debug("starting connection");
-                    connection.start();
-                    status = PollStatus.available(timeoutTracker.elapsedTimeInMillis());
-                    break;
-                } finally {
                     if (session != null) {
                         session.close();
                     }
-                }
-            } catch (JMSException ex) {
-                LOG.debug("JMSException", ex);
-            } finally {
-                if (connection != null) {
-                    try {
+                    if (connection != null) {
                         connection.close();
-                    } catch (JMSException ex) {
-                        LOG.debug("JMSException", ex);
                     }
+                } catch (JMSException ex) {
+                        LOG.debug("Received a JMSException while closing the connection to the remote ActiveMQ Broker", ex);
                 }
             }
         }
