@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/eventTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: eventTrap</event-label>
+        <descr>
+            &lt;p&gt;This is the definition of the generic OpenNMS trap sent from the
+            scriptd process. Key variables are uei (which tells what type
+            of OpenNMS event this was), interface (the IP address of the interface
+            that caused the event) and severity.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            dbid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            distPoller&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            create-time&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            master-station&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            uei&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            source&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodeid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            time&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            host&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            interface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            snmphost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            service&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            descr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logmsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            severity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            pathoutage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            operinst&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#17]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ifresolve&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#18]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodelabel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#19]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
+            with UEI: %parm[#5]%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/tl1AutonomousMessageTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: tl1AutonomousMessageTrap</event-label>
+        <descr>
+            &lt;p&gt;This trap is used to convey the contents of a TL1 autonomous message
+            received from a TL1 NE or a north-bound TL1 EMS. Managers receiving
+            this trap may need to perform additional analysis of its varbinds in
+            order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodeid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            time&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            host&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            interface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            service&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            severity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amRawMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amAlarmCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amAutonomousTag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amVerb&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amAutoBlock&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amAID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            tl1amAdditionalParams&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            tl1AutonomousMessageTrap trap received
+            nodeid=%parm[#1]%
+            time=%parm[#2]%
+            host=%parm[#3]%
+            interface=%parm[#4]%
+            service=%parm[#5]%
+            severity=%parm[#6]%
+            tl1amRawMessage=%parm[#7]%
+            tl1amAlarmCode=%parm[#8]%
+            tl1amAutonomousTag=%parm[#9]%
+            tl1amVerb=%parm[#10]%
+            tl1amAutoBlock=%parm[#11]%
+            tl1amAID=%parm[#12]%
+            tl1amAdditionalParams=%parm[#13]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/alarmTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: alarmTrap</event-label>
+        <descr>
+            &lt;p&gt;The OpenNMS alarm SNMP Trap&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            dbid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            distPoller&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            create-time&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            master-station&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            uei&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            source&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodeid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            time&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            host&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            interface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            snmphost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            service&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            descr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logmsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            severity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            pathoutage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            operinst&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#17]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ifresolve&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#18]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodelabel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#19]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            alarmId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#20]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            synchronizing&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#21]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
+            with UEI: %parm[#5]%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/heartbeatTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: heartbeatTrap</event-label>
+        <descr>
+            &lt;p&gt;Trap sent periodically by OpenNMS to keep alive external SNMP Manager&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            heartbeatTrap trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/startSyncTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: startSyncTrap</event-label>
+        <descr>
+            &lt;p&gt;OpenNMS Synchronization Process is starting&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            startSyncTrap trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/endSyncTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: endSyncTrap</event-label>
+        <descr>
+            &lt;p&gt;OpenNMS Synchronization Process is successfully ended&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            endSyncTrap trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>7</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/syncRequestTrap</uei>
+        <event-label>OPENNMS-MIB defined trap event: syncRequestTrap</event-label>
+        <descr>
+            &lt;p&gt;OpenNMS synchronization request&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;
+            syncRequestTrap trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+</events>
