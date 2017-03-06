@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
@@ -21,6 +23,39 @@ public class BroadcastDomain {
 
     Object m_locker;
     
+	public Set<String> getBridgeMacAddresses(Integer bridgeid) {
+		Set<String> bridgemacaddresses = new HashSet<String>();
+		Bridge bridge = getBridge(bridgeid);
+		if ( bridge != null ) {
+			for (BridgeElement element: bridge.getBridgeElements()) {
+				if (InetAddressUtils.isValidBridgeAddress(element.getBaseBridgeAddress()))
+	                bridgemacaddresses.add(element.getBaseBridgeAddress());			}
+		}
+		return bridgemacaddresses;
+	}
+
+    public List<BridgeElement> getBridgeElements() {
+    	List<BridgeElement> elements = new ArrayList<BridgeElement>();
+    	for (Bridge bridge: m_bridges) {
+    		for (BridgeElement element: bridge.getBridgeElements())
+    			elements.add(element);
+    	}
+    	return elements;
+    }
+
+    public void setBridgeElements(List<BridgeElement> bridgeelements) {
+    	for (Bridge bridge: m_bridges)
+    		bridge.clearBridgeElement();
+    	
+E:    	for (BridgeElement element: bridgeelements) {
+			for (Bridge bridge: m_bridges) {
+				if (bridge.addBridgeElement(element)) {
+					continue E;
+				}
+			}
+		}
+    }
+
     public void clearTopology() {
         m_topology.clear();
     }
@@ -416,5 +451,38 @@ public class BroadcastDomain {
         return strbfr.toString();
     }
 
+    public Bridge electRootBridge() {
+        if (getBridges().size() == 1) 
+            return getBridges().iterator().next();
+        
+            //if null try set the stp roots
+        Set<String> rootBridgeIds=new HashSet<String>();
+        for (Bridge bridge: m_bridges) {
+        	for (BridgeElement element: bridge.getBridgeElements() ) {
+        		if (InetAddressUtils.
+        				isValidStpBridgeId(element.getStpDesignatedRoot()) 
+        				&& !element.getBaseBridgeAddress().
+        				equals(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()))) {
+        			rootBridgeIds.add(InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot()));
+        		}
+        	}
+        }
+        //well only one root bridge should be defined....
+        //otherwise we need to skip calculation
+        //so here is the place were we can
+        //manage multi stp domains...
+        //ignoring for the moment....
+        for (String rootBridgeId: rootBridgeIds) {
+            for (Bridge bridge: m_bridges) {
+            	for (BridgeElement element: bridge.getBridgeElements() ) {
+            		if (element.getBaseBridgeAddress().equals((rootBridgeId))) {
+            			return bridge;
+            		}
+            	}
+            }
+        }
+
+        return null;
+    }
     
 }
