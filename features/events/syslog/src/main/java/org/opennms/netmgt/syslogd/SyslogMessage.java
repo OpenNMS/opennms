@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class SyslogMessage {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogMessage.class);
-    private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
+    private static final ThreadLocal<DateFormat> m_rfc3164Format = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
@@ -73,9 +73,7 @@ public class SyslogMessage {
     private Integer m_processId;
     private String m_messageId;
     private String m_message;
-    private String m_matchedMessage;
-    private String m_fullText;
-    
+
     public SyslogMessage() {
     }
 
@@ -103,7 +101,6 @@ public class SyslogMessage {
     }
 
     public void setFacility(final SyslogFacility facility) {
-        m_fullText = null;
         m_facility = facility;
     }
 
@@ -112,7 +109,6 @@ public class SyslogMessage {
     }
 
     public void setSeverity(final SyslogSeverity severity) {
-        m_fullText = null;
         m_severity = severity;
     }
 
@@ -121,7 +117,6 @@ public class SyslogMessage {
     }
 
     public void setVersion(final Integer version) {
-        m_fullText = null;
         m_version = version;
     }
 
@@ -130,7 +125,6 @@ public class SyslogMessage {
     }
     
     public void setDate(final Date date) {
-        m_fullText = null;
         m_date = date;
     }
 
@@ -139,7 +133,6 @@ public class SyslogMessage {
     }
     
     public void setHostName(final String hostname) {
-        m_fullText = null;
         m_hostname = hostname;
     }
 
@@ -164,7 +157,6 @@ public class SyslogMessage {
     }
     
     public void setProcessName(final String processName) {
-        m_fullText = null;
         m_processName = processName;
     }
 
@@ -173,7 +165,6 @@ public class SyslogMessage {
     }
     
     public void setProcessId(final Integer processId) {
-        m_fullText = null;
         m_processId = processId;
     }
 
@@ -182,7 +173,6 @@ public class SyslogMessage {
     }
 
     public void setMessageID(final String messageId) {
-        m_fullText = null;
         m_messageId = messageId;
     }
 
@@ -191,29 +181,19 @@ public class SyslogMessage {
     }
 
     public void setMessage(final String message) {
-        m_fullText = null;
         m_message = message;
     }
 
-    public String getMatchedMessage() {
-        return m_matchedMessage == null? m_message : m_matchedMessage;
-    }
-
-    public void setMatchedMessage(final String matchedMessage) {
-        m_fullText = null;
-        m_matchedMessage = matchedMessage;
-    }
-
-    public int getPriorityField() {
+    private int getPriorityField() {
         if (m_severity != null && m_facility != null) {
             return m_severity.getPriority(m_facility);
         }
         return 0;
     }
 
-    public String getSyslogFormattedDate() {
+    public String getRfc3164FormattedDate() {
         if (m_date == null) return null;
-        return m_dateFormat.get().format(m_date);
+        return m_rfc3164Format.get().format(m_date);
     }
 
     public String getRfc3339FormattedDate() {
@@ -221,17 +201,16 @@ public class SyslogMessage {
         return m_rfc3339Format.get().format(m_date);
     }
 
-    public String getFullText() {
-        if (m_fullText == null) {
-            if (m_processId != null && m_processName != null) {
-                m_fullText = String.format("<%d>%s %s %s[%d]: %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
-            } else if (m_processName != null) {
-                m_fullText = String.format("<%d>%s %s %s: %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getProcessName(), getMessage());
-            } else {
-                m_fullText = String.format("<%d>%s %s %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getMessage());
+    public String asRfc3164Message() {
+        if (m_processName != null) {
+            if (m_processId != null) {
+                return String.format("<%d>%s %s %s[%d]: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
+            } else  {
+                return String.format("<%d>%s %s %s: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getMessage());
             }
+        } else {
+            return String.format("<%d>%s %s %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getMessage());
         }
-        return m_fullText;
     }
 
     @Override
