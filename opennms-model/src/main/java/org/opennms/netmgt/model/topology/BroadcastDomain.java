@@ -274,9 +274,9 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public void clearTopologyForBridge(Integer bridgeId) {
     	Bridge bridge = getBridge(bridgeId);
-        SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
     	if (bridge == null)
     		return;
+        SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
