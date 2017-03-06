@@ -74,6 +74,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Integer m_yx;
         Map<Integer, List<BridgeMacLink>> m_throughSetX= new HashMap<Integer, List<BridgeMacLink>>();
         Map<Integer, List<BridgeMacLink>> m_throughSetY= new HashMap<Integer, List<BridgeMacLink>>();
+        Set<String> m_xythrowsetmacs = new HashSet<String>();
         SimpleConnection m_simpleconnection; 
         public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT,Bridge yBridge, List<BridgeMacLink> yBFT) {
             super();
@@ -148,11 +149,18 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             List<BridgeMacLink> connectionsOnSegment=new ArrayList<BridgeMacLink>();
             for (BridgeMacLink xlink: xBFT) {
                 if (xlink.getBridgePort() == m_xy && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
-                    if (m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
+                    if (ymactoport.get(xlink.getMacAddress()) != null 
+                    		&& m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
                     	connectionsOnSegment.add(xlink);
                         LOG.debug("BridgeTopologyHelper: bridge [{}]: simple connection link added: [bridge:[{}],port:{},mac:{}.]", 
                         		xBridge.getId(),
                         		xlink.getNode().getId(),
+                        		xlink.getBridgePort(),
+                        		xlink.getMacAddress());
+                    } else {
+                    	m_xythrowsetmacs.add(xlink.getMacAddress());
+                        LOG.debug("BridgeTopologyHelper: bridge [{}]: port {}: added mac {} to throghset .", 
+                        		xBridge.getId(),
                         		xlink.getBridgePort(),
                         		xlink.getMacAddress());
                     }
@@ -175,11 +183,18 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             
             for (BridgeMacLink ylink: yBFT) {
                 if (ylink.getBridgePort() == m_yx && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
-                    if (m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
+                    if ( xmactoport.get(ylink.getMacAddress()) != null &&
+                    		m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
                     	connectionsOnSegment.add(ylink);
                         LOG.debug("BridgeTopologyHelper: bridge [{}]: simple connection link added: [bridge:[{}],port:{},mac:{}.]", 
                         		xBridge.getId(),
                         		ylink.getNode().getId(),
+                        		ylink.getBridgePort(),
+                        		ylink.getMacAddress());
+                    } else {
+                    	m_xythrowsetmacs.add(ylink.getMacAddress());
+                        LOG.debug("BridgeTopologyHelper: bridge [{}]: port {}: added mac {} to throghset .", 
+                        		xBridge.getId(),
                         		ylink.getBridgePort(),
                         		ylink.getMacAddress());
                     }
@@ -404,6 +419,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         	for (List<BridgeMacLink> links: m_throughSetX.values())
         		for (BridgeMacLink link: links)
         			macs.add(link.getMacAddress());
+        	macs.addAll(m_xythrowsetmacs);
             return macs;
         }
 
@@ -412,6 +428,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         	for (List<BridgeMacLink> links: m_throughSetY.values())
         		for (BridgeMacLink link: links)
         			macs.add(link.getMacAddress());
+        	macs.addAll(m_xythrowsetmacs);
             return macs;
         }
         

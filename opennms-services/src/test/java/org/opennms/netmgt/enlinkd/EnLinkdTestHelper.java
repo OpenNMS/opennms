@@ -1401,31 +1401,27 @@ public abstract class EnLinkdTestHelper {
         }
         
     public void check2nodeTopology(BroadcastDomain domain, boolean revertedbblink) {
+    	printBridgeTopology(domain);
     	List<SharedSegment> shsegs = domain.getTopology();
         assertEquals(5, shsegs.size());
         for (SharedSegment shared: shsegs) {
-            System.err.println(shared.printTopology());
             assertTrue(!shared.noMacsOnSegment());
             Set<Integer> nodeidsOnSegment = shared.getBridgeIdsOnSegment();
             List<BridgeMacLink> links = shared.getBridgeMacLinks();
             Set<String> macs = shared.getMacsOnSegment();
-            if (shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portBA
-                    || shared.getDesignatedBridge().intValue() == nodeAId.intValue() && shared.getDesignatedPort() == portAB
-                    ) {
+            if (
+            		(shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portBA) 
+            	|| 
+                    (shared.getDesignatedBridge().intValue() == nodeAId.intValue() && shared.getDesignatedPort() == portAB)  
+            		) {
                 assertEquals(2, nodeidsOnSegment.size());
-                assertEquals(9, macs.size());
-                assertEquals(12, links.size());
+                assertEquals(3, macs.size());
+                assertEquals(6, links.size());
                 assertTrue(nodeidsOnSegment.contains(nodeAId));
                 assertTrue(nodeidsOnSegment.contains(nodeBId));
                 assertTrue(macs.contains(macAB1));
                 assertTrue(macs.contains(macAB2));
                 assertTrue(macs.contains(macAB3));
-                assertTrue(macs.contains(macAB4));
-                assertTrue(macs.contains(macAB5));
-                assertTrue(macs.contains(macAB6));
-                assertTrue(macs.contains(macBA1));
-                assertTrue(macs.contains(macBA2));
-                assertTrue(macs.contains(macBA3));
                 for (BridgeMacLink link: links) {
                     if (link.getNode().getId() == nodeAId) {
                         assertEquals(portAB, link.getBridgePort());
@@ -1438,16 +1434,15 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(1, shared.getBridgeBridgeLinks().size());
                 BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
                 if (revertedbblink) {
-                	assertEquals(nodeAId, dlink.getDesignatedNode().getId());
-                	assertEquals(portAB, dlink.getDesignatedPort());
-                	assertEquals(nodeBId, dlink.getNode().getId());
-                	assertEquals(portBA, dlink.getBridgePort());                   
-                } else {
                 	assertEquals(nodeBId, dlink.getDesignatedNode().getId());
                 	assertEquals(portBA, dlink.getDesignatedPort());
                 	assertEquals(nodeAId, dlink.getNode().getId());
                 	assertEquals(portAB, dlink.getBridgePort());                   
-                	
+                } else {
+                	assertEquals(nodeAId, dlink.getDesignatedNode().getId());
+                	assertEquals(portAB, dlink.getDesignatedPort());
+                	assertEquals(nodeBId, dlink.getNode().getId());
+                	assertEquals(portBA, dlink.getBridgePort());                                   	
                 }
             } else if (shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portB2) {
                 assertEquals(0, shared.getBridgeBridgeLinks().size());
@@ -2205,29 +2200,17 @@ public abstract class EnLinkdTestHelper {
             assertEquals(3, shsegs.size());
 
             for (SharedSegment shared: shsegs) {
-                assertEquals(false, shared.noMacsOnSegment());
-                if (shared.getMacsOnSegment().contains(macAB)) {
+                if (shared.getMacsOnSegment().size() == 0) {
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
-                    assertEquals(2, shared.getMacsOnSegment().size());
+                    assertEquals(0, shared.getMacsOnSegment().size());
                     assertEquals(2, shared.getBridgeIdsOnSegment().size());
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
-                    assertEquals(2, links.size());
-                    for (BridgeMacLink link: links) {
-                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
-                        if (link.getNode().getId() == nodeAId) {
-                            assertEquals("bbbbbbbbbbbb", link.getMacAddress());
-                            assertEquals(portAB,link.getBridgePort());
-                        } else if (link.getNode().getId() == nodeBId) {
-                           assertEquals(macAB, link.getMacAddress());
-                           assertEquals(portBA,link.getBridgePort());
-                        } else 
-                           assertTrue(false);
-                    }
+                    assertEquals(0, links.size());
                     BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
-                    assertEquals(portAB, dlink.getDesignatedPort());
-                    assertEquals(nodeBId, dlink.getNode().getId());
-                    assertEquals(portBA, dlink.getBridgePort());
+                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
+                    assertEquals(portBA, dlink.getDesignatedPort());
+                    assertEquals(nodeAId, dlink.getNode().getId());
+                    assertEquals(portAB, dlink.getBridgePort());
                 } else if (shared.getMacsOnSegment().contains(macA11)) {
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     assertEquals(2, shared.getMacsOnSegment().size());
