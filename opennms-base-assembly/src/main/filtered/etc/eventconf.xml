@@ -157,6 +157,7 @@
   <event-file>events/IBM.events.xml</event-file>
   <event-file>events/IBM-UMS.events.xml</event-file>
   <event-file>events/IBMRSA2.events.xml</event-file>
+  <event-file>events/IBM.EIF.events.xml</event-file>
   <event-file>events/IEEE802dot11.events.xml</event-file>
   <event-file>events/ietf.dlsw.events.xml</event-file>
   <event-file>events/ietf.docsis.events.xml</event-file>

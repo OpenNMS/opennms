@@ -140,6 +140,8 @@
     
     <!-- Internal Plugins Descriptor -->
     <module>internal-plugins-descriptor</module>
-    
+
+    <!-- Event Integration Facility Adapter -->
+    <module>eif-adapter</module>
   </modules>
 </project>
