@@ -274,6 +274,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public void clearTopologyForBridge(Integer bridgeId) {
     	Bridge bridge = getBridge(bridgeId);
+        SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
     	if (bridge == null)
     		return;
         if (bridge.isRootBridge()) {
@@ -285,17 +286,18 @@ E:    	for (BridgeElement element: bridgeelements) {
                 for (Bridge curBridge: getBridges()) {
                     if (curBridge.getId().intValue() == newRootId.intValue()) {
                         newRootBridge=curBridge;
+                        System.out.println("root bridge" +newRootBridge.getId());
                         break;
                     }
                 }
                 if (newRootBridge == null)
                     continue;
+                topsegment = getSharedSegment(newRootId,newRootBridge.getRootPort());
                 hierarchySetUp(newRootBridge);
                 break;
             }
         }
         //all the topology will be merged with the segment for bridge designated port
-        SharedSegment topsegment = getSharedSegment(bridge.getId(), bridge.getRootPort());
         if (topsegment != null) {
             topsegment.removeBridge(bridge.getId());
         }

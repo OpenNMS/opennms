@@ -1819,7 +1819,7 @@ public abstract class EnLinkdTestHelper {
 
         }
         
-        public void check(BroadcastDomain domain) {
+        public void check(BroadcastDomain domain, boolean reverse) {
             printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
 
@@ -1829,10 +1829,18 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, shared.getBridgeMacLinks().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     BridgeBridgeLink link=shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeAId, link.getDesignatedNode().getId());
-                    assertEquals(portAB,link.getDesignatedPort());
-                    assertEquals(nodeBId, link.getNode().getId());
-                    assertEquals(portBA,link.getBridgePort());
+                    if (reverse) {
+                        assertEquals(nodeBId, link.getDesignatedNode().getId());
+                        assertEquals(portBA,link.getDesignatedPort());
+                        assertEquals(nodeAId, link.getNode().getId());
+                        assertEquals(portAB,link.getBridgePort());
+                    	
+                    } else {
+                    	assertEquals(nodeAId, link.getDesignatedNode().getId());
+                    	assertEquals(portAB,link.getDesignatedPort());
+                    	assertEquals(nodeBId, link.getNode().getId());
+                    	assertEquals(portBA,link.getBridgePort());
+                    }
                 } else {
                     assertEquals(1, shared.getMacsOnSegment().size());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
