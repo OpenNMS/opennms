@@ -60,8 +60,7 @@ import org.slf4j.LoggerFactory;
 public class RequisitionEntity implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionEntity.class);
 
-    // TODO MVR ...
-    private static final long serialVersionUID = 1629774241824443273L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="name")

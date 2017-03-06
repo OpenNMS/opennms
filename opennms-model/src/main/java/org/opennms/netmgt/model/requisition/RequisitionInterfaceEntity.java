@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.model.requisition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +64,9 @@ import org.opennms.netmgt.model.PrimaryType;
 
 @Entity
 @Table(name = "requisition_node_interfaces")
-public class RequisitionInterfaceEntity {
+public class RequisitionInterfaceEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="id")

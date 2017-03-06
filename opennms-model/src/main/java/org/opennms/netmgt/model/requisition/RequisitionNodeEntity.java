@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.requisition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,9 @@ import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name="requisition_nodes")
-public class RequisitionNodeEntity {
+public class RequisitionNodeEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="id")

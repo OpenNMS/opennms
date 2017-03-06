@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.model.requisition;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,7 +54,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="requisition_node_interface_services")
-public class RequisitionMonitoredServiceEntity {
+public class RequisitionMonitoredServiceEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(nullable=false)

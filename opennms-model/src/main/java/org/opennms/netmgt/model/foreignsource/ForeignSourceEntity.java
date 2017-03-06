@@ -53,8 +53,7 @@ public class ForeignSourceEntity implements Serializable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceEntity.class);
 
-    // TODO MVR serialVersionUid neu generieren
-    private static final long serialVersionUID = -1903289015976502808L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "name", nullable = false, unique = true)

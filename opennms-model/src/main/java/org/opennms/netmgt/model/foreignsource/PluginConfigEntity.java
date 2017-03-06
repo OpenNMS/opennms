@@ -58,8 +58,7 @@ import javax.persistence.Table;
 @DiscriminatorColumn(name="type")
 public abstract class PluginConfigEntity implements Serializable {
 
-    // TODO MVR
-    private static final long serialVersionUID = 4307231598310473690L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name="id")
