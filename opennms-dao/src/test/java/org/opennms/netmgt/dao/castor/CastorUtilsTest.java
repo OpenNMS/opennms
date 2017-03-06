@@ -32,11 +32,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Ignore;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
@@ -44,11 +42,15 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 /**
  * Test class for CastorUtils.
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
+@Ignore("CastorUtils is going away soon.")
 public class CastorUtilsTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
@@ -123,16 +125,16 @@ public class CastorUtilsTest extends TestCase {
     public void testUnmarshallInputStreamWithUtf8() throws MarshalException, ValidationException, IOException {
         Userinfo users = CastorUtils.unmarshal(Userinfo.class, ConfigurationTestUtils.getInputStreamForResource(this, "/users-utf8.xml"));
         
-        assertEquals("user count", 1, users.getUsers().getUserCount());
+        assertEquals("user count", 1, users.getUsers().getUsers().size());
         // \u00f1 is unicode for n~ 
-        assertEquals("user name", "Admi\u00f1istrator", users.getUsers().getUser(0).getFullName());
+        assertEquals("user name", "Admi\u00f1istrator", users.getUsers().getUsers().get(0).getFullName());
     }
     
     public void testUnmarshallResourceWithUtf8() throws MarshalException, ValidationException, IOException {
         Userinfo users = CastorUtils.unmarshal(Userinfo.class, new InputStreamResource(ConfigurationTestUtils.getInputStreamForResource(this, "/users-utf8.xml")));
         
-        assertEquals("user count", 1, users.getUsers().getUserCount());
+        assertEquals("user count", 1, users.getUsers().getUsers().size());
         // \u00f1 is unicode for n~ 
-        assertEquals("user name", "Admi\u00f1istrator", users.getUsers().getUser(0).getFullName());
+        assertEquals("user name", "Admi\u00f1istrator", users.getUsers().getUsers().get(0).getFullName());
     }
 }

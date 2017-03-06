@@ -33,16 +33,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Dictionary;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import javax.jms.MessageProducer;
 
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
@@ -53,10 +48,10 @@ import org.opennms.minion.core.api.RestClient;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.base.Throwables;
 
 /**
  * Verifies that the {@link org.opennms.netmgt.config.TrapdConfig} is reloaded regularily from OpenNMS
@@ -74,19 +69,16 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		final RestClient client = new RestClient() {
-			@Override
-			public void ping() throws Exception {
-			}
-
-			@Override
-			public String getSnmpV3Users() throws Exception {
-				return "<?xml version='1.0'?>"
-						+ "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
-						+ "		<snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
-						+ "</trapd-configuration>";
-			}
-		};
+		final RestClient client;
+		try {
+			client = mock(RestClient.class);
+			when(client.getSnmpV3Users()).thenReturn("<?xml version='1.0'?>"
+				+ "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
+				+ "     <snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
+				+ "</trapd-configuration>");
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
 		// add mocked services to osgi mocked container (Felix Connect)
 		services.put(RestClient.class.getName(), asService(client, null, null));
 		services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));

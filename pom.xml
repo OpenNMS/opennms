@@ -106,6 +106,9 @@
     <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
+    <!-- build -->
+    <module>checkstyle</module>
+
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
@@ -1099,7 +1102,7 @@
         <version>0.12.3</version>
       </plugin>
     </plugins>
-  </build>
+ </build>
 
 
  <reporting>
@@ -1384,8 +1387,8 @@
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
-    <snmp4jVersion>2.4.3</snmp4jVersion>
-    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
+    <snmp4jVersion>2.5.5</snmp4jVersion>
+    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
@@ -1576,6 +1579,79 @@
         <runPingTests>true</runPingTests>
       </properties>
     </profile>
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <property>
+          <name>!disable.checkstyle</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>2.17</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>7.6</version>
+              </dependency>
+              <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>org.opennms.checkstyle</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>com.github.sevntu.checkstyle</groupId>
+                <artifactId>sevntu-checkstyle-maven-plugin</artifactId>
+                <version>1.23.1</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <configLocation>nms_checks.xml</configLocation>
+              <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+              <!-- <sourceDirectory> is needed so that checkstyle ignores the
+                   generated sources directory -->
+              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <includeResources>true</includeResources>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
+              <includeTestResources>true</includeTestResources>
+              <failsOnError>false</failsOnError>
+              <consoleOutput>true</consoleOutput>
+            </configuration>
+            <executions>
+              <execution>
+                <id>check-license</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>process-sources</phase>
+                <configuration>
+                  <configLocation>check-license.xml</configLocation>
+                  <suppressionsLocation>license-suppressions.xml</suppressionsLocation>
+                  <headerLocation>AGPL-LICENSE.regexp.txt</headerLocation>
+                  <includeResources>false</includeResources>
+                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                  <includeTestResources>false</includeTestResources>
+                  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                  <failsOnError>false</failsOnError>
+                  <consoleOutput>true</consoleOutput>
+                </configuration>
+              </execution>
+              <execution>
+                <id>check-style</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>process-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <dependencyManagement>
     <dependencies>
@@ -1599,6 +1675,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-ackd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.checkstyle</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3951,6 +4032,11 @@
       <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
+    <pluginRepository>
+      <id>sevntu-maven</id>
+      <name>sevntu-maven</name>
+      <url>http://sevntu-checkstyle.github.io/sevntu.checkstyle/maven2</url>
+    </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
     <site>

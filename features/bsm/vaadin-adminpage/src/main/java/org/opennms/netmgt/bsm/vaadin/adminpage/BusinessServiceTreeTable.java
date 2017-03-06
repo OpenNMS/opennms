@@ -120,9 +120,8 @@ public class BusinessServiceTreeTable extends TreeTable {
                 editButton.setId("editButton-" + getItem(itemId).getBean().getName());
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
-                    final Long businessServiceId = getItem(itemId).getBean().getBusinessService().getId();
-                    BusinessService businessService = businessServiceManager.getBusinessServiceById(businessServiceId);
-                    final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, businessServiceManager);
+                    final BusinessServiceEditWindow window = new BusinessServiceEditWindow(getItem(itemId).getBean().getBusinessService(),
+                                                                                           businessServiceManager);
                     window.addCloseListener(e -> refresh());
 
                     getUI().addWindow(window);
@@ -133,11 +132,10 @@ public class BusinessServiceTreeTable extends TreeTable {
                 deleteButton.setId("deleteButton-" + getItem(itemId).getBean().getName());
 
                 deleteButton.addClickListener((Button.ClickListener)event -> {
-                    final Long businessServiceId = getItem(itemId).getBean().getBusinessService().getId();
-                    BusinessService businessService = businessServiceManager.getBusinessServiceById(businessServiceId);
+                    BusinessService businessService = getItem(itemId).getBean().getBusinessService();
                     if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
                         UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
-                            businessServiceManager.getBusinessServiceById(businessServiceId).delete();
+                            businessServiceManager.getBusinessServiceById(businessService.getId()).delete();
                             refresh();
                         });
                     } else {
@@ -145,7 +143,7 @@ public class BusinessServiceTreeTable extends TreeTable {
                                 .withOkAction((org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action) UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
                                     @Override
                                     public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                        businessServiceManager.getBusinessServiceById(businessServiceId).delete();
+                                        businessServiceManager.getBusinessServiceById(businessService.getId()).delete();
                                         refresh();
                                     }
                                 }))
