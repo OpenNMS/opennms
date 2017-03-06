@@ -642,7 +642,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         try {
             final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
-            transportMappings = new TransportMapping[] { mapping };
+            transportMappings = new TransportMapping<?>[] { mapping };
         } catch (final IOException e) {
             s_log.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
             m_failure.set(e);
