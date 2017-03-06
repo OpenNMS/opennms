@@ -68,6 +68,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ContentHandler;
 
+import com.codahale.metrics.MetricRegistry;
+
 
 /**
  * The top-level element of the drools-engine.xml configuration
@@ -375,14 +377,14 @@ public class EngineConfiguration implements Serializable {
 	}
 
 
-	public CorrelationEngine[] constructEngines(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager) {
+	public CorrelationEngine[] constructEngines(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
 		
 		LOG.info("Creating drools engins for configuration {}.", basePath);
 
 		List<CorrelationEngine> engineList = new ArrayList<CorrelationEngine>();
 		for (final RuleSet ruleSet : getRuleSet()) {
 			LOG.debug("Constucting engind for ruleset {} in configuration {}.", ruleSet.getName(), basePath);
-			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager));
+			engineList.add(ruleSet.constructEngine(basePath, appContext, eventIpcManager, metricRegistry));
 	    }
 	    
 	    return engineList.toArray(new CorrelationEngine[0]);

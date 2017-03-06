@@ -48,12 +48,15 @@ import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.core.RuleBaseFactory;
 import org.drools.core.WorkingMemory;
 import org.kie.api.conf.EventProcessingOption;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * <p>DroolsCorrelationEngine class.</p>
@@ -71,13 +74,25 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
+
+    private final Meter m_eventsMeter;
     
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+        this.m_name = name;
+        final Gauge<Long> factCount = () -> { return getWorkingMemory().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
+        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
+        m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
 	LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
+        m_eventsMeter.mark();
 	LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
@@ -210,15 +225,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     	return m_workingMemory;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-    
     /**
      * <p>getName</p>
      *

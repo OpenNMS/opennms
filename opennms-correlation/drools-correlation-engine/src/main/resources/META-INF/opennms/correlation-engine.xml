@@ -18,9 +18,26 @@
     
     <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
     	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="metricRegistry" ref="metricRegistry" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
     	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
     	<property name="configurationDirectory" ref="droolsCorrelationEngineBuilderConfigurationDirectory"/>
     </bean>
-        
+
+	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+	<bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<constructor-arg ref="metricRegistry"/>
+	</bean>
+
+	<bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<constructor-arg value="org.opennms.drools"/>
+	</bean>
+
+	<bean id="metricRegistryJmxReporter"
+        factory-bean="metricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
 </beans>
