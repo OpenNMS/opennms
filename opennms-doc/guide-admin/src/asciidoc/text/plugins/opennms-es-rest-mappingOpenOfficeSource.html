@@ -1,68 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 5.0.6.2 (Linux)"/>
+	<meta name="author" content="cgallen"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2017-03-06T14:06:32.614710140"/>
+	<meta name="AppVersion" content="14.0000"/>
+	<meta name="Company" content="Hewlett-Packard"/>
+	<meta name="DocSecurity" content="0"/>
+	<meta name="HyperlinksChanged" content="false"/>
+	<meta name="LinksUpToDate" content="false"/>
+	<meta name="ScaleCrop" content="false"/>
+	<meta name="ShareDoc" content="false"/>
+	<meta name="created" content="00:00:00">
+	<meta name="changed" content="2017-03-06T11:24:16.845813502">
+	<meta name="created" content="2017-03-02T10:27:00">
+	<meta name="changed" content="2017-03-06T11:10:03.708821330">
+	<style type="text/css">
+		@page { size: landscape; margin: 2.54cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; line-height: 150%; orphans: 2; widows: 2 }
+		p.western { font-family: "Arial", serif; font-size: 12pt }
+		p.cjk { font-size: 12pt }
+		p.ctl { font-size: 12pt }
+		td p { margin-bottom: 0.21cm; direction: ltr; color: #000000; line-height: 150%; orphans: 2; widows: 2 }
+		td p.western { font-family: "Arial", serif; font-size: 12pt }
+		td p.cjk { font-size: 12pt }
+		td p.ctl { font-size: 12pt }
+	</style>
+</head>
+<body lang="en-GB" text="#000000" dir="ltr">
+<p class="western"><br/>
+<br/>
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+</p>
+<p class="western" style="margin-bottom: 0cm; line-height: 100%; page-break-before: always"><a name="_GoBack"></a>
+<font size="2" style="font-size: 10pt">The following table describes
+the mapping of simple OpenNMS events to the Raw Events Index and the
+mapping of Alarm Change Events to the Alarm Change Events index and
+to the Alarms index</font></p>
+<p class="western" style="margin-bottom: 0cm; line-height: 100%"><br/>
 
-==== Mapping of _{opennms-product-name}_ Alarms and Events to Elastic Search
-
-===== Overview of index mapping
-
-In _{opennms-product-name}_ Alarm and Event table entries contain references to associated node, asset, service and journal message tables. 
-In Elastic Search we must flatten these entries into a single row (or index) entry for each insertion. Thus each index entry contains 
-more context information than would be found in the actual _{opennms-product-name}_ event or alarm. This context information includes the associated node
-and asset table information which was current when (but may have changed since) the event was archived. 
-
-In the _Table of Index Mapping_ below we have example alarm and event json entries retrieved using a sense command. The table helps illustrate how _{opennms-product-name}_
-saves data in elastic search.
-
-Internal elastic search fields always begin with an underscore  character. The internal fields `_id` `_index` and `_type` are combined to give the unique identifier for an entry
-as described above under _Index Definitions_. All of the fields under `_source` represent the stored alarm or event (Elastic search documentation refers to source entries as indexed documents)
-The id of each event is included in the _source` `id` field and also duplicated in the internal `_id`.
-
-Events in the _{opennms-product-name}_ events table (i.e. those corresponding to logs or taps) are copied directly to the `opennms-events-raw-`
-indexes. In _{opennms-product-name}_ alarms and events can contain `parameters` which  are name value pairs referencing additional data stored when the 
-event or alarm is created. In Elastic Search these parameters are always stored in separate fields in the index with names beginning with `p_`
-
-Alarm change events created by the _Alarm Change Notifier Plugin_ have an identical format to raw events 
-but are only copied to the `opennms-events-alarmchange-` indexes. These alarm change events are also used to change 
-the state of alarms in the `opennms-alarms-` indexes. Thus alarm entries in the `opennms-alarms-` indexes reflect the current state of 
-alarms as notified by _{opennms-product-name}_ through alarm change events. 
-
-The parameters included with each type of Alarm Change Event are listed in the _Alarm Change Notifier Plugin_ section. Each parameter in the index
-will have a p_ prefix. (Thus %parm[newalarmvalues]% becomes p_newalarmvalues).
-
-Alarms and Events have `severity` fields defined as integers (long) and also corresponding `severity_text` fields which give the 
-text equivalent (Critical,Major,Minor,Normal,Cleared etc.).
-
-===== Additional Alarm Fields
-
-The id of each alarm is included in the `_source` `alarmid` field and also duplicated in the internal `_id` reference for the alarms index. 
-Alarm Change Events reference their associated alarm using the `p_alarmid` parameter. So to make it easier to search for alarm change events associated
-with the same alarm, alarms also have a `_source`  `p_alarmid` parameter which matches `alarmid`.  Thus we should be able to search for an alarm in the `opennms-alarms` index
-and find its complete lifecycle from alarm raise to deletion in the `opennms-events-alarmchange` index
-
-The alarms index is enriched with additional data to allow the alarm entries to be used in SLA calculations.
-
-[options="header, autowidth"]
-|===
-| Additional Alarm Fields  | description 
-| alarmackduration | Calculated time in ms from first event which created the alarm to the latest alarm acknowledgement
-| alarmclearduration| Calculated time in ms from first event which created the alarm to the latest alarm clear
-| initialseverity | The final state of any given alarm in an alarm index should be cleared and deleted. Therefore we also include an initial severity
-| initialseverity_text | The initial severity as a text field
-|===
-
-
-
-
-
-===== Table of Index Mapping
-
-The following table describes the mapping of simple
-_{opennms-product-name}_ events to the Raw Events Index and the mapping of Alarm
-Change Events to the Alarm Change Events index and  to the Alarms
-index
-++++
-
+</p>
 <table width="786" cellpadding="2" cellspacing="0">
 	<col width="135">
 	<col width="128">
@@ -2291,5 +2271,17 @@ index
 		</td>
 	</tr>
 </table>
+<p class="western"><br/>
+<br/>
 
-++++
+</p>
+<p class="western"><br/>
+<br/>
+
+</p>
+<p class="western"><br/>
+<br/>
+
+</p>
+</body>
+</html>

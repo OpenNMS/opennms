@@ -54,85 +54,6 @@ ssh admin@localhost -p 8101
 features:install opennms-es-rest
 ----
 
-==== Index Definitions
-
-Three indices are created; one for alarms, one for alarm change events and one for raw events. 
-Alarms and alarm change events are only saved if the alarm-change-notifier plugin is also 
-installed to generate alarm change events from the OpenNMS alarms table. 
-The index names are of the form:
-
-<name>-<date>/type/id
-
-For example
-
-a) Alarms
-
-opennms-alarms-2017.01/alarmdata/1823
-
-b) Alarm Change Events
-
-opennms-events-alarmchange-2017.01/eventdata/11549
-
-c) Raw OpenNMS events (not including alarm change events)
-
-opennms-events-raw-2017.01/eventdata/11549
-
-==== Viewing events using Kibana Sense 
-
-_Kibana Sense_ is a _Kibana_ app which allows you to run queries directly against _Elasticsearch_.
-(https://www.elastic.co/guide/en/sense/current/installing.html)
-
-If you install _Kibana Sense_ you can use the following commands to view the alarms and events sent to _Elasticsearch_
-You should review the _Elasticsearch_ ReST API documentation to understand how searches are specified. 
-(See https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
-
-Example searches to use in _Kibana Sense_:
-
-Search all the alarms indexes
-----
-GET /opennms-alarms-*/_search
-----
-Get all of the alarms indexes
-----
-GET /opennms-alarms-*/
-----
-Get a specific alarm id from the 2017.01 index
-----
-GET opennms-alarms-2017.01/alarmdata/1823
-----
-Delete all alarm indexes
-----
-DELETE /opennms-alarms-*/
-----
-Search all the events indexes
-----
-GET /opennms-events-*/_search
-----
-Search all the raw events indexes
-----
-GET /opennms-events-raw*/_search
-----
-Delete all the events indexes
-----
-DELETE /opennms-events-*/
-----
-Get all the raw events indexes
-----
-GET /opennms-events-raw*/
-----
-Get all the alarmchange event indexes
-----
-GET /opennms-events-alarmchange-*/
-----
-Search all the alarm change event indexes
-----
-GET opennms-events-alarmchange-*/_search
-----
-Get a specific alarm change event
-----
-GET opennms-events-alarmchange-2016.08/eventdata/11549
-----
-
 ==== Loading Historical Events
 
 It is possible to load historical OpenNMS events into _Elasticsearch_ from the OpenNMS database using a _karaf_ console command.
@@ -169,12 +90,94 @@ nodelabel is provided in this case.
 
 Command examples:
 ----
+# This retrieves 110 alarms from the local machine using the 
+# local node cache for node label
 elastic-search:send-historic-events 100 0 admin admin http://localhost:8980 false
 
-This retrieves 110 alarms from the local machine using the local node cache for node label
-
+# This retrieves 110 alarms from the remote machine using the remote node labels
 elastic-search:send-historic-events 100 0 demo demo http://demo.opennms.org true
-
-This retrieves 110 alarms from the remote machine using the remote node labels
 ----
 
+==== Index Definitions
+
+Three indices are created; one for alarms, one for alarm change events and one for raw events. 
+Alarms and alarm change events are only saved if the alarm-change-notifier plugin is also 
+installed to generate alarm change events from the OpenNMS alarms table. 
+The index names are of the form:
+----
+<name>-<date>/type/id
+----
+
+For example
+
+a) Alarms
+----
+opennms-alarms-2017.01/alarmdata/1823
+----
+
+b) Alarm Change Events
+----
+opennms-events-alarmchange-2017.01/eventdata/11549
+----
+
+c) Raw OpenNMS events (not including alarm change events)
+----
+opennms-events-raw-2017.01/eventdata/11549
+----
+
+==== Viewing events using Kibana Sense 
+
+_Kibana Sense_ is a _Kibana_ app which allows you to run queries directly against _Elasticsearch_.
+(https://www.elastic.co/guide/en/sense/current/installing.html)
+
+If you install _Kibana Sense_ you can use the following commands to view the alarms and events sent to _Elasticsearch_
+You should review the _Elasticsearch_ ReST API documentation to understand how searches are specified. 
+(See https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
+
+Example searches to use in _Kibana Sense_ (you can copy the whole contents of this panel into _Kibana Sense_ as a set of examples)
+----
+
+# Search all the alarms indexes
+
+GET /opennms-alarms-*/_search
+
+# Get all of the alarms indexes
+
+GET /opennms-alarms-*/
+
+# Get a specific alarm id from the 2017.01 index
+
+GET opennms-alarms-2017.01/alarmdata/1823
+
+# Delete all alarm indexes
+
+DELETE /opennms-alarms-*/
+
+# Search all the events indexes
+
+GET /opennms-events-*/_search
+
+# Search all the raw events indexes
+
+GET /opennms-events-raw*/_search
+
+# Delete all the events indexes
+
+DELETE /opennms-events-*/
+
+# Get all the raw events indexes
+
+GET /opennms-events-raw*/
+
+# Get all the alarmchange event indexes
+
+GET /opennms-events-alarmchange-*/
+
+# Search all the alarm change event indexes
+
+GET opennms-events-alarmchange-*/_search
+
+# Get a specific alarm change event
+
+GET opennms-events-alarmchange-2016.08/eventdata/11549
+----

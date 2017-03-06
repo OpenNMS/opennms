@@ -155,6 +155,24 @@
   </event>
   
   <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnSuppressed</uei>
+    <event-label>Alarm Change Notification Event : Alarm UnSuppressed</event-label>
+    <descr>
+
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed &lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
     <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange</uei>
     <event-label>Alarm Change Notification Event : Trouble Ticket State Change</event-label>
     <descr>
