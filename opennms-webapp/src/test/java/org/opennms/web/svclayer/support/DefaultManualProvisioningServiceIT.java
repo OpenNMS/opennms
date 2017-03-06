@@ -80,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-@Ignore("The DefaultManualProvisioningService is deprecated and should not be used anymore.")
+@Ignore("The DefaultManualProvisioningService is deprecated and should not be used anymore. See HZN-1032")
 public class DefaultManualProvisioningServiceIT {
 
     private DefaultManualProvisioningService m_provisioningService;
@@ -167,7 +167,6 @@ public class DefaultManualProvisioningServiceIT {
         int newCount = PropertyUtils.getPathValue(result, pathToNode+".interfaceCount", int.class);
 
         assertEquals(initialCount+1, newCount);
-        // TODO MVR this will fail
         RequisitionInterface newIface = PropertyUtils.getPathValue(result, pathToNode+".interface[0]", RequisitionInterface.class);
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());

@@ -241,8 +241,10 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     private void validate(ForeignSourceEntity foreignSource) {
-        // TODO MVR
-//        throw new UnsupportedOperationException("TODO MVR implement me");
+        // Originally the validate method was used to ensure that the foreignSources do not contain "/" in their names.
+        // Now this limitation does not apply anymore (due to database persistence).
+        // The validate method was still kept and can be used to add custom validations, e.g. Bean-Validation
+        // in the future.
     }
 
 }

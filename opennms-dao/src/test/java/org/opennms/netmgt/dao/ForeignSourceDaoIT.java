@@ -85,11 +85,6 @@ public class ForeignSourceDaoIT {
         Assert.assertEquals(date, received.getDate());
         Assert.assertEquals(1, received.getDetectors().size());
         Assert.assertEquals(1, received.getPolicies().size());
-
-        // TODO MVR update foreign source
-        // - change values in existing hierarchy
-        // - add new elements in existing hierarchy
-        // - remove elements in existing hierarchy
     }
 
     private static PluginConfigEntity createPluginConfig(ForeignSourceEntity parent, PluginConfigType pluginConfigType, String name, String pluginClass, Map<String, String> parameters) {

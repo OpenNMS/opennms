@@ -173,6 +173,12 @@
     <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.mock.MockRequisitionedCategoryAssociationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
 
+    <bean id="foreignSourceDao" class="org.opennms.netmgt.dao.mock.MockForeignSourceDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ForeignSourceDao" ref="foreignSourceDao" />
+
+    <bean id="requisitionDao" class="org.opennms.netmgt.dao.mock.MockRequisitionDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionDao" ref="requisitionDao" />
+
     <!-- 
     <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
         <property name="nodeDao" ref="nodeDao" />

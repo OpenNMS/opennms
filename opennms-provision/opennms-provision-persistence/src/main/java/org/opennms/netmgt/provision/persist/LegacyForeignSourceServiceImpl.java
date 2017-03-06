@@ -34,6 +34,11 @@ import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
+/**
+ * @deprecated These are left overs of the old requisition ui. See HZN-1032 for more details
+ *
+ */
+@Deprecated
 public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService implements LegacyForeignSourceService {
 
     @Override
@@ -52,7 +57,8 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
         if (getForeignSource(target) != null) {
             throw new IllegalArgumentException("ForeignSource with name '" + target + "' already exists. Cannot clone");
         }
-        // TODO MVR clone (this does not clone..)
+        // MVR: With the RequisitionEntities this does not clone anymore.
+        // In general the legacy requisition ui is not used anymore and should be deleted. See HZN-1032.
         final ForeignSourceEntity foreignSource = getForeignSource(name);
         foreignSource.setDefault(false);
         foreignSource.setName(target);
@@ -62,6 +68,8 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
 
     @Override
     public ForeignSourceEntity addParameter(String foreignSourceName, String pathToAdd) {
+        // MVR: This was commented out, because it does not work anymore with the new requisition services.
+        // In general the legacy requisition ui is not used anymore and should be deleted. See HZN-1032.
 
 //        ForeignSourceEntity fs = getForeignSource(foreignSourceName);
 //        PropertyPath path = new PropertyPath(pathToAdd);
@@ -79,12 +87,14 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
 //
 //        m_pendingForeignSourceRepository.save(fs);
 //        return fs;
-        // TODO MVR implement me
         return null;
     }
 
     @Override
     public ForeignSourceEntity deletePath(String foreignSourceName, String pathToDelete) {
+        // MVR: This was commented out, because it does not work anymore with the new requisition services.
+        // In general the legacy requisition ui is not used anymore and should be deleted. See HZN-1032.
+
 //        ForeignSource fs = getForeignSource(foreignSourceName);
 //        PropertyPath path = new PropertyPath(pathToDelete);
 //
@@ -107,7 +117,6 @@ public class LegacyForeignSourceServiceImpl extends DefaultForeignSourceService 
 //
 //        m_pendingForeignSourceRepository.save(fs);
 //        return fs;
-        // TODO MVR implement me
         return null;
     }
 

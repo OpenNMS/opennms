@@ -94,7 +94,6 @@ public class RequisitionInterfaceEntity implements Serializable {
     @Column(name="managed")
     protected boolean managed = true;
 
-    // TODO MVR this looks weird and is different than in OnmsIpInterface, why does it not work automatically?!
     @Embedded
     @AttributeOverride(name="m_collType", column=@Column(name="issnmpprimary"))
     protected PrimaryType snmpPrimary = PrimaryType.NOT_ELIGIBLE;

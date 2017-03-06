@@ -31,24 +31,24 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toPersistenceModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.JAXB;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.core.io.ClassPathResource;
 
-public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase {
+public class MockRequisitionServiceTest {
+
     private String m_defaultForeignSourceName;
 
     private RequisitionService m_foreignSourceRepository;
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_foreignSourceRepository = new MockRequisitionService();
         m_defaultForeignSourceName = "imported:";
     }
@@ -66,27 +66,4 @@ public class MockRequisitionServiceTest extends ForeignSourceRepositoryTestCase 
         assertEquals("number of nodes visited", 2, r.getNodes().size());
         assertEquals("node name matches", "apknd", r.getNodes().get(0).getNodeLabel());
     }
-
-    /**
-     * This test ensures that the Spring Bean accessor classes work properly
-     * since our REST implementation uses bean access to update the values.
-     */
-    @Test
-    // TODO MVR remove this
-    public void testBeanWrapperAccess() throws Exception {
-        createRequisition();
-        RequisitionEntity r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
-        List<String> categories = new ArrayList<>(r.getNodes().get(0).getCategories());
-        assertEquals("AC", categories.get(0));
-        assertEquals("UK", categories.get(1));
-        assertEquals("low", categories.get(2));
-        assertEquals(0, r.getNodes().get(1).getCategories().size());
-
-        // TODO MVR ..
-//        wrapper.setPropertyValue("node[1].categories[0]", new RequisitionCategory("Hello world"));
-//        wrapper.setPropertyValue("node[1].categories[1]", new RequisitionCategory("Hello again"));
-//
-//        assertEquals(2, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
-    }
-
 }

@@ -26,30 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.dao.mock;
 
-import java.util.Set;
+import org.opennms.netmgt.dao.api.ForeignSourceDao;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 
-import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
-import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
-import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
+public class MockForeignSourceDao extends AbstractMockDao<ForeignSourceEntity, String> implements ForeignSourceDao {
+    @Override
+    protected String getId(ForeignSourceEntity entity) {
+        return entity.getName();
+    }
 
-public interface RequisitionService {
-
-    RequisitionEntity getRequisition(String foreignSource);
-
-    void deleteRequisition(String foreignSource);
-
-    void saveOrUpdateRequisition(RequisitionEntity input);
-
-    Set<RequisitionEntity> getRequisitions();
-
-    void triggerImport(ImportRequest importRequest);
-
-    int getDeployedCount();
-
-    DeployedStats getDeployedStats();
-
-    DeployedRequisitionStats getDeployedStats(String foreignSource);
+    @Override
+    protected void generateId(ForeignSourceEntity entity) {
+        // Ids are not automatically generated, they must be set before invoking "save" or "update"
+    }
 }

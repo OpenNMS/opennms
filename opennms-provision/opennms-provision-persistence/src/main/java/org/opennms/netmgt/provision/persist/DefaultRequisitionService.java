@@ -115,7 +115,6 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     @Override
-    // TODO MVR what to do with this?
     @Transactional(readOnly = true)
     public DeployedStats getDeployedStats() {
         final DeployedStats deployedStats = new DeployedStats();
@@ -134,9 +133,7 @@ public class DefaultRequisitionService implements RequisitionService {
         return deployedStats;
     }
 
-    // GLOBAL
     @Override
-    // TODO MVR what to do with these?
     @Transactional(readOnly = true)
     public DeployedRequisitionStats getDeployedStats(String foreignSource) {
         final DeployedRequisitionStats deployedStats = new DeployedRequisitionStats();
@@ -152,7 +149,9 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     private void validate(RequisitionEntity requisition) {
-//        // TODO MVR
-//        throw new UnsupportedOperationException("TODO MVR implement me");
+        // Originally the validate method was used to ensure that the requisition names and foreign ids do not contain "/"
+        // in their names/ids. Now this limitation does not apply anymore (due to database persistence).
+        // The validate method was still kept and can be used to add custom validations, e.g. Bean-Validation
+        // in the future.
     }
 }

@@ -149,9 +149,5 @@ public class RequisitionDaoIT {
         Assert.assertEquals(interfaceService.getServiceName(), readService.getServiceName());
         Assert.assertEquals(1, readService.getCategories().size());
 
-        // TODO MVR update requisition
-        // - change values in existing hierarchy
-        // - add new elements in existing hierarchy
-        // - remove elements in existing hierarchy
     }
 }

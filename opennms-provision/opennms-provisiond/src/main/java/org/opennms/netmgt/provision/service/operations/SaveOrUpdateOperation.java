@@ -135,7 +135,6 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         return m_node;
     }
 
-    // TODO MVR wieder String einführen?!
     protected boolean getRescanExisting() {
         return m_rescanExisting;
     }

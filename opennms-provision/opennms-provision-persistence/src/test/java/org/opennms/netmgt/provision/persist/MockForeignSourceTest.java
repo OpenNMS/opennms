@@ -35,16 +35,18 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 
-public class MockForeignSourceTest extends ForeignSourceRepositoryTestCase {
+public class MockForeignSourceTest {
 
     private ForeignSourceService m_foreignSourceRepository;
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_foreignSourceRepository = new MockForeignSourceService();
     }
 

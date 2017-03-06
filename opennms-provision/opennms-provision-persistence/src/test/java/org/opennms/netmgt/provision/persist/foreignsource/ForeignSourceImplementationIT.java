@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionImplementationTest;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionImplementationIT;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +53,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/testForeignSourceContext.xml"
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/testForeignSourceContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
 })
 @JUnitConfigurationEnvironment
 @Transactional
-public class ForeignSourceImplementationTest  implements InitializingBean, ApplicationContextAware {
-    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationTest.class);
+public class ForeignSourceImplementationIT implements InitializingBean, ApplicationContextAware {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationIT.class);
 
     private Map<String, ForeignSourceService> m_repositories;
 
@@ -77,27 +80,13 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
         void test(T t);
     }
 
-    protected <T> void runTest(final RepositoryTest<ForeignSourceService> rt, final Class<? extends Throwable> expected) {
+    protected <T> void runTest(final RepositoryTest<ForeignSourceService> rt) {
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final ForeignSourceService fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
             fsr.resetDefaultForeignSource();
-            try {
-                rt.test(fsr);
-            } catch (final Throwable t) {
-                if (expected == null) {
-                    // we didn't expect a failure, but got one... rethrow it
-                    throw t;
-                } else {
-                    LOG.debug("expected: {}, got: {}", expected, t);
-                    if (t.getClass().getCanonicalName().equals(expected.getCanonicalName())) {
-                        // we got the exception we expected, carry on
-                    } else {
-                        throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but got " + t.getClass() + " instead!", t);
-                    }
-                }
-            }
+            rt.test(fsr);
         });
     }
 
@@ -111,8 +100,7 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
                     fs = fsr.getForeignSource("blah");
                     assertNotNull(fs);
                     assertNotNull(fs.getScanInterval());
-                },
-                null
+                }
         );
     }
 
@@ -126,8 +114,7 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
                     final ForeignSourceEntity saved = fsr.getForeignSource("foo bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
-                },
-                null
+                }
         );
     }
 
@@ -141,10 +128,7 @@ public class ForeignSourceImplementationTest  implements InitializingBean, Appli
                     final ForeignSourceEntity saved = fsr.getForeignSource("foo/bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
-                },
-                // TODO MVR was ForeignSourceRepositoryException, but now is different, fix it
-//                ForeignSourceRepositoryException.class
-                RuntimeException.class
+                }
         );
     }
 

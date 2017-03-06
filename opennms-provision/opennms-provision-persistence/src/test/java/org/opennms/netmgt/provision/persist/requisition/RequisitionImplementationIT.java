@@ -30,13 +30,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/testForeignSourceContext.xml"
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/testForeignSourceContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
 })
 @JUnitConfigurationEnvironment
 @Transactional
-public class RequisitionImplementationTest implements InitializingBean, ApplicationContextAware {
+public class RequisitionImplementationIT implements InitializingBean, ApplicationContextAware {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationIT.class);
 
     private Map<String, RequisitionService> m_repositories;
 
@@ -55,26 +58,12 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
         void test(T t);
     }
 
-    protected <T> void runTest(final RepositoryTest<RequisitionService> rt, final Class<? extends Throwable> expected) {
+    protected <T> void runTest(final RepositoryTest<RequisitionService> rt) {
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final RequisitionService fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
-            try {
-                rt.test(fsr);
-            } catch (final Throwable t) {
-                if (expected == null) {
-                    // we didn't expect a failure, but got one... rethrow it
-                    throw t;
-                } else {
-                    LOG.debug("expected: {}, got: {}", expected, t);
-                    if (t.getClass().getCanonicalName().equals(expected.getCanonicalName())) {
-                        // we got the exception we expected, carry on
-                    } else {
-                        throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but got " + t.getClass() + " instead!", t);
-                    }
-                }
-            }
+            rt.test(fsr);
         });
     }
 
@@ -91,9 +80,8 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                },
-                null
-                );
+                }
+        );
     }
 
 
@@ -107,9 +95,8 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     final RequisitionEntity saved = fsr.getRequisition("foo bar");
                     assertNotNull(saved);
                     assertEquals(req, saved);
-                },
-                null
-                );
+                }
+        );
     }
 
     @Test
@@ -119,11 +106,8 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     final RequisitionEntity req = new RequisitionEntity("foo/bar");
                     req.setForeignSource("foo/bar");
                     fsr.saveOrUpdateRequisition(req);
-                },
-                // TOOD MVR was ForeignSourceRepositoryException but now is RuntimeException, what to do?
-//                ForeignSourceRepositoryException.class
-                RuntimeException.class
-                );
+                }
+        );
     }
 
     @Override

@@ -72,7 +72,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-// TODO MVR write tests -> dao level? add node twice, add ip interface twice, add service twice, add category twice
 public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired

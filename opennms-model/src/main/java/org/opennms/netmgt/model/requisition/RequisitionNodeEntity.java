@@ -167,7 +167,9 @@ public class RequisitionNodeEntity implements Serializable {
     }
 
     public String getForeignSource() {
-        // TODO MVR verify that this actually works
+        if (getRequisition() != null) {
+            throw new IllegalStateException("The current node is not assigned to a requisition");
+        }
         return getRequisition().getForeignSource();
     }
 
