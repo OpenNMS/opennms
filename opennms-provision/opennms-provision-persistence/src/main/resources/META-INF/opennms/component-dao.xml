@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:osgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
 	<context:annotation-config />
 
@@ -24,12 +24,20 @@
 		<property name="ignoreUnresolvablePlaceholders" value="true"/>
 	</bean>
 
-	<bean id="foreignSourceMerger" class="org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger"/>
-	<bean id="requisitionMerger" class="org.opennms.netmgt.provision.persist.requisition.RequisitionMerger"/>
+	<bean id="foreignSourceMerger" class="org.opennms.netmgt.provision.persist.foreignsource.DefaultForeignSourceMerger"/>
+	<osgi:service ref="foreignSourceMerger" interface="org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger"/>
+
+	<bean id="requisitionMerger" class="org.opennms.netmgt.provision.persist.requisition.DefaultRequisitionMerger"/>
+	<osgi:service ref="requisitionMerger" interface="org.opennms.netmgt.provision.persist.requisition.RequisitionMerger"/>
+
 	<bean id="requisitionService" class="org.opennms.netmgt.provision.persist.DefaultRequisitionService"/>
+	<osgi:service ref="requisitionService" interface="org.opennms.netmgt.provision.persist.RequisitionService"/>
+
 	<bean id="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
 		<qualifier value="default"/>
 	</bean>
+	<osgi:service ref="defaultForeignSourceService" interface="org.opennms.netmgt.provision.persist.ForeignSourceService"/>
+
 	<bean id="legacyForeignSourceService" class="org.opennms.netmgt.provision.persist.LegacyForeignSourceServiceImpl">
 		<qualifier value="legacy"/>
 	</bean>

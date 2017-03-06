@@ -4,6 +4,11 @@
 
     <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" availability="mandatory"/>
     <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
+    <reference id="foreignSourceService" interface="org.opennms.netmgt.provision.persist.ForeignSourceService" availability="mandatory"/>
+    <reference id="foreignSourceMerger" interface="org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger" availability="mandatory"/>
+    <reference id="requisitionService" interface="org.opennms.netmgt.provision.persist.RequisitionService" availability="mandatory"/>
+    <reference id="requisitionMerger" interface="org.opennms.netmgt.provision.persist.requisition.RequisitionMerger" availability="mandatory"/>
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <bean id="serviceNameCompleter" class="org.opennms.netmgt.provision.detector.command.ServiceNameCompleter">
         <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry" />
@@ -46,5 +51,30 @@
 			</action>
 		</command>
 	</command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="foreignsource/import">
+            <action class="org.opennms.netmgt.provision.requisition.command.ForeignSourceImportCommand">
+                <property name="foreignSourceService" ref="foreignSourceService"/>
+                <property name="foreignSourceMerger" ref="foreignSourceMerger"/>
+                <property name="transactionOperations" ref="transactionTemplate"/>
+            </action>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="requisition/import">
+            <action class="org.opennms.netmgt.provision.requisition.command.RequisitionImportCommand">
+                <property name="requisitionService" ref="requisitionService"/>
+                <property name="requisitionMerger" ref="requisitionMerger"/>
+                <property name="transactionOperations" ref="transactionTemplate"/>
+            </action>
+        </command>
+        <command name="requisition/synchronize">
+            <action class="org.opennms.netmgt.provision.requisition.command.RequisitionSynchronizeCommand">
+                <property name="requisitionService" ref="requisitionService"/>
+            </action>
+        </command>
+    </command-bundle>
 	
 </blueprint>

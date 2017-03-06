@@ -129,9 +129,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
     <property name="pollerConfig" ref="pollerConfig"/>
   </bean>
-  <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-    <qualifier value="default"/>
-  </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
     <property name="resourceDao" ref="resourceDao"/>

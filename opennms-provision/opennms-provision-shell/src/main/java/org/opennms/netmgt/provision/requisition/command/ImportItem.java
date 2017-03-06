@@ -26,23 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist.requisition;
+package org.opennms.netmgt.provision.requisition.command;
 
-import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
-import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+// Item to import abstraction
+interface ImportItem<T> {
+    String getName();
 
-public interface RequisitionMerger {
-    RequisitionEntity mergeOrCreate(Requisition input);
+    String getType();
 
-    RequisitionNodeEntity mergeOrCreate(RequisitionEntity parentRequisition, RequisitionNode inputNode);
+    T getItem();
 
-    RequisitionInterfaceEntity mergeOrCreate(RequisitionNodeEntity parentNode, RequisitionInterface inputInterface);
-
-    RequisitionMonitoredServiceEntity mergeOrCreate(RequisitionInterfaceEntity parentInterface, RequisitionMonitoredService inputService);
+    boolean alreadyExists();
 }

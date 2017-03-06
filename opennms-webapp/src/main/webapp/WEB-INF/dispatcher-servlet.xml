@@ -68,13 +68,6 @@
         <property name="flowExecutor" ref="flowExecutor"/>
     </bean>
 
-    <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
-        <qualifier value="default"/>
-    </bean>
-    <bean name="legacyForeignSourceService" class="org.opennms.netmgt.provision.persist.LegacyForeignSourceServiceImpl">
-        <qualifier value="legacy"/>
-    </bean>
-
     <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
           <property name="eventConfDao" ref="eventConfDao"/>
     </bean>

@@ -1,0 +1,26 @@
+[[releasenotes-20]]
+== OpenNMS 20
+
+=== System Requirements
+
+* *Java 8*: OpenNMS Horizon 20 requires Java 8 as the runtime environment.
+  To run Horizon 20, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9.2 or higher*: Horizon 20 requires PostgreSQL 9.2 or higher.
+  All older versions of PostgreSQL are past their end-of-life support date.
+
+=== Important Upgrade Notes
+* The Foreign Sources and Requisitions have been moved to the database. All files from `$OPENNMS_HOME/etc` must be migrated manually.
+  See TODO MVR for upgrade instructions
+
+
+=== New Features
+
+=== New Data Collection Definitions
+
+=== Retired Features
+
+=== Deprecated Features
+
+=== Dependency Updates
+
+=== Internal Improvements

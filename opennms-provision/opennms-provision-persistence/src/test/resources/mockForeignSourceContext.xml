@@ -18,4 +18,6 @@
   	<qualifier value="mock" />
   </bean>
 
+  <bean id="foreignSourceMerger" class="org.opennms.netmgt.provision.persist.foreignsource.DefaultForeignSourceMerger"/>
+  <bean id="requisitionMerger" class="org.opennms.netmgt.provision.persist.requisition.DefaultRequisitionMerger"/>
 </beans>
