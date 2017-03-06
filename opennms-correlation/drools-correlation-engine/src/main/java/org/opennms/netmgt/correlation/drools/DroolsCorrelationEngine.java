@@ -52,6 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -70,13 +73,25 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
+
+    private final Meter m_eventsMeter;
     
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+        this.m_name = name;
+        final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
+        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
+        m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_kieSession.insert(e);
         m_kieSession.fireAllRules();
+        m_eventsMeter.mark();
         LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
@@ -178,15 +193,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         return m_kieSession;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-    
     /**
      * <p>getName</p>
      *
