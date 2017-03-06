@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,21 @@ package org.opennms.mock.snmp.responder;
 
 import org.snmp4j.smi.Variable;
 
-public interface DynamicVariable {
+/**
+ * Throws an SNMP error with a status code matching
+ * the requested instance.
+ *
+ * See org.snmp4j.mp.SnmpConstants.SNMP_ERROR_* for known error codes.
+ *
+ * @author jwhite
+ */
+public class Error implements DynamicVariable {
 
-	public Variable getVariableForOID(String oidStr) throws SnmpErrorStatusException;
+    @Override
+    public Variable getVariableForOID(String oidStr) throws SnmpErrorStatusException {
+        String[] oids = oidStr.split("\\.");
+        Integer instance = Integer.parseInt(oids[oids.length-1]);
+        throw new SnmpErrorStatusException(instance);
+    }
 
 }
