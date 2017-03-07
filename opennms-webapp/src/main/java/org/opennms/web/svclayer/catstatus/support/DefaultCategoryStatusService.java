@@ -170,6 +170,6 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
     }
 
     private List<String> getServicesForCategory(Category categoryDetail) {
-        return categoryDetail.getServiceCollection();
+        return categoryDetail.getServices();
     }
 }

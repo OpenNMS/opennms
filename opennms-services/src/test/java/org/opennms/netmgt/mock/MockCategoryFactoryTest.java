@@ -92,12 +92,12 @@ public class MockCategoryFactoryTest extends TestCase {
 	public void testGetCategory() {
 		
 		Category category = m_catFactory.getCategory(CATLABEL);
-		assertEquals(99,category.getNormal(),0);
-		assertEquals(97,category.getWarning(),0);
+		assertEquals(99,category.getNormalThreshold(),0);
+		assertEquals(97,category.getWarningThreshold(),0);
 		assertEquals(CATCOMMENT,category.getComment());
 		assertEquals(CATRULE,category.getRule());
-		assertEquals("ICMP",category.getService(0));
-		assertEquals("SNMP",category.getService(1));
+		assertEquals("ICMP",category.getServices().get(0));
+		assertEquals("SNMP",category.getServices().get(1));
 		
 		
 	}
