@@ -35,6 +35,9 @@ import org.graphdrawing.graphml.GraphmlType;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.service.GraphmlRepository;
+import org.opennms.features.topology.plugins.topo.asset.repo.NodeInfoRepository;
+import org.opennms.features.topology.plugins.topo.asset.repo.Utils;
+import org.opennms.features.topology.plugins.topo.asset.repo.xml.NodeInfoRepositoryXML;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -53,9 +56,14 @@ public class AssetGraphMLProvider implements EventListener {
 
     public static final String CREATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/create";
 	public static final String REMOVE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/remove";
+	public static final String CREATE_ASSET_NODE_INFO = "uei.opennms.plugins/assettopology/nodeinfo";
 
 	// TODO optional add update capability
 //	public static final String UPDATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/update";
+	
+	public static final String TEMP_FOLDER = "data/tmp"; // folder created in OpenNMS to store asset topology info for debugging
+	public static final String ASSET_LIST_XML_FILE = "AssetListFile.xml"; // file generated for debugging
+
 
 	private final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY);
 
@@ -102,13 +110,18 @@ public class AssetGraphMLProvider implements EventListener {
                 GraphML graphML = new AssetGraphGenerator(nodeDao).generateGraphs(config);
                 GraphmlType graphmlType = GraphMLWriter.convert(graphML);
                 graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
-            }
-            if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
+            } else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
                 if (!graphmlRepository.exists(config.getProviderId())) {
                     // TODO or log instead
                     throw new IllegalStateException("Provider cannot be removed, because it does not exist");
                 }
                 graphmlRepository.delete(config.getProviderId());
+            } else if (CREATE_ASSET_NODE_INFO.equals(e.getUei())) {
+            	NodeInfoRepository nir = new NodeInfoRepository();
+            	nir.setNodeDao(nodeDao);
+            	nir.initialiseNodeInfo(null);
+        		String nodeInfoxml = NodeInfoRepositoryXML.nodeInfoToXML(nir.getNodeInfo());
+        		Utils.writeFileToDisk(nodeInfoxml, ASSET_LIST_XML_FILE, TEMP_FOLDER);
             }
         } catch (Exception ex) {
             // TODO or log instead
