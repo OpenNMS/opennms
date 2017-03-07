@@ -63,6 +63,5 @@
 		<detector name="MS-RDP" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
 			<parameter key="port" value="3389"/>
 		</detector>
-		<detector name="ActiveMQ" class="org.opennms.netmgt.provision.detector.jms.ActiveMQDetector"/>
 	</detectors>
 </foreign-source>
