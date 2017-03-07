@@ -36,8 +36,6 @@ import java.util.TreeSet;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
-import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.springframework.util.Assert;
 
@@ -82,13 +80,4 @@ public class MockRequisitionService implements RequisitionService {
         return m_requisitions.size();
     }
 
-    @Override
-    public DeployedStats getDeployedStats() {
-        return null; // not implemented
-    }
-
-    @Override
-    public DeployedRequisitionStats getDeployedStats(String foreignSource) {
-        return null; // not implemented
-    }
 }

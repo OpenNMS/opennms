@@ -31,8 +31,6 @@ package org.opennms.netmgt.provision.persist;
 import java.util.Set;
 
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
-import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 
 public interface RequisitionService {
@@ -49,7 +47,4 @@ public interface RequisitionService {
 
     int getDeployedCount();
 
-    DeployedStats getDeployedStats();
-
-    DeployedRequisitionStats getDeployedStats(String foreignSource);
 }

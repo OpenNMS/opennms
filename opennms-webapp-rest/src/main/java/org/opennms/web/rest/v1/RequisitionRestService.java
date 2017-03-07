@@ -31,6 +31,9 @@ package org.opennms.web.rest.v1;
 import static org.opennms.netmgt.provision.persist.requisition.RequisitionMapper.toRestModel;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +56,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionMonitoredServiceEntity;
@@ -145,6 +149,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Autowired
     private RequisitionMerger requisitionMerger;
 
+    @Autowired
+    private NodeDao nodeDao;
+
     /**
      * get a plain text numeric string of the number of deployed requisitions
      *
@@ -165,8 +172,22 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("deployed/stats")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DeployedStats getDeployedStats() {
-        return requisitionService.getDeployedStats();
+        final DeployedStats deployedStats = new DeployedStats();
+        final Map<String, Date> lastImportedMap = new HashMap<String, Date>();
+        requisitionService.getRequisitions().forEach(r -> {
+            lastImportedMap.put(r.getForeignSource(), r.getLastImport());
+        });
+        Map<String, Set<String>> map = nodeDao.getForeignIdsPerForeignSourceMap();
+        map.entrySet().forEach(e -> {
+            DeployedRequisitionStats stats = new DeployedRequisitionStats();
+            stats.setForeignSource(e.getKey());
+            stats.setForeignIds(new ArrayList<>(e.getValue()));
+            stats.setLastImported(lastImportedMap.get(e.getKey()));
+            deployedStats.add(stats);
+        });
+        return deployedStats;
     }
 
     /**
@@ -177,8 +198,14 @@ public class RequisitionRestService extends OnmsRestService {
     @GET
     @Path("deployed/stats/{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
     public DeployedRequisitionStats getDeployedStats(@PathParam("foreignSource") final String foreignSource) {
-        return requisitionService.getDeployedStats(foreignSource);
+        final DeployedRequisitionStats deployedStats = new DeployedRequisitionStats();
+        final RequisitionEntity fs = requisitionService.getRequisition(foreignSource);
+        deployedStats.setForeignSource(foreignSource);
+        deployedStats.setLastImported(fs.getLastImport());
+        deployedStats.addAll(nodeDao.getForeignIdsPerForeignSource(foreignSource));
+        return deployedStats;
     }
 
     /**

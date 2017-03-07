@@ -32,11 +32,13 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.RequisitionService;
 
 /**
  * This should not be used anymore and is deprecated.
  *
- * @deprecated Use {@link org.opennms.netmgt.provision.persist.ForeignSourceService} or {@link org.opennms.netmgt.provision.persist.RequisitionService} instead for now.
+ * @deprecated Use {@link ForeignSourceService} or {@link RequisitionService} instead for now.
  */
 @Deprecated
 public interface ManualProvisioningService {

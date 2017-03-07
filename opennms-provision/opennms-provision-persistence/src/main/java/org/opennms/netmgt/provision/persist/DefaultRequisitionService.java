@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -41,8 +37,6 @@ import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
-import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,36 +106,6 @@ public class DefaultRequisitionService implements RequisitionService {
     @Transactional(readOnly = true)
     public int getDeployedCount() {
         return getRequisitions().size();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public DeployedStats getDeployedStats() {
-        final DeployedStats deployedStats = new DeployedStats();
-        final Map<String, Date> lastImportedMap = new HashMap<String, Date>();
-        getRequisitions().forEach(r -> {
-            lastImportedMap.put(r.getForeignSource(), r.getLastImport());
-        });
-        Map<String, Set<String>> map = nodeDao.getForeignIdsPerForeignSourceMap();
-        map.entrySet().forEach(e -> {
-            DeployedRequisitionStats stats = new DeployedRequisitionStats();
-            stats.setForeignSource(e.getKey());
-            stats.setForeignIds(new ArrayList<>(e.getValue()));
-            stats.setLastImported(lastImportedMap.get(e.getKey()));
-            deployedStats.add(stats);
-        });
-        return deployedStats;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public DeployedRequisitionStats getDeployedStats(String foreignSource) {
-        final DeployedRequisitionStats deployedStats = new DeployedRequisitionStats();
-        final RequisitionEntity fs = getRequisition(foreignSource);
-        deployedStats.setForeignSource(foreignSource);
-        deployedStats.setLastImported(fs.getLastImport());
-        deployedStats.addAll(nodeDao.getForeignIdsPerForeignSource(foreignSource));
-        return deployedStats;
     }
 
     private EventProxy getEventProxy() {
