@@ -64,7 +64,7 @@ public class ForeignSourceEntity implements Serializable {
     protected Date date = new Date();
 
     @Column(name="scaninterval")
-    private long scanInterval = TimeUnit.DAYS.convert(1, TimeUnit.MILLISECONDS);
+    private long scanInterval = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "foreignSource")
     private List<PluginConfigEntity> plugins = new ArrayList<>();
