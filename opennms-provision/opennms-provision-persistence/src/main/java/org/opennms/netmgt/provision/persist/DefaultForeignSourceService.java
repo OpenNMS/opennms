@@ -97,7 +97,6 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         if (foreignSourceEntity == null) {
             foreignSourceEntity = getDefaultForeignSource();
             foreignSourceEntity.setName(name);
-            foreignSourceEntity.setDefault(false);
         }
         return foreignSourceEntity;
     }
@@ -106,10 +105,9 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     public void saveForeignSource(ForeignSourceEntity foreignSource) {
         validate(foreignSource);
         normalizePluginConfigs(foreignSource);
+        boolean isDefault = DEFAULT_FOREIGNSOURCE_NAME.equals(foreignSource.getName());
         foreignSource.updateDateStamp();
-        if (DEFAULT_FOREIGNSOURCE_NAME.equals(foreignSource.getName())) {
-            foreignSource.setDefault(true);
-        }
+        foreignSource.setDefault(isDefault);
         foreignSourceDao.saveOrUpdate(foreignSource);
     }
 
