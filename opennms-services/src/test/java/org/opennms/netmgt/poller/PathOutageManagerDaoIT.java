@@ -52,7 +52,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.PathOutageManager;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
@@ -166,9 +165,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 		pollContext.setName("Test.DefaultPollContext");
 		pollContext.setPollerConfig(m_pollerConfig);
 		pollContext.setQueryManager(m_queryManager);
-
-		MockOutageConfig config = new MockOutageConfig();
-		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
 	}
 
 	@After

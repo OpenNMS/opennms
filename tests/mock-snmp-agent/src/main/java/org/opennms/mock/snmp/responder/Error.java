@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.mock.snmp.responder;
+
+import org.snmp4j.smi.Variable;
 
 /**
- * <p>OutageManagerConfig interface.</p>
+ * Throws an SNMP error with a status code matching
+ * the requested instance.
  *
- * @author brozow
+ * See org.snmp4j.mp.SnmpConstants.SNMP_ERROR_* for known error codes.
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- * @version $Id: $
+ * @author jwhite
  */
-public interface OutageManagerConfig {
-    /**
-     * Return the number of writer threads to be started.
-     *
-     * @return the number of writer threads to be started
-     */
-    public int getWriters();
+public class Error implements DynamicVariable {
 
-    /**
-     * Return the SQL statemet to get the next outage ID.
-     *
-     * @return the SQL statemet to get the next outage ID
-     */
-    public String getGetNextOutageID();
+    @Override
+    public Variable getVariableForOID(String oidStr) throws SnmpErrorStatusException {
+        String[] oids = oidStr.split("\\.");
+        Integer instance = Integer.parseInt(oids[oids.length-1]);
+        throw new SnmpErrorStatusException(instance);
+    }
 
-    /**
-     * Return a boolean flag to indicate if a deleteService should be propagated
-     * to the interface or node level deletion when approciate.
-     *
-     * @return true for delete propagation otherwise false.
-     */
-    public boolean deletePropagation();
 }

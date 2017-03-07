@@ -29,6 +29,7 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -46,7 +47,6 @@ import org.opennms.web.svclayer.model.SnmpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -135,7 +135,7 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
-		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), Charsets.UTF_8));
+		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), StandardCharsets.UTF_8));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
 		dispatcher.forward(request, response);

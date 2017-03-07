@@ -43,6 +43,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.opennms.mock.snmp.responder.DynamicVariable;
+import org.opennms.mock.snmp.responder.SnmpErrorStatusException;
 import org.snmp4j.agent.DefaultMOScope;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.MOScope;
@@ -185,7 +186,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return tail.firstKey();
     }
     
-    private Variable findValueForOID(final OID oid) {
+    private Variable findValueForOID(final OID oid) throws SnmpErrorStatusException {
     	final Object val = m_vars.get(oid);
         if (val == null) {
             return null;
@@ -202,11 +203,16 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     }
 
     private void getVariable(final SubRequest request, final OID oid) {
-        Variable value = findValueForOID(oid);
-        VariableBinding vb = request.getVariableBinding();
-        vb.setOid(oid);
-        vb.setVariable(value == null ? Null.noSuchObject : value);
-        request.completed();
+        try {
+            final Variable value = findValueForOID(oid);
+            final VariableBinding vb = request.getVariableBinding();
+            vb.setOid(oid);
+            vb.setVariable(value == null ? Null.noSuchObject : value);
+            request.completed();
+        } catch (SnmpErrorStatusException e) {
+            request.setErrorStatus(e.getErrorStatus());
+            request.completed();
+        }
     }
 
     /**
@@ -321,8 +327,9 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 * @param oidStr a {@link java.lang.String} object.
 	 * @param valStr a {@link java.lang.String} object.
 	 * @return a {@link org.snmp4j.smi.Variable} object.
+	 * @throws SnmpErrorStatusException
 	 */
-	private Variable getVariableFromValueString(String oidStr, String valStr) {
+	private Variable getVariableFromValueString(String oidStr, String valStr) throws SnmpErrorStatusException {
 	    Variable newVar;
 	    
 	    if (valStr.startsWith("Wrong Type")) {
@@ -372,6 +379,8 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	                //newVar = new OctetString(moValStr);
 	                throw new IllegalArgumentException("Unrecognized SNMP Type "+moTypeStr);
 	            }
+	        } catch (SnmpErrorStatusException e) {
+	            throw e;
 	        } catch (Throwable t) {
 	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
 	        }
@@ -385,8 +394,9 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
      * @param oidStr a {@link java.lang.String} object.
      * @param typeStr a {@link java.lang.String} object.
      * @return a {@link org.snmp4j.smi.Variable} object.
+     * @throws SnmpErrorStatusException
      */
-	protected Variable handleDynamicVariable(String oidStr, String typeStr) {
+	protected Variable handleDynamicVariable(String oidStr, String typeStr) throws SnmpErrorStatusException {
 		DynamicVariable responder = m_dynamicVariableCache.get(oidStr);
 		
 		if( responder != null ) {

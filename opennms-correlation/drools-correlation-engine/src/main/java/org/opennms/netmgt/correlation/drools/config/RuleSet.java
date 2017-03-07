@@ -1,29 +1,31 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
- * 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
- */
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.correlation.drools.config;
 
 import java.io.IOException;
@@ -61,6 +63,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.xml.sax.ContentHandler;
+
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * Class RuleSet.
@@ -831,11 +835,10 @@ public class RuleSet implements Serializable {
         return true;
     }
 
-    public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager) {
+    public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
         final ApplicationContext configContext = new ConfigFileApplicationContext(basePath, getConfigLocation(), appContext);
 
-        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
-        engine.setName(getName());
+        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine(getName(), metricRegistry);
         engine.setAssertBehaviour(getAssertBehaviour());
         engine.setEventProcessingMode(getEventProcessingMode());
         engine.setEventIpcManager(eventIpcManager);
