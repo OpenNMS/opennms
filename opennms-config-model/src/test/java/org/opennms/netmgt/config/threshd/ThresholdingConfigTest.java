@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd.mock;
+package org.opennms.netmgt.config.threshd;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.opennms.netmgt.config.ThreshdConfigManager;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class MockThreshdConfigManager extends ThreshdConfigManager {
+public class ThresholdingConfigTest extends XmlTestNoCastor<ThresholdingConfig> {
 
-    public MockThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException  {
-        super(stream, localServer, verifyServer);
+    public ThresholdingConfigTest(ThresholdingConfig sampleObject, Object sampleXml) {
+        super(sampleObject, sampleXml, "src/main/resources/xsds/thresholding.xsd");
     }
 
-    @Override
-    public void reloadXML() throws IOException {
-        // pass
+    @Parameters
+    public static Collection<Object[]> data() throws ParseException {
+        return Arrays.asList(new Object[][] {
+            {
+                new ThresholdingConfig(),
+                "<thresholding-config/>"
+            }
+        });
     }
-
-    @Override
-    protected void saveXML(String xmlString) throws IOException {
-        // pass
-    }
-
 }
