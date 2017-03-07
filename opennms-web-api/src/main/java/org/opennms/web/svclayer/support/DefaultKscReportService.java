@@ -88,8 +88,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
         Report report = new Report();
         report.setTitle(title);
-        report.setShow_timespan_button(true);
-        report.setShow_graphtype_button(true);
+        report.setShowTimespanButton(true);
+        report.setShowGraphtypeButton(true);
 
         List<OnmsResource> resources = service.findChildResources(parentResource, "interfaceSnmp");
         for (OnmsResource resource : resources) {
