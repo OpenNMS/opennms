@@ -1,16 +1,35 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../../images
+:imagesdir: ../../../images
 
-[[ga-performance-mgmt-collectors-wsman]]
-==== WS-Management
+[[ga-performance-mgmt-collectors-wsman-collector]]
+==== WsManCollector
+
+The _WsManCollector_ collects peformance metrics using the Web Services-Management (WS-Management) protocol.
 
 Web Services-Management (WS-Management) is a DMTF open standard defining a SOAP-based protocol for the management of servers, devices, applications and various Web services.
 Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
-{opennms-product-name} currently provides support for detecting, polling and collecting metrics from WS-Man endpoints.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.WsManCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the WsManCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the _WS-Man Collection_ to use  | required |
+|===
 
 [[ga-performance-mgmt-collectors-wsman-setup]]
-===== Setup
+===== WS-Management Setup
 
 Before setting up {opennms-product-name} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {opennms-product-name} system.
 If you need help enabling the WS-Management agent, consult the documentation from the manufacturer.
@@ -31,7 +50,7 @@ wsman identify -h localhost -P 5985 -u wsman -p secret
 
 Once validated, add the agent specific details to the {opennms-product-name} configuration, defined in the next section.
 
-===== Troubleshooting and Commands
+====== Troubleshooting and Commands
 
 For troubleshooting there is a set of commands you can use in _Powershell_ verified on _Microsoft Windows Server 2012_.
 
@@ -85,7 +104,7 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 ----
 
 [[ga-performance-mgmt-collectors-wsman-agent-config]]
-===== Agent Configuration
+===== WS-Management Agent Configuration
 
 The agent specific configuration details are maintained in `etc/wsman-config.xml`.
 This file has a similar structure as `etc/snmp-config.xml`, which the reader may already be familiar with.
@@ -135,8 +154,7 @@ Here is an example with several definitions:
 NOTE: If you try to connect against _Microsoft Windows Server_ make sure to set specific ports for _WinRM_ connections.
       By default _Microsoft Windows Server_ uses port `TCP/5985` for plain text and port `TCP/5986` for _SSL_ connections.
 
-[[ga-performance-mgmt-collectors-wsman-collector]]
-===== Collector
+===== WS-Management Collection Configuration
 
 Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 

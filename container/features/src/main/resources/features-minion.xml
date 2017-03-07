@@ -111,6 +111,7 @@
       <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
       <feature>opennms-vmware</feature>
       <feature>wmi-integration</feature>
+      <feature>wsman-integration</feature>
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
