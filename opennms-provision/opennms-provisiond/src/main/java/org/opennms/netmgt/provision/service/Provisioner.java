@@ -49,7 +49,6 @@ import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
-import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -104,9 +103,6 @@ public class Provisioner implements SpringServiceDaemon {
     private MonitoringSystemDao monitoringSystemDao;
     
     private ImportScheduler m_importSchedule;
-
-    @Autowired
-    private RequisitionDao requisitionDao;
 
     /**
      * <p>setProvisionService</p>

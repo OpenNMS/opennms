@@ -11,13 +11,14 @@
   <context:annotation-config/>
 
   <bean id="mockRequisitionService" class="org.opennms.netmgt.provision.persist.MockRequisitionService">
-  	<qualifier value="mock" />
+  	<qualifier value="default" />
   </bean>
 
   <bean id="mockForeignSourceService" class="org.opennms.netmgt.provision.persist.MockForeignSourceService">
-  	<qualifier value="mock" />
+  	<qualifier value="default" />
   </bean>
 
   <bean id="foreignSourceMerger" class="org.opennms.netmgt.provision.persist.foreignsource.DefaultForeignSourceMerger"/>
+
   <bean id="requisitionMerger" class="org.opennms.netmgt.provision.persist.requisition.DefaultRequisitionMerger"/>
 </beans>
