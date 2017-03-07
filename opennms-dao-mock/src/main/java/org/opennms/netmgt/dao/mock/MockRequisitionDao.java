@@ -76,4 +76,13 @@ public class MockRequisitionDao extends AbstractMockDao<RequisitionEntity, Strin
     protected void generateId(RequisitionEntity entity) {
         // The id is not generated and must be set before invoking "save" or "update"
     }
+
+    @Override
+    public void saveOrUpdate(RequisitionEntity entity) {
+        if (get(entity.getName()) ==  null) {
+            save(entity);
+        } else {
+            update(entity);
+        }
+    }
 }

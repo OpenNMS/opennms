@@ -41,4 +41,13 @@ public class MockForeignSourceDao extends AbstractMockDao<ForeignSourceEntity, S
     protected void generateId(ForeignSourceEntity entity) {
         // Ids are not automatically generated, they must be set before invoking "save" or "update"
     }
+
+    @Override
+    public void saveOrUpdate(ForeignSourceEntity entity) {
+        if (get(entity.getName()) ==  null) {
+            save(entity);
+        } else {
+            update(entity);
+        }
+    }
 }
