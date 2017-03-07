@@ -269,7 +269,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);

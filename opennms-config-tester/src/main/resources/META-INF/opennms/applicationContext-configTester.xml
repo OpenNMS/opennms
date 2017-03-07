@@ -330,7 +330,7 @@
 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="pollerConfigFactory-init" factory-method="getInstance"/>
   
-  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultProvisiondConfigurationDao">
+  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
 
