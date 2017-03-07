@@ -336,7 +336,10 @@ public class Provisioner implements SpringServiceDaemon {
     //^ Helper functions for the schedule
 
     protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
-        doImport(new ImportRequest(NAME).withUrl(resource.getURL().toString()).withRescanExisting(rescanExisting));
+        final ImportRequest importRequest = new ImportRequest(NAME)
+                .withUrl(resource.getURL().toString())
+                .withRescanExisting(rescanExisting);
+        importModelFromResource(importRequest);
     }
 
     protected void importModelFromResource(final ImportRequest importRequest) throws Exception {
