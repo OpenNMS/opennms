@@ -194,7 +194,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -250,10 +250,10 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);

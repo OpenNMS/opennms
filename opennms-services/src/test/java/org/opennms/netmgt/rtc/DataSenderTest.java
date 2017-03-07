@@ -76,8 +76,8 @@ public class DataSenderTest {
         Category category = new Category();
         category.setLabel(categoryName);
         category.setComment("Some database servers.  Exciting, eh?");
-        category.setNormal(99.0);
-        category.setWarning(97.0);
+        category.setNormalThreshold(99.0);
+        category.setWarningThreshold(97.0);
         RTCCategory rtcCategory = new RTCCategory(category, categoryName);
         Map<String, RTCCategory> rtcCategories = new HashMap<String, RTCCategory>();
         rtcCategories.put(categoryName, rtcCategory);
