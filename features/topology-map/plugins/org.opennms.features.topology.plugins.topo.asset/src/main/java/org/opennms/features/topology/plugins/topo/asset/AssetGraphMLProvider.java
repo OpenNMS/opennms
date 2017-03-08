@@ -44,6 +44,7 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Lists;
 
@@ -52,80 +53,107 @@ import com.google.common.collect.Lists;
  */
 public class AssetGraphMLProvider implements EventListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AssetGraphMLProvider.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(AssetGraphMLProvider.class);
+	
+	// TODO optional add update capability
+	// public static final String UPDATE_ASSET_TOPOLOGY =
+	// "uei.opennms.plugins/assettopology/update";
 
-    public static final String CREATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/create";
+	public static final String CREATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/create";
 	public static final String REMOVE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/remove";
 	public static final String CREATE_ASSET_NODE_INFO = "uei.opennms.plugins/assettopology/nodeinfo";
-
-	// TODO optional add update capability
-//	public static final String UPDATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/update";
 	
-	public static final String TEMP_FOLDER = "data/tmp"; // folder created in OpenNMS to store asset topology info for debugging
-	public static final String ASSET_LIST_XML_FILE = "AssetListFile.xml"; // file generated for debugging
+	private final List<String> ueiList = Lists.newArrayList(
+			CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY, CREATE_ASSET_NODE_INFO);
 
 
-	private final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY);
+
+	// folder created in OpenNMS to store asset topology info for debugging
+	public static final String TEMP_FOLDER = "data/tmp"; 
+	
+	// file  generated for debugging
+	public static final String ASSET_LIST_XML_FILE = "AssetListFile.xml"; 
+
+
 
 	private final EventIpcManager eventIpcManager;
 
-    private final GraphmlRepository graphmlRepository;
+	private final GraphmlRepository graphmlRepository;
 
-    private final NodeDao nodeDao;
+	private final NodeDao nodeDao;
+	
+	private final TransactionOperations transactionOperations;
 
-    private final GeneratorConfig config;
+	private final GeneratorConfig config;
 
 
-    public AssetGraphMLProvider(GraphmlRepository repository,
-                                EventIpcManager eventIpcManager,
-                                NodeDao nodeDao,
-                                GeneratorConfig config) {
-        this.graphmlRepository = Objects.requireNonNull(repository);
-        this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
-        this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.config = Objects.requireNonNull(config);
-    }
+	public AssetGraphMLProvider(GraphmlRepository repository,
+			EventIpcManager eventIpcManager, NodeDao nodeDao, 
+			TransactionOperations transactionOperations,
+			GeneratorConfig config) {
+		this.graphmlRepository = Objects.requireNonNull(repository);
+		this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
+		this.nodeDao = Objects.requireNonNull(nodeDao);
+		this.transactionOperations=transactionOperations;
+		this.config = Objects.requireNonNull(config);
+	}
 
-    public void init() {
-        eventIpcManager.addEventListener(this, ueiList);
-    }
+	public void init() {
+		eventIpcManager.addEventListener(this, ueiList);
+		LOG.info("asset topology provider started");
+	}
 
-    public void destroy() {
-        eventIpcManager.removeEventListener(this, ueiList);
-    }
+	public void destroy() {
+		eventIpcManager.removeEventListener(this, ueiList);
+		LOG.info("asset topology provider stopped");
+	}
 
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
+	@Override
+	public String getName() {
+		return getClass().getSimpleName();
+	}
 
-    @Override
-    public void onEvent(Event e) {
-        try {
-            if (CREATE_ASSET_TOPOLOGY.equals(e.getUei())) {
-                if (graphmlRepository.exists("asset")) {
-                    // TODO or log instead
-                    throw new IllegalStateException("Provider already exists");
-                }
-                GraphML graphML = new AssetGraphGenerator(nodeDao).generateGraphs(config);
-                GraphmlType graphmlType = GraphMLWriter.convert(graphML);
-                graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
-            } else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
-                if (!graphmlRepository.exists(config.getProviderId())) {
-                    // TODO or log instead
-                    throw new IllegalStateException("Provider cannot be removed, because it does not exist");
-                }
-                graphmlRepository.delete(config.getProviderId());
-            } else if (CREATE_ASSET_NODE_INFO.equals(e.getUei())) {
-            	NodeInfoRepository nir = new NodeInfoRepository();
-            	nir.setNodeDao(nodeDao);
-            	nir.initialiseNodeInfo(null);
-        		String nodeInfoxml = NodeInfoRepositoryXML.nodeInfoToXML(nir.getNodeInfo());
-        		Utils.writeFileToDisk(nodeInfoxml, ASSET_LIST_XML_FILE, TEMP_FOLDER);
-            }
-        } catch (Exception ex) {
-            // TODO or log instead
-            throw new RuntimeException(ex);
-        }
-    }
+	@Override
+	public void onEvent(Event e) {
+		try {
+			if (CREATE_ASSET_TOPOLOGY.equals(e.getUei())) {
+				LOG.info("creating new asset topology providerid="+config.getProviderId()+" label="+config.getLabel());
+				if (graphmlRepository.exists("asset")) {
+					// TODO or log instead
+					throw new IllegalStateException("Provider already exists");
+				}
+				GraphML graphML = new AssetGraphGenerator(nodeDao,transactionOperations)
+						.generateGraphs(config);
+				GraphmlType graphmlType = GraphMLWriter.convert(graphML);
+				graphmlRepository.save(config.getProviderId(),
+						config.getLabel(), graphmlType);
+			} else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
+				LOG.info("removing asset topology providerid="+config.getProviderId());
+				if (!graphmlRepository.exists(config.getProviderId())) {
+					// TODO or log instead
+					throw new IllegalStateException(
+							"Provider cannot be removed, because it does not exist");
+				}
+				graphmlRepository.delete(config.getProviderId());
+			} else if (CREATE_ASSET_NODE_INFO.equals(e.getUei())) {
+				try {
+					LOG.info("creating nodeinfo file=" + ASSET_LIST_XML_FILE
+							+ " in folder=" + TEMP_FOLDER);
+					NodeInfoRepository nodeInfoRepository = new NodeInfoRepository();
+					nodeInfoRepository.setNodeDao(nodeDao);
+					nodeInfoRepository.setTransactionOperations(transactionOperations);
+					nodeInfoRepository.initialiseNodeInfo(null);
+					String nodeInfoxml = NodeInfoRepositoryXML
+							.nodeInfoToXML(nodeInfoRepository.getNodeInfo());
+					Utils.writeFileToDisk(nodeInfoxml, ASSET_LIST_XML_FILE,
+							TEMP_FOLDER);
+				} catch (Exception ex) {
+					LOG.error("problem creating " + ASSET_LIST_XML_FILE, ex);
+				}
+			}
+		} catch (Exception ex) {
+			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);
+		}
+	}
 }

@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.asset.repo;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * list of constants which correspond to both OpenNMS node table entries 
  * or OpenNMS asset table entries. 
@@ -82,5 +85,16 @@ public interface NodeParamLabels {
 	public static final String  ASSET_DESCRIPTION ="asset-description";
 	public static final String  ASSET_OPERATINGSYSTEM ="asset-operatingsystem";
 
-
+	/**
+	 * static list of all the valid constant keys in this class
+	 */
+	public static final List<String> ALL_KEYS= Arrays.asList(NODE_NODELABEL, NODE_NODEID, NODE_FOREIGNSOURCE, 
+			NODE_FOREIGNID, NODE_NODESYSNAME, NODE_NODESYSLOCATION, NODE_OPERATINGSYSTEM, NODE_CATEGORIES, 
+			PARENT_NODELABEL, PARENT_NODEID, PARENT_FOREIGNSOURCE, PARENT_FOREIGNID, ASSET_COUNTRY, 
+			ASSET_ADDRESS1, ASSET_ADDRESS2, ASSET_CITY, ASSET_ZIP, ASSET_STATE, ASSET_LATITUDE, ASSET_LONGITUDE, 
+			ASSET_REGION, ASSET_DIVISION, ASSET_DEPARTMENT, ASSET_BUILDING, ASSET_FLOOR, ASSET_ROOM, ASSET_RACK, 
+			ASSET_SLOT, ASSET_PORT, ASSET_CIRCUITID, ASSET_CATEGORY, ASSET_DISPLAYCATEGORY, ASSET_NOTIFYCATEGORY, 
+			ASSET_POLLERCATEGORY, ASSET_THRESHOLDCATEGORY, ASSET_MANAGEDOBJECTTYPE, ASSET_MANAGEDOBJECTINSTANCE, 
+			ASSET_MANUFACTURER, ASSET_VENDOR, ASSET_MODELNUMBER, ASSET_DESCRIPTION, ASSET_OPERATINGSYSTEM);
+    
 }

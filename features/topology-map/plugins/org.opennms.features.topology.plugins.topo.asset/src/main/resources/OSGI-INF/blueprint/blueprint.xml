@@ -35,6 +35,7 @@
         <argument ref="graphmlRepository"/>
         <argument ref="eventIpcManager" />
         <argument ref="nodeDao" />
+        <argument ref="transactionOperations" />
         <argument ref="generatorConfig" />
     </bean>
 
