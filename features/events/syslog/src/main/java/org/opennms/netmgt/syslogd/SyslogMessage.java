@@ -141,10 +141,14 @@ public class SyslogMessage {
             try {
                 return InetAddress.getByName(m_hostname);
             } catch (UnknownHostException e) {
-                LOG.debug("Unable to resolve hostname '" + m_hostname + "' in syslog message.", e);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Unable to resolve hostname '{}' in syslog message", m_hostname, e);
+                } else {
+                    LOG.debug("Unable to resolve hostname '{}' in syslog message", m_hostname);
+                }
                 return null;
             } catch (final IllegalArgumentException e) {
-                LOG.debug("Illegal argument when trying to resolve hostname '" + m_hostname + "' in syslog message.", e);
+                LOG.debug("Illegal argument when trying to resolve hostname '{}' in syslog message", m_hostname, e);
                 return null;
             }
         } else {
