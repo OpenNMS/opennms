@@ -10,7 +10,7 @@
   <context:annotation-config />
 
   <!-- Start an ActiveMQ broker based on the opennms-activemq.xml config file -->
-  <bean id="brokerFactory" class="org.apache.activemq.xbean.BrokerFactoryBean">
+  <bean id="brokerFactory" class="org.apache.activemq.xbean.BrokerFactoryBean" destroy-method="destroy">
     <constructor-arg value="file:${opennms.home}/etc/opennms-activemq.xml" />
   </bean>
 

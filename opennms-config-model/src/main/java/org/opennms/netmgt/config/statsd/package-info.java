@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-/**
- * @deprecated Use {@link InetAddressUtils} instead.
- */
-@Deprecated
-public abstract class InetAddrUtils {
-
-	public static String str(InetAddress address) {
-		return address == null ? null : address.getHostAddress();
-	}
-
-	public static InetAddress addr(String value) {
-		try {
-			return value == null ? null : InetAddress.getByName(value);
-		} catch (UnknownHostException e) {
-			throw new RuntimeException("Unable to turn " + value + " into an inet address");
-		}
-	}
-
-	public static InetAddress getLocalHostAddress() {
-		return addr("127.0.0.1");
-	}
-	
-	
-
-}
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/statsd",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/statsd"),
+    }
+)
+package org.opennms.netmgt.config.statsd;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

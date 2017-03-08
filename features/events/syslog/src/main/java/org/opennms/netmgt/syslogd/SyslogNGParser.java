@@ -36,6 +36,12 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A stricter variant of the {@link CustomSyslogParser} which parses
+ * Syslog-NG's default format.  It ignores forwarding-regexp, 
+ * matching-group-host, and matching-group-message and instead 
+ * relies on a well-known properly-formatted syslog message.
+ */
 public class SyslogNGParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogNGParser.class);
 
