@@ -152,7 +152,6 @@ public class CustomSyslogParser extends SyslogParser {
         if (m.matches()) {
 
             final String matchedMessage = m.group(m_matchingGroupMessage);
-            syslogMessage.setMatchedMessage(matchedMessage);
 
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);

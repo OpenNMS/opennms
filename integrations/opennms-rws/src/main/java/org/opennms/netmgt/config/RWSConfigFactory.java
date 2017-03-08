@@ -37,8 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,11 +80,9 @@ public final class RWSConfigFactory extends RWSConfigManager {
      *
      * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public RWSConfigFactory(final long currentVersion, final InputStream stream) throws MarshalException, ValidationException, IOException {
+    public RWSConfigFactory(final long currentVersion, final InputStream stream) throws IOException {
         super(stream);
         m_currentVersion = currentVersion;
     }
@@ -97,15 +93,9 @@ public final class RWSConfigFactory extends RWSConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -184,10 +174,8 @@ public final class RWSConfigFactory extends RWSConfigManager {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException{
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
