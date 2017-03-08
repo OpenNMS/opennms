@@ -86,6 +86,9 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     @Autowired
     private NodeDao m_nodeDao;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -94,13 +97,10 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final ForeignSourceService mfsr = new MockForeignSourceService();
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        mfsr.saveForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
-        m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
+        m_foreignSourceService.saveForeignSource(fs);
     }
 
     @Test

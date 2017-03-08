@@ -77,15 +77,16 @@ public class MultipleImportIT extends ProvisioningITCase {
     @Autowired
     private NodeDao m_nodeDao;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final ForeignSourceService foreignSourceService = new MockForeignSourceService();
         final ForeignSourceEntity foreignSource = new ForeignSourceEntity();
         foreignSource.setName("default");
         foreignSource.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
-        foreignSourceService.saveForeignSource(foreignSource);
-        m_provisioner.getProvisionService().setForeignSourceService(foreignSourceService);
+        m_foreignSourceService.saveForeignSource(foreignSource);
     }
 
     @Test

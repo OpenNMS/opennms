@@ -107,6 +107,9 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
     @Autowired
     private DatabasePopulator m_populator;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     private MockSnmpDataProvider m_mockSnmpDataProvider;
 
     @Override
@@ -133,9 +136,7 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        final ForeignSourceService mfsr = new MockForeignSourceService();
-        mfsr.saveForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
+        m_foreignSourceService.saveForeignSource(fs);
         m_provisioner.start();
     }
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.tasks.BatchTask;
@@ -201,18 +202,13 @@ public class CoreImportActivities {
             return;
         }
 
-        m_transactionOperations.execute(status -> {
-            LOG.info("Running relate phase");
-
-            final RequisitionEntity requisition = requisitionService.getRequisition(ri.getForeignSource());
-            requisition.getNodes().forEach(nodeReq -> {
-                LOG.debug("Scheduling relate of node {}", nodeReq);
-                currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));
-            });
-
-            LOG.info("Finished Running relate phase");
-            return null;
+        LOG.info("Running relate phase");
+        List<RequisitionNodeEntity> nodes = m_transactionOperations.execute(status -> requisitionService.getRequisition(ri.getForeignSource()).getNodes());
+        nodes.forEach(nodeReq -> {
+            LOG.debug("Scheduling relate of node {}", nodeReq);
+            currentPhase.add(parentSetter(m_provisionService, nodeReq, ri.getForeignSource()));
         });
+        LOG.info("Finished Running relate phase");
     }
     
     private static Runnable parentSetter(final ProvisionService provisionService, final RequisitionNodeEntity nodeReq, final String foreignSource) {

@@ -114,6 +114,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -196,6 +197,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     private MockSnmpDataProvider m_mockSnmpDataProvider;
 
+    @Autowired
     private ForeignSourceService m_foreignSourceService;
 
     @Autowired
@@ -245,7 +247,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         policy.addParameter("label", "localhost");
         m_foreignSource.addPolicy(policy);
 
-        m_foreignSourceService = new MockForeignSourceService();
         m_foreignSourceService.saveForeignSource(m_foreignSource);
 
         final ForeignSourceEntity emptyForeignSource = new ForeignSourceEntity();
@@ -259,9 +260,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         final DetectorPluginConfigEntity snmpDetector = new DetectorPluginConfigEntity("SNMP", SnmpDetector.class.getName());
         snmpForeignSource.addDetector(snmpDetector);
         m_foreignSourceService.saveForeignSource(snmpForeignSource);
-
-        m_provisionService.setForeignSourceService(m_foreignSourceService);
-        m_provisionService.setRequisitionService(new MockRequisitionService());
 
         // make sure node scan scheduler is running initially
         getScanExecutor().resume();

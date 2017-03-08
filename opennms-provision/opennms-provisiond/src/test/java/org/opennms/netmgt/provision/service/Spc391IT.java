@@ -83,16 +83,17 @@ public class Spc391IT extends ProvisioningITCase {
     @Autowired
     private DatabasePopulator m_populator;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        final ForeignSourceService mfsr = new MockForeignSourceService();
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("ICMP", "org.opennms.netmgt.provision.service.MockServiceDetector"));
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        mfsr.saveForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
+        m_foreignSourceService.saveForeignSource(fs);
         m_provisioner.start();
     }
     

@@ -80,14 +80,14 @@ import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
-import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.requisition.RequisitionInterfaceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
-import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
@@ -765,20 +765,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getRequisitionedNode(final String foreignSource, final String foreignId) {
         final RequisitionNodeEntity requisitionNode = requisitionService.getRequisition(foreignSource).getNode(foreignId);
-        final OnmsNode node = new OnmsNodeBuilder().buildNode(requisitionNode);
+        if (requisitionNode != null) {
+            final OnmsNode node = new OnmsNodeBuilder().buildNode(requisitionNode);
 
-        // fill in real database categories
-        final HashSet<OnmsCategory> dbCategories = new HashSet<>();
-        for(final OnmsCategory category : node.getCategories()) {
-            dbCategories.add(createCategoryIfNecessary(category.getName()));
+            // fill in real database categories
+            final HashSet<OnmsCategory> dbCategories = new HashSet<>();
+            for(final OnmsCategory category : node.getCategories()) {
+                dbCategories.add(createCategoryIfNecessary(category.getName()));
+            }
+
+            node.setCategories(dbCategories);
+
+            // fill in real service types
+            node.visit(new ServiceTypeFulfiller());
+
+            return node;
         }
-
-        node.setCategories(dbCategories);
-
-        // fill in real service types
-        node.visit(new ServiceTypeFulfiller());
-
-        return node;
+        return null;
     }
 
     @Transactional
@@ -1456,15 +1459,5 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
-    }
-
-    @Override
-    public void setForeignSourceService(ForeignSourceService foreignSourceService) {
-        this.foreignSourceService = foreignSourceService;
-    }
-
-    @Override
-    public void setRequisitionService(RequisitionService requisitionService) {
-        this.requisitionService = requisitionService;
     }
 }

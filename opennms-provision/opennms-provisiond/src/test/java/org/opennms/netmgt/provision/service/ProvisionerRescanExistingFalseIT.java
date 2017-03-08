@@ -107,14 +107,14 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
     private ResourceLoader m_resourceLoader;
 
     @Autowired
-    private ProvisionService m_provisionService;
-
-    @Autowired
     @Qualifier("scheduledExecutor")
     private PausibleScheduledThreadPoolExecutor m_scheduledExecutor;
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
 
     protected EventAnticipator m_eventAnticipator;
 
@@ -154,12 +154,7 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         snmpDetector.addParameter("retries", "0");
 		m_foreignSource.addDetector(snmpDetector);
 
-        ForeignSourceService foreignSourceService = new MockForeignSourceService();
-        foreignSourceService.saveForeignSource(m_foreignSource);
-
-        m_provisionService.setForeignSourceService(foreignSourceService);
-        m_provisionService.setRequisitionService(new MockRequisitionService());
-        
+        m_foreignSourceService.saveForeignSource(m_foreignSource);
         m_scheduledExecutor.pause();
     }
     

@@ -93,17 +93,17 @@ public class Nms5414IT extends ProvisioningITCase {
     
     @Autowired
     private MockNodeDao m_nodeDao;
-    
+
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final ForeignSourceService mfsr = new MockForeignSourceService();
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
-        mfsr.saveForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
-        m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
+        m_foreignSourceService.saveForeignSource(fs);
     }
 
     @Test

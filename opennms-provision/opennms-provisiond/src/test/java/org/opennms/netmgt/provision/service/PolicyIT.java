@@ -95,10 +95,12 @@ public class PolicyIT {
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        final ForeignSourceService mfsr = new MockForeignSourceService();
         final ForeignSourceEntity fs = new ForeignSourceEntity();
         fs.setName("default");
         fs.addDetector(new DetectorPluginConfigEntity("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
@@ -117,12 +119,9 @@ public class PolicyIT {
         System.err.println(policy2.toString());
 
         fs.addPolicy(policy1);
-
         fs.addPolicy(policy2);
 
-        mfsr.saveForeignSource(fs);
-        m_provisioner.getProvisionService().setForeignSourceService(mfsr);
-        m_provisioner.getProvisionService().setRequisitionService(new MockRequisitionService());
+        m_foreignSourceService .saveForeignSource(fs);
     }
 
     @Test

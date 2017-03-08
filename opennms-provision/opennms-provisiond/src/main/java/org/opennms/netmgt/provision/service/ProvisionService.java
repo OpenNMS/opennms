@@ -39,15 +39,13 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -239,7 +237,4 @@ public interface ProvisionService {
 
     LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
 
-    void setForeignSourceService(ForeignSourceService foreignSourceService);
-
-    void setRequisitionService(RequisitionService requisitionService);
 }

@@ -71,6 +71,7 @@ import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
+import org.opennms.netmgt.provision.persist.DefaultForeignSourceService;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockForeignSourceService;
 import org.opennms.netmgt.provision.persist.MockRequisitionService;
@@ -138,6 +139,10 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
     @Autowired
     private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
+    @Autowired
+    private ForeignSourceService m_foreignSourceService;
+
+    @Autowired
     private RequisitionService m_requisitionService;
 
     private ForeignSourceEntity m_foreignSource;
@@ -177,12 +182,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         detector.addParameter("retries", "0");
         m_foreignSource.addDetector(detector);
 
-        ForeignSourceService foreignSourceService = new MockForeignSourceService();
-        foreignSourceService.saveForeignSource(m_foreignSource);
-        m_provisionService.setForeignSourceService(foreignSourceService);
-
-        m_requisitionService = new MockRequisitionService();
-        m_provisionService.setRequisitionService(m_requisitionService);
+        m_foreignSourceService.saveForeignSource(m_foreignSource);
 
         m_provisioner.start();
     }
