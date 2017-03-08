@@ -68,32 +68,44 @@ public class ParserStageSequenceBuilder {
 	private static class ParserStageState {
 		public final ByteBuffer buffer;
 
-		private final StringBuffer accumulatedValue;
-		private final AtomicInteger accumulatedSize;
+		private StringBuffer accumulatedValue = null;
+		private AtomicInteger accumulatedSize = null;
 
 		// Only used by MatchMonth
 		public RadixTreeNode<CharacterWithValue> currentNode = null; 
 
 		public ParserStageState(ByteBuffer input) {
 			buffer = input;
-			accumulatedValue = new StringBuffer();
-			accumulatedSize = new AtomicInteger();
 		}
 
 		public void accumulate(char c) {
-			accumulatedValue.append(c);
-			accumulatedSize.incrementAndGet();
+			accessAccumulatedValue().append(c);
+			accessAccumulatedSize().incrementAndGet();
 		}
 
 		public int getAccumulatedSize() {
-			return accumulatedSize.get();
+			return accessAccumulatedSize().get();
+		}
+
+		private final StringBuffer accessAccumulatedValue() {
+			if (accumulatedValue == null) {
+				accumulatedValue = new StringBuffer();
+			}
+			return accumulatedValue;
+		}
+
+		private final AtomicInteger accessAccumulatedSize() {
+			if (accumulatedSize == null) {
+				accumulatedSize = new AtomicInteger();
+			}
+			return accumulatedSize;
 		}
 
 		@Override
 		public String toString() {
 			return new ToStringBuilder(this)
-				.append("accumulatedValue", accumulatedValue.toString())
-				.append("accumulatedSize", accumulatedSize.get())
+				.append("accumulatedValue", accumulatedValue == null ? "null" : accumulatedValue.toString())
+				.append("accumulatedSize", accumulatedSize == null ? 0 : accumulatedSize.get())
 				.toString();
 		}
 	}
@@ -247,6 +259,12 @@ public class ParserStageSequenceBuilder {
 		public abstract AcceptResult acceptChar(ParserStageState state, char c);
 
 		public final ParserState apply(final ParserState state) {
+			if (state == null) {
+				return null;
+			} else {
+				LOG.trace("Starting stage: " + this);
+			}
+
 			// Create a new state for the current ParserStage.
 			// Use ByteBuffer.duplicate() to create a buffer with marks
 			// and positions that only this stage will use.
@@ -279,6 +297,7 @@ public class ParserStageSequenceBuilder {
 						return new ParserState(stageState.buffer, state.builder);
 					} else {
 						// Reached end of buffer, match failed
+						LOG.trace("Parse failed due to buffer underflow: " + this);
 						return null;
 					}
 				}
@@ -317,6 +336,7 @@ public class ParserStageSequenceBuilder {
 							return new ParserState(stageState.buffer, state.builder);
 						} else {
 							// Match failed
+							LOG.trace("Parse failed: " + this);
 							return null;
 						}
 				}
@@ -336,7 +356,12 @@ public class ParserStageSequenceBuilder {
 		}
 
 		protected static String getAccumulatedValue(ParserStageState state) {
-			return state.accumulatedValue.toString();
+			StringBuffer accumulatedValue = state.accumulatedValue;
+			if (accumulatedValue == null) {
+				return null;
+			} else {
+				return accumulatedValue.toString();
+			}
 		}
 
 		protected R getValue(ParserStageState state) {
@@ -345,7 +370,7 @@ public class ParserStageSequenceBuilder {
 	}
 
 	/**
-	 * Match any whitespace character.
+	 * Match 0...n whitespace characters.
 	 */
 	static class MatchWhitespace extends AbstractParserStage<Void> {
 		@Override

@@ -86,7 +86,7 @@ public abstract class GrokParserStageSequenceBuilder {
 		 * @see ISO-8601
 		 * @see RFC 3164
 		 * @see RFC 3339
-		 * @see RFC 5424: DATE-FULLYEAR
+		 * @see RFC 5424: DATE-MONTH
 		 */
 		month,
 
@@ -282,6 +282,12 @@ SNMP-only:
 				return (s,v) -> {
 					s.builder.setSecond(v);
 				};
+			// TODO: This should be handled as a string... this is only
+			// in here as a stopgap until we create a DIGITS pattern type.
+			case secondFraction:
+				return (s,v) -> {
+					s.builder.setMillisecond(v);
+				};
 			case version:
 				// Unique to this parser
 				return (s,v) -> {
@@ -447,6 +453,38 @@ SNMP-only:
 				GrokPattern patternType = GrokPattern.valueOf(patternString);
 
 				switch(c) {
+				case '\\':
+					switch(patternType) {
+					case STRING:
+						// TODO: We need to peek forward to the escaped character and then do the same as the default case
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a pattern yet");
+					case INTEGER:
+						factory.integer(semanticIntegerToEventBuilder(semanticString));
+						break;
+					case MONTH:
+						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						break;
+					}
+					pattern = new StringBuffer();
+					semantic = new StringBuffer();
+					state = GrokState.ESCAPE_PATTERN;
+					continue;
+				case '%':
+					switch(patternType) {
+					case STRING:
+						// TODO: Can we handle this case?
+						throw new IllegalArgumentException(String.format("Invalid pattern: %s:%s does not have a trailing delimiter, cannot determine end of string", patternString, semanticString));
+					case INTEGER:
+						factory.integer(semanticIntegerToEventBuilder(semanticString));
+						break;
+					case MONTH:
+						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						break;
+					}
+					pattern = new StringBuffer();
+					semantic = new StringBuffer();
+					state = GrokState.START_PATTERN;
+					continue;
 				case ' ':
 					switch(patternType) {
 					case STRING:

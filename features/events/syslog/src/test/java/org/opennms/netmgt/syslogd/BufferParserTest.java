@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -74,7 +75,7 @@ public class BufferParserTest {
 
 		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 		//BufferParserFactory grokFactory = parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
-		ByteBufferParser<Event> grokParser = new SingleSequenceParser(grokStages);
+		ByteBufferParser<EventBuilder> grokParser = new SingleSequenceParser(grokStages);
 
 		// SyslogNG format
 		List<ParserStage> parserStages = new ParserStageSequenceBuilder()
@@ -129,7 +130,7 @@ public class BufferParserTest {
 			 })
 			.getStages()
 			;
-		ByteBufferParser<Event> parser = new SingleSequenceParser(parserStages);
+		ByteBufferParser<EventBuilder> parser = new SingleSequenceParser(parserStages);
 
 		RadixTreeParser radixParser = new RadixTreeParser();
 		//radixParser.teach(grokStages.toArray(new ParserStage[0]));
@@ -184,7 +185,7 @@ public class BufferParserTest {
 		}
 
 		{
-			CompletableFuture<Event> event = null;
+			CompletableFuture<EventBuilder> event = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				event = parser.parse(incoming.asReadOnlyBuffer());
@@ -207,7 +208,7 @@ public class BufferParserTest {
 		}
 
 		{
-			CompletableFuture<Event> event = null;
+			CompletableFuture<EventBuilder> event = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				event = grokParser.parse(incoming.asReadOnlyBuffer());
@@ -326,6 +327,43 @@ public class BufferParserTest {
 		GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
 	}
 
+	/**
+	 * Test adjacent pattern statements. This does not work with STRING patterns
+	 * yet because they must be terminated by a delimiter: either a character,
+	 * whitespace, or the end of the {@link ByteBuffer}.
+	 */
+	@Test
+	public void testGrokWithAdjacentPatterns() {
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("%{INTEGER:a}%{MONTH:b}%{INTEGER:c}%{STRING:d} %{INTEGER:e}"));
+
+		Event event = parser.parse(ByteBuffer.wrap("435Jan333fghj 999".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
+		assertEquals("435", event.getParm("a").getValue().getContent());
+		// January
+		assertEquals("1", event.getParm("b").getValue().getContent());
+		assertEquals("333", event.getParm("c").getValue().getContent());
+		assertEquals("fghj", event.getParm("d").getValue().getContent());
+		assertEquals("999", event.getParm("e").getValue().getContent());
+
+		assertNull(parser.parse(ByteBuffer.wrap("Feb12345".getBytes(StandardCharsets.US_ASCII))).join());
+	}
+
+	/**
+	 * Test a pattern followed immediately by an escape sequence. This does not
+	 * work yet with STRING patterns but could if we peek ahead to the escaped
+	 * value and use it as a delimiter.
+	 */
+	@Test
+	public void testGrokWithAdjacentEscape() {
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("\\5%{INTEGER:a}\\%\\%%{MONTH:b}\\f"));
+
+		Event event = parser.parse(ByteBuffer.wrap("56666%%Febf".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
+		assertEquals("6666", event.getParm("a").getValue().getContent());
+		// February
+		assertEquals("2", event.getParm("b").getValue().getContent());
+
+		assertNull(parser.parse(ByteBuffer.wrap("5abc%%Febf".getBytes(StandardCharsets.US_ASCII))).join());
+	}
+
 	@Test
 	public void testParserStages() throws InterruptedException, ExecutionException {
 		ParserStage a = new MatchChar('a');
@@ -386,5 +424,16 @@ public class BufferParserTest {
 
 		System.out.println("Parser tree: " + radixParser.tree.toString());
 		System.out.println("Parser tree size: " + radixParser.tree.size());
+	}
+	
+	@Test
+	public void testParseSingleMessage() {
+		RadixTreeParser radixParser = new RadixTreeParser();
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		EventBuilder bldr = radixParser.parse(ByteBuffer.wrap("<31>main: 2010-08-19 localhost foo%d: load test %d on tty1".getBytes(StandardCharsets.US_ASCII))).join();
+		assertNotNull(bldr);
+		Event event = bldr.getEvent();
+		assertEquals("main", event.getParm("messageid").getValue().getContent());
+		assertEquals("foo%d", event.getParm("process").getValue().getContent());
 	}
 }

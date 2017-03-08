@@ -34,13 +34,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class uses a single {@link ParserStage} sequence to parse an incoming
  * {@link ByteBuffer} message.
  */
-public class SingleSequenceParser implements ByteBufferParser<Event> {
+public class SingleSequenceParser implements ByteBufferParser<EventBuilder> {
 
 	private final List<ParserStage> m_stages;
 
@@ -49,7 +48,7 @@ public class SingleSequenceParser implements ByteBufferParser<Event> {
 	}
 
 	@Override
-	public CompletableFuture<Event> parse(ByteBuffer incoming) {
+	public CompletableFuture<EventBuilder> parse(ByteBuffer incoming) {
 
 		// Put all mutable parts of the parse operation into a state object
 		final ParserState state = new ParserState(incoming, new EventBuilder());
@@ -67,7 +66,7 @@ public class SingleSequenceParser implements ByteBufferParser<Event> {
 			if (s == null) {
 				return null;
 			} else {
-				return s.builder.getEvent();
+				return s.builder;
 			}
 		});
 	}
