@@ -47,4 +47,14 @@ public interface EventHandler {
      * @return a ready-to-run Runnable that will process the events
      */
     Runnable createRunnable(Log eventLog);
+
+    /**
+     * Create a Runnable to handle the passed-in event Log.
+     *
+     * @param eventLog events to be processed
+     * @param synchronous Whether the runnable should wait for all
+     *   processors to finish processing before returning
+     * @return a ready-to-run Runnable that will process the events
+     */
+    Runnable createRunnable(Log eventLog, boolean synchronous);
 }

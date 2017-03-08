@@ -39,6 +39,8 @@ public interface EventIpcBroadcaster {
      * Called by eventd to send an event to all interested listeners.
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param synchronous Whether this call should wait for all {@link EventListener}
+     *   calls to finish before returning.
      */
-    void broadcastNow(Event event);
+    void broadcastNow(Event event, boolean synchronous);
 }

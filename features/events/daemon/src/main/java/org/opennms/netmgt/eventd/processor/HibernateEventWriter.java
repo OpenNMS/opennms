@@ -152,6 +152,14 @@ public class HibernateEventWriter implements EventWriter {
         return true;
     }
 
+    /**
+     * Event writing is always synchronous so this method just 
+     * delegates to {@link #process(Log)}.
+     */
+    @Override
+    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
+        process(eventLog);
+    }
 
     @Override
     public void process(Log eventLog) throws EventProcessorException {
