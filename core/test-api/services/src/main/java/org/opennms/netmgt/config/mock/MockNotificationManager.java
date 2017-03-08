@@ -61,7 +61,7 @@ public class MockNotificationManager extends NotificationManager {
      * @see org.opennms.netmgt.config.NotificationManager#update()
      */
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException {
     }
 
     /* (non-Javadoc)

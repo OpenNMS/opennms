@@ -222,11 +222,11 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
-        addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.JAXB);
+        addFile(Source.CONFIG, "notifications.xml", Notifications.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, Impl.JAXB);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, Impl.JAXB);
