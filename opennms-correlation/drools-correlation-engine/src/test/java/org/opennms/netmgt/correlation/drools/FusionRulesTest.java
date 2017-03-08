@@ -50,7 +50,7 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
         engine.correlate(createNodeLostServiceEvent(1, "SSH"));
         Thread.sleep(4000); // Give time to execute the time-based rules.
         m_anticipatedMemorySize = 5;
-        engine.getKieSessionObjects().forEach(System.err::println);
+        engine.getMemoryObjects().forEach(System.err::println);
         
         verify(engine);
     }
