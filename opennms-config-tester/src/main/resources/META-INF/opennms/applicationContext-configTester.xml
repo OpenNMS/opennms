@@ -467,7 +467,7 @@
 
   <bean id="thresholdingConfigFactory" class="org.opennms.netmgt.config.ThresholdingConfigFactory" depends-on="thresholdingConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
+  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>
   

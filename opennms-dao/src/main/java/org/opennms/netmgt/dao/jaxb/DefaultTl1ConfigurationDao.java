@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.core.xml.AbstractCastorConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.dao.api.Tl1ConfigurationDao;
@@ -43,7 +43,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @author brozow
  * @version $Id: $
  */
-public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConfiguration, Tl1dConfiguration>implements Tl1ConfigurationDao {
+public class DefaultTl1ConfigurationDao extends AbstractJaxbConfigDao<Tl1dConfiguration, Tl1dConfiguration>implements Tl1ConfigurationDao {
 
     /**
      * <p>Constructor for DefaultTl1ConfigurationDao.</p>
