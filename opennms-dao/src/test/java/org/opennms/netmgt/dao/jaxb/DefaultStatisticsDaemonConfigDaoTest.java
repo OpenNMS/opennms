@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.io.InputStream;
 import java.util.List;
@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.statsd.model.Report;
+import org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao;
 import org.springframework.core.io.InputStreamResource;
 
 /**
