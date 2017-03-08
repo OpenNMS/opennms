@@ -112,7 +112,7 @@ import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
-import org.opennms.netmgt.config.wmi.WmiConfig;
+import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
@@ -265,7 +265,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
