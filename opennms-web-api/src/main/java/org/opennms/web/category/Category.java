@@ -300,38 +300,6 @@ public class Category {
     }
 
     /**
-     * Returns the outage background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getOutageColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this, getServicePercentage());
-        }
-    }
-
-    /**
-     * Returns the availability background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getAvailColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this);
-        }
-    }
-
-    /**
      * Returns the outage CSS class for this category.
      *
      * @return a {@link java.lang.String} object.

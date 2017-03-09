@@ -40,6 +40,13 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A parser that handles the new Syslog standard (as defined in RFC5424).
+ * It has strict parsing that should match the grammar specified in the RFC, 
+ * although it currently discards structured data. Like the SyslogNGParser, 
+ * it ignores forwarding-regexp, matching-group-host, and matching-group-message 
+ * in favor of stricter parsing of the known grammer.
+ */
 public class Rfc5424SyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(Rfc5424SyslogParser.class);
 

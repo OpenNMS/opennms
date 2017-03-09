@@ -53,7 +53,7 @@ import com.google.common.collect.Lists;
  *
  * <ul>
  * <li>Input: {@link DiscoveryConfiguration}</li>
- * <li>Input: {@link List<DiscoveryJob>}</li>
+ * <li>Output: {@link List<DiscoveryJob>}</li>
  * </ul>
  */
 public class RangeChunker {
