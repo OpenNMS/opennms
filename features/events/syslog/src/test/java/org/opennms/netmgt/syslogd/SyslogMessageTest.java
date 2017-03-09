@@ -173,7 +173,7 @@ public class SyslogMessageTest {
             assertEquals(cal.getTime(), message.getDate());
             assertEquals("petrus", message.getHostName());
             assertEquals("sudo", message.getProcessName());
-            assertEquals(0, message.getProcessId().intValue());
+            assertEquals(null, message.getProcessId());
             assertEquals("cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases", message.getMessage());
         } finally {
             Locale.setDefault(startLocale);
