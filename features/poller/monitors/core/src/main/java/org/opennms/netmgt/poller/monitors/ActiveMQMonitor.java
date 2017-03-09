@@ -33,7 +33,6 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -95,15 +94,12 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
 
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
         Connection connection = null;
-        Session session = null;
 
         for(timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
             timeoutTracker.startAttempt();
             status = PollStatus.unknown("polling never attempted");
             try {
                 connection = connectionFactory.createConnection();
-                status = PollStatus.unresponsive("connected, no session");
-                session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 connection.start();
                 status = PollStatus.available(timeoutTracker.elapsedTimeInMillis());
                 break;
@@ -111,9 +107,6 @@ public class ActiveMQMonitor extends AbstractServiceMonitor {
                 LOG.debug("Received a JMSException while connecting to the remote ActiveMQ Broker", ex);
             } finally {
                 try {
-                    if (session != null) {
-                        session.close();
-                    }
                     if (connection != null) {
                         connection.close();
                     }
