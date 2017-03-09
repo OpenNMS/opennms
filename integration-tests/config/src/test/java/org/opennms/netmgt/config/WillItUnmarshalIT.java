@@ -262,8 +262,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.JAXB);
