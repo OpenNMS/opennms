@@ -254,7 +254,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
@@ -264,7 +264,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.JAXB);
