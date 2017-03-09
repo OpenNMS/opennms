@@ -213,8 +213,6 @@ public class SharedSegment {
     }
 
     public void assign(Set<String> macs, BridgeBridgeLink dlink) {
-        System.err.println(macs);
-        System.err.println(m_macsOnSegment);
     	if (isEmpty() ) {
      		add(dlink);
     		m_macsOnSegment = macs;
