@@ -389,10 +389,10 @@ E:    	for (BridgeElement element: bridgeelements) {
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
         strbfr.append("\n------broadcast domain-----\n");
-        strbfr.append("bridge node ids: ");
+        strbfr.append("domain bridges:");
         strbfr.append(getBridgeNodesOnDomain());
         strbfr.append("\n");
-        strbfr.append("macs: ");
+        strbfr.append("domain macs: ");
         strbfr.append(getMacsOnDomain());
         strbfr.append("\n");
     	if (hasRootBridge()) {
@@ -406,18 +406,18 @@ E:    	for (BridgeElement element: bridgeelements) {
     		for (SharedSegment shared: getTopology())
 			strbfr.append(shared.printTopology());
     	}
-        strbfr.append("------broadcast domain-----\n");
+        strbfr.append("------broadcast domain-----");
     	return strbfr.toString();
     }
     
     public String printTopologyFromLevel(Set<Integer> bridgeIds, int level) {
     	Set<Integer> bridgesDownLevel = new HashSet<Integer>();
     	StringBuffer strbfr = new StringBuffer();
-        strbfr.append("\n------level ");
+        strbfr.append("------level ");
     	strbfr.append(level);
         strbfr.append(" -----\n");
 
-        strbfr.append("level bridge node id: ");
+        strbfr.append("bridges on level:");
         strbfr.append(bridgeIds);
         strbfr.append("\n");
         for (Integer bridgeid : bridgeIds) {

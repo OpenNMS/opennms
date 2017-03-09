@@ -132,7 +132,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         LOG.debug("run: node [{}]: bridge ifindex map {}",
                   getNodeId(), bridgeifindex);
         bft = walkDot1qTpFdb(getPeer(),bridgeifindex, bft);
-        LOG.debug("run: node [{}] bft {}", getNodeId(), bft);
+        LOG.debug("run: node [{}]: bft size:{}", getNodeId(), bft.size());
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
@@ -307,12 +307,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             @Override
             public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
                 BridgeMacLink link = row.getLink();
-                LOG.debug("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}",
-                		getNodeId(),
-                        row.getDot1dTpFdbAddress(), vlan,
-                        row.getDot1dTpFdbPort(),
-                        link.getBridgePortIfIndex(),
-                        link.getBridgeDot1qTpFdbStatus());
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
                     LOG.warn("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {}. row has null status. ",
                     		getNodeId(),
@@ -351,7 +345,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                     return;
                 }
                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
-                LOG.info("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
+                LOG.debug("processDot1dTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
                 		getNodeId(),
                          link.getMacAddress(), link.getVlan(),
                          link.getBridgePort(), link.getBridgePortIfIndex(),
@@ -393,12 +387,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             @Override
             public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
                 BridgeMacLink link = row.getLink();
-                LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: on port {} ifindex {} status {}.",
-                		getNodeId(),
-                        row.getDot1qTpFdbAddress(),
-                        row.getDot1qTpFdbPort(),
-                        link.getBridgePortIfIndex(),
-                        link.getBridgeDot1qTpFdbStatus());
 
                 if (link.getBridgeDot1qTpFdbStatus() == null) {
                     LOG.warn("processDot1qTpFdbRow: node [{}]: mac {}: on port {}. row has null status.",
@@ -437,7 +425,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                 }
 
                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
-                LOG.info("processDot1qTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
+                LOG.debug("processDot1qTpFdbRow: node [{}]: mac {}: vlan {}: on port {} ifindex {} status {}. row processed.",
                 		getNodeId(),
                          link.getMacAddress(), link.getVlan(),
                          link.getBridgePort(), link.getBridgePortIfIndex(),

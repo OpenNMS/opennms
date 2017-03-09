@@ -248,20 +248,15 @@ public class BridgeBridgeLink {
 	public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
 
-    	strbfr.append("------BridgeBridgeLink-----\n");
-    	strbfr.append("nodeid: "); 
+    	strbfr.append("bridge link:[nodeid:["); 
     	strbfr.append(getNode().getId());
-        strbfr.append("\n");
-    	strbfr.append("bridgeport: ");
+    	strbfr.append("], bridgeport:");
     	strbfr.append(getBridgePort());
-        strbfr.append("\n");
-    	strbfr.append("designatednodeid: ");
+    	strbfr.append(", designatednodeid:[");
     	strbfr.append(getDesignatedNode().getId());
-        strbfr.append("\n");
-    	strbfr.append("designatedbridgeport: ");
+    	strbfr.append("], designatedbridgeport: ");
     	strbfr.append(getDesignatedPort());
-        strbfr.append("\n");
-    	strbfr.append("------BridgeBridgeLink-----\n");        
+        strbfr.append("]\n");
 
     	return strbfr.toString();
 	}

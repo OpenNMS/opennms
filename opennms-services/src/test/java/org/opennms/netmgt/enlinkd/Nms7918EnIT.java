@@ -488,7 +488,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
         assertEquals(2,m_bridgeBridgeLinkDao.countAll());
-        assertEquals(91,m_bridgeMacLinkDao.countAll());
+        assertEquals(76,m_bridgeMacLinkDao.countAll());
 
 
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
@@ -520,6 +520,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         }
         
         for (String mac: asw01port2bft) {
+        	System.err.println(mac);
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             assertEquals(1, links.size());
             BridgeMacLink link = links.iterator().next();
