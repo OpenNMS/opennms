@@ -28,23 +28,22 @@
 
 package org.opennms.netmgt.provision.detector.jms;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
-import org.apache.activemq.broker.BrokerService;
 import org.junit.After;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.netmgt.provision.detector.jms.ActiveMQDetector;
 import org.opennms.netmgt.provision.detector.jms.ActiveMQDetectorFactory;
 import org.slf4j.Logger;
@@ -55,64 +54,51 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@ContextConfiguration(locations = { "classpath:/META-INF/opennms/detectors.xml" })
 public class ActiveMQDetectorTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(ActiveMQDetectorTest.class);
-    private BrokerService broker;
-    private static final String DEFAULT_BROKER_BROKERURL = "tcp://localhost:61616?transport.threadName&transport.trace=false&transport.soTimeout=20000";
-    private static final String DEFAULT_CLIENT_BROKERURL = "tcp://localhost:61616?trace=false&soTimeout=20000";
+	private static final Logger LOG = LoggerFactory.getLogger(ActiveMQDetectorTest.class);
+	private static final String DEFAULT_BROKER_BROKERURL = "tcp://localhost:61616?transport.threadName&transport.trace=false&transport.soTimeout=20000";
+	private static final String DEFAULT_CLIENT_BROKERURL = "tcp://localhost:61616?trace=false&soTimeout=20000";
 
-    @Autowired
-    public ActiveMQDetectorFactory m_detectorFactory;
-    public ActiveMQDetector m_detector;
+	@Autowired
+	public ActiveMQDetectorFactory m_detectorFactory;
+	public ActiveMQDetector m_detector;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		BeanUtils.assertAutowiring(this);
+	}
 
-    @Rule
-    public TestName m_test = new TestName();
+	@Rule
+	public TestName m_test = new TestName();
 
-    @Before
-    public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
-        LOG.info("setUp(): starting test {}\n", m_test.getMethodName());
-        m_detector = m_detectorFactory.createDetector();
-    }
+	@ClassRule
+	public static ActiveMQBroker broker = new ActiveMQBroker(DEFAULT_BROKER_BROKERURL);
 
-    private void setupBroker() throws Exception{
-        broker = new BrokerService();
-        broker.setPersistent(false);
-        broker.setUseJmx(false);
-        broker.addConnector(DEFAULT_BROKER_BROKERURL);
-        broker.start();
-        broker.waitUntilStarted();
-        LOG.info("setUp(): broker is running!\n\n");
-    }
+	@Before
+	public void setUp() throws Exception {
+		MockLogAppender.setupLogging();
+		LOG.info("setUp(): starting test {}\n", m_test.getMethodName());
+		m_detector = m_detectorFactory.createDetector();
+	}
 
-    @After
-    public void tearDown() throws Exception {
-        LOG.info("tearDown()");
-        try {
-            broker.stop();
-        } catch (Throwable ignore) {
-        }
-        LOG.info("tearDown(): finished test {}\n\n", m_test.getMethodName());
-    }
+	@After
+	public void tearDown() throws Exception {
+		LOG.info("tearDown(): finished test {}\n\n", m_test.getMethodName());
+	}
 
-    @Test(timeout=20000)
-    public void testDetectorWired(){
-        assertNotNull(m_detector);
-    }
+	@Test(timeout = 20000)
+	public void testDetectorWired() {
+		assertNotNull(m_detector);
+	}
 
-    @Test(timeout=20000)
-    public void testDetectorSuccess() throws Exception {
-        setupBroker();
-        URI uri = new URI(DEFAULT_CLIENT_BROKERURL);
-        m_detector.setBrokerURL(DEFAULT_CLIENT_BROKERURL);
-        m_detector.setPort(uri.getPort());
-        m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), uri));
-    }
+	@Test(timeout = 20000)
+	public void testDetectorSuccess() throws Exception {
+		URI uri = new URI(DEFAULT_CLIENT_BROKERURL);
+		m_detector.setBrokerURL(DEFAULT_CLIENT_BROKERURL);
+		m_detector.setPort(uri.getPort());
+		m_detector.onInit();
+		assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost(), uri));
+		m_detector.dispose();
+	}
 }

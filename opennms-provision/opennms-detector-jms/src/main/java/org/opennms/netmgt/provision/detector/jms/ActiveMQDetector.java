@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import javax.jms.Connection;
+import javax.jms.JMSException;
 import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.netmgt.provision.DetectRequest;
@@ -42,120 +43,141 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>ActiveMQDetector class.</p>
+ * <p>
+ * ActiveMQDetector class.
+ * </p>
  *
  * @author roskens
  * @version $Id: $
  */
 
-public class ActiveMQDetector extends AgentBasedSyncAbstractDetector<URI>{
-    private static final Logger LOG = LoggerFactory.getLogger(ActiveMQDetector.class);
+public class ActiveMQDetector extends AgentBasedSyncAbstractDetector<URI> {
+	private static final Logger LOG = LoggerFactory.getLogger(ActiveMQDetector.class);
 
-    private static final String DEFAULT_SERVICE_NAME = "ActiveMQ";
-    private static final String DEFAULT_BROKERURL = "vm://localhost?create=false";
+	private static final String DEFAULT_SERVICE_NAME = "ActiveMQ";
+	private static final String DEFAULT_BROKERURL = "vm://localhost?create=false";
 
-    private String m_brokerURL;
-    private String m_user;
-    private String m_password;
-    private Boolean m_useNodeLabel;
-    private final ActiveMQConnectionFactory m_connectionFactory;
-    private Connection connection;
-    private Session session;
+	private String m_brokerURL;
+	private String m_user;
+	private String m_password;
+	private Boolean m_useNodeLabel;
+	private final ActiveMQConnectionFactory m_connectionFactory;
+	private Connection m_connection;
+	private Session m_session;
 
-    /**
-     * <p>Constructor for ActiveMQDetector.</p>
-     */
-    public ActiveMQDetector() {
-        super(DEFAULT_SERVICE_NAME, 0);
-        setBrokerURL(DEFAULT_BROKERURL);
-        m_connectionFactory = new ActiveMQConnectionFactory();
-        connection = null;
-        session = null;
-    }
+	/**
+	 * <p>
+	 * Constructor for ActiveMQDetector.
+	 * </p>
+	 */
+	public ActiveMQDetector() {
+		super(DEFAULT_SERVICE_NAME, 0);
+		setBrokerURL(DEFAULT_BROKERURL);
+		m_connectionFactory = new ActiveMQConnectionFactory();
+		m_connection = null;
+		m_session = null;
+	}
 
-    public ActiveMQDetector(String serviceName, int port) {
-        super(serviceName, port);
-        setBrokerURL(DEFAULT_BROKERURL);
-        m_connectionFactory = new ActiveMQConnectionFactory();
-        connection = null;
-        session = null;
-    }
+	public ActiveMQDetector(String serviceName, int port) {
+		super(serviceName, port);
+		setBrokerURL(DEFAULT_BROKERURL);
+		m_connectionFactory = new ActiveMQConnectionFactory();
+		m_connection = null;
+		m_session = null;
+	}
 
-    @Override
-    public URI getAgentConfig(DetectRequest request) {
-        URI uri = null;
-        try {
-            uri = new URI(m_brokerURL);
-            Map<String,String> map = request.getRuntimeAttributes();
-            if (map != null) {
-                LOG.info("runtimeAttributes: {}", map);
-                //uri = new URI(uri.getScheme(), uri.getUserInfo(), map.getNodeLabel(), uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
-            }
-        } catch (URISyntaxException e) {
-            LOG.error("Invalid BrokerURL: {}", m_brokerURL, e);
-        }
-        return uri;
-    }
+	@Override
+	public URI getAgentConfig(DetectRequest request) {
+		LOG.debug("getAgentConfig(request=[{}]", request);
+		URI uri = null;
+		try {
+			uri = new URI(m_brokerURL);
+			Map<String, String> map = request.getRuntimeAttributes();
+			LOG.info("runtimeAttributes: {}", map);
+			if (map != null) {
+				// uri = new URI(uri.getScheme(), uri.getUserInfo(),
+				// map.getNodeLabel(), uri.getPort(), uri.getPath(),
+				// uri.getQuery(), uri.getFragment());
+			}
+		} catch (URISyntaxException e) {
+			LOG.error("Invalid BrokerURL: {}", m_brokerURL, e);
+		}
+		return uri;
+	}
 
-    @Override
-    public boolean isServiceDetected(InetAddress address, URI agentConfig) {
-        LOG.debug("isServiceDetected(address=[{}], agentConfig=[{}])", address, agentConfig);
-        try {
-            m_connectionFactory.setBrokerURL(agentConfig.toString());
-            connection = m_connectionFactory.createConnection(m_user, m_password);
-            LOG.info("connection created");
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            LOG.info("session created");
-            connection.start();
-            LOG.info("connection started");
+	@Override
+	public boolean isServiceDetected(InetAddress address, URI agentConfig) {
+		LOG.debug("isServiceDetected(address=[{}], agentConfig=[{}])", address, agentConfig);
+		try {
+			m_connectionFactory.setBrokerURL(agentConfig.toString());
+			m_connection = m_connectionFactory.createConnection(m_user, m_password);
+			LOG.info("connection created");
+			m_session = m_connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			LOG.info("session created");
+			m_connection.start();
+			LOG.info("connection started");
 
-            session.close();
-            connection.close();
-            return true;
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
+			return true;
+		} catch (Throwable t) {
+			throw new UndeclaredThrowableException(t);
+		}
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onInit() {
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected void onInit() {
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public void dispose() {
-    }
+	/** {@inheritDoc} */
+	@Override
+	public void dispose() {
+		if (m_session != null) {
+			try {
+				m_session.close();
+			} catch (JMSException e) {
+				LOG.debug("JMSException while closing the session.", e);
+			}
+			m_session = null;
+		}
+		if (m_connection != null) {
+			try {
+				m_connection.close();
+			} catch (JMSException e) {
+				LOG.debug("JMSException while closing the connection.", e);
+			}
+			m_connection = null;
+		}
+	}
 
-    public String getBrokerURL() {
-        return m_brokerURL;
-    }
+	public String getBrokerURL() {
+		return m_brokerURL;
+	}
 
-    public final void setBrokerURL(final String brokerURL) {
-        m_brokerURL = brokerURL;
-    }
+	public final void setBrokerURL(final String brokerURL) {
+		m_brokerURL = brokerURL;
+	}
 
-    public String getUser() {
-        return m_user;
-    }
+	public String getUser() {
+		return m_user;
+	}
 
-    public final void setUser(final String user) {
-        m_user = user;
-    }
+	public final void setUser(final String user) {
+		m_user = user;
+	}
 
-    public String getPassword() {
-        return m_password;
-    }
+	public String getPassword() {
+		return m_password;
+	}
 
-    public final void setPassword(final String password) {
-        m_password = password;
-    }
+	public final void setPassword(final String password) {
+		m_password = password;
+	}
 
-    public Boolean getUseNodeLabel() {
-        return m_useNodeLabel;
-    }
+	public Boolean getUseNodeLabel() {
+		return m_useNodeLabel;
+	}
 
-    public final void setUseNodeLabel(final Boolean useNodeLabel) {
-        m_useNodeLabel = useNodeLabel;
-    }
+	public final void setUseNodeLabel(final Boolean useNodeLabel) {
+		m_useNodeLabel = useNodeLabel;
+	}
 }
