@@ -445,7 +445,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
   </bean>
 
-  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>
   </bean>
   
