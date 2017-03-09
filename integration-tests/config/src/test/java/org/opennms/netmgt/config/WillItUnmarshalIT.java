@@ -255,7 +255,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.JAXB);
