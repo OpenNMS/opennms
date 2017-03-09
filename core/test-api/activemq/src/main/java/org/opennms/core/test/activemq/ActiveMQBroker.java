@@ -45,12 +45,20 @@ public class ActiveMQBroker extends ExternalResource {
 
     private BrokerService m_broker = new BrokerService();
     private Path m_temporaryDirectory;
+    private String m_brokerURL = null;
+
+    public ActiveMQBroker(final String brokerURL) {
+        m_brokerURL = brokerURL;
+    }
 
     @Override
     public void before() throws Exception {
         m_temporaryDirectory = Files.createTempDirectory("activemq-data");
         m_broker.setPersistent(false);
         m_broker.setDataDirectory(m_temporaryDirectory.toString());
+        if (m_brokerURL != null) {
+            m_broker.addConnector(m_brokerURL);
+        }
         m_broker.start();
         if (!m_broker.waitUntilStarted()) {
             throw new Exception("ActiveMQ broker was not started or stopped unexpectedly. Error: " + m_broker.getStartException());
