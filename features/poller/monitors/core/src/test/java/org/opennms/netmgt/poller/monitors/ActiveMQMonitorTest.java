@@ -30,13 +30,14 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.activemq.broker.BrokerService;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -50,29 +51,16 @@ import org.slf4j.LoggerFactory;
  */
 public class ActiveMQMonitorTest {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQMonitorTest.class);
-    private BrokerService broker;
     private static final String DEFAULT_BROKERURL = "tcp://localhost:61616?transport.threadName&transport.trace=false&transport.soTimeout=20000";
 
     @Rule
     public TestName m_test = new TestName();
 
-    @Before
-    public void setUp() throws Exception {
-        broker = new BrokerService();
-        broker.setPersistent(false);
-        broker.setUseJmx(false);
-        broker.addConnector(DEFAULT_BROKERURL);
-        broker.start();
-        broker.waitUntilStarted();
-        LOG.info("broker is running!");
-    }
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @After
     public void tearDown() throws Exception {
-        try {
-            broker.stop();
-        } catch (Throwable ignore) {
-        }
         LOG.info("======== Finished test " + m_test.getMethodName());
     }
 
