@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://xmlns.opennms.org/xsd/config/syslogd-types"
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/syslog"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/syslogd-types"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/syslog"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
 		  elementFormDefault="qualified">
     <annotation>
-        <documentation>XML Schema for the common content used on syslogd-configuration.xml configuration
-            file. Version: $Id: syslogd-configuration.xsd 3400 joed $
+        <documentation>XML Schema for Syslog related configuration
         </documentation>
     </annotation>
 
@@ -79,14 +78,14 @@
             <attribute name="parser" type="string" use="optional" default="org.opennms.netmgt.syslogd.CustomSyslogParser">
                 <annotation>
                     <documentation>
-                    	A string which defines the class to use when parsing syslog messages.
-                    	The default is the "CustomSyslogParser", which honors the forwarding-regexp,
-                    	matching-group-host, and matching-group-message attributes, and can parse
-                    	most BSD-style Syslog messages, including Syslog-NG's default format.
-                    	Other options include "org.opennms.netmgt.syslogd.SyslogNGParser" which is a
-                    	slightly more strict version of the CustomSyslogParser, and
-                    	"org.opennms.netmgt.syslogd.Rfc5424SyslogParser" which can handle the recent
-                    	(2009) RFC for syslog messages.
+                      A string which defines the class to use when parsing syslog messages.
+                      The default is the "CustomSyslogParser", which honors the forwarding-regexp,
+                      matching-group-host, and matching-group-message attributes, and can parse
+                      most BSD-style Syslog messages, including Syslog-NG's default format.
+                      Other options include "org.opennms.netmgt.syslogd.SyslogNGParser" which is a
+                      slightly more strict version of the CustomSyslogParser, and
+                      "org.opennms.netmgt.syslogd.Rfc5424SyslogParser" which can handle the recent
+                      (2009) RFC for syslog messages.
                     </documentation>
                 </annotation>
             </attribute>
@@ -266,12 +265,12 @@
                             </annotation>
                         </attribute>
                         <attribute name="default-parameter-mapping" type="boolean" use="optional" default="true">
-                        	<annotation>
-                        		<documentation>Whether to do the default mappings of matching-groups to
-                        					   event parameters (group 1 -> group1, etc.) if this is a
-                        					   regex match.
-           					   </documentation>
-                        	</annotation>
+                          <annotation>
+                            <documentation>Whether to do the default mappings of matching-groups to
+                                     event parameters (group 1 -> group1, etc.) if this is a
+                                     regex match.
+                       </documentation>
+                          </annotation>
                         </attribute>
                     </complexType>
                 </element>
@@ -282,37 +281,37 @@
                         <documentation>UEI</documentation>
                     </annotation>
                 </element>
-                
+
                 <element maxOccurs="unbounded" minOccurs="0" name="parameter-assignment">
-                	<annotation>
-                		<documentation>For regex matches, assign the value of a matching group
-                		               to a named event parameter
-                		</documentation>
-                	</annotation>
-                	<complexType>
-                		<attribute name="matching-group" use="required">
-                			<annotation>
-                				<documentation>The number of the matching group from the regex
-                				               whose value will be assigned. Group 0 always refers
-                				               to the entire string matched by the expression. If
-                				               the referenced group does not exist, the empty string
-                				               will be assigned.
-                				</documentation>
-               				</annotation>
-               				<simpleType>
-								<restriction base="int">
-									<minInclusive value="0" />
-								</restriction>
-               				</simpleType>
-                		</attribute>
-                		<attribute name="parameter-name" type="string" use="required">
-                			<annotation>
-                				<documentation>The name of the event parameter to which the named
-                				               matching group's value will be assigned
-                				</documentation>
-                			</annotation>
-                		</attribute>
-                	</complexType>
+                  <annotation>
+                    <documentation>For regex matches, assign the value of a matching group
+                                   to a named event parameter
+                    </documentation>
+                  </annotation>
+                  <complexType>
+                    <attribute name="matching-group" use="required">
+                      <annotation>
+                        <documentation>The number of the matching group from the regex
+                                       whose value will be assigned. Group 0 always refers
+                                       to the entire string matched by the expression. If
+                                       the referenced group does not exist, the empty string
+                                       will be assigned.
+                        </documentation>
+                      </annotation>
+                      <simpleType>
+                <restriction base="int">
+                  <minInclusive value="0" />
+                </restriction>
+                      </simpleType>
+                    </attribute>
+                    <attribute name="parameter-name" type="string" use="required">
+                      <annotation>
+                        <documentation>The name of the event parameter to which the named
+                                       matching group's value will be assigned
+                        </documentation>
+                      </annotation>
+                    </attribute>
+                  </complexType>
                 </element>
             </sequence>
         </complexType>
@@ -359,6 +358,26 @@
                         </attribute>
                     </complexType>
                 </element>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="syslogd-configuration-group">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="0" ref="this:ueiList"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:hideMessage"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="syslogd-configuration">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" ref="this:configuration"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:ueiList"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:hideMessage"/>
+                <element maxOccurs="unbounded" minOccurs="0" name="import-file" type="string"/>
             </sequence>
         </complexType>
     </element>
