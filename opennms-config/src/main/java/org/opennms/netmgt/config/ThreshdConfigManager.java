@@ -37,27 +37,25 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
 import org.opennms.netmgt.config.threshd.IncludeRange;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract ThreshdConfigManager class.</p>
@@ -98,11 +96,12 @@ public abstract class ThreshdConfigManager {
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ThreshdConfiguration.class, stream);
+    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(ThreshdConfiguration.class, reader);
+        }
 
         createUrlIpMap();
 
@@ -110,8 +109,6 @@ public abstract class ThreshdConfigManager {
         m_localServer = localServer;
 
         createPackageIpListMap();
-
-
     }
 
     /**
@@ -188,34 +185,23 @@ public abstract class ThreshdConfigManager {
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-    
-             //marshall to a string first, then write the string to the file. This way the original config
-             //isn't lost if the xml from the marshall is hosed.
-             StringWriter stringWriter = new StringWriter();
-             Marshaller.marshal(m_config, stringWriter);
-             
-             String xmlString = stringWriter.toString();
-            if (xmlString!=null)
-             {
-                 saveXML(xmlString);
-             }
-    
-             reloadXML();
+    public synchronized void saveCurrent() throws IOException {
+        //marshall to a string first, then write the string to the file. This way the original config
+        final String xmlString = JaxbUtils.marshal(m_config);
+        if (xmlString!=null) {
+            saveXML(xmlString);
+            reloadXML();
+        }
      }
 
     /**
      * <p>reloadXML</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public abstract void reloadXML() throws IOException, MarshalException, ValidationException;
+    public abstract void reloadXML() throws IOException;
 
     /**
      * <p>saveXML</p>

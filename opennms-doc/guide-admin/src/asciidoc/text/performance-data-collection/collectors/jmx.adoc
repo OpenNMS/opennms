@@ -32,6 +32,7 @@ Attributes are extracted from the available _MBeans_.
 | `urlPath`              | Path used in `JMX` connection string                                            | optional | /jmxrmi
 | `rmiServerPort`        | RMI port.                                                                       | optional | 45444
 | `remoteJMX`            | Use an alternative `JMX` URL scheme                                             | optional | `false`
+|===
 
 ===== JDBC Collection Configuration
 

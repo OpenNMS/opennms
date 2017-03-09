@@ -179,6 +179,8 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		Category category = new Category();
 		
 		category.setLabel(label);
+		category.setNormalThreshold(0d);
+		category.setWarningThreshold(0d);
 		category.setRule("isHTTP");
 		category.addService("HTTP");
 		

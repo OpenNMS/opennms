@@ -149,10 +149,21 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>check-license</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>check-style</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-
-
-
   </build>
 
   <dependencies>

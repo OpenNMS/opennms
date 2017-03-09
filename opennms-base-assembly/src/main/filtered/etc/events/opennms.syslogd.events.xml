@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>DISCARD-MATCHING-MESSAGES</uei>
+        <event-label>OpenNMS-defined DISCARD-MATCHING-MESSAGES</event-label>
+        <descr>
+            DISCARD-MATCHING-MESSAGES is used in the syslogd to generate events that
+            have no matching events. This event is not persisted by default.
+        </descr>
+        <logmsg dest="donotpersist">
+            &lt;p&gt;DISCARD-MATCHING-MESSAGES.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+</events>

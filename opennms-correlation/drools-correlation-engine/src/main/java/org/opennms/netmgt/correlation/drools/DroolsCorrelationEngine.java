@@ -46,12 +46,16 @@ import org.kie.api.builder.Message.Level;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -70,13 +74,25 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
+    private boolean m_isStreaming = false;
+    private final Meter m_eventsMeter;
     
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+        this.m_name = name;
+        final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
+        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
+        m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
         LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_kieSession.insert(e);
-        m_kieSession.fireAllRules();
+        if (!m_isStreaming) m_kieSession.fireAllRules();
+        m_eventsMeter.mark();
         LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
@@ -86,7 +102,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_kieSession.insert(expiration);
-        m_kieSession.fireAllRules();
+        if (!m_isStreaming) m_kieSession.fireAllRules();
         LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
@@ -148,6 +164,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
         if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
             eventProcessingOption = EventProcessingOption.STREAM;
+            m_isStreaming = true;
         }
         ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
 
@@ -157,6 +174,13 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_kieSession.setGlobal(entry.getKey(), entry.getValue());
+        }
+
+        if (m_isStreaming) {
+            new Thread(() -> {
+                Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
+                m_kieSession.fireUntilHalt();
+            }, "FireTask").start();
         }
     }
 
@@ -178,15 +202,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         return m_kieSession;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-    
     /**
      * <p>getName</p>
      *

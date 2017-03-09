@@ -90,6 +90,7 @@
         hibernate.cache=false
         hibernate.cache.use_query_cache=false
         hibernate.jdbc.batch_size=0
+        <!-- hibernate.show_sql=true -->
         <!-- hibernate.format_sql=true -->
       </value>
     </property>
@@ -526,7 +527,7 @@
     <constructor-arg value="file:${opennms.home}/etc/statsd-configuration.xml" />
   </bean>
 
-  <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
+  <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" ref="statsdConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>

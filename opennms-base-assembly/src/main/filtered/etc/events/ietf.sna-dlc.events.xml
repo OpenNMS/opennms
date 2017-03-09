@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.41.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/SNA-SDLC/traps/sdlcPortStatusChange</uei>
+        <event-label>SNA-SDLC-MIB defined trap event: sdlcPortStatusChange</event-label>
+        <descr>&lt;p&gt;This trap indicates that the state of an SDLC
+            port has transitioned to active or inactive.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ifAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            up(1) down(2) testing(3)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ifOperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            up(1) down(2) testing(3)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcPortOperLastFailTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcPortOperLastFailCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            undefined(1) physical(2)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: Port Status Change.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.41.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/SNA-SDLC/traps/sdlcLSStatusChange</uei>
+        <event-label>SNA-SDLC-MIB defined trap event: sdlcLSStatusChange</event-label>
+        <descr>&lt;p&gt;This trap indicates that the state of an SDLC
+            link station has transitioned to contacted or
+            discontacted.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            discontacted(1) contactPending(2) contacted(3) discontactPending(4)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSAdminState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            inactive(1) active(2)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            undefined(1) rxFRMR(2) txFRMR(3) noResponse(4) protocolErr(5) noActivity(6) rnrLimit(7)
+            retriesExpired(8)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailFRMRInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCtrlIn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCtrlOut&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailREPLYTOs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.41.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/SNA-SDLC/traps/sdlcLSStatusChange1</uei>
+        <event-label>SNA-SDLC-MIB defined trap event: sdlcLSStatusChange1</event-label>
+        <descr>&lt;p&gt;This trap indicates that the state of an SDLC
+            link station has transitioned to contacted or
+            discontacted.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            discontacted(1) contactPending(2) contacted(3) discontactPending(4)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSAdminState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            inactive(1) active(2)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            undefined(1) rxFRMR(2) txFRMR(3) noResponse(4) protocolErr(5) noActivity(6) rnrLimit(7)
+            retriesExpired(8)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailFRMRInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCtrlIn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailCtrlOut&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            sdlcLSOperLastFailREPLYTOs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>
