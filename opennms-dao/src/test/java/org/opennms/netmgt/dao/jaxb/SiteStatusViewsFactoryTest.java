@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.io.IOException;
 
@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.siteStatusViews.View;
+import org.opennms.netmgt.dao.jaxb.SiteStatusViewsFactory;
 
 public class SiteStatusViewsFactoryTest extends TestCase {
 	
