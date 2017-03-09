@@ -146,12 +146,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             
             BridgeMacLink xylink = null;
             BridgeMacLink yxlink = null;
-            List<BridgeMacLink> connectionsOnSegment=new ArrayList<BridgeMacLink>();
+            Set<String> macsOnSegment=new HashSet<String>();
             for (BridgeMacLink xlink: xBFT) {
                 if (xlink.getBridgePort() == m_xy && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if (ymactoport.get(xlink.getMacAddress()) != null 
                     		&& m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
-                    	connectionsOnSegment.add(xlink);
+                    	macsOnSegment.add(xlink.getMacAddress());
                         LOG.debug("BridgeTopologyHelper: simple connection: link added: [bridge:[{}],port:{},mac:{}].", 
                         		xlink.getNode().getId(),
                         		xlink.getBridgePort(),
@@ -175,16 +175,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     m_throughSetX.get(xlink.getBridgePort()).add(xlink);
                 }
             }
-            int xlinks = connectionsOnSegment.size();
-            LOG.debug("BridgeTopologyHelper: bridge [{}]: added {} links on simple connection.", 
-            		xBridge.getId(),
-            		xlinks);
             
             for (BridgeMacLink ylink: yBFT) {
                 if (ylink.getBridgePort() == m_yx && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if ( xmactoport.get(ylink.getMacAddress()) != null &&
                     		m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
-                    	connectionsOnSegment.add(ylink);
+                    	macsOnSegment.add(ylink.getMacAddress());
                         LOG.debug("BridgeTopologyHelper: simple connection: link added: [bridge:[{}],port:{},mac:{}].", 
                         		ylink.getNode().getId(),
                         		ylink.getBridgePort(),
@@ -208,10 +204,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     m_throughSetY.get(ylink.getBridgePort()).add(ylink);
                 }
             }
-            int ylinks = connectionsOnSegment.size() - xlinks;
-            LOG.debug("BridgeTopologyHelper: bridge [{}]: added {} links on simple connection.", 
-            		yBridge.getId(),
-            		ylinks);
+            LOG.debug("BridgeTopologyHelper: links:{}, found on simple connection.", 
+            		macsOnSegment.size());
     
             BridgeBridgeLink blink = new BridgeBridgeLink();
             if (xylink != null && yxlink != null ) {
@@ -230,7 +224,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
 
             }
-            m_simpleconnection = new SimpleConnection(connectionsOnSegment, blink);
+            m_simpleconnection = new SimpleConnection(macsOnSegment, blink);
         }
 
         private List<Integer> condition3(Set<String> commonlearnedmacs,Map<String,BridgeMacLink> xbft,Map<String,BridgeMacLink> ybft) {
@@ -896,8 +890,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 LOG.debug("calculate: node [{}]: level {}: bridge: [{},designated port [{}]]: is 'upper' Bridge: [{}]. Adding shared segment.", 
                 		getNodeId(), 
                 		level,xBridge.getId(),yBridge.getId(),xyDesignatedPort);
-                SharedSegment leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection().getDlink());
-                leafSegment.setBridgeMacLinks(yx.getSimpleConnection().getLinks());
+                SharedSegment leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection().getDlink(),yx.getSimpleConnection().getMacs());
                 leafSegment.setDesignatedBridge(xBridge.getId());
                 m_domain.add(leafSegment);
                 portsAdded.add(xyDesignatedPort);
@@ -933,7 +926,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         		getNodeId(), 
                  level, xBridge.getId(), rx.getSecondBridgeTroughSet());
         topSegment.removeMacs(rx.getSecondBridgeTroughSet());
-        topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
+        LOG.debug("calculate: node [{}]: level {}: bridge: [{}]. assign macs {} to top segment", 
+        		getNodeId(), 
+                 level,xBridge.getId(),rx.getSimpleConnection().getMacs());
+        topSegment.assign(rx.getSimpleConnection().getMacs(),rx.getSimpleConnection().getDlink());
         LOG.debug("calculate: node [{}]: level {}: bridge: [{}]. removing through sets {} from top segment", 
         		getNodeId(), 
                  level,xBridge.getId(),throughSets);
@@ -946,9 +942,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         for (Integer xbridgePort : rx.getSecondBridgeTroughSetBft().keySet()) {
             if (portsAdded.contains(xbridgePort))
                 continue;
-            SharedSegment xleafSegment = new SharedSegment(m_domain);
-            xleafSegment.setBridgeMacLinks(rx.getSecondBridgeTroughSetBft().get(xbridgePort));
+            SharedSegment xleafSegment = new SharedSegment(m_domain,rx.getSecondBridgeTroughSetBft().get(xbridgePort));
             xleafSegment.setDesignatedBridge(xBridge.getId());  
+            m_domain.add(xleafSegment);
             LOG.debug("calculate: node [{}]: level {}: bridge: [{}]. Add shared segment. "
             		+ "[ designated bridge:[{}], "
             		+ "port:{}, "
@@ -959,7 +955,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                      xleafSegment.getDesignatedBridge(),
                      xleafSegment.getDesignatedPort(),
                      xleafSegment.getMacsOnSegment());
-            m_domain.add(xleafSegment);
         }
         return true;
     }
