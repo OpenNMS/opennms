@@ -45,7 +45,11 @@ public class ActiveMQBroker extends ExternalResource {
 
     private BrokerService m_broker = new BrokerService();
     private Path m_temporaryDirectory;
-    private String m_brokerURL = null;
+    private final String m_brokerURL;
+
+    public ActiveMQBroker() {
+        m_brokerURL = null;
+    }
 
     public ActiveMQBroker(final String brokerURL) {
         m_brokerURL = brokerURL;
