@@ -235,12 +235,12 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmptrap-northbounder-configuration.xml", SnmpTrapNorthbounderConfig.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
