@@ -183,13 +183,13 @@ public class KscRestService extends OnmsRestService {
             report.setId(kscReport.getId());
             report.setTitle(kscReport.getLabel());
             if (kscReport.getShowGraphtypeButton() != null) {
-                report.setShow_graphtype_button(kscReport.getShowGraphtypeButton());
+                report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
             }
             if (kscReport.getShowTimespanButton() != null) {
-                report.setShow_timespan_button(kscReport.getShowTimespanButton());
+                report.setShowTimespanButton(kscReport.getShowTimespanButton());
             }
             if (kscReport.getGraphsPerLine() != null) {
-                report.setGraphs_per_line(kscReport.getGraphsPerLine());
+                report.setGraphsPerLine(kscReport.getGraphsPerLine());
             }
             if (kscReport.hasGraphs()) {
                 for (KscGraph kscGraph : kscReport.getGraphs()) {
@@ -273,9 +273,9 @@ public class KscRestService extends OnmsRestService {
         public KscReport(Report report) {
             m_id = report.getId();
             m_label = report.getTitle();
-            m_show_timespan_button = report.getShow_timespan_button();
-            m_show_graphtype_button = report.getShow_graphtype_button();
-            m_graphs_per_line = report.getGraphs_per_line();
+            m_show_timespan_button = report.getShowTimespanButton();
+            m_show_graphtype_button = report.getShowGraphtypeButton();
+            m_graphs_per_line = report.getGraphsPerLine();
             m_graphs.clear();
 
             for(Graph graph : report.getGraphCollection()) {

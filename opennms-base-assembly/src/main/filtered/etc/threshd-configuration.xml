@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threshd-configuration
-    xmlns="http://xmlns.opennms.org/xsd/config/threshd" threads="5">
+    threads="5">
     <package name="mib2">
         <filter>IPADDR != '0.0.0.0'</filter>
         <include-range begin="1.1.1.1" end="254.254.254.254"/>

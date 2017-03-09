@@ -26,6 +26,8 @@
             <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
             <attrib name="TasksTotal" alias="ONMSPollerTasksTot" type="counter"/>
             <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
          </mbean>
          <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
             <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
@@ -38,6 +40,8 @@
             <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>
             <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
             <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
          </mbean>
          <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
             <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
