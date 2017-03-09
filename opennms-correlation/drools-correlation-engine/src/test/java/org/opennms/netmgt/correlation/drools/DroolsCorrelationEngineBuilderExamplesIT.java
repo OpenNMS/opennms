@@ -51,7 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:META-INF/opennms/applicationContext-correlator.xml",
         "classpath:test-context-examples.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={"org.opennms.activemq.broker.disable=true"})
 @JUnitTemporaryDatabase
 public class DroolsCorrelationEngineBuilderExamplesIT {
 

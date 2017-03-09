@@ -38,8 +38,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
@@ -285,12 +283,6 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         LOG.debug("initialize: Initializing WmiPeerFactory");
         try {
             WmiPeerFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (final ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (final IOException e) {
             LOG.error("initialize: Error reading configuration.", e);
             throw new UndeclaredThrowableException(e);
