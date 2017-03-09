@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <!-- NMS-9146: Assure that the Default location exists in the database -->
+  <changeSet author="cpape" id="19.0.2-assure-default-location-exists">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(id) FROM monitoringlocations WHERE id='Default';
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="monitoringlocations">
+      <column name="id" value="Default"/>
+      <column name="monitoringarea" value="Default"/>
+    </insert>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.0.2-fix-empty-locations-in-node-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select location from node where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update node set location='Default' where location='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.0.2-fix-empty-locations-in-collectionpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationscollectionpackages where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationscollectionpackages set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.0.2-fix-empty-locations-in-pollingpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationspollingpackages where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationspollingpackages set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.0.2-fix-empty-locations-in-tags-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationstags where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationstags set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.0.2-fix-empty-locations-in-scanreports-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select location from scanreports where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update scanreports set location='Default' where location='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Remove ON DELETE CASCADE for the location foreign key constraint in the node table -->
+  <changeSet author="cpape" id="19.0.2-remove-on-delete-cascade">
+    <!-- Drop existing foreign key constraints -->
+    <dropForeignKeyConstraint baseTableName="node" constraintName="fk_node_location"/>
+    <!-- Recreate the foreign key constraint without using onDelete="CASCADE" -->
+    <addForeignKeyConstraint baseTableName="node" constraintName="fk_node_location" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" onUpdate="CASCADE"/>
+  </changeSet>
+
+  <!-- NMS-9146: Double check that nothing is associated with the blank location before deleting it -->
+  <changeSet author="cpape" id="19.0.2-delete-blank-location">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select
+          case when exists (
+            select * from (
+              select location from node
+              union
+              select monitoringlocationid as location from monitoringlocationscollectionpackages
+              union
+              select monitoringlocationid as location from monitoringlocationspollingpackages
+              union
+              select monitoringlocationid as location from monitoringlocationstags
+              union
+              select location from scanreports
+            ) S where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      delete from monitoringlocations where id='';
+    </sql>
+  </changeSet>
+</databaseChangeLog>
