@@ -775,11 +775,6 @@
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
     </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
 
     <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
     <!-- these should all be <scope>compile</scope> -->

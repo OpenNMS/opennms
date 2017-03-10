@@ -31,8 +31,6 @@ package org.opennms.web.category;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
@@ -64,10 +62,8 @@ public class RTCPostSubscriber {
      * <p>Constructor for RTCPostSubscriber.</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
+    public RTCPostSubscriber() throws IOException {
         m_proxy = Util.createEventProxy();
     }
 

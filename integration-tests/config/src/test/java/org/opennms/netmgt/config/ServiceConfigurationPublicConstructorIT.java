@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -56,7 +54,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @JUnitConfigurationEnvironment
 public class ServiceConfigurationPublicConstructorIT extends PublicConstructorTest {
 	@Override
-	protected List<Class<? extends Object>> getClasses() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
+	protected List<Class<? extends Object>> getClasses() throws IOException, ClassNotFoundException {
 		List<Class<? extends Object>> retval = new ArrayList<Class<? extends Object>>();
 		Service[] services = new ServiceConfigFactory().getServices();
 		for (Service service : services) {

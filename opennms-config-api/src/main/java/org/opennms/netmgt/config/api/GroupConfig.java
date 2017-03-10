@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
@@ -64,31 +62,25 @@ public interface GroupConfig {
 	 * 
 	 * @return a Map<String, Group>
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	Map<String, Group> getGroups() throws IOException, MarshalException, ValidationException;
+	Map<String, Group> getGroups() throws IOException;
 	
 	/**
 	 * <p>getOnmsGroupList</p>
 	 * 
 	 * @return an OnmsGroupList
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	OnmsGroupList getOnmsGroupList() throws MarshalException, ValidationException, IOException;
+	OnmsGroupList getOnmsGroupList() throws IOException;
 	
 	/**
 	 * <p>getOnmsGroup</p>
 	 * 
 	 * @param a String
 	 * @return an OnmsGroup
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	OnmsGroup getOnmsGroup(final String groupName) throws MarshalException, ValidationException, IOException;
+	OnmsGroup getOnmsGroup(final String groupName) throws IOException;
 	
 	/**
 	 * <p>save</p>
@@ -104,20 +96,16 @@ public interface GroupConfig {
 	 * @param a String
 	 * @return a boolean
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	boolean hasGroup(String groupName) throws IOException, MarshalException, ValidationException;
+	boolean hasGroup(String groupName) throws IOException;
 	
 	/**
 	 * <p>getGroupNames</p>
 	 * 
 	 * @return a List<String>
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	List<String> getGroupNames() throws IOException, MarshalException, ValidationException;
+	List<String> getGroupNames() throws IOException;
 	
 	/**
 	 * <p>getGroup</p>
@@ -125,10 +113,8 @@ public interface GroupConfig {
 	 * @param a String
 	 * @return a Group
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	Group getGroup(String name) throws IOException, MarshalException, ValidationException;
+	Group getGroup(String name) throws IOException;
 	
 	/**
 	 * <p>saveGroups</p>
@@ -144,10 +130,8 @@ public interface GroupConfig {
 	 * @param a Calendar
 	 * @return a boolean
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	boolean isGroupOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException;
+	boolean isGroupOnDuty(String group, Calendar time) throws IOException;
 	
 	/**
 	 * <p>groupNextOnDuty</p>
@@ -156,10 +140,8 @@ public interface GroupConfig {
 	 * @param a Calendar
 	 * @return a long
 	 * @throws IOException
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 */
-	long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException;
+	long groupNextOnDuty(String group, Calendar time) throws IOException;
 	
 	/**
 	 * <p>saveGroup</p>
@@ -248,11 +230,9 @@ public interface GroupConfig {
 	 * @param a String
 	 * @param a String
 	 * @return a boolean
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean userHasRole(String userId, String roleid) throws MarshalException, ValidationException, IOException;
+	boolean userHasRole(String userId, String roleid) throws IOException;
 	
 	/**
 	 * <p>getSchedulesForRoleAt</p>
@@ -260,11 +240,9 @@ public interface GroupConfig {
 	 * @param a String
 	 * @param a String
 	 * @return a List<Schedule>
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException;
+	List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws IOException;
 	
 	/**
 	 * <p>getUserSchedulesForRole</p>
@@ -272,11 +250,9 @@ public interface GroupConfig {
 	 * @param a String
 	 * @param a String
 	 * @return a List<Schedule>
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	List<Schedule> getUserSchedulesForRole(String userId, String roleId) throws MarshalException, ValidationException, IOException;
+	List<Schedule> getUserSchedulesForRole(String userId, String roleId) throws IOException;
 	
 	/**
 	 * <p>isUserScheduledForRole</p>
@@ -285,11 +261,9 @@ public interface GroupConfig {
 	 * @param a String
 	 * @param a Date
 	 * @return a boolean
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	boolean isUserScheduledForRole(String userId, String roleId, Date time) throws MarshalException, ValidationException, IOException;
+	boolean isUserScheduledForRole(String userId, String roleId, Date time) throws IOException;
 	
 	/**
 	 * <p>getRoleScheduleEntries</p>
@@ -298,11 +272,9 @@ public interface GroupConfig {
 	 * @param a Date
 	 * @param a Date
 	 * @return an OwnedIntervalSequence
-	 * @throws MarshalException
-	 * @throws ValidationException
 	 * @throws IOException
 	 */
-	OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws MarshalException, ValidationException, IOException;
+	OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws IOException;
 	
 	/**
 	 * <p>findGroupsForUser</p>

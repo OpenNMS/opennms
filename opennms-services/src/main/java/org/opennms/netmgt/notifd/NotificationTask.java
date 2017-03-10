@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -309,7 +307,7 @@ public class NotificationTask extends Thread {
         return m_userManager;
     }
 
-    private String getContactInfo(String cmdName) throws IOException, MarshalException, ValidationException {
+    private String getContactInfo(String cmdName) throws IOException {
         return getUserManager().getContactInfo(m_user, cmdName);
     }
 
@@ -376,10 +374,8 @@ public class NotificationTask extends Thread {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getEmail() throws IOException, MarshalException, ValidationException {
+    public String getEmail() throws IOException {
         return getContactInfo("email");
     }
     
@@ -387,11 +383,9 @@ public class NotificationTask extends Thread {
      * <p>getTuiPin</p>
      *
      * @return a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public String getTuiPin() throws MarshalException, ValidationException, IOException {
+    public String getTuiPin() throws IOException {
         return getContactInfo("tuiPin");
     }
 

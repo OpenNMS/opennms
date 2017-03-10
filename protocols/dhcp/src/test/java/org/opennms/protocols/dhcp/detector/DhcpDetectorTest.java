@@ -36,8 +36,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -98,11 +96,10 @@ public class DhcpDetectorTest implements InitializingBean {
 
     @Test(timeout=90000)
     @Ignore
-    public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
+    public void testDetectorSuccess() throws  IOException {
         m_detector.setTimeout(5000);
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
-
     }
 
     @Test(timeout=90000)

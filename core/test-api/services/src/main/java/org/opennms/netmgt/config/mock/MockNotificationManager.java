@@ -34,17 +34,16 @@ import java.io.StringReader;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
+
 /**
  * @author david
  */
 public class MockNotificationManager extends NotificationManager {
 
     @SuppressWarnings("deprecation")
-    public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) throws MarshalException, ValidationException {
+    public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) {
         super(configManager, db);
         Reader reader = new StringReader(mgrString);
         parseXML(reader);

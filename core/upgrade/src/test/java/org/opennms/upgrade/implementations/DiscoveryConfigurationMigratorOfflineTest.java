@@ -29,7 +29,6 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +67,7 @@ public class DiscoveryConfigurationMigratorOfflineTest {
         task.postExecute();
 
         final File configFile = new File(m_tempFolder.getRoot(), "etc/discovery-configuration.xml");
-        final String xml = FileUtils.readFileToString(configFile);
-        final DiscoveryConfiguration config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileReader(configFile));
+        final DiscoveryConfiguration config = JaxbUtils.unmarshal(DiscoveryConfiguration.class, configFile);
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.getIncludeRanges().size());
     }

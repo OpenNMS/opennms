@@ -31,8 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 
 
@@ -114,19 +112,15 @@ public interface EnhancedLinkdConfig {
      * <p>Reload the configuration file<p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    void reload() throws IOException, MarshalException, ValidationException;
+    void reload() throws IOException;
     
     /**
      * <p>save</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    void save() throws MarshalException, IOException, ValidationException;
+    void save() throws IOException;
 
     /**
      * <p>getConfiguration</p>

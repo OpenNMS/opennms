@@ -1,4 +1,0 @@
-#Fri Mar 10 11:48:53 EST 2017
-org.opennms.netmgt.config.reportd.Report=org.opennms.netmgt.config.reportd.descriptors.ReportDescriptor
-org.opennms.netmgt.config.reportd.ReportdConfiguration=org.opennms.netmgt.config.reportd.descriptors.ReportdConfigurationDescriptor
-org.opennms.netmgt.config.reportd.Parameter=org.opennms.netmgt.config.reportd.descriptors.ParameterDescriptor

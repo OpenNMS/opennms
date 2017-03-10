@@ -55,14 +55,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -112,7 +109,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
 
-    public DiscoveryConfigFactory() throws MarshalException, ValidationException, IOException {
+    public DiscoveryConfigFactory() throws IOException {
         reload();
     }
 
@@ -134,20 +131,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws MarshalException, ValidationException, IOException {
+    public synchronized void reload() throws IOException {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
             final FileSystemResource resource = new FileSystemResource(cfgFile);
-            m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, resource);
+            m_config = JaxbUtils.unmarshal(DiscoveryConfiguration.class, resource);
 
             try {
                 getInitialSleepTime();
@@ -155,9 +146,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 getIntraPacketDelay();
                 getConfiguredAddresses();
             } catch (final Throwable e) {
-                throw new ValidationException("An error occurred while validating the configuration: " + e.getMessage(), e);
+                throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
             }
-        } catch (MarshalException | ValidationException | IOException e) {
+        } catch (IOException e) {
             LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
             throw e;
         }
@@ -197,18 +188,16 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * <p>saveConfiguration</p>
      *
      * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
+    public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
         getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(configuration, stringWriter);
+            JaxbUtils.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();
             LOG.debug("saving configuration...");
             saveXml(xml);

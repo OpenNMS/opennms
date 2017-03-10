@@ -39,8 +39,6 @@ import java.sql.Statement;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.test.DaoTestConfigBean;
@@ -184,7 +182,7 @@ public class ConnectionFactoryIT extends TestCase {
 		}
 	}
 
-	private AtomikosDataSourceFactory makeFactory(String database) throws MarshalException, ValidationException, PropertyVetoException, SQLException, IOException, ClassNotFoundException {
+	private AtomikosDataSourceFactory makeFactory(String database) throws PropertyVetoException, SQLException, IOException, ClassNotFoundException {
 		InputStream stream1 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
 		DataSourceFactory.setDataSourceConfigurationFactory(new DataSourceConfigurationFactory(stream1));
 		InputStream stream2 = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
