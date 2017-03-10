@@ -253,7 +253,7 @@
     <property name="userManager" ref="userManager" />
   </bean>
   
-  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
+  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
   </bean>
 
