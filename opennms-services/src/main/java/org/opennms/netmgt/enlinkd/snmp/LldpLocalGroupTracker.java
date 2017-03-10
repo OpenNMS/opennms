@@ -32,18 +32,12 @@ import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.ErrorStatus;
-import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class LldpLocalGroupTracker extends AggregateTracker {
-
-    private final static Logger LOG = LoggerFactory.getLogger(LldpLocalGroupTracker.class);
 	
     public final static String LLDP_LOC_CHASSISID_SUBTYPE_ALIAS = "lldpLocChassisIdSubtype";
     public final static String LLDP_LOC_CHASSISID_SUBTYPE_OID = ".1.0.8802.1.1.2.1.3.1";
@@ -95,7 +89,6 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
             if (snmpValue.isDisplayable())
                 decodedsnmpValue = snmpValue.toDisplayString();
         } catch (Exception e) {
-            LOG.debug("getDisplayable: got not displayable Value", e);
         }
         return decodedsnmpValue;
     }
@@ -107,7 +100,6 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         try {
             type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
         }  catch (IllegalArgumentException iae) {
-            LOG.debug("decodeLldpChassisId: not valid subtype, return displayable", iae);
             return getDisplayable(lldpchassisid);
         }
         /*
@@ -230,7 +222,6 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
                  try {
                      return LldpUtils.decodeNetworkAddress(getDisplayable(lldpchassisid));
                  } catch (Exception e) {
-                     LOG.debug("decodeLldpChassisId: subtype networkaddress is not inet family", e);
                  }
             }
         return getDisplayable(lldpchassisid);
@@ -258,26 +249,6 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     /** {@inheritDoc} */
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
-    }
-
-    /** {@inheritDoc} */
-    protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving LLDP local group: {}",msg);
-    }
-
-    /** {@inheritDoc} */
-    protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving LLDP local group: {}",msg);
-    }
-
-    @Override
-    protected void reportFatalErr(final ErrorStatusException ex) {
-        LOG.warn("Error retrieving LLDP local group: {}", ex.getMessage(), ex);
-    }
-
-    @Override
-    protected void reportNonFatalErr(final ErrorStatus status) {
-        LOG.info("Non-fatal error ({}) retrieving LLDP local group: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     public LldpElement getLldpElement() {

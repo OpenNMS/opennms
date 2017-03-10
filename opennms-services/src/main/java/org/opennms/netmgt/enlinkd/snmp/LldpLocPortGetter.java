@@ -35,12 +35,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LldpLocPortGetter extends TableTracker {
-
-    private final static Logger LOG = LoggerFactory.getLogger(LldpLocPortGetter.class);
 
     public final static SnmpObjId LLDP_LOC_PORTID_SUBTYPE = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.2");
     public final static SnmpObjId LLDP_LOC_PORTID         = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
@@ -67,9 +63,6 @@ public class LldpLocPortGetter extends TableTracker {
         LldpLink lldplink = new LldpLink();
         lldplink.setLldpLocalPortNum(lldpRemLocalPortNum);
         if (val == null || val.length != 3) {
-            LOG.warn("get: cannot find local instance for lldp local port number {}",
-                     lldpRemLocalPortNum);
-            LOG.warn("get: setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortDescr("");
@@ -77,17 +70,11 @@ public class LldpLocPortGetter extends TableTracker {
         }
 
         if (val[0] == null || val[0].isError() || !val[0].isNumeric()) {
-            LOG.warn("get: port id subtype is null or invalid for lldp local port number {}",
-                     lldpRemLocalPortNum);
-            LOG.warn("get: setting default not found Values: portidtype \"InterfaceAlias\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         } else {
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.get(val[0].toInt()));
         }
         if (val[1] == null || val[1].isError()) {
-            LOG.warn("get: port id is null for lldp local port number {}",
-                     lldpRemLocalPortNum);
-            LOG.warn("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {
             lldplink.setLldpPortId(LldpRemTableTracker.decodeLldpPortId(lldplink.getLldpPortIdSubType().getValue(),
@@ -102,8 +89,6 @@ public class LldpLocPortGetter extends TableTracker {
             try {
                 lldplink.setLldpPortIfindex((val[1].toInt()));
             } catch (Exception e) {
-                LOG.debug("get: failed to convert to ifindex local port id {}",
-                          val[1]);
             }
         }
         return lldplink;

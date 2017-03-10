@@ -35,12 +35,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IsisCircTableTracker extends TableTracker {
-	private final static Logger LOG = LoggerFactory.getLogger(IsisCircTableTracker.class);
-
     public static final SnmpObjId ISIS_CIRC_TABLE       = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2"); // start of table (GETNEXT)
     public final static SnmpObjId ISIS_CIRC_IFINDEX     = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
     public final static SnmpObjId ISIS_CIRC_ADMIN_STATE = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
@@ -77,7 +73,6 @@ public class IsisCircTableTracker extends TableTracker {
 
 		public IsIsCircRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
-            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
 
 	    public Integer getIsisCircIndex() {
@@ -93,14 +88,10 @@ public class IsisCircTableTracker extends TableTracker {
 	    }
 	    
 	    public IsIsLink getIsisLink() {
-            LOG.info( "getIsisLink: row count: {}", getColumnCount());
             IsIsLink link = new IsIsLink();
     		link.setIsisCircIndex(getIsisCircIndex());
-            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIndex());
     		link.setIsisCircIfIndex(getIsisCircIfIndex());
-            LOG.info( "getIsisLink: IS-IS Circ If Index: {}",  link.getIsisCircIfIndex());
     		link.setIsisCircAdminState(IsisAdminState.get(getIsisCircAdminState()));
-            LOG.info( "getIsisLink: IS-IS Circ Admin State: {}",  IsisAdminState.getTypeString(getIsisCircAdminState()));
 	    	return link;
 	    }
     }        
