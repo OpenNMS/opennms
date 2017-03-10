@@ -247,8 +247,8 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, Impl.JAXB);
