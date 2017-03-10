@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -35,9 +37,13 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OspfIfTableTracker extends TableTracker {
 
+	private final static Logger LOG = LoggerFactory.getLogger(OspfIfTableTracker.class);
+	
     public static final SnmpObjId OSPF_IF_TABLE_ENTRY  = SnmpObjId.get(".1.3.6.1.2.1.14.7.1"); // start of table (GETNEXT)
     
     public final static SnmpObjId OSPF_IF_IPADDRESS    = SnmpObjId.get(".1.3.6.1.2.1.14.7.1.1");
@@ -66,6 +72,7 @@ public class OspfIfTableTracker extends TableTracker {
 
     	public OspfIfRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
+            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
     	
     	public InetAddress getOspfIpAddress() {
@@ -79,6 +86,9 @@ public class OspfIfTableTracker extends TableTracker {
 		public OspfLink getOspfLink(
 				OspfIpAddrTableGetter ipAddrTableGetter) {
 		
+            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
+
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
             link.setOspfAddressLessIndex(getOspfAddressLessIf());
@@ -88,6 +98,9 @@ public class OspfIfTableTracker extends TableTracker {
 
 		public OspfLink getOspfLink() {
 		
+            LOG.info( "getOspfLink: row ospf ip address: {}", str(getOspfIpAddress()));
+            LOG.info( "getOspfLink: row ospf address less ifindex: {}", getOspfAddressLessIf());
+
             OspfLink link = new OspfLink();
             link.setOspfIpAddr(getOspfIpAddress());
             link.setOspfAddressLessIndex(getOspfAddressLessIf());

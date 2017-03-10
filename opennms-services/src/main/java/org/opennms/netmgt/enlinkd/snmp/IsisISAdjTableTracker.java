@@ -36,8 +36,12 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IsisISAdjTableTracker extends TableTracker {
+	private final static Logger LOG = LoggerFactory.getLogger(IsisISAdjTableTracker.class);
+
     public static final SnmpObjId ISIS_IS_ADJ_TABLE = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1"); // start of table (GETNEXT)
 
     public final static SnmpObjId ISIS_IS_ADJ_STATE                = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
@@ -126,6 +130,7 @@ public class IsisISAdjTableTracker extends TableTracker {
     public static class IsIsAdjRow extends SnmpRowResult {
 		public IsIsAdjRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
+            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
     	
 	    public Integer getIsisCircIndex() {
@@ -157,14 +162,22 @@ public class IsisISAdjTableTracker extends TableTracker {
 	    }
 
 	    public IsIsLink getIsisLink() {
+            LOG.info( "getIsisLink: row count: {}", getColumnCount());
             IsIsLink link = new IsIsLink();
             link.setIsisCircIndex(getIsisCircIndex());
+            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIndex());
             link.setIsisISAdjIndex(getIsisISAdjIndex());
+            LOG.info( "getIsisLink: IS-IS IS Adj Index: {}",  link.getIsisISAdjIndex());
             link.setIsisISAdjState(IsisISAdjState.get(getIsisISAdjStatus()));
+            LOG.info( "getIsisLink: IS-IS IS Adj State: {}",  IsisISAdjState.getTypeString(getIsisISAdjStatus()));
             link.setIsisISAdjNeighSNPAAddress(getIsisISAdjNeighSnpaAddress());
+            LOG.info( "getIsisLink: IS-IS IS Adj Neigh SNPA Address: {}",  link.getIsisISAdjNeighSNPAAddress());
             link.setIsisISAdjNeighSysType(IsisISAdjNeighSysType.get(getIsisISAdjNeighSysType()));
+            LOG.info( "getIsisLink: IS-IS IS Adj Neigh Sys Type: {}",  IsisISAdjNeighSysType.getTypeString(getIsisISAdjNeighSysType()));
             link.setIsisISAdjNeighSysID(getIsisISAdjNeighSysID());
+            LOG.info( "getIsisLink: IS-IS IS Adj Neigh Sys ID: {}",  link.getIsisISAdjNeighSysID());
             link.setIsisISAdjNbrExtendedCircID(getIsisISAdjNbrExtendedCircID());
+            LOG.info( "getIsisLink: IS-IS IS Adj Nbr Extended Circ ID: {}",  link.getIsisISAdjNbrExtendedCircID());
             return link;
 	    }
     }

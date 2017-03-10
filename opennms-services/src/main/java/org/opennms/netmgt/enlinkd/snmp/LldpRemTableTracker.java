@@ -39,8 +39,12 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LldpRemTableTracker extends TableTracker {
+    private final static Logger LOG = LoggerFactory.getLogger(LldpRemTableTracker.class);
+	
     public static final SnmpObjId LLDP_REM_TABLE_ENTRY = SnmpObjId.get(".1.0.8802.1.1.2.1.4.1.1"); // start of table (GETNEXT)
     
     
@@ -170,6 +174,7 @@ public class LldpRemTableTracker extends TableTracker {
 
 		public LldpRemRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
+            LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
     	
 	    public Integer getLldpRemLocalPortNum() {
@@ -203,12 +208,29 @@ public class LldpRemTableTracker extends TableTracker {
 	    }
 	    
 	    public LldpLink getLldpLink(LldpLocPortGetter lldpLocPort) {
+            LOG.info( "getLldpLink: row local port num: {}",  getLldpRemLocalPortNum());
+
             LldpLink lldpLink = lldpLocPort.get(getLldpRemLocalPortNum());
+            // Check if lldpLink is null.....and do what?
+
+            LOG.info( "getLldpLink: row local port id: {}", lldpLink.getLldpPortId());
+            LOG.info( "getLldpLink: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));
+    	
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
+            LOG.info( "getLldpLink: row rem lldp identifier: {}", lldpLink.getLldpRemChassisId());
+            
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
+            LOG.info( "getLldpLink: row rem lldp chassis id subtype: {}", LldpChassisIdSubType.getTypeString(getLldpRemChassisidSubtype()));
+    	
             lldpLink.setLldpRemSysname(getLldpRemSysname());
+            LOG.info( "getLldpLink: row rem lldp sysname: {}", lldpLink.getLldpRemSysname());
+
             lldpLink.setLldpRemPortId(getLldpRemPortid());
+            LOG.info( "getLldpLink: row rem lldp port id: {}", lldpLink.getLldpRemPortId());
+
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
+            LOG.info( "getLldpLink: row rem lldp port id subtype: {}", LldpPortIdSubType.getTypeString(getLldpRemPortidSubtype()));
+ 
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
             
     		return lldpLink;

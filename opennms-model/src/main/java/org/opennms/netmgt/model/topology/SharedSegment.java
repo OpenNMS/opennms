@@ -220,6 +220,7 @@ public class SharedSegment {
     	}
  	    add(dlink);          
  	    m_macsOnSegment.retainAll(macs);
+        System.err.println(m_macsOnSegment);
     }
 
     public void removeBridge(int bridgeId) {

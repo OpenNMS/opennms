@@ -32,8 +32,13 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>Dot1dBase holds the dot1dBridge.dot1dBase group properties
@@ -47,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
  */
 public final class Dot1dBaseTracker extends AggregateTracker
 {
+	private final static Logger LOG = LoggerFactory.getLogger(Dot1dBaseTracker.class);
     /**
      * the bridge type
      */
@@ -172,6 +178,31 @@ public final class Dot1dBaseTracker extends AggregateTracker
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
         m_store = new SnmpStore(ms_elemList); 
 	}
+
+    /** {@inheritDoc} */
+    protected void storeResult(SnmpResult res) {
+        m_store.storeResult(res);
+    }
+
+    /** {@inheritDoc} */
+    protected void reportGenErr(final String msg) {
+        LOG.warn("Error retrieving dot1dbase: {}", msg);
+    }
+
+    /** {@inheritDoc} */
+    protected void reportNoSuchNameErr(final String msg) {
+        LOG.info("Error retrieving dot1dbase: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving dot1dbase: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving dot1dbase: {}", status, status.retry()? "Retrying." : "Giving up.");
+    }
 
     /**
      * <p>getBridgeAddress</p>

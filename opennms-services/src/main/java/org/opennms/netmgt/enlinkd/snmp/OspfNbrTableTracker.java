@@ -36,8 +36,13 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 public class OspfNbrTableTracker extends TableTracker {
+	private final static Logger LOG = LoggerFactory.getLogger(OspfNbrTableTracker.class);
 
 	public final static SnmpObjId OSPF_NBR_IPADDRESS          = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.1");
     public final static SnmpObjId OSPF_NBR_ADDRESS_LESS_INDEX = SnmpObjId.get(".1.3.6.1.2.1.14.10.1.2");
@@ -96,7 +101,11 @@ public class OspfNbrTableTracker extends TableTracker {
 	    }
 
 		public OspfLink getOspfLink() {
+            LOG.info( "getOspfLink: row count: {}", getColumnCount());
             OspfLink link = new OspfLink();
+            LOG.info( "getOspfLink: row ospf nbr router id: {}", str(getOspfNbrRouterId()));
+            LOG.info( "getOspfLink: row ospf nbr ip address: {}", str(getOspfNbrIpAddress()));
+            LOG.info( "getOspfLink: row ospf nbr address less ifindex: {}", getOspfNbrAddressLessIndex());
             link.setOspfRemRouterId(getOspfNbrRouterId());
             link.setOspfRemIpAddr(getOspfNbrIpAddress());
             link.setOspfRemAddressLessIndex(getOspfNbrAddressLessIndex());

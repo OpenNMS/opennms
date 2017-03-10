@@ -33,6 +33,8 @@ import java.net.InetAddress;
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -43,6 +45,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 
 public class CdpCacheTableTracker extends TableTracker {
+	private static final Logger LOG = LoggerFactory.getLogger(CdpCacheTableTracker.class);
 	
 	public static final SnmpObjId CDP_CACHE_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1"); // start of table (GETNEXT)
 
@@ -114,6 +117,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		
     	public CdpCacheRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
+            LOG.debug("column count = {}, instance = {}", columnCount, instance);
 		}
 
     	/**
@@ -223,6 +227,8 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 
 		public CdpLink getLink(CdpInterfacePortNameGetter cdpInterfacePortNameGetter) {
+            LOG.info("processCdpCacheRow: row index: cdpCacheIfindex: {} cdpCacheDeviceIndex: {}",  
+                     getCdpCacheIfIndex(), getCdpCacheDeviceIndex());
             CdpLink link = new CdpLink();
             
             link.setCdpCacheIfIndex(getCdpCacheIfIndex());

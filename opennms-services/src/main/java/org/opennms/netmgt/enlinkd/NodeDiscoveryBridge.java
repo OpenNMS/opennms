@@ -465,25 +465,9 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             @Override
             public void processDot1dStpPortRow(final Dot1dStpPortRow row) {
                 BridgeStpLink link = row.getLink();
-                LOG.debug("processDot1dStpPortRow: node [{}]: stp: port:{}/{}, vlan:{}, designated root/bridge/port:{}/{}/{}. row processed", getNodeId(),
-                		link.getStpPort(),
-                		link.getStpPortState(),
-                		link.getVlan(),
-                		link.getDesignatedRoot(),
-                		link.getDesignatedBridge(),
-                		link.getDesignatedPort()
-                		);
                 if (isValidStpBridgeId(link.getDesignatedRoot())
                         && isValidStpBridgeId(link.getDesignatedBridge())
                         && !baseBridgeAddress.equals(link.getDesignatedBridgeAddress())) {
-                    LOG.debug("processDot1dStpPortRow: node [{}]: stp: port:{}/{}, vlan:{}, designated root/bridge/port:{}/{}/{}. row added", getNodeId(),
-                    		link.getStpPort(),
-                    		link.getStpPortState(),
-                    		link.getVlan(),
-                    		link.getDesignatedRoot(),
-                    		link.getDesignatedBridge(),
-                    		link.getDesignatedPort()
-                    		);
                     stplinks.add(link);
                 }
             }

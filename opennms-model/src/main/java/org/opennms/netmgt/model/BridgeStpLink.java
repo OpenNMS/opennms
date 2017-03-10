@@ -359,11 +359,8 @@ public class BridgeStpLink {
 	
 	@Override
 	public String toString() {
-		Integer nodeid = null;
-		if (m_node != null)
-			nodeid = m_node.getId();
 		return new ToStringBuilder(this)
-				.append("Nodeid", nodeid)
+				.append("Nodeid", m_node.getId())
 				.append("stpPortState", m_stpPortState)
 				.append("stpPortEnable", m_stpPortEnable)
 				.append("stpPort", m_stpPort)

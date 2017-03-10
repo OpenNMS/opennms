@@ -31,12 +31,19 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class IsisSysObjectGroupTracker extends AggregateTracker {
     
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IsisSysObjectGroupTracker.class);
+
     public final static String ISIS_SYS_ID_ALIAS = "isisSysID";
     public final static String ISIS_SYS_ID_OID = ".1.3.6.1.2.1.138.1.1.1.3";
     
@@ -112,6 +119,28 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
     @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void reportGenErr(String msg) {
+        LOG.warn("Error retrieving isisSysObject: {}", msg);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void reportNoSuchNameErr(String msg) {
+        LOG.info("Error retrieving isisSysObject: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving isisSysObject: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving isisSysObject: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
     public IsIsElement getIsisElement() {

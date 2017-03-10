@@ -32,9 +32,13 @@ import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>Dot1dBaseGroup holds the dot1dBridge.dot1dBase group properties
@@ -48,6 +52,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
  */
 public final class CdpGlobalGroupTracker extends AggregateTracker
 {
+	private final static Logger LOG = LoggerFactory.getLogger(CdpGlobalGroupTracker.class);
     /**
      * the bridge type
      */
@@ -138,6 +143,26 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
         m_store.storeResult(res);
     }
 
+    /** {@inheritDoc} */
+    protected void reportGenErr(final String msg) {
+        LOG.warn("Error retrieving CDP global group: {}", msg);
+    }
+
+    /** {@inheritDoc} */
+    protected void reportNoSuchNameErr(final String msg) {
+        LOG.info("Error retrieving CDP global group: {}", msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Fatal error retrieving CDP global group: {}", ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) retrieving CDP global group: {}", status, status.retry()? "Retrying." : "Giving up.");
+    }
+
     /**
      * <p>getCdpDeviceId</p>
      *
@@ -163,7 +188,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
     	    try {
     	        cdpElement.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.get(getCdpGlobalDeviceFormat()));
     	    } catch (IllegalArgumentException e) {
-    	    	return cdpElement;
+    	        LOG.info("setCdpGlobalDeviceIdFormat not supported: ", e.getLocalizedMessage());
     	    }
     	}    	
     	return cdpElement;
