@@ -148,32 +148,30 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
      */
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
-        if (m_jmsDestination.isSendAsObjectMessageEnabled()) {
-            for (NorthboundAlarm alarm : alarms) {
-                m_template.convertAndSend(alarm);
+        for (final NorthboundAlarm alarm : alarms) {
+            Integer count = alarm.getCount();
+            LOG.debug("Does destination {} take only first occurances? {} Is new alarm? Has count of {}.", m_jmsDestination.getName(), m_jmsDestination.isFirstOccurrenceOnly(), count);
+            if(count > 1 && m_jmsDestination.isFirstOccurrenceOnly()) {
+                LOG.debug("Skipping because not new alarm.");
+                continue;
             }
-        } else {
-            for (final NorthboundAlarm alarm : alarms) {
-                Integer count = alarm.getCount();
-                LOG.debug("Does destination {} take only first occurances? {} Is new alarm? Has count of {}.", m_jmsDestination.getName(), m_jmsDestination.isFirstOccurrenceOnly(), count);
-                if(count > 1 && m_jmsDestination.isFirstOccurrenceOnly()) {
-                    LOG.debug("Skipping because not new alarm.");
-                    continue;
-                }
-                LOG.debug("Attempting to send a message to "
-                        + m_jmsDestination.getJmsDestination() + " of type "
-                        + m_jmsDestination.getDestinationType());
-                try {
-                    m_template.send(m_jmsDestination.getJmsDestination(), new MessageCreator() {
-                        @Override
-                        public Message createMessage(Session session) throws JMSException {
-                            return session.createTextMessage(convertAlarmToText(alarm));
-                        }
-                    });
-                    LOG.debug("Sent message.");
-                } catch (JmsException e) {
-                    LOG.error("Unable to send alarm to JMS NB because {}", e.getLocalizedMessage());
-                }
+            LOG.debug("Attempting to send a message to "
+                    + m_jmsDestination.getJmsDestination() + " of type "
+                    + m_jmsDestination.getDestinationType());
+            try {
+                m_template.send(m_jmsDestination.getJmsDestination(), new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                          if (m_jmsDestination.isSendAsObjectMessageEnabled()) {
+                              return session.createObjectMessage(alarm);
+                          } else {
+                              return session.createTextMessage(convertAlarmToText(alarm));
+                          }
+                    }
+                });
+                LOG.debug("Sent message.");
+            } catch (JmsException e) {
+                LOG.error("Unable to send alarm to JMS NB because {}", e.getLocalizedMessage());
             }
         }
     }

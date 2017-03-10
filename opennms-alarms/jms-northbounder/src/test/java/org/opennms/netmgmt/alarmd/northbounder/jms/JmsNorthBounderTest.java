@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.TextMessage;
+import javax.jms.ObjectMessage;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -326,6 +327,98 @@ public class JmsNorthBounderTest {
         Assert.assertEquals("Contents of message\n'" + response + "'\n not equals\n'" + escapedResponse+"'.", response, escapedResponse);
     }
     @Test
+    public void testObjectMessage() throws Exception {
+        String xml = objectMessageConfigXml();
+
+        Resource resource = new ByteArrayResource(xml.getBytes());
+
+        JmsNorthbounderConfigDao dao = new JmsNorthbounderConfigDao();
+        dao.setConfigResource(resource);
+        dao.afterPropertiesSet();
+
+        JmsNorthbounderConfig config = dao.getConfig();
+
+        List<JmsDestination> destinations = config.getDestinations();
+
+        List<JmsNorthbounder> nbis = new LinkedList<JmsNorthbounder>();
+
+        for (JmsDestination jmsDestination : destinations) {
+            JmsNorthbounder nbi = new JmsNorthbounder(
+                                                      config,
+                                                      m_jmsNorthbounderConnectionFactory,
+                                                      jmsDestination);
+            //nbi.setNodeDao(m_nodeDao);
+            nbi.afterPropertiesSet();
+            nbis.add(nbi);
+        }
+
+        List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
+        OnmsNode node = new OnmsNode(null, NODE_LABEL);
+        node.setForeignSource("TestGroup");
+        node.setForeignId("2");
+        node.setId(m_nodeDao.getNextNodeId());
+        OnmsIpInterface ip = new OnmsIpInterface("127.0.0.1", node);
+        InetAddress ia = null;
+        try {
+            ia = InetAddress.getByName("127.0.0.1");
+        } catch (UnknownHostException e){ }
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
+        // TX via NBIs
+        for (JmsNorthbounder nbi : nbis) {
+            String eventparms = "syslogmessage=Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed(string,text);severity=Error(string,text);timestamp=Dec 22 14:13:21(string,text);process=229250(string,text);service=local7(string,text)";
+            OnmsEvent event = new OnmsEvent(5, "uei.uei.org/uei", new Date(),
+                "eventhost", "eventsource", ia,
+                null, "eventssnmphost", null,
+                "eventsnmp", eventparms, new Date(),
+                "eventdescr", "eventloggroup", "eventlogmsg",
+                4, null, null,
+                0, "operinstruct",
+                null, null,
+                null, null,
+                "tticketid", 1,
+                null, null, null,
+                null, null, null,
+                null, node,
+                null, null,
+                null);
+            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            alarm.setNode(node);
+            alarm.setDescription(event.getEventDescr());
+            alarm.setApplicationDN("applicationDN");
+            alarm.setLogMsg(event.getEventLogMsg());
+            alarm.setManagedObjectInstance("managedObjectInstance");
+            alarm.setManagedObjectType("managedObjectType");
+            alarm.setOssPrimaryKey("ossPrimaryKey");
+            alarm.setQosAlarmState("qosAlarmState");
+            alarm.setTTicketId("tticketId");
+            alarm.setReductionKey("reductionKey");
+            alarm.setClearKey("clearKey");
+            alarm.setOperInstruct("operInstruct");
+            alarm.setFirstEventTime(new Date(0));
+            alarm.setAlarmType(1);
+            alarm.setIpAddr(ia);
+            alarm.setEventParms(eventparms);
+            alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
+            alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
+            NorthboundAlarm a = new NorthboundAlarm(alarm);
+            alarms.add(a);
+            nbi.forwardAlarms(alarms);
+        }
+
+        Thread.sleep(100);
+
+        // Let's become a consumer and receive the message
+        Message m = m_template.receive("ObjectTestQueue");
+        Assert.assertNotNull(m);
+        Object response = ((ObjectMessage)m).getObject();
+        Assert.assertNotNull(response);
+        Assert.assertTrue("message\n'" + response + "'\n not a NorthboundAlarm\n'" + "'.", (response instanceof NorthboundAlarm));
+        String rk = ((NorthboundAlarm) response).getAlarmKey();
+        Assert.assertEquals("received alarm has incorrect reduction key: " + rk, "reductionKey", rk);
+    }
+
+    @Test
     public void testAlarmMappings() throws Exception {
         String xml = generateMappingConfigXml();
 
@@ -452,7 +545,22 @@ public class JmsNorthBounderTest {
                 + "   <uei>uei.opennms.org/nodes/nodeUp</uei>\n"
                 + "</jms-northbounder-config>\n" + "";
     }
-    
+
+    private String objectMessageConfigXml() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                + "<jms-northbounder-config>\n"
+                + "  <enabled>true</enabled>\n"
+                + "  <nagles-delay>1000</nagles-delay>\n"
+                + "  <batch-size>30</batch-size>\n"
+                + "  <queue-size>30000</queue-size>\n"
+                + "  <destination>\n"
+                + "    <jms-destination>ObjectTestQueue</jms-destination>\n"
+                + "    <send-as-object-message>true</send-as-object-message>\n"
+                + "    <first-occurence-only>false</first-occurence-only>"
+                + "   </destination>\n"
+                + "</jms-northbounder-config>\n" + "";
+    }
+
     private String generateMappingConfigXml() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
                 + "<jms-northbounder-config>\n"

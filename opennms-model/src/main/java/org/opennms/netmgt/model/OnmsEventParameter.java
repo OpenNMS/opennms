@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,7 +43,7 @@ import org.opennms.netmgt.xml.event.Parm;
  */
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OnmsEventParameter {
+public class OnmsEventParameter implements Serializable {
 
     /** The name. */
     @XmlAttribute(name="name")
