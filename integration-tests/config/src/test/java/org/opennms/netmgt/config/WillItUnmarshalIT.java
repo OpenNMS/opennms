@@ -245,7 +245,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, Impl.JAXB);
@@ -276,7 +276,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, Impl.JAXB);
