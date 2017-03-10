@@ -26,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.core.xml.AbstractCastorConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.reporting.DateParm;
 import org.opennms.netmgt.config.reporting.IntParm;
+import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.reporting.Parameters;
+import org.opennms.netmgt.config.reporting.Report;
 import org.opennms.netmgt.config.reporting.StringParm;
-import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
-import org.opennms.netmgt.config.reporting.opennms.Report;
 import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 
-public class DefaultOnmsReportConfigDao extends AbstractCastorConfigDao<OpennmsReports, List<Report>>
+public class DefaultOnmsReportConfigDao extends AbstractJaxbConfigDao<OpennmsReports, List<Report>>
 implements OnmsReportConfigDao {
     
     /**

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-
-public class DefaultJaspertReportConfigDaoTest {
-
-    private static final String ID = "sample-report";
-    private static final String TEMPLATE = "sample-report.jxrml";
-    private static final String ENGINE = "jdbc";
-
-    private static DefaultJasperReportConfigDao m_dao;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        Resource resource = new ClassPathResource("/jasper-reports-testdata.xml");
-        m_dao = new DefaultJasperReportConfigDao();
-        m_dao.setConfigResource(resource);
-        m_dao.afterPropertiesSet();
+@XmlSchema(
+    namespace = "http://xmlns.opennms.org/xsd/config/reporting",
+    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/reporting"),
     }
-
-    @Test
-    public void testConfig() throws Exception {
-        assertEquals(TEMPLATE, m_dao.getTemplateLocation(ID));
-        assertEquals(ENGINE, m_dao.getEngine(ID));
-    }
-
-}
+)
+package org.opennms.netmgt.config.reporting;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;
