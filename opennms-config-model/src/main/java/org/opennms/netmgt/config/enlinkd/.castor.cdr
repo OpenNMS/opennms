@@ -1,0 +1,2 @@
+#Fri Mar 10 11:22:45 EST 2017
+org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration=org.opennms.netmgt.config.enlinkd.descriptors.EnlinkdConfigurationDescriptor

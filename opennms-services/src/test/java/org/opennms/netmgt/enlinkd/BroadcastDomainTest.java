@@ -68,8 +68,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
             public void reload() throws IOException, MarshalException,
                     ValidationException {
                 m_config = new EnlinkdConfiguration();
-                m_config.setInitial_sleep_time(1000);
-                m_config.setRescan_interval(10000);
+                m_config.setInitialSleepTime(1000L);
+                m_config.setRescanInterval(10000L);
             }
             
             @Override

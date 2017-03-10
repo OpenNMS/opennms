@@ -458,7 +458,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
-        m_linkdConfig.getConfiguration().setMax_bft(3);
+        m_linkdConfig.getConfiguration().setMaxBft(3);
         assertTrue(!m_linkdConfig.useLldpDiscovery());
         assertTrue(!m_linkdConfig.useCdpDiscovery());
         assertTrue(!m_linkdConfig.useOspfDiscovery());
@@ -712,7 +712,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
-        m_linkdConfig.getConfiguration().setMax_bft(2);
+        m_linkdConfig.getConfiguration().setMaxBft(2);
 
         assertTrue(!m_linkdConfig.useLldpDiscovery());
         assertTrue(!m_linkdConfig.useCdpDiscovery());
