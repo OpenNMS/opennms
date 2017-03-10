@@ -290,8 +290,7 @@ public class EventToIndex implements AutoCloseable {
 		return jestClient;
 	}
 
-	@Override
-	public void close(){
+	private void closeJestClient() {
 		if (jestClient != null) {
 			synchronized(this){
 				try{
@@ -302,6 +301,11 @@ public class EventToIndex implements AutoCloseable {
 				jestClient = null;
 			}
 		}
+	}
+
+	@Override
+	public void close(){
+		closeJestClient();
 
 		// Shutdown the thread pool
 		executor.shutdown();
@@ -416,7 +420,7 @@ public class EventToIndex implements AutoCloseable {
 				} catch (Throwable ex){
 					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
 					// Shutdown the ES client, it will be recreated as needed
-					close();
+					closeJestClient();
 				}
 			}
 		}
