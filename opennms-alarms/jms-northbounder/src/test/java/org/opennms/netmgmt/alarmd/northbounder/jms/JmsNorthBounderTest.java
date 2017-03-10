@@ -400,7 +400,10 @@ public class JmsNorthBounderTest {
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
+            alarm.setCounter(2);
+            NorthboundAlarm b = new NorthboundAlarm(alarm);
             alarms.add(a);
+            alarms.add(b);
             nbi.forwardAlarms(alarms);
         }
 
@@ -421,6 +424,10 @@ public class JmsNorthBounderTest {
                 "</eventParms>";
         String response = ((TextMessage)m).getText();
         Assert.assertEquals("Contents of message\n'" + response + "'\n not equals\n'" + escapedResponse+"'.", response, escapedResponse);
+        // ensure only 1 message received since same reduction key
+        m_template.setReceiveTimeout(JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
+        m = m_template.receive("MappingTestQueue");
+        Assert.assertNull(m);
     }
     /**
      * Generate configuration XML.
@@ -461,7 +468,7 @@ public class JmsNorthBounderTest {
                 + "  <destination>\n"
                 + "    <jms-destination>MappingTestQueue</jms-destination>\n"
                 + "    <send-as-object-message>false</send-as-object-message>\n"
-                + "    <first-occurence-only>false</first-occurence-only>"
+                + "    <first-occurence-only>true</first-occurence-only>"
                 + "   </destination>\n"
                 + "</jms-northbounder-config>\n" + "";
     }

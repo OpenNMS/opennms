@@ -154,7 +154,15 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
             }
         } else {
             for (final NorthboundAlarm alarm : alarms) {
-                LOG.debug("Attempting to send a message to {} of type {}", m_jmsDestination.getJmsDestination(), m_jmsDestination.getDestinationType());
+                Integer count = alarm.getCount();
+                LOG.debug("Does destination {} take only first occurances? {} Is new alarm? Has count of {}.", m_jmsDestination.getName(), m_jmsDestination.isFirstOccurrenceOnly(), count);
+                if(count > 1 && m_jmsDestination.isFirstOccurrenceOnly()) {
+                    LOG.debug("Skipping because not new alarm.");
+                    continue;
+                }
+                LOG.debug("Attempting to send a message to "
+                        + m_jmsDestination.getJmsDestination() + " of type "
+                        + m_jmsDestination.getDestinationType());
                 try {
                     m_template.send(m_jmsDestination.getJmsDestination(), new MessageCreator() {
                         @Override
