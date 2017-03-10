@@ -610,8 +610,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         
         calculate();
-        LOG.debug("run: node: {}, Print Calculated Topology. {} ", getNodeId(),m_domain.printTopology());
-       
         LOG.info("run: node: [{}], saving Topology.", getNodeId());
         m_linkd.getQueryManager().store(m_domain,now);
         LOG.info("run: node: [{}], saved Topology.", getNodeId());
