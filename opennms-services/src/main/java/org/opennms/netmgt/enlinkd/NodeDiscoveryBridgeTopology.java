@@ -598,7 +598,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_domain.clearTopologyForBridge(nodeid);
         	m_domain.removeBridge(nodeid);
         }
-        m_linkd.getQueryManager().store(m_domain,now);
         m_linkd.getQueryManager().cleanBroadcastDomains();
         
         m_domain.setBridgeElements(m_linkd.getQueryManager().getBridgeElements(m_domain.getBridgeNodesOnDomain()));
