@@ -618,4 +618,17 @@
         </logmsg>
         <severity>Normal</severity>
     </event>
+    <event>
+        <uei>uei.opennms.org/internal/poller/servicePollStatus</uei>
+        <event-label>OpenNMS-defined poller event: servicePollStatus</event-label>
+        <descr>
+            &lt;p&gt;Service Polling Status Event for the %service% service
+            on interface %interface% as covered by a poller package, and
+            managed.
+        </descr>
+        <logmsg dest='logndisplay'>
+            Polling Status of "%parm[statusName]%" with reason "%parm[reason]%" for %service% service on interface %interface%. Poll completed in %parm[responseTime]%ms.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
 </events>

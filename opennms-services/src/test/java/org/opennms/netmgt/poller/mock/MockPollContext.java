@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -113,14 +114,18 @@ public class MockPollContext implements PollContext, EventListener {
         return pollEvent;
     }
     
-    
-
     @Override
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, Map<String,String> params) {
+        EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, null);
         e.setTime(date);
+        if (params != null) {
+            params.entrySet().forEach((entry) -> {
+                e.addParam(entry.getKey(), entry.getValue());
+            });
+        }
         return e.getEvent();
     }
+
     @Override
     public void openOutage(final PollableService pSvc, final PollEvent svcLostEvent) {
         Runnable r = new Runnable() {

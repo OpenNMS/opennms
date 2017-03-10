@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -317,6 +317,14 @@ public abstract class PollableElement {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public abstract Event createUpEvent(Date date);
+
+    /**
+     * createPollStatusEvent
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public abstract Event createPollStatusEvent(Date date);
 
     /**
      * <p>createOutage</p>

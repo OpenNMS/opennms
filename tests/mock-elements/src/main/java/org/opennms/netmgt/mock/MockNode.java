@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -257,4 +257,14 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
         return event.getEvent();
     }
     
+    /**
+     * <p>
+     * createPollStatusEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @Override
+    public Event createPollStatusEvent() {
+        throw new UnsupportedOperationException("Cannot generate new pollstatus event for the node.");
+    }
 }

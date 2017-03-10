@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,12 +50,20 @@ public class EventAnticipator implements EventListener {
     
     boolean m_discardUnanticipated = false;
 
+    boolean m_discardIgnored = false;
+
     /**
      * This collection contains events that are expected to be received during the
      * given unit test.
      */
     final List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
     
+    /**
+     * This collection contains event UEIs that will be ignored during the
+     * given unit test.
+     */
+    final List<String> m_ignoredEventUEIs = new ArrayList<>();
+
     /**
      * This collection contains events that have been received during the unit test.
      * These events are removed from {@link #m_anticipatedEvents} as they are received.
@@ -70,13 +78,21 @@ public class EventAnticipator implements EventListener {
     final List<Event> m_unanticipatedEvents = new ArrayList<Event>();
 
     /**
+     * This list contains events that were ignored during the test.
+     * The {@link #m_ignoredEvents} list is only populated if
+     * {@link #m_discardIgnored} is set to <code>false</code>,
+     * the default.
+     */
+    final List<Event> m_ignoredEvents = new ArrayList<>();
+
+    /**
      */
     public EventAnticipator() {
     }
     
 
     /**
-     * @return the discardUnanticipated
+     * @return true to save or false to discard unanticipated events.
      */
     public boolean isDiscardUnanticipated() {
         return m_discardUnanticipated;
@@ -84,12 +100,25 @@ public class EventAnticipator implements EventListener {
 
 
     /**
-     * @param discardUnanticipated the discardUnanticipated to set
+     * @param discardUnanticipated flag for whether to discard or save unanticipated events.
      */
     public void setDiscardUnanticipated(boolean discardUnanticipated) {
         m_discardUnanticipated = discardUnanticipated;
     }
 
+    /**
+     * @return true to save or false to discard ignored events.
+     */
+    public boolean isDiscardIgnored() {
+        return m_discardIgnored;
+    }
+
+    /**
+     * @param discardIgnored flag for whether to discard or save ignored events.
+     */
+    public void setDiscardIgnored(boolean discardIgnored) {
+        m_discardIgnored = discardIgnored;
+    }
 
     /**
      * @param event
@@ -116,6 +145,16 @@ public class EventAnticipator implements EventListener {
         notifyAll();
     }
 
+    public synchronized void ignoreEventUei(final String uei) {
+        m_ignoredEventUEIs.add(uei);
+    }
+
+    private void saveIgnoredEvent(Event event) {
+        if (!m_discardIgnored) {
+            m_ignoredEvents.add(event);
+        }
+    }
+    
     /**
      * @param event
      */
@@ -126,7 +165,11 @@ public class EventAnticipator implements EventListener {
             m_anticipatedEventsReceived.add(event);
             notifyAll();
         } else {
-            saveUnanticipatedEvent(event);
+            if (m_ignoredEventUEIs.contains(event.getUei())) {
+                saveIgnoredEvent(event);
+            } else {
+                saveUnanticipatedEvent(event);
+            }
         }
     }
 
@@ -156,6 +199,7 @@ public class EventAnticipator implements EventListener {
     public synchronized void reset() {
         resetAnticipated();
         resetUnanticipated();
+        resetIgnored();
     }
 
     public synchronized void resetUnanticipated() {
@@ -167,8 +211,26 @@ public class EventAnticipator implements EventListener {
         m_anticipatedEventsReceived.clear();
     }
 
+    public void resetIgnored() {
+        m_ignoredEvents.clear();
+    }
+
     /**
-     * @param i
+     * @return
+     */
+    public Collection<Event> unanticipatedEvents() {
+        return Collections.synchronizedCollection(Collections.unmodifiableCollection(m_unanticipatedEvents));
+    }
+
+    /**
+     * @return
+     */
+    public Collection<Event> ignoredEvents() {
+        return Collections.synchronizedCollection(Collections.unmodifiableCollection(m_ignoredEvents));
+    }
+
+    /**
+     * @param millis
      * @return
      */
     public synchronized Collection<Event> waitForAnticipated(long millis) {

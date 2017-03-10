@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -89,6 +89,10 @@ public abstract class MockEventUtil {
      */
     public static Event createNodeLostServiceEvent(String source, MockService svc) {
         return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, null);
+    }
+
+    public static Event createPollStatusEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, svc, null);
     }
 
     /**
@@ -661,7 +665,17 @@ public abstract class MockEventUtil {
         if (prefix == null) {
             prefix = "Event";
         }
-        LOG.info("{}: {}/{}/{}/{}", prefix, event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix)
+          .append(": ").append(event.getUei())
+          .append("/").append(event.getNodeid());
+        if (event.getInterface() != null) {
+            sb.append("/").append(event.getInterface());
+            if (event.getService() != null) {
+                sb.append("/").append(event.getService());
+            }
+        }
+        LOG.info(sb.toString());
     }
 
     /**

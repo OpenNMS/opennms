@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -235,7 +237,9 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     @Test
     public void testCreateEvent() throws Exception {
         Date date = new Date(1222222222000L);
-        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, params);
         assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, nodeEvent.getUei());
         assertEquals(Long.valueOf(1), nodeEvent.getNodeid());
         assertNull(nodeEvent.getInterface());
@@ -393,7 +397,9 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         CriticalPath path = m_pathOutageManager.getCriticalPath(1);
         Assert.assertEquals(InetAddrUtils.addr("169.254.0.1"), path.getIpAddress());
 
-        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, new Date(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, new Date(), params);
         Assert.assertNotNull(nodeEvent);
         Assert.assertEquals("169.254.0.1", nodeEvent.getParm(EventConstants.PARM_CRITICAL_PATH_IP).getValue().getContent());
         Assert.assertEquals(EventConstants.PARM_VALUE_PATHOUTAGE, nodeEvent.getParm(EventConstants.PARM_LOSTSERVICE_REASON).getValue().getContent());

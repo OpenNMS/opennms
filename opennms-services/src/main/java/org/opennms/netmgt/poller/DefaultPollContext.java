@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         // service events without node processing enable
         EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI,
         EventConstants.SERVICE_RESPONSIVE_EVENT_UEI,
-        
+        EventConstants.SERVICE_POLLSTATUS_EVENT_UEI,
         // service events with node processing enabled
         EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
         EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
@@ -251,11 +253,11 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
+     * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date, java.lang.String)
      */
     /** {@inheritDoc} */
     @Override
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, Map<String,String> params) {
         LOG.debug("createEvent: uei = {} nodeid = {}", uei, nodeId);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
@@ -286,7 +288,11 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
         
         else if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
-            bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, (reason == null ? "Unknown" : reason));
+            if (params.containsKey(EventConstants.PARM_REASON)) {
+                bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, params.get(EventConstants.PARM_REASON));
+            } else {
+                bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, "Unknown");
+            }
         }
         
         // For node level events (nodeUp/nodeDown) retrieve the
@@ -297,6 +303,13 @@ public class DefaultPollContext implements PollContext, EventListener {
             String nodeLabel = this.getNodeLabel(nodeId);
             bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
             
+        }
+        else if (uei.equals(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI)) {
+            String nodeLabel = this.getNodeLabel(nodeId);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+            params.entrySet().forEach((entry) -> {
+                bldr.addParam(entry.getKey(), entry.getValue());
+            });
         }
         
         return bldr.getEvent();

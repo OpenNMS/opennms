@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,9 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -253,16 +255,28 @@ public class PollableInterface extends PollableContainer {
     /** {@inheritDoc} */
     @Override
     public Event createDownEvent(Date date) {
-        return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date, params);
     }
     
     
     /** {@inheritDoc} */
     @Override
     public Event createUpEvent(Date date) {
-        return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, params);
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        throw new UnsupportedOperationException("No pollStatus event for the interface");
+    }
+
     /**
      * <p>toString</p>
      *

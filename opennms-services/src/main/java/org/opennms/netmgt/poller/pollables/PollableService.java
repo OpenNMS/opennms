@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,9 +30,10 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
-
 import org.opennms.core.logging.Logging;
+
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -51,6 +52,8 @@ import org.slf4j.LoggerFactory;
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
     
     private static final Logger LOG = LoggerFactory.getLogger(PollableService.class);
+
+    private static final String ENABLE_POLLSTATUS_SYSTEM_PROPERTY = "opennms.poller.enablePollStatusEvent";
 
     private final class PollRunner implements Runnable {
     	
@@ -224,14 +227,18 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /** {@inheritDoc} */
     @Override
     public Event createDownEvent(Date date) {
-        return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
     
     
     /** {@inheritDoc} */
     @Override
     public Event createUpEvent(Date date) {
-        return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
     
     /**
@@ -241,7 +248,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createUnresponsiveEvent(Date date) {
-        return getContext().createEvent(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
 
     /**
@@ -251,10 +260,32 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createResponsiveEvent(Date date) {
-        return getContext().createEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        return getContext().createEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * createPollStatusEvent
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        Map<String, String> params = new HashMap<>(4);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        params.put(EventConstants.PARM_POLLSTATUS_STATUSNAME, getStatus().getStatusName());
+        Double responseTime = getStatus().getResponseTime();
+        if (responseTime != null) {
+            params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, responseTime.toString());
+        }
+        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
@@ -281,6 +312,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /** {@inheritDoc} */
     @Override
     public void processStatusChange(Date date) {
+        if (Boolean.getBoolean(ENABLE_POLLSTATUS_SYSTEM_PROPERTY)) {
+            getContext().sendEvent(createPollStatusEvent(new Date()));
+        }
         
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {
@@ -449,7 +483,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * <p>sendDeleteEvent</p>
      */
     public void sendDeleteEvent() {
-        getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), getStatus().getReason()));
+        Map<String, String> params = new HashMap<>(1);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), params));
     }
 
     /**

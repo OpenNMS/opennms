@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -211,6 +211,12 @@ public class PollableNetwork extends PollableContainer {
         throw new UnsupportedOperationException("No up event for the network");
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        throw new UnsupportedOperationException("No pollStatus event for the network");
+    }
+
     static class DumpVisitor extends PollableVisitorAdaptor {
         
         private static final Logger LOG = LoggerFactory.getLogger(PollableNetwork.DumpVisitor.class);

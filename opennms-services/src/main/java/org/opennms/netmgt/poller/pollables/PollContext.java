@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.xml.event.Event;
 
@@ -78,10 +79,10 @@ public interface PollContext {
      * @param address a {@link java.net.InetAddress} object.
      * @param svcName a {@link java.lang.String} object.
      * @param date a {@link java.util.Date} object.
-     * @param reason a {@link java.lang.String} object.
+     * @param params a {@link java.util.Map} object containing {@link java.ling.String} key to {@link java.ling.String} value mappings.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason);
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, Map<String,String> params);
 
     /**
      * <p>openOutage</p>
