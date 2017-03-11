@@ -524,7 +524,7 @@ public class AssetGraphGenerator {
 			String nodeLabelStr = nodeParamaters.get(NodeParamLabels.NODE_NODELABEL);
 			graphMLNode.setId(nodeLabelStr);
 			graphMLNode.setProperty(GraphMLProperties.LABEL, nodeLabelStr);
-			graphMLNode.setProperty(GraphMLProperties.NODE_ID, nodeId);
+			graphMLNode.setProperty(GraphMLProperties.NODE_ID, Integer.parseInt(nodeId));
 			graphMLNode.setProperty(GraphMLProperties.FOREIGN_ID, foreignIdStr);
 			graphMLNode.setProperty(GraphMLProperties.FOREIGN_SOURCE, foreignSourceStr);
 

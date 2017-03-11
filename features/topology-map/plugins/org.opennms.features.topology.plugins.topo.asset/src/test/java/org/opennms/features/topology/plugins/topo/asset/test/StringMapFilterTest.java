@@ -56,7 +56,7 @@ public class StringMapFilterTest {
 		Map<String, Map<String, String>> newMap;
 		newMap = new StringMapFilter(m).filter(filter);
 		String actual=stringMapToString(newMap);
-		//		LOG.debug("\nFilter:"+listToString(filter));
+		//		LOG.debug("\nFilter:"+setToString(filter));
 		//		LOG.debug("\nExpected Result:"+expected);
 		//		LOG.debug("\nActual Result:"+actual);
 
@@ -81,9 +81,9 @@ public class StringMapFilterTest {
 
 		String actual=stringMapToString(newMap);
 
-		//		LOG.debug("\nFilter:"+listToString(filter));
-		//		LOG.debug("\nExpected Result:"+expected);
-		//		LOG.debug("\nActual Result:"+actual);
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
 
 		assertEquals(expected,actual);
 
@@ -220,9 +220,9 @@ public class StringMapFilterTest {
 
 		String actual=setToString(newMap.keySet());
 
-		LOG.debug("\nFilter:"+setToString(filter));
-		LOG.debug("\nExpected Result:"+expected);
-		LOG.debug("\nActual Result:"+actual);
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
 
 		assertEquals(expected,actual);
 
@@ -250,9 +250,9 @@ public class StringMapFilterTest {
 
 		String actual=setToString(newMap.keySet());
 
-		LOG.debug("\nFilter:"+setToString(filter));
-		LOG.debug("\nExpected Result:"+expected);
-		LOG.debug("\nActual Result:"+actual);
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
 
 		assertEquals(expected,actual);
 
@@ -280,13 +280,73 @@ public class StringMapFilterTest {
 
 		String actual=setToString(newMap.keySet());
 
-		LOG.debug("\nFilter:"+setToString(filter));
-		LOG.debug("\nExpected Result:"+expected);
-		LOG.debug("\nActual Result:"+actual);
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
 
 		assertEquals(expected,actual);
 
 		LOG.debug("End of testFilter8()");
+
+	}
+	
+	/**
+	 * check AND works
+	 * key1=outerMap_0_value1,outerMap_1_value1","key5=value5","key2=outerMap_1_value2"
+	 * 
+	 */
+	@Test
+	public void testFilter9() {
+		LOG.debug("Start of testFilter9()");
+		List<String> filter=Arrays.asList("key1=outerMap_0_value1,outerMap_1_value1","key5=value5","key2=outerMap_1_value2");
+
+		String expected = "List<String>[outerMap_1]";
+
+		Map<String, Map<String, String>> m = createMockMap();
+
+		Map<String, Map<String, String>> newMap;
+
+		newMap = new StringMapFilter(m).filter(filter);
+
+		String actual=setToString(newMap.keySet());
+
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
+
+		assertEquals(expected,actual);
+
+		LOG.debug("End of testFilter9()");
+
+	}
+	
+	/**
+	 * check AND with negation works
+	 * key1=outerMap_0_value1,outerMap_1_value1","key5=value5","key2=!outerMap_1_value2"
+	 * 
+	 */
+	@Test
+	public void testFilter10() {
+		LOG.debug("Start of testFilter10()");
+		List<String> filter=Arrays.asList("key1=outerMap_0_value1,outerMap_1_value1","key5=value5","key2=!outerMap_1_value2");
+
+		String expected = "List<String>[outerMap_0]";
+
+		Map<String, Map<String, String>> m = createMockMap();
+
+		Map<String, Map<String, String>> newMap;
+
+		newMap = new StringMapFilter(m).filter(filter);
+
+		String actual=setToString(newMap.keySet());
+
+//		LOG.debug("\nFilter:"+setToString(filter));
+//		LOG.debug("\nExpected Result:"+expected);
+//		LOG.debug("\nActual Result:"+actual);
+
+		assertEquals(expected,actual);
+
+		LOG.debug("End of testFilter9()");
 
 	}
 
@@ -330,20 +390,20 @@ public class StringMapFilterTest {
 		return stringMap;
 	}
 
-//	public String stringMapKeysString(Map<String,Map<String,String>> mockMap){
-//		StringBuffer s= new StringBuffer("Keys[");
-//		for(String key: mockMap.keySet()){
-//			s.append(key+",");
-//			Map<String, String> innerMap = mockMap.get(key);
-//			for(String innerKey: innerMap.keySet()){
-//				s.append(innerKey+"="+innerMap.get(innerKey)+",");
-//			}
-//			if (innerMap.size()!=0) s.deleteCharAt(s.lastIndexOf(","));
-//			s.append("]\n");
-//		}
-//		s.append("]\n");
-//		return s.toString();
-//	}
+	//	public String stringMapKeysString(Map<String,Map<String,String>> mockMap){
+	//		StringBuffer s= new StringBuffer("Keys[");
+	//		for(String key: mockMap.keySet()){
+	//			s.append(key+",");
+	//			Map<String, String> innerMap = mockMap.get(key);
+	//			for(String innerKey: innerMap.keySet()){
+	//				s.append(innerKey+"="+innerMap.get(innerKey)+",");
+	//			}
+	//			if (innerMap.size()!=0) s.deleteCharAt(s.lastIndexOf(","));
+	//			s.append("]\n");
+	//		}
+	//		s.append("]\n");
+	//		return s.toString();
+	//	}
 
 	public String stringMapToString(Map<String,Map<String,String>> mockMap){
 		StringBuffer s= new StringBuffer("Map<String,Map<String,String>>[");

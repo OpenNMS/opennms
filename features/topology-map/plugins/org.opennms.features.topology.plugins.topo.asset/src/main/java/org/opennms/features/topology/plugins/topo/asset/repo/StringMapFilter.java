@@ -1,6 +1,7 @@
 package org.opennms.features.topology.plugins.topo.asset.repo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,24 +42,25 @@ public class StringMapFilter {
 	}
 
 	private boolean matches(Map<String, String> peramaterMap,List<String> filter) {
-		boolean matches = false;
 
 		// check filter correctness and split comma separated values
+		if(filter.isEmpty()) return false;
+
 		List<String>newFilter=new ArrayList<String>();
 		for (String filterElement : filter) {
 			String[] keyVal = filterElement.split("=");
 			if (keyVal.length < 2)
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"filter element incorrectly formatted. (no '=' in filterElement '"
 								+ filterElement + "')");
 			if (keyVal.length != 2)
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"filter element incorrectly formatted. (too many '=' in  filterElement '"
 								+ filterElement + "')");
 			String key = keyVal[0];
 			String value = keyVal[1];
 			if (key.contains(","))
-				throw new RuntimeException(
+				throw new IllegalArgumentException(
 						"filter element incorrectly formatted. (',' in  key in filterElement '"
 								+ filterElement + "')");
 			// deal with case parameter=a,b,c
@@ -68,26 +70,50 @@ public class StringMapFilter {
 				newFilter.add(key+"="+val);
 			}
 		}
-
 		// deal with new filter without comma separated values
+
+		// separate all values for each key
+		Map<String,List<String>> keys = new LinkedHashMap<String,List<String>>();
+
 		for (String filterElement : newFilter) {
 			String[] keyVal = filterElement.split("=");
 			String key = keyVal[0];
 			String value = keyVal[1];
-			String paramValue = peramaterMap.get(key);
-			if(value.equals("!")) throw new RuntimeException("filter element incorrectly formatted. (only'!' in  filterElement '"
+			if(value.equals("!")) throw new IllegalArgumentException("filter element incorrectly formatted. (only'!' in  filterElement '"
 					+ filterElement + "')");
-			if (paramValue != null) {
-				// deal with negation
-				if (value.startsWith("!")) {
-					if (value.substring(1).equals(paramValue)) return false;
-				} else {
-					if (value.equals(paramValue)) matches= true;
-				}
+
+			if(!keys.containsKey(key)){
+				keys.put(key, new ArrayList<String>());
 			}
+			keys.get(key).add(value);
 		}
 
-		return matches;
+		// for each key if no matching parameter key return false
+		// for each key if no matching parameter values return false
+
+		for(String key:keys.keySet()){
+			String paramValue = peramaterMap.get(key);
+			boolean innerMatch=false;
+			List<String> values = keys.get(key);
+
+			for(String value:values){
+				// deal with negation
+				if (value.startsWith("!")) {
+					// break and return if we ever find a NOT value
+					if (value.substring(1).equals(paramValue)) return false;
+					innerMatch= true;
+				} else {
+					if (value.equals(paramValue)) {
+						// break and return innerMatch true if paramValue matches value
+						innerMatch= true;
+						break;
+					}
+				}
+			}
+			if(!innerMatch) return false;
+		}
+
+		return true;
 	}
 
 }
