@@ -126,19 +126,15 @@ public interface EnhancedLinkdService {
     Set<BroadcastDomain> getAllBroadcastDomains();
     
     Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
-
-    void save(int rootId, List<BridgeMacLink> rootBFT);
     
-    BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
+    BroadcastDomain getBroadcastDomain(int nodeId);
 
     List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
 
     List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
 
     boolean hasUpdatedBft(int nodeid);
-    
-    List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid);
-    
+        
     List<BridgeElement> getBridgeElements(Set<Integer> nodeids);
 
 }

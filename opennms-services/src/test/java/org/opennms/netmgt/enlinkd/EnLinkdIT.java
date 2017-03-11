@@ -112,7 +112,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(topology.bftA.size(), links.size());
         for (BridgeMacLink link: links) {
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
-            printBridgeMacLink(link);
+            System.err.println(link.printTopology());
         }
     }
     
@@ -197,19 +197,19 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
-        topology.check(nodeAbd.getTopology());
+        topology.check(nodeAbd);
         
         List<SharedSegment> nodeASegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeA.getId());
         assertEquals(2, nodeASegments.size());
         for (SharedSegment segment: nodeASegments) {
-            printSharedSegment(segment);
+        	System.err.println(segment.printTopology());
         }
     }    
     
@@ -288,12 +288,12 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
         assertNotNull(nodeBbd);
         assertEquals(nodeAbd, nodeBbd);
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertNotNull(nodeCbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());
@@ -302,13 +302,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridgeId());
-        topology.check(nodeAbd.getTopology());
+        topology.check(nodeAbd);
         
         m_linkd.deleteNode(nodeC.getId());
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyDao.getAll().iterator().next();
-        topology.checkAB(domain.getTopology());
+        topology.checkAB(domain);
         
     }
     
@@ -387,10 +387,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());
@@ -399,7 +399,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridgeId());
-        topology.check(nodeAbd.getTopology());
+        topology.check(nodeAbd);
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeB.getId()));
         
@@ -407,7 +407,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyDao.getAll().iterator().next();
-        topology.checkAC(domain.getTopology());
+        topology.checkAC(domain);
         
     }
     
@@ -486,10 +486,10 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         m_linkd.getQueryManager().loadBridgeTopology();
 
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
-        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
-        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
-        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         assertNull(nodeAbd.getRootBridgeId());
@@ -498,7 +498,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         assertNotNull(nodeAbd.getRootBridgeId());
-        topology.check(nodeAbd.getTopology());
+        topology.check(nodeAbd);
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeA.getId()));
         m_linkd.scheduleBridgeTopologyDiscovery(nodeA.getId());
@@ -507,7 +507,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(1, m_bridgeTopologyDao.getAll().size());
         
         BroadcastDomain domain = m_bridgeTopologyDao.getAll().iterator().next();
-        topology.checkBC(domain.getTopology());
+        topology.checkBC(domain);
         
     }
 
