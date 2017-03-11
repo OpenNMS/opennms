@@ -1366,6 +1366,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             LOG.debug("mergeNodeAttributes(): skipping event.");
         }
 
+        if (hasNewValue(scannedNode.getLocation(), getLocation())) {
+            setLocation(scannedNode.getLocation());
+        }
+
         if (hasNewValue(scannedNode.getForeignSource(), getForeignSource())) {
             setForeignSource(scannedNode.getForeignSource());
         }

@@ -493,7 +493,7 @@ create table node (
 	location        text not null,
 
 	constraint pk_nodeID primary key (nodeID),
-	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);

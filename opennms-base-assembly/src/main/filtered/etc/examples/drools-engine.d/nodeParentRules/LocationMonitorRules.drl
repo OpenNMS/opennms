@@ -17,6 +17,7 @@ global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 global java.lang.Integer WIDE_SPREAD_THRESHOLD;
 global java.lang.Long FLAP_INTERVAL;
 global java.lang.Integer FLAP_COUNT;
+global org.slf4j.Logger LOG;
 
 rule "first service lost event received"
 	salience 100
