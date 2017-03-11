@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.persistence.tcponly;
+package org.opennms.netmgt.collection.persistence.tcp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class TcpOutputStrategyFactory implements ApplicationContextAware {
     /**
      * <p>getStrategy</p>
      *
-     * @return a {@link org.opennms.netmgt.collection.persistence.tcponly.TcpOutputStrategy} object.
+     * @return a {@link org.opennms.netmgt.collection.persistence.tcp.TcpOutputStrategy} object.
      */
     @SuppressWarnings("unchecked")
     public TcpOutputStrategy getStrategy() {

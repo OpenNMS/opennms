@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.persistence.tcponly;
+package org.opennms.netmgt.collection.persistence.tcp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,6 +61,10 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(TcpPersistOperationBuilder.class);
 
+    // Piggyback off of RRD directory/extension for now
+    final String baseDir = System.getProperty("rrd.base.dir", "");
+    final String fileExt = System.getProperty("org.opennms.rrd.fileExtension", "");
+
     private final TcpOutputStrategy m_tcpStrategy;
     private final String m_rrdName;
     private final ResourceIdentifier m_resource;
@@ -71,7 +75,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
     /**
      * <p>Constructor for TcpPersistOperationBuilder.</p>
      *
-     * @param tcpStrategy a {@link org.opennms.netmgt.collection.persistence.tcponly.TcpOutputStrategy} object.
+     * @param tcpStrategy a {@link org.opennms.netmgt.collection.persistence.tcp.TcpOutputStrategy} object.
      * @param resource a {@link org.opennms.netmgt.collection.api.ResourceIdentifier} object.
      * @param rrdName a {@link java.lang.String} object.
      */
@@ -99,7 +103,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
-        return new File("/opt/opennms/share/rrd").toPath()
+        return new File(baseDir).toPath()
                 .resolve(resource.getPath())
                 .toFile();
     }
@@ -139,7 +143,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
             final String ownerName = m_resource.getOwnerName();
             final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
 
-            String rrdFile = absolutePath + File.separator + m_rrdName + ".jrb";
+            String rrdFile = absolutePath + File.separator + m_rrdName + fileExt;
             long timestamp = m_timeKeeper.getCurrentTime();
             long time = (timestamp + 500L) / 1000L;
 

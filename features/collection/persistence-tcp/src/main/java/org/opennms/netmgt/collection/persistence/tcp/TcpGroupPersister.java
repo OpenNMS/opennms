@@ -25,11 +25,9 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.collection.persistence.tcponly;
+package org.opennms.netmgt.collection.persistence.tcp;
 
-import java.util.Collections;
-
-import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -37,14 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class TcpSinglePersister.
+ * The Class TcpGroupPersister.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class TcpSinglePersister extends TcpBasePersister {
+public class TcpGroupPersister extends TcpBasePersister {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(TcpSinglePersister.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TcpGroupPersister.class);
 
     /**
      * Instantiates a new TCP persister.
@@ -52,27 +50,26 @@ public class TcpSinglePersister extends TcpBasePersister {
      * @param params the service parameters
      * @param repository the repository
      */
-    public TcpSinglePersister(ServiceParameters params, RrdRepository repository, TcpOutputStrategy tcpStrategy) {
+    public TcpGroupPersister(ServiceParameters params, RrdRepository repository, TcpOutputStrategy tcpStrategy) {
         super(params, repository, tcpStrategy);
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.AbstractPersister#visitAttribute(org.opennms.netmgt.collection.api.CollectionAttribute)
+     * @see org.opennms.netmgt.collection.api.AbstractPersister#visitGroup(org.opennms.netmgt.collection.api.AttributeGroup)
      */
     @Override
-    public void visitAttribute(CollectionAttribute attribute) {
-        pushShouldPersist(attribute);
+    public void visitGroup(AttributeGroup group) {
+        pushShouldPersist(group);
         if (shouldPersist()) {
-            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
-            storeAttribute(attribute);
+            setBuilder(createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes()));
         }
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.AbstractPersister#completeAttribute(org.opennms.netmgt.collection.api.CollectionAttribute)
+     * @see org.opennms.netmgt.collection.api.AbstractPersister#completeGroup(org.opennms.netmgt.collection.api.AttributeGroup)
      */
     @Override
-    public void completeAttribute(CollectionAttribute attribute) {
+    public void completeGroup(AttributeGroup group) {
         if (shouldPersist()) {
             commitBuilder();
         }

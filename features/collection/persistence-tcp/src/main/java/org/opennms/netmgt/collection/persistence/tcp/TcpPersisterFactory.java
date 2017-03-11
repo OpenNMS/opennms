@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.collection.persistence.tcponly;
+package org.opennms.netmgt.collection.persistence.tcp;
 
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;

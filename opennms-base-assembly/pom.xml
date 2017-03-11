@@ -330,11 +330,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-tcponly</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -626,6 +621,11 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.timeseries-evaluate</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.tcp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
