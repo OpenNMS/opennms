@@ -37,13 +37,13 @@ public class NodeInfoRepositoryXmlTest {
 		// write MockNodeInfoRepository to xml file 
 		NodeInfoRepository nodeInfoRep = NodeInfoRepositoryTest.getMockNodeInfoRepository(null);
 		String nodeInfoxml = NodeInfoRepositoryXML.nodeInfoToXML(nodeInfoRep.getNodeInfo());
-		Utils.writeFileToDisk(nodeInfoxml, TEST_TEMP_FILE_NAME, TEST_TEMP_FOLDER);
+		Utils.writeFileToDisk(nodeInfoxml, TEST_TEMP_FOLDER, TEST_TEMP_FILE_NAME );
 		
 		//create and populate new NodeInfoRepository from xml file
 		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
 		Map<String, Map<String, String>> nodeInfo = nodeInfoRepository.getNodeInfo();
 
-		String nodeInfoXmlStr = Utils.readFileFromDisk(TEST_TEMP_FILE_NAME, TEST_TEMP_FOLDER);
+		String nodeInfoXmlStr = Utils.readFileFromDisk(TEST_TEMP_FOLDER, TEST_TEMP_FILE_NAME);
 		NodeInfoRepositoryXML.XMLtoNodeInfo(nodeInfo, nodeInfoXmlStr);
 		
 		//check sample data
@@ -69,7 +69,7 @@ public class NodeInfoRepositoryXmlTest {
 		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
 		Map<String, Map<String, String>> nodeInfo = nodeInfoRepository.getNodeInfo();
 
-		String nodeInfoXmlStr = Utils.readFileFromDisk(NODE_TEST_DATA_FILE_NAME, TEST_RESOURCE_FOLDER);
+		String nodeInfoXmlStr = Utils.readFileFromDisk( TEST_RESOURCE_FOLDER, NODE_TEST_DATA_FILE_NAME);
 		NodeInfoRepositoryXML.XMLtoNodeInfo(nodeInfo, nodeInfoXmlStr);
 		
 		LOG.debug(nodeInfoRepository.nodeInfoToString());

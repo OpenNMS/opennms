@@ -146,8 +146,7 @@ public class AssetGraphMLProvider implements EventListener {
 					nodeInfoRepository.initialiseNodeInfo(null);
 					String nodeInfoxml = NodeInfoRepositoryXML
 							.nodeInfoToXML(nodeInfoRepository.getNodeInfo());
-					Utils.writeFileToDisk(nodeInfoxml, ASSET_LIST_XML_FILE,
-							TEMP_FOLDER);
+					Utils.writeFileToDisk(nodeInfoxml, TEMP_FOLDER, ASSET_LIST_XML_FILE);
 				} catch (Exception ex) {
 					LOG.error("problem creating " + ASSET_LIST_XML_FILE, ex);
 				}

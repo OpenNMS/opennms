@@ -56,8 +56,13 @@ public class AssetGraphGenerator {
 	
 	private TransactionOperations transactionOperations;
 	
+	public AssetGraphGenerator(){
+		super();
+	}
+	
 	public AssetGraphGenerator(NodeDao nodeDao, TransactionOperations transactionOperations) {
 		this.nodeDao = Objects.requireNonNull(nodeDao);
+		this.transactionOperations = Objects.requireNonNull(transactionOperations);
 	}
 
 	//    public GraphML generateGraphs(GeneratorConfig config) {
@@ -184,21 +189,21 @@ public class AssetGraphGenerator {
 			List<GraphMLGraph> graphList = new ArrayList<GraphMLGraph>();
 			Integer semanticZoomLevel=0;
 
-			String descriptionStr=null;
+			String descriptionStr="";
 			// create graph for each layer in hierarchy
-			for(String graphname:layerHierarchy){
+			for(String graphId:layerHierarchy){
 				//(GraphmlType graphmlType, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt)
-				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphname, descriptionStr, preferredLayout, semanticZoomLevel);
+				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
 				graphList.add(graph);
-				msg.append(graphname+",");
+				msg.append(graphId+",");
 				semanticZoomLevel++;
 			}
 
 			//create graph for nodes layer (last layer in hierarchy)
-			String graphname="nodes";
-			GraphMLGraph nodegraph = createGraphInGraphmlType(graphmlType, graphname, descriptionStr, preferredLayout, semanticZoomLevel);
+			String graphId="nodes";
+			GraphMLGraph nodegraph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
 			graphList.add(nodegraph);
-			msg.append(graphname);
+			msg.append(graphId);
 
 			if( LOG.isDebugEnabled()) LOG.debug(msg.toString());
 
@@ -219,10 +224,10 @@ public class AssetGraphGenerator {
 				unAllocatedNodeInfo.remove(allocatedNodeId);
 			}
 
-			graphname="unallocated_Nodes";
+			graphId="unallocated_Nodes";
 			descriptionStr="A graph containing all nodes which cannot be placed in topology hierarchy";
 			semanticZoomLevel=0;
-			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphname, descriptionStr, preferredLayout, semanticZoomLevel);
+			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
 			addOpenNMSNodes(graph, unAllocatedNodeInfo);
 		}
 
@@ -352,7 +357,7 @@ public class AssetGraphGenerator {
 						GraphMLNode childNode = nextgraph.getNodeById(childNodeLabelStr);						
 						GraphMLEdge edge = addEdgeToGraph(graph, node, childNode);
 
-						msg.append(edge.getId()+",");
+						if (edge!=null) msg.append(edge.getId()+",");
 
 						addedNodes.put(targetNodeId, nodeParamaters);
 					}
@@ -366,7 +371,7 @@ public class AssetGraphGenerator {
 						GraphMLNode childNode = nextgraph.getNodeById(nodeLabelStr);
 						GraphMLEdge edge = addEdgeToGraph(graph, node, childNode);
 
-						msg.append(edge.getId()+",");
+						if (edge!=null) msg.append(edge.getId()+",");
 
 						addedNodes.put(targetNodeId, nodeParamaters);
 					}
@@ -417,7 +422,7 @@ public class AssetGraphGenerator {
 	 * @param graph
 	 * @param sourceIdStr source nodeId for this edge (nodeId represents the graphml nodeId unique in the graph namespace)
 	 * @param targetIdStr target nodeId for this edge
-	 * @return
+	 * @return added edge or null if already in graph
 	 */
 	private GraphMLEdge addEdgeToGraph(GraphMLGraph graph, GraphMLNode sourceNode, GraphMLNode targetNode){
 
@@ -428,7 +433,7 @@ public class AssetGraphGenerator {
 
 		String id =sourceIdStr+"_"+targetIdStr;
 
-		if (graph.getEdgeById(id)!=null){
+		if (graph.getEdgeById(id)==null){
 			if( LOG.isDebugEnabled()) LOG.debug("adding edge id="+id+ " to graph:"+graph.getId());
 			edge= new GraphMLEdge();
 			edge.setId(id);
@@ -483,6 +488,7 @@ public class AssetGraphGenerator {
 	 */
 	private GraphMLGraph createGraphInGraphmlType(GraphML graphML, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt) {
 		GraphMLGraph graph = new GraphMLGraph();
+		graph.setId(graphId);
 
 		graph.setProperty(GraphMLProperties.NAMESPACE, graphId);
 		graph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");

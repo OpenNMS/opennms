@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class Utils {
 	private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 	
-	public static void writeFileToDisk(String content, String filename, String filefolder){
+	public static void writeFileToDisk(String content, String filefolder, String filename ){
 		File folder = new File(filefolder);
 		File file = new File(folder, filename );
 		LOG.info("writing to file:"+file.getAbsolutePath());
@@ -57,7 +57,7 @@ public class Utils {
 		}
 	}
 
-	public static String readFileFromDisk(String filename, String filefolder){
+	public static String readFileFromDisk(String filefolder, String filename ){
 		String xmlString=null;
 		BufferedReader bufReader=null;
 		try{

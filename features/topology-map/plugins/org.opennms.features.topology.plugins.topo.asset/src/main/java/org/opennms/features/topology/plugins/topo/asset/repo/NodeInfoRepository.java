@@ -92,6 +92,23 @@ public class NodeInfoRepository {
 		this.transactionOperations = transactionOperations;
 	}
 
+	/**
+	 * returns filtered node info repository
+	 * filter name value pair
+	 * filter = null do not filter results
+	 * key1=value1&key1=value2 (additive i.e. OR of key 1 values
+	 * key1=value1,value2,value3 (additive i.e. OR of key 1 values) alternative)
+	 * key1=value1,key2=value2,value3 etc (AND of keys - both must apply)
+	 * key1=!value1 (negation - key NOT value1)
+	 * key1=~regex (regex match of key) or key1=!~regex
+	 * @param filter filter can be derived from url query
+	 * @return filter NodeInfo
+	 */
+	public Map<String, Map<String, String>> getNodeInfo(Map<String,String> filter) {
+		
+		return nodeInfo;
+	}
+	
 	/** 
 	 * utility method to clear nodeInfo table
 	 */
