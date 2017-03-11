@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.Date;
+
 
 
 
@@ -96,13 +95,17 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
         }
         
         if (cdpGlobalGroup.getCdpDeviceId() == null ) {
-            LOG.info("run: cdp mib not supported on: {}", str(getPeer().getAddress()));
+            LOG.info("run: node [{}]: address {}. CDP_MIB mib not supported", 
+            		getNodeId(),
+            		getPrimaryIpAddressString());
             return;
         } 
         CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
         m_linkd.getQueryManager().store(getNodeId(), cdpElement);
         if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
-            LOG.info("run: cdp disabled on: {}", str(getPeer().getAddress()));
+            LOG.info("run: node [{}]: address {}. CDP Disabled", 
+            		getNodeId(),
+            		getPrimaryIpAddressString());
             return;
         }
 
@@ -135,15 +138,8 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable CdpLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
-		return "CdpLinksDiscovery";
+		return "CdpLinkDiscovery";
 	}
 
 }
