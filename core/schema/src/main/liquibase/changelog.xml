@@ -76,6 +76,7 @@
 	<include file="17.0.0/changelog.xml"/>
 	<include file="18.0.0/changelog.xml"/>
 	<include file="19.0.0/changelog.xml"/>
+	<include file="19.0.2/changelog.xml"/>
 
 	<include file="2015.1.0/changelog.xml"/>
 
