@@ -3,6 +3,9 @@ package org.opennms.features.topology.plugins.topo.asset.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
+import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphGenerator;
@@ -36,7 +40,7 @@ public class NodeInfoToGraphMLTest {
 
 	//layerHierarch empty
 	@Test
-	public void assetGraphGeneratorTest1() throws InvalidGraphException {
+	public void assetGraphGeneratorTest1() throws InvalidGraphException, FileNotFoundException {
 		LOG.debug("start of assetGraphGeneratorTest1");
 		//create and populate new NodeInfoRepository from xml file
 		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
@@ -52,14 +56,20 @@ public class NodeInfoToGraphMLTest {
 		String preferredLayout="Grid Layout";
 		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout);
 		
-		GraphMLWriter.write(graphML , new File("target/output.graphml"));
+		GraphMLWriter.write(graphML , new File("target/test1.graphml"));
+		
+		// check we can read written graphml file
+		File graphMLFile= new File("target/test1.graphml");
+		InputStream input = new FileInputStream(graphMLFile);
+        GraphML readgraphML = GraphMLReader.read(input);
+        assertEquals(1,readgraphML.getGraphs().size());
 		
 		LOG.debug("end of assetGraphGeneratorTest1");
 	}
 	
 	// layerhierarchy populated
 	@Test
-	public void assetGraphGeneratorTest2() throws InvalidGraphException {
+	public void assetGraphGeneratorTest2() throws InvalidGraphException, FileNotFoundException {
 		LOG.debug("start of assetGraphGeneratorTest2");
 		//create and populate new NodeInfoRepository from xml file
 		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
@@ -77,8 +87,13 @@ public class NodeInfoToGraphMLTest {
 		String preferredLayout="Grid Layout";
 		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout);
 		
-		GraphMLWriter.write(graphML , new File("target/output2.graphml"));
+		GraphMLWriter.write(graphML , new File("target/test2.graphml"));
 		
+        //check written graphml against test topology file
+        String expectedFileXmlStr = Utils.readFileFromDisk(TEST_RESOURCE_FOLDER, GRAPHML_TEST_TOPOLOGY_FILE_NAME);
+        String testGraphmlXmlStr = Utils.readFileFromDisk("./target", "test2.graphml");
+        assertEquals(expectedFileXmlStr,testGraphmlXmlStr);
+        
 		LOG.debug("end of assetGraphGeneratorTest2");
 	}
 

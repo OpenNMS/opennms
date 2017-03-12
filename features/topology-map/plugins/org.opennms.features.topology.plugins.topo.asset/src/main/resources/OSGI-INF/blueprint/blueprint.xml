@@ -30,6 +30,7 @@
         <property name="providerId" value="${providerId}"/>
         <property name="preferredLayout" value="${preferredLayout}"/>
         <property name="breadcrumbStrategy" value="${breadcrumbStrategy}"/>
+        <property name="filter" value="${filter}"/>
     </bean>
 
     <bean id="assetGraphmlProvder" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
