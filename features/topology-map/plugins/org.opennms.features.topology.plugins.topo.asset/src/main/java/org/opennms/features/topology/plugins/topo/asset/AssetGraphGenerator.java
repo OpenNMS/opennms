@@ -53,13 +53,13 @@ public class AssetGraphGenerator {
 	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphGenerator.class);
 
 	private NodeDao nodeDao;
-	
+
 	private TransactionOperations transactionOperations;
-	
+
 	public AssetGraphGenerator(){
 		super();
 	}
-	
+
 	public AssetGraphGenerator(NodeDao nodeDao, TransactionOperations transactionOperations) {
 		this.nodeDao = Objects.requireNonNull(nodeDao);
 		this.transactionOperations = Objects.requireNonNull(transactionOperations);
@@ -70,13 +70,14 @@ public class AssetGraphGenerator {
 		String menuLabelStr= config.getLabel();
 		List<String> layerHierarchy= config.getLayerHierarchies();
 		String preferredLayout = config.getPreferredLayout();
-		
+		boolean generateUnallocated = config.getGenerateUnallocated();
+
 		Map<String, Map<String, String>> onmsNodeInfo =generateNodeInfo(config);
 
-		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr,layerHierarchy, preferredLayout);
+		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr, layerHierarchy, preferredLayout, generateUnallocated);
 
 	}
-	
+
 	public Map<String, Map<String, String>> generateNodeInfo(GeneratorConfig config) {
 
 		List<String> filter = config.getFilterList();
@@ -86,7 +87,7 @@ public class AssetGraphGenerator {
 		nodeInfoRepository.setTransactionOperations(transactionOperations);
 		nodeInfoRepository.initialiseNodeInfo(null);
 		Map<String, Map<String, String>> onmsNodeInfo =nodeInfoRepository.getFilteredNodeInfo(filter);
-		
+
 		return onmsNodeInfo;
 	}
 
@@ -95,7 +96,8 @@ public class AssetGraphGenerator {
 	 * This method generates the layer hierarchy graphml file from the
 	 * node asset information supplied in nodeInfoRepository
 	 */
-	public GraphML nodeInfoToTopology(Map<String, Map<String, String>> onmsNodeInfo, String menuLabelStr,List<String> layerHierarchy, String preferredLayout) {
+	public GraphML nodeInfoToTopology(Map<String, Map<String, String>> onmsNodeInfo, String menuLabelStr,
+			List<String> layerHierarchy, String preferredLayout, boolean generateUnallocated) {
 
 		// print log info for graph definition
 		StringBuffer msg = new StringBuffer("Creating topology "+menuLabelStr+" for layerHierarchy :");
@@ -163,11 +165,13 @@ public class AssetGraphGenerator {
 				unAllocatedNodeInfo.remove(allocatedNodeId);
 			}
 
-			graphId="unallocated_Nodes";
-			descriptionStr="A graph containing all nodes which cannot be placed in topology hierarchy";
-			semanticZoomLevel=0;
-			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
-			addOpenNMSNodes(graph, unAllocatedNodeInfo);
+			if(generateUnallocated){
+				graphId="unallocated_Nodes";
+				descriptionStr="A graph containing all nodes which cannot be placed in topology hierarchy";
+				semanticZoomLevel=0;
+				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
+				addOpenNMSNodes(graph, unAllocatedNodeInfo);
+			}
 		}
 
 		return graphmlType;

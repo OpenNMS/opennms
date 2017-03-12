@@ -122,7 +122,7 @@ public class GeneratorConfig {
 				+ ", filter=" + filter 
 				+ ", breadcrumbStrategy="+ breadcrumbStrategy
 				+ ", preferredLayout=" + preferredLayout 
-				+ ", geneateUnallocated=" + generateUnallocated 
+				+ ", generateUnallocated=" + generateUnallocated 
 				+ "]";
 	}
     

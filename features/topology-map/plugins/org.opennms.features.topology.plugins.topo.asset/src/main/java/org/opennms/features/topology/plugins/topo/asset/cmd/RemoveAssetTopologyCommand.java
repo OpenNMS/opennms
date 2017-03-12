@@ -34,11 +34,14 @@ import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 @Command(scope = "asset-topology/remove", name = "removeAssetTopology", description="Removes Asset Topology")
 public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
+	private static final Logger LOG = LoggerFactory.getLogger(RemoveAssetTopologyCommand.class);
 
 	private AssetGraphMLProvider assetGraphMLProvider;
 
@@ -60,13 +63,15 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 		this.defaultGeneratorConfig = defaultGeneratorConfig;
 	}
 
-	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = true, multiValued = false)
-	String providerId = defaultGeneratorConfig.getProviderId();
+	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
+	String providerId = null;
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
 			GeneratorConfig config = new GeneratorConfig();
+			
+			if (providerId==null) providerId=defaultGeneratorConfig.getProviderId();
 			config.setProviderId(providerId);
 
 			System.out.println("Removing Asset Topology for providerId="+providerId);
@@ -78,6 +83,7 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 		} catch (Exception e) {
 			System.out.println("Error Removing Asset Topology for providerId="+providerId
 					+ " Exception="+e);
+			LOG.error("Error Removing Asset Topology for providerId="+providerId,e);
 		}
 		return null;
 	}

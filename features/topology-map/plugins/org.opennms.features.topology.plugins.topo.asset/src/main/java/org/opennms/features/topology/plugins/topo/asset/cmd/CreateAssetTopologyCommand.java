@@ -34,9 +34,12 @@ import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Command(scope = "asset-topology/create", name = "createAssetTopology", description="Creates Asset Topology")
 public class CreateAssetTopologyCommand extends OsgiCommandSupport {
+	private static final Logger LOG = LoggerFactory.getLogger(CreateAssetTopologyCommand.class);
 
 	private AssetGraphMLProvider assetGraphMLProvider;
 
@@ -58,37 +61,51 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 		this.defaultGeneratorConfig = defaultGeneratorConfig;
 	}
 
-	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = true, multiValued = false)
-	String providerId = defaultGeneratorConfig.getProviderId();
+	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
+	String providerId = null;
 
-	@Argument(index = 1, name = "assetLayers", description = "Comma seperated list of asset layers", required = true, multiValued = false)
-	String assetLayers = defaultGeneratorConfig.getAssetLayers();
+	@Argument(index = 1, name = "assetLayers", description = "Comma seperated list of asset layers", required = false, multiValued = false)
+	String assetLayers = null;
 
 	@Argument(index = 2, name = "filter", description = "Topology node filter", required = false, multiValued = false)
-	String filter = defaultGeneratorConfig.getFilter();
+	String filter = null;
 
 	@Argument(index = 3, name = "generateUnallocated", description = "Generate Unallocated Nodes Graph", required = false, multiValued = false)
-	String generateUnallocatedStr = Boolean.toString(defaultGeneratorConfig.getGenerateUnallocated());
+	String generateUnallocatedStr = null;
 
 	@Argument(index = 4, name = "label", description = "Asset Topology label (shows in topology menu - defaults to providerId )", required = false, multiValued = false)
-	String label = defaultGeneratorConfig.getLabel();
+	String label = null;
 
 	@Argument(index = 5, name = "breadcrumbStrategy", description = "Bread Crumb Strategy", required = false, multiValued = false)
-	String breadcrumbStrategy = defaultGeneratorConfig.getBreadcrumbStrategy();
+	String breadcrumbStrategy = null;
 
 	@Argument(index = 6, name = "preferredLayout", description = "Preferred Layout", required = false, multiValued = false)
-	String preferredLayout = defaultGeneratorConfig.getPreferredLayout();
+	String preferredLayout = null;
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
 			GeneratorConfig config = new GeneratorConfig();
+			
+			if (providerId==null) providerId=defaultGeneratorConfig.getProviderId();
 			config.setProviderId(providerId);
+			
+			if(assetLayers==null) assetLayers=defaultGeneratorConfig.getAssetLayers();
 			config.setAssetLayers(assetLayers);
+			
+			if(filter==null) filter = defaultGeneratorConfig.getFilter();
 			config.setFilter(filter);
+			
+			if (generateUnallocatedStr==null) generateUnallocatedStr = (Boolean.toString(defaultGeneratorConfig.getGenerateUnallocated()));
 			config.setGenerateUnallocated(Boolean.valueOf(generateUnallocatedStr));
+			
+			if(label==null) label =defaultGeneratorConfig.getLabel();
 			config.setLabel(label);
+			
+			if (breadcrumbStrategy==null) breadcrumbStrategy=defaultGeneratorConfig.getBreadcrumbStrategy();
 			config.setBreadcrumbStrategy(breadcrumbStrategy);
+			
+			if (preferredLayout==null) preferredLayout=defaultGeneratorConfig.getPreferredLayout();
 			config.setPreferredLayout(preferredLayout);
 
 			System.out.println("Creating Asset Topology from configuration "+config);
@@ -99,6 +116,7 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 
 		} catch (Exception e) {
 			System.out.println("Error Creating Asset Topology. Exception="+e);
+			LOG.error("Error Creating Asset Topology",e);
 		}
 		return null;
 	}

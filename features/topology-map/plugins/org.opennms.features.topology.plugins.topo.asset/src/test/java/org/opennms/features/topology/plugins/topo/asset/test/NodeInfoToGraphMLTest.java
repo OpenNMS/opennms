@@ -54,7 +54,8 @@ public class NodeInfoToGraphMLTest {
 		String menuLabelStr="testgraph";
 		List<String> layerHierarchy= new ArrayList<String>(); //Arrays.asList(a);
 		String preferredLayout="Grid Layout";
-		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout);
+		boolean generateUnallocated=true;
+		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout,generateUnallocated);
 		
 		GraphMLWriter.write(graphML , new File("target/test1.graphml"));
 		
@@ -85,7 +86,8 @@ public class NodeInfoToGraphMLTest {
 				NodeParamLabels.ASSET_BUILDING, 
 				NodeParamLabels.ASSET_RACK);
 		String preferredLayout="Grid Layout";
-		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout);
+		boolean generateUnallocated=true;
+		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout,generateUnallocated);
 		
 		GraphMLWriter.write(graphML , new File("target/test2.graphml"));
 		
