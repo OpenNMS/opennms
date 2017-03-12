@@ -65,79 +65,20 @@ public class AssetGraphGenerator {
 		this.transactionOperations = Objects.requireNonNull(transactionOperations);
 	}
 
-	//    public GraphML generateGraphs(GeneratorConfig config) {
-	//        final GraphML graphML = new GraphML();
-	//        graphML.setProperty(GraphMLProperties.LABEL, config.getLabel());
-	//        graphML.setProperty(GraphMLProperties.BREADCRUMB_STRATEGY, config.getBreadcrumbStrategy());
-	//
-	//        // Simulate asset layer generation
-	//        final List<String> layerHierarchies = config.getLayerHierarchies();
-	//        for (String eachLayer : layerHierarchies) {
-	//            GraphMLGraph layerGraph = new GraphMLGraph();
-	//            layerGraph.setId(eachLayer);
-	//            layerGraph.setProperty(GraphMLProperties.NAMESPACE, "asset:" + eachLayer);
-	//            applyDefaults(layerGraph, "Layer " + eachLayer, config);
-	//
-	//            // E.g. assetHelper.getAssetValues(eachLayer)
-	//            for (int i=0; i<3; i++) {
-	//                GraphMLNode assetNode = new GraphMLNode();
-	//                assetNode.setId(eachLayer + "_" + i);
-	//                assetNode.setProperty(GraphMLProperties.LABEL, "Simulated Asset value layer " + eachLayer + " item " + i);
-	//
-	//                layerGraph.addNode(assetNode);
-	//            }
-	//            graphML.addGraph(layerGraph);
-	//        }
-	//        // TODO implement linking to next layer, e.g.:
-	////            for (String eachParent : assetHelper.getAssetValues(eachLayer)) {
-	////                for (String eachChild : assetHelper.getAssetValues(eachParent)) {
-	////
-	////                }
-	////            }
-	//
-	//
-	//        // Finally simulating last layer
-	//        GraphMLGraph nodeGraph = new GraphMLGraph();
-	//        nodeGraph.setId("nodes");
-	//        nodeGraph.setProperty(GraphMLProperties.NAMESPACE, "asset:nodes");
-	//        applyDefaults(nodeGraph, "Nodes", config);
-	//        for (OnmsNode node : nodeDao.findAllProvisionedNodes()) {
-	//            GraphMLNode graphMLNode = new GraphMLNode();
-	//            graphMLNode.setId("node: " + node.getNodeId());
-	//
-	//            graphMLNode.setProperty(GraphMLProperties.LABEL, node.getLabel());
-	//            graphMLNode.setProperty(GraphMLProperties.NODE_ID, node.getId());
-	//            graphMLNode.setProperty(GraphMLProperties.FOREIGN_ID, node.getForeignId());
-	//            graphMLNode.setProperty(GraphMLProperties.FOREIGN_SOURCE, node.getForeignSource());
-	//
-	//            nodeGraph.addNode(graphMLNode);
-	//        }
-	//        graphML.addGraph(nodeGraph);
-	//
-	//        // TODO implement linking to last layer.:
-	//        return graphML;
-	//    }
-	//    
-	//    
-	//
-	//    private void applyDefaults(GraphMLGraph graph, String description, GeneratorConfig config) {
-	//        graph.setProperty(GraphMLProperties.NAMESPACE, graph.getId());
-	//        graph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
-	//        if (config.getPreferredLayout() != null) {
-	//            graph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
-	//        }
-	//        if (description != null) {
-	//            graph.setProperty(GraphMLProperties.DESCRIPTION, description);
-	//        }
-	//        graph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, 0);
-	//    }
-
-
 	public GraphML generateGraphs(GeneratorConfig config) {
 
 		String menuLabelStr= config.getLabel();
 		List<String> layerHierarchy= config.getLayerHierarchies();
 		String preferredLayout = config.getPreferredLayout();
+		
+		Map<String, Map<String, String>> onmsNodeInfo =generateNodeInfo(config);
+
+		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr,layerHierarchy, preferredLayout);
+
+	}
+	
+	public Map<String, Map<String, String>> generateNodeInfo(GeneratorConfig config) {
+
 		List<String> filter = config.getFilterList();
 
 		NodeInfoRepository nodeInfoRepository = new NodeInfoRepository();
@@ -145,9 +86,8 @@ public class AssetGraphGenerator {
 		nodeInfoRepository.setTransactionOperations(transactionOperations);
 		nodeInfoRepository.initialiseNodeInfo(null);
 		Map<String, Map<String, String>> onmsNodeInfo =nodeInfoRepository.getFilteredNodeInfo(filter);
-
-		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr,layerHierarchy, preferredLayout);
-
+		
+		return onmsNodeInfo;
 	}
 
 

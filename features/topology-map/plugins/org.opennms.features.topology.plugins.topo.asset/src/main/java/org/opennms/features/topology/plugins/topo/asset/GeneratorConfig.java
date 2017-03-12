@@ -40,8 +40,17 @@ public class GeneratorConfig {
     private String preferredLayout;
     private String assetLayers;
     private String filter;
+    private boolean generateUnallocated=false;
 
-    public String getLabel() {
+    public boolean getGenerateUnallocated() {
+		return generateUnallocated;
+	}
+
+	public void setGenerateUnallocated(boolean generateUnallocated) {
+		this.generateUnallocated = generateUnallocated;
+	}
+
+	public String getLabel() {
         return label;
     }
 
@@ -103,5 +112,20 @@ public class GeneratorConfig {
                 .map(h -> h.trim())
                 .collect(Collectors.toList());
     }
+
+	@Override
+	public String toString() {
+		return "GeneratorConfig ["
+				+ "providerId=" + providerId
+				+ ", label=" + label 
+				+ ", assetLayers="	+ assetLayers 
+				+ ", filter=" + filter 
+				+ ", breadcrumbStrategy="+ breadcrumbStrategy
+				+ ", preferredLayout=" + preferredLayout 
+				+ ", geneateUnallocated=" + generateUnallocated 
+				+ "]";
+	}
+    
+    
 	
 }
