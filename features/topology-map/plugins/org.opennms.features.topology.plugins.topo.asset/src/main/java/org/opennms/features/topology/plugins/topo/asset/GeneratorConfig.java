@@ -39,6 +39,7 @@ public class GeneratorConfig {
     private String providerId;
     private String preferredLayout;
     private String assetLayers;
+    private String filter;
 
     public String getLabel() {
         return label;
@@ -86,4 +87,21 @@ public class GeneratorConfig {
     public void setAssetLayers(String assetLayers) {
         this.assetLayers = assetLayers;
     }
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+	
+    public List<String> getFilterList() {
+    	if(filter==null || filter.isEmpty()) return null;
+        return  Arrays.asList(filter.split("&")).stream()
+                .filter(h -> h != null && !h.trim().isEmpty())
+                .map(h -> h.trim())
+                .collect(Collectors.toList());
+    }
+	
 }

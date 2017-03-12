@@ -29,13 +29,11 @@
 package org.opennms.features.topology.plugins.topo.asset.repo;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -94,6 +92,7 @@ public class NodeInfoRepository {
 
 	/**
 	 * returns filtered node info repository
+	 * keys must be from NodeParamLabels
 	 * filter name value pair
 	 * filter = null do not filter results
 	 * key1=value1&key1=value2 (additive i.e. OR of key 1 values
@@ -104,9 +103,10 @@ public class NodeInfoRepository {
 	 * @param filter filter can be derived from url query
 	 * @return filter NodeInfo
 	 */
-	public Map<String, Map<String, String>> getNodeInfo(Map<String,String> filter) {
+	public Map<String, Map<String, String>> getFilteredNodeInfo(List<String> filter) {
 		
-		return nodeInfo;
+		return new StringMapFilter(nodeInfo).filter(filter,NodeParamLabels.ALL_KEYS);
+
 	}
 	
 	/** 
@@ -148,7 +148,7 @@ public class NodeInfoRepository {
 
 	/**
 	 * Initialises node info map from supplied opennms node list 
-	 * @param requiredParameeters list of parameters to populate (named from constants in NodeParamLabels) 
+	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels) 
 	 *        if requiredParameters is null return entire parameter list
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 * @param nodeList
@@ -206,7 +206,7 @@ public class NodeInfoRepository {
 	 * The map attributes are populated from the supplied OpenNMS node
 	 * @param nodeParameters the supplied map to populate
 	 * @param node the OpenNMS  node object to use
-	 * @param requiredParameeters list of parameters to populate (named from constants in NodeParamLabels) 
+	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels) 
 	 *        if requiredParameters is null return entire parameter list
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 */

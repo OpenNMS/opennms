@@ -67,8 +67,6 @@ public class AssetGraphMLProvider implements EventListener {
 	private final List<String> ueiList = Lists.newArrayList(
 			CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY, CREATE_ASSET_NODE_INFO);
 
-
-
 	// folder created in OpenNMS to store asset topology info for debugging
 	public static final String TEMP_FOLDER = "data/tmp"; 
 	

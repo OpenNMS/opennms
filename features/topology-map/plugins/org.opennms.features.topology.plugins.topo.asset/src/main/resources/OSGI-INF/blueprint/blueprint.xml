@@ -15,6 +15,7 @@
             <cm:property name="label" value="Asset Provider"/>
             <cm:property name="breadcrumbStrategy" value="SHORTEST_PATH_TO_ROOT"/>
             <cm:property name="writeAssetListDebugFile"  value="true" /> <!-- TODO MVR -->
+            <cm:property name="filter"  value="" />
         </cm:default-properties>
     </cm:property-placeholder>
 

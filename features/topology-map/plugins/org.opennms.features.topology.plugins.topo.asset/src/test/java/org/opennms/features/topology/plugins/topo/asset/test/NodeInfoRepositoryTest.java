@@ -67,7 +67,33 @@ public class NodeInfoRepositoryTest {
 		LOG.debug("end of getPartialRepositoryTest");
 
 	}
+	
+	@Test
+	public void getFilteredRepositoryTest() {
+		LOG.debug("start of getFilteredRepositoryTest");
+		NodeInfoRepository nir = getMockNodeInfoRepository(null);
+		assertNotNull(nir);
+		
+		List<String> filter=Arrays.asList(NodeParamLabels.ASSET_REGION+"=asset-region_1,asset-region_2");
+		
+		// sample test correct values are present
+	    Map<String, Map<String, String>> nodeInfo = nir.getFilteredNodeInfo(filter);
+	    assertNotNull(nodeInfo);
+	    assertEquals(2,nodeInfo.size());
+	    assertTrue(nodeInfo.containsKey("1"));
+	    assertTrue(nodeInfo.containsKey("2"));
+	    assertTrue(!nodeInfo.containsKey("3"));
 
+		LOG.debug("end of getFilteredRepositoryTest");
+
+	}
+
+
+	/* *************************
+	 * UTILITY METHODS FOR TESTS
+	 * *************************
+	 */
+	
 	/**
 	 * utility to create mock node info repository
 	 * @param id

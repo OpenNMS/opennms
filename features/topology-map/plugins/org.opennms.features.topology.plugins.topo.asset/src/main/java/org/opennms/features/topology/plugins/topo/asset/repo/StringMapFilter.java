@@ -24,28 +24,31 @@ public class StringMapFilter {
 	 * key1=!value1 (negation - key NOT value1)
 	 * key1=~regex (regex match of key) or key1=!~regex
 	 * 
-	 * @param filter
-	 *            filter can be derived from url query
+	 * @param filter filter can be derived from url query
+	 * @param allowedKeys if keys used in filter are not in this list an IllegalArgumentException is thrown
 	 * @return filter NodeInfo
 	 */
-	public Map<String, Map<String, String>> filter(List<String> filter) {
+	public Map<String, Map<String, String>> filter(List<String> filter, List<String> allowedKeys) {
 		Map<String, Map<String, String>> newMap = new LinkedHashMap<String, Map<String, String>>();
 
 		if (filter == null)
 			return map;
 
 		for (String key : map.keySet()) {
-			if (matches(map.get(key), filter))
+			if (matches(map.get(key), filter, allowedKeys))
 				newMap.put(key, map.get(key));
 		}
 		return newMap;
 
 	}
-
-	private boolean matches(Map<String, String> peramaterMap,List<String> filter) {
-
+	
+	public Map<String,List<String>>  keysAndValuesInfilter(List<String> filter, List<String> allowedKeys){
+		
+		// container for all values for each key
+		Map<String,List<String>> keysAndValues = new LinkedHashMap<String,List<String>>();
+		
 		// check filter correctness and split comma separated values
-		if(filter.isEmpty()) return false;
+		if(filter.isEmpty()) return keysAndValues;
 
 		List<String>newFilter=new ArrayList<String>();
 		for (String filterElement : filter) {
@@ -74,28 +77,41 @@ public class StringMapFilter {
 		// deal with new filter without comma separated values
 
 		// separate all values for each key
-		Map<String,List<String>> keys = new LinkedHashMap<String,List<String>>();
 
 		for (String filterElement : newFilter) {
 			String[] keyVal = filterElement.split("=");
 			String key = keyVal[0];
 			String value = keyVal[1];
-			if(value.equals("!")) throw new IllegalArgumentException("filter element incorrectly formatted. (only'!' in  filterElement '"
+			
+			// check if key allowed
+			if (allowedKeys!=null && !allowedKeys.contains(key))
+				throw new IllegalArgumentException("filter element contains unknown key '"+ key + "')");
+
+			// check if only ! in value
+			if(value.equals("!"))
+				throw new IllegalArgumentException("filter element incorrectly formatted. (only'!' in  filterElement '"
 					+ filterElement + "')");
 
-			if(!keys.containsKey(key)){
-				keys.put(key, new ArrayList<String>());
+			if(!keysAndValues.containsKey(key)){
+				keysAndValues.put(key, new ArrayList<String>());
 			}
-			keys.get(key).add(value);
+			keysAndValues.get(key).add(value);
 		}
+		return keysAndValues;
+	}
+
+	private boolean matches(Map<String, String> peramaterMap,List<String> filter, List<String> allowedKeys) {
+		// check filter correctness and split comma separated values
+		if(filter.isEmpty()) return false;
+		Map<String, List<String>> keysAndValues = keysAndValuesInfilter( filter, allowedKeys);
 
 		// for each key if no matching parameter key return false
 		// for each key if no matching parameter values return false
 
-		for(String key:keys.keySet()){
+		for(String key:keysAndValues.keySet()){
 			String paramValue = peramaterMap.get(key);
 			boolean innerMatch=false;
-			List<String> values = keys.get(key);
+			List<String> values = keysAndValues.get(key);
 
 			for(String value:values){
 				// deal with negation

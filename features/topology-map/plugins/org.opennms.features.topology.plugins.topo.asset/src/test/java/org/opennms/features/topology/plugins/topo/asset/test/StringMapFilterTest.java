@@ -30,6 +30,8 @@ import com.google.common.collect.Maps;
  */
 public class StringMapFilterTest {
 	private static final Logger LOG = LoggerFactory.getLogger(StringMapFilterTest.class);
+	
+	private static List<String> allowedKeys=Arrays.asList("key1","key2","key3","key4","key5");
 
 	/**
 	 * test mock map works OK
@@ -54,7 +56,7 @@ public class StringMapFilterTest {
 		String expected = stringMapToString(m);
 
 		Map<String, Map<String, String>> newMap;
-		newMap = new StringMapFilter(m).filter(filter);
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=stringMapToString(newMap);
 		//		LOG.debug("\nFilter:"+setToString(filter));
 		//		LOG.debug("\nExpected Result:"+expected);
@@ -77,7 +79,7 @@ public class StringMapFilterTest {
 
 		Map<String, Map<String, String>> m = createMockMap();
 		Map<String, Map<String, String>> newMap;
-		newMap = new StringMapFilter(m).filter(filter);
+		newMap = new StringMapFilter(m).filter(filter,null);
 
 		String actual=stringMapToString(newMap);
 
@@ -106,7 +108,7 @@ public class StringMapFilterTest {
 
 			Map<String, Map<String, String>> m = createMockMap();
 			Map<String, Map<String, String>> newMap;
-			newMap = new StringMapFilter(m).filter(filter);
+			newMap = new StringMapFilter(m).filter(filter,null);
 
 		} catch(Exception e){
 			isException=true;
@@ -125,7 +127,7 @@ public class StringMapFilterTest {
 	@Test
 	public void testFilter4() {
 		LOG.debug("Start of testFilter4()");
-		List<String> filter=Arrays.asList("aaa=bbb","a,b,c=aaa");
+		List<String> filter=Arrays.asList("key1=bbb","key2,key3,key4=aaa");
 
 		boolean isException=false;
 
@@ -133,7 +135,7 @@ public class StringMapFilterTest {
 
 			Map<String, Map<String, String>> m = createMockMap();
 			Map<String, Map<String, String>> newMap;
-			newMap = new StringMapFilter(m).filter(filter);
+			newMap = new StringMapFilter(m).filter(filter,null);
 
 		} catch(Exception e){
 			isException=true;
@@ -160,7 +162,7 @@ public class StringMapFilterTest {
 
 			Map<String, Map<String, String>> m = createMockMap();
 			Map<String, Map<String, String>> newMap;
-			newMap = new StringMapFilter(m).filter(filter);
+			newMap = new StringMapFilter(m).filter(filter,null);
 
 		} catch(Exception e){
 			isException=true;
@@ -179,7 +181,7 @@ public class StringMapFilterTest {
 	@Test
 	public void testFilter5() {
 		LOG.debug("Start of testFilter5()");
-		List<String> filter=Arrays.asList("a=aa=bbb","c=aaa");
+		List<String> filter=Arrays.asList("key1=key2=bbb","key3=aaa");
 
 		boolean isException=false;
 
@@ -187,7 +189,7 @@ public class StringMapFilterTest {
 
 			Map<String, Map<String, String>> m = createMockMap();
 			Map<String, Map<String, String>> newMap;
-			newMap = new StringMapFilter(m).filter(filter);
+			newMap = new StringMapFilter(m).filter(filter,null);
 
 		} catch(Exception e){
 			isException=true;
@@ -213,11 +215,8 @@ public class StringMapFilterTest {
 		String expected = "List<String>[outerMap_0,outerMap_1,outerMap_2,outerMap_3,outerMap_4]";
 
 		Map<String, Map<String, String>> m = createMockMap();
-
 		Map<String, Map<String, String>> newMap;
-
-		newMap = new StringMapFilter(m).filter(filter);
-
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=setToString(newMap.keySet());
 
 //		LOG.debug("\nFilter:"+setToString(filter));
@@ -241,13 +240,9 @@ public class StringMapFilterTest {
 		List<String> filter=Arrays.asList("key5=value5","key2=!outerMap_1_value2");
 
 		String expected = "List<String>[outerMap_0,outerMap_2,outerMap_3,outerMap_4]";
-
 		Map<String, Map<String, String>> m = createMockMap();
-
 		Map<String, Map<String, String>> newMap;
-
-		newMap = new StringMapFilter(m).filter(filter);
-
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=setToString(newMap.keySet());
 
 //		LOG.debug("\nFilter:"+setToString(filter));
@@ -273,11 +268,8 @@ public class StringMapFilterTest {
 		String expected = "List<String>[outerMap_0,outerMap_4]";
 
 		Map<String, Map<String, String>> m = createMockMap();
-
 		Map<String, Map<String, String>> newMap;
-
-		newMap = new StringMapFilter(m).filter(filter);
-
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=setToString(newMap.keySet());
 
 //		LOG.debug("\nFilter:"+setToString(filter));
@@ -303,11 +295,8 @@ public class StringMapFilterTest {
 		String expected = "List<String>[outerMap_1]";
 
 		Map<String, Map<String, String>> m = createMockMap();
-
 		Map<String, Map<String, String>> newMap;
-
-		newMap = new StringMapFilter(m).filter(filter);
-
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=setToString(newMap.keySet());
 
 //		LOG.debug("\nFilter:"+setToString(filter));
@@ -333,11 +322,8 @@ public class StringMapFilterTest {
 		String expected = "List<String>[outerMap_0]";
 
 		Map<String, Map<String, String>> m = createMockMap();
-
 		Map<String, Map<String, String>> newMap;
-
-		newMap = new StringMapFilter(m).filter(filter);
-
+		newMap = new StringMapFilter(m).filter(filter,null);
 		String actual=setToString(newMap.keySet());
 
 //		LOG.debug("\nFilter:"+setToString(filter));
@@ -346,7 +332,35 @@ public class StringMapFilterTest {
 
 		assertEquals(expected,actual);
 
-		LOG.debug("End of testFilter9()");
+		LOG.debug("End of testFilter10()");
+
+	}
+	
+	
+	/**
+	 * check allowedkeys are checked
+	 * key1=outerMap_0_value1,outerMap_1_value1","unknownkey=value5","key2=!outerMap_1_value2"
+	 * 
+	 */
+	@Test
+	public void testFilter11() {
+		LOG.debug("Start of testFilter11()");
+		List<String> filter=Arrays.asList("key1=outerMap_0_value1,outerMap_1_value1","unknownkey=value5","key2=!outerMap_1_value2");
+
+		boolean isException=false;
+
+		try{
+
+			Map<String, Map<String, String>> m = createMockMap();
+			Map<String, Map<String, String>> newMap;
+			newMap = new StringMapFilter(m).filter(filter,allowedKeys);
+
+		} catch(Exception e){
+			isException=true;
+			LOG.debug("expected exception:"+e.getMessage());
+		}
+		
+		LOG.debug("End of testFilter11()");
 
 	}
 

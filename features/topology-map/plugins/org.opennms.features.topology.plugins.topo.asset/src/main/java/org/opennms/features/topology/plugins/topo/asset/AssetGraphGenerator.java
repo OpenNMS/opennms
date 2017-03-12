@@ -138,13 +138,15 @@ public class AssetGraphGenerator {
 		String menuLabelStr= config.getLabel();
 		List<String> layerHierarchy= config.getLayerHierarchies();
 		String preferredLayout = config.getPreferredLayout();
+		List<String> filter = config.getFilterList();
 
 		NodeInfoRepository nodeInfoRepository = new NodeInfoRepository();
 		nodeInfoRepository.setNodeDao(nodeDao);
 		nodeInfoRepository.setTransactionOperations(transactionOperations);
 		nodeInfoRepository.initialiseNodeInfo(null);
+		Map<String, Map<String, String>> onmsNodeInfo =nodeInfoRepository.getFilteredNodeInfo(filter);
 
-		return nodeInfoToTopology(nodeInfoRepository, menuLabelStr,layerHierarchy, preferredLayout);
+		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr,layerHierarchy, preferredLayout);
 
 	}
 
@@ -153,7 +155,7 @@ public class AssetGraphGenerator {
 	 * This method generates the layer hierarchy graphml file from the
 	 * node asset information supplied in nodeInfoRepository
 	 */
-	public GraphML nodeInfoToTopology(NodeInfoRepository nodeInfoRepository, String menuLabelStr,List<String> layerHierarchy, String preferredLayout) {
+	public GraphML nodeInfoToTopology(Map<String, Map<String, String>> onmsNodeInfo, String menuLabelStr,List<String> layerHierarchy, String preferredLayout) {
 
 		// print log info for graph definition
 		StringBuffer msg = new StringBuffer("Creating topology "+menuLabelStr+" for layerHierarchy :");
@@ -168,8 +170,6 @@ public class AssetGraphGenerator {
 
 		GraphML graphmlType = createGraphML(menuLabelStr);
 
-		Map<String, Map<String, String>> onmsNodeInfo = nodeInfoRepository.getNodeInfo();
-
 		if (layerHierarchy.size()==0){
 			//create simple graph with all nodes if layerHierarchy is empty
 			if( LOG.isDebugEnabled()) LOG.debug("creating a simple graph containing all nodes as layerHierarchy is empty");
@@ -179,8 +179,7 @@ public class AssetGraphGenerator {
 			String descriptionStr="A simple graph containing all nodes created because layerHierarchy property is empty";
 			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
 
-			Map<String, Map<String, String>> nodeInfo = nodeInfoRepository.getNodeInfo();
-			addOpenNMSNodes(graph, nodeInfo);
+			addOpenNMSNodes(graph, onmsNodeInfo);
 
 		} else {
 			// create graphs for all possible layers in hierarchy
