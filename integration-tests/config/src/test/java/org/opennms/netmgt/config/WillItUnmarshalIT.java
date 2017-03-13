@@ -209,8 +209,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);

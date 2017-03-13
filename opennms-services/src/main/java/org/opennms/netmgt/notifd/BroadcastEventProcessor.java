@@ -663,7 +663,7 @@ public final class BroadcastEventProcessor implements EventListener {
         String targetName = target.getName();
 
         if (getGroupManager().hasGroup(targetName)) {
-            count = getGroupManager().getGroup(targetName).getUserCount();
+            count = getGroupManager().getGroup(targetName).getUsers().size();
         } else if (getUserManager().hasOnCallRole(targetName)) {
             count = getUserManager().countUsersWithRole(targetName);
         } else if (getUserManager().hasUser(targetName)) {
@@ -839,7 +839,7 @@ public final class BroadcastEventProcessor implements EventListener {
         }
 
         LOG.debug("The group {} is on duty in {} millisec.", group.getName(), next);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         
         // There are no users in the group
         if (users == null || users.length == 0) {

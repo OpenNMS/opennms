@@ -207,7 +207,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
     
@@ -238,7 +238,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected Collection<String> getUsersInGroup(String groupName) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return Arrays.asList(users);
         
     }
