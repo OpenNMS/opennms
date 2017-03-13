@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -73,8 +71,6 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     protected void runCollection() {
 
     	final Date now = new Date(); 
-        LOG.debug("run: collecting : {}", getPeer());
-
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
 
 
@@ -85,23 +81,28 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: Agent error while scanning the cdpGlobalGroup table", e);
+           LOG.info("run: node [{}]: Agent error while scanning the cdpGlobalGroup table",
+                    getNodeId(),
+                    e);
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: Cdp cdpGlobalGroup collection interrupted, exiting",e);
+           LOG.info("run: node [{}]: Cdp cdpGlobalGroup collection interrupted, exiting",
+                    getNodeId(),
+                    e);
            return;
        }
        if (cdpGlobalGroup.getCdpDeviceId() == null ) {
-            LOG.info("run: cdp mib not supported on: {}", str(getPeer().getAddress()));
+            LOG.info("run: node [{}]: CDP_MIB not supported", 
+                     getNodeId());
             return;
        } 
        CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
        m_linkd.getQueryManager().store(getNodeId(), cdpElement);
        if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
-           LOG.info("run: cdp disabled on: {}", str(getPeer().getAddress()));
+           LOG.info("run: node [{}]. CDP disabled.",
+                    getNodeId());
            return;
        }
-
         
        List<CdpLink> links = new ArrayList<CdpLink>();
         CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
@@ -118,10 +119,14 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
             execute().
             get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.error("run: node [{}]: collection execution failed, exiting",
+                      getNodeId(),
+                      e);
             return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            LOG.error("run: node [{}]: Cdp Linkd collection interrupted, exiting",
+                      getNodeId(),
+                      e);
             return;
         }
         final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer(), 
@@ -134,15 +139,8 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable CdpLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
-		return "CdpLinksDiscovery";
+		return "CdpLinkDiscovery";
 	}
 
 }
