@@ -275,7 +275,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, Impl.JAXB);

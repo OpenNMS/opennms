@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.ListIterator;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.xml.AbstractCastorConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
@@ -50,8 +50,8 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @version $Id: $
  */
-public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<MicroblogConfiguration, MicroblogConfiguration> implements MicroblogConfigurationDao {
-    
+public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<MicroblogConfiguration, MicroblogConfiguration> implements MicroblogConfigurationDao {
+
     private static final Logger LOG = LoggerFactory.getLogger(DefaultMicroblogConfigurationDao.class);
 
     /**
