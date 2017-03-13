@@ -111,12 +111,10 @@ public class SyslogParser {
         Date date;
         try {
             final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             date = df.parse(dateString);
         } catch (final Exception e) {
             try {
                 final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss", Locale.ROOT);
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
                 
                 // Ugh, what's a non-lame way of forcing it to parse to "this year"?
                 date = df.parse(dateString);
