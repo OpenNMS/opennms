@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,17 +46,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.GroupConfig;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
-import org.opennms.netmgt.config.groups.Groups;
 import org.opennms.netmgt.config.groups.Header;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Roles;
@@ -85,7 +82,7 @@ public abstract class GroupManager implements GroupConfig {
             Group castorGroup = new Group();
             castorGroup.setName(inputGroup.getName());
             castorGroup.setComments(inputGroup.getComments());
-            castorGroup.setUser(inputGroup.getUsers().toArray(EMPTY_STRING_ARRAY));
+            castorGroup.setUsers(inputGroup.getUsers());
             return castorGroup;
         }
 
@@ -93,7 +90,7 @@ public abstract class GroupManager implements GroupConfig {
             if (inputGroup == null) return null;
             final OnmsGroup xmlGroup = new OnmsGroup(inputGroup.getName());
             xmlGroup.setComments(inputGroup.getComments());
-            xmlGroup.setUsers(inputGroup.getUserCollection());
+            xmlGroup.setUsers(inputGroup.getUsers());
             return xmlGroup;
         }
 
@@ -118,8 +115,6 @@ public abstract class GroupManager implements GroupConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupManager.class);
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
     /**
      * The duty schedules for each group
      */
@@ -136,19 +131,20 @@ public abstract class GroupManager implements GroupConfig {
      * <p>parseXml</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    protected synchronized void parseXml(InputStream stream) throws MarshalException, ValidationException {
-        Groupinfo groupinfo = CastorUtils.unmarshal(Groupinfo.class, stream);
-        initializeGroupsAndRoles(groupinfo);
+    protected synchronized void parseXml(InputStream stream) throws IOException {
+        try(final InputStreamReader isr = new InputStreamReader(stream)) {
+            Groupinfo groupinfo = JaxbUtils.unmarshal(Groupinfo.class, isr);
+            initializeGroupsAndRoles(groupinfo);
+        }
     }
 
     private void initializeGroupsAndRoles(Groupinfo groupinfo) {
-        Groups groups = groupinfo.getGroups();
+        List<Group> groups = groupinfo.getGroups();
         m_groups = new LinkedHashMap<String, Group>();
         m_oldHeader = groupinfo.getHeader();
-        for (Group curGroup : groups.getGroupCollection()) {
+        for (Group curGroup : groups) {
             m_groups.put(curGroup.getName(), curGroup);
         }
         buildDutySchedules(m_groups);
@@ -156,7 +152,7 @@ public abstract class GroupManager implements GroupConfig {
         Roles roles = groupinfo.getRoles();
         m_roles = new LinkedHashMap<String, Role>();
         if (roles != null) {
-        	for (Role role : roles.getRoleCollection()) {
+        	for (Role role : roles.getRoles()) {
                 m_roles.put(role.getName(), role);
             }
         }
@@ -176,10 +172,8 @@ public abstract class GroupManager implements GroupConfig {
      *
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public Map<String, Group> getGroups() throws IOException, MarshalException, ValidationException {
+    public Map<String, Group> getGroups() throws IOException {
     
         update();
     
@@ -187,12 +181,12 @@ public abstract class GroupManager implements GroupConfig {
     
     }
 
-    public OnmsGroupList getOnmsGroupList() throws MarshalException, ValidationException, IOException {
+    public OnmsGroupList getOnmsGroupList() throws IOException {
         return new OnmsGroupListMapper().map(
                 new OnmsGroupMapper().map(getGroups().values()));
     }
 
-    public OnmsGroup getOnmsGroup(final String groupName) throws MarshalException, ValidationException, IOException {
+    public OnmsGroup getOnmsGroup(final String groupName) throws IOException {
         final Group castorGroup = getGroup(groupName);
         if (castorGroup == null) return null;
         return new OnmsGroupMapper().map(castorGroup);
@@ -205,7 +199,7 @@ public abstract class GroupManager implements GroupConfig {
             castorGroup.setName(group.getName());
         }
         castorGroup.setComments(group.getComments());
-        castorGroup.setUser(group.getUsers().toArray(EMPTY_STRING_ARRAY));
+        castorGroup.setUsers(group.getUsers());
         
         saveGroup(group.getName(), castorGroup);
     }
@@ -213,11 +207,9 @@ public abstract class GroupManager implements GroupConfig {
     /**
      * <p>update</p>
      *
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
      */
-    public abstract void update() throws IOException, MarshalException, ValidationException;
+    public abstract void update() throws IOException;
 
     /**
      * Returns a boolean indicating if the group name appears in the xml file
@@ -225,10 +217,8 @@ public abstract class GroupManager implements GroupConfig {
      * @return true if the group exists in the xml file, false otherwise
      * @param groupName a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public boolean hasGroup(String groupName) throws IOException, MarshalException, ValidationException {
+    public boolean hasGroup(String groupName) throws IOException {
         update();
     
         return m_groups.containsKey(groupName);
@@ -239,10 +229,8 @@ public abstract class GroupManager implements GroupConfig {
      *
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public List<String> getGroupNames() throws IOException, MarshalException, ValidationException {
+    public List<String> getGroupNames() throws IOException {
         update();
     
         return new ArrayList<String>(m_groups.keySet());
@@ -255,10 +243,8 @@ public abstract class GroupManager implements GroupConfig {
      *            the name of the group to return
      * @return Group, the group specified by name
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public Group getGroup(String name) throws IOException, MarshalException, ValidationException {
+    public Group getGroup(String name) throws IOException {
         update();
     
         return m_groups.get(name);
@@ -274,9 +260,9 @@ public abstract class GroupManager implements GroupConfig {
 
         if (header != null) header.setCreated(EventConstants.formatToString(new Date()));
     
-        Groups groups = new Groups();
-        for (Group grp : m_groups.values()) {
-            groups.addGroup(grp);
+        final List<Group> groups = new ArrayList<>();
+        for (final Group grp : m_groups.values()) {
+            groups.add(grp);
         }
         
         
@@ -287,7 +273,7 @@ public abstract class GroupManager implements GroupConfig {
     
         Groupinfo groupinfo = new Groupinfo();
         groupinfo.setGroups(groups);
-        if (roles.getRoleCount() > 0)
+        if (roles.getRoles().size() > 0)
             groupinfo.setRoles(roles);
         groupinfo.setHeader(header);
     
@@ -297,7 +283,7 @@ public abstract class GroupManager implements GroupConfig {
         // way the original configuration
         // isn't lost if the XML from the marshal is hosed.
         StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(groupinfo, stringWriter);
+        JaxbUtils.marshal(groupinfo, stringWriter);
         String data = stringWriter.toString();
         saveXml(data);
     }
@@ -312,9 +298,9 @@ public abstract class GroupManager implements GroupConfig {
         for (final Entry<String, Group> entry : groups.entrySet()) {
             final String key = entry.getKey();
             final Group curGroup = entry.getValue();
-            if (curGroup.getDutyScheduleCount() > 0) {
+            if (curGroup.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
-                for (final String duty : curGroup.getDutyScheduleCollection()) {
+                for (final String duty : curGroup.getDutySchedules()) {
                     dutyList.add(new DutySchedule(duty));
                 }
                 m_dutySchedules.put(key, dutyList);
@@ -330,10 +316,8 @@ public abstract class GroupManager implements GroupConfig {
      * @param time the time to check for a duty schedule
      * @return boolean, true if the group is on duty, false otherwise.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public boolean isGroupOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
+    public boolean isGroupOnDuty(String group, Calendar time) throws IOException {
         update();
         //if the group has no duty schedules then it is on duty
         if (!m_dutySchedules.containsKey(group)) {
@@ -356,10 +340,8 @@ public abstract class GroupManager implements GroupConfig {
      * @param time the time to check for a duty schedule
      * @return long, the time in milliseconds until the group is next on duty
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
+    public long groupNextOnDuty(String group, Calendar time) throws IOException {
         long next = -1;
         update();
         //if the group has no duty schedules then it is on duty
@@ -431,7 +413,7 @@ public abstract class GroupManager implements GroupConfig {
         	}
 
         	for (Role role : m_roles.values()) {
-                Iterator<Schedule> s = role.getScheduleCollection().iterator();
+                Iterator<Schedule> s = role.getSchedules().iterator();
                 while(s.hasNext()) {
                     Schedule sched = s.next();
                     if (name.equals(sched.getName())) {
@@ -529,7 +511,7 @@ public abstract class GroupManager implements GroupConfig {
             Map<String, Group> map = new LinkedHashMap<String, Group>();
             
         	for (Group group : m_groups.values()) {        	   
-        	   for(ListIterator<String> userList = group.getUserCollection().listIterator(); userList.hasNext();){
+        	   for(ListIterator<String> userList = group.getUsers().listIterator(); userList.hasNext();){
         	       String name = userList.next();
         	       
         	       if(name.equals(oldName)){
@@ -543,7 +525,7 @@ public abstract class GroupManager implements GroupConfig {
         	m_groups.putAll(map);
 
             for (Role role : m_roles.values()) {
-            	for (Schedule sched : role.getScheduleCollection()) {
+            	for (Schedule sched : role.getSchedules()) {
                     if (oldName.equals(sched.getName())) {
                         sched.setName(newName);
                     }
@@ -589,14 +571,12 @@ public abstract class GroupManager implements GroupConfig {
      * @param userId a {@link java.lang.String} object.
      * @param roleid a {@link java.lang.String} object.
      * @return a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean userHasRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
+    public boolean userHasRole(String userId, String roleid) throws IOException {
         update();
 
-        for (Schedule sched : getRole(roleid).getScheduleCollection()) {
+        for (Schedule sched : getRole(roleid).getSchedules()) {
             if (userId.equals(sched.getName())) {
                 return true;
             }
@@ -610,15 +590,13 @@ public abstract class GroupManager implements GroupConfig {
      * @param roleId a {@link java.lang.String} object.
      * @param time a {@link java.util.Date} object.
      * @return a {@link java.util.List} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException {
+    public List<Schedule> getSchedulesForRoleAt(String roleId, Date time) throws IOException {
         update();
 
         List<Schedule> schedules = new ArrayList<Schedule>();
-        for (Schedule sched : getRole(roleId).getScheduleCollection()) {
+        for (Schedule sched : getRole(roleId).getSchedules()) {
             if (BasicScheduleUtils.isTimeInSchedule(time, BasicScheduleUtils.getGroupSchedule(sched))) {
                 schedules.add(sched);
             }
@@ -632,15 +610,13 @@ public abstract class GroupManager implements GroupConfig {
      * @param userId a {@link java.lang.String} object.
      * @param roleId a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public List<Schedule> getUserSchedulesForRole(String userId, String roleId) throws MarshalException, ValidationException, IOException {
+    public List<Schedule> getUserSchedulesForRole(String userId, String roleId) throws IOException {
         update();
 
         List<Schedule> scheds = new ArrayList<Schedule>();
-        for (Schedule sched : getRole(roleId).getScheduleCollection()) {
+        for (Schedule sched : getRole(roleId).getSchedules()) {
             if (userId.equals(sched.getName())) {
                 scheds.add(sched);
             }
@@ -656,11 +632,9 @@ public abstract class GroupManager implements GroupConfig {
      * @param roleId a {@link java.lang.String} object.
      * @param time a {@link java.util.Date} object.
      * @return a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean isUserScheduledForRole(String userId, String roleId, Date time) throws MarshalException, ValidationException, IOException {
+    public boolean isUserScheduledForRole(String userId, String roleId, Date time) throws IOException {
         update();
 
         for (Schedule sched : getUserSchedulesForRole(userId, roleId)) {
@@ -672,7 +646,7 @@ public abstract class GroupManager implements GroupConfig {
         // if no user is scheduled then the supervisor is schedule by default 
         Role role = getRole(roleId);
         if (userId.equals(role.getSupervisor())) {
-        	for (Schedule sched : role.getScheduleCollection()) {
+        	for (Schedule sched : role.getSchedules()) {
                 if (BasicScheduleUtils.isTimeInSchedule(time, BasicScheduleUtils.getGroupSchedule(sched))) {
                     // we found another scheduled user
                     return false;
@@ -690,17 +664,16 @@ public abstract class GroupManager implements GroupConfig {
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
      * @return a {@link org.opennms.core.utils.OwnedIntervalSequence} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws MarshalException, ValidationException, IOException {
+    public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws IOException {
         update();
 
         OwnedIntervalSequence schedEntries = new OwnedIntervalSequence();
                  Role role = getRole(roleid);
-                 for (int i = 0; i < role.getScheduleCount(); i++) {
-                    Schedule sched = (Schedule) role.getSchedule(i);
+                 for (int i = 0; i < role.getSchedules().size(); i++) {
+                    final int index = i;
+                    Schedule sched = (Schedule) role.getSchedules().get(index);
                      Owner owner = new Owner(roleid, sched.getName(), i);
                      schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, BasicScheduleUtils.getGroupSchedule(sched), owner));
                  }
@@ -727,7 +700,7 @@ public abstract class GroupManager implements GroupConfig {
         List<Group> groups = new ArrayList<Group>();
         
         for (Group group : m_groups.values()) {
-            if (group.getUserCollection().contains(user)) {
+            if (group.getUsers().contains(user)) {
                 groups.add(group);
             }
         }

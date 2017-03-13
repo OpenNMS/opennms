@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +35,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.View;
 
@@ -70,11 +70,9 @@ public class SiteStatusViewsFactory {
      * <p>Constructor for SiteStatusViewsFactory.</p>
      *
      * @param configFile a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public SiteStatusViewsFactory(String configFile) throws MarshalException, ValidationException, IOException {
+    public SiteStatusViewsFactory(String configFile) throws IOException {
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
@@ -90,17 +88,17 @@ public class SiteStatusViewsFactory {
      * <p>Constructor for SiteStatusViewsFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public SiteStatusViewsFactory(InputStream stream) throws MarshalException, ValidationException {
+    public SiteStatusViewsFactory(InputStream stream) throws IOException {
         initialize(stream);
     }
 
-    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+    private void initialize(InputStream stream) throws IOException {
         LOG.debug("initialize: initializing site status views factory.");
-        m_config = CastorUtils.unmarshal(SiteStatusViewConfiguration.class, stream);
-
+        try(final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(SiteStatusViewConfiguration.class, reader);
+        }
         initializeViewsMap();
     }
 
@@ -119,7 +117,7 @@ public class SiteStatusViewsFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
         if (m_instance == null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SITE_STATUS_VIEWS_FILE_NAME);
             m_instance = new SiteStatusViewsFactory(cfgFile.getPath());
@@ -148,7 +146,7 @@ public class SiteStatusViewsFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.dao.castor.SiteStatusViewsFactory} object.
+     * @param instance a {@link org.opennms.netmgt.dao.jaxb.SiteStatusViewsFactory} object.
      */
     public static synchronized void setInstance(SiteStatusViewsFactory instance) {
         m_instance = instance;
@@ -160,10 +158,8 @@ public class SiteStatusViewsFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException {
         m_instance = null;
         init();
     }
@@ -174,10 +170,8 @@ public class SiteStatusViewsFactory {
      * @param viewName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.siteStatusViews.View} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public View getView(String viewName) throws IOException, MarshalException, ValidationException {
+    public View getView(String viewName) throws IOException {
         if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -194,10 +188,8 @@ public class SiteStatusViewsFactory {
      * read it.
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    protected void updateFromFile() throws IOException, MarshalException, ValidationException {
+    protected void updateFromFile() throws IOException {
         if (m_loadedFromFile) {
             File siteStatusViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.SITE_STATUS_VIEWS_FILE_NAME);
             if (m_lastModified != siteStatusViewsFile.lastModified()) {
