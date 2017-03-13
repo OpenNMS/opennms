@@ -31,13 +31,14 @@ package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "asset-topology/create", name = "createAssetTopology", description="Creates Asset Topology")
+@Command(scope = "asset-topology/create", name = "createAssetTopology", description="Creates Asset Topology. Uses default config if options not supplied")
 public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(CreateAssetTopologyCommand.class);
 
@@ -61,25 +62,25 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 		this.defaultGeneratorConfig = defaultGeneratorConfig;
 	}
 
-	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
+	@Option(name = "-i", aliases =  "--providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
 	String providerId = null;
 
-	@Argument(index = 1, name = "assetLayers", description = "Comma seperated list of asset layers", required = false, multiValued = false)
+	@Option(name = "-a", aliases = "--assetLayers", description = "Comma seperated list of asset layers", required = false, multiValued = false)
 	String assetLayers = null;
 
-	@Argument(index = 2, name = "filter", description = "Topology node filter", required = false, multiValued = false)
+	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
 	String filter = null;
 
-	@Argument(index = 3, name = "generateUnallocated", description = "Generate Unallocated Nodes Graph", required = false, multiValued = false)
+	@Option(name = "-u", aliases = "--unallocatedGraph", description = "Generate Unallocated Nodes Graph", required = false, multiValued = false)
 	String generateUnallocatedStr = null;
 
-	@Argument(index = 4, name = "label", description = "Asset Topology label (shows in topology menu - defaults to providerId )", required = false, multiValued = false)
+	@Option(name = "-l", aliases = "--label", description = "Asset Topology label (shows in topology menu)", required = false, multiValued = false)
 	String label = null;
 
-	@Argument(index = 5, name = "breadcrumbStrategy", description = "Bread Crumb Strategy", required = false, multiValued = false)
+	@Option(name = "-b", aliases ="--breadcrumbStrategy", description = "Bread Crumb Strategy", required = false, multiValued = false)
 	String breadcrumbStrategy = null;
 
-	@Argument(index = 6, name = "preferredLayout", description = "Preferred Layout", required = false, multiValued = false)
+	@Option(name = "-p", aliases = "--preferredLayout", description = "Preferred Layout", required = false, multiValued = false)
 	String preferredLayout = null;
 
 	@Override

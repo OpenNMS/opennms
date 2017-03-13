@@ -31,13 +31,14 @@ package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "asset-topology/createNodeInfo", name = "createNodeInfo", description="Creates Debug Node Info File")
+@Command(scope = "asset-topology/createNodeInfo", name = "createNodeInfo", description="Creates Debug Node Info File. Uses default config if options not supplied")
 public class CreateNodeInfoCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(CreateNodeInfoCommand .class);
 
@@ -61,8 +62,8 @@ public class CreateNodeInfoCommand extends OsgiCommandSupport {
 		this.defaultGeneratorConfig = defaultGeneratorConfig;
 	}
 
-	@Argument(index = 0, name = "filter", description = "Optional Topology node filter", required = false, multiValued = false)
-	String filter=null; 
+	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
+	String filter = null;
 
 	@Override
 	protected Object doExecute() throws Exception {

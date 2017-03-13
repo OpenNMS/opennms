@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 
 
-@Command(scope = "asset-topology/remove", name = "removeAssetTopology", description="Removes Asset Topology")
+@Command(scope = "asset-topology/remove", name = "removeAssetTopology", description="Removes Asset Topology. Uses default config if options not supplied")
 public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(RemoveAssetTopologyCommand.class);
 
@@ -63,7 +63,7 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 		this.defaultGeneratorConfig = defaultGeneratorConfig;
 	}
 
-	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
+	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology (optional)", required = false, multiValued = false)
 	String providerId = null;
 
 	@Override
