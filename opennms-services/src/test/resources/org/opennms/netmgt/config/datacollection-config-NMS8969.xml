@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--  
+	Test configuration for PointerLike indexes undirection
+	case 1: collect values through indirection
+-->
+<datacollection-config rrdRepository="%rrdRepository%">
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+		<resourceType name="ifEntry" label="Reified interface"
+                      resourceLabel="dot1 ${index} (itf ${dot1dBasePortIfIdx} / b: ${dot1dBasePortString})">
+            <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+            <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+        </resourceType>
+        <resourceType name="dot1dBasePortEntry" label="dot1dBasePortIndex"
+                      resourceLabel="dot1 ${index} (itf ${dot1dBasePortIfIdx} / b: ${dot1dBasePortString})">
+            <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+            <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+                <parameter key="sibling-column-name" value="dot1dBasePortIfIdx"/>
+                
+            </storageStrategy>
+        </resourceType>
+
+        <groups>
+            <group name="dot1test" ifType="all">
+                <mibObj oid=".1.3.6.1.2.1.17.1.4.1.1" instance="dot1dBasePortEntry" alias="dot1dBasePortString" type="string"/>
+                <mibObj oid=".1.3.6.1.2.1.17.1.4.1.2" instance="dot1dBasePortEntry" alias="dot1dBasePortIfIdx" type="string"/>
+                <mibObj oid=".1.3.6.1.2.1.17.1.4.1.5" instance="dot1dBasePortEntry" alias="dot1dBPMtuX6Dcd1" type="counter"/>
+                <property 
+                	instance="dot1dBasePortEntry"
+                	alias   ="associatedIfDescr"
+                	class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender">
+					<parameter key="source-index-pointer" value="dot1dBasePortIfIdx" />
+					<parameter key="source-type" value="ifEntry" />
+					<parameter key="source-alias" value="ifDescr" />
+                </property>
+            </group>
+            <group name="reified-mib2-interfaces" ifType="all">
+                <mibObj oid=".1.3.6.1.2.1.2.2.1.1" instance="ifEntry" alias="ifIndex" type="string"/>
+                <mibObj oid=".1.3.6.1.2.1.2.2.1.2" instance="ifEntry" alias="ifDescr" type="string"/>
+            </group>
+        </groups>
+
+        <systems>
+            <systemDef name="Enterprise">
+                <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
+                <collect>
+                    <includeGroup>reified-mib2-interfaces</includeGroup>
+                    <includeGroup>dot1test</includeGroup>
+                </collect>
+            </systemDef>
+        </systems>
+    </snmp-collection>
+</datacollection-config>
