@@ -209,8 +209,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
@@ -242,7 +242,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, Impl.JAXB);
@@ -275,7 +275,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, Impl.JAXB);

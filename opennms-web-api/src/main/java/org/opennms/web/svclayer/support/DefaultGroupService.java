@@ -175,7 +175,7 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         Group group = getGroup(groupName);
         OnmsUserList userCollection = new OnmsUserList();
         if (group != null) {
-            for (String eachUser : group.getUserCollection()) {
+            for (String eachUser : group.getUsers()) {
                 OnmsUser onmsUser;
                 try {
                     onmsUser = m_userDao.getOnmsUser(eachUser);
@@ -192,7 +192,7 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     @Override
     public OnmsUser getUserForGroup(String groupName, String userName) {
         Group group = getGroup(groupName);
-        if (group != null && group.getUserCollection().contains(userName)) {
+        if (group != null && group.getUsers().contains(userName)) {
             try {
                 return m_userDao.getOnmsUser(userName);
             } catch (IOException e) {

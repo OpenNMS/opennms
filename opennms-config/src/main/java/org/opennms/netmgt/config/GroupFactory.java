@@ -38,8 +38,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -77,7 +75,7 @@ public class GroupFactory extends GroupManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public GroupFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public GroupFactory() throws FileNotFoundException, IOException {
         super();
         reload();
     }
@@ -90,7 +88,7 @@ public class GroupFactory extends GroupManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
 
         if (s_instance == null || !s_initialized) {
             s_instance = new GroupFactory();
@@ -127,7 +125,7 @@ public class GroupFactory extends GroupManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException {
         File confFile = ConfigFileConstants.getFile(ConfigFileConstants.GROUPS_CONF_FILE_NAME);
 
         reloadFromFile(confFile);
@@ -135,11 +133,11 @@ public class GroupFactory extends GroupManager {
 
     /**
      * @param confFile
-     * @throws FileNotFoundException
+     * @throws IOException 
      * @throws MarshalException
      * @throws ValidationException
      */
-    private void reloadFromFile(File confFile) throws FileNotFoundException, MarshalException, ValidationException {
+    private void reloadFromFile(File confFile) throws IOException {
         m_groupsConfFile = confFile;
         InputStream configIn = null;
         try {
@@ -172,7 +170,7 @@ public class GroupFactory extends GroupManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException {
         if (m_lastModified != m_groupsConfFile.lastModified()) {
             reload();
         }

@@ -57,9 +57,9 @@
 
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
             if (index < 0) {
-                targets = newPath.getTargetCollection();
+                targets = newPath.getTargets();
             } else {
-                targets = newPath.getEscalate()[index].getTargetCollection();
+                targets = newPath.getEscalates().get(index).getTargets();
             }
 %>
 
