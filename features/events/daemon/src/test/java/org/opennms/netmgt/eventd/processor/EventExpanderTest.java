@@ -94,7 +94,7 @@ public class EventExpanderTest {
     @Test
     public void testExpandEventWithNoDaoMatches() {
 
-        String uei = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+        String uei = "uei.opennms.org/nodes/nodeDown";
 
         EventBuilder builder = new EventBuilder(uei, "something");
 
@@ -113,10 +113,6 @@ public class EventExpanderTest {
         expander.expandEvent(event);
         
         assertEquals("event UEI", uei, event.getUei());
-        //assertNotNull("event description should not be null after expandEvent is called", event.getDescr());
-        //
-        //String matchText = "During a rescan";
-        //assertTrue("event description should contain '" + matchText + "'", event.getDescr().contains(matchText));
     }
 
     @Test

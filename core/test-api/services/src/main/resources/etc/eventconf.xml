@@ -11,17 +11,21 @@
 	</global>
 
 	<event>
-		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
-		<event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
+		<uei>uei.opennms.org/nodes/nodeDown</uei>
+		<event-label>OpenNMS-defined node event: nodeDown</event-label>
 		<descr>
-			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
-			conflict with the ip interfaces listed in the database for this node.
-			&lt;/p&gt;
+			&lt;p&gt;All interfaces on node %parm[nodelabel]% are
+			down.&lt;/p&gt; &lt;p&gt;This event is generated when node
+			outage processing determines that all interfaces on the node
+			are down.&lt;/p&gt; &lt;p&gt;New outage records have been
+			created and service level availability calculations will be
+			impacted until this outage is resolved.&lt;/p&gt;
 		</descr>
-		<logmsg dest='logndisplay'>
-			IP interfaces as determined by SNMP disagree with the database.
+		<logmsg dest="logndisplay">
+			Node %parm[nodelabel]% is down. %parm[eventReason]%
 		</logmsg>
-		<severity>Warning</severity>
+		<severity>Major</severity>
+		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
 	</event>
 
     <event-file>events/Standard.events.xml</event-file>

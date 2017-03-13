@@ -47,4 +47,28 @@
         </logmsg>
         <severity>Warning</severity>
     </event>
+    <event>
+        <uei>uei.opennms.org/internal/discovery/pause</uei>
+        <event-label>OpenNMS-defined internal event: Discovery pause</event-label>
+        <descr>
+            &lt;p&gt;The services scanning engine has asked discovery to
+            pause due to a backlog of interfaces yet to be scanned.
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            Discovery has asked to pause momentarily.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/discovery/resume</uei>
+        <event-label>OpenNMS-defined internal event: Discovery resume</event-label>
+        <descr>
+            &lt;p&gt;Discovery to resume adding nodes to the queue.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            ´Discovery is ready to resume scheduling nodes.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
 </events>
