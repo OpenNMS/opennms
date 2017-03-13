@@ -1,15 +1,9 @@
 package org.opennms.features.topology.plugins.topo.asset.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
@@ -17,86 +11,76 @@ import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphGenerator;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeInfoRepository;
+import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
-import org.opennms.features.topology.plugins.topo.asset.repo.Utils;
-import org.opennms.features.topology.plugins.topo.asset.repo.xml.NodeInfoRepositoryXML;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 public class NodeInfoToGraphMLTest {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(NodeInfoToGraphMLTest.class);
-	
-	public static final String TEST_RESOURCE_FOLDER="./src/test/resources";
-	public static final String NODE_TEST_DATA_FILE_NAME="nodeInfoMockTestData2.xml";
-	public static final String GRAPHML_TEST_TOPOLOGY_FILE_NAME="graphmlTestTopology2.xml";
 
-//	@Test
-//	public void test() throws InvalidGraphException {
-//		GraphML graphML = new GraphML();
-//		GraphMLWriter.write(graphML , new File("target/output.graphml"));
-//	}
 
-	//layerHierarch empty
-	@Test
-	public void assetGraphGeneratorTest1() throws InvalidGraphException, FileNotFoundException {
-		LOG.debug("start of assetGraphGeneratorTest1");
-		//create and populate new NodeInfoRepository from xml file
-		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
-		Map<String, Map<String, String>> nodeInfo = nodeInfoRepository.getNodeInfo();
+	public static final String GRAPHML_TEST_TOPOLOGY_FILE_NAME="/graphmlTestTopology2.xml";
 
-		String nodeInfoXmlStr = Utils.readFileFromDisk(TEST_RESOURCE_FOLDER, NODE_TEST_DATA_FILE_NAME);
-		NodeInfoRepositoryXML.XMLtoNodeInfo(nodeInfo, nodeInfoXmlStr);
-
-		AssetGraphGenerator assetGraphGenerator=new AssetGraphGenerator();
-
-		String menuLabelStr="testgraph";
-		List<String> layerHierarchy= new ArrayList<String>(); //Arrays.asList(a);
-		String preferredLayout="Grid Layout";
-		boolean generateUnallocated=true;
-		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout,generateUnallocated);
-		
-		GraphMLWriter.write(graphML , new File("target/test1.graphml"));
-		
-		// check we can read written graphml file
-		File graphMLFile= new File("target/test1.graphml");
-		InputStream input = new FileInputStream(graphMLFile);
-        GraphML readgraphML = GraphMLReader.read(input);
-        assertEquals(1,readgraphML.getGraphs().size());
-		
-		LOG.debug("end of assetGraphGeneratorTest1");
+	public static void main(String[] args) throws InvalidGraphException {
+		GraphML graphML = GraphMLReader.read(NodeInfoToGraphMLTest.class.getResourceAsStream(GRAPHML_TEST_TOPOLOGY_FILE_NAME));
+		graphML.getGraphs().forEach(g -> {
+			if (!g.getId().startsWith("asset")) {
+				g.setId("asset:" + g.getId());
+			}
+			g.setProperty(GraphMLProperties.NAMESPACE, g.getId());
+		});
+		graphML.getGraph("asset:nodes").getNodes().forEach(n -> {
+			n.setId(AssetGraphGenerator.createIdForNode(String.valueOf((int) n.getProperty(GraphMLProperties.NODE_ID)), n.getProperty(GraphMLProperties.LABEL)));
+		});
+		graphML.getGraph("asset:asset-rack").getEdges().forEach(e -> {
+			e.setId(e.getSource().getId() + "_" + e.getTarget().getId());
+		});
+		GraphMLWriter.write(graphML, new File("/Users/mvrueden/Desktop/graphml.xml"));
 	}
-	
-	// layerhierarchy populated
+
 	@Test
-	public void assetGraphGeneratorTest2() throws InvalidGraphException, FileNotFoundException {
-		LOG.debug("start of assetGraphGeneratorTest2");
-		//create and populate new NodeInfoRepository from xml file
-		NodeInfoRepository nodeInfoRepository= new NodeInfoRepository();
-		Map<String, Map<String, String>> nodeInfo = nodeInfoRepository.getNodeInfo();
+	public void verifyGenerationWithNoHierarchies() throws InvalidGraphException, FileNotFoundException {
+		// Generate
+		final GeneratorConfig config = new GeneratorConfig();
+		config.setProviderId("asset");
+		config.setLabel("testgraph");
+		config.setPreferredLayout("Grid Layout");
+		config.setGenerateUnallocated(true);
+		config.setAssetLayers(""); // empty layers
 
-		String nodeInfoXmlStr = Utils.readFileFromDisk(TEST_RESOURCE_FOLDER, NODE_TEST_DATA_FILE_NAME);
-		NodeInfoRepositoryXML.XMLtoNodeInfo(nodeInfo, nodeInfoXmlStr);
+		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestDataProvider());
 
-		AssetGraphGenerator assetGraphGenerator=new AssetGraphGenerator();
+		final GraphML graphML = assetGraphGenerator.generateGraphs(config);
 
-		String menuLabelStr="testgraph";
-		List<String> layerHierarchy= Arrays.asList(NodeParamLabels.ASSET_REGION, 
-				NodeParamLabels.ASSET_BUILDING, 
-				NodeParamLabels.ASSET_RACK);
-		String preferredLayout="Grid Layout";
-		boolean generateUnallocated=true;
-		GraphML graphML = assetGraphGenerator.nodeInfoToTopology(nodeInfoRepository.getNodeInfo(), menuLabelStr,layerHierarchy, preferredLayout,generateUnallocated);
-		
-		GraphMLWriter.write(graphML , new File("target/test2.graphml"));
-		
-        //check written graphml against test topology file
-        String expectedFileXmlStr = Utils.readFileFromDisk(TEST_RESOURCE_FOLDER, GRAPHML_TEST_TOPOLOGY_FILE_NAME);
-        String testGraphmlXmlStr = Utils.readFileFromDisk("./target", "test2.graphml");
-        assertEquals(expectedFileXmlStr,testGraphmlXmlStr);
-        
-		LOG.debug("end of assetGraphGeneratorTest2");
+		// Verify
+		assertEquals(1,graphML.getGraphs().size());
+	}
+
+	@Test
+	public void verifyGenerationWithLayersPopulated() throws InvalidGraphException, FileNotFoundException {
+		// Generate
+		final GeneratorConfig config = new GeneratorConfig();
+		config.setProviderId("asset");
+		config.setLabel("testgraph");
+		config.setPreferredLayout("Grid Layout");
+		config.setGenerateUnallocated(true);
+		config.setLayerHierarchies(Lists.newArrayList(
+				NodeParamLabels.ASSET_REGION,
+				NodeParamLabels.ASSET_BUILDING,
+				NodeParamLabels.ASSET_RACK));
+
+		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestDataProvider());
+
+		final GraphML graphML = assetGraphGenerator.generateGraphs(config);
+
+		// verify
+		GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream(GRAPHML_TEST_TOPOLOGY_FILE_NAME));
+		assertEquals(expectedGraphML, graphML);
 	}
 
 

@@ -34,16 +34,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.features.topology.plugins.topo.asset.DataProvider;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Class used to generate a nested map of nodes and node parameters from the OpenNMS Node and Asset tables
@@ -57,8 +54,7 @@ import org.springframework.transaction.support.TransactionOperations;
 public class NodeInfoRepository {
 	private static final Logger LOG = LoggerFactory.getLogger(NodeInfoRepository.class);
 
-	private volatile NodeDao nodeDao;
-	private volatile TransactionOperations transactionOperations;
+	private DataProvider dataProvider;
 
 	/**
 	 * Map of Maps of node parameters which is populated by populateBodyWithNodeInfo
@@ -72,22 +68,6 @@ public class NodeInfoRepository {
 	/* getters and setters */
 	public Map<String, Map<String, String>> getNodeInfo() {
 		return nodeInfo;
-	}
-
-	public NodeDao getNodeDao() {
-		return nodeDao;
-	}
-
-	public void setNodeDao(NodeDao nodeDao) {
-		this.nodeDao = nodeDao;
-	}
-
-	public TransactionOperations getTransactionOperations() {
-		return transactionOperations;
-	}
-
-	public void setTransactionOperations(TransactionOperations transactionOperations) {
-		this.transactionOperations = transactionOperations;
 	}
 
 	/**
@@ -128,22 +108,15 @@ public class NodeInfoRepository {
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 */
 	public synchronized void initialiseNodeInfo(List<String> requiredParameters) {
-		if (nodeDao==null) throw new RuntimeException("nodeDao must be set before running initialiseNodeInfo");
+		if (dataProvider==null) throw new RuntimeException("dataProvider must be set before running initialiseNodeInfo");
 		LOG.info("initialising node info");
 
 		// make sure nodeInfo is empty
 		clearNodeInfo();
 
 		// populate nodeinfo from latest database provisioned nodes information
-		// wrap in a transaction so that Hibernate session is bound and getCategories works
-		transactionOperations.execute(new TransactionCallbackWithoutResult() {
-
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				List<OnmsNode> nodeList = nodeDao.findAllProvisionedNodes();
-				initialiseNodeInfoFromNodeList(nodeList,requiredParameters);
-			}
-		});       
+		List<OnmsNode> nodeList = dataProvider.getNodes();
+		initialiseNodeInfoFromNodeList(nodeList,requiredParameters);
 	}
 
 	/**
@@ -307,57 +280,11 @@ public class NodeInfoRepository {
 			if( assetRecord.getDescription()!=null && ! assetRecord.getDescription().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_DESCRIPTION, assetRecord.getDescription());
 			if( assetRecord.getOperatingSystem()!=null && ! assetRecord.getOperatingSystem().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_OPERATINGSYSTEM, assetRecord.getOperatingSystem()); 
 
-
-			/*not used or depreciated*/
-			/*
-                assetRecord.getComment();
-                assetRecord.getPassword();
-                assetRecord.getConnection();
-                //assetRecord.getCountry(); // depreciated
-                assetRecord.getUsername();
-                assetRecord.getEnable();
-                assetRecord.getAutoenable();
-                assetRecord.getCpu();
-                assetRecord.getRam();
-                assetRecord.getSnmpcommunity();
-                assetRecord.getRackunitheight();
-                assetRecord.getAdmin();
-                assetRecord.getAdditionalhardware();
-                assetRecord.getInputpower();
-                assetRecord.getNumpowersupplies();
-                assetRecord.getHdd6();
-                assetRecord.getHdd5();
-                assetRecord.getHdd4();
-                assetRecord.getHdd3();
-                assetRecord.getHdd2();
-                assetRecord.getHdd1();
-                assetRecord.getStoragectrl();
-                //assetRecord.getAddress1();// depreciated
-                //assetRecord.getAddress2();// depreciated
-                //assetRecord.getCity();// depreciated
-                //assetRecord.getZip();// depreciated
-                assetRecord.getVmwareManagedEntityType();
-                assetRecord.getVmwareManagedObjectId();
-                assetRecord.getVmwareManagementServer();
-                assetRecord.getVmwareState();
-                assetRecord.getVmwareTopologyInfo();
-                assetRecord.getSerialNumber();
-                assetRecord.getAssetNumber();
-                assetRecord.getVendorPhone();
-                assetRecord.getVendorFax();
-                assetRecord.getVendorAssetNumber();
-                assetRecord.getLastModifiedBy();
-                assetRecord.getDateInstalled();
-                assetRecord.getLease();
-                assetRecord.getLeaseExpires();
-                assetRecord.getSupportPhone();
-                assetRecord.getMaintcontract();
-                //assetRecord.getMaintContractNumber();// depreciated
-                assetRecord.getMaintContractExpiration();
-                //assetRecord.getState();// depreciated
-			 */
 		}
 
 	}
 
+	public void setDataProvider(DataProvider dataProvider) {
+		this.dataProvider = dataProvider;
+	}
 }

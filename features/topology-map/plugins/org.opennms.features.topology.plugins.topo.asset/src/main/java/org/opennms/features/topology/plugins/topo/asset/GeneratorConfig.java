@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.asset;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +39,9 @@ public class GeneratorConfig {
     private String breadcrumbStrategy;
     private String providerId;
     private String preferredLayout;
-    private String assetLayers;
+    private List<String> layerHierarchy = new ArrayList<>();
     private String filter;
-    private boolean generateUnallocated=false;
+    private boolean generateUnallocated;
 
     public boolean getGenerateUnallocated() {
 		return generateUnallocated;
@@ -83,21 +84,29 @@ public class GeneratorConfig {
     }
 
     public List<String> getLayerHierarchies() {
-        return  Arrays.asList(assetLayers.split(",")).stream()
-                .filter(h -> h != null && !h.trim().isEmpty())
-                .map(h -> h.trim())
-                .collect(Collectors.toList());
+        return layerHierarchy;
+    }
+
+    public void setLayerHierarchies(List<String> layers) {
+        this.layerHierarchy = layers;
     }
 
     public String getAssetLayers() {
-        return assetLayers;
+        return layerHierarchy.stream().collect(Collectors.joining(","));
     }
 
     public void setAssetLayers(String assetLayers) {
-        this.assetLayers = assetLayers;
+        if (assetLayers != null) {
+            List<String> layers = Arrays.asList(assetLayers.split(",")).stream()
+                    .filter(h -> h != null && !h.trim().isEmpty())
+                    .map(h -> h.trim())
+                    .collect(Collectors.toList());
+            setLayerHierarchies(layers);
+        }
     }
 
-	public String getFilter() {
+
+    public String getFilter() {
 		return filter;
 	}
 
@@ -118,7 +127,7 @@ public class GeneratorConfig {
 		return "GeneratorConfig ["
 				+ "providerId=" + providerId
 				+ ", label=" + label 
-				+ ", assetLayers="	+ assetLayers 
+				+ ", layerHierarchy="	+ layerHierarchy
 				+ ", filter=" + filter 
 				+ ", breadcrumbStrategy="+ breadcrumbStrategy
 				+ ", preferredLayout=" + preferredLayout 

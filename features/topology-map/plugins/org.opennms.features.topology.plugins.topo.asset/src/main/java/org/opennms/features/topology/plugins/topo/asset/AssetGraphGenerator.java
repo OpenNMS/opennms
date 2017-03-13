@@ -42,27 +42,18 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 //import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeInfoRepository;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class AssetGraphGenerator {
 	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphGenerator.class);
 
-	private NodeDao nodeDao;
+	private final DataProvider dataProvider;
 
-	private TransactionOperations transactionOperations;
-
-	public AssetGraphGenerator(){
-		super();
-	}
-
-	public AssetGraphGenerator(NodeDao nodeDao, TransactionOperations transactionOperations) {
-		this.nodeDao = Objects.requireNonNull(nodeDao);
-		this.transactionOperations = Objects.requireNonNull(transactionOperations);
+	public AssetGraphGenerator(DataProvider dataProvider) {
+		this.dataProvider = Objects.requireNonNull(dataProvider);
 	}
 
 	public GraphML generateGraphs(GeneratorConfig config) {
@@ -74,7 +65,7 @@ public class AssetGraphGenerator {
 
 		Map<String, Map<String, String>> onmsNodeInfo =generateNodeInfo(config);
 
-		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr, layerHierarchy, preferredLayout, generateUnallocated);
+		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr, layerHierarchy, preferredLayout, generateUnallocated, config.getProviderId());
 
 	}
 
@@ -83,8 +74,7 @@ public class AssetGraphGenerator {
 		List<String> filter = config.getFilterList();
 
 		NodeInfoRepository nodeInfoRepository = new NodeInfoRepository();
-		nodeInfoRepository.setNodeDao(nodeDao);
-		nodeInfoRepository.setTransactionOperations(transactionOperations);
+		nodeInfoRepository.setDataProvider(dataProvider);
 		nodeInfoRepository.initialiseNodeInfo(null);
 		Map<String, Map<String, String>> onmsNodeInfo =nodeInfoRepository.getFilteredNodeInfo(filter);
 
@@ -97,7 +87,7 @@ public class AssetGraphGenerator {
 	 * node asset information supplied in nodeInfoRepository
 	 */
 	public GraphML nodeInfoToTopology(Map<String, Map<String, String>> onmsNodeInfo, String menuLabelStr,
-			List<String> layerHierarchy, String preferredLayout, boolean generateUnallocated) {
+			List<String> layerHierarchy, String preferredLayout, boolean generateUnallocated, String id) {
 
 		// print log info for graph definition
 		StringBuffer msg = new StringBuffer("Creating topology "+menuLabelStr+" for layerHierarchy :");
@@ -119,8 +109,7 @@ public class AssetGraphGenerator {
 			Integer semanticZoomLevel=0;
 			String graphId ="all nodes";
 			String descriptionStr="A simple graph containing all nodes created because layerHierarchy property is empty";
-			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
-
+			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
 			addOpenNMSNodes(graph, onmsNodeInfo);
 
 		} else {
@@ -134,7 +123,7 @@ public class AssetGraphGenerator {
 			// create graph for each layer in hierarchy
 			for(String graphId:layerHierarchy){
 				//(GraphmlType graphmlType, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt)
-				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
+				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
 				graphList.add(graph);
 				msg.append(graphId+",");
 				semanticZoomLevel++;
@@ -142,7 +131,7 @@ public class AssetGraphGenerator {
 
 			//create graph for nodes layer (last layer in hierarchy)
 			String graphId="nodes";
-			GraphMLGraph nodegraph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
+			GraphMLGraph nodegraph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
 			graphList.add(nodegraph);
 			msg.append(graphId);
 
@@ -169,7 +158,7 @@ public class AssetGraphGenerator {
 				graphId="unallocated_Nodes";
 				descriptionStr="A graph containing all nodes which cannot be placed in topology hierarchy";
 				semanticZoomLevel=0;
-				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel);
+				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
 				addOpenNMSNodes(graph, unAllocatedNodeInfo);
 			}
 		}
@@ -309,9 +298,9 @@ public class AssetGraphGenerator {
 					msg.append(" edges added for opennms nodes: " );
 					for (String targetNodeId:nextLayerNodesAdded.keySet()){
 						Map<String, String> nodeParamaters = nextLayerNodesAdded.get(targetNodeId);
-						String nodeLabelStr = nodeParamaters.get(NodeParamLabels.NODE_NODELABEL);
+						String nodeId = createIdForNode(nodeParamaters);
 
-						GraphMLNode childNode = nextgraph.getNodeById(nodeLabelStr);
+						GraphMLNode childNode = nextgraph.getNodeById(nodeId);
 						GraphMLEdge edge = addEdgeToGraph(graph, node, childNode);
 
 						if (edge!=null) msg.append(edge.getId()+",");
@@ -427,13 +416,14 @@ public class AssetGraphGenerator {
 	 * @param descriptionStr
 	 * @param preferredLayout
 	 * @param semanticZoomLevelInt
+	 * @param id
 	 * @return
 	 */
-	private GraphMLGraph createGraphInGraphmlType(GraphML graphML, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt) {
+	private GraphMLGraph createGraphInGraphmlType(GraphML graphML, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt, String id) {
 		GraphMLGraph graph = new GraphMLGraph();
-		graph.setId(graphId);
+		graph.setId(id + ":" + graphId);
 
-		graph.setProperty(GraphMLProperties.NAMESPACE, graphId);
+		graph.setProperty(GraphMLProperties.NAMESPACE, graph.getId());
 		graph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
 		graph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, preferredLayout);
 		graph.setProperty(GraphMLProperties.DESCRIPTION, descriptionStr);
@@ -465,7 +455,7 @@ public class AssetGraphGenerator {
 			String foreignSourceStr= nodeParamaters.get(NodeParamLabels.NODE_FOREIGNSOURCE);
 			String foreignIdStr= nodeParamaters.get(NodeParamLabels.NODE_FOREIGNID);
 			String nodeLabelStr = nodeParamaters.get(NodeParamLabels.NODE_NODELABEL);
-			graphMLNode.setId(nodeLabelStr);
+			graphMLNode.setId(createIdForNode(nodeParamaters));
 			graphMLNode.setProperty(GraphMLProperties.LABEL, nodeLabelStr);
 			graphMLNode.setProperty(GraphMLProperties.NODE_ID, Integer.parseInt(nodeId));
 			graphMLNode.setProperty(GraphMLProperties.FOREIGN_ID, foreignIdStr);
@@ -473,14 +463,13 @@ public class AssetGraphGenerator {
 
 			nodesGraph.addNode(graphMLNode);
 		}
-
-
 	}
 
+	protected static String createIdForNode(Map<String, String> nodeParameters) {
+		return createIdForNode(nodeParameters.get(NodeParamLabels.NODE_NODEID), nodeParameters.get(NodeParamLabels.NODE_NODELABEL));
+	}
 
-
-
-
-
-
+	public static String createIdForNode(String nodeId, String nodeLabel) {
+		return String.format("nodes:%s:%s", nodeId, nodeLabel);
+	}
 }

@@ -28,12 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.asset.repo.xml;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement (name="nodeInfo")
@@ -41,10 +42,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class NodeInfoXML {
 
 	@XmlElement(name="nodeId")
-	private String nodeId=null;
-	
-	@XmlElement(name="nodeParamList")
-	private List<NodeParameterXML> nodeParamList=new ArrayList<NodeParameterXML>();
+	private String nodeId;
+
+	@XmlElementWrapper(name="parameters")
+	private Map<String, String> parameters = new HashMap<>();
 
 	public String getNodeId() {
 		return nodeId;
@@ -53,11 +54,12 @@ public class NodeInfoXML {
 	public void setNodeId(String nodeId) {
 		this.nodeId = nodeId;
 	}
-	public List<NodeParameterXML> getNodeParamList() {
-		return nodeParamList;
+
+	public Map<String, String> getParameters() {
+		return parameters;
 	}
 
-	public void setNodeParamList(List<NodeParameterXML> nodeParamList) {
-		this.nodeParamList = nodeParamList;
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 }

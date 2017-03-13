@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.repo.xml;
+package org.opennms.features.topology.plugins.topo.asset;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
-@XmlRootElement (name="nodeParameter")
-@XmlAccessorType(XmlAccessType.NONE)
-public class NodeParameterXML {
+import org.opennms.netmgt.model.OnmsNode;
 
-	@XmlElement(name="paramKey")
-	private String paramKey=null;
-	
-	@XmlElement(name="paramValue")
-	private String paramValue=null;
-
-	public String getParamKey() {
-		return paramKey;
-	}
-
-	public void setParamKey(String paramKey) {
-		this.paramKey = paramKey;
-	}
-
-	public String getParamValue() {
-		return paramValue;
-	}
-
-	public void setParamValue(String paramValue) {
-		this.paramValue = paramValue;
-	}
-	
-
-
+public interface DataProvider {
+    List<OnmsNode> getNodes();
 }
