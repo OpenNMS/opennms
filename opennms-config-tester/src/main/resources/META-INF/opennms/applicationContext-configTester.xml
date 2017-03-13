@@ -395,7 +395,7 @@
 
   <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
-  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
+  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSiteStatusViewConfigDao"/>
   
   <bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory"/>
 
