@@ -453,6 +453,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-asset</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.geolocation</groupId>
       <artifactId>geolocation</artifactId>
       <version>${project.version}</version>
