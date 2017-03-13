@@ -62,13 +62,15 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
         private String m_filename;
         private String m_owner;
         private Long m_timestamp;
-        private List<Double> m_values;
+        private List<Double> m_dblValues;
+        private List<String> m_strValues;
         private String m_data;
-        public PerformanceDataReading(String filename, String owner, Long timestamp, List<Double> values) {
+        public PerformanceDataReading(String filename, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) {
             m_filename = filename;
             m_owner = owner;
             m_timestamp = timestamp;
-            m_values = values;
+            m_dblValues = dblValues;
+            m_strValues = strValues;
         }
         public String getFilename() {
             return m_filename;
@@ -79,8 +81,11 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
         public Long getTimestamp() {
             return m_timestamp;
         }
-        public List<Double> getValues() {
-            return m_values;
+        public List<Double> getDblValues() {
+            return m_dblValues;
+        }
+        public List<String> getStrValues() {
+            return m_strValues;
         }
     }
 
@@ -101,7 +106,7 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
                     if (m_myQueue.drainTo(sendMe) > 0) {
                         RrdOutputSocket socket = new RrdOutputSocket(m_strategy.getHost(), m_strategy.getPort());
                         for (PerformanceDataReading reading : sendMe) {
-                            socket.addData(reading.getFilename(), reading.getOwner(), reading.getTimestamp(), reading.getValues());
+                            socket.addData(reading.getFilename(), reading.getOwner(), reading.getTimestamp(), reading.getDblValues(), reading.getStrValues());
                         }
                         socket.writeData();
                     } else {
@@ -140,8 +145,8 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public void updateData(String path, String owner, Long timestamp, List<Double> values) throws Exception {
-        if (m_queue.offer(new PerformanceDataReading(path, owner, timestamp, values), 500, TimeUnit.MILLISECONDS)) {
+    public void updateData(String path, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) throws Exception {
+        if (m_queue.offer(new PerformanceDataReading(path, owner, timestamp, dblValues, strValues), 500, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
                 LOG.warn("Skipped {} performance data message(s) because of queue overflow", m_skippedReadings);
                 m_skippedReadings = 0;

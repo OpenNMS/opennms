@@ -101,9 +101,9 @@ public class SimpleTcpOutputStrategy implements TcpOutputStrategy {
 
     /** {@inheritDoc} */
     @Override
-    public void updateData(String path, String owner, Long timestamp, List<Double> values) throws Exception {
+    public void updateData(String path, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) throws Exception {
         RrdOutputSocket socket = new RrdOutputSocket(m_host, m_port);
-        socket.addData(path, owner, timestamp, values);
+        socket.addData(path, owner, timestamp, dblValues, strValues);
         socket.writeData();
     }
 }

@@ -55,10 +55,12 @@ public interface TcpOutputStrategy {
      *            the owner of the data
      * @paeam time
      *            the timestamp for the data
-     * @param values
+     * @param dblValues
      *            a list of Double values
+     * @param strValues
+     *            a list of String values
      * @throws java.lang.Exception
      *             if an error occurs updating the file
      */
-    public void updateData(String path, String owner, Long timestamp, List<Double> values) throws Exception;
+    public void updateData(String path, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) throws Exception;
 }

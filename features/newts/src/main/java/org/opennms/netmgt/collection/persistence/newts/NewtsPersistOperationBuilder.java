@@ -93,9 +93,12 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     @Override
-    public void setAttributeValue(CollectionAttributeType attributeType, Number value) {
+    public void setNumericAttributeValue(CollectionAttributeType attributeType, Number value) {
         m_declarations.put(attributeType, value);
     }
+
+    @Override
+    public void setStringAttributeValue(CollectionAttributeType attributeType, String value) {}
 
     public void persistStringAttribute(ResourcePath path, String key, String value) {
         Map<String, String> stringAttributesForPath = m_stringAttributesByPath.get(path);

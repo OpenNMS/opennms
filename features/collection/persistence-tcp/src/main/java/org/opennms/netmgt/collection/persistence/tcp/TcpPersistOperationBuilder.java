@@ -68,7 +68,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
     private final TcpOutputStrategy m_tcpStrategy;
     private final String m_rrdName;
     private final ResourceIdentifier m_resource;
-    private final Map<CollectionAttributeType, Number> m_declarations;
+    private final Map<CollectionAttributeType, Number> m_dbl_declarations;
     private final Map<CollectionAttributeType, String> m_str_declarations;
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
@@ -84,10 +84,10 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
         m_resource = resource;
         m_rrdName = rrdName;
         if (dontReorderAttributes) {
-            m_declarations = new LinkedHashMap<>();
+            m_dbl_declarations = new LinkedHashMap<>();
             m_str_declarations = new LinkedHashMap<>();
         } else {
-            m_declarations = new TreeMap<>(new ByNameComparator());
+            m_dbl_declarations = new TreeMap<>(new ByNameComparator());
             m_str_declarations = new TreeMap<>(new ByNameComparator());
         }
     }
@@ -115,8 +115,19 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
      * @param value the value
      */
     @Override
-    public void setAttributeValue(CollectionAttributeType attributeType, Number value) {
-        m_declarations.put(attributeType, value);
+    public void setNumericAttributeValue(CollectionAttributeType attributeType, Number value) {
+        m_dbl_declarations.put(attributeType, value);
+    }
+
+    /**
+     * Sets the attribute value.
+     *
+     * @param attributeType the attribute type
+     * @param value the value
+     */
+    @Override
+    public void setStringAttributeValue(CollectionAttributeType attributeType, String value) {
+        m_str_declarations.put(attributeType, value);
     }
 
     /**
@@ -135,7 +146,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
      */
     @Override
     public void commit() throws PersistException {
-        if (m_declarations.size() == 0 && m_str_declarations.size() == 0) {
+        if (m_dbl_declarations.size() == 0 && m_str_declarations.size() == 0) {
             return;
         }
 
@@ -148,7 +159,7 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
             long time = (timestamp + 500L) / 1000L;
 
             TcpOutputStrategy strategy = toGenericType(m_tcpStrategy);
-            strategy.updateData(ownerName, rrdFile, new Long(time), getValues());
+            strategy.updateData(ownerName, rrdFile, new Long(time), getDblValues(), getStrValues());
         } catch (FileNotFoundException e) {
             LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
             return;
@@ -157,13 +168,23 @@ public class TcpPersistOperationBuilder implements PersistOperationBuilder {
         }
     }
 
-    private List<Double> getValues() {
+    private List<Double> getDblValues() {
 	List<Double> values = new ArrayList<Double>();
-        for (Iterator<CollectionAttributeType> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
+        for (Iterator<CollectionAttributeType> iter = m_dbl_declarations.keySet().iterator(); iter.hasNext();) {
             CollectionAttributeType attrDef = iter.next();
-            Number value = m_declarations.get(attrDef);
+            Number value = m_dbl_declarations.get(attrDef);
             Double dblValue = new Double(value.doubleValue());
             values.add(dblValue);
+        }
+        return values;
+    }
+
+    private List<String> getStrValues() {
+	List<String> values = new ArrayList<String>();
+        for (Iterator<CollectionAttributeType> iter = m_str_declarations.keySet().iterator(); iter.hasNext();) {
+            CollectionAttributeType attrDef = iter.next();
+            String value = m_str_declarations.get(attrDef);
+            values.add(value);
         }
         return values;
     }

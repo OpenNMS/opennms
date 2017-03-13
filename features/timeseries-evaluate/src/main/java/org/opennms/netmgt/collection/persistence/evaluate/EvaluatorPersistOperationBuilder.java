@@ -56,7 +56,16 @@ public class EvaluatorPersistOperationBuilder implements PersistOperationBuilder
      * @param value the value
      */
     @Override
-    public void setAttributeValue(CollectionAttributeType attributeType, Number value) {}
+    public void setNumericAttributeValue(CollectionAttributeType attributeType, Number value) {}
+
+    /**
+     * Sets the attribute value.
+     *
+     * @param attributeType the attribute type
+     * @param value the value
+     */
+    @Override
+    public void setStringAttributeValue(CollectionAttributeType attributeType, String value) {}
 
     /**
      * Sets the attribute metadata.

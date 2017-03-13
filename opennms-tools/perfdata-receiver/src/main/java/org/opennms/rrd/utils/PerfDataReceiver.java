@@ -88,15 +88,24 @@ public class PerfDataReceiver {
 							InputStream is = socket.getInputStream();
 							PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(is);
 							for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
-								StringBuffer values = new StringBuffer();
-								values.append("{ ");
-								for (int i = 0; i < message.getValueCount(); i++) {
+								StringBuffer dblValues = new StringBuffer();
+								dblValues.append("{ ");
+								for (int i = 0; i < message.getDblValueCount(); i++) {
 									if (i != 0) {
-										values.append(", ");
+										dblValues.append(", ");
 									}
-									values.append(message.getValue(i));
+									dblValues.append(message.getDblValue(i));
 								}
-								values.append(" }");
+								dblValues.append(" }");
+								StringBuffer strValues = new StringBuffer();
+								strValues.append("{ ");
+								for (int i = 0; i < message.getStrValueCount(); i++) {
+									if (i != 0) {
+										strValues.append(", ");
+									}
+									strValues.append(message.getStrValue(i));
+								}
+								strValues.append(" }");
 								System.out
 										.println("Message received: { "
 												+ "path: \""
@@ -105,8 +114,10 @@ public class PerfDataReceiver {
 												+ message.getOwner() + "\", "
 												+ "timestamp: \""
 												+ message.getTimestamp()
-												+ "\", " + "values: "
-												+ values.toString() + " }");
+												+ "\", " + "double values: "
+												+ dblValues.toString()
+												+ ", string values: "
+												+ strValues.toString() + " }");
 
 							}
 						} catch (SocketTimeoutException e) {

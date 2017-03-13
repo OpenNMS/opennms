@@ -132,14 +132,22 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     /**
-     * <p>setAttributeValue</p>
+     * <p>setNumericAttributeValue</p>
      *
      * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      * @param value a {@link java.lang.Number} object.
      */
-    public void setAttributeValue(CollectionAttributeType attrType, Number value) {
+    public void setNumericAttributeValue(CollectionAttributeType attrType, Number value) {
         m_declarations.put(attrType, value);
     }
+    
+    /**
+     * <p>setStringAttributeValue</p>
+     *
+     * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
+     * @param value a {@link java.lang.String} object.
+     */
+    public void setStringAttributeValue(CollectionAttributeType attrType, String value) {}
     
     public void setAttributeMetadata(String metricIdentifier, String name) {
         if (metricIdentifier == null) {

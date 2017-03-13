@@ -139,7 +139,7 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
         boolean shouldIgnorePersist = isIgnorePersist() && attribute.getType().toLowerCase().startsWith("counter");
         LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
         Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
-        m_builder.setAttributeValue(attribute.getAttributeType(), value);
+        m_builder.setNumericAttributeValue(attribute.getAttributeType(), value);
         m_builder.setAttributeMetadata(attribute.getMetricIdentifier(), attribute.getName());
     }
 

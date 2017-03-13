@@ -75,13 +75,15 @@ public class TcpBasePersister extends AbstractPersister {
         boolean shouldIgnorePersist = isIgnorePersist() && attribute.getType().toLowerCase().startsWith("counter");
         LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
         Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
-        getBuilder().setAttributeValue(attribute.getAttributeType(), value);
+        getBuilder().setNumericAttributeValue(attribute.getAttributeType(), value);
     }
 
     /** {@inheritDoc} */
     @Override
     public void persistStringAttribute(CollectionAttribute attribute) {
         LOG.debug("Persisting {}", attribute);
+        String value = attribute.getStringValue();
+        getBuilder().setStringAttributeValue(attribute.getAttributeType(), value);
     }
 
     /* (non-Javadoc)
