@@ -245,6 +245,23 @@ public class BridgeBridgeLink {
 	}
 
 	@Transient
+	public String printTopology() {
+    	StringBuffer strbfr = new StringBuffer();
+
+    	strbfr.append("bridge link:[nodeid:["); 
+    	strbfr.append(getNode().getId());
+    	strbfr.append("], bridgeport:");
+    	strbfr.append(getBridgePort());
+    	strbfr.append(", designatednodeid:[");
+    	strbfr.append(getDesignatedNode().getId());
+    	strbfr.append("], designatedbridgeport: ");
+    	strbfr.append(getDesignatedPort());
+        strbfr.append("]\n");
+
+    	return strbfr.toString();
+	}
+	
+	@Transient
 	public BridgeBridgeLink getReverseBridgeBridgeLink() {
 		
 		BridgeBridgeLink link = new BridgeBridgeLink();

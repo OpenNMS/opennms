@@ -68,7 +68,7 @@ public class UpdateGroupServlet extends HttpServlet {
             Group newGroup = (Group) userSession.getAttribute("group");
 
             // get the rest of the group information from the form
-            newGroup.removeAllUser();
+            newGroup.clearUsers();
 
             String[] users = request.getParameterValues("selectedUsers");
 
@@ -115,6 +115,6 @@ public class UpdateGroupServlet extends HttpServlet {
     }
 
     private List<String> getDutySchedulesForGroup(Group group) {
-        return (List<String>) group.getDutyScheduleCollection();
+        return (List<String>) group.getDutySchedules();
     }
 }
