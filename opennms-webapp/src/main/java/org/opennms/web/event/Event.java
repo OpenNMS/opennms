@@ -451,10 +451,10 @@ public class Event {
     /**
      * <p>getNodeId</p>
      *
-     * @return a int.
+     * @return a {@link java.lang.Integer} object.
      */
-    public int getNodeId() {
-        return (nodeID.intValue());
+    public Integer getNodeId() {
+        return (nodeID);
     }
 
     /**
@@ -469,10 +469,10 @@ public class Event {
     /**
      * <p>getServiceId</p>
      *
-     * @return a int.
+     * @return a {@link java.lang.Integer} object.
      */
-    public int getServiceId() {
-        return (serviceID.intValue());
+    public Integer getServiceId() {
+        return (serviceID);
     }
 
     /**
