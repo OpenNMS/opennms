@@ -48,6 +48,7 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
+import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.mock.MockDestinationPathManager;
 import org.opennms.netmgt.config.mock.MockGroupManager;
@@ -268,8 +269,8 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     }
 
     protected long computeInterval() throws IOException, MarshalException, ValidationException {
-        String interval = m_destinationPathManager.getPath("Intervals").getTarget(0).getInterval();
-        return TimeConverter.convertToMillis(interval);
+        String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
+        return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
     }
 
     @Override
