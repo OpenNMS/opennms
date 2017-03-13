@@ -1,0 +1,49 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Didactum">
+    <resourceType name="ctlIntSensAnlEnt" label="Internal Sensors Analog" resourceLabel="${ctlIntSensAnlName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="ctlCanSensAnlEnt" label="CAN Sensors Analog" resourceLabel="${ctlCanSensAnlName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+    <resourceType name="ctlRsSensAnlEnt" label="RS Sensors Analog" resourceLabel="${ctlRsSensAnlName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+    <group name="ctlIntSensAnlTbl" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.4" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlType" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.5" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.7" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlValu" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.10" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlLAla" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.11" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlLWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.12" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlHWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.5.2.1.13" instance="ctlIntSensAnlEnt" alias="ctlIntSensAnlHAla" type="gauge32"/>
+    </group>
+    <group name="ctlCanSensAnlTbl" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.4" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlType" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.5" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.7" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlValu" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.10" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlLAla" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.11" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlLWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.12" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlHWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.6.2.1.13" instance="ctlCanSensAnlEnt" alias="ctlCanSensAnlHAla" type="gauge32"/>
+    </group>
+    <group name="ctlRsSensAnlTbl" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.4" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlType" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.5" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.7" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlValu" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.10" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlLAla" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.11" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlLWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.12" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlHWar" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.46501.7.2.1.13" instance="ctlRsSensAnlEnt" alias="ctlRsSensAnlHAla" type="gauge32"/>
+    </group>
+    <systemDef name="Didactum">
+        <sysoidMask>.1.3.6.1.4.1.8072.3.2.10</sysoidMask>
+        <collect>
+            <includeGroup>ctlIntSensAnlTbl</includeGroup>
+            <includeGroup>ctlCanSensAnlTbl</includeGroup>
+            <includeGroup>ctlRsSensAnlTbl</includeGroup>
+        </collect>
+    </systemDef>
+</datacollection-group>
