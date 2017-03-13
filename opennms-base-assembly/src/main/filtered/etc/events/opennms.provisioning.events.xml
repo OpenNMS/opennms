@@ -98,4 +98,49 @@
         <severity>Warning</severity>
         <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>
     </event>
+    <event>
+        <uei>uei.opennms.org/internal/provisiond/addNode</uei>
+        <event-label>OpenNMS-defined internal event: Provisiond addNode</event-label>
+        <descr>
+            &lt;p&gt;This event is an external command to add a node
+            to the database. The required paramater is the IP
+            address for the main interface: %interface%, and
+            the optional parameter of a node label: %nodelabel%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to add a node with interface:
+            %interface% and node label: %nodelabel%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/provisiond/deleteInterface</uei>
+        <event-label>OpenNMS-defined internal event: Provisiond deleteInterface</event-label>
+        <descr>
+            &lt;p&gt;This event is an external command to delete an interface
+            from the database. The required paramater is the IP
+            address for the interface: %interface%, or the nodeid %nodeid%
+            and ifIndex %ifindex%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to delete an interface:
+            %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/provisiond/forceRescan</uei>
+        <event-label>OpenNMS-defined internal event: Provisiond forceRescan</event-label>
+        <descr>
+            &lt;p&gt;A services scan has been forced.&lt;/p&gt;
+            &lt;p&gt;The administrator has forced a services scan on
+            this node to update the list of supported
+            services.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A services scan has been forced on this
+            node.&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
 </events>

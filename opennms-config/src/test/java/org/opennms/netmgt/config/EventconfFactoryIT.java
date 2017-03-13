@@ -85,8 +85,8 @@ import org.springframework.util.StringUtils;
 public class EventconfFactoryIT {
     private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryIT.class);
 
-    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-    private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
+    private static final String knownUEI1="uei.opennms.org/nodes/nodeDown";
+    private static final String knownLabel1="OpenNMS-defined node event: nodeDown";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
@@ -138,7 +138,7 @@ public class EventconfFactoryIT {
     	
     	final int ATTEMPTS = 10000;
 
-        // knownUEI1 is currently set to 'uei.opennms.org/internal/capsd/snmpConflictsWithDb'
+        // knownUEI1 is currently set to 'uei.opennms.org/nodes/nodeDown'
         // and is defined in the root of the eventconf that is loaded bellow.
         // Prior to this commit, this test would produce very different results
         // when running against another UEI i.e. 'uei.opennms.org/default/event'

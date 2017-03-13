@@ -217,27 +217,6 @@
         <severity>Warning</severity>
     </event>
     <event>
-        <uei>uei.opennms.org/nodes/interfaceIndexChanged</uei>
-        <event-label>OpenNMS-defined node event: interfaceIndexChanged</event-label>
-        <descr>
-            &lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
-            to %parm[newIfIndex]% on %interface%&lt;/p&gt; &lt;p&gt;The
-            ifIndex, or unique numeric identifier of an SNMP device's
-            interfaces, can be reordered by the SNMP agent. Usually this
-            happens if interfaces are added or removed, or by a change
-            in administrative or operational status.&lt;/p&gt;
-            &lt;p&gt;This is typically not a reason for concern, but you
-            should be aware that the active configuration on this SNMP
-            device has changed, and the hardware configuration may have
-            been impacted as well.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logndisplay">
-            &lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
-            to %parm[newIfIndex]% on %interface%&lt;/p&gt;
-        </logmsg>
-        <severity>Warning</severity>
-    </event>
-    <event>
         <uei>uei.opennms.org/nodes/interfaceReparented</uei>
         <event-label>OpenNMS-defined node event: interfaceReparented</event-label>
         <descr>
