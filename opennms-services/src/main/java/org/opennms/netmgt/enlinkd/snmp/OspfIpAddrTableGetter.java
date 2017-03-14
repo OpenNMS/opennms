@@ -50,6 +50,7 @@ public class OspfIpAddrTableGetter extends SnmpGetter {
 	}
 
     public OspfElement get(OspfElement element) {
+        //loopback mask by default
         element.setOspfRouterIdNetmask(InetAddressUtils.addr("255.255.255.255"));
         List<SnmpValue> val = get(element.getOspfRouterId());
         if (val != null && val.size() == 2) {
@@ -67,7 +68,8 @@ public class OspfIpAddrTableGetter extends SnmpGetter {
     }
 	
 	public OspfLink get(OspfLink link) {
-		
+		//use point to point by default
+		link.setOspfIpMask(InetAddressUtils.addr("255.255.255.252"));
 		List<SnmpValue> val = get(link.getOspfIpAddr());
 		if (val != null && val.size() == 2 ) {
 			if (!val.get(0).isNull() && val.get(0).isNumeric() )
