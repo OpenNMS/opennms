@@ -403,11 +403,13 @@ public class EventToIndex implements AutoCloseable {
 
 						// Log any unsuccessful completions as errors
 						for (BulkResultItem item : result.getItems()) {
-							if(item.status != 200){
+							if(item.status >= 200 && item.status < 300){
+								if (LOG.isDebugEnabled()) {
+									// If debug is enabled, log all completions
+									logEsDebug(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
+								}
+							} else {
 								logEsError(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
-							} else if(LOG.isDebugEnabled()) {
-								// If debug is enabled, log all completions
-								logEsDebug(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
 							}
 						}
 					}
