@@ -29,6 +29,8 @@
       <cm:property name="archiveAlarmChangeEvents" value="true" />
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
+      <cm:property name="timeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
+      <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
       <cm:property name="batchSize" value="1" /> <!-- Disable batching by default -->
       <cm:property name="batchInterval" value="0" /> <!-- Disable batching by default -->
       <cm:property name="threads" value="0" /> <!-- Use the default number of threads -->
@@ -70,6 +72,8 @@
     <argument value="${elasticsearchUrl}" />
     <argument value="${esusername}" />
     <argument value="${espassword}" />
+    <property name="timeout" value="${timeout}" />
+    <property name="retries" value="${retries}" />
   </bean>
 
 

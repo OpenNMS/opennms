@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -178,6 +179,10 @@ public abstract class AbstractSyslogTest {
                 pipe.println("config:propset logAllEvents true");
                 pipe.println("config:propset batchSize 500");
                 pipe.println("config:propset batchInterval 500");
+                pipe.println("config:propset timeout 5000");
+                // Retry enough times that all events are eventually sent
+                // even if transient ES outages occur
+                pipe.println("config:propset retries 200");
                 pipe.println("config:update");
                 pipe.println("features:install opennms-es-rest");
             } else {
@@ -267,41 +272,46 @@ public abstract class AbstractSyslogTest {
     }
 
     protected static void pollForElasticsearchEventsUsingJest(InetSocketAddress esTransportAddr, int numMessages) {
-        JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(String.format("http://%s:%d", esTransportAddr.getHostString(), esTransportAddr.getPort()))
-            .multiThreaded(true)
-            .build());
-        JestClient client = factory.getObject();
+        pollForElasticsearchEventsUsingJest(() -> esTransportAddr, numMessages);
+    }
 
-        try {
-            with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
-                try {
-                    SearchResult response = client.execute(
-                        new Search.Builder(new SearchSourceBuilder()
-                            .query(QueryBuilders.matchQuery("eventuei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic"))
-                            .toString()
-                        )
-                            .addIndex("opennms*")
-                            .build()
-                    );
+    protected static void pollForElasticsearchEventsUsingJest(Supplier<InetSocketAddress> esTransportAddr, int numMessages) {
+        with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
+            JestClient client = null;
+            try {
+                JestClientFactory factory = new JestClientFactory();
+                factory.setHttpClientConfig(new HttpClientConfig.Builder(String.format("http://%s:%d", esTransportAddr.get().getHostString(), esTransportAddr.get().getPort()))
+                    .multiThreaded(true)
+                    .build());
+                client = factory.getObject();
 
-                    LOG.debug("SEARCH RESPONSE: {}", response.toString());
+                SearchResult response = client.execute(
+                    new Search.Builder(new SearchSourceBuilder()
+                        .query(QueryBuilders.matchQuery("eventuei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic"))
+                        .toString()
+                    )
+                        .addIndex("opennms*")
+                        .build()
+                );
 
-                    // Sometimes, the first warm-up message is successful so treat both message counts as valid
-                    assertTrue("ES search hits was not equal to " + numMessages + ": " + response.getTotal(),
-                        (numMessages == response.getTotal())
-                    );
-                    //assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
-                    //assertEquals("Event IP address did not match", "4.2.2.2", response.getHits().getAt(0).getSource().get("ipaddr"));
-                } catch (Throwable e) {
-                    LOG.warn(e.getMessage(), e);
-                    return false;
+                LOG.debug("SEARCH RESPONSE: {}", response.toString());
+
+                // Sometimes, the first warm-up message is successful so treat both message counts as valid
+                assertTrue("ES search hits was not equal to " + numMessages + ": " + response.getTotal(),
+                    (numMessages == response.getTotal())
+                );
+                //assertEquals("Event UEI did not match", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic", response.getHits().getAt(0).getSource().get("eventuei"));
+                //assertEquals("Event IP address did not match", "4.2.2.2", response.getHits().getAt(0).getSource().get("ipaddr"));
+            } catch (Throwable e) {
+                LOG.warn(e.getMessage(), e);
+                return false;
+            } finally {
+                if (client != null) {
+                    client.shutdownClient();
                 }
-                return true;
-            });
-        } finally {
-            client.shutdownClient();
-        }
+            }
+            return true;
+        });
     }
 
     /**
