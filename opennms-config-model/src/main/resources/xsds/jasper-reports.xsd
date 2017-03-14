@@ -4,9 +4,6 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
 	elementFormDefault="qualified">
 
-	<import namespace="http://xmlns.opennms.org/xsd/config/report-parms"
-		schemaLocation="report-parms.xsd" />
-
 	<element name="jasper-reports">
 		<annotation>
 			<documentation>
