@@ -720,4 +720,41 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             return m_events;
         }
     }
+
+    public void testBroadcastNowSync() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        final EventListener slowListener = new EventListener() {
+            @Override
+            public String getName() {
+                return "testBroadcastNowSync";
+            }
+
+            @Override
+            public void onEvent(Event event) {
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                } catch (InterruptedException e) {
+                }
+                counter.incrementAndGet();
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setHandlerPoolSize(5);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.afterPropertiesSet();
+
+        manager.addEventListener(slowListener);
+
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testBroadcastNowSync");
+        Event e = bldr.getEvent();
+
+        // Verify the initial state
+        assertEquals(0, counter.get());
+        // Broadcast synchronously - this should block until our event listener returns
+        manager.broadcastNow(e, true);
+        // broadcastNow() returned, so the counter should have been increased
+        assertEquals(1, counter.get());
+    }
 }
