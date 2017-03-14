@@ -39,7 +39,7 @@
     <property name="javamailConfigDao" ref="javamailConfigDao" />
   </bean>
 
-  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
+  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
     <property name="configResource" ref="reportdConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>

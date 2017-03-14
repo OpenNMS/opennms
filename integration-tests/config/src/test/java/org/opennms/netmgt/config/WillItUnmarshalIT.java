@@ -87,7 +87,7 @@ import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
-import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
+import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -218,7 +218,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.JAXB);
-        addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
@@ -270,7 +270,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.JAXB);

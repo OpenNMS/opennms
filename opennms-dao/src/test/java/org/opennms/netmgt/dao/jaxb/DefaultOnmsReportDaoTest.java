@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -35,6 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.reporting.DateParm;
 import org.opennms.netmgt.config.reporting.IntParm;
+import org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -82,16 +83,16 @@ public class DefaultOnmsReportDaoTest {
         assertEquals(DATE_NAME,dates[0].getName());
         assertEquals(DATE_DISPLAY_NAME,dates[0].getDisplayName());
         assertEquals(false,dates[0].getUseAbsoluteDate());
-        assertEquals(1,dates[0].getDefaultCount());
+        assertEquals(Integer.valueOf(1),dates[0].getDefaultCount());
         assertEquals("day",dates[0].getDefaultInterval());
-        assertEquals(23,dates[0].getDefaultTime().getHours());
-        assertEquals(59,dates[0].getDefaultTime().getMinutes());
+        assertEquals(Integer.valueOf(23),dates[0].getDefaultTime().getHours());
+        assertEquals(Integer.valueOf(59),dates[0].getDefaultTime().getMinutes());
         
         IntParm[] integers = m_dao.getIntParms(ID);
         assertEquals(1,integers.length);
         assertEquals(STRING_NAME,integers[0].getName());
         assertEquals(STRING_DISPLAY_NAME,integers[0].getDisplayName());
-        assertEquals(20,integers[0].getDefault());
+        assertEquals(Integer.valueOf(20),integers[0].getDefault());
         
     }
 
