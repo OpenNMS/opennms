@@ -192,7 +192,7 @@ public class RangeChunkerTest {
 			specific.setForeignSource("ABC");
 			specific.setLocation("123");
 			specific.setRetries(5);
-			specific.setTimeout(i);
+			specific.setTimeout(i+1);
 			config.addSpecific(specific);
 		}
 

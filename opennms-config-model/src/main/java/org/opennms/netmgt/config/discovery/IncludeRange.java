@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.discovery;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -94,32 +95,35 @@ public class IncludeRange implements Serializable {
         m_end = end;
     }
 
-    public String getLocation() {
-        return m_location;
+    public Optional<String> getLocation() {
+        return Optional.ofNullable(m_location);
     }
 
     public void setLocation(final String location) {
         m_location = location;
     }
 
-    public Integer getRetries() {
-        return m_retries;
+    public Optional<Integer> getRetries() {
+        return Optional.ofNullable( m_retries);
     }
 
     public void setRetries(final Integer retries) {
         m_retries = retries;
     }
 
-    public Long getTimeout() {
-        return m_timeout;
+    public Optional<Long> getTimeout() {
+        return Optional.ofNullable(m_timeout);
     }
 
     public void setTimeout(final Long timeout) {
+        if (timeout != null && timeout == 0) {
+            throw new IllegalArgumentException("Can't have a 0 timeout!");
+        }
         m_timeout = timeout;
     }
 
-    public String getForeignSource() {
-        return m_foreignSource;
+    public Optional<String> getForeignSource() {
+        return Optional.ofNullable(m_foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
@@ -131,6 +135,9 @@ public class IncludeRange implements Serializable {
     }
 
     public void setBegin(final String begin) {
+        if (begin == null) {
+            throw new IllegalArgumentException("Include range 'begin' cannot be null!");
+        }
         m_begin = begin;
     }
 
@@ -139,6 +146,9 @@ public class IncludeRange implements Serializable {
     }
 
     public void setEnd(final String end) {
+        if (end == null) {
+            throw new IllegalArgumentException("Include range 'end' cannot be null!");
+        }
         m_end = end;
     }
 

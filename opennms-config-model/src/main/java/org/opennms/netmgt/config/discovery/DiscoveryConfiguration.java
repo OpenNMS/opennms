@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -136,64 +137,67 @@ public class DiscoveryConfiguration implements Serializable {
     public DiscoveryConfiguration() {
     }
 
-    public String getLocation() {
-        return m_location;
+    public Optional<String> getLocation() {
+        return Optional.ofNullable(m_location);
     }
 
     public void setLocation(final String location) {
         m_location = location;
     }
 
-    public Double getPacketsPerSecond() {
-        return m_packetsPerSecond;
+    public Optional<Double> getPacketsPerSecond() {
+        return Optional.ofNullable(m_packetsPerSecond);
     }
 
     public void setPacketsPerSecond(final Double packetsPerSecond) {
         m_packetsPerSecond = packetsPerSecond;
     }
 
-    public Long getInitialSleepTime() {
-        return m_initialSleepTime;
+    public Optional<Long> getInitialSleepTime() {
+        return Optional.ofNullable(m_initialSleepTime);
     }
 
     public void setInitialSleepTime(final Long initialSleepTime) {
         m_initialSleepTime = initialSleepTime;
     }
 
-    public Long getRestartSleepTime() {
-        return m_restartSleepTime;
+    public Optional<Long> getRestartSleepTime() {
+        return Optional.ofNullable(m_restartSleepTime);
     }
 
     public void setRestartSleepTime(final Long restartSleepTime) {
         m_restartSleepTime = restartSleepTime;
     }
 
-    public Integer getRetries() {
-        return m_retries;
+    public Optional<Integer> getRetries() {
+        return Optional.ofNullable(m_retries);
     }
 
     public void setRetries(final Integer retries) {
         m_retries = retries;
     }
 
-    public Long getTimeout() {
-        return m_timeout;
+    public Optional<Long> getTimeout() {
+        return Optional.ofNullable(m_timeout);
     }
 
     public void setTimeout(final Long timeout) {
+        if (timeout != null && timeout == 0) {
+            throw new IllegalArgumentException("Can't have a 0 timeout!");
+        }
         m_timeout = timeout;
     }
 
-    public String getForeignSource() {
-        return m_foreignSource;
+    public Optional<String> getForeignSource() {
+        return Optional.ofNullable(m_foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
-    public Integer getChunkSize() {
-        return m_chunkSize;
+    public Optional<Integer> getChunkSize() {
+        return Optional.ofNullable(m_chunkSize);
     }
 
     public void setChunkSize(final Integer chunkSize) {

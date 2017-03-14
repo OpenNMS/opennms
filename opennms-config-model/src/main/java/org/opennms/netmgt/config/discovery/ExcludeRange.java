@@ -70,6 +70,9 @@ public class ExcludeRange implements Serializable {
     }
 
     public void setBegin(final String begin) {
+        if (begin == null) {
+            throw new IllegalArgumentException("Exclude range 'begin' cannot be null!");
+        }
         m_begin = begin;
     }
 
@@ -78,6 +81,9 @@ public class ExcludeRange implements Serializable {
     }
 
     public void setEnd(final String end) {
+        if (end == null) {
+            throw new IllegalArgumentException("Exclude range 'end' cannot be null!");
+        }
         m_end = end;
     }
 
