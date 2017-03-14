@@ -56,6 +56,7 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -75,7 +76,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
     private static final Logger LOG = LoggerFactory.getLogger(ActionDiscoveryServlet.class);
 
     private static final long serialVersionUID = 2L;
-    
+
     public static final String ATTRIBUTE_DISCOVERY_CONFIGURATION = ActionDiscoveryServlet.class.getSimpleName() + "-discoveryConfiguration";
 
     /**
@@ -87,9 +88,9 @@ public class ActionDiscoveryServlet extends HttpServlet {
     public static DiscoveryConfiguration getDiscoveryConfig() throws ServletException {
         DiscoveryConfiguration config = null;
         try {
-             DiscoveryConfigFactory factory = DiscoveryConfigFactory.getInstance();
-             factory.reload();
-             config = factory.getConfiguration();
+            DiscoveryConfigFactory factory = DiscoveryConfigFactory.getInstance();
+            factory.reload();
+            config = factory.getConfiguration();
         } catch (final Exception e) {
             throw new ServletException("Could not load configuration: " + e.getMessage(), e);
         }
@@ -115,86 +116,86 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
         //add a Specific
         if(action.equals(addSpecificAction)){
-        	LOG.debug("Adding Specific");
-        	String ipAddr = request.getParameter("specificipaddress");
-        	String timeout = request.getParameter("specifictimeout");
-        	String retries = request.getParameter("specificretries");
-        	String foreignSource = request.getParameter("specificforeignsource");
-        	String location = request.getParameter("specificlocation");
-        	Specific newSpecific = new Specific();
-        	newSpecific.setAddress(ipAddr);
+            LOG.debug("Adding Specific");
+            String ipAddr = request.getParameter("specificipaddress");
+            String timeout = request.getParameter("specifictimeout");
+            String retries = request.getParameter("specificretries");
+            String foreignSource = request.getParameter("specificforeignsource");
+            String location = request.getParameter("specificlocation");
+            Specific newSpecific = new Specific();
+            newSpecific.setAddress(ipAddr);
 
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
-        		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
-        	}
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
+                newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
+            }
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
-        		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
-        	}
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
+                newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
+            }
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
-        		newSpecific.setForeignSource(foreignSource);
-        	}
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
+                newSpecific.setForeignSource(foreignSource);
+            }
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
-        		newSpecific.setLocation(location);
-        	}
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
+                newSpecific.setLocation(location);
+            }
 
-        	config.addSpecific(newSpecific);
+            config.addSpecific(newSpecific);
         }
 
         //remove 'Specific' from configuration
         if(action.equals(removeSpecificAction)){
-        	LOG.debug("Removing Specific");
-        	String specificIndex = request.getParameter("index");
-        	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	Specific spec= config.getSpecific(index);
-        	boolean result = config.removeSpecific(spec);
-        	LOG.debug("Removing Specific result = {}", result);
+            LOG.debug("Removing Specific");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            Specific spec= config.getSpecific(index);
+            boolean result = config.removeSpecific(spec);
+            LOG.debug("Removing Specific result = {}", result);
         } 
 
-        
+
         //add an 'Include Range'
         if(action.equals(addIncludeRangeAction)){
-        	LOG.debug("Adding Include Range");
-        	String ipAddrBase = request.getParameter("irbase");
-        	String ipAddrEnd = request.getParameter("irend");
-        	String timeout = request.getParameter("irtimeout");
-        	String retries = request.getParameter("irretries");
-        	String foreignSource = request.getParameter("irforeignsource");
-        	String location = request.getParameter("irlocation");
-        	IncludeRange newIR = new IncludeRange();
-        	newIR.setBegin(ipAddrBase);
-        	newIR.setEnd(ipAddrEnd);
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
-        		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
-        	}
+            LOG.debug("Adding Include Range");
+            String ipAddrBase = request.getParameter("irbase");
+            String ipAddrEnd = request.getParameter("irend");
+            String timeout = request.getParameter("irtimeout");
+            String retries = request.getParameter("irretries");
+            String foreignSource = request.getParameter("irforeignsource");
+            String location = request.getParameter("irlocation");
+            IncludeRange newIR = new IncludeRange();
+            newIR.setBegin(ipAddrBase);
+            newIR.setEnd(ipAddrEnd);
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
+                newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
+            }
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
-        		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
-        	}
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
+                newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
+            }
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
-        		newIR.setForeignSource(foreignSource);
-        	}
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
+                newIR.setForeignSource(foreignSource);
+            }
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
-        		newIR.setLocation(location);
-        	}
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
+                newIR.setLocation(location);
+            }
 
-        	config.addIncludeRange(newIR);
+            config.addIncludeRange(newIR);
         }
 
         //remove 'Include Range' from configuration
         if(action.equals(removeIncludeRangeAction)){
-        	LOG.debug("Removing Include Range");
-        	String specificIndex = request.getParameter("index");
-        	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	IncludeRange ir= config.getIncludeRange(index);
-        	boolean result = config.removeIncludeRange(ir);
-        	LOG.debug("Removing Include Range result = {}", result);
+            LOG.debug("Removing Include Range");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            IncludeRange ir= config.getIncludeRange(index);
+            boolean result = config.removeIncludeRange(ir);
+            LOG.debug("Removing Include Range result = {}", result);
         } 
-        
+
         //add an 'Include URL'
         if(action.equals(addIncludeUrlAction)){
             LOG.debug("Adding Include URL");
@@ -206,19 +207,19 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             IncludeUrl iu = new IncludeUrl();
             iu.setUrl(url);
-            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
 
-            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
                 iu.setRetries(WebSecurityUtils.safeParseInt(retries));
             }
 
-            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
                 iu.setForeignSource(foreignSource);
             }
 
-            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
                 iu.setLocation(location);
             }
 
@@ -234,72 +235,72 @@ public class ActionDiscoveryServlet extends HttpServlet {
             boolean result = config.removeIncludeUrl(iu);
             LOG.debug("Removing Include URL result = {}", result);
         } 
-        
+
         //add an 'Exclude Range'
         if(action.equals(addExcludeRangeAction)){
-        	LOG.debug("Adding Exclude Range");
-        	String ipAddrBegin = request.getParameter("erbegin");
-        	String ipAddrEnd = request.getParameter("erend");
-        	ExcludeRange newER = new ExcludeRange();
-        	newER.setBegin(ipAddrBegin);
-        	newER.setEnd(ipAddrEnd);
-        	config.addExcludeRange(newER);
+            LOG.debug("Adding Exclude Range");
+            String ipAddrBegin = request.getParameter("erbegin");
+            String ipAddrEnd = request.getParameter("erend");
+            ExcludeRange newER = new ExcludeRange();
+            newER.setBegin(ipAddrBegin);
+            newER.setEnd(ipAddrEnd);
+            config.addExcludeRange(newER);
         }
 
         //remove 'Exclude Range' from configuration
         if(action.equals(removeExcludeRangeAction)){
-        	LOG.debug("Removing Exclude Range");
-        	String specificIndex = request.getParameter("index");
-        	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	ExcludeRange er= config.getExcludeRange(index);
-        	boolean result = config.removeExcludeRange(er);
-        	LOG.debug("Removing Exclude Range result = {}", result);
+            LOG.debug("Removing Exclude Range");
+            String specificIndex = request.getParameter("index");
+            int index = WebSecurityUtils.safeParseInt(specificIndex);
+            ExcludeRange er= config.getExcludeRange(index);
+            boolean result = config.removeExcludeRange(er);
+            LOG.debug("Removing Exclude Range result = {}", result);
         }         
-        
+
         //save configuration and restart discovery service
         if(action.equals(saveAndRestartAction)){
-        	DiscoveryConfigFactory dcf=null;
-        	try{
-        			StringWriter configString = new StringWriter();
-        			JaxbUtils.marshal(config, configString);
-        			LOG.debug(configString.toString().trim());
-        		dcf = DiscoveryConfigFactory.getInstance();
-            	        dcf.saveConfiguration(config);
-        	}catch(Throwable ex){
-        		LOG.error("Error while saving configuration. {}", ex);
-        		throw new ServletException(ex);
-        	}
-        	
-        	EventProxy proxy = null;
-        	try {
-    			proxy = Util.createEventProxy();
-    		} catch (Throwable me) {
-    			LOG.error(me.getMessage());
-    		}
+            DiscoveryConfigFactory dcf=null;
+            try{
+                StringWriter configString = new StringWriter();
+                JaxbUtils.marshal(config, configString);
+                LOG.debug(configString.toString().trim());
+                dcf = DiscoveryConfigFactory.getInstance();
+                dcf.saveConfiguration(config);
+            }catch(Throwable ex){
+                LOG.error("Error while saving configuration. {}", ex);
+                throw new ServletException(ex);
+            }
 
-    		EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");
-    		bldr.setHost("host");
+            EventProxy proxy = null;
+            try {
+                proxy = Util.createEventProxy();
+            } catch (Throwable me) {
+                LOG.error(me.getMessage());
+            }
+
+            EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");
+            bldr.setHost("host");
 
             try {
-            	proxy.send(bldr.getEvent());
+                proxy.send(bldr.getEvent());
             } catch (Throwable me) {
-    			LOG.error(me.getMessage());
-    		}
+                LOG.error(me.getMessage());
+            }
 
             LOG.info("Restart Discovery requested!");  
             sess.removeAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION);
             response.sendRedirect(Util.calculateUrlBase( request, "admin/discovery/config-done.jsp" ));
             return;
         }
-        
+
         sess.setAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION, config);
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/discovery/edit-config.jsp");
         dispatcher.forward(request, response);
     }
-	
-	/** {@inheritDoc} */
+
+    /** {@inheritDoc} */
     @Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
 }

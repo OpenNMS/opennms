@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.discovery;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -93,40 +94,46 @@ public class IncludeUrl implements Serializable {
         m_url = url;
     }
 
-    public String getUrl() {
-        return m_url;
+    public Optional<String> getUrl() {
+        return Optional.ofNullable(m_url);
     }
 
-    public void setUrl(final String content) {
-        m_url = content;
+    public void setUrl(final String url) {
+        if (url == null) {
+            throw new IllegalArgumentException("URL cannot be null!");
+        }
+        m_url = url;
     }
 
-    public String getLocation() {
-        return m_location;
+    public Optional<String> getLocation() {
+        return Optional.ofNullable(m_location);
     }
 
     public void setLocation(final String location) {
         m_location = location;
     }
 
-    public Integer getRetries() {
-        return m_retries;
+    public Optional<Integer> getRetries() {
+        return Optional.ofNullable(m_retries);
     }
 
     public void setRetries(final Integer retries) {
         m_retries = retries;
     }
 
-    public Long getTimeout() {
-        return m_timeout;
+    public Optional<Long> getTimeout() {
+        return Optional.ofNullable(m_timeout);
     }
 
     public void setTimeout(final Long timeout) {
+        if (timeout != null && timeout == 0) {
+            throw new IllegalArgumentException("Can't have a 0 timeout!");
+        }
         m_timeout = timeout;
     }
 
-    public String getForeignSource() {
-        return m_foreignSource;
+    public Optional<String> getForeignSource() {
+        return Optional.ofNullable(m_foreignSource);
     }
 
     public void setForeignSource(final String foreignSource) {
