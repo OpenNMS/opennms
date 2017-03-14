@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.notifd.MicroblogAuthorization.MicroblogAuthorizationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;

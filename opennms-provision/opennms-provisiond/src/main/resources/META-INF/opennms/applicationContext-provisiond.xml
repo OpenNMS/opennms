@@ -177,7 +177,7 @@
     <constructor-arg value="file:${opennms.home}/etc/provisiond-configuration.xml" />
   </bean>
 
-  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.castor.DefaultProvisiondConfigurationDao">
+  <bean id="provisiondConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
     <property name="configResource" ref="provisiondConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>

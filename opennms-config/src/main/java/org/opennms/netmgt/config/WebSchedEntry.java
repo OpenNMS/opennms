@@ -106,8 +106,8 @@ public class WebSchedEntry {
     }
 
     private void modifyRole(Role role) {
-        Schedule sched = role.getSchedule(m_schedIndex);
-        Time time = sched.getTime(m_timeIndex);
+        Schedule sched = role.getSchedules().get(m_schedIndex);
+        Time time = sched.getTimes().get(m_timeIndex);
         sched.setName(m_user);
         sched.setType(m_type);
         time.setBegins(m_begins);

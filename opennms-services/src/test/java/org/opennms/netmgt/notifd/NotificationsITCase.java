@@ -48,6 +48,7 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
+import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.mock.MockDestinationPathManager;
 import org.opennms.netmgt.config.mock.MockGroupManager;
@@ -206,7 +207,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
     
@@ -237,7 +238,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected Collection<String> getUsersInGroup(String groupName) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return Arrays.asList(users);
         
     }
@@ -268,8 +269,8 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     }
 
     protected long computeInterval() throws IOException, MarshalException, ValidationException {
-        String interval = m_destinationPathManager.getPath("Intervals").getTarget(0).getInterval();
-        return TimeConverter.convertToMillis(interval);
+        String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
+        return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
     }
 
     @Override

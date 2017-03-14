@@ -187,7 +187,9 @@
 					// name and we can't use dot notation to refer to it as a default param
 					saveMe.$delete({id: item['location-name']}, function() {
 						$scope.refresh();
-					});
+					}, function (response) {
+                        $window.alert('Deletion of location \"' +  item['location-name'] + '\" failed. Please make sure that no nodes are associated with the given location.');
+                    });
 				}
 			}, function(response) {
 				if (response.status === 404) {

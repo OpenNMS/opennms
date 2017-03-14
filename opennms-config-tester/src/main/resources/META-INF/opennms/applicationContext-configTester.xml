@@ -46,7 +46,7 @@
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
-        <entry key="jasper-reports.xml" value="jasperReportConfigDao"/>
+        <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
@@ -134,7 +134,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.asterisk.utils.AsteriskConfig.getProperties</value></property>
   </bean>
   
-  <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao">
+  <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/availability-reports.xml"/>
   </bean>
   
@@ -208,10 +208,19 @@
 
   <bean id="httpCollectionConfigFactory" class="org.opennms.netmgt.config.HttpCollectionConfigFactory" depends-on="httpCollectionConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/jasper-reports.xml"/>
+  <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
   </bean>
-  
+
+  <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/report-templates"/>
+  </bean>
+
+  <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
+    <constructor-arg ref="legacyLocalJasperReportsConfigResource"/>
+    <constructor-arg ref="jrTemplateResource"/>
+  </bean>
+
   <bean id="javaMailerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.javamail.JavaMailerConfig.getProperties</value></property>
   </bean>
@@ -253,7 +262,7 @@
     <property name="userManager" ref="userManager" />
   </bean>
   
-  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
+  <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
   </bean>
 
@@ -330,7 +339,7 @@
 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="pollerConfigFactory-init" factory-method="getInstance"/>
   
-  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultProvisiondConfigurationDao">
+  <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
 
@@ -340,7 +349,7 @@
 
   <bean id="rancidAdapterConfigFactory" class="org.opennms.netmgt.config.RancidAdapterConfigFactory" depends-on="rancidAdapterConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="reportdConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
+  <bean id="reportdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/reportd-configuration.xml"/>
   </bean>
   
@@ -395,7 +404,7 @@
 
   <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
-  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
+  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSiteStatusViewConfigDao"/>
   
   <bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory"/>
 
@@ -445,7 +454,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
   </bean>
 
-  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/surveillance-views.xml"/>
   </bean>
   
@@ -467,7 +476,7 @@
 
   <bean id="thresholdingConfigFactory" class="org.opennms.netmgt.config.ThresholdingConfigFactory" depends-on="thresholdingConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
+  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>
   

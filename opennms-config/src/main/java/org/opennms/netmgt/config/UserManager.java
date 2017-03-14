@@ -51,8 +51,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.xml.JaxbUtils;
@@ -1216,14 +1214,9 @@ public abstract class UserManager implements UserConfig {
 
     private boolean _userHasRole(final User user, final String roleid) throws IOException {
         if (roleid == null) throw new NullPointerException("roleid is null");
-        
-        try {
-            return m_groupManager.userHasRole(user.getUserId(), roleid);
-        } catch (final MarshalException | ValidationException e) {
-            throw new IOException(e);
-        }
+        return m_groupManager.userHasRole(user.getUserId(), roleid);
     }
-    
+
     /**
      * <p>isUserScheduledForRole</p>
      *
@@ -1247,14 +1240,9 @@ public abstract class UserManager implements UserConfig {
 
     private boolean _isUserScheduledForRole(final User user, final String roleid, final Date time) throws IOException {
         if (roleid == null) throw new NullPointerException("roleid is null");
-        
-        try {
-            return m_groupManager.isUserScheduledForRole(user.getUserId(), roleid, time);
-        } catch (final MarshalException | ValidationException e) {
-            throw new IOException(e);
-        }
+        return m_groupManager.isUserScheduledForRole(user.getUserId(), roleid, time);
     }
-    
+
     /**
      * <p>getUsersScheduledForRole</p>
      *

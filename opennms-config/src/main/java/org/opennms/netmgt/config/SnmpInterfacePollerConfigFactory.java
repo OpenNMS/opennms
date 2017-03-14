@@ -207,11 +207,9 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public synchronized void update() throws IOException, MarshalException, ValidationException {
+    public synchronized void update() throws IOException {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);
         if (cfgFile.lastModified() > m_currentVersion) {
