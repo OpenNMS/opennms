@@ -11,21 +11,17 @@
 	</global>
 
 	<event>
-		<uei>uei.opennms.org/nodes/nodeDown</uei>
-		<event-label>OpenNMS-defined node event: nodeDown</event-label>
+		<uei>uei.opennms.org/opennmsConfig/eventconf</uei>
+		<event-label>OpenNMS-defined opennms-config event: eventconf</event-label>
 		<descr>
-			&lt;p&gt;All interfaces on node %parm[nodelabel]% are
-			down.&lt;/p&gt; &lt;p&gt;This event is generated when node
-			outage processing determines that all interfaces on the node
-			are down.&lt;/p&gt; &lt;p&gt;New outage records have been
-			created and service level availability calculations will be
-			impacted until this outage is resolved.&lt;/p&gt;
+			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
+			conflict with the ip interfaces listed in the database for this node.
+			&lt;/p&gt;
 		</descr>
-		<logmsg dest="logndisplay">
-			Node %parm[nodelabel]% is down. %parm[eventReason]%
+		<logmsg dest='logndisplay'>
+			IP interfaces as determined by SNMP disagree with the database.
 		</logmsg>
-		<severity>Major</severity>
-		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+		<severity>Warning</severity>
 	</event>
 
     <event-file>events/Standard.events.xml</event-file>
