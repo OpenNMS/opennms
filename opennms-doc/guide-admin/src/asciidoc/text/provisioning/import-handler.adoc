@@ -50,9 +50,6 @@ Examples:
 
  requisition://file?path=/path/to/my/requisition.xml;location=MINION
 
-==== DNS Handler
-
-
 ==== HTTP Handler
 
 Examples:

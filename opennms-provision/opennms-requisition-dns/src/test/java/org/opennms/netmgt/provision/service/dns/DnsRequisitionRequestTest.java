@@ -26,39 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.service.dns;
 
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public abstract class AbstractRequisitionProvider<T extends RequisitionRequest> implements RequisitionProvider {
+public class DnsRequisitionRequestTest extends XmlTestNoCastor<DnsRequisitionRequest> {
 
-    private final Class<T> clazz;
-
-    public AbstractRequisitionProvider(Class<T> clazz) {
-        this.clazz = Objects.requireNonNull(clazz);
+    public DnsRequisitionRequestTest(DnsRequisitionRequest sampleObject, String sampleXml) {
+        super(sampleObject, sampleXml, null);
     }
 
-    public abstract Requisition getRequisitionFor(T request);
+    @Parameters
+    public static Collection<Object[]> data() throws Exception {
+        DnsRequisitionRequest request = new DnsRequisitionRequest();
+        request.setHost("my-dns-server");
+        request.setPort(5353);
+        request.setZone("some-zone");
+        request.setFallback(false);
+        request.setForeignSource("f*s*");
 
-    @Override
-    public Requisition getRequisition(RequisitionRequest request) {
-        if (request == null || !(clazz.isAssignableFrom(request.getClass()))) {
-            throw new IllegalArgumentException("Invalid request: " + request);
-        }
-        return getRequisitionFor(clazz.cast(request));
-    }
-
-    @Override
-    public String marshalRequest(RequisitionRequest request) {
-        return JaxbUtils.marshal(request);
-    }
-
-    @Override
-    public RequisitionRequest unmarshalRequest(String marshaledRequest) {
-        return JaxbUtils.unmarshal(clazz, marshaledRequest);
+        return Arrays.asList(new Object[][] {
+            {
+                request,
+                "<dns-requisition-request host=\"my-dns-server\" port=\"5353\" zone=\"some-zone\" foreign-source=\"f*s*\" fallback=\"false\"/>"
+            }
+        });
     }
 
 }
