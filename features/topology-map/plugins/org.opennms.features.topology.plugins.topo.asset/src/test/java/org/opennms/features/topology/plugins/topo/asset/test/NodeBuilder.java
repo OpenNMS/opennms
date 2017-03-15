@@ -32,9 +32,11 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class NodeBuilder {
     
@@ -49,6 +51,11 @@ public class NodeBuilder {
     
     public NodeBuilder withLabel(String label) {
         node.setLabel(label);
+        return this;
+    }
+
+    public NodeBuilder withParentId(int parentId) {
+        getParent().setId(parentId);
         return this;
     }
 
@@ -106,7 +113,7 @@ public class NodeBuilder {
         if (assetBuilder != null) {
             return assetBuilder;
         }
-        assetBuilder = new AssetBuilder();
+        assetBuilder = new AssetBuilder(this);
         return assetBuilder;
     }
 
@@ -115,6 +122,9 @@ public class NodeBuilder {
             OnmsAssetRecord assetRecord = assetBuilder.getAssetRecord();
             assetRecord.setNode(node);
             node.setAssetRecord(assetRecord);
+        }
+        if (node.getLocation() == null) {
+            node.setLocation(new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         }
         return node;
     }
@@ -125,5 +135,15 @@ public class NodeBuilder {
         }
         node.setParent(new OnmsNode());
         return node.getParent();
+    }
+
+    public NodeBuilder withId(int nodeId) {
+        node.setId(nodeId);
+        return this;
+    }
+
+    public NodeBuilder withSysname(String sysname) {
+        node.setSysName(sysname);
+        return this;
     }
 }

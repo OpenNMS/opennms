@@ -33,16 +33,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.common.base.MoreObjects;
+
 public class GeneratorConfig {
 
-    private String label;
-    private String breadcrumbStrategy;
-    private String providerId;
-    private String preferredLayout;
+    private String label = "Asset Topology Provider";
+    private String breadcrumbStrategy = "SHORTEST_PATH_TO_ROOT";
+    private String providerId = "asset";
+    private String preferredLayout = "Grid Layout";
     private List<String> layerHierarchy = new ArrayList<>();
     private String filter;
     private boolean generateUnallocated;
 
+    // TODO MVR make it bean compliant
     public boolean getGenerateUnallocated() {
 		return generateUnallocated;
 	}
@@ -115,8 +118,8 @@ public class GeneratorConfig {
 	}
 	
     public List<String> getFilterList() {
-    	if(filter==null || filter.isEmpty()) return null;
-        return  Arrays.asList(filter.split("&")).stream()
+    	if(filter == null || filter.isEmpty()) return null;
+        return Arrays.asList(filter.split("&")).stream()
                 .filter(h -> h != null && !h.trim().isEmpty())
                 .map(h -> h.trim())
                 .collect(Collectors.toList());
@@ -124,17 +127,14 @@ public class GeneratorConfig {
 
 	@Override
 	public String toString() {
-		return "GeneratorConfig ["
-				+ "providerId=" + providerId
-				+ ", label=" + label 
-				+ ", layerHierarchy="	+ layerHierarchy
-				+ ", filter=" + filter 
-				+ ", breadcrumbStrategy="+ breadcrumbStrategy
-				+ ", preferredLayout=" + preferredLayout 
-				+ ", generateUnallocated=" + generateUnallocated 
-				+ "]";
+        return MoreObjects.toStringHelper(this)
+                .add("providerId", providerId)
+                .add("label", label)
+                .add("layerHierarchy", layerHierarchy)
+                .add("filter", filter)
+                .add("breadcrumbStrategy", breadcrumbStrategy)
+                .add("preferredLayout", preferredLayout)
+                .add("generateUnallocated", generateUnallocated)
+                .toString();
 	}
-    
-    
-	
 }

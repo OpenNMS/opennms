@@ -5,6 +5,7 @@
     ">
 
   <!-- Configuration properties -->
+  <!-- TODO MVR rip out, we do not need this anymore -->
   <cm:property-placeholder id="assetPluginConfigProperties" persistent-id="org.opennms.plugins.graphml.asset" update-strategy="reload">
     <cm:default-properties>
       <cm:property name="assetLayers" value="asset-region,asset-building,asset-rack" />
@@ -18,10 +19,10 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
   <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory" />
   <reference id="graphmlRepository" interface="org.opennms.features.graphml.service.GraphmlRepository" availability="mandatory" />
+  <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
 
   <bean id="defaultGeneratorConfig" class="org.opennms.features.topology.plugins.topo.asset.GeneratorConfig">
     <property name="label" value="${label}" />
@@ -33,15 +34,20 @@
     <property name="generateUnallocated" value="${generateUnallocated}" />
   </bean>
 
+  <!-- TODO MVR rip out -->
   <!-- Asset Topology Provider service -->
   <service ref="assetGraphMLProvderImpl" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" />
 
   <bean id="assetGraphMLProvderImpl" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProviderImpl" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
     <argument ref="eventIpcManager" />
-    <argument ref="nodeDao" />
+    <argument ref="dataProvider" />
     <argument ref="transactionOperations" />
     <argument ref="defaultGeneratorConfig" />
+  </bean>
+
+  <bean id="dataProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceDataProvider">
+    <argument ref="genericPersistenceAccessor"/>
   </bean>
 
   <!-- command line commands -->

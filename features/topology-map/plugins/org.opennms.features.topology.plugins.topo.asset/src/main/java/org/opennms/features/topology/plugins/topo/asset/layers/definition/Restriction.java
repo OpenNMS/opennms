@@ -26,13 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers.definition;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.netmgt.model.OnmsNode;
-
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Restriction {
+    String value();
 }

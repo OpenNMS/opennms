@@ -26,13 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers.decorator;
 
-import java.util.List;
+import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.netmgt.model.OnmsNode;
+public class AssetItemNodeDecorator implements NodeDecorator<String> {
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+    @Override
+    public void decorate(GraphMLNode graphMLNode, String value) {
+        graphMLNode.setProperty(GraphMLProperties.LABEL, value);
+    }
+
+    @Override
+    public String getId(String value) {
+        return value;
+    }
 }

@@ -28,10 +28,18 @@
 
 package org.opennms.features.topology.plugins.topo.asset.test;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
 public class AssetBuilder {
     private final OnmsAssetRecord assetRecord = new OnmsAssetRecord();
+
+    private final NodeBuilder nodeBuilder;
+
+    public AssetBuilder(NodeBuilder parent) {
+        this.nodeBuilder = Objects.requireNonNull(parent);
+    }
 
     public AssetBuilder withRegion(String region) {
         assetRecord.setRegion(region);
@@ -181,6 +189,10 @@ public class AssetBuilder {
     public AssetBuilder withOperatingSystem(String operatingSystem) {
         assetRecord.setOperatingSystem(operatingSystem);
         return this;
+    }
+
+    public NodeBuilder done() {
+        return nodeBuilder;
     }
 
     public OnmsAssetRecord getAssetRecord() {

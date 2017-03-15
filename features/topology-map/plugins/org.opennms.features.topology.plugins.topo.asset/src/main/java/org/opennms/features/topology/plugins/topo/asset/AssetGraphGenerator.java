@@ -29,21 +29,20 @@
 package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
-//import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
+import org.opennms.features.topology.plugins.topo.asset.layers.definition.LayerDefinitionBuilder;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeInfoRepository;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,419 +56,130 @@ public class AssetGraphGenerator {
 	}
 
 	public GraphML generateGraphs(GeneratorConfig config) {
+		final List<LayerMapping.Mapping> layerMappings = new LayerMapping().getMapping(config.getLayerHierarchies());
+		final List<OnmsNode> nodes = dataProvider.getNodes(layerMappings);
 
-		String menuLabelStr= config.getLabel();
-		List<String> layerHierarchy= config.getLayerHierarchies();
-		String preferredLayout = config.getPreferredLayout();
-		boolean generateUnallocated = config.getGenerateUnallocated();
+		// Define Layers
+		final List<LayerDefinition> layerDefinitions = layerMappings.stream().map(mapping -> mapping.getLayerDefinition()).collect(Collectors.toList());
 
-		Map<String, Map<String, String>> onmsNodeInfo =generateNodeInfo(config);
+		// Add last Layer for Nodes
+		layerDefinitions.add(new LayerDefinitionBuilder()
+				.withId("nodes")
+				.withNamespace("nodes")
+				.withItemProvider(node -> node)
+				.withIdGenerator(IdGenerator.SIMPLE)
+				.build()
+		);
 
-		return nodeInfoToTopology(onmsNodeInfo, menuLabelStr, layerHierarchy, preferredLayout, generateUnallocated, config.getProviderId());
-
-	}
-
-	public Map<String, Map<String, String>> generateNodeInfo(GeneratorConfig config) {
-
-		List<String> filter = config.getFilterList();
-
-		NodeInfoRepository nodeInfoRepository = new NodeInfoRepository();
-		nodeInfoRepository.setDataProvider(dataProvider);
-		nodeInfoRepository.initialiseNodeInfo(null);
-		Map<String, Map<String, String>> onmsNodeInfo =nodeInfoRepository.getFilteredNodeInfo(filter);
-
-		return onmsNodeInfo;
-	}
-
-
-	/**
-	 * This method generates the layer hierarchy graphml file from the
-	 * node asset information supplied in nodeInfoRepository
-	 */
-	public GraphML nodeInfoToTopology(Map<String, Map<String, String>> onmsNodeInfo, String menuLabelStr,
-			List<String> layerHierarchy, String preferredLayout, boolean generateUnallocated, String id) {
-
-		// print log info for graph definition
-		StringBuffer msg = new StringBuffer("Creating topology "+menuLabelStr+" for layerHierarchy :");
-		if(layerHierarchy.size()==0){
-			msg.append("EMPTY");
-		} else {
-			for(String layer:layerHierarchy){
-				msg.append(layer+",");
+		// Ensure that all elements in the nodes do have values set
+		layerDefinitions.forEach(layerDefinition -> {
+			List<OnmsNode> nodeWithNullValues = nodes.stream().filter(n -> layerDefinition.getItemProvider().getItem(n) == null).collect(Collectors.toList());
+			if (!nodeWithNullValues.isEmpty()) {
+				LOG.debug("Found nodes with null value for layer (id: {}, label: {}). Removing nodes {}",
+						layerDefinition.getId(), layerDefinition.getLabel(),
+						nodeWithNullValues.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
+				nodes.removeAll(nodeWithNullValues);
 			}
-		}
-		LOG.info(msg.toString());
+		});
 
-		GraphML graphmlType = createGraphML(menuLabelStr);
-
-		if (layerHierarchy.size()==0){
-			//create simple graph with all nodes if layerHierarchy is empty
-			if( LOG.isDebugEnabled()) LOG.debug("creating a simple graph containing all nodes as layerHierarchy is empty");
-
-			Integer semanticZoomLevel=0;
-			String graphId ="all nodes";
-			String descriptionStr="A simple graph containing all nodes created because layerHierarchy property is empty";
-			GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
-			addOpenNMSNodes(graph, onmsNodeInfo);
-
-		} else {
-			// create graphs for all possible layers in hierarchy
-			msg = new StringBuffer("create graphs from asset and layerHierarchy: ");
-
-			List<GraphMLGraph> graphList = new ArrayList<GraphMLGraph>();
-			Integer semanticZoomLevel=0;
-
-			String descriptionStr="";
-			// create graph for each layer in hierarchy
-			for(String graphId:layerHierarchy){
-				//(GraphmlType graphmlType, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt)
-				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
-				graphList.add(graph);
-				msg.append(graphId+",");
-				semanticZoomLevel++;
-			}
-
-			//create graph for nodes layer (last layer in hierarchy)
-			String graphId="nodes";
-			GraphMLGraph nodegraph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
-			graphList.add(nodegraph);
-			msg.append(graphId);
-
-			if( LOG.isDebugEnabled()) LOG.debug(msg.toString());
-
-			// create graph hierarchy according to asset table contents
-
-			// used to store all nodes which have been allocated to a graph layer
-			Map<String, Map<String, String>> allocatedNodeInfo = new LinkedHashMap<String, Map<String, String>>();
-
-			// add layer graphs for defined layerHierarchy
-			String parentNodeId=null;
-			recursivelyAddlayers(layerHierarchy, 0,   onmsNodeInfo,  allocatedNodeInfo,  graphmlType, graphList, parentNodeId);
-
-			// add unallocated nodes into a default unallocated_Nodes graph
-			Map<String, Map<String, String>> unAllocatedNodeInfo = new LinkedHashMap<String, Map<String, String>>();
-			unAllocatedNodeInfo.putAll(onmsNodeInfo); //initialise with full list of nodes
-
-			for (String allocatedNodeId:allocatedNodeInfo.keySet()){
-				unAllocatedNodeInfo.remove(allocatedNodeId);
-			}
-
-			if(generateUnallocated){
-				graphId="unallocated_Nodes";
-				descriptionStr="A graph containing all nodes which cannot be placed in topology hierarchy";
-				semanticZoomLevel=0;
-				GraphMLGraph graph = createGraphInGraphmlType(graphmlType, graphId, descriptionStr, preferredLayout, semanticZoomLevel, id);
-				addOpenNMSNodes(graph, unAllocatedNodeInfo);
-			}
-		}
-
-		return graphmlType;
-	}
-
-
-
-	/**
-	 * Recursive function to add OpenNMS nodes defined in nodeInfo into hierarchy of graphs created in the given graphmlType
-	 * returns list of nodes added in the next layer for use in edges in this layer
-	 * @param layerHierarchy static list of layer names which correspond to asset table keys defined in NodeParamLabels
-	 * @param layerHierarchyIndex the current layer for which this function is called (initialise to 0) subsequent recursive calls will increment the number until layerHierarchy.size()
-	 * @param nodeInfo nodeInfo map with values Map<nodeId, Map<nodeParamLabelKey, nodeParamValue>>
-	 *        nodeParamLabelKey a node asset parameter key (from those defined in org.opennms.plugins.graphml.asset.NodeParamLabels)
-	 *        nodeParamValue a node asset value ( e.g. key NodeParamLabels.ASSET_RACK ('asset-rack') value: rack1
-	 * @param allocatedNodeInfo this contains all of the nodes which a recursive call to this method has added. i.e. once the function is finished,
-	 * all of the nodes placed in a graph are included in this list. The list can then be used to determine the unallocated nodes.
-	 * @param graphmlType the parent graphmltype into which all the created graphe muse be placed
-	 * @param graphList a list of pre created graphs which are in the same order and should  be pre-named with the names in the layerHierarchy
-	 * @param parentNodeId the nodeId of the parent node which the edges generated for the next layer must reference
-	 * @return addedNodes returns list of nodes which have been added by this recursive call. These nodes are used to create the edges in the previous layer
-	 */
-	private Map<String, Map<String, String>> recursivelyAddlayers(List<String> layerHierarchy, int layerHierarchyIndex,  
-			Map<String, Map<String, String>> nodeInfo, Map<String, Map<String, String>> allocatedNodeInfo, 
-			GraphML graphmlType, List<GraphMLGraph> graphList, String parentNodeId){
-		if(layerHierarchy==null||layerHierarchy.size()==0 ) throw new RuntimeException("AssetTopologyMapperImpl layerHierarchy must not be null or empty");
-
-		// returns list of nodes added - either OpenNMS nodes or higher level graphs
-		Map<String, Map<String, String>> addedNodes=null;
-
-		if( LOG.isDebugEnabled()) LOG.debug("recursivelyAddlayers called for layerHierarchyIndex:"+layerHierarchyIndex+" parentNodeId="+parentNodeId);
-
-		// add nodes to graph
-		if(layerHierarchyIndex>=layerHierarchy.size()){
-			// we are at bottom of hierarchy so add real opennms nodes and edges
-
-			//get hierarchy name for the previous layer
-			String layerNodeParamLabel= layerHierarchy.get(layerHierarchyIndex-1);
-
-			// get graph for this layer
-			if( LOG.isDebugEnabled()) LOG.debug("populating graph with OpenNMS nodes for layer="+layerNodeParamLabel);
-
-			// this will return the nodes graph - the last graph in graphList
-			GraphMLGraph graph = graphList.get(layerHierarchyIndex); 
-
-			//add real opennms nodes to graph
-			addOpenNMSNodes(graph, nodeInfo);
-
-			// add these nodes to the allocated node set
-			allocatedNodeInfo.putAll(nodeInfo);
-
-			if (LOG.isDebugEnabled()) {
-				StringBuffer msg= new StringBuffer("adding opennms nodes to graphId="+layerNodeParamLabel+ " nodes:");
-
-				for (String targetNodeId:nodeInfo.keySet()){
-					msg.append(targetNodeId+",");
-				}
-			}
-
-			addedNodes=nodeInfo;
-
-		} else {
-			// else create and add the parent nodes for the next layer
-			if( LOG.isDebugEnabled()) LOG.debug("populating parent graph for index "+layerHierarchyIndex);
-
-			//get hierarchy name for this layer
-			String layerNodeParamLabelKey= layerHierarchy.get(layerHierarchyIndex);
-			if( LOG.isDebugEnabled()) LOG.debug("parent graph name="+layerNodeParamLabelKey);
-
-			// get graph for this layer
-			GraphMLGraph graph = graphList.get(layerHierarchyIndex);
-			// this will return the nodes graph - the last  graph in graphList
-			GraphMLGraph nextgraph = graphList.get(layerHierarchyIndex+1); 
-
-			// find all values corresponding to nodeParamLabelKey in this layer
-			Set<String> layerNodeParamLabelValues = new TreeSet<String>();
-			for (String nodeId: nodeInfo.keySet()){
-				String nodeParamValue = nodeInfo.get(nodeId).get(layerNodeParamLabelKey);
-				if(nodeParamValue!=null){
-					layerNodeParamLabelValues.add(nodeParamValue);
-				}
-			}
-
-			if (LOG.isDebugEnabled()){
-				StringBuffer msg=new StringBuffer("values corresponding to layerNodeParamLabelKey="+layerNodeParamLabelKey+ " in this layer :");
-				for (String nodeParamValue:layerNodeParamLabelValues){
-					msg.append(nodeParamValue+",");
-				}
-				LOG.debug(msg.toString());
-			}
-
-			// create added nodes to return. These are the nodes which have been added in this layer
-			// and are used to populate the edges in the previous layer
-			addedNodes = new LinkedHashMap<String, Map<String, String>>();
-
-			// iterate over values in this layer
-			for (String nodeParamLabelValue:layerNodeParamLabelValues){
-
-				// create new node for each value in this layer
-				String graphmlNodeId= (parentNodeId==null) ? nodeParamLabelValue : parentNodeId+"."+nodeParamLabelValue;
-				GraphMLNode node = createNodeType(graphmlNodeId,nodeParamLabelValue);
-				graph.addNode(node);
-
-				StringBuffer msg=new StringBuffer("created childNode graphmlNodeId="+graphmlNodeId+" nodeParamLabelValue="+nodeParamLabelValue+ " in  graphId="+layerNodeParamLabelKey);
-
-				// create sub list of nodes corresponding to param label 
-				Map<String, Map<String, String>> nodeInfoSubList =createNodeInfoSubList(layerNodeParamLabelKey, nodeParamLabelValue, nodeInfo);
-
-				// recursively add graphs and nodes until complete
-				int nextLayerHierarchyIndex=layerHierarchyIndex+1;
-				Map<String, Map<String, String>> nextLayerNodesAdded = recursivelyAddlayers(layerHierarchy, nextLayerHierarchyIndex, nodeInfoSubList, allocatedNodeInfo, graphmlType, graphList, graphmlNodeId );
-
-				// we are now using data returned from a recursive call to recursivelyAddlayers
-				// nextLayerNodesAdded contains the nodes added in the lower layer
-				// and these can be used to populates edges in this layer
-
-				// create edge for each node in returned nextLayerNodesAdded
-				if (nextLayerHierarchyIndex<layerHierarchy.size()){
-					// if not lowest layer then add edges pointing next layers
-					msg.append(" edges added for next graph layer: " );
-					for (String targetNodeId:nextLayerNodesAdded.keySet()){
-						Map<String, String> nodeParamaters = nextLayerNodesAdded.get(targetNodeId);
-						String labelStr = nodeParamaters.get(layerHierarchy.get(nextLayerHierarchyIndex));
-						String childNodeLabelStr= graphmlNodeId+"."+labelStr;
-
-						GraphMLNode childNode = nextgraph.getNodeById(childNodeLabelStr);						
-						GraphMLEdge edge = addEdgeToGraph(graph, node, childNode);
-
-						if (edge!=null) msg.append(edge.getId()+",");
-
-						addedNodes.put(targetNodeId, nodeParamaters);
-					}
-				} else {
-					// if lowest layer then add node ids (i.e. opennms node labels)
-					msg.append(" edges added for opennms nodes: " );
-					for (String targetNodeId:nextLayerNodesAdded.keySet()){
-						Map<String, String> nodeParamaters = nextLayerNodesAdded.get(targetNodeId);
-						String nodeId = createIdForNode(nodeParamaters);
-
-						GraphMLNode childNode = nextgraph.getNodeById(nodeId);
-						GraphMLEdge edge = addEdgeToGraph(graph, node, childNode);
-
-						if (edge!=null) msg.append(edge.getId()+",");
-
-						addedNodes.put(targetNodeId, nodeParamaters);
-					}
-				}
-
-				if( LOG.isDebugEnabled()){
-					LOG.debug(msg.toString());
-				}
-
-			}
-
-		}
-		if( LOG.isDebugEnabled()) LOG.debug("returning from recursivelyAddlayers called for layerHierarchyIndex:"+layerHierarchyIndex);
-		return addedNodes;
-	}
-
-
-	/**
-	 * searches the supplied nodeInfo for nodes with matching parameters for nodeParamLabelKey and nodeParamValue
-	 * returns a sub list of nodeInfo only for the nodes with the matching parameter
-	 * @param nodeParamLabelKey a node asset parameter key (from those defined in org.opennms.plugins.graphml.asset.NodeParamLabels)
-	 * @param nodeParamValue a node asset value ( e.g. key NodeParamLabels.ASSET_RACK ('asset-rack') value: rack1
-	 * @param nodeInfo Map<String, Map<String, String>> with values Map<nodeId, Map<nodeParamLabelKey, nodeParamValue>>
-	 * @return
-	 */
-	private Map<String, Map<String, String>> createNodeInfoSubList(String nodeParamLabelKey, String nodeParamValue, Map<String, Map<String, String>> nodeInfo){
-		if(nodeParamLabelKey==null) throw new RuntimeException("createNodeInfoSubList nodeParamLabel cannot be null");
-		if(nodeParamValue==null) throw new RuntimeException("createNodeInfoSubList nodeParamValue cannot be null");
-
-		Map<String,Map<String,String>> nodeInfoSubList = new LinkedHashMap<String, Map<String, String>>();
-
-		StringBuffer msg = new StringBuffer("creating NodeInfoSubList for nodeParamLabelKey:"+nodeParamLabelKey+" nodeParamValue:"+nodeParamValue+ " sublist nodeIds:");
-		for (String nodeId:nodeInfo.keySet()){
-			Map<String, String> nodeParams = nodeInfo.get(nodeId);
-			if(nodeParamValue.equals(nodeParams.get(nodeParamLabelKey))){
-				nodeInfoSubList.put(nodeId, nodeParams );
-				msg.append(nodeId+",");
-			}
-		}
-		if( LOG.isDebugEnabled()) LOG.debug(msg.toString());
-		return nodeInfoSubList;
-	}
-
-
-	/**
-	 * Creates a new edge and adds it to a given graphml graph. The graph is first searched and the edge is only added if
-	 * its id is not already defined. The id is concatenated from the sourceIdStr and the targetIdStr
-	 * @param graph
-	 * @param sourceIdStr source nodeId for this edge (nodeId represents the graphml nodeId unique in the graph namespace)
-	 * @param targetIdStr target nodeId for this edge
-	 * @return added edge or null if already in graph
-	 */
-	private GraphMLEdge addEdgeToGraph(GraphMLGraph graph, GraphMLNode sourceNode, GraphMLNode targetNode){
-
-		GraphMLEdge edge= null;
-
-		String sourceIdStr = sourceNode.getId();
-		String targetIdStr = targetNode.getId();
-
-		String id =sourceIdStr+"_"+targetIdStr;
-
-		if (graph.getEdgeById(id)==null){
-			if( LOG.isDebugEnabled()) LOG.debug("adding edge id="+id+ " to graph:"+graph.getId());
-			edge= new GraphMLEdge();
-			edge.setId(id);
-			edge.setSource(sourceNode);
-			edge.setTarget(targetNode);
-			graph.addEdge(edge);
-		} else {
-			if( LOG.isDebugEnabled()) LOG.debug("not adding edge id="+id+ " as already in graph:"+graph.getId());
-		}
-
-		return edge;
-	}
-
-	/**
-	 * Creates a new graphml node with a nodeId and nodeLabel
-	 * note that the nodeId is the unique id in the graph name space. The nodelabel is the value which shows
-	 * up on the rendered graph
-	 * @param nodeId
-	 * @param nodeLabel
-	 * @return
-	 */
-	private GraphMLNode createNodeType(String nodeId, String nodeLabel){
-		GraphMLNode graphMLNode = new GraphMLNode();
-		graphMLNode.setId(nodeId);
-
-		graphMLNode.setProperty(GraphMLProperties.LABEL, nodeLabel);
-		return graphMLNode;
-	}
-
-	/**
-	 * Creates a new empty graphml graph with a predefined breadcrumb strategy for the OpenNMS use case
-	 * @param menuLabelStr
-	 * @return
-	 */
-	private GraphML createGraphML(String menuLabelStr){
+		// Start generating the hierarchy
+		// Overall graphml object
 		final GraphML graphML = new GraphML();
-		graphML.setProperty(GraphMLProperties.LABEL, menuLabelStr);
-		//graphML.setProperty(GraphMLProperties.BREADCRUMB_STRATEGY, config.getBreadcrumbStrategy());
-		//String bc = BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT.name(); //TODO
-		graphML.setProperty(GraphMLProperties.BREADCRUMB_STRATEGY, "SHORTEST_PATH_TO_ROOT");
+		graphML.setProperty(GraphMLProperties.LABEL, config.getLabel());
+		graphML.setProperty(GraphMLProperties.BREADCRUMB_STRATEGY, config.getBreadcrumbStrategy());
+
+		// Build each Graph
+		int index = 0;
+		for (LayerDefinition layerDefinition : layerDefinitions) {
+			GraphMLGraph layerGraph = new GraphMLGraph();
+			layerGraph.setId(config.getProviderId() + ":" + layerDefinition.getId());
+			layerGraph.setProperty(GraphMLProperties.NAMESPACE, config.getProviderId() + ":" + layerDefinition.getNamespace());
+			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
+//            layerGraph.setProperty(GraphMLProperties.DESCRIPTION, layerDefinition.getDescription());
+			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "");
+			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
+			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, index);
+			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
+
+			// Build layer for nodes
+			for (OnmsNode eachNode : nodes) {
+				final Object eachItem = layerDefinition.getItemProvider().getItem(eachNode);
+				if (eachItem != null) {
+					List<LayerDefinition> processedLayers = layerDefinitions.subList(0, index);
+					String id = layerDefinition.getIdGenerator().generateId(processedLayers, eachNode, layerDefinition.getNodeDecorator().getId(eachItem));
+					if (layerGraph.getNodeById(id) == null) {
+						GraphMLNode node = new GraphMLNode();
+						node.setId(id);
+						layerDefinition.getNodeDecorator().decorate(node, eachItem);
+						layerGraph.addNode(node);
+					}
+				}
+			}
+			graphML.addGraph(layerGraph);
+			index++;
+		}
+
+		// Now link all nodes, but only if there are at least 2 layers
+		if (graphML.getGraphs().size() > 1) {
+			nodes.forEach(n -> {
+				List<GraphMLNode> path = getPath(n, graphML.getGraphs(), layerDefinitions);
+				if (path.size() != graphML.getGraphs().size() ) {
+					throw new IllegalStateException("TODO MVR");
+				}
+				for (int i=0; i<path.size() - 1; i++) {
+					GraphMLNode sourceNode = path.get(i);
+					GraphMLNode targetNode = path.get(i+1);
+					GraphMLGraph sourceGraph = graphML.getGraphs().get(i);
+					String edgeId = String.format("%s_%s", sourceNode.getId(), targetNode.getId());
+					if (sourceGraph.getEdgeById(edgeId) == null) {
+						GraphMLEdge edge = new GraphMLEdge();
+						edge.setId(edgeId);
+						edge.setSource(sourceNode);
+						edge.setTarget(targetNode);
+						sourceGraph.addEdge(edge);
+					}
+				}
+			});
+		}
+
+		// Add nodes for unallocated elements
+		if (!config.getLayerHierarchies().isEmpty() && config.getGenerateUnallocated()) {
+			GraphMLGraph layerGraph = new GraphMLGraph();
+			layerGraph.setId(config.getProviderId() + ":unallocated_Nodes");
+			layerGraph.setProperty(GraphMLProperties.NAMESPACE, layerGraph.getId());
+			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
+			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "A graph containing all nodes which cannot be placed in topology hierarchy");
+			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
+			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, 0);
+			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
+			graphML.addGraph(layerGraph);
+		}
+
 		return graphML;
 	}
 
-	/**
-	 * Creates a new graph in the graphml type with default data values for the opennms keys
-	 * @param graphML
-	 * @param graphId
-	 * @param descriptionStr
-	 * @param preferredLayout
-	 * @param semanticZoomLevelInt
-	 * @param id
-	 * @return
-	 */
-	private GraphMLGraph createGraphInGraphmlType(GraphML graphML, String graphId, String descriptionStr, String preferredLayout, Integer semanticZoomLevelInt, String id) {
-		GraphMLGraph graph = new GraphMLGraph();
-		graph.setId(id + ":" + graphId);
-
-		graph.setProperty(GraphMLProperties.NAMESPACE, graph.getId());
-		graph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
-		graph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, preferredLayout);
-		graph.setProperty(GraphMLProperties.DESCRIPTION, descriptionStr);
-		graph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, semanticZoomLevelInt);
-
-		graphML.addGraph(graph);
-
-		return graph;
-
-	}
-
-	/**
-	 * Adds all of the OpenNMS nodes defined in the nodeInfo type to a graph. Adds nodeID and foreignsource / foreignid values if defined
-	 * @param nodesGraph
-	 * @param nodeInfo map with values Map<nodeId, Map<nodeParamLabelKey, nodeParamValue>>
-	 *        nodeParamLabelKey a node asset parameter key (from those defined in org.opennms.plugins.graphml.asset.NodeParamLabels)
-	 *        nodeParamValue a node asset value ( e.g. key NodeParamLabels.ASSET_RACK ('asset-rack') value: rack1
-	 */
-	private void addOpenNMSNodes(GraphMLGraph nodesGraph, Map<String, Map<String, String>> nodeInfo) {
-
-		// set vertex-status-provider true for nodes graph		
-		nodesGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
-
-		for (String nodeId:nodeInfo.keySet()){
-
-			GraphMLNode graphMLNode = new GraphMLNode();
-
-			Map<String, String> nodeParamaters = nodeInfo.get(nodeId);
-			String foreignSourceStr= nodeParamaters.get(NodeParamLabels.NODE_FOREIGNSOURCE);
-			String foreignIdStr= nodeParamaters.get(NodeParamLabels.NODE_FOREIGNID);
-			String nodeLabelStr = nodeParamaters.get(NodeParamLabels.NODE_NODELABEL);
-			graphMLNode.setId(createIdForNode(nodeParamaters));
-			graphMLNode.setProperty(GraphMLProperties.LABEL, nodeLabelStr);
-			graphMLNode.setProperty(GraphMLProperties.NODE_ID, Integer.parseInt(nodeId));
-			graphMLNode.setProperty(GraphMLProperties.FOREIGN_ID, foreignIdStr);
-			graphMLNode.setProperty(GraphMLProperties.FOREIGN_SOURCE, foreignSourceStr);
-
-			nodesGraph.addNode(graphMLNode);
+	private static List<GraphMLNode> getPath(OnmsNode node, List<GraphMLGraph> graphs, List<LayerDefinition> layerDefinitions) {
+		if (graphs.size() != layerDefinitions.size()) {
+			// TODO MVR not computable
 		}
-	}
 
-	protected static String createIdForNode(Map<String, String> nodeParameters) {
-		return createIdForNode(nodeParameters.get(NodeParamLabels.NODE_NODEID), nodeParameters.get(NodeParamLabels.NODE_NODELABEL));
-	}
+		final List<GraphMLNode> path = new ArrayList<>();
+		for (int i=0; i<graphs.size(); i++) {
+			final GraphMLGraph graph = graphs.get(i); // the layer graph
+			final LayerDefinition layerDefinition = layerDefinitions.get(i); // the layer definition
 
-	public static String createIdForNode(String nodeId, String nodeLabel) {
-		return String.format("nodes:%s:%s", nodeId, nodeLabel);
+			// the the value for the specified node in that layer (it must exist)
+			final Object item = layerDefinition.getItemProvider().getItem(node);
+			final String itemId = layerDefinition.getNodeDecorator().getId(item);
+			final String nodeId = layerDefinition.getIdGenerator().generateId(layerDefinitions.subList(0, i), node, itemId);
+
+			final GraphMLNode GraphMlNode = graph.getNodeById(nodeId);
+			if (GraphMlNode != null) {
+				path.add(GraphMlNode);
+			} else {
+				// TODO MVR should never occur?!
+			}
+		}
+		return path;
 	}
 }

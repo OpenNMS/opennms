@@ -26,13 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import java.util.List;
-
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.netmgt.model.OnmsNode;
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+public interface ItemProvider<T> {
+
+    T getItem(OnmsNode node);
 }

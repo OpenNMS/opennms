@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXB;
 
 import org.opennms.features.topology.plugins.topo.asset.DataProvider;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.repo.xml.NodeInfoRepositoryXML;
 import org.opennms.netmgt.model.OnmsNode;
@@ -45,7 +46,7 @@ public class TestDataProvider implements DataProvider {
     private static final String NODE_TEST_DATA_FILE_NAME="/nodeInfoMockTestData2.xml";
 
     @Override
-    public List<OnmsNode> getNodes() {
+    public List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings) {
             NodeInfoRepositoryXML nodeInfoRepositoryXML = JAXB.unmarshal(getClass().getResourceAsStream(NODE_TEST_DATA_FILE_NAME), NodeInfoRepositoryXML.class);
             final List<OnmsNode> nodes = nodeInfoRepositoryXML.getNodeInfoList().stream().map(eachEntry -> {
                 final NodeBuilder nodeBuilder = new NodeBuilder().withId(eachEntry.getNodeId());

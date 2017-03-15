@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * This class also contains static methods for marshalling and unmarshalling XML representations
  * of the nodeInfoRepository to a nodeInfo type. 
  * nodeInfo is a map with values Map<nodeId, Map<nodeParamLabelKey, nodeParamValue>>
- *     nodeParamLabelKey a node asset parameter key (from those defined in org.opennms.plugins.graphml.asset.NodeParamLabels)
- *     nodeParamValue a node asset value ( e.g. key NodeParamLabels.ASSET_RACK ('asset-rack') value: rack1
+ *     nodeParamLabelKey a node asset parameter key (from those defined in org.opennms.plugins.graphml.asset.LayerIdentifier)
+ *     nodeParamValue a node asset value ( e.g. key LayerIdentifier.ASSET_RACK ('asset-rack') value: rack1
  *
  */
 @XmlRootElement (name="nodeInfoRepository")

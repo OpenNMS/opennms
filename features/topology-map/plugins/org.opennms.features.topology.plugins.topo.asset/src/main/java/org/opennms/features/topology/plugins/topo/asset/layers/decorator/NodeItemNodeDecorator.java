@@ -26,13 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers.decorator;
 
-import java.util.List;
-
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
+import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+public class NodeItemNodeDecorator implements NodeDecorator<OnmsNode> {
+
+    @Override
+    public void decorate(GraphMLNode graphMLNode, OnmsNode onmsNode) {
+        if (onmsNode.getNodeId() != null) {
+            graphMLNode.setProperty(GraphMLProperties.NODE_ID, onmsNode.getId());
+        }
+        if (onmsNode.getLabel() != null) {
+            graphMLNode.setProperty(GraphMLProperties.LABEL, onmsNode.getLabel());
+        }
+        if (onmsNode.getForeignId() != null) {
+            graphMLNode.setProperty(GraphMLProperties.FOREIGN_ID, onmsNode.getForeignId());
+        }
+        if (onmsNode.getForeignSource() != null) {
+            graphMLNode.setProperty(GraphMLProperties.FOREIGN_SOURCE, onmsNode.getForeignSource());
+        }
+    }
+
+    @Override
+    public String getId(OnmsNode node) {
+        return "nodes:" + node.getNodeId() + ":" + node.getLabel();
+    }
 }

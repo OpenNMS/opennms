@@ -26,13 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import java.util.List;
+public interface LayerDefinition<T> {
+    // The id of the layer
+    String getId();
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.netmgt.model.OnmsNode;
+    // the namespace of the layer
+    String getNamespace();
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+    // The label of the layer
+    String getLabel();
+
+    // The description of the layer
+    String getDescription();
+
+    // Decorator to build the node for this layer
+    NodeDecorator<T> getNodeDecorator();
+
+    // The item provider to build nodes from
+    ItemProvider<T> getItemProvider();
+
+    IdGenerator getIdGenerator();
 }

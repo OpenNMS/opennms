@@ -85,7 +85,7 @@ public class NodeInfoRepository {
 	 */
 	public Map<String, Map<String, String>> getFilteredNodeInfo(List<String> filter) {
 		
-		return new StringMapFilter(nodeInfo).filter(filter,NodeParamLabels.ALL_KEYS);
+		return new StringMapFilter(nodeInfo).filter(filter, NodeParamLabels.ALL_KEYS);
 
 	}
 	
@@ -103,7 +103,7 @@ public class NodeInfoRepository {
 
 	/**
 	 * initialises node info map from the opennms database node and asset tables using nodeDao
-	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels) 
+	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels)
 	 *        if requiredParameters is null return entire parameter list in node info
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 */
@@ -115,13 +115,13 @@ public class NodeInfoRepository {
 		clearNodeInfo();
 
 		// populate nodeinfo from latest database provisioned nodes information
-		List<OnmsNode> nodeList = dataProvider.getNodes();
+		List<OnmsNode> nodeList = dataProvider.getNodes(null);
 		initialiseNodeInfoFromNodeList(nodeList,requiredParameters);
 	}
 
 	/**
 	 * Initialises node info map from supplied opennms node list 
-	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels) 
+	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels)
 	 *        if requiredParameters is null return entire parameter list
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 * @param nodeList
@@ -179,7 +179,7 @@ public class NodeInfoRepository {
 	 * The map attributes are populated from the supplied OpenNMS node
 	 * @param nodeParameters the supplied map to populate
 	 * @param node the OpenNMS  node object to use
-	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels) 
+	 * @param requiredParameters list of parameters to populate (named from constants in NodeParamLabels)
 	 *        if requiredParameters is null return entire parameter list
 	 *        NODE_NODEID, NODE_NODELABEL,NODE_FOREIGNID and NODE_FOREIGNSOURCE are always added by default
 	 */
@@ -278,7 +278,7 @@ public class NodeInfoRepository {
 			if( assetRecord.getVendor()!=null && ! assetRecord.getVendor().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_VENDOR, assetRecord.getVendor());
 			if( assetRecord.getModelNumber()!=null && ! assetRecord.getModelNumber().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_MODELNUMBER, assetRecord.getModelNumber());
 			if( assetRecord.getDescription()!=null && ! assetRecord.getDescription().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_DESCRIPTION, assetRecord.getDescription());
-			if( assetRecord.getOperatingSystem()!=null && ! assetRecord.getOperatingSystem().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_OPERATINGSYSTEM, assetRecord.getOperatingSystem()); 
+			if( assetRecord.getOperatingSystem()!=null && ! assetRecord.getOperatingSystem().isEmpty()) nodeParameters.put(NodeParamLabels.ASSET_OPERATINGSYSTEM, assetRecord.getOperatingSystem());
 
 		}
 

@@ -35,10 +35,8 @@ import org.graphdrawing.graphml.GraphmlType;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.service.GraphmlRepository;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,24 +69,23 @@ public class AssetGraphMLProviderImpl implements EventListener, AssetGraphMLProv
 
 	private final GraphmlRepository graphmlRepository;
 
-	private final NodeDao nodeDao;
-
 	private final TransactionOperations transactionOperations;
+
+	private final DataProvider dataProvider;
 
 	private final GeneratorConfig defaultConfig;
 
 
 	public AssetGraphMLProviderImpl(GraphmlRepository repository,
-			EventIpcManager eventIpcManager, NodeDao nodeDao, 
+			EventIpcManager eventIpcManager, DataProvider dataProvider,
 			TransactionOperations transactionOperations,
 			GeneratorConfig defaultConfig) {
 		this.graphmlRepository = Objects.requireNonNull(repository);
 		this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
-		this.nodeDao = Objects.requireNonNull(nodeDao);
+		this.dataProvider = Objects.requireNonNull(dataProvider);
 		this.transactionOperations=transactionOperations;
 		this.defaultConfig = Objects.requireNonNull(defaultConfig);
 	}
-
 
 	/**
 	 * Generates and installs a new AssetTopology defined by the config
@@ -105,21 +102,7 @@ public class AssetGraphMLProviderImpl implements EventListener, AssetGraphMLProv
 				throw new IllegalStateException("Provider providerid="+config.getProviderId()+" label="+localConfig.getLabel()
 						+ "already exists");
 			}
-			GraphML graphML = new AssetGraphGenerator(new DataProvider() {
-				@Override
-				public List<OnmsNode> getNodes() {
-					return transactionOperations.execute((status) -> {
-						List<OnmsNode> nodes = nodeDao.findAllProvisionedNodes();
-
-						// Initialize objects (lazy loading is your friend *yay*)
-						nodes.forEach(n -> {
-							n.getAssetRecord();
-							n.getParent();
-						});
-						return nodes;
-					});
-				}
-			}).generateGraphs(localConfig);
+			GraphML graphML = new AssetGraphGenerator(dataProvider).generateGraphs(localConfig);
 			GraphmlType graphmlType = GraphMLWriter.convert(graphML);
 			graphmlRepository.save(localConfig.getProviderId(), localConfig.getLabel(), graphmlType);
 		} catch (Exception ex){

@@ -6,9 +6,9 @@
     <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"/>
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"/>
     <key id="description" for="graph" attr.name="description" attr.type="string"/>
+    <key id="vertex-status-provider" for="graph" attr.name="vertex-status-provider" attr.type="boolean"/>
     <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
     <key id="label" for="node" attr.name="label" attr.type="string"/>
-    <key id="vertex-status-provider" for="graph" attr.name="vertex-status-provider" attr.type="boolean"/>
     <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"/>
     <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"/>
     <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"/>
@@ -19,6 +19,7 @@
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-region</data>
         <data key="description"></data>
+        <data key="vertex-status-provider">true</data>
         <data key="semantic-zoom-level">0</data>
         <node id="region_A">
             <data key="label">region_A</data>
@@ -41,6 +42,7 @@
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-building</data>
         <data key="description"></data>
+        <data key="vertex-status-provider">true</data>
         <data key="semantic-zoom-level">1</data>
         <node id="region_A.21">
             <data key="label">21</data>
@@ -92,6 +94,7 @@
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-rack</data>
         <data key="description"></data>
+        <data key="vertex-status-provider">true</data>
         <data key="semantic-zoom-level">2</data>
         <node id="region_A.21.A">
             <data key="label">A</data>

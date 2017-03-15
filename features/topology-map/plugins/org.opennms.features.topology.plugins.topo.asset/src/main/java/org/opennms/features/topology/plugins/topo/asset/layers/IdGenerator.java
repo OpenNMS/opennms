@@ -26,13 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.netmgt.model.OnmsNode;
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+public interface IdGenerator {
+
+    String generateId(List<LayerDefinition> processedLayers, OnmsNode currentNode, String currentId);
+
+    IdGenerator HIERARCHY = new IdGenerator() {
+        @Override
+        public String generateId(List<LayerDefinition> processedLayers, OnmsNode currentNode, String currentId) {
+            List<String> collectedValues = processedLayers.stream().map(l -> l.getItemProvider().getItem(currentNode).toString()).collect(Collectors.toList());
+            collectedValues.add(currentId);
+            return collectedValues.stream().collect(Collectors.joining("."));
+        }
+    };
+
+    IdGenerator SIMPLE = new IdGenerator() {
+        @Override
+        public String generateId(List<LayerDefinition> processedLayers, OnmsNode currentNode, String currentId) {
+            return currentId;
+        }
+    };
 }

@@ -26,13 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers.definition;
 
-import java.util.List;
+import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
+import org.opennms.features.topology.plugins.topo.asset.layers.decorator.AssetItemNodeDecorator;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.netmgt.model.OnmsNode;
+public abstract class AssetLayerDefinition implements LayerDefinition<String> {
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+    @Override
+    public String getNamespace() {
+        return getId();
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public NodeDecorator<String> getNodeDecorator() {
+        return new AssetItemNodeDecorator();
+    }
+
+    @Override
+    public IdGenerator getIdGenerator() {
+        return IdGenerator.HIERARCHY;
+    }
 }
