@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -310,8 +311,8 @@ import javax.xml.bind.annotation.XmlRootElement;
      * 
      * @return the value of field 'AutoAcknowledgeAlarm'.
      */
-    public AutoAcknowledgeAlarm getAutoAcknowledgeAlarm() {
-        return this.autoAcknowledgeAlarm;
+    public Optional<AutoAcknowledgeAlarm> getAutoAcknowledgeAlarm() {
+        return Optional.ofNullable(this.autoAcknowledgeAlarm);
     }
 
     /**
@@ -527,15 +528,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     }
 
     /**
-     * Method hasMatchAll.
-     * 
-     * @return true if at least one MatchAll has been added
-     */
-    public boolean hasMatchAll() {
-        return this.matchAll != null;
-    }
-
-    /**
      * Method hasNumericSkipResolutionPrefix.
      * 
      * @return true if at least one NumericSkipResolutionPrefix has been added
@@ -569,15 +561,6 @@ import javax.xml.bind.annotation.XmlRootElement;
             queueList, 
             outageCalendarList);
         return hash;
-    }
-
-    /**
-     * Returns the value of field 'matchAll'.
-     * 
-     * @return the value of field 'MatchAll'.
-     */
-    public Boolean isMatchAll() {
-        return this.matchAll;
     }
 
     /**
@@ -779,7 +762,7 @@ import javax.xml.bind.annotation.XmlRootElement;
      * @param autoAcknowledgeList the Vector to set.
      */
     public void setAutoAcknowledgeCollection(final List<AutoAcknowledge> autoAcknowledgeList) {
-        this.autoAcknowledgeList = autoAcknowledgeList;
+        this.autoAcknowledgeList = autoAcknowledgeList == null? new ArrayList<>() : autoAcknowledgeList;
     }
 
     /**
@@ -797,6 +780,9 @@ import javax.xml.bind.annotation.XmlRootElement;
      * @param matchAll the value of field 'matchAll'.
      */
     public void setMatchAll(final Boolean matchAll) {
+        if (matchAll == null) {
+            throw new IllegalArgumentException("match-all is a required field!");
+        }
         this.matchAll = matchAll;
     }
 
@@ -889,7 +875,7 @@ import javax.xml.bind.annotation.XmlRootElement;
      * @param outageCalendarList the Vector to set.
      */
     public void setOutageCalendarCollection(final List<String> outageCalendarList) {
-        this.outageCalendarList = outageCalendarList;
+        this.outageCalendarList = outageCalendarList == null? new ArrayList<>() : outageCalendarList;
     }
 
     /**
@@ -962,7 +948,7 @@ import javax.xml.bind.annotation.XmlRootElement;
      * @param queueList the Vector to set.
      */
     public void setQueueCollection(final List<Queue> queueList) {
-        this.queueList = queueList;
+        this.queueList = queueList == null? new ArrayList<>() : queueList;
     }
 
     /**
@@ -980,6 +966,9 @@ import javax.xml.bind.annotation.XmlRootElement;
      * @param status the value of field 'status'.
      */
     public void setStatus(final String status) {
+        if (status == null) {
+            throw new IllegalArgumentException("status is a required field!");
+        }
         this.status = status;
     }
 

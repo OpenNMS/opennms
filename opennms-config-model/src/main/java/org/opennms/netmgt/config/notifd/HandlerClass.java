@@ -273,7 +273,7 @@ public class HandlerClass implements java.io.Serializable {
      * @param initParamsList the Vector to set.
      */
     public void setInitParamsCollection(final List<InitParams> initParamsList) {
-        this.initParamsList = initParamsList;
+        this.initParamsList = initParamsList == null? new ArrayList<>() : initParamsList;
     }
 
     /**
@@ -282,6 +282,9 @@ public class HandlerClass implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("name is a required field!");
+        }
         this.name = name;
     }
 

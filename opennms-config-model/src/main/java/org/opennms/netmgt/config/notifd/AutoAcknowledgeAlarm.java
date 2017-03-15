@@ -330,7 +330,7 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
      * @param ueiList the Vector to set.
      */
     public void setUeiCollection(final List<String> ueiList) {
-        this.ueiList = ueiList;
+        this.ueiList = ueiList == null? new ArrayList<>() : ueiList;
     }
 
 }

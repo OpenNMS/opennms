@@ -112,6 +112,9 @@ public class InitParams implements java.io.Serializable {
      * @param paramName the value of field 'paramName'.
      */
     public void setParamName(final String paramName) {
+        if (paramName == null) {
+            throw new IllegalArgumentException("paramName is a required field!");
+        }
         this.paramName = paramName;
     }
 

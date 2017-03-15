@@ -295,6 +295,9 @@ public class AutoAcknowledge implements java.io.Serializable {
      * @param acknowledge the value of field 'acknowledge'.
      */
     public void setAcknowledge(final String acknowledge) {
+        if (uei == acknowledge) {
+            throw new IllegalArgumentException("acknowledge is a required field!");
+        }
         this.acknowledge = acknowledge;
     }
 
@@ -350,7 +353,7 @@ public class AutoAcknowledge implements java.io.Serializable {
      * @param matchList the Vector to set.
      */
     public void setMatchCollection(final List<String> matchList) {
-        this.matchList = matchList;
+        this.matchList = matchList == null? new ArrayList<>() : matchList;
     }
 
     /**
@@ -377,6 +380,9 @@ public class AutoAcknowledge implements java.io.Serializable {
      * @param uei the value of field 'uei'.
      */
     public void setUei(final String uei) {
+        if (uei == null) {
+            throw new IllegalArgumentException("UEI is a required field!");
+        }
         this.uei = uei;
     }
 

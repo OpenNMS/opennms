@@ -126,6 +126,9 @@ public class Queue implements java.io.Serializable {
      * @param handlerClass the value of field 'handlerClass'.
      */
     public void setHandlerClass(final HandlerClass handlerClass) {
+        if (handlerClass == null) {
+            throw new IllegalArgumentException("HandlerClass is a required field!");
+        }
         this.handlerClass = handlerClass;
     }
 
@@ -135,6 +138,9 @@ public class Queue implements java.io.Serializable {
      * @param interval the value of field 'interval'.
      */
     public void setInterval(final String interval) {
+        if (interval == null) {
+            throw new IllegalArgumentException("Interval is a required field!");
+        }
         this.interval = interval;
     }
 
@@ -144,6 +150,9 @@ public class Queue implements java.io.Serializable {
      * @param queueId the value of field 'queueId'.
      */
     public void setQueueId(final String queueId) {
+        if (queueId == null) {
+            throw new IllegalArgumentException("Queue ID is a required field!");
+        }
         this.queueId = queueId;
     }
 
