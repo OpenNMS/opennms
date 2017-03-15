@@ -73,7 +73,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @XmlRootElement(name="xml-collection")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlDataCollection implements Serializable, Comparable<XmlDataCollection> {
+public class XmlDataCollection implements Serializable, Comparable<XmlDataCollection>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 6448438583337362122L;
@@ -98,6 +98,12 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
      * Instantiates a new XML data collection.
      */
     public XmlDataCollection() {
+    }
+
+    public XmlDataCollection(XmlDataCollection copy) {
+        m_name = copy.m_name;
+        m_xmlRrd = copy.m_xmlRrd.clone();
+        copy.getXmlSources().stream().forEach(s -> m_xmlSources.add(s.clone()));
     }
 
     /**
@@ -200,4 +206,8 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
         return false;
     }
 
+    @Override
+    public XmlDataCollection clone() {
+        return new XmlDataCollection(this);
+    }
 }

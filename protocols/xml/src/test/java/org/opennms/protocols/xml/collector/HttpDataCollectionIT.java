@@ -43,12 +43,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.collection.test.CollectionSetUtils;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -59,10 +62,10 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.http.collector.HttpCollectionHandler;
 import org.opennms.protocols.json.collector.DefaultJsonCollectionHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
@@ -121,10 +124,7 @@ public class HttpDataCollectionIT {
         m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
         m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
-        m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
-        EasyMock.expect(m_collectionAgent.getStorageResourcePath()).andReturn(ResourcePath.get("1")).anyTimes();
+        m_collectionAgent = new MockCollectionAgent(1, "mynode.local", InetAddrUtils.addr("127.0.0.1"));
 
         m_nodeDao = EasyMock.createMock(NodeDao.class);
         OnmsNode node = new OnmsNode();
@@ -132,7 +132,7 @@ public class HttpDataCollectionIT {
         node.setLabel("mynode.local");
         node.setAssetRecord(new OnmsAssetRecord());
         EasyMock.expect(m_nodeDao.get(1)).andReturn(node).anyTimes();
-        EasyMock.replay(m_collectionAgent, m_nodeDao);
+        EasyMock.replay(m_nodeDao);
     }
 
     /**
@@ -142,7 +142,7 @@ public class HttpDataCollectionIT {
      */
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_collectionAgent, m_nodeDao);
+        EasyMock.verify(m_nodeDao);
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -165,11 +165,10 @@ public class HttpDataCollectionIT {
         parameters.put("collection", "Http-Count");
 
         DefaultXmlCollectionHandler collector = new DefaultXmlCollectionHandler();
-        collector.setNodeDao(m_nodeDao);
         collector.setRrdRepository(repository);
         collector.setServiceName("HTTP");
 
-        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_nodeDao, collector, m_collectionAgent, collection, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
@@ -203,11 +202,10 @@ public class HttpDataCollectionIT {
         parameters.put("collection", "Http-Market");
 
         HttpCollectionHandler collector = new HttpCollectionHandler();
-        collector.setNodeDao(m_nodeDao);
         collector.setRrdRepository(repository);
         collector.setServiceName("HTTP");
 
-        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_nodeDao, collector, m_collectionAgent, collection, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
@@ -241,11 +239,10 @@ public class HttpDataCollectionIT {
         parameters.put("collection", "Http-Person-Stats");
 
         DefaultXmlCollectionHandler collector = new DefaultXmlCollectionHandler();
-        collector.setNodeDao(m_nodeDao);
         collector.setRrdRepository(repository);
         collector.setServiceName("HTTP");
 
-        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_nodeDao, collector, m_collectionAgent, collection, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
@@ -279,12 +276,12 @@ public class HttpDataCollectionIT {
         parameters.put("collection", "Solaris");
 
         DefaultJsonCollectionHandler collector = new DefaultJsonCollectionHandler();
-        collector.setNodeDao(m_nodeDao);
         collector.setRrdRepository(repository);
         collector.setServiceName("HTTP");
 
-        XmlCollectionSet collectionSet = collector.collect(m_collectionAgent, collection, parameters);
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_nodeDao, collector, m_collectionAgent, collection, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        System.err.println(CollectionSetUtils.flatten(collectionSet));
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);

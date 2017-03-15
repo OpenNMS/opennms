@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -336,7 +337,9 @@ public final class GenericIndexResourceType implements OnmsResourceType {
         Collections.sort(resourceTypeList, new Comparator<ResourceType>() {
             @Override
             public int compare(ResourceType r0, ResourceType r1) {
-                return r0.getLabel().compareTo(r1.getLabel());
+                // Sort by resource label, allowing the resource label to be null
+                final Comparator<? super String> comparator = (a, b) -> a.compareTo(b);
+                return Objects.compare(r0.getLabel(), r1.getLabel(), Comparator.nullsLast(comparator));
             }
         });
         for (ResourceType resourceType : resourceTypeList) {

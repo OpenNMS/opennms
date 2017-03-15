@@ -26,11 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.adapters;
+package org.opennms.netmgt.collection.api;
 
 import java.util.function.Function;
-
-import org.opennms.netmgt.collection.api.ResourceType;
 
 /**
  * Singleton used to lookup {@link ResourceType}s by name.
@@ -67,6 +65,35 @@ public class ResourceTypeMapper {
         if (mapper != null) {
             return mapper.apply(name);
         }
+        return null;
+    }
+
+    public ResourceType getResourceTypeWithFallback(String name, String fallback) {
+        if (mapper == null) {
+            return null;
+        }
+        
+        ResourceType rt = mapper.apply(name);
+        if (rt != null) {
+            return rt;
+        }
+
+        if (fallback != null) {
+            // We didn't find the resource type, but a fallback was set
+            // so try looking that one up
+            rt = mapper.apply(fallback);
+            if (rt != null) {
+                // We found the fallback type, so we'll use this one
+                // but rename it to be the same as the originally requested type
+                return new DelegatingResourceType(rt) {
+                    @Override
+                    public String getName() {
+                        return name;
+                    }
+                };
+            }
+        }
+
         return null;
     }
 }

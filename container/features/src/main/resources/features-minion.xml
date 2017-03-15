@@ -112,6 +112,7 @@
       <feature>opennms-vmware</feature>
       <feature>wmi-integration</feature>
       <feature>wsman-integration</feature>
+      <feature>opennms-xml-collector</feature>
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">

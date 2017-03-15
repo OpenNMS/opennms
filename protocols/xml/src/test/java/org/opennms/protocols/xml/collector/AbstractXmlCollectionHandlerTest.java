@@ -28,18 +28,10 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.protocols.xml.config.Request;
-import org.opennms.protocols.xml.config.XmlDataCollection;
-import org.opennms.protocols.xml.config.XmlSource;
 
 /**
  * The Test Class for AbstractXmlCollectionHandler.
@@ -55,38 +47,16 @@ public class AbstractXmlCollectionHandlerTest {
      */
     @Test
     public void testParseString() throws Exception {
-        AbstractXmlCollectionHandler handler = new AbstractXmlCollectionHandler() {
-            @Override
-            public XmlCollectionSet collect(CollectionAgent agent,
-                    XmlDataCollection collection,
-                    Map<String, Object> parameters)
-                            throws CollectionException {
-                return null;
-            }
-
-            @Override
-            protected void processXmlResource(
-                    XmlCollectionResource collectionResource,
-                    AttributeGroupType attribGroupType) {
-            }
-
-            @Override
-            protected void fillCollectionSet(String urlString,
-                    Request request, CollectionAgent agent,
-                    XmlCollectionSet collectionSet, XmlSource source)
-                    throws Exception {
-            }
-        };
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("mynode.local");
         OnmsAssetRecord asset = new OnmsAssetRecord();
         asset.setSerialNumber("1001");
         node.setAssetRecord(asset);
-        String url = handler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300);
+        String url = AbstractXmlCollectionHandler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300);
         Assert.assertEquals("http://mynode.local/127.0.0.1/serial/1001/300", url);
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
-        String xml = handler.parseString("Content", multiline, node, "127.0.0.1", 300);
+        String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
     }
 
