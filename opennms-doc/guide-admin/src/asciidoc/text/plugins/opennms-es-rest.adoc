@@ -25,19 +25,21 @@ With the following properties (defaults shown will be used if file is not presen
 
 [options="header, autowidth"]
 |===
-| Parameter                 | Default               | Description
-|`elasticsearchUrl`         | http://localhost:9200 | URL of _Elasticsearch_ ReST interface
-|`esusername`               |                       | Username to access _Elasticsearch_
-|`espassword`               |                       | Username to access _Elasticsearch_
-|`logEventDescription`      | true                  | Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
-|`archiveRawEvents`         | true                  | Archive events.
-|`archiveAlarms`            | true                  | Archive alarms.
-|`archiveAlarmChangeEvents` | true                  | Archive alarm change events.
-|`archiveOldAlarmValues`    | true                  | For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
-|`archiveNewAlarmValues`    | true                  | 
-|`logAllEvents`             | false                 | If changed to true, then archive all events even if they have not been persisted in the OpenNMS database.
-|`batchSize`                | 1                     | Increase this value to enable batch inserts into Elasticsearch. This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
-|`batchInterval`            | 0                     | This value specifies the maximum time interval between batch events (recommended: 500ms).
+| Parameter                 | Default Value         | Required | Description
+|`elasticsearchUrl`         | http://localhost:9200 | optional | URL of _Elasticsearch_ ReST interface. This value can also contain a comma-separated list of URLs that will be used in round-robin fashion for increased scalability.
+|`esusername`               |                       | optional | Username to access _Elasticsearch_.
+|`espassword`               |                       | optional | Password to access _Elasticsearch_.
+|`logEventDescription`      | true                  | optional | Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
+|`archiveRawEvents`         | true                  | optional | Archive events.
+|`archiveAlarms`            | true                  | optional | Archive alarms.
+|`archiveAlarmChangeEvents` | true                  | optional | Archive alarm change events.
+|`archiveOldAlarmValues`    | true                  | optional | For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
+|`archiveNewAlarmValues`    | true                  | optional | 
+|`logAllEvents`             | false                 | optional | If changed to true, then archive all events even if they have not been persisted in the OpenNMS database.
+|`retries`                  | 0                     | optional | The number of times to retry an _Elasticsearch_ operation that fails completely. You can increase `retries` to avoid losing forwarded events and alarms when _Elasticsearch_ is down or unreachable.
+|`timeout`                  | 5000                  | optional | The interval between subsequent retries when a `retries` value greater than 1 is being used.
+|`batchSize`                | 1                     | optional | Increase this value to enable batch inserts into _Elasticsearch_. This is the maximum size of a batch of events that is sent to _Elasticsearch_ in a single connection.
+|`batchInterval`            | 0                     | optional | The maximum time interval in milliseconds between batch events (recommended: 500ms) when a `batchSize` value greater than 1 is being used.
 |===
 
 Once you are sure everything is correctly configured, you can activate the _Elasticsearch_ forwarder by logging into the _OSGi_ console and installing the feature.
