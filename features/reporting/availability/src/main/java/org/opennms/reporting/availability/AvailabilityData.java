@@ -286,7 +286,7 @@ public class AvailabilityData {
                                                                             topOffenders,
                                                                             cat.getWarningThreshold(),
                                                                             cat.getNormalThreshold(),
-                                                                            cat.getComment(),
+                                                                            cat.getComment().orElse(null),
                                                                             cat.getLabel(),
                                                                             format,
                                                                             monthFormat,
@@ -296,7 +296,7 @@ public class AvailabilityData {
                 report.setSectionCount(m_sectionIndex - 1);
             } else {
                 org.opennms.reporting.availability.Category category = new org.opennms.reporting.availability.Category();
-                category.setCatComments(cat.getComment());
+                category.setCatComments(cat.getComment().orElse(null));
                 category.setCatName(cat.getLabel());
                 category.setCatIndex(catIndex);
                 category.setNodeCount(0);

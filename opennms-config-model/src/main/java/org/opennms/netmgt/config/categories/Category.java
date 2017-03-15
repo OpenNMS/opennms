@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -119,8 +120,8 @@ public class Category implements Serializable {
         m_label = label;
     }
 
-    public String getComment() {
-        return m_comment;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(m_comment);
     }
 
     public void setComment(final String comment) {

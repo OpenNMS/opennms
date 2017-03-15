@@ -96,6 +96,9 @@ public class CategoryGroup implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("name is a required field!");
+        }
         m_name = name;
     }
 
@@ -104,6 +107,9 @@ public class CategoryGroup implements Serializable {
     }
 
     public void setComment(final String comment) {
+        if (comment == null) {
+            throw new IllegalArgumentException("comment is a required field!");
+        }
         m_comment = comment;
     }
 
@@ -112,7 +118,11 @@ public class CategoryGroup implements Serializable {
     }
 
     public void setCommon(final Common common) {
-        m_common = common;
+        if (common == null) {
+            m_common = new Common();
+        } else {
+            m_common = common;
+        }
     }
 
     public void setCommonRule(final String rule) {

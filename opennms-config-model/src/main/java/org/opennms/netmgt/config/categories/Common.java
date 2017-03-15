@@ -65,6 +65,9 @@ public class Common implements Serializable {
     }
 
     public void setRule(final String rule) {
+        if (rule == null) {
+            throw new IllegalArgumentException("rule is a required field!");
+        }
         m_rule = rule;
     }
 
