@@ -84,46 +84,52 @@
             <td>{{ requisition.nodesInDatabase }}</td>
             <td>
               <span class="pull-right">
-                <button type="button" class="btn btn-default btn-xs"
-                  uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
-                  ng-click="edit(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-pencil"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs"
-                  uib-tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
-                  ng-click="editForeignSource(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs"
-                  uib-tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
-                  ng-disabled="timingStatus.isRunning"
-                  ng-click="clone(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-random"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs"
-                  uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
-                  ng-disabled="timingStatus.isRunning"
-                  ng-click="synchronize(requisition)">
-                  <span class="glyphicon glyphicon-transfer"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs"
-                  uib-tooltip="Refresh deployed stats for the {{requisition.foreignSource}} Requisition"
-                  ng-disabled="timingStatus.isRunning"
-                  ng-click="refresh(requisition)">
-                  <span class="glyphicon glyphicon-refresh"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" ng-disabled="requisition.nodesDefined == 0"
-                  uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
-                  ng-disabled="timingStatus.isRunning"
-                  ng-click="removeAllNodes(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-remove-circle"></span>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" ng-disabled="requisition.nodesInDatabase > 0"
-                  uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
-                  ng-disabled="timingStatus.isRunning"
-                  ng-click="delete(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-trash"></span>
-                </button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default btn-xs"
+                          uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
+                          ng-click="edit(requisition.foreignSource)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs"
+                          uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
+                          ng-disabled="timingStatus.isRunning"
+                          ng-click="synchronize(requisition)">
+                    <span class="glyphicon glyphicon-transfer"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs"
+                          uib-tooltip="Refresh deployed stats for the {{requisition.foreignSource}} Requisition"
+                          ng-disabled="timingStatus.isRunning"
+                          ng-click="refresh(requisition)">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                  </button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default btn-xs"
+                          uib-tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
+                          ng-click="editForeignSource(requisition.foreignSource)">
+                    <span class="glyphicon glyphicon-edit"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs"
+                          uib-tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
+                          ng-disabled="timingStatus.isRunning"
+                          ng-click="clone(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-random"></span>
+                  </button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default btn-xs" ng-disabled="requisition.nodesDefined == 0"
+                          uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
+                          ng-disabled="timingStatus.isRunning"
+                          ng-click="removeAllNodes(requisition.foreignSource)">
+                    <span class="glyphicon glyphicon-remove-circle"></span>
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs" ng-disabled="requisition.nodesInDatabase > 0"
+                          uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
+                          ng-disabled="timingStatus.isRunning"
+                          ng-click="delete(requisition.foreignSource)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </button>
+                </div>
               </span>
             </td>
           </tr>

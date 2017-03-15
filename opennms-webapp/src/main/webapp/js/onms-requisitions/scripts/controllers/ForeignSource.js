@@ -166,7 +166,7 @@
           buttons: {
             success: {
               label: 'Yes',
-              className: 'btn-danger',
+              className: 'btn-primary',
               callback: handler
             },
             main: {
