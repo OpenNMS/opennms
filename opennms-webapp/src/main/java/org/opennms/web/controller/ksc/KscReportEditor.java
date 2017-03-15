@@ -69,8 +69,8 @@ public class KscReportEditor implements Serializable {
     private static Report getNewReport() {
         Report new_report = new Report();
         new_report.setTitle("New Report Title");
-        new_report.setShow_graphtype_button(false);
-        new_report.setShow_timespan_button(false);
+        new_report.setShowGraphtypeButton(false);
+        new_report.setShowTimespanButton(false);
         return new_report;
     }
 

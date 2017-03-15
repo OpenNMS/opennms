@@ -30,15 +30,15 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rws.StandbyUrl;
@@ -71,11 +71,9 @@ public abstract class RWSConfigManager implements RWSConfig {
      * <p>Constructor for RWSConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public RWSConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
+    public RWSConfigManager(final InputStream stream) throws IOException {
         reloadXML(stream);
     }
 
@@ -221,14 +219,12 @@ public abstract class RWSConfigManager implements RWSConfig {
      * <p>reloadXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        try {
+    protected void reloadXML(final InputStream stream) throws IOException {
+        try (Reader reader = new InputStreamReader(stream)) {
             getWriteLock().lock();
-            m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
+            m_config = JaxbUtils.unmarshal(RwsConfiguration.class, reader);
         } finally {
             getWriteLock().unlock();
         }

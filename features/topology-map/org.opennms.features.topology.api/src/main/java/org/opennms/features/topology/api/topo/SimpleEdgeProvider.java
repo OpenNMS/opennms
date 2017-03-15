@@ -109,7 +109,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getEdgeNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 	
@@ -133,7 +133,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	private Edge getSimpleEdge(EdgeRef reference) {
-		if (getEdgeNamespace().equals(reference.getNamespace())) {
+		if (getNamespace().equals(reference.getNamespace())) {
 			if (reference instanceof Edge) {
 				return Edge.class.cast(reference);
 			} else {
@@ -242,7 +242,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 					Edge next = itr.next();
 					if (
 						matchingCriteria.getType() == Criteria.ElementType.EDGE &&
-						matchingCriteria.getNamespace() == getEdgeNamespace() &&
+						matchingCriteria.getNamespace() == getNamespace() &&
 						!matchingCriteria.matches(next)
 					) {
 						itr.remove();
@@ -261,4 +261,8 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		fireEdgesRemoved(all);
 	}
 
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeMap.size();
+	}
 }

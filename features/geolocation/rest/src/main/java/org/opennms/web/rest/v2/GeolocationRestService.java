@@ -112,7 +112,6 @@ public class GeolocationRestService {
                 query.setStatusCalculationStrategy(getEnum(queryDTO.getStrategy(), StatusCalculationStrategy.values()));
             }
             query.setIncludeAcknowledgedAlarms(queryDTO.isIncludeAcknowledgedAlarms());
-            query.setResolveCoordinatesFromAddressString(queryDTO.isResolveMissingCoordinatesFromAddressString());
             return query;
         }
         return null;

@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -91,10 +91,10 @@ class DefaultJmxConnector implements JmxServerConnector {
             JMXServiceURL url = null;
             
             if(remoteJMX.equalsIgnoreCase("true")){
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.str(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);	
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
             }
             else{
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
             }
              	
             LOG.debug("JMX: {} - {}", factory, url);

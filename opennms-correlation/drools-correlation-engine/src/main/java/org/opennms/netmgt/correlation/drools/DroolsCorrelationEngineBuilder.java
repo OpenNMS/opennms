@@ -50,6 +50,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * <p>DroolsCorrelationEngineBuilder class.</p>
  *
@@ -74,10 +76,10 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 			m_configuration = JaxbUtils.unmarshal(EngineConfiguration.class, m_configResource);
 		}
 
-		public CorrelationEngine[] constructEngines(ApplicationContext appContext, EventIpcManager eventIpcManager) {
+		public CorrelationEngine[] constructEngines(ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
 			LOG.info("Creating drools engins for configuration {}.", m_configResource);
 
-			return m_configuration.constructEngines(m_configResource, appContext, eventIpcManager);
+			return m_configuration.constructEngines(m_configResource, appContext, eventIpcManager, metricRegistry);
 		}
 
 	}
@@ -87,6 +89,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     private Resource m_configResource;
     private EventIpcManager m_eventIpcManager;
     private CorrelationEngineRegistrar m_correlator;
+    private MetricRegistry m_metricRegistry;
 
     // built
     private PluginConfiguration[] m_pluginConfigurations;
@@ -119,6 +122,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         assertSet(m_configDirectory, "configurationDirectory");
         assertSet(m_eventIpcManager, "eventIpcManager");
         assertSet(m_correlator, "correlator");
+        assertSet(m_metricRegistry, "metricRegistry");
         
         Assert.state(!m_configDirectory.exists() || m_configDirectory.isDirectory(), m_configDirectory+" must be a directory!");
         
@@ -127,18 +131,27 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 
     private void registerEngines(final ApplicationContext appContext) {
     	for(PluginConfiguration pluginConfig : m_pluginConfigurations) {
-    		m_correlator.addCorrelationEngines(pluginConfig.constructEngines(appContext, m_eventIpcManager));
+    		m_correlator.addCorrelationEngines(pluginConfig.constructEngines(appContext, m_eventIpcManager, m_metricRegistry));
     	}
 
     }
 
-	/**
+    /**
      * <p>setEventIpcManager</p>
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
+    }
+
+    /**
+     * <p>setMetricRegistry</p>
+     *
+     * @param metricRegistry a {@link com.codahale.metrics.MetricRegistry} object.
+     */
+    public void setMetricRegistry(final MetricRegistry metricRegistry) {
+        m_metricRegistry = metricRegistry;
     }
 
     /**

@@ -117,6 +117,11 @@ public class GenericTypeResource extends DeferredGenericTypeResource {
     }
 
     @Override
+    public String getTypeName() {
+        return m_resourceType.getName();
+    }
+
+    @Override
     public String toString() {
         return String.format("GenericTypeResource[node=%s, instance=%s, resourceType=%s,"
                 + "storageStrategy=%s, persistenceSelectorStrategy=%s]",
@@ -141,4 +146,6 @@ public class GenericTypeResource extends DeferredGenericTypeResource {
         return super.equals(other)
                 && Objects.equals(this.m_resourceType, other.m_resourceType);
     }
+
+
 }

@@ -144,8 +144,8 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         xml = sendRequest(GET, "/users/test", 200); 
         OnmsUser testUser = JaxbUtils.unmarshal(OnmsUser.class,  xml);
         // ... but in xml-file
-        User castorUser = m_userManager.getUser("test");
-        assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
+        User xmlUser = m_userManager.getUser("test");
+        assertEquals(xmlUser.getPassword().getEncryptedPassword(), "MONKEYS");
 
         // validate change of email
         assertEquals("test@opennms.org", testUser.getEmail());
@@ -240,8 +240,8 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
             // validate change of password
             eachUser = JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/users/test" + i, 200));
-            User castorUser = m_userManager.getUser("test" + i);
-            assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
+            User xmlUser = m_userManager.getUser("test" + i);
+            assertEquals(xmlUser.getPassword().getEncryptedPassword(), "MONKEYS");
 
             // validate change of email
             assertEquals("TEST@OPENNMS.COM", eachUser.getEmail());

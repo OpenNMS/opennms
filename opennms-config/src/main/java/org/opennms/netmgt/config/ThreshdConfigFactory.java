@@ -37,8 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,12 +76,9 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public ThreshdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
+    public ThreshdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws IOException {
         super(stream, localServer, verifyServer);
-
     }
 
     /**
@@ -92,15 +87,9 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -133,15 +122,9 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -156,7 +139,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
           * @throws org.exolab.castor.xml.ValidationException if any.
           */
     @Override
-         public void reloadXML() throws IOException, MarshalException, ValidationException {
+         public void reloadXML() throws IOException {
              /* FIXME: THIS IS WAY WRONG! Should only reload the xml not recreate the instance
               otherwise references to the old instance will still linger */
             reload();

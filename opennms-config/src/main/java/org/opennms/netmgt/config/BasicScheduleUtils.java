@@ -569,7 +569,7 @@ public abstract class BasicScheduleUtils {
 		basicSchedule.setName(schedule.getName());
 		basicSchedule.setType(schedule.getType());
 		final Collection<Time> times = new ArrayList<Time>();
-		for (final org.opennms.netmgt.config.groups.Time time : schedule.getTimeCollection()) {
+		for (final org.opennms.netmgt.config.groups.Time time : schedule.getTimes()) {
 			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
 		}
 		basicSchedule.setTimeCollection(times);

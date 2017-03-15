@@ -39,6 +39,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.TopologyService;
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -100,13 +102,13 @@ public class BusinessServiceSearchProviderIT {
         businessServiceDao.flush();
 
         // prepare mocks
-        GraphProvider graphProviderMock = EasyMock.createNiceMock(GraphProvider.class);
-        EasyMock.expect(graphProviderMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
+        TopologyServiceClient topologyServiceClientMock = EasyMock.createNiceMock(TopologyServiceClient.class);
+        EasyMock.expect(topologyServiceClientMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
                 .andReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
 
         GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
-        EasyMock.expect(graphContainerMock.getBaseTopology()).andReturn(graphProviderMock).times(1);
-        EasyMock.replay(graphContainerMock, graphProviderMock);
+        EasyMock.expect(graphContainerMock.getTopologyServiceClient()).andReturn(topologyServiceClientMock).anyTimes();
+        EasyMock.replay(graphContainerMock, topologyServiceClientMock);
 
         // try searching
         final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
@@ -119,6 +121,6 @@ public class BusinessServiceSearchProviderIT {
         };
         final List<SearchResult> result = provider.query(query, graphContainerMock);
         Assert.assertEquals(1, result.size());
-        EasyMock.verify(graphContainerMock, graphProviderMock);
+        EasyMock.verify(graphContainerMock, topologyServiceClientMock);
     }
 }

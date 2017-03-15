@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.api.topo;
@@ -31,4 +31,11 @@ package org.opennms.features.topology.api.topo;
 public interface TopologyProviderInfo {
     String getName();
     String getDescription();
+
+    /**
+     * Defines if the current topology is hierarchical.
+     *
+     * @return true if hierarchical, false otherwise.
+     */
+    boolean isHierarchical();
 }

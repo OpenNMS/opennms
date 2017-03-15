@@ -337,14 +337,14 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
 
     private void handleLayerButton(GraphContainer graphContainer) {
         // Toggle layer button
-        boolean enableLayerButton = graphContainer.getMetaTopologyProvider().getGraphProviders().size() > 1;
+        boolean enableLayerButton = graphContainer.getTopologyServiceClient().getGraphProviders().size() > 1;
         layerButton.setEnabled(enableLayerButton);
 
         // update the layer layout
         layerLayout.removeAllComponents();
         if (enableLayerButton) {
-            graphContainer.getMetaTopologyProvider().getGraphProviders().forEach(topologyProvider -> {
-                boolean selected = topologyProvider.getVertexNamespace().equals(graphContainer.getBaseTopology().getVertexNamespace());
+            graphContainer.getTopologyServiceClient().getGraphProviders().forEach(topologyProvider -> {
+                boolean selected = topologyProvider.getNamespace().equals(graphContainer.getTopologyServiceClient().getNamespace());
                 final TopologyProviderInfo topologyProviderInfo = topologyProvider.getTopologyProviderInfo();
 
                 final Label nameLabel = new Label(topologyProviderInfo.getName());
@@ -366,7 +366,8 @@ public class ToolbarPanel extends CssLayout implements SelectionListener, Change
         // Toggle save button for coordinates
         if (graphContainer.getLayoutAlgorithm() instanceof ManualLayoutAlgorithm) {
             // We only show the save button if we don't have a layout persisted, or the layout is not equal
-            boolean showSave = layoutManager.loadLayout(graphContainer) == null || !layoutManager.isPersistedLayoutEqualToCurrentLayout(graphContainer);
+            boolean showSave = layoutManager.loadLayout(graphContainer.getGraph()) == null
+                    || !layoutManager.isPersistedLayoutEqualToCurrentLayout(graphContainer.getGraph());
             layerSaveButton.setEnabled(showSave);
             if (showSave) {
                 layerSaveButton.setDescription("Save the current layout");

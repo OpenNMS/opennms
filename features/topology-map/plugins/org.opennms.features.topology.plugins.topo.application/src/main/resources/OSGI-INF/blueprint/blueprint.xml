@@ -13,6 +13,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<bean id="applicationTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
 		<property name="name" value="Application Topology Provider"/>
 		<property name="description" value="This Topology Provider displays all defined Applications and their calculated states."/>
+		<property name="hierarchical" value="true" />
 	</bean>
 
 	<!-- Topology Provider -->
@@ -24,22 +25,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<bean id="applicationTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
 		<argument ref="applicationTopologyProvider" />
 	</bean>
-	<!-- Register the hop aware Provider -->
-	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="applicationTopologyHopProvider">
-		<service-properties>
-			<entry key="label" value="Application"/>
-		</service-properties>
-	</service>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="applicationTopologyHopProvider">
-		<service-properties>
-			<entry key="label" value="Application"/>
-		</service-properties>
-	</service>
-	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="applicationTopologyHopProvider">
-		<service-properties>
-			<entry key="label" value="Application"/>
-		</service-properties>
-	</service>
 
     <!-- Meta topology provider -->
     <bean id="applicationMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">

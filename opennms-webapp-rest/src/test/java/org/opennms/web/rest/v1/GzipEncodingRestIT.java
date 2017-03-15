@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import javax.servlet.ServletContext;
@@ -54,7 +55,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
 /**
@@ -122,7 +122,7 @@ public class GzipEncodingRestIT extends AbstractSpringJerseyRestTestCase {
         // Decompress the response
         assertEquals("gzip", response.getHeader("Content-Encoding"));
         InputStream gzip = new GZIPInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
-        String ungzippedXml = CharStreams.toString(new InputStreamReader(gzip, Charsets.UTF_8));
+        String ungzippedXml = CharStreams.toString(new InputStreamReader(gzip, StandardCharsets.UTF_8));
 
         // The resulting strings from both requests should match
         assertEquals(xml, ungzippedXml);

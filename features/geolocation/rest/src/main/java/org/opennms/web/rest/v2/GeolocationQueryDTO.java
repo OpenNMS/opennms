@@ -38,8 +38,6 @@ public class GeolocationQueryDTO {
 
     private boolean includeAcknowledgedAlarms;
 
-    private boolean resolveMissingCoordinatesFromAddressString;
-
     public String getStrategy() {
         return strategy;
     }
@@ -62,13 +60,5 @@ public class GeolocationQueryDTO {
 
     public void setIncludeAcknowledgedAlarms(boolean includeAcknowledgedAlarms) {
         this.includeAcknowledgedAlarms = includeAcknowledgedAlarms;
-    }
-
-    public boolean isResolveMissingCoordinatesFromAddressString() {
-        return resolveMissingCoordinatesFromAddressString;
-    }
-
-    public void setResolveMissingCoordinatesFromAddressString(boolean resolveMissingCoordinatesFromAddressString) {
-        this.resolveMissingCoordinatesFromAddressString = resolveMissingCoordinatesFromAddressString;
     }
 }

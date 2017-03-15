@@ -11,14 +11,15 @@ The alarm northbounder exposes the following properties via the `org.opennms.fea
 
 [options="header"]
 |===
-| Property      | Default                                                         | Description
-| connectionUrl | amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672' | Used by the AMQPConnectionFactory. See http://people.apache.org/~grkvlt/qpid-site/qpid-java/qpid-client/apidocs/org/apache/qpid/jms/ConnectionURL.html[ConnectionURL]
- for a full list of options.
-| destination   | amqp:OpenNMS-Exchange/opennms-routing-key  | Target queue or topic. See http://camel.apache.org/amqp.html[AMQP] for details.
-| processorName | default-alarm-northbounder-processor       | Name `org.apache.camel.Processor` used to filter and/or format the events.
+| Property        | Default                                                           | Description
+| _connectionUrl_ | `amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672'` | Used by the AMQPConnectionFactory.
+                                                                                        See http://people.apache.org/~grkvlt/qpid-site/qpid-java/qpid-client/apidocs/org/apache/qpid/jms/ConnectionURL.html[ConnectionURL] for a full list of options.
+| _destination_   | `amqp:OpenNMS-Exchange/opennms-routing-key`                       | Target queue or topic.
+                                                                                        See http://camel.apache.org/amqp.html[AMQP] for details.
+| _processorName_ | `default-alarm-northbounder-processor`                            | Name `org.apache.camel.Processor` used to filter and/or format the events.
 |===
 
-The default processor, the `default-alarm-northbounder-processor`, convets the alarms to a string and does not perform any filtering.
+The default processor, the `default-alarm-northbounder-processor`, converts the alarms to a string and does not perform any filtering.
 This means that when enabled, all alarms will be forwarded to the AMQP destination with strings as the message body.
 
 ==== Setup

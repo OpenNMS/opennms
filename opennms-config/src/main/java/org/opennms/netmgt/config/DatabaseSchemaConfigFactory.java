@@ -29,9 +29,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,11 +43,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
@@ -104,31 +102,22 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
-    private DatabaseSchemaConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgStream = null;
-        try {
-            cfgStream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream);
-            finishConstruction();
-        } finally {
-            IOUtils.closeQuietly(cfgStream);
-        }
+    private DatabaseSchemaConfigFactory(final String configFile) throws IOException {
+        m_config = JaxbUtils.unmarshal(DatabaseSchema.class, new File(configFile));
+        finishConstruction();
     }
 
     /**
      * <p>Constructor for DatabaseSchemaConfigFactory.</p>
      *
      * @param is a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public DatabaseSchemaConfigFactory(final InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
+    public DatabaseSchemaConfigFactory(final InputStream is) throws IOException {
+        try (final Reader reader = new InputStreamReader(is)) {
+            m_config = JaxbUtils.unmarshal(DatabaseSchema.class, reader);
+        }
         finishConstruction();
     }
 
@@ -146,15 +135,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -171,15 +154,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 

@@ -152,7 +152,6 @@ public class CustomSyslogParser extends SyslogParser {
         if (m.matches()) {
 
             final String matchedMessage = m.group(m_matchingGroupMessage);
-            syslogMessage.setMatchedMessage(matchedMessage);
 
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
@@ -173,9 +172,8 @@ public class CustomSyslogParser extends SyslogParser {
         final int colonIdx = message.indexOf(':');
         final int spaceIdx = message.indexOf(' ');
 
-        int processId = 0;
-        String processName = "";
-        String processIdStr = "";
+        Integer processId = null;
+        String processName = null;
 
         // If statement has been reversed in order to make the decision faster
         // rather than always calculating lbIdx < (rbIdx - 1) which might fail
@@ -185,13 +183,17 @@ public class CustomSyslogParser extends SyslogParser {
             message = message.substring(colonIdx + 2);
         } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
-            processIdStr = message.substring(lbIdx + 1, rbIdx);
+            String processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
             processId = parseInt(processIdStr, "Bad process id '{}'");
         }
 
-        syslogMessage.setProcessId(processId);
-        syslogMessage.setProcessName(processName);
+        if (processId != null) {
+            syslogMessage.setProcessId(processId);
+        }
+        if (processName != null) {
+            syslogMessage.setProcessName(processName);
+        }
         syslogMessage.setMessage(message.trim());
 
         LOG.debug("Message parse end");

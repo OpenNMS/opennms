@@ -95,7 +95,7 @@ public class JaxbCastorEquivalenceTest {
         final javax.xml.bind.Marshaller jaxbMarshaller = c.createMarshaller();
 
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        final Schema schema = factory.newSchema(new StreamSource("src/main/castor/event.xsd"));
+        final Schema schema = factory.newSchema(new StreamSource("src/main/resources/xsds/event.xsd"));
         jaxbMarshaller.setSchema(schema);
 		jaxbMarshaller.marshal(event, jaxbWriter);
         final String jaxbXml = jaxbWriter.toString();
@@ -150,7 +150,7 @@ public class JaxbCastorEquivalenceTest {
         final JAXBContext c = JAXBContext.newInstance("org.opennms.netmgt.xml.event");
         final Unmarshaller unmarshaller = c.createUnmarshaller();
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        final Schema schema = factory.newSchema(new StreamSource("src/main/castor/event.xsd"));
+        final Schema schema = factory.newSchema(new StreamSource("src/main/resources/xsds/event.xsd"));
         unmarshaller.setSchema(schema);
         unmarshaller.unmarshal(new StringReader(xmlWithNamespace));
     }
@@ -160,7 +160,7 @@ public class JaxbCastorEquivalenceTest {
         final JAXBContext c = JAXBContext.newInstance("org.opennms.xmlns.xsd.event");
         final Unmarshaller unmarshaller = c.createUnmarshaller();
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        final Schema schema = factory.newSchema(new StreamSource("src/main/castor/event.xsd"));
+        final Schema schema = factory.newSchema(new StreamSource("src/main/resources/xsds/event.xsd"));
         unmarshaller.setSchema(schema);
         unmarshaller.unmarshal(new StringReader(xmlWithNamespace));
     }

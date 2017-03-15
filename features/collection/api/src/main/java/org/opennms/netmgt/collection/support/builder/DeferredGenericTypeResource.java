@@ -66,7 +66,8 @@ public class DeferredGenericTypeResource extends AbstractResource {
         return m_node;
     }
 
-    public String getResourceTypeName() {
+    @Override
+    public String getTypeName() {
         return m_resourceTypeName;
     }
 

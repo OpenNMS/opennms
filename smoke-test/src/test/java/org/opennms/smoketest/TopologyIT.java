@@ -30,17 +30,24 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXB;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
@@ -310,18 +317,18 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
                 try {
+                    // we should wait, otherwise the menu has not yet updated
+                    waitForTransition();
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
-                    // we should wait, otherwise the menu has not yet updated
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw Throwables.propagate(e);
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception while clicking on menu item {}", label, e);
                     throw e;
                 }
             }
+            // Wait to give the menu a chance to update
+            waitForTransition();
             return this;
         }
 
@@ -650,7 +657,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     // Verifies that the ping operation is available. See NMS-9019
     @Test
-    public void verifyPingOperation() {
+    public void verifyPingOperation() throws InterruptedException, IOException {
         // Create Dummy Node
         final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
@@ -666,6 +673,16 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
+
+        // Send an event to force reload of topology
+        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
+        builder.setTime(new Date());
+        builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JAXB.marshal(builder.getEvent(), outputStream);
+            sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
+        }
+        Thread.sleep(5000); // Wait to allow the event to be processed
 
         // Find Node and try select ping from context menu
         topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);

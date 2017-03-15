@@ -27,6 +27,8 @@
                 <attrib name="ActiveThreads" alias="ONMSPollerThreadAct" type="gauge"/>
                 <attrib name="TasksTotal" alias="ONMSPollerTasksTot" type="counter"/>
                 <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
+                <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
+                <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
             </mbean>
             <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
                 <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
@@ -39,6 +41,8 @@
                 <attrib name="TasksTotal" alias="ONMSCollectTasksTot" type="counter"/>
                 <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt" type="counter"/>
                 <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
+                <attrib name="TaskQueuePendingCount" alias="ONMSCollectTskQPCnt" type="gauge"/>
+                <attrib name="TaskQueueRemainingCapacity" alias="ONMSCollectTskQRCap" type="gauge"/>
             </mbean>
             <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
                 <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
@@ -300,12 +304,12 @@
                 <attrib name="Count" alias="CasCluster1ReqCnt" type="counter"/>
             </mbean>
             <mbean name="org.apache.activemq" objectname="org.apache.activemq:type=Broker,brokerName=localhost">
-                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="gauge"/>
-                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="gauge"/>
-                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="gauge"/>
+                <attrib name="TotalConnectionsCount" alias="TtlConCnt" type="counter"/>
+                <attrib name="TotalEnqueueCount" alias="TtlEnqCnt" type="counter"/>
+                <attrib name="TotalDequeueCount" alias="TtlDeqCnt" type="counter"/>
                 <attrib name="TotalConsumerCount" alias="TtlConsumerCnt" type="gauge"/>
                 <attrib name="TotalProducerCount" alias="TtlProdCnt" type="gauge"/>
-                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="gauge"/>
+                <attrib name="TotalMessageCount" alias="TtlMsgCnt" type="counter"/>
                 <attrib name="AverageMessageSize" alias="AvgMsgSize" type="gauge"/>
                 <attrib name="MaxMessageSize" alias="MaxMsgSize" type="gauge"/>
                 <attrib name="MinMessageSize" alias="MinMsgSize" type="gauge"/>

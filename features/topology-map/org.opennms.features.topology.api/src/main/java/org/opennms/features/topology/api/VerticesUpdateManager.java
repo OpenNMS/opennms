@@ -30,7 +30,6 @@ package org.opennms.features.topology.api;
 
 import java.util.Set;
 
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -50,9 +49,9 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
 
         private final Set<VertexRef> m_vertexRefs;
         private final boolean m_displayingAllVertices;
-        private final GraphProvider m_source;
+        private final TopologyServiceClient m_source;
 
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, GraphProvider source) {
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, TopologyServiceClient source) {
             this(vertexRefs, source, false);
         }
 
@@ -61,7 +60,7 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
          * @param source                The source of the event.
          * @param displayingAllVertices If all vertices are selected this should be true.
          */
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, GraphProvider source, boolean displayingAllVertices){
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, TopologyServiceClient source, boolean displayingAllVertices){
             m_vertexRefs = vertexRefs;
             m_displayingAllVertices = displayingAllVertices;
             m_source = source;
@@ -75,7 +74,7 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
             return m_displayingAllVertices;
         }
 
-        public GraphProvider getSource() {
+        public TopologyServiceClient getSource() {
             return m_source;
         }
 

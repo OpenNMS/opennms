@@ -20,6 +20,7 @@
         <!-- Used for the REST client -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
 
         <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>

@@ -29,6 +29,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -36,8 +39,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
@@ -46,26 +51,25 @@ import org.opennms.core.wsman.exceptions.InvalidResourceURI;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
-import org.opennms.netmgt.collection.api.AbstractLegacyServiceCollector;
+import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
-import org.opennms.netmgt.config.api.ResourceTypesDao;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
+import org.opennms.netmgt.config.wsman.Definition;
 import org.opennms.netmgt.config.wsman.Group;
+import org.opennms.netmgt.config.wsman.Groups;
 import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -81,8 +85,17 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class WsManCollector extends AbstractLegacyServiceCollector {
+public class WsManCollector extends AbstractRemoteServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(WsManCollector.class);
+
+    private static final String WSMAN_AGENT_CONFIG_KEY = "wsmanAgentConfig";
+
+    private static final String WSMAN_GROUPS_KEY = "wsmanGroups";
+
+    private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
+            new SimpleEntry<>(WSMAN_AGENT_CONFIG_KEY, Definition.class),
+            new SimpleEntry<>(WSMAN_GROUPS_KEY, Groups.class))
+            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
@@ -90,53 +103,65 @@ public class WsManCollector extends AbstractLegacyServiceCollector {
 
     private WSManConfigDao m_wsManConfigDao;
 
-    private ResourceTypesDao m_resourceTypesDao;
-
     private NodeDao m_nodeDao;
 
+    public WsManCollector() {
+        super(TYPE_MAP);
+    }
+
     @Override
-    public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
-        LOG.debug("initialize({})", parameters);
+    public void initialize() throws CollectionInitializationException {
+        LOG.debug("initialize()");
         // Retrieve the configuration DAOs
         m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
         m_wsManDataCollectionConfigDao = BeanUtils.getBean("daoContext", "wsManDataCollectionConfigDao", WSManDataCollectionConfigDao.class);
-        m_resourceTypesDao = BeanUtils.getBean("daoContext", "resourceTypesDao", ResourceTypesDao.class);
         m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
     }
 
     @Override
-    public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
-        LOG.debug("collect({}, {}, {})", agent, eproxy, parameters);
+    public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
+        final Map<String, Object> runtimeAttributes = new HashMap<>();
 
-        final Object collectionNameParam = parameters.get("collection");
-        if (collectionNameParam == null || !(collectionNameParam instanceof String)) {
-            throw new CollectionException("Collector configuration does not include the required 'collection' parameter.");
+        final String collectionName = ParameterMap.getKeyedString(parameters, "collection", null);
+        if (collectionName == null) {
+            throw new IllegalArgumentException("Collector configuration does not include the required 'collection' parameter.");
         }
-
-        final String collectionName = (String)collectionNameParam;
 
         final Collection collection = m_wsManDataCollectionConfigDao.getCollectionByName(collectionName);
         if (collection == null) {
-            throw new CollectionException("No collection found with name: " + collectionName);
+            throw new IllegalArgumentException("No collection found with name: " + collectionName);
         }
 
         final OnmsNode node = m_nodeDao.get(agent.getNodeId());
         if (node == null) {
-            throw new CollectionException("Could not find node with id: " + agent.getNodeId());
+            throw new IllegalArgumentException("Could not find node with id: " + agent.getNodeId());
         }
 
-        final WsmanAgentConfig config = m_wsManConfigDao.getConfig(agent.getAddress());
-        final WSManEndpoint endpoint = m_wsManConfigDao.getEndpoint(config, agent.getAddress());
+        final Definition agentConfig = m_wsManConfigDao.getAgentConfig(agent.getAddress());
+        final Groups groups = new Groups(m_wsManDataCollectionConfigDao.getGroupsForAgent(collection, agent, agentConfig, node));
+
+        runtimeAttributes.put(WSMAN_AGENT_CONFIG_KEY, agentConfig);
+        runtimeAttributes.put(WSMAN_GROUPS_KEY, groups);
+        return runtimeAttributes;
+    }
+
+    @Override
+    public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
+        LOG.debug("collect({}, {}, {})", agent, parameters);
+
+        final WsmanAgentConfig config = (WsmanAgentConfig)parameters.get(WSMAN_AGENT_CONFIG_KEY);
+        final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);
+
+        final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, agent.getAddress());
         final WSManClient client = m_factory.getClient(endpoint);
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
-        final List<Group> groups = m_wsManDataCollectionConfigDao.getGroupsForAgent(collection, agent, config, node);
 
         if (LOG.isDebugEnabled()) {
-            String groupNames = groups.stream().map(g -> g.getName()).collect(Collectors.joining(", "));
+            String groupNames = groups.getGroups().stream().map(g -> g.getName()).collect(Collectors.joining(", "));
             LOG.debug("Collecting attributes on {} from groups: {}", agent, groupNames);
         }
 
-        for (Group group : groups) {
+        for (Group group : groups.getGroups()) {
             try {
                 collectGroupUsing(group, agent, client, config.getRetry() != null ? config.getRetry() : 0, collectionSetBuilder);
             } catch (InvalidResourceURI e) {
@@ -158,10 +183,6 @@ public class WsManCollector extends AbstractLegacyServiceCollector {
         final AtomicInteger instanceId = new AtomicInteger();
         Supplier<Resource> resourceSupplier = () -> nodeResource;
         if (!"node".equalsIgnoreCase(group.getResourceType())) {
-            final ResourceType resourceType = m_resourceTypesDao.getResourceTypeByName(group.getResourceType());
-            if (resourceType == null) {
-                throw new CollectionException("No resource type found with name '" + group.getResourceType() + "'.");
-            }
             resourceSupplier = () -> {
                 // Generate a unique instance for each node in each group to ensure
                 // that the attributes are grouped together properly.
@@ -169,7 +190,7 @@ public class WsManCollector extends AbstractLegacyServiceCollector {
                 // similar to the SiblingColumnStorageStrategy should be used instead
                 // of the IndexStorageStrategy.
                 final String instance = String.format("%s%d", group.getName(), instanceId.getAndIncrement());
-                return new GenericTypeResource(nodeResource, resourceType, instance);
+                return new DeferredGenericTypeResource(nodeResource, group.getResourceType(), instance);
             };
         }
         if (LOG.isDebugEnabled()) {
@@ -262,21 +283,6 @@ public class WsManCollector extends AbstractLegacyServiceCollector {
         return rrdRepository;
     }
 
-    @Override
-    public void release() {
-        // pass
-    }
-
-    @Override
-    public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
-        // pass
-    }
-
-    @Override
-    public void release(CollectionAgent agent) {
-        // pass
-    }
-
     public void setWSManConfigDao(WSManConfigDao wsManConfigDao) {
         m_wsManConfigDao = Objects.requireNonNull(wsManConfigDao);
     }
@@ -287,10 +293,6 @@ public class WsManCollector extends AbstractLegacyServiceCollector {
 
     public void setWSManClientFactory(WSManClientFactory factory) {
         m_factory = Objects.requireNonNull(factory);
-    }
-
-    public void setResourceTypesDao(ResourceTypesDao resourceTypesDao) {
-        m_resourceTypesDao = Objects.requireNonNull(resourceTypesDao);
     }
 
     public void setNodeDao(NodeDao nodeDao) {

@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.support.breadcrumbs.Breadcrumb;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,7 @@ public class NavigationMenuItem extends AbstractMenuItem {
     @Override
     public MenuCommand getCommand() {
         return (targets, operationContext) -> {
-            Breadcrumb breadcrumb = new Breadcrumb(targetGraphProvider.getVertexNamespace(), sourceVertex);
+            Breadcrumb breadcrumb = new Breadcrumb(targetGraphProvider.getNamespace(), sourceVertex);
             BreadcrumbCriteria criteria = Criteria.getSingleCriteriaForGraphContainer(operationContext.getGraphContainer(), BreadcrumbCriteria.class, true);
             criteria.setNewRoot(breadcrumb);
             criteria.handleClick(breadcrumb, operationContext.getGraphContainer());
@@ -74,16 +73,14 @@ public class NavigationMenuItem extends AbstractMenuItem {
     @Override
     public boolean isVisible(List<VertexRef> targets, OperationContext operationContext) {
         // Only display the operation, when we have a single vertex selected, and the topology contains multiple graphs
-        final MetaTopologyProvider metaTopologyProvider = operationContext.getGraphContainer().getMetaTopologyProvider();
-        return targets.size() == 1 && metaTopologyProvider.getGraphProviders().size() > 1;
+        return targets.size() == 1 && operationContext.getGraphContainer().getTopologyServiceClient().getGraphProviders().size() > 1;
     }
 
     @Override
     public boolean isEnabled(List<VertexRef> targets, OperationContext operationContext) {
         // Only enable the operation the vertex links to other graphs
-        final MetaTopologyProvider metaTopologyProvider = operationContext.getGraphContainer().getMetaTopologyProvider();
         return targets.stream().findFirst()
-                .map(v -> metaTopologyProvider.getOppositeVertices(v).size() > 0)
+                .map(v -> operationContext.getGraphContainer().getTopologyServiceClient().getOppositeVertices(v).size() > 0)
                 .orElse(false);
     }
 }

@@ -27,8 +27,11 @@
  *******************************************************************************/
 package org.opennms.minion.core.impl;
 
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -51,26 +54,39 @@ import org.opennms.minion.core.api.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public class ScvEnabledRestClientImpl implements RestClient {
     public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledRestClientImpl.class);
 
+    /**
+     * Name of the key at which the server's version can be found
+     * in the info map returned by '/rest/info'
+     */
+    private static final String VERSION_KEY = "version";
+
     private final URL url;
-    private final String username;
-    private final String password;
+    private final SecureCredentialsVault scv;
+    private final String scvAlias;
 
     public ScvEnabledRestClientImpl(String url, SecureCredentialsVault scv, String scvAlias) throws MalformedURLException {
         this.url = new URL(url);
-        final Credentials amqCredentials = scv.getCredentials(scvAlias);
-        if (amqCredentials == null) {
-            LOG.warn("No credentials found in SCV for alias '{}'. Using default credentials.", scvAlias);
-            username = "admin";
-            password = "admin";
-        } else {
-            username = amqCredentials.getUsername();
-            password = amqCredentials.getPassword();
-        }
+        this.scv = Objects.requireNonNull(scv);
+        this.scvAlias = Objects.requireNonNull(scvAlias);
     }
-    
+
+    private UsernamePasswordCredentials getCredentials() {
+        // Perform the lookup in SVC on every call, so that the client
+        // does not need to be reloaded when the credentials are changed
+        final Credentials credentials = scv.getCredentials(scvAlias);
+        if (credentials == null) {
+            LOG.warn("No credentials found in SCV for alias '{}'. Using default credentials.", scvAlias);
+            return new UsernamePasswordCredentials("admin", "admin");
+        }
+        return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
+    }
+
 	// Setup a client with pre-emptive authentication
     private CloseableHttpResponse getResponse(HttpGet httpget)
             throws Exception {
@@ -80,9 +96,7 @@ public class ScvEnabledRestClientImpl implements RestClient {
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(new AuthScope(target.getHostName(),
                                                    target.getPort()),
-                                     new UsernamePasswordCredentials(
-                                                                     username,
-                                                                     password));
+                                                   getCredentials());
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
@@ -94,13 +108,36 @@ public class ScvEnabledRestClientImpl implements RestClient {
         response = httpclient.execute(target, httpget, localContext);
         return response;
     }
-    
+
+    @Override
+    public String getVersion() throws Exception {
+        // Issue a simple GET against the Info endpoint
+        final HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
+        try (CloseableHttpResponse response = getResponse(httpget)) {
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new IllegalStateException(String.format("Oups. We were expecting a status code of 200, but got %d instead.",
+                        response.getStatusLine().getStatusCode()));
+            }
+
+            final HttpEntity entity = response.getEntity();
+            final String json = EntityUtils.toString(entity);
+            final Gson g = new Gson();
+            final Type type = new TypeToken<Map<String, String>>(){}.getType();
+            try {
+                final Map<String, String> info = g.fromJson(json, type);
+                return info.get(VERSION_KEY);
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException("Failed to parse JSON: " + json, e);
+            }
+        }
+    }
+
     @Override
 	public void ping() throws Exception {
-		// Issue a simple GET against the Info endpoint
-		HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
-		CloseableHttpResponse response = getResponse(httpget);
-		response.close();
+        if (getVersion() == null) {
+            throw new Exception("Server did not return a version.");
+        }
+        // We were able to successfully retrieve's the server's version!
 	}
 
     @Override
@@ -116,4 +153,5 @@ public class ScvEnabledRestClientImpl implements RestClient {
         response.close();
         return responseString;
     }
+
 }

@@ -65,6 +65,7 @@ import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
@@ -370,6 +371,19 @@ public class MockSnmpAgentIT  {
 
         Sleeper.getInstance().resetWithVariable(new Integer32(42));
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGet();
+    }
+
+    @Test
+    public void testErrorResponder() throws Exception {
+        // When using the Error responder, the resulting VariableBinding
+        // should always be null
+        String oid = "1.3.5.1.1.99.1";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_NULL, new Null());
+        doGet();
+
+        oid = "1.3.5.1.1.99.2";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_NULL, new Null());
         doGet();
     }
 

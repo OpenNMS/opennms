@@ -54,6 +54,7 @@
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
+                                <feature>minion-provisiond-requisitions</feature>
                                 <feature>minion-poller</feature>
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
@@ -138,6 +139,10 @@
             <groupId>org.opennms.features.minion.heartbeat</groupId>
             <artifactId>org.opennms.features.minion.heartbeat.producer</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-requisition-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -228,6 +233,14 @@
             <groupId>org.opennms.features.poller.monitors</groupId>
             <artifactId>org.opennms.features.poller.monitors.core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.jdbc-collector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-vmware</artifactId>
         </dependency>
     </dependencies>
 

@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,14 +43,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
-import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.HostaddrMatch;
 import org.opennms.netmgt.config.syslogd.HostnameMatch;
 import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.ProcessMatch;
-import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -142,15 +142,10 @@ public class ConvertToEvent {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        final UeiList ueiList = config.getUeiList();
-        final HideMessage hideMessage = config.getHideMessages();
-        final String discardUei = config.getDiscardUei();
-
-        final String syslogString;
-        if (data.endsWith("\0")) {
-            syslogString = data.substring(0, data.length() - 1);
-        } else {
-            syslogString = data;
+        String syslogString = data;
+        // Trim trailing nulls from the string
+        while (syslogString.endsWith("\0")) {
+            syslogString = syslogString.substring(0, syslogString.length() - 1);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -159,7 +154,7 @@ public class ConvertToEvent {
 
         SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
         if (!parser.find()) {
-            throw new MessageDiscardedException("message does not match");
+            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", syslogString));
         }
         SyslogMessage message;
         try {
@@ -169,38 +164,68 @@ public class ConvertToEvent {
             throw new MessageDiscardedException(ex);
         }
 
+        if (message == null) {
+            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", syslogString));
+        }
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("got syslog message {}", message);
         }
-        if (message == null) {
-            throw new MessageDiscardedException(String.format("Unable to parse '%s'", syslogString));
-        }
+
         // Build a basic event out of the syslog message
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
 
         EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
 
+
+        // Set constant values in EventBuilder
+
+        // Set monitoring system
         bldr.setDistPoller(systemId);
-
-        bldr.setTime(message.getDate());
-
         // Set event host
         bldr.setHost(InetAddressUtils.getLocalHostName());
+        // Set default event destination to logndisplay
+        bldr.setLogDest("logndisplay");
+
+
+        // Set values from SyslogMessage in the EventBuilder
 
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
             // Set nodeId
-            int nodeId = AbstractInterfaceToNodeCache.getInstance().getNodeId(location, hostAddress);
-            if (nodeId > 0) {
-                bldr.setNodeid(nodeId);
+            InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
+            if (cache != null) {
+                int nodeId = cache.getNodeId(location, hostAddress);
+                if (nodeId > 0) {
+                    bldr.setNodeid(nodeId);
+                }
             }
 
             bldr.setInterface(hostAddress);
         }
-        
-        bldr.setLogDest("logndisplay");
 
+        bldr.setTime(message.getDate());
+
+        bldr.setLogMessage(message.getMessage());
+        // Using parms provides configurability.
+        bldr.addParam("syslogmessage", message.getMessage());
+
+        bldr.addParam("severity", "" + priorityTxt);
+
+        bldr.addParam("timestamp", message.getRfc3164FormattedDate());
+
+        if (message.getProcessName() != null) {
+            bldr.addParam("process", message.getProcessName());
+        }
+
+        bldr.addParam("service", "" + facilityTxt);
+
+        if (message.getProcessId() != null) {
+            bldr.addParam("processid", message.getProcessId().toString());
+        }
+
+        // Post-process the message based on the SyslogdConfig
 
         // We will also here find out if, the host needs to
         // be replaced, the message matched to a UEI, and
@@ -219,149 +244,98 @@ public class ConvertToEvent {
         * node to match against nodeId.
          */
 
-        Pattern msgPat = null;
-        Matcher msgMat = null;
-
         // Time to verify UEI matching.
 
-        final String fullText = message.getFullText();
-        final String matchedText = message.getMatchedMessage();
+        final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
+        for (final UeiMatch uei : ueiMatch) {
+            final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
+                                              containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
+                                              matchProcess(uei.getProcessMatch(), message.getProcessName()) &&
+                                              matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
+                                              matchHostAddr(uei.getHostaddrMatch(), str(hostAddress));
 
-        final List<UeiMatch> ueiMatch = ueiList == null? null : ueiList.getUeiMatchCollection();
-        if (ueiMatch == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No ueiList configured.");
-            }
-        } else {
-            for (final UeiMatch uei : ueiMatch) {
-                final boolean otherStuffMatches = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
-                                                  containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
-                                                  matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
-                                                  matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
-                                                  matchHostAddr(uei.getHostaddrMatch(), str(hostAddress));
-
-                // Single boolean check is added instead of performing multiple
-                // boolean check for both if and else if which causes a extra time
-                if (otherStuffMatches) {
-                    if (uei.getMatch().getType().equals("substr")) {
-                        if (matchSubstring(discardUei, bldr, matchedText, uei)) {
-                            break;
-                        }
-                    } else if ((uei.getMatch().getType().startsWith("regex"))) {
-                        if (matchRegex(message, uei, bldr, discardUei)) {
-                            break;
-                        }
+            if (messageMatchesUeiListEntry) {
+                if (uei.getMatch().getType().equals("substr")) {
+                    if (matchSubstring(message.getMessage(), uei, bldr, config.getDiscardUei())) {
+                        break;
+                    }
+                } else if ((uei.getMatch().getType().startsWith("regex"))) {
+                    if (matchRegex(message.getMessage(), uei, bldr, config.getDiscardUei())) {
+                        break;
                     }
                 }
             }
         }
+
+        final String fullText = message.asRfc3164Message();
 
         // Time to verify if we need to hide the message
+        final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages().getHideMatchCollection());
         boolean doHide = false;
-        final List<HideMatch> hideMatch = hideMessage == null? null : hideMessage.getHideMatchCollection();
-        if (hideMatch == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No hideMessage configured.");
-            }
-        } else {
-            for (final HideMatch hide : hideMatch) {
-                if (hide.getMatch().getType().equals("substr")) {
-                    if (fullText.contains(hide.getMatch().getExpression())) {
-                        // We should hide the message based on this match
-                        doHide = true;
-                    }
-                } else if (hide.getMatch().getType().equals("regex")) {
-                    try {
-                        msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
-                        msgMat = msgPat.matcher(fullText);
-                    } catch (PatternSyntaxException pse) {
-                        LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
-                        msgMat = null;
-                    }
-                    if ((msgMat != null) && (msgMat.find())) {
-                        // We should hide the message based on this match
-                        doHide = true;
-                    }
-                }
-                if (doHide) {
-                    LOG.debug("Hiding syslog message from Event - May contain sensitive data");
-                    message.setMessage(HIDDEN_MESSAGE);
-                    // We want to stop here, no point in checking further hideMatches
+        for (final HideMatch hide : hideMatch) {
+            if (hide.getMatch().getType().equals("substr")) {
+                if (fullText.contains(hide.getMatch().getExpression())) {
+                    // We should hide the message based on this match
+                    doHide = true;
                     break;
                 }
+            } else if (hide.getMatch().getType().equals("regex")) {
+                try {
+                    Pattern msgPat = getPattern(hide.getMatch().getExpression());
+                    Matcher msgMat = msgPat.matcher(fullText);
+                    if (msgMat.find()) {
+                        // We should hide the message based on this match
+                        doHide = true;
+                        break;
+                    }
+                } catch (PatternSyntaxException pse) {
+                    LOG.warn("Failed to compile hide-match regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                }
             }
         }
 
-        // Using parms provides configurability.
-        bldr.setLogMessage(message.getMessage());
-
-        bldr.addParam("syslogmessage", message.getMessage());
-        bldr.addParam("severity", "" + priorityTxt);
-        bldr.addParam("timestamp", message.getSyslogFormattedDate());
-        
-        if (message.getProcessName() != null) {
-            bldr.addParam("process", message.getProcessName());
-        }
-
-        bldr.addParam("service", "" + facilityTxt);
-
-        if (message.getProcessId() != null) {
-            bldr.addParam("processid", message.getProcessId().toString());
+        if (doHide) {
+            LOG.debug("Hiding syslog message from Event - May contain sensitive data");
+            bldr.setLogMessage(HIDDEN_MESSAGE);
+            bldr.setParam("syslogmessage", HIDDEN_MESSAGE);
         }
 
         m_event = bldr.getEvent();
     }
 
     private static boolean matchFind(final String expression, final String input, final String context) {
+        if (input == null) {
+            return false;
+        }
         final Pattern pat = getPattern(expression);
         if (pat == null) {
             LOG.debug("Unable to get pattern for expression '{}' in {} context", expression, context);
             return false;
         }
         final Matcher mat = pat.matcher(input);
-        if (mat != null && mat.find()) return true;
-        return false;
+        if (mat != null && mat.find()) {
+            LOG.trace("Successful regex {} for input '{}' against expression '{}'", context, input, expression);
+            return true;
+        } else {
+           return false;
+        }
     }
-    
+
     private static boolean matchHostAddr(final HostaddrMatch hostaddrMatch, final String hostAddress) {
         if (hostaddrMatch == null) return true;
-        if (hostAddress == null) return false;
-        
-        final String expression = hostaddrMatch.getExpression();
-        
-        if (matchFind(expression, hostAddress, "hostaddr-match")) {
-            LOG.trace("Successful regex hostaddr-match for input '{}' against expression '{}'", hostAddress, expression);
-            return true;
-        }
-        return false;
+        return matchFind(hostaddrMatch.getExpression(), hostAddress, "hostaddr-match");
     }
-    
+
     private static boolean matchHostname(final HostnameMatch hostnameMatch, final String hostName) {
         if (hostnameMatch == null) return true;
-        if (hostName == null) return false;
-        
-        final String expression = hostnameMatch.getExpression();
-        
-        if (matchFind(expression, hostName, "hostname-match")) {
-            LOG.trace("Successful regex hostname-match for input '{}' against expression '{}'", hostName, expression);
-            return true;
-        }
-        return false;
+        return matchFind(hostnameMatch.getExpression(), hostName, "hostname-match");
     }
 
     private static boolean matchProcess(final ProcessMatch processMatch, final String processName) {
         if (processMatch == null) return true;
-        if (processName == null) return false;
-
-        final String expression = processMatch.getExpression();
-
-        if (matchFind(expression, processName, "process-match")) {
-            LOG.trace("Successful regex process-match for input '{}' against expression '{}'", processName, expression);
-            return true;
-        }
-        return false;
+        return matchFind(processMatch.getExpression(), processName, "process-match");
     }
-    
+
     private static boolean containsIgnoreCase(List<String> collection, String match) {
          if (collection.size() == 0) return true;
          for (String string : collection) {
@@ -374,54 +348,73 @@ public class ConvertToEvent {
         return CACHED_PATTERNS.getUnchecked(expression);
     }
 
-    private static boolean matchSubstring(final String discardUei, final EventBuilder bldr, String message, final UeiMatch uei) throws MessageDiscardedException {
-        boolean doIMatch = false;
-        boolean traceEnabled = LOG.isTraceEnabled();
+    /**
+     * Checks the message for substring matches to a {@link UeiMatch}. If the message
+     * matches, then the UEI is updated (or the event is discarded if the discard
+     * UEI is used). Parameter assignments are NOT performed for substring matches.
+     * 
+     * @param message
+     * @param uei
+     * @param bldr
+     * @param discardUei
+     * @return
+     * @throws MessageDiscardedException
+     */
+    private static boolean matchSubstring(String message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
+        final boolean traceEnabled = LOG.isTraceEnabled();
         if (message.contains(uei.getMatch().getExpression())) {
             if (discardUei.equals(uei.getUei())) {
                 if (traceEnabled) LOG.trace("Specified UEI '{}' is same as discard-uei, discarding this message.", uei.getUei());
                 throw new MessageDiscardedException();
             } else {
-                //We can pass a new UEI on this
+                // Update the UEI to the new value
                 if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
                 bldr.setUei(uei.getUei());
-                // I think we want to stop processing here so the first
-                // ueiMatch wins, right?
-                doIMatch = true;
+                return true;
             }
         } else {
             if (traceEnabled) LOG.trace("No substring match for text of a Syslogd event to : {}", uei.getMatch().getExpression());
+            return false;
         }
-        return doIMatch;
     }
 
-    private static boolean matchRegex(final SyslogMessage message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
-        boolean traceEnabled = LOG.isTraceEnabled();
+    /**
+     * Checks the message for matches to a {@link UeiMatch}. If the message
+     * matches, then the UEI is updated (or the event is discarded if the discard
+     * UEI is used) and parameters are added to the event.
+     * 
+     * @param message
+     * @param uei
+     * @param bldr
+     * @param discardUei
+     * @return
+     * @throws MessageDiscardedException
+     */
+    private static boolean matchRegex(final String message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
+        final boolean traceEnabled = LOG.isTraceEnabled();
         final String expression = uei.getMatch().getExpression();
         final Pattern msgPat = getPattern(expression);
-        final Matcher msgMat;
         if (msgPat == null) {
             LOG.debug("Unable to create pattern for expression '{}'", expression);
             return false;
-        } else {
-            final String text;
-            if (message.getMatchedMessage() != null) {
-                text = message.getMatchedMessage();
-            } else {
-                text = message.getFullText();
-            }
-            msgMat = msgPat.matcher(text);
-        }
+        } 
+
+        final Matcher msgMat = msgPat.matcher(message);
+
+        // If the message matches the regex
         if ((msgMat != null) && (msgMat.find())) {
+            // Discard the message if the UEI is set to the discard UEI
             if (discardUei.equals(uei.getUei())) {
-                LOG.debug("Specified UEI '{}' is same as discard-uei, discarding this message.", uei.getUei());
+                if (traceEnabled) LOG.trace("Specified UEI '{}' is same as discard-uei, discarding this message.", uei.getUei());
                 throw new MessageDiscardedException();
+            } else {
+                // Update the UEI to the new value
+                if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on regex match, to : {}", uei.getUei());
+                bldr.setUei(uei.getUei());
             }
 
-            // We matched a UEI
-            bldr.setUei(uei.getUei());
-            // Removed check of count in both if condition which is redundant
             if (msgMat.groupCount() > 0) {
+                // Perform default parameter mapping
                 if (uei.getMatch().isDefaultParameterMapping()) {
                     if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
                     for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
@@ -430,6 +423,7 @@ public class ConvertToEvent {
                     }
                 }
 
+                // If there are specific parameter mappings as well, perform those mappings
                 if (uei.getParameterAssignmentCount() > 0) {
                     if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
                     for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
@@ -443,11 +437,11 @@ public class ConvertToEvent {
                     }
                 }
             }
-            // I think we want to stop processing here so the first
-            // ueiMatch wins, right?
+
             return true;
         }
-        if (traceEnabled) LOG.trace("Message '{}' did not regex-match pattern '{}'", message.getMessage(), expression);
+
+        if (traceEnabled) LOG.trace("Message portion '{}' did not regex-match pattern '{}'", message, expression);
         return false;
     }
 

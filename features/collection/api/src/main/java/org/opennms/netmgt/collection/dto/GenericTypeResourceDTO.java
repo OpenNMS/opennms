@@ -62,7 +62,7 @@ public class GenericTypeResourceDTO {
 
     public GenericTypeResourceDTO(DeferredGenericTypeResource resource) {
         parent = new NodeLevelResourceDTO(resource.getParent());
-        name = resource.getResourceTypeName();
+        name = resource.getTypeName();
         instance = resource.getInstance();
         timestamp = resource.getTimestamp();
     }

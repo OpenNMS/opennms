@@ -241,10 +241,6 @@ public final class BroadcastEventProcessor implements EventListener {
         
         try {
             notificationStatus = getNotifdConfigManager().getNotificationStatus();
-        } catch (MarshalException e) {
-            LOG.error("onEvent: problem marshalling configuration", e);
-        } catch (ValidationException e) {
-            LOG.error("onEvent: problem validating marsharled configuraion", e);
         } catch (IOException e) {
             LOG.error("onEvent: IO problem marshalling configuration", e);
         }
@@ -283,10 +279,6 @@ public final class BroadcastEventProcessor implements EventListener {
                     createPathOutageEvent(nodeid.intValue(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), cip, csvc, noticeSupressed);
                 }
             }
-        } catch (MarshalException e) {
-            LOG.error("onEvent: problem marshalling configuration", e);
-        } catch (ValidationException e) {
-            LOG.error("onEvent: problem validating marshalled configuration", e);
         } catch (IOException e) {
             LOG.error("onEvent: IO problem marshalling configuration", e);
         }
@@ -564,9 +556,9 @@ public final class BroadcastEventProcessor implements EventListener {
                             LOG.error("Could not get destination path for {}, please check the destinationPath.xml for errors.", notification.getDestinationPath(), e);
                             return;
                         }
-                        String initialDelay = (path.getInitialDelay() == null ? "0s" : path.getInitialDelay());
-                        Target[] targets = path.getTarget();
-                        Escalate[] escalations = path.getEscalate();
+                        String initialDelay = (path.getInitialDelay() == null ? Path.DEFAULT_INITIAL_DELAY : path.getInitialDelay());
+                        Target[] targets = path.getTargets().toArray(new Target[0]);
+                        Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
                         // now check to see if any users are to receive the
                         // notification, if none then generate an event a exit
@@ -654,7 +646,7 @@ public final class BroadcastEventProcessor implements EventListener {
         }
 
         for (int j = 0; j < escalations.length; j++) {
-            Target[] escalationTargets = escalations[j].getTarget();
+            Target[] escalationTargets = escalations[j].getTargets().toArray(new Target[0]);
             for (int k = 0; k < escalationTargets.length; k++) {
                 totalUsers += getUsersInTarget(escalationTargets[k]);
             }
@@ -671,7 +663,7 @@ public final class BroadcastEventProcessor implements EventListener {
         String targetName = target.getName();
 
         if (getGroupManager().hasGroup(targetName)) {
-            count = getGroupManager().getGroup(targetName).getUserCount();
+            count = getGroupManager().getGroup(targetName).getUsers().size();
         } else if (getUserManager().hasOnCallRole(targetName)) {
             count = getUserManager().countUsersWithRole(targetName);
         } else if (getUserManager().hasUser(targetName)) {
@@ -783,7 +775,7 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException, MarshalException, ValidationException {
         for (int i = 0; i < targets.length; i++) {
-            String interval = (targets[i].getInterval() == null ? "0s" : targets[i].getInterval());
+            String interval = (targets[i].getInterval() == null ? Target.DEFAULT_INTERVAL : targets[i].getInterval());
 
             String targetName = targets[i].getName();
             String autoNotify = targets[i].getAutoNotify();
@@ -803,11 +795,11 @@ public final class BroadcastEventProcessor implements EventListener {
             NotificationTask[] tasks = null;
             
             if (getGroupManager().hasGroup((targetName))) {
-                tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
+                tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommands().toArray(new String[0]), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
             } else if (getUserManager().hasOnCallRole(targetName)) {
-                tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
+                tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommands().toArray(new String[0]), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
             } else if (getUserManager().hasUser(targetName)) {
-                NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
+                NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommands().toArray(new String[0]), targetSiblings, autoNotify) };
                 tasks = userTasks;
             } else if (targetName.indexOf('@') > -1) {
             	// Bug 2027 -- get the command name from the Notifd config instead of using default of "email"
@@ -847,7 +839,7 @@ public final class BroadcastEventProcessor implements EventListener {
         }
 
         LOG.debug("The group {} is on duty in {} millisec.", group.getName(), next);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         
         // There are no users in the group
         if (users == null || users.length == 0) {
@@ -893,7 +885,7 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void processEscalations(Escalate[] escalations, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException, MarshalException, ValidationException {
         for (int i = 0; i < escalations.length; i++) {
-            Target[] targets = escalations[i].getTarget();
+            Target[] targets = escalations[i].getTargets().toArray(new Target[0]);
             startTime += TimeConverter.convertToMillis(escalations[i].getDelay());
             processTargets(targets, targetSiblings, noticeQueue, startTime, params, noticeId);
         }
@@ -969,7 +961,7 @@ public final class BroadcastEventProcessor implements EventListener {
     
     boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
         boolean retVal = false;
-        for (Contact c : user.getContactCollection()) {
+        for (Contact c : user.getContacts()) {
             if (contactType.equalsIgnoreCase(c.getType())) {
                 if (allowEmpty || ! "".equals(c.getInfo())) {
                     retVal = true;

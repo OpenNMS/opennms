@@ -17,7 +17,6 @@
 
   <modules>
     <module>org.opennms.features.topology.plugins.browsers</module>
-    <module>org.opennms.features.topology.plugins.devutils</module>
     <module>org.opennms.features.topology.plugins.layout</module>
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>

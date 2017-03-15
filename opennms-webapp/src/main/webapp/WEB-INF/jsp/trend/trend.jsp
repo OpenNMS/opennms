@@ -69,7 +69,7 @@
 </div>
 
 <script type="text/javascript">
-    require(['jquery', '../js/jquery.sparkline.min'], function( $ ) {
+    require(['jquery', 'jquery-sparkline'], function( $ ) {
         $('.sparkline-${trendDefinition.name}').sparkline('html', { enableTagOptions: true });
     });
 </script>

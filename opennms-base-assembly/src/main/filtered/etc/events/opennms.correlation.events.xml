@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
+        <event-label>OpenNMS-defined correlator event: A widespread outage has been detected</event-label>
+        <descr>
+            This event is sent when a widespread outage is detected. Typically used in correlation rules
+            that detected a threshold # of monitors have detected the same outage.
+        </descr>
+        <logmsg dest="logndisplay">
+            A wide spread outage of the service: %service% has been correlated from multiple remote pollers.
+        </logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
+        <event-label>OpenNMS-defined correlator event: A widespread outage has been resolved</event-label>
+        <descr>
+            This event is sent when a widespread outage has been cleared. Typically used in correlation rules
+            that have detected that a wide spread outage has been cleared.
+        </descr>
+        <logmsg dest="logndisplay">
+            A wide spread outage of the service: %service% has been resolved.
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2"
+                    clear-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%"
+                    auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/correlation/serviceFlapping</uei>
+        <event-label>OpenNMS-defined correlator event: A service has been detected to be in a flapping state
+        </event-label>
+        <descr>
+            This event is sent when a correlation rule has detected that a service is flapping.
+        </descr>
+        <logmsg dest="logndisplay">
+            The service: %service% has been correlated to indicate a flapping state.
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+    </event>
+</events>

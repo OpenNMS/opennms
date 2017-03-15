@@ -22,7 +22,7 @@
   </bean>
   
   <!-- Override the configResource location in applicationContext-dao.xml -->
-  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="classpath:/org/opennms/web/svclayer/surveillance-views-gwtSurveillanceService.xml" />
   </bean>
   

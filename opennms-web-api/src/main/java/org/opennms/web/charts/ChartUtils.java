@@ -88,10 +88,6 @@ public abstract class ChartUtils {
     static {
         try {
             ChartConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("static initializer: Error marshalling chart configuration", e);
-        } catch (ValidationException e) {
-            LOG.error("static initializer: Error validating chart configuration.", e);
         } catch (FileNotFoundException e) {
             LOG.error("static initializer: Error finding chart configuration.", e);
         } catch (IOException e) {

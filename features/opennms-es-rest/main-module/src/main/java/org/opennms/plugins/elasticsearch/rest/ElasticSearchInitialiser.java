@@ -218,7 +218,7 @@ public class ElasticSearchInitialiser {
 
 						PutTemplate putTemplate = new PutTemplate.Builder(templateName, body).build();
 
-						JestResult jestResult = getJestClient().execute(putTemplate);
+						JestResult jestResult = new OnmsJestResult(getJestClient().execute(putTemplate));
 
 						if (! jestResult.isSucceeded()){
 							LOG.error("Error sending template '"+templateName+"' to Elasticsearch"

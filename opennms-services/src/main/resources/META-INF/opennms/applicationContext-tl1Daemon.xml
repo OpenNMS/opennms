@@ -18,7 +18,7 @@
   
   <context:annotation-config />
 
-  <bean id="tl1dConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultTl1ConfigurationDao">
+  <bean id="tl1dConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>

@@ -55,7 +55,7 @@ public class GraphMLVertexStatusProviderTest {
     public void testStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
         GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0), new GraphMLServiceAccessor());
-        GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(topologyProvider.getVertexNamespace(), nodeIds -> Lists.newArrayList(
+        GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(topologyProvider.getNamespace(), nodeIds -> Lists.newArrayList(
                 createSummary(1, "North", OnmsSeverity.WARNING, 1),
                 createSummary(2, "West", OnmsSeverity.MINOR, 2),
                 createSummary(3, "South", OnmsSeverity.MAJOR, 3)
@@ -63,16 +63,16 @@ public class GraphMLVertexStatusProviderTest {
 
         List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
-        Assert.assertEquals(topologyProvider.getVertexNamespace(), statusProvider.getNamespace());
-        Assert.assertEquals(Boolean.TRUE, statusProvider.contributesTo(topologyProvider.getVertexNamespace()));
+        Assert.assertEquals(topologyProvider.getNamespace(), statusProvider.getNamespace());
+        Assert.assertEquals(Boolean.TRUE, statusProvider.contributesTo(topologyProvider.getNamespace()));
 
         Map<VertexRef, Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider, vertices, new Criteria[0]);
         Assert.assertEquals(4, statusForVertices.size());
         Assert.assertEquals(ImmutableMap.of(
-                createVertexRef(topologyProvider.getVertexNamespace(), "north"), createStatus(OnmsSeverity.WARNING, 1),
-                createVertexRef(topologyProvider.getVertexNamespace(), "west"), createStatus(OnmsSeverity.MINOR, 2),
-                createVertexRef(topologyProvider.getVertexNamespace(), "south"), createStatus(OnmsSeverity.MAJOR, 3),
-                createVertexRef(topologyProvider.getVertexNamespace(), "east"), createStatus(OnmsSeverity.NORMAL, 0)), statusForVertices);
+                createVertexRef(topologyProvider.getNamespace(), "north"), createStatus(OnmsSeverity.WARNING, 1),
+                createVertexRef(topologyProvider.getNamespace(), "west"), createStatus(OnmsSeverity.MINOR, 2),
+                createVertexRef(topologyProvider.getNamespace(), "south"), createStatus(OnmsSeverity.MAJOR, 3),
+                createVertexRef(topologyProvider.getNamespace(), "east"), createStatus(OnmsSeverity.NORMAL, 0)), statusForVertices);
     }
 
     private static Status createStatus(OnmsSeverity severity, long count) {

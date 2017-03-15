@@ -30,7 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,14 +62,15 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
+import org.opennms.netmgt.config.wsman.Definition;
 import org.opennms.netmgt.config.wsman.Group;
-import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
@@ -226,9 +227,8 @@ public class WSManCollectorTest {
         NodeDao nodeDao = mock(NodeDao.class);
         when(nodeDao.get(0)).thenReturn(node);
 
-        WsmanConfig config = new WsmanConfig();
         WSManConfigDao configDao = mock(WSManConfigDao.class);
-        when(configDao.getConfig(anyObject())).thenReturn(config);
+        when(configDao.getAgentConfig(any())).thenReturn(new Definition());
 
         Collection collection = new Collection();
         WSManDataCollectionConfigDao dataCollectionConfigDao = mock(WSManDataCollectionConfigDao.class);
@@ -241,13 +241,13 @@ public class WSManCollectorTest {
         collector.setNodeDao(nodeDao);
 
         CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getAddress()).thenReturn(InetAddrUtils.getLocalHostAddress());
         when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get());
-        collector.initialize(agent, Maps.newHashMap());
 
         Map<String, Object> collectionParams = Maps.newHashMap();
         collectionParams.put("collection", "default");
-
-        CollectionSet collectionSet = collector.collect(agent, null, collectionParams);
+        collectionParams.putAll(collector.getRuntimeAttributes(agent, collectionParams));
+        CollectionSet collectionSet = collector.collect(agent, collectionParams);
 
         assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
         assertEquals(0, CollectionSetUtils.getAttributesByName(collectionSet).size());

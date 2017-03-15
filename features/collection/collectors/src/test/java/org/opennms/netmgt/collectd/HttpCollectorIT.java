@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,7 +52,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
-import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -116,9 +115,6 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
     @Autowired
     private FilesystemResourceStorageDao m_resourceStorageDao;
 
-    @Autowired
-    private LocationAwareCollectorClient m_locationAwareCollectorClient;
-
     private TestContext m_context;
 
     private final String m_testHostName = "127.0.0.1";
@@ -174,7 +170,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("collection", "default");
-        m_collector.initialize(parameters);
+        m_collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
         m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
@@ -392,7 +388,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("http-collection", "default");
         parameters.put("port", "10342");
-        collector.initialize(parameters);
+        collector.initialize();
 
         Package pkg = new Package();
         Filter filter = new Filter();
@@ -410,7 +406,8 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         service.addParameter(portParm);
         pkg.addService(service);
 
-        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector, new DefaultCollectdInstrumentation(), m_locationAwareCollectorClient);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector, new DefaultCollectdInstrumentation(),
+                CollectorTestUtils.createLocationAwareCollectorClient());
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());

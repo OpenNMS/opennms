@@ -147,15 +147,40 @@ The following table describes valid values for an OpenNMS attribute.
 |===
 
 As described above the values are usually identified by their name instead of their id (projects are identified by their key).
-This is easier to read, but may brake the mapping code, if for example the name of a component changes in the future.
+This is easier to read, but may break the mapping code, if for example the name of a component changes in the future.
 To change the mapping from `name` (or `key`) to `id` an entry in `jira.properties` must be made:
 
-    jira.attribute.customfield_10113.resolution=id
+    jira.attributes.customfield_10113.resolution=id
 
 To learn more about the Jira REST API please consult the following pages:
 
  * https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-create-issue#JIRARESTAPIExample-CreateIssue-MultiSelect
  * https://docs.atlassian.com/jira/REST/cloud/
+
+The following jira (custom) fields have been tested with jira version `6.3.15`:
+
+ * Checkboxes
+ * Date Picker
+ * Date Time Picker
+ * Group Picker (multiple groups)
+ * Group Picker (single group)
+ * Labels
+ * Number Field
+ * Project Picker (single project)
+ * Radio Buttons
+ * Select List (cascading)
+ * Select List (multiple choices)
+ * Select List (single choice)
+ * Text Field (multi-line)
+ * Text Field (read only)
+ * Text Field (single line)
+ * URL Field
+ * User Picker (multiple user)
+ * User Picker (single user)
+ * Version Picker (multiple versions)
+ * Version Picker (single version)
+
+NOTE: All other field types are mapped as is and therefore may not work.
 
 ===== Examples
 The following output is the result of the command `jira:list-fields -h http://localhost:8080 -u admin -p testtest -k DUM -i Bug -s` and lists all available fields for project with key `DUM` and issue type `Bug`:

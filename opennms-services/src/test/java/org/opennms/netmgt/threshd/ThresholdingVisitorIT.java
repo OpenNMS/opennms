@@ -77,9 +77,11 @@ import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -101,7 +103,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -1513,6 +1517,44 @@ public class ThresholdingVisitorIT {
         verifyEvents(0);
     }
 
+    /**
+     * Similar to {@link #testThresholdsFiltersOnNodeResource()}, but
+     * we generate the collection set using the CollectionSetBuilder instead
+     * of using SnmpCollector specific types.
+     */
+    @Test
+    public void testThresholdsFiltersOnNodeResourceWithCollectionSetBuilder() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-5.xml");
+        ThresholdingVisitor visitor = createVisitor();
+
+        // Adding Expected Thresholds
+        addHighThresholdEvent(1, 30, 25, 50, "/home", "node", "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 50, 45, 60, "/opt", "node", "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
+
+        // Creating Node ResourceType
+        SnmpCollectionAgent agent = createCollectionAgent();
+        NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageUsed", 50, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda1_hrStorageSize", 100, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda2_hrStorageUsed", 60, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda2_hrStorageSize", 100, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda3_hrStorageUsed", 70, AttributeType.GAUGE)
+                .withNumericAttribute(nodeResource, "hd-usage", "hda3_hrStorageSize", 100, AttributeType.GAUGE)
+                .build();
+
+        // Creating strings.properties file
+        ResourcePath path = ResourcePath.get("snmp", "1");
+        m_resourceStorageDao.setStringAttribute(path, "hda1_hrStorageDescr", "/home");
+        m_resourceStorageDao.setStringAttribute(path, "hda2_hrStorageDescr", "/opt");
+        m_resourceStorageDao.setStringAttribute(path, "hda3_hrStorageDescr", "/usr");
+
+        // Run Visitor and Verify Events
+        collectionSet.visit(visitor);
+        EasyMock.verify(agent);
+        verifyEvents(0);
+    }
+
     private ThresholdingVisitor createVisitor() {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
@@ -1620,13 +1662,23 @@ public class ThresholdingVisitorIT {
         EasyMock.verify(agent);        
         verifyEvents(0);
     }
-    
+
     private static SnmpCollectionAgent createCollectionAgent() {
         SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(String.valueOf(1))).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
+        EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
+        EasyMock.expect(agent.getType()).andReturn(NetworkInterface.TYPE_INET).anyTimes();
+        EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
+        EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
+        EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();
+        EasyMock.expect(agent.getForeignSource()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getForeignId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getLocationName()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSysObjectId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSavedSysUpTime()).andReturn(0L).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }
