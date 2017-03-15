@@ -527,7 +527,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
 
                         Map<String, String> paramMap = buildParameterMap(notification, event, noticeId);
-                        String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
+                        String queueID = (notification.getNoticeQueue().orElse("default"));
 
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("destination : {}", notification.getDestinationPath());
@@ -757,11 +757,11 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     private static String nullSafeSubj(Notification notification, int noticeId) {
-        return notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId;
+        return notification.getSubject().orElse("Notice #" + noticeId);
     }
 
     private static String nullSafeNumerMsg(Notification notification, int noticeId) {
-        return notification.getNumericMessage() != null ? notification.getNumericMessage() : "111-" + noticeId;
+        return notification.getNumericMessage().orElse("111-" + noticeId);
     }
 
     private static String nullSafeTextMsg(Notification notification) {

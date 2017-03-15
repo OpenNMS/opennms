@@ -291,7 +291,7 @@ public class Notifications implements java.io.Serializable {
      * @param notificationList the Vector to set.
      */
     public void setNotificationCollection(final List<Notification> notificationList) {
-        this.notificationList = notificationList;
+        this.notificationList = notificationList == null? new ArrayList<>() : notificationList;
     }
 
 }

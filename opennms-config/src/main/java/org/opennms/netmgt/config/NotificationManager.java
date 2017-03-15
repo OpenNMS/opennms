@@ -280,9 +280,9 @@ public abstract class NotificationManager {
 
             LOG.trace("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
             // parameter is optional, return true if not set
-            if (curNotif.getEventSeverity() == null) {
+            if (!curNotif.getEventSeverity().isPresent()) {
                 // Skip matching on severity
-            } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
+            } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().get().toLowerCase())) {
                 // Severities match
             } else {
 
@@ -1021,14 +1021,14 @@ public abstract class NotificationManager {
         if (notice != null) {
             notice.setWriteable(newNotice.getWriteable());
             notice.setName(newNotice.getName());
-            notice.setDescription(newNotice.getDescription());
+            notice.setDescription(newNotice.getDescription().orElse(null));
             notice.setUei(newNotice.getUei());
             notice.setRule(newNotice.getRule());
             notice.setDestinationPath(newNotice.getDestinationPath());
-            notice.setNoticeQueue(newNotice.getNoticeQueue());
+            notice.setNoticeQueue(newNotice.getNoticeQueue().orElse(null));
             notice.setTextMessage(newNotice.getTextMessage());
-            notice.setSubject(newNotice.getSubject());
-            notice.setNumericMessage(newNotice.getNumericMessage());
+            notice.setSubject(newNotice.getSubject().orElse(null));
+            notice.setNumericMessage(newNotice.getNumericMessage().orElse(null));
             notice.setStatus(newNotice.getStatus());
             notice.setVarbind(newNotice.getVarbind());
             notice.getParameterCollection().clear(); // Required to avoid NMS-5948

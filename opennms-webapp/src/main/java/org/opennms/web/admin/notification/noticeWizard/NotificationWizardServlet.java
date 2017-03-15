@@ -45,8 +45,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -492,14 +492,14 @@ public class NotificationWizardServlet extends HttpServlet {
 
         newNotice.setName(oldNotice.getName());
         newNotice.setWriteable(oldNotice.getWriteable());
-        newNotice.setDescription(oldNotice.getDescription());
+        newNotice.setDescription(oldNotice.getDescription().orElse(null));
         newNotice.setUei(oldNotice.getUei());
         newNotice.setRule(oldNotice.getRule());
         newNotice.setDestinationPath(oldNotice.getDestinationPath());
-        newNotice.setNoticeQueue(oldNotice.getNoticeQueue());
+        newNotice.setNoticeQueue(oldNotice.getNoticeQueue().orElse(null));
         newNotice.setTextMessage(oldNotice.getTextMessage());
-        newNotice.setSubject(oldNotice.getSubject());
-        newNotice.setNumericMessage(oldNotice.getNumericMessage());
+        newNotice.setSubject(oldNotice.getSubject().orElse(null));
+        newNotice.setNumericMessage(oldNotice.getNumericMessage().orElse(null));
         newNotice.setStatus(oldNotice.getStatus());
         newNotice.setVarbind(oldNotice.getVarbind());
 

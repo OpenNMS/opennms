@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -170,8 +171,8 @@ public class Notification implements java.io.Serializable {
      * 
      * @return the value of field 'Description'.
      */
-    public String getDescription() {
-        return this.description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(this.description);
     }
 
     /**
@@ -188,8 +189,8 @@ public class Notification implements java.io.Serializable {
      * 
      * @return the value of field 'EventSeverity'.
      */
-    public String getEventSeverity() {
-        return this.eventSeverity;
+    public Optional<String> getEventSeverity() {
+        return Optional.ofNullable(this.eventSeverity);
     }
 
     /**
@@ -206,8 +207,8 @@ public class Notification implements java.io.Serializable {
      * 
      * @return the value of field 'NoticeQueue'.
      */
-    public String getNoticeQueue() {
-        return this.noticeQueue;
+    public Optional<String> getNoticeQueue() {
+        return Optional.ofNullable(this.noticeQueue);
     }
 
     /**
@@ -215,8 +216,8 @@ public class Notification implements java.io.Serializable {
      * 
      * @return the value of field 'NumericMessage'.
      */
-    public String getNumericMessage() {
-        return this.numericMessage;
+    public Optional<String> getNumericMessage() {
+        return Optional.ofNullable(this.numericMessage);
     }
 
     /**
@@ -293,8 +294,8 @@ public class Notification implements java.io.Serializable {
      * 
      * @return the value of field 'Subject'.
      */
-    public String getSubject() {
-        return this.subject;
+    public Optional<String> getSubject() {
+        return Optional.ofNullable(this.subject);
     }
 
     /**
@@ -411,6 +412,7 @@ public class Notification implements java.io.Serializable {
      * @param destinationPath the value of field 'destinationPath'.
      */
     public void setDestinationPath(final String destinationPath) {
+        checkNotNull(destinationPath, "Destination path is a required field!");
         this.destinationPath = destinationPath;
     }
 
@@ -429,6 +431,7 @@ public class Notification implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        checkNotNull(name, "Name is a required field!");
         this.name = name;
     }
 
@@ -502,7 +505,7 @@ public class Notification implements java.io.Serializable {
      * @param parameterList the Vector to set.
      */
     public void setParameterCollection(final List<Parameter> parameterList) {
-        this.parameterList = parameterList;
+        this.parameterList = parameterList == null? new ArrayList<>() : parameterList;
     }
 
     /**
@@ -511,6 +514,7 @@ public class Notification implements java.io.Serializable {
      * @param rule the value of field 'rule'.
      */
     public void setRule(final String rule) {
+        checkNotNull(rule, "Rule is a required field!");
         this.rule = rule;
     }
 
@@ -520,6 +524,7 @@ public class Notification implements java.io.Serializable {
      * @param status the value of field 'status'.
      */
     public void setStatus(final String status) {
+        checkNotNull(status, "Status is a required field!");
         this.status = status;
     }
 
@@ -538,6 +543,7 @@ public class Notification implements java.io.Serializable {
      * @param textMessage the value of field 'textMessage'.
      */
     public void setTextMessage(final String textMessage) {
+        checkNotNull(textMessage, "Text message is a required field!");
         this.textMessage = textMessage;
     }
 
@@ -547,6 +553,7 @@ public class Notification implements java.io.Serializable {
      * @param uei the value of field 'uei'.
      */
     public void setUei(final String uei) {
+        checkNotNull(uei, "UEI is a required field!");
         this.uei = uei;
     }
 
@@ -569,4 +576,9 @@ public class Notification implements java.io.Serializable {
         this.writeable = writeable;
     }
 
+    private void checkNotNull(final Object value, final String warning) {
+        if (value == null) {
+            throw new IllegalArgumentException(warning);
+        }
+    }
 }

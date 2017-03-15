@@ -121,6 +121,9 @@ public class Varbind implements java.io.Serializable {
      * @param vbname the value of field 'vbname'.
      */
     public void setVbname(final String vbname) {
+        if (vbname == null) {
+            throw new IllegalArgumentException("vbname is a required field!");
+        }
         this.vbname = vbname;
     }
 

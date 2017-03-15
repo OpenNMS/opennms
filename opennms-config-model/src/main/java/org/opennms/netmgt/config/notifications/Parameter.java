@@ -112,6 +112,9 @@ public class Parameter implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name is a required field!");
+        }
         this.name = name;
     }
 
