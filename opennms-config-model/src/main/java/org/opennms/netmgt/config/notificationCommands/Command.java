@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -195,8 +196,8 @@ public class Command implements java.io.Serializable {
      * 
      * @return the value of field 'Comment'.
      */
-    public String getComment() {
-        return this.comment;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(this.comment);
     }
 
     /**
@@ -204,8 +205,8 @@ public class Command implements java.io.Serializable {
      * 
      * @return the value of field 'ContactType'.
      */
-    public String getContactType() {
-        return this.contactType;
+    public Optional<String> getContactType() {
+        return Optional.ofNullable(this.contactType);
     }
 
     /**
@@ -332,7 +333,7 @@ public class Command implements java.io.Serializable {
      * @param argumentList the Vector to set.
      */
     public void setArgumentCollection(final List<Argument> argumentList) {
-        this.argumentList = argumentList;
+        this.argumentList = argumentList == null? new ArrayList<>() : argumentList;
     }
 
     /**
@@ -368,6 +369,9 @@ public class Command implements java.io.Serializable {
      * @param execute the value of field 'execute'.
      */
     public void setExecute(final String execute) {
+        if (execute == null) {
+            throw new IllegalArgumentException("Execute is a required field!");
+        }
         this.execute = execute;
     }
 
@@ -377,6 +381,9 @@ public class Command implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name is a required field!");
+        }
         this.name = name;
     }
 

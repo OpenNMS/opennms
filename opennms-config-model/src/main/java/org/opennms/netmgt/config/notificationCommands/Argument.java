@@ -30,17 +30,14 @@ package org.opennms.netmgt.config.notificationCommands;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Argument.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "argument")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Argument implements java.io.Serializable {
@@ -94,8 +91,8 @@ public class Argument implements java.io.Serializable {
      * 
      * @return the value of field 'Substitution'.
      */
-    public String getSubstitution() {
-        return this.substitution;
+    public Optional<String> getSubstitution() {
+        return Optional.ofNullable(this.substitution);
     }
 
     /**
@@ -103,8 +100,8 @@ public class Argument implements java.io.Serializable {
      * 
      * @return the value of field 'Switch'.
      */
-    public String getSwitch() {
-        return this._switch;
+    public Optional<String> getSwitch() {
+        return Optional.ofNullable(this._switch);
     }
 
     /**
@@ -127,6 +124,9 @@ public class Argument implements java.io.Serializable {
      * @param streamed the value of field 'streamed'.
      */
     public void setStreamed(final String streamed) {
+        if (streamed == null) {
+            throw new IllegalArgumentException("Streamed is a required field!");
+        }
         this.streamed = streamed;
     }
 

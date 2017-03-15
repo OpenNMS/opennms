@@ -908,7 +908,7 @@ public final class BroadcastEventProcessor implements EventListener {
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
             if (commands[i] != null && commands[i].getContactType() != null) {
-                if (! userHasContactType(user, commands[i].getContactType())) {
+                if (! userHasContactType(user, commands[i].getContactType().orElse(null))) {
                     LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
                 }
             }

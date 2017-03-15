@@ -318,9 +318,9 @@ public class NotificationTask extends Thread {
         List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<org.opennms.netmgt.model.notifd.Argument>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch().orElse(null)), Boolean.valueOf(curArg.getStreamed()).booleanValue());
 
-            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
+            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
         }
 
         return commandArgs;

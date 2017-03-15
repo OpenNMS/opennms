@@ -274,7 +274,7 @@ public class NotificationCommands implements java.io.Serializable {
      * @param commandList the Vector to set.
      */
     public void setCommandCollection(final List<Command> commandList) {
-        this.commandList = commandList;
+        this.commandList = commandList == null? new ArrayList<>() : commandList;
     }
 
     /**
