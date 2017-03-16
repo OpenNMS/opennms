@@ -29,4 +29,9 @@
     	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.graphml"/>
     	</service-properties>
     </service>
+
+	<bean id="graphMLRepository" class="org.opennms.features.topology.plugins.topo.graphml.GraphmlRepositoryImpl"/>
+	<service interface="org.opennms.features.graphml.service.GraphmlRepository">
+		<ref component-id="graphMLRepository"/>
+	</service>
 </blueprint>

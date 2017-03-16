@@ -42,8 +42,4 @@
     <!-- Interceptors -->
     <bean id="gzipOutInterceptor" class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor" />
 
-    <!-- TODO MVR find a better playe for this GraphmlRepository -->
-    <bean id="graphmlRepository" class="org.opennms.features.graphml.service.GraphmlRepositoryImpl"/>
-    <onmsgi:service interface="org.opennms.features.graphml.service.GraphmlRepository" ref="graphmlRepository"/>
-
 </beans>
