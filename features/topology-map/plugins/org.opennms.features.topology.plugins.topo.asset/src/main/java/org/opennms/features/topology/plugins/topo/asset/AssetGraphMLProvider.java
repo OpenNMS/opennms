@@ -37,6 +37,7 @@ import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.service.GraphmlRepository;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,18 +70,13 @@ public class AssetGraphMLProvider implements EventListener {
 
 	private final DataProvider dataProvider;
 
-	private final GeneratorConfig defaultConfig;
-
-
 	public AssetGraphMLProvider(GraphmlRepository repository,
 									EventIpcManager eventIpcManager, DataProvider dataProvider,
-									TransactionOperations transactionOperations,
-									GeneratorConfig defaultConfig) {
+									TransactionOperations transactionOperations) {
 		this.graphmlRepository = Objects.requireNonNull(repository);
 		this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
 		this.dataProvider = Objects.requireNonNull(dataProvider);
 		this.transactionOperations=transactionOperations;
-		this.defaultConfig = Objects.requireNonNull(defaultConfig);
 	}
 
 	/**
@@ -88,20 +84,17 @@ public class AssetGraphMLProvider implements EventListener {
 	 * @param config if null the default config is used
 	 */
 	public synchronized void createAssetTopology(GeneratorConfig config){
+		Objects.requireNonNull(config);
 		try {
-			GeneratorConfig localConfig= (config==null) ? defaultConfig : config;
-			LOG.info("creating new asset topology providerid="+localConfig.getProviderId()+" label="+localConfig.getLabel()
-					+ "from "+ ((config==null) ? "default ": "supplied ")+localConfig.toString() );
-
+			LOG.debug("Creating Asset Topology providerId: {}, label: {}, config: {}", config.getProviderId(), config.getLabel(), config);
 			if (graphmlRepository.exists("asset")) {
-				throw new IllegalStateException("Provider providerid="+config.getProviderId()+" label="+localConfig.getLabel()
-						+ "already exists");
+				throw new IllegalStateException(String.format("Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
 			}
-			GraphML graphML = new AssetGraphGenerator(dataProvider).generateGraphs(localConfig);
-			GraphmlType graphmlType = GraphMLWriter.convert(graphML);
-			graphmlRepository.save(localConfig.getProviderId(), localConfig.getLabel(), graphmlType);
+			final GraphML graphML = new AssetGraphGenerator(dataProvider).generateGraphs(config);
+			final GraphmlType graphmlType = GraphMLWriter.convert(graphML);
+			graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
 		} catch (Exception ex){
-			LOG.error("problem creating asset topology ", ex);
+			LOG.error("Could not create Asset Topology", ex);
 			throw new RuntimeException(ex);
 		}
 	}
@@ -110,16 +103,15 @@ public class AssetGraphMLProvider implements EventListener {
 	 * Removes the AssetTopology defined by the config
 	 * @param config if null the default config is used
 	 */
-	public synchronized void removeAssetTopology(GeneratorConfig config){
+	public synchronized void removeAssetTopology(String providerId){
+		Objects.requireNonNull(providerId);
 		try {
-			GeneratorConfig localConfig= (config==null) ? defaultConfig : config;
-			LOG.info("removing asset topology providerid="+localConfig.getProviderId()
-					+ "from "+ ((config==null) ? "default ": "supplied ")+localConfig.toString() );
-			if (!graphmlRepository.exists(localConfig.getProviderId())) {
-				throw new IllegalStateException(
-						"Provider providerid="+config.getProviderId()+" label="+localConfig.getLabel()
-								+ " cannot be removed, because it does not exist");
-			} else 	graphmlRepository.delete(localConfig.getProviderId());
+			LOG.debug("Removing Asset Topology providerId: {}", providerId);
+			if (!graphmlRepository.exists(providerId)) {
+				throw new IllegalStateException(String.format("Provider with id '%s' cannot be removed, because it does not exist", providerId));
+			} else 	{
+				graphmlRepository.delete(providerId);
+			}
 		} catch (Exception ex){
 			LOG.error("problem removing asset topology ", ex);
 			throw new RuntimeException(ex);
@@ -131,7 +123,7 @@ public class AssetGraphMLProvider implements EventListener {
 	 * in debugging a config.
 	 * @param config if null the default config is used
 	 */
-	public synchronized void createNodeInfoFile(GeneratorConfig config){
+	public synchronized void createNodeInfoFile(String providerId){
 		// TODO MVR ...
 //		try {
 //			GeneratorConfig localConfig= (config==null) ? defaultConfig : config;
@@ -167,17 +159,15 @@ public class AssetGraphMLProvider implements EventListener {
 	@Override
 	public void onEvent(Event e) {
 		try {
-			//TODO read config from event params
-			GeneratorConfig localconfig = defaultConfig;
-
 			if (CREATE_ASSET_TOPOLOGY.equals(e.getUei())) {
-				this.createAssetTopology(localconfig);
-
+				final GeneratorConfig config = GeneratorConfigBuilder.buildFrom(e);
+				createAssetTopology(config);
 			} else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
-				this.removeAssetTopology(localconfig);
-
+				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
+				this.removeAssetTopology(providerId);
 			} else if (CREATE_ASSET_NODE_INFO.equals(e.getUei())) {
-				this.createNodeInfoFile(localconfig);
+				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
+				this.createNodeInfoFile(providerId);
 			}
 		} catch (Exception ex) {
 			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);

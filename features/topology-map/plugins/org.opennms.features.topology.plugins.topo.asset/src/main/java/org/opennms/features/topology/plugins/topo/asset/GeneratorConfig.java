@@ -28,22 +28,29 @@
 
 package org.opennms.features.topology.plugins.topo.asset;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 
 public class GeneratorConfig {
 
     private String label = "Asset Topology Provider";
-    private String breadcrumbStrategy = "SHORTEST_PATH_TO_ROOT";
+    private String breadcrumbStrategy = BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT.name();
     private String providerId = "asset";
     private String preferredLayout = "Grid Layout";
-    private List<String> layerHierarchy = new ArrayList<>();
-    private String filter;
+    private String filter = "";
     private boolean generateUnallocated;
+    private List<String> layerHierarchy = Lists.newArrayList(
+            NodeParamLabels.ASSET_REGION,
+            NodeParamLabels.ASSET_BUILDING,
+            NodeParamLabels.ASSET_RACK);
 
     // TODO MVR make it bean compliant
     public boolean getGenerateUnallocated() {
@@ -94,10 +101,6 @@ public class GeneratorConfig {
         this.layerHierarchy = layers;
     }
 
-    public String getAssetLayers() {
-        return layerHierarchy.stream().collect(Collectors.joining(","));
-    }
-
     public void setAssetLayers(String assetLayers) {
         if (assetLayers != null) {
             List<String> layers = Arrays.asList(assetLayers.split(",")).stream()
@@ -107,7 +110,6 @@ public class GeneratorConfig {
             setLayerHierarchies(layers);
         }
     }
-
 
     public String getFilter() {
 		return filter;
@@ -125,7 +127,29 @@ public class GeneratorConfig {
                 .collect(Collectors.toList());
     }
 
-	@Override
+    @Override
+    public int hashCode() {
+        return Objects.hash(label, breadcrumbStrategy, providerId, preferredLayout, filter, generateUnallocated, layerHierarchy);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (obj instanceof GeneratorConfig) {
+            GeneratorConfig other = (GeneratorConfig) obj;
+            return Objects.equals(generateUnallocated, other.generateUnallocated)
+                    && Objects.equals(label, other.label)
+                    && Objects.equals(breadcrumbStrategy, other.breadcrumbStrategy)
+                    && Objects.equals(providerId, other.providerId)
+                    && Objects.equals(preferredLayout, other.preferredLayout)
+                    && Objects.equals(filter, other.filter)
+                    && Objects.equals(layerHierarchy, other.layerHierarchy);
+        }
+        return false;
+    }
+
+    @Override
 	public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("providerId", providerId)

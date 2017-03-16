@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -38,47 +37,33 @@ import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "asset-topology/createNodeInfo", name = "createNodeInfo", description="Creates Debug Node Info File. Uses default config if options not supplied")
+@Command(scope = "asset-topology", name = "createNodeInfo", description="Creates Debug Node Info File. Uses default config if options are not supplied.")
 public class CreateNodeInfoCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(CreateNodeInfoCommand .class);
 
-	private AssetGraphMLProvider assetGraphMLProvider;
+	private final AssetGraphMLProvider assetGraphMLProvider;
 
-	private GeneratorConfig defaultGeneratorConfig;
-
-	public AssetGraphMLProvider getAssetGraphMLProvider() {
-		return assetGraphMLProvider;
-	}
-
-	public void setAssetGraphMLProvider(AssetGraphMLProvider assetGraphMLProvider) {
+	public CreateNodeInfoCommand(AssetGraphMLProvider assetGraphMLProvider) {
 		this.assetGraphMLProvider = assetGraphMLProvider;
 	}
-
-	public GeneratorConfig getDefaultGeneratorConfig() {
-		return defaultGeneratorConfig;
-	}
-
-	public void setDefaultGeneratorConfig(GeneratorConfig defaultGeneratorConfig) {
-		this.defaultGeneratorConfig = defaultGeneratorConfig;
-	}
-
 	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
-	String filter = null;
+	String filter = new GeneratorConfig().getFilter();
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
-			GeneratorConfig config = new GeneratorConfig();
-			
-			if(filter==null) filter=defaultGeneratorConfig.getFilter();
-
-			config.setFilter(filter);
-
-			System.out.println("Creating Node Info File from filter: "+filter);
-
-			assetGraphMLProvider.createNodeInfoFile(config);
-
-			System.out.println("Node Info File created");
+			// TODO MVR implement ...
+//			GeneratorConfig config = new GeneratorConfig();
+//
+//			if(filter==null) filter=defaultGeneratorConfig.getFilter();
+//
+//			config.setFilter(filter);
+//
+//			System.out.println("Creating Node Info File from filter: "+filter);
+//
+//			assetGraphMLProvider.createNodeInfoFile(config);
+//
+//			System.out.println("Node Info File created");
 
 		} catch (Exception e) {
 			System.out.println("Error Creating Node Info File. Exception="+e);

@@ -37,57 +37,30 @@ import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-@Command(scope = "asset-topology/remove", name = "removeAssetTopology", description="Removes Asset Topology. Uses default config if options not supplied")
+@Command(scope = "asset-topology", name = "remove", description="Removes Asset Topology. Uses default config if options not supplied")
 public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(RemoveAssetTopologyCommand.class);
 
-	private AssetGraphMLProvider assetGraphMLProvider;
+	private final AssetGraphMLProvider assetGraphMLProvider;
 
-	private GeneratorConfig defaultGeneratorConfig;
-
-	public AssetGraphMLProvider getAssetGraphMLProvider() {
-		return assetGraphMLProvider;
-	}
-
-	public void setAssetGraphMLProvider(AssetGraphMLProvider assetGraphMLProvider) {
+	public RemoveAssetTopologyCommand(AssetGraphMLProvider assetGraphMLProvider) {
 		this.assetGraphMLProvider = assetGraphMLProvider;
 	}
 
-	public GeneratorConfig getDefaultGeneratorConfig() {
-		return defaultGeneratorConfig;
-	}
-
-	public void setDefaultGeneratorConfig(GeneratorConfig defaultGeneratorConfig) {
-		this.defaultGeneratorConfig = defaultGeneratorConfig;
-	}
-
 	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology (optional)", required = false, multiValued = false)
-	String providerId = null;
+	String providerId = new GeneratorConfig().getProviderId();
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
-			GeneratorConfig config = new GeneratorConfig();
-			
-			if (providerId==null) providerId=defaultGeneratorConfig.getProviderId();
-			config.setProviderId(providerId);
-
-			System.out.println("Removing Asset Topology for providerId="+providerId);
-
-			assetGraphMLProvider.removeAssetTopology(config);
-
-			System.out.println("Removed Asset Topology for providerId="+providerId);
-
+			System.out.println("Removing Asset Topology for providerId=" + providerId);
+			assetGraphMLProvider.removeAssetTopology(providerId);
+			System.out.println("Removed Asset Topology for providerId=" + providerId);
 		} catch (Exception e) {
-			System.out.println("Error Removing Asset Topology for providerId="+providerId
-					+ " Exception="+e);
-			LOG.error("Error Removing Asset Topology for providerId="+providerId,e);
+			System.out.println("Error Removing Asset Topology for providerId=" + providerId + " Exception="+e);
+			LOG.error("Error Removing Asset Topology for providerId=" + providerId,e);
 		}
 		return null;
 	}
-
-
 }
 

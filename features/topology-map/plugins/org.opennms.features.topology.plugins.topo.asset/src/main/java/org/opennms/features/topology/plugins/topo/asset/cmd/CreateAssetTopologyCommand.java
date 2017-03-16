@@ -29,99 +29,68 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
+import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "asset-topology/create", name = "createAssetTopology", description="Creates Asset Topology. Uses default config if options not supplied")
+@Command(scope = "asset-topology", name = "create", description="Creates Asset Topology. Uses default config if options are not supplied.")
 public class CreateAssetTopologyCommand extends OsgiCommandSupport {
+
 	private static final Logger LOG = LoggerFactory.getLogger(CreateAssetTopologyCommand.class);
 
-	private AssetGraphMLProvider assetGraphMLProvider;
+	private final AssetGraphMLProvider assetGraphMLProvider;
 
-	private GeneratorConfig defaultGeneratorConfig;
-
-	public AssetGraphMLProvider getAssetGraphMLProvider() {
-		return assetGraphMLProvider;
-	}
-
-	public void setAssetGraphMLProvider(AssetGraphMLProvider assetGraphMLProvider) {
+	public CreateAssetTopologyCommand(AssetGraphMLProvider assetGraphMLProvider) {
 		this.assetGraphMLProvider = assetGraphMLProvider;
 	}
 
-	public GeneratorConfig getDefaultGeneratorConfig() {
-		return defaultGeneratorConfig;
-	}
-
-	public void setDefaultGeneratorConfig(GeneratorConfig defaultGeneratorConfig) {
-		this.defaultGeneratorConfig = defaultGeneratorConfig;
-	}
-
 	@Option(name = "-i", aliases =  "--providerId", description = "Unique providerId of asset topology", required = false, multiValued = false)
-	String providerId = null;
+	String providerId;
 
 	@Option(name = "-a", aliases = "--assetLayers", description = "Comma seperated list of asset layers", required = false, multiValued = false)
-	String assetLayers = null;
+	String assetLayers;
 
 	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
-	String filter = null;
+	String filter;
 
 	@Option(name = "-u", aliases = "--unallocatedGraph", description = "Generate Unallocated Nodes Graph", required = false, multiValued = false)
-	String generateUnallocatedStr = null;
+	String generateUnallocatedStr;
 
 	@Option(name = "-l", aliases = "--label", description = "Asset Topology label (shows in topology menu)", required = false, multiValued = false)
-	String label = null;
+	String label;
 
 	@Option(name = "-b", aliases ="--breadcrumbStrategy", description = "Bread Crumb Strategy", required = false, multiValued = false)
-	String breadcrumbStrategy = null;
+	String breadcrumbStrategy;
 
 	@Option(name = "-p", aliases = "--preferredLayout", description = "Preferred Layout", required = false, multiValued = false)
-	String preferredLayout = null;
+	String preferredLayout;
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
-			GeneratorConfig config = new GeneratorConfig();
-			
-			if (providerId==null) providerId=defaultGeneratorConfig.getProviderId();
-			config.setProviderId(providerId);
-			
-			if(assetLayers==null) assetLayers=defaultGeneratorConfig.getAssetLayers();
-			config.setAssetLayers(assetLayers);
-			
-			if(filter==null) filter = defaultGeneratorConfig.getFilter();
-			config.setFilter(filter);
-			
-			if (generateUnallocatedStr==null) generateUnallocatedStr = (Boolean.toString(defaultGeneratorConfig.getGenerateUnallocated()));
-			config.setGenerateUnallocated(Boolean.valueOf(generateUnallocatedStr));
-			
-			if(label==null) label =defaultGeneratorConfig.getLabel();
-			config.setLabel(label);
-			
-			if (breadcrumbStrategy==null) breadcrumbStrategy=defaultGeneratorConfig.getBreadcrumbStrategy();
-			config.setBreadcrumbStrategy(breadcrumbStrategy);
-			
-			if (preferredLayout==null) preferredLayout=defaultGeneratorConfig.getPreferredLayout();
-			config.setPreferredLayout(preferredLayout);
+			GeneratorConfig config = new GeneratorConfigBuilder()
+					.withProviderId(providerId)
+					.withHierarchy(assetLayers)
+					.withFilter(filter)
+					.withIncludeUnassingedNodes(generateUnallocatedStr)
+					.withLabel(label)
+					.withBreadcrumbStrategy(breadcrumbStrategy)
+					.withPreferredLayout(preferredLayout)
+					.build();
 
-			System.out.println("Creating Asset Topology from configuration "+config);
-
+			System.out.println("Creating Asset Topology from configuration " + config);
 			assetGraphMLProvider.createAssetTopology(config);
-
 			System.out.println("Asset Topology created");
-
 		} catch (Exception e) {
 			System.out.println("Error Creating Asset Topology. Exception="+e);
 			LOG.error("Error Creating Asset Topology",e);
 		}
 		return null;
 	}
-
-
 }
 

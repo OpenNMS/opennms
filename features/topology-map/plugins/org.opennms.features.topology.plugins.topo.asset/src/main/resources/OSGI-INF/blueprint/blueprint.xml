@@ -4,41 +4,16 @@
     http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
     ">
 
-  <!-- Configuration properties -->
-  <!-- TODO MVR rip out, we do not need this anymore -->
-  <cm:property-placeholder id="assetPluginConfigProperties" persistent-id="org.opennms.plugins.graphml.asset" update-strategy="reload">
-    <cm:default-properties>
-      <cm:property name="assetLayers" value="asset-region,asset-building,asset-rack" />
-      <cm:property name="preferredLayout" value="Grid Layout" />
-      <cm:property name="providerId" value="asset" />
-      <cm:property name="label" value="Asset Provider" />
-      <cm:property name="breadcrumbStrategy" value="SHORTEST_PATH_TO_ROOT" />
-      <cm:property name="filter" value="" />
-      <cm:property name="generateUnallocated" value="false" />
-    </cm:default-properties>
-  </cm:property-placeholder>
-
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
   <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory" />
   <reference id="graphmlRepository" interface="org.opennms.features.graphml.service.GraphmlRepository" availability="mandatory" />
   <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
-
-  <bean id="defaultGeneratorConfig" class="org.opennms.features.topology.plugins.topo.asset.GeneratorConfig">
-    <property name="label" value="${label}" />
-    <property name="assetLayers" value="${assetLayers}" />
-    <property name="providerId" value="${providerId}" />
-    <property name="preferredLayout" value="${preferredLayout}" />
-    <property name="breadcrumbStrategy" value="${breadcrumbStrategy}" />
-    <property name="filter" value="${filter}" />
-    <property name="generateUnallocated" value="${generateUnallocated}" />
-  </bean>
 
   <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
     <argument ref="eventIpcManager" />
     <argument ref="dataProvider" />
     <argument ref="transactionOperations" />
-    <argument ref="defaultGeneratorConfig" />
   </bean>
 
   <bean id="dataProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceDataProvider">
@@ -51,20 +26,17 @@
     <!-- Asset Topology Service Commands -->
     <command name="asset-topology/create">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateAssetTopologyCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
-        <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
+        <argument ref="assetGraphMLProvider" />
       </action>
     </command>
     <command name="asset-topology/remove">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RemoveAssetTopologyCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
-        <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
+        <argument ref="assetGraphMLProvider" />
       </action>
     </command>
     <command name="asset-topology/createNodeInfo">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateNodeInfoCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
-        <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
+        <argument ref="assetGraphMLProvider" />
       </action>
     </command>
   </command-bundle>
