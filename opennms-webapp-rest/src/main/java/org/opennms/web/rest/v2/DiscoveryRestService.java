@@ -383,7 +383,7 @@ public class DiscoveryRestService {
 
         for(DiscoveryConfigurationDTO.SpecificDTO specificDTO : discoveryConfigurationDTO.getSpecificDTOList()) {
             Specific specific = new Specific();
-            specific.setContent(specificDTO.getContent());
+            specific.setAddress(specificDTO.getContent());
             specific.setTimeout(specificDTO.getTimeout());
             specific.setRetries(specificDTO.getRetries());
             specific.setForeignSource(specificDTO.getForeignSource());
@@ -393,7 +393,7 @@ public class DiscoveryRestService {
 
         for(DiscoveryConfigurationDTO.IncludeUrlDTO includeUrlDTO : discoveryConfigurationDTO.getIncludeUrlDTOList()){
             IncludeUrl includeUrl = new IncludeUrl();
-            includeUrl.setContent(includeUrlDTO.getContent());
+            includeUrl.setUrl(includeUrlDTO.getContent());
             includeUrl.setTimeout(includeUrlDTO.getTimeout());
             includeUrl.setRetries(includeUrlDTO.getRetries());
             includeUrl.setForeignSource(includeUrlDTO.getForeignSource());

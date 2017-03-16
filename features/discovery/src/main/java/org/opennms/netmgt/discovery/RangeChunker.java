@@ -66,8 +66,8 @@ public class RangeChunker {
 
     public Map<String, List<DiscoveryJob>> chunk(final DiscoveryConfiguration config) {
 
-        final int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE;
-        final double packetsPerSecond = (config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
+        final int chunkSize = config.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE);
+        final double packetsPerSecond = config.getPacketsPerSecond().orElse(DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND);
 
         // If the foreign source for the discovery config is not set than use 
         // a value of null so that non-requisitioned nodes are created.
@@ -75,11 +75,17 @@ public class RangeChunker {
         // TODO: Use the "default" foreign source instead so that we can move
         // away from using non-requisitioned nodes.
         //
-        final String foreignSourceFromConfig = (config.getForeignSource() == null || "".equals(config.getForeignSource().trim())) ? null : config.getForeignSource().trim();
+        final String foreignSourceFromConfig = config.getForeignSource().isPresent()? config.getForeignSource().get().trim() : null;
 
         // If the monitoring location for the discovery config is not set than use 
         // the default localhost location
-        final String locationFromConfig = (config.getLocation() == null || "".equals(config.getLocation().trim())) ? MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID : config.getLocation().trim();
+        final String locationFromConfig = config.getLocation().map(l -> {
+            final String trimmed = l.trim();
+            if ("".equals(trimmed)) {
+                return null;
+            }
+            return trimmed;
+        }).orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
 
         final DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
 
