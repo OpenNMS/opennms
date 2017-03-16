@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.internal;
 
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptEngineManager;
 
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
@@ -93,41 +95,45 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			}
 
 			// Expose the MetaTopologyProvider
-			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(m_serviceAccessor);
-			metaTopologyProvider.setTopologyLocation(location);
-			metaTopologyProvider.load();
-			registerService(pid, MetaTopologyProvider.class, metaTopologyProvider, metaData);
+			try {
+				final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(m_serviceAccessor);
+				metaTopologyProvider.setTopologyLocation(location);
+				metaTopologyProvider.load();
+				registerService(pid, MetaTopologyProvider.class, metaTopologyProvider, metaData);
 
-			// Create and register additional services
-			final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
-					.map(eachProvider -> eachProvider.getVertexNamespace())
-					.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
-					.map(eachVertex -> eachVertex.getIconKey())
-					.filter(eachIconKey -> eachIconKey != null)
-					.collect(Collectors.toSet());
-			registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
+				// Create and register additional services
+				final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
+						.map(eachProvider -> eachProvider.getVertexNamespace())
+						.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
+						.map(eachVertex -> eachVertex.getIconKey())
+						.filter(eachIconKey -> eachIconKey != null)
+						.collect(Collectors.toSet());
+				registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
 
-			// Create a OSGi aware script engine manager
-			final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
-			metaTopologyProvider.getGraphProviders().forEach(it -> {
-				// Find Topology Provider
-				final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace());
+				// Create a OSGi aware script engine manager
+				final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
+				metaTopologyProvider.getGraphProviders().forEach(it -> {
+					// Find Topology Provider
+					final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace());
 
-				// EdgeStatusProvider
-				registerService(pid, EdgeStatusProvider.class, new GraphMLEdgeStatusProvider(rawTopologyProvider, scriptEngineManager, m_serviceAccessor));
+					// EdgeStatusProvider
+					registerService(pid, EdgeStatusProvider.class, new GraphMLEdgeStatusProvider(rawTopologyProvider, scriptEngineManager, m_serviceAccessor));
 
-				// SearchProvider
-				registerService(pid, SearchProvider.class, new GraphMLSearchProvider(rawTopologyProvider));
+					// SearchProvider
+					registerService(pid, SearchProvider.class, new GraphMLSearchProvider(rawTopologyProvider));
 
-				// Vertex Status Provider
-				// Only add status provider if explicitly set in GraphML document
-				if (rawTopologyProvider.requiresStatusProvider()) {
-					GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
-							rawTopologyProvider.getVertexNamespace(),
-							(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
-					registerService(pid, StatusProvider.class, statusProvider);
-				}
-			});
+					// Vertex Status Provider
+					// Only add status provider if explicitly set in GraphML document
+					if (rawTopologyProvider.requiresStatusProvider()) {
+						GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
+								rawTopologyProvider.getVertexNamespace(),
+								(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
+						registerService(pid, StatusProvider.class, statusProvider);
+					}
+				});
+			} catch (InvalidGraphException | IOException e) {
+				LOG.error("An error occurred while loading GraphMLTopology from file {}. Ignoring...", location, e);
+			}
 		} else {
 			LOG.warn("Service with pid '{}' updated. Updating is not supported. Ignoring...");
 		}
