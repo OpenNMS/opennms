@@ -95,12 +95,6 @@
                         ng-click="synchronize(requisition)">
                   <span class="glyphicon glyphicon-transfer"> Synchronize</span>
                 </button>
-                <button type="button" class="btn btn-default btn-xs" ng-disabled="requisition.nodesInDatabase > 0"
-                        uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
-                        ng-disabled="timingStatus.isRunning"
-                        ng-click="delete(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-trash"> Delete</span>
-                </button>
 
                 <div class="btn-group" uib-dropdown dropdown-append-to-body>
                   <button id="btn-append-to-to-body" type="button" class="btn btn-default btn-xs" uib-dropdown-toggle>
@@ -121,11 +115,18 @@
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
                       <span class="glyphicon glyphicon-random"/> Clone detectors &amp; policies</a></li>
+                    <li class="divider"></li>
                     <li role="menuitem"><a href=""
                                            uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
                       <span class="glyphicon glyphicon-remove-circle"/> Remove all nodes</a></li>
+                    <li role="menuitem"><a href=""
+                                           ng-disabled="requisition.nodesInDatabase > 0"
+                                           uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
+                                           ng-disabled="timingStatus.isRunning"
+                                           ng-click="delete(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-trash"/> Delete requisition</a></li>
                   </ul>
                 </div>
               </span>
