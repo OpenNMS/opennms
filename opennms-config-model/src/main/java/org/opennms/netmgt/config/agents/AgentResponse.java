@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.agents;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -57,7 +58,7 @@ public class AgentResponse {
 
     @XmlElement(name = "parameters")
     @XmlJavaTypeAdapter(JaxbMapAdapter.class)
-    private Map<String,String> m_parameters = new HashMap<String, String>();
+    private Map<String,String> m_parameters = new HashMap<>();
 
     public AgentResponse() { }
 
@@ -68,16 +69,16 @@ public class AgentResponse {
         m_parameters = parameters;
     }
 
-    public InetAddress getAddress() {
-        return m_address;
+    public Optional<InetAddress> getAddress() {
+        return Optional.ofNullable(m_address);
     }
 
-    public Integer getPort() {
-        return m_port;
+    public Optional<Integer> getPort() {
+        return Optional.ofNullable(m_port);
     }
 
-    public String getServiceName() {
-        return m_serviceName;
+    public Optional<String> getServiceName() {
+        return Optional.ofNullable(m_serviceName);
     }
 
     public Map<String,String> getParameters() {
