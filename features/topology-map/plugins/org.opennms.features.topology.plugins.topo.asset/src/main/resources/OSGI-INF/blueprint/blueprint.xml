@@ -33,11 +33,7 @@
     <property name="generateUnallocated" value="${generateUnallocated}" />
   </bean>
 
-  <!-- TODO MVR rip out -->
-  <!-- Asset Topology Provider service -->
-  <service ref="assetGraphMLProvderImpl" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" />
-
-  <bean id="assetGraphMLProvderImpl" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProviderImpl" init-method="init" destroy-method="destroy">
+  <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
     <argument ref="eventIpcManager" />
     <argument ref="dataProvider" />
@@ -55,19 +51,19 @@
     <!-- Asset Topology Service Commands -->
     <command name="asset-topology/create">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateAssetTopologyCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvderImpl" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
         <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
       </action>
     </command>
     <command name="asset-topology/remove">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.RemoveAssetTopologyCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvderImpl" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
         <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
       </action>
     </command>
     <command name="asset-topology/createNodeInfo">
       <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateNodeInfoCommand">
-        <property name="assetGraphMLProvider" ref="assetGraphMLProvderImpl" />
+        <property name="assetGraphMLProvider" ref="assetGraphMLProvider" />
         <property name="defaultGeneratorConfig" ref="defaultGeneratorConfig" />
       </action>
     </command>
