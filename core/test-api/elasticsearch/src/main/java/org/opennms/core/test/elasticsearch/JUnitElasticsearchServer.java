@@ -59,7 +59,11 @@ public class JUnitElasticsearchServer extends ExternalResource {
             // By default, the service will listen on a free port from 9200 to 9300
             //.put("http.enabled", "false")
             //network.publish_host: 192.168.0.1
-            .put("cluster.name", "opennms")
+
+            // Randomize the cluster.name so that Elasticsearch instances don't cluster with each other during tests.
+            // Use the same method as org.opennms.core.test.db.TemporaryDatabasePostgreSQL.
+            .put("cluster.name", String.format("opennms_test_%s_%06d_%s", System.currentTimeMillis(), System.nanoTime(), Math.abs(this.hashCode())))
+
             .put("path.data", m_temporaryDirectory);
 
         m_node = NodeBuilder.nodeBuilder()
