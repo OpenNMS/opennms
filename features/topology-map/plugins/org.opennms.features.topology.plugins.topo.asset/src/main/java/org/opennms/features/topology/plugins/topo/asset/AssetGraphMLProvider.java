@@ -51,10 +51,8 @@ public class AssetGraphMLProvider implements EventListener {
 
 	public static final String CREATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/create";
 	public static final String REMOVE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/remove";
-	public static final String CREATE_ASSET_NODE_INFO = "uei.opennms.plugins/assettopology/nodeinfo";
 
-	private static final List<String> ueiList = Lists.newArrayList(
-			CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY, CREATE_ASSET_NODE_INFO);
+	private static final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY);
 
 	// folder created in OpenNMS to store asset topology info for debugging
 	public static final String TEMP_FOLDER = "data/tmp";
@@ -118,29 +116,6 @@ public class AssetGraphMLProvider implements EventListener {
 		}
 	}
 
-	/**
-	 * Generates an XML node info file using the config. The file is intended to be used
-	 * in debugging a config.
-	 * @param config if null the default config is used
-	 */
-	public synchronized void createNodeInfoFile(String providerId){
-		// TODO MVR ...
-//		try {
-//			GeneratorConfig localConfig= (config==null) ? defaultConfig : config;
-//
-//			LOG.info("creating nodeinfo file=" + ASSET_LIST_XML_FILE
-//					+ " in folder=" + TEMP_FOLDER + " from "+ ((config==null) ? "default ": "supplied ")+localConfig.toString() );
-//
-//			Map<String, Map<String, String>> nodeInfo = new AssetGraphGenerator(nodeDao,transactionOperations).generateNodeInfo(localConfig);
-//
-//			String nodeInfoxml = NodeInfoRepositoryXML.nodeInfoToXML(nodeInfo);
-//			Utils.writeFileToDisk(nodeInfoxml, TEMP_FOLDER, ASSET_LIST_XML_FILE);
-//		} catch (Exception ex) {
-//			LOG.error("problem creating " + ASSET_LIST_XML_FILE, ex);
-//			throw new RuntimeException("problem creating " + ASSET_LIST_XML_FILE, ex);
-//		}
-	}
-
 	public void init() {
 		eventIpcManager.addEventListener(this, ueiList);
 		LOG.info("asset topology provider started");
@@ -165,9 +140,6 @@ public class AssetGraphMLProvider implements EventListener {
 			} else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
 				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
 				this.removeAssetTopology(providerId);
-			} else if (CREATE_ASSET_NODE_INFO.equals(e.getUei())) {
-				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
-				this.createNodeInfoFile(providerId);
 			}
 		} catch (Exception ex) {
 			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);

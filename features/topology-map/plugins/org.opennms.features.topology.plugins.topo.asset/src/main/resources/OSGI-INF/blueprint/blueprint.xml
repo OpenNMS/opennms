@@ -34,11 +34,6 @@
         <argument ref="assetGraphMLProvider" />
       </action>
     </command>
-    <command name="asset-topology/createNodeInfo">
-      <action class="org.opennms.features.topology.plugins.topo.asset.cmd.CreateNodeInfoCommand">
-        <argument ref="assetGraphMLProvider" />
-      </action>
-    </command>
   </command-bundle>
 
 </blueprint>
