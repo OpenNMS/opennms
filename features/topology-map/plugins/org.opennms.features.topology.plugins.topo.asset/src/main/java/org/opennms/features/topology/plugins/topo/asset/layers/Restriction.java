@@ -26,32 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.definition;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
-import org.opennms.features.topology.plugins.topo.asset.layers.decorator.AssetItemNodeDecorator;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public abstract class AssetLayerDefinition implements LayerDefinition<String> {
-
-    @Override
-    public String getNamespace() {
-        return getId();
-    }
-
-    @Override
-    public String getDescription() {
-        return "";
-    }
-
-    @Override
-    public NodeDecorator<String> getNodeDecorator() {
-        return new AssetItemNodeDecorator();
-    }
-
-    @Override
-    public IdGenerator getIdGenerator() {
-        return IdGenerator.HIERARCHY;
-    }
+/**
+ * The Asset Topology is build from {@link org.opennms.netmgt.model.OnmsNode}s.
+ * In order to correctly build the hierarchy, each value for each {@link org.opennms.netmgt.model.OnmsNode} (provided by {@link org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider})
+ * for each {@link Layer} must not be null.
+ * With the {@link Restriction} annotation it is possible to define a HQL restriction which must be fullfilled, otherwise the node is not included.
+ *
+ * @author mvrueden
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Restriction {
+    String hql();
 }

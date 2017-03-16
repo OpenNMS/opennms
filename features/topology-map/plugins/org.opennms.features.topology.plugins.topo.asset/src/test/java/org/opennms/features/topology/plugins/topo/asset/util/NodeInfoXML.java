@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.decorator;
+package org.opennms.features.topology.plugins.topo.asset.util;
 
-import org.opennms.features.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
-import org.opennms.features.topology.plugins.topo.asset.layers.AssetLayer;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Decorates each node in an Asset Layer.
- *
- * @author mvrueden
- * @see AssetLayer
- */
-public class AssetItemNodeDecorator implements NodeDecorator<String> {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    @Override
-    public void decorate(GraphMLNode graphMLNode, String value) {
-        graphMLNode.setProperty(GraphMLProperties.LABEL, value);
-    }
+@XmlRootElement (name="nodeInfo")
+@XmlAccessorType(XmlAccessType.NONE)
+public class NodeInfoXML {
 
-    @Override
-    public String getId(String value) {
-        return value;
-    }
+	@XmlElement(name="nodeId")
+	private String nodeId;
+
+	@XmlElementWrapper(name="parameters")
+	private Map<String, String> parameters = new HashMap<>();
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public Map<String, String> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
+	}
 }

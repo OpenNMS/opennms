@@ -26,15 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.definition;
+package org.opennms.features.topology.plugins.topo.asset;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Restriction {
-    String value();
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.netmgt.model.OnmsNode;
+
+/**
+ * Provides {@link OnmsNode}s which the Asset Topology is build from.
+ *
+ * @author mvrueden
+ */
+public interface NodeProvider {
+    /**
+     * Returns all nodes for which the given mapping applies.
+     *
+     * The returned list SHOULD NOT contain any nodes, where any value from {@link org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider#getItem(OnmsNode)} would return null.
+     * If the returned list contains those nodes anyways, they will be filtered out later.
+     * This is considered a BAD PRACTISE and should only be used if absolutely necessary (e.g. tests)
+     *
+     * @param mappings
+     * @return all nodes for which the given mapping applies.
+     */
+    List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings);
 }

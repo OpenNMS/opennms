@@ -12,11 +12,11 @@
   <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
     <argument ref="graphmlRepository" />
     <argument ref="eventIpcManager" />
-    <argument ref="dataProvider" />
+    <argument ref="nodeProvider" />
     <argument ref="transactionOperations" />
   </bean>
 
-  <bean id="dataProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceDataProvider">
+  <bean id="nodeProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider">
     <argument ref="genericPersistenceAccessor"/>
   </bean>
 

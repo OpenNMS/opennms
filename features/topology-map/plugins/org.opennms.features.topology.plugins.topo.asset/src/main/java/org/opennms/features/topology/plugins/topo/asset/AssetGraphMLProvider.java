@@ -66,14 +66,14 @@ public class AssetGraphMLProvider implements EventListener {
 
 	private final TransactionOperations transactionOperations;
 
-	private final DataProvider dataProvider;
+	private final NodeProvider nodeProvider;
 
 	public AssetGraphMLProvider(GraphmlRepository repository,
-									EventIpcManager eventIpcManager, DataProvider dataProvider,
+									EventIpcManager eventIpcManager, NodeProvider nodeProvider,
 									TransactionOperations transactionOperations) {
 		this.graphmlRepository = Objects.requireNonNull(repository);
 		this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
-		this.dataProvider = Objects.requireNonNull(dataProvider);
+		this.nodeProvider = Objects.requireNonNull(nodeProvider);
 		this.transactionOperations=transactionOperations;
 	}
 
@@ -88,7 +88,7 @@ public class AssetGraphMLProvider implements EventListener {
 			if (graphmlRepository.exists("asset")) {
 				throw new IllegalStateException(String.format("Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
 			}
-			final GraphML graphML = new AssetGraphGenerator(dataProvider).generateGraphs(config);
+			final GraphML graphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 			final GraphmlType graphmlType = GraphMLWriter.convert(graphML);
 			graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
 		} catch (Exception ex){

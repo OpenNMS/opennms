@@ -26,13 +26,48 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import java.util.List;
+/**
+ * Allows building a generic layer.
+ *
+ * @author mvrueden
+ */
+public class LayerDefinitionBuilder {
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.netmgt.model.OnmsNode;
+    private DefaultLayer definition = new DefaultLayer();
 
-public interface DataProvider {
-    List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings);
+    public LayerDefinitionBuilder withId(String id) {
+        definition.setId(id);
+        return this;
+    }
+
+    public LayerDefinitionBuilder withNamespace(String namespace) {
+        definition.setNamespace(namespace);
+        return this;
+    }
+
+    public LayerDefinitionBuilder withLabel(String label) {
+        definition.setLabel(label);
+        return this;
+    }
+
+    public LayerDefinitionBuilder withDescription(String description) {
+        definition.setDescription(description);
+        return this;
+    }
+
+    public LayerDefinitionBuilder withItemProvider(ItemProvider itemProvider) {
+        definition.setItemProvider(itemProvider);
+        return this;
+    }
+
+    public LayerDefinitionBuilder withIdGenerator(IdGenerator idGenerator) {
+        definition.setIdGenerator(idGenerator);
+        return this;
+    }
+
+    public Layer build() {
+        return definition;
+    }
 }

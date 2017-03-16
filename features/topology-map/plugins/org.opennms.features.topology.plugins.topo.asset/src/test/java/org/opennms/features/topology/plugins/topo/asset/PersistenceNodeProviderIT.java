@@ -36,10 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.features.topology.plugins.topo.asset.layers.PersistenceDataProvider;
-import org.opennms.features.topology.plugins.topo.asset.layers.definition.Layers;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider;
+import org.opennms.features.topology.plugins.topo.asset.layers.Layers;
+import org.opennms.features.topology.plugins.topo.asset.layers.Restriction;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
@@ -60,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class PersistenceDataProviderIT {
+public class PersistenceNodeProviderIT {
 
     @Autowired
     private NodeDao nodeDao;
@@ -126,19 +128,19 @@ public class PersistenceDataProviderIT {
     }
 
     /**
-     * In order to build a valid hierarchy, each{@link org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition}
+     * In order to build a valid hierarchy, each{@link Layer}
      * must ensure that the value for each node IS NOT null.
-     * To let the database do the filtering, a {@link org.opennms.features.topology.plugins.topo.asset.layers.definition.Restriction}
+     * To let the database do the filtering, a {@link Restriction}
      * annotation must be present.
-     * This tests ensures that each defined {@link org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition} actually provides a restriction and that the {@link org.opennms.features.topology.plugins.topo.asset.layers.definition.Restriction} works as expected.
+     * This tests ensures that each defined {@link Layer} actually provides a restriction and that the {@link Restriction} works as expected.
      */
     @Test
     public void verifyLayerRestrictions() throws Exception {
-        List<LayerMapping.Mapping> mapping = new LayerMapping().getMapping(NodeParamLabels.ALL_KEYS);
+        List<LayerDefinition.Mapping> mapping = new LayerDefinition().getMapping(NodeParamLabels.ALL_KEYS);
         Assert.assertEquals(NodeParamLabels.ALL_KEYS.size(), Layers.values().length);
         Assert.assertEquals(Layers.values().length, mapping.size());
 
-        final List<OnmsNode> nodes = new PersistenceDataProvider(genericPersistenceAccessor).getNodes(mapping);
+        final List<OnmsNode> nodes = new PersistenceNodeProvider(genericPersistenceAccessor).getNodes(mapping);
         Assert.assertEquals(1, nodes.size());
         OnmsNode actualNode = nodes.get(0);
         OnmsNode expectedNode = nodeDao.findByLabel("Node 2").get(0);

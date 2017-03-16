@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.repo.xml;
+package org.opennms.features.topology.plugins.topo.asset.util;
 
 import java.util.ArrayList;
 import java.util.List;

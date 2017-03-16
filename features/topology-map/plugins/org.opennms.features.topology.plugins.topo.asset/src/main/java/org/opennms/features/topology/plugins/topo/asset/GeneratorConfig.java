@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;

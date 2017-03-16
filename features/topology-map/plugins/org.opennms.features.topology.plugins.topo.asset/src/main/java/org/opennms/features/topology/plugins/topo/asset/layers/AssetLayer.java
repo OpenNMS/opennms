@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.repo.xml;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.opennms.features.topology.plugins.topo.asset.layers.decorator.AssetItemNodeDecorator;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+public abstract class AssetLayer implements Layer<String> {
 
-@XmlRootElement (name="nodeInfo")
-@XmlAccessorType(XmlAccessType.NONE)
-public class NodeInfoXML {
+    @Override
+    public String getNamespace() {
+        return getId();
+    }
 
-	@XmlElement(name="nodeId")
-	private String nodeId;
+    @Override
+    public String getDescription() {
+        return "";
+    }
 
-	@XmlElementWrapper(name="parameters")
-	private Map<String, String> parameters = new HashMap<>();
+    @Override
+    public NodeDecorator<String> getNodeDecorator() {
+        return new AssetItemNodeDecorator();
+    }
 
-	public String getNodeId() {
-		return nodeId;
-	}
-
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
-	}
-
-	public Map<String, String> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
-	}
+    @Override
+    public IdGenerator getIdGenerator() {
+        return IdGenerator.HIERARCHY;
+    }
 }

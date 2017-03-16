@@ -26,16 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.definition;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
-import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
 import org.opennms.features.topology.plugins.topo.asset.layers.decorator.NodeItemNodeDecorator;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class DefaultLayerDefinition implements LayerDefinition {
+/**
+ * Simply POJO for a layer.
+ *
+ * @author mvrueden
+ */
+public class DefaultLayer implements Layer {
 
     private String id;
     private String label;
@@ -43,10 +44,6 @@ public class DefaultLayerDefinition implements LayerDefinition {
     private String description;
     private ItemProvider<OnmsNode> itemProvider;
     private IdGenerator idGenerator;
-
-    protected DefaultLayerDefinition() {
-
-    }
 
     protected void setId(String id) {
         this.id = id;

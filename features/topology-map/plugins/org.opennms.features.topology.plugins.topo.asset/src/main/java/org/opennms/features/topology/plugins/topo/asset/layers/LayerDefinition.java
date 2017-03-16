@@ -28,24 +28,50 @@
 
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
-public interface LayerDefinition<T> {
-    // The id of the layer
-    String getId();
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-    // the namespace of the layer
-    String getNamespace();
+public class LayerDefinition {
 
-    // The label of the layer
-    String getLabel();
+    public static class Mapping {
 
-    // The description of the layer
-    String getDescription();
+        private final Layer layer;
+        private final String restriction;
 
-    // Decorator to build the node for this layer
-    NodeDecorator<T> getNodeDecorator();
+        public Mapping(Layer layer, String restriction) {
+            this.layer = Objects.requireNonNull(layer);
+            this.restriction = restriction;
+        }
 
-    // The item provider to build nodes from
-    ItemProvider<T> getItemProvider();
+        public String getRestriction() {
+            return restriction;
+        }
 
-    IdGenerator getIdGenerator();
+        public Layer getLayer() {
+            return layer;
+        }
+    }
+
+    final Map<String, Mapping> mapping = new HashMap<>();
+
+    public LayerDefinition() {
+        for (Layers layer : Layers.values()) {
+            try {
+                final Field enumField = layer.getClass().getField(layer.name());
+                final Key key = enumField.getAnnotation(Key.class);
+                final Restriction restriction = enumField.getAnnotation(Restriction.class);
+                mapping.put(key == null ? layer.getLayer().getId() : key.value(), new Mapping(layer.getLayer(), restriction == null ? null : restriction.hql()));
+            } catch (NoSuchFieldException e) {
+                // swallow, should not happen
+            }
+        }
+    }
+
+    public List<Mapping> getMapping(List<String> layerKeys) {
+        return layerKeys.stream().map(key -> mapping.get(key)).filter(definition -> definition != null).collect(Collectors.toList());
+    }
 }

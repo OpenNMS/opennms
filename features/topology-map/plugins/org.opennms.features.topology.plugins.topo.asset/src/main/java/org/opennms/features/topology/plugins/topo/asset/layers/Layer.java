@@ -26,28 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.decorator;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import org.opennms.features.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
-import org.opennms.features.topology.plugins.topo.asset.layers.AssetLayer;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
+public interface Layer<T> {
+    // The id of the layer
+    String getId();
 
-/**
- * Decorates each node in an Asset Layer.
- *
- * @author mvrueden
- * @see AssetLayer
- */
-public class AssetItemNodeDecorator implements NodeDecorator<String> {
+    // the namespace of the layer
+    String getNamespace();
 
-    @Override
-    public void decorate(GraphMLNode graphMLNode, String value) {
-        graphMLNode.setProperty(GraphMLProperties.LABEL, value);
-    }
+    // The label of the layer
+    String getLabel();
 
-    @Override
-    public String getId(String value) {
-        return value;
-    }
+    // The description of the layer
+    String getDescription();
+
+    // Decorator to build the node for this layer
+    NodeDecorator<T> getNodeDecorator();
+
+    // The item provider to build nodes from
+    ItemProvider<T> getItemProvider();
+
+    // The generator fo
+    IdGenerator getIdGenerator();
 }

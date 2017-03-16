@@ -26,21 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers.definition;
+package org.opennms.features.topology.plugins.topo.asset.layers;
 
 import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphMLNode;
-import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 
 public enum Layers {
     @Key("asset-country")
-    @Restriction("assetRecord.geolocation.country is not null")
-    ASSET_COUNTRY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.country is not null")
+    ASSET_COUNTRY(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -59,8 +56,8 @@ public enum Layers {
     }),
 
     @Key("asset-address1")
-    @Restriction("assetRecord.geolocation.address1 is not null")
-    ASSET_ADDRESS1(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.address1 is not null")
+    ASSET_ADDRESS1(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -79,8 +76,8 @@ public enum Layers {
     }),
 
     @Key("asset-address2")
-    @Restriction("assetRecord.geolocation.address2 is not null")
-    ASSET_ADDRESS2(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.address2 is not null")
+    ASSET_ADDRESS2(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -99,8 +96,8 @@ public enum Layers {
     }),
 
     @Key("asset-city")
-    @Restriction("assetRecord.geolocation.city is not null")
-    ASSET_CITY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.city is not null")
+    ASSET_CITY(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -119,8 +116,8 @@ public enum Layers {
     }),
 
     @Key("asset-zip")
-    @Restriction("assetRecord.geolocation.zip is not null")
-    ASSET_ZIP(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.zip is not null")
+    ASSET_ZIP(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -139,8 +136,8 @@ public enum Layers {
     }),
 
     @Key("asset-state")
-    @Restriction("assetRecord.geolocation.state is not null")
-    ASSET_STATE(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.state is not null")
+    ASSET_STATE(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -159,8 +156,8 @@ public enum Layers {
     }),
 
     @Key("asset-latitude")
-    @Restriction("assetRecord.geolocation.latitude is not null")
-    ASSET_LATITUDE(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.latitude is not null")
+    ASSET_LATITUDE(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -182,8 +179,8 @@ public enum Layers {
     }),
 
     @Key("asset-longitude")
-    @Restriction("assetRecord.geolocation.longitude is not null")
-    ASSET_LONGITUDE(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.geolocation.longitude is not null")
+    ASSET_LONGITUDE(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -205,8 +202,8 @@ public enum Layers {
     }),
 
     @Key("asset-building")
-    @Restriction("assetRecord.building is not null")
-    ASSET_BUILDING(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.building is not null")
+    ASSET_BUILDING(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -225,8 +222,8 @@ public enum Layers {
     }),
 
     @Key("asset-region")
-    @Restriction("assetRecord.region is not null")
-    ASSET_REGION(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.region is not null")
+    ASSET_REGION(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -245,8 +242,8 @@ public enum Layers {
     }),
 
     @Key("asset-division")
-    @Restriction("assetRecord.division is not null")
-    ASSET_DIVISION(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.division is not null")
+    ASSET_DIVISION(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -265,8 +262,8 @@ public enum Layers {
     }),
 
     @Key("asset-department")
-    @Restriction("assetRecord.department is not null")
-    ASSET_DEPARTMENT(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.department is not null")
+    ASSET_DEPARTMENT(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -285,8 +282,8 @@ public enum Layers {
     }),
 
     @Key("asset-floor")
-    @Restriction("assetRecord.floor is not null")
-    ASSET_FLOOR(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.floor is not null")
+    ASSET_FLOOR(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -305,8 +302,8 @@ public enum Layers {
     }),
 
     @Key("asset-room")
-    @Restriction("assetRecord.room is not null")
-    ASSET_ROOM(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.room is not null")
+    ASSET_ROOM(new AssetLayer() {
 
         @Override
         public String getId() {
@@ -325,8 +322,8 @@ public enum Layers {
     }),
 
     @Key("asset-rack")
-    @Restriction("assetRecord.rack is not null")
-    ASSET_RACK(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.rack is not null")
+    ASSET_RACK(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-rack";
@@ -344,8 +341,8 @@ public enum Layers {
     }),
 
     @Key("asset-slot")
-    @Restriction("assetRecord.slot is not null")
-    ASSET_SLOT(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.slot is not null")
+    ASSET_SLOT(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-slot";
@@ -363,8 +360,8 @@ public enum Layers {
     }),
 
     @Key("asset-port")
-    @Restriction("assetRecord.port is not null")
-    ASSET_PORT(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.port is not null")
+    ASSET_PORT(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-port";
@@ -382,8 +379,8 @@ public enum Layers {
     }),
 
     @Key("asset-circuitid")
-    @Restriction("assetRecord.circuitId is not null")
-    ASSET_CIRCUIT_ID(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.circuitId is not null")
+    ASSET_CIRCUIT_ID(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-circuitid";
@@ -401,8 +398,8 @@ public enum Layers {
     }),
 
     @Key("asset-category")
-    @Restriction("assetRecord.category is not null")
-    ASSET_CATEGORY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.category is not null")
+    ASSET_CATEGORY(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-category";
@@ -420,8 +417,8 @@ public enum Layers {
     }),
 
     @Key("asset-displaycategory")
-    @Restriction("assetRecord.displayCategory is not null")
-    ASSET_DISPLAY_CATEGORY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.displayCategory is not null")
+    ASSET_DISPLAY_CATEGORY(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-displaycategory";
@@ -439,8 +436,8 @@ public enum Layers {
     }),
 
     @Key("asset-notifycategory")
-    @Restriction("assetRecord.notifyCategory is not null")
-    ASSET_NOTIFY_CATEGORY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.notifyCategory is not null")
+    ASSET_NOTIFY_CATEGORY(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-notifycategory";
@@ -458,8 +455,8 @@ public enum Layers {
     }),
 
     @Key("asset-pollercategory")
-    @Restriction("assetRecord.pollerCategory is not null")
-    ASSET_POLLER_CATEGORY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.pollerCategory is not null")
+    ASSET_POLLER_CATEGORY(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-pollercategory";
@@ -477,8 +474,8 @@ public enum Layers {
     }),
 
     @Key("asset-thresholdcategory")
-    @Restriction("assetRecord.thresholdCategory is not null")
-    ASSET_THRESHOLD_CATEGORY(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.thresholdCategory is not null")
+    ASSET_THRESHOLD_CATEGORY(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-thresholdcategory";
@@ -496,8 +493,8 @@ public enum Layers {
     }),
 
     @Key("asset-managedobjecttype")
-    @Restriction("assetRecord.managedObjectType is not null")
-    ASSET_MANAGED_OBJECT_TYPE(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.managedObjectType is not null")
+    ASSET_MANAGED_OBJECT_TYPE(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-managedobjecttype";
@@ -515,8 +512,8 @@ public enum Layers {
     }),
 
     @Key("asset-managedobjectinstance")
-    @Restriction("assetRecord.managedObjectInstance is not null")
-    ASSET_MANAGED_OBJECT_INSTANCE(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.managedObjectInstance is not null")
+    ASSET_MANAGED_OBJECT_INSTANCE(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-managedobjectinstance";
@@ -534,8 +531,8 @@ public enum Layers {
     }),
 
     @Key("asset-manufacturer")
-    @Restriction("assetRecord.manufacturer is not null")
-    ASSET_MANUFACTURER(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.manufacturer is not null")
+    ASSET_MANUFACTURER(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-manufacturer";
@@ -553,8 +550,8 @@ public enum Layers {
     }),
 
     @Key("asset-vendor")
-    @Restriction("assetRecord.vendor is not null")
-    ASSET_VENDOR(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.vendor is not null")
+    ASSET_VENDOR(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-vendor";
@@ -572,8 +569,8 @@ public enum Layers {
     }),
 
     @Key("asset-modelnumber")
-    @Restriction("assetRecord.modelNumber is not null")
-    ASSET_MODEL_NUMBER(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.modelNumber is not null")
+    ASSET_MODEL_NUMBER(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-modelnumber";
@@ -591,8 +588,8 @@ public enum Layers {
     }),
 
     @Key("asset-description")
-    @Restriction("assetRecord.description is not null")
-    ASSET_DESCRIPTION(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.description is not null")
+    ASSET_DESCRIPTION(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-description";
@@ -610,8 +607,8 @@ public enum Layers {
     }),
 
     @Key("asset-operatingsystem")
-    @Restriction("assetRecord.operatingSystem is not null")
-    ASSET_OPERATING_SYSTEM(new AssetLayerDefinition() {
+    @Restriction(hql = "assetRecord.operatingSystem is not null")
+    ASSET_OPERATING_SYSTEM(new AssetLayer() {
         @Override
         public String getId() {
             return "asset-operatingsystem";
@@ -629,8 +626,8 @@ public enum Layers {
     }),
 
     @Key("node-nodelabel")
-    @Restriction("label is not null")
-    NODE_LABEL(new AssetLayerDefinition() {
+    @Restriction(hql = "label is not null")
+    NODE_LABEL(new AssetLayer() {
         @Override
         public String getId() {
             return "node-nodelabel";
@@ -648,8 +645,8 @@ public enum Layers {
     }),
 
     @Key("node-nodeid")
-    @Restriction("id is not null")
-    NODE_ID(new AssetLayerDefinition() {
+    @Restriction(hql = "id is not null")
+    NODE_ID(new AssetLayer() {
         @Override
         public String getId() {
             return "node-id";
@@ -667,8 +664,8 @@ public enum Layers {
     }),
 
     @Key("node-foreignsource")
-    @Restriction("foreignSource is not null")
-    NODE_FOREIGN_SOURCE(new AssetLayerDefinition() {
+    @Restriction(hql = "foreignSource is not null")
+    NODE_FOREIGN_SOURCE(new AssetLayer() {
         @Override
         public String getId() {
             return "node-foreignsource";
@@ -686,8 +683,8 @@ public enum Layers {
     }),
 
     @Key("node-foreignid")
-    @Restriction("foreignId is not null")
-    NODE_FOREIGN_ID(new AssetLayerDefinition() {
+    @Restriction(hql = "foreignId is not null")
+    NODE_FOREIGN_ID(new AssetLayer() {
         @Override
         public String getId() {
             return "node-foreignid";
@@ -705,8 +702,8 @@ public enum Layers {
     }),
 
     @Key("node-nodesysname")
-    @Restriction("sysName is not null")
-    NODE_SYSTEM_NAME(new AssetLayerDefinition() {
+    @Restriction(hql = "sysName is not null")
+    NODE_SYSTEM_NAME(new AssetLayer() {
         @Override
         public String getId() {
             return "node-nodesysname";
@@ -724,8 +721,8 @@ public enum Layers {
     }),
 
     @Key("node-nodesyslocation")
-    @Restriction("sysLocation is not null")
-    NODE_SYSTEM_LOCATION(new AssetLayerDefinition() {
+    @Restriction(hql = "sysLocation is not null")
+    NODE_SYSTEM_LOCATION(new AssetLayer() {
         @Override
         public String getId() {
             return "node-nodesyslocation";
@@ -743,8 +740,8 @@ public enum Layers {
     }),
 
     @Key("node-operatingsystem")
-    @Restriction("operatingSystem is not null")
-    NODE_OPERATING_SYSTEM(new AssetLayerDefinition() {
+    @Restriction(hql = "operatingSystem is not null")
+    NODE_OPERATING_SYSTEM(new AssetLayer() {
         @Override
         public String getId() {
             return "node-operatingsystem";
@@ -762,8 +759,8 @@ public enum Layers {
     }),
 
     @Key("parent-nodelabel")
-    @Restriction("parent.label is not null")
-    PARENT_NODE_LABEL(new AssetLayerDefinition() {
+    @Restriction(hql = "parent.label is not null")
+    PARENT_NODE_LABEL(new AssetLayer() {
         @Override
         public String getId() {
             return "parent-nodelabel";
@@ -781,8 +778,8 @@ public enum Layers {
     }),
 
     @Key("parent-nodeid")
-    @Restriction("parent.id is not null")
-    PARENT_NODE_ID(new AssetLayerDefinition() {
+    @Restriction(hql = "parent.id is not null")
+    PARENT_NODE_ID(new AssetLayer() {
         @Override
         public String getId() {
             return "parent-nodeid";
@@ -800,8 +797,8 @@ public enum Layers {
     }),
 
     @Key("parent-foreignsource")
-    @Restriction("parent.foreignSource is not null")
-    PARENT_FOREIGN_SOURCE(new AssetLayerDefinition() {
+    @Restriction(hql = "parent.foreignSource is not null")
+    PARENT_FOREIGN_SOURCE(new AssetLayer() {
         @Override
         public String getId() {
             return "parent-foreignsource";
@@ -819,8 +816,8 @@ public enum Layers {
     }),
 
     @Key("parent-foreignid")
-    @Restriction("parent.foreignId is not null")
-    PARENT_FOREIGN_ID(new AssetLayerDefinition() {
+    @Restriction(hql = "parent.foreignId is not null")
+    PARENT_FOREIGN_ID(new AssetLayer() {
         @Override
         public String getId() {
             return "parent-foreignid";
@@ -838,8 +835,8 @@ public enum Layers {
     }),
 
     @Key("node-categories")
-    @Restriction("categories is not empty")
-    NODE_CATEGORIES(new AssetLayerDefinition() {
+    @Restriction(hql = "categories is not empty")
+    NODE_CATEGORIES(new AssetLayer() {
         @Override
         public String getId() {
             return "node-categories";
@@ -883,13 +880,13 @@ public enum Layers {
         }
     });
 
-    private final LayerDefinition layerDefinition;
+    private final Layer layer;
 
-    Layers(LayerDefinition layerDefinition) {
-        this.layerDefinition = layerDefinition;
+    Layers(Layer layer) {
+        this.layer = layer;
     }
 
-    public LayerDefinition getLayerDefinition() {
-        return layerDefinition;
+    public Layer getLayer() {
+        return layer;
     }
 }

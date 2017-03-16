@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.util;
 
 import java.util.List;
 import java.util.Map;
@@ -35,19 +35,17 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
-import org.opennms.features.topology.plugins.topo.asset.repo.xml.NodeInfoRepositoryXML;
-import org.opennms.features.topology.plugins.topo.asset.util.AssetBuilder;
-import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
+import org.opennms.features.topology.plugins.topo.asset.NodeProvider;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class TestDataProvider implements DataProvider {
+public class TestNodeProvider implements NodeProvider {
 
-    private static final String NODE_TEST_DATA_FILE_NAME="/nodeInfoMockTestData2.xml";
+    private static final String NODE_TEST_DATA_FILE_NAME="/mock-testdata.xml";
 
     @Override
-    public List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings) {
+    public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
             NodeInfoRepositoryXML nodeInfoRepositoryXML = JAXB.unmarshal(getClass().getResourceAsStream(NODE_TEST_DATA_FILE_NAME), NodeInfoRepositoryXML.class);
             final List<OnmsNode> nodes = nodeInfoRepositoryXML.getNodeInfoList().stream().map(eachEntry -> {
                 final NodeBuilder nodeBuilder = new NodeBuilder().withId(eachEntry.getNodeId());

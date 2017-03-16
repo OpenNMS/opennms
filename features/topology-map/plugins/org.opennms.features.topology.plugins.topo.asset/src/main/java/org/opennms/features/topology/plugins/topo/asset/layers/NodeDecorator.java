@@ -30,8 +30,25 @@ package org.opennms.features.topology.plugins.topo.asset.layers;
 
 import org.opennms.features.graphml.model.GraphMLNode;
 
+/**
+ * Decorator to set the fields of each {@link GraphMLNode} in a {@link Layer}.
+ *
+ * @author mvrueden
+ *
+ * @param <T> the type of the value each {@link org.opennms.netmgt.model.OnmsNode} is converted to.
+ * @see ItemProvider
+ */
 public interface NodeDecorator<T> {
     void decorate(GraphMLNode graphMLNode, T value);
 
+    /**
+     * Returns the {@link GraphMLNode}'s id for the given <code>value</code>.
+     *
+     * DOES NOT CONSIDER HIERARCHY.
+     *
+     * @param value The <code>code</code>.
+     * @return the {@link GraphMLNode}'s id for the given <code>value</code>.
+     * @see IdGenerator
+     */
     String getId(T value);
 }

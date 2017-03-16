@@ -33,6 +33,11 @@ import org.opennms.features.topology.plugins.topo.asset.layers.NodeDecorator;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 
+/**
+ * Decorator to decorate {@link OnmsNode}s.
+ *
+ * @author mvrueden
+ */
 public class NodeItemNodeDecorator implements NodeDecorator<OnmsNode> {
 
     @Override

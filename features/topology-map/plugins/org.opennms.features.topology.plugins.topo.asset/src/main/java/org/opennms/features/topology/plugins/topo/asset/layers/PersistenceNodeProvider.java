@@ -31,24 +31,24 @@ package org.opennms.features.topology.plugins.topo.asset.layers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.features.topology.plugins.topo.asset.DataProvider;
+import org.opennms.features.topology.plugins.topo.asset.NodeProvider;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PersistenceDataProvider implements DataProvider {
+public class PersistenceNodeProvider implements NodeProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PersistenceDataProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PersistenceNodeProvider.class);
 
     private final GenericPersistenceAccessor genericPersistenceAccessor;
 
-    public PersistenceDataProvider(GenericPersistenceAccessor genericPersistenceAccessor) {
+    public PersistenceNodeProvider(GenericPersistenceAccessor genericPersistenceAccessor) {
         this.genericPersistenceAccessor = genericPersistenceAccessor;
     }
 
     @Override
-    public List<OnmsNode> getNodes(List<LayerMapping.Mapping> mappings) {
+    public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
         final StringBuilder queryBuilder = new StringBuilder("Select n from OnmsNode n join n.assetRecord assetRecord");
         final List<String> restrictions = mappings.stream().map(eachMapping -> eachMapping.getRestriction()).filter(hql -> hql != null).collect(Collectors.toList());
         if (!restrictions.isEmpty()) {

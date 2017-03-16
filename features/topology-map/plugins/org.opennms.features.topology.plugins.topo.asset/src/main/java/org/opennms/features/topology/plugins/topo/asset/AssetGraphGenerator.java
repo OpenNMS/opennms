@@ -38,9 +38,9 @@ import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
+import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
-import org.opennms.features.topology.plugins.topo.asset.layers.definition.LayerDefinitionBuilder;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinitionBuilder;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -49,21 +49,21 @@ import org.slf4j.LoggerFactory;
 public class AssetGraphGenerator {
 	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphGenerator.class);
 
-	private final DataProvider dataProvider;
+	private final NodeProvider nodeProvider;
 
-	public AssetGraphGenerator(DataProvider dataProvider) {
-		this.dataProvider = Objects.requireNonNull(dataProvider);
+	public AssetGraphGenerator(NodeProvider nodeProvider) {
+		this.nodeProvider = Objects.requireNonNull(nodeProvider);
 	}
 
 	public GraphML generateGraphs(GeneratorConfig config) {
-		final List<LayerMapping.Mapping> layerMappings = new LayerMapping().getMapping(config.getLayerHierarchies());
-		final List<OnmsNode> nodes = dataProvider.getNodes(layerMappings);
+		final List<LayerDefinition.Mapping> layerMappings = new LayerDefinition().getMapping(config.getLayerHierarchies());
+		final List<OnmsNode> nodes = nodeProvider.getNodes(layerMappings);
 
 		// Define Layers
-		final List<LayerDefinition> layerDefinitions = layerMappings.stream().map(mapping -> mapping.getLayerDefinition()).collect(Collectors.toList());
+		final List<Layer> layers = layerMappings.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
 
 		// Add last Layer for Nodes
-		layerDefinitions.add(new LayerDefinitionBuilder()
+		layers.add(new LayerDefinitionBuilder()
 				.withId("nodes")
 				.withNamespace("nodes")
 				.withItemProvider(node -> node)
@@ -72,7 +72,7 @@ public class AssetGraphGenerator {
 		);
 
 		// Ensure that all elements in the nodes do have values set
-		layerDefinitions.forEach(layerDefinition -> {
+		layers.forEach(layerDefinition -> {
 			List<OnmsNode> nodeWithNullValues = nodes.stream().filter(n -> layerDefinition.getItemProvider().getItem(n) == null).collect(Collectors.toList());
 			if (!nodeWithNullValues.isEmpty()) {
 				LOG.debug("Found nodes with null value for layer (id: {}, label: {}). Removing nodes {}",
@@ -90,12 +90,12 @@ public class AssetGraphGenerator {
 
 		// Build each Graph
 		int index = 0;
-		for (LayerDefinition layerDefinition : layerDefinitions) {
+		for (Layer layer : layers) {
 			GraphMLGraph layerGraph = new GraphMLGraph();
-			layerGraph.setId(config.getProviderId() + ":" + layerDefinition.getId());
-			layerGraph.setProperty(GraphMLProperties.NAMESPACE, config.getProviderId() + ":" + layerDefinition.getNamespace());
+			layerGraph.setId(config.getProviderId() + ":" + layer.getId());
+			layerGraph.setProperty(GraphMLProperties.NAMESPACE, config.getProviderId() + ":" + layer.getNamespace());
 			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
-//            layerGraph.setProperty(GraphMLProperties.DESCRIPTION, layerDefinition.getDescription());
+//            layerGraph.setProperty(GraphMLProperties.DESCRIPTION, layer.getDescription());
 			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "");
 			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
 			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, index);
@@ -103,14 +103,14 @@ public class AssetGraphGenerator {
 
 			// Build layer for nodes
 			for (OnmsNode eachNode : nodes) {
-				final Object eachItem = layerDefinition.getItemProvider().getItem(eachNode);
+				final Object eachItem = layer.getItemProvider().getItem(eachNode);
 				if (eachItem != null) {
-					List<LayerDefinition> processedLayers = layerDefinitions.subList(0, index);
-					String id = layerDefinition.getIdGenerator().generateId(processedLayers, eachNode, layerDefinition.getNodeDecorator().getId(eachItem));
+					List<Layer> processedLayers = layers.subList(0, index);
+					String id = layer.getIdGenerator().generateId(processedLayers, eachNode, layer.getNodeDecorator().getId(eachItem));
 					if (layerGraph.getNodeById(id) == null) {
 						GraphMLNode node = new GraphMLNode();
 						node.setId(id);
-						layerDefinition.getNodeDecorator().decorate(node, eachItem);
+						layer.getNodeDecorator().decorate(node, eachItem);
 						layerGraph.addNode(node);
 					}
 				}
@@ -122,7 +122,7 @@ public class AssetGraphGenerator {
 		// Now link all nodes, but only if there are at least 2 layers
 		if (graphML.getGraphs().size() > 1) {
 			nodes.forEach(n -> {
-				List<GraphMLNode> path = getPath(n, graphML.getGraphs(), layerDefinitions);
+				List<GraphMLNode> path = getPath(n, graphML.getGraphs(), layers);
 				if (path.size() != graphML.getGraphs().size() ) {
 					throw new IllegalStateException("TODO MVR");
 				}
@@ -158,20 +158,20 @@ public class AssetGraphGenerator {
 		return graphML;
 	}
 
-	private static List<GraphMLNode> getPath(OnmsNode node, List<GraphMLGraph> graphs, List<LayerDefinition> layerDefinitions) {
-		if (graphs.size() != layerDefinitions.size()) {
+	private static List<GraphMLNode> getPath(OnmsNode node, List<GraphMLGraph> graphs, List<Layer> layers) {
+		if (graphs.size() != layers.size()) {
 			// TODO MVR not computable
 		}
 
 		final List<GraphMLNode> path = new ArrayList<>();
 		for (int i=0; i<graphs.size(); i++) {
 			final GraphMLGraph graph = graphs.get(i); // the layer graph
-			final LayerDefinition layerDefinition = layerDefinitions.get(i); // the layer definition
+			final Layer layer = layers.get(i); // the layer definition
 
 			// the the value for the specified node in that layer (it must exist)
-			final Object item = layerDefinition.getItemProvider().getItem(node);
-			final String itemId = layerDefinition.getNodeDecorator().getId(item);
-			final String nodeId = layerDefinition.getIdGenerator().generateId(layerDefinitions.subList(0, i), node, itemId);
+			final Object item = layer.getItemProvider().getItem(node);
+			final String itemId = layer.getNodeDecorator().getId(item);
+			final String nodeId = layer.getIdGenerator().generateId(layers.subList(0, i), node, itemId);
 
 			final GraphMLNode GraphMlNode = graph.getNodeById(nodeId);
 			if (GraphMlNode != null) {
