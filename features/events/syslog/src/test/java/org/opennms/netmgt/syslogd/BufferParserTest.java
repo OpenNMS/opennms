@@ -73,8 +73,8 @@ public class BufferParserTest {
 		//String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
 		ByteBuffer incoming = ByteBuffer.wrap(abc.getBytes());
 
-		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
-		//BufferParserFactory grokFactory = parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		//BufferParserFactory grokFactory = parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
 		ByteBufferParser<EventBuilder> grokParser = new SingleSequenceParser(grokStages);
 
 		// SyslogNG format
@@ -134,28 +134,28 @@ public class BufferParserTest {
 
 		RadixTreeParser radixParser = new RadixTreeParser();
 		//radixParser.teach(grokStages.toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
 
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{STRING:repeatedmonth} %{INTEGER:repeatedday} %{INTEGER:repeatedhour}:%{INTEGER:repeatedminute}:%{INTEGER:repeatedsecond} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{STRING:repeatedmonth} %{INT:repeatedday} %{INT:repeatedhour}:%{INT:repeatedminute}:%{INT:repeatedsecond} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 
 		int iterations = 100000;
 
@@ -324,7 +324,7 @@ public class BufferParserTest {
 
 	@Test
 	public void testGrokParser() {
-		GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{MONTH:month} %{INTEGER:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INTEGER:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class BufferParserTest {
 	 */
 	@Test
 	public void testGrokWithAdjacentPatterns() {
-		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("%{INTEGER:a}%{MONTH:b}%{INTEGER:c}%{STRING:d} %{INTEGER:e}"));
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("%{INT:a}%{MONTH:b}%{INT:c}%{STRING:d} %{INT:e}"));
 
 		Event event = parser.parse(ByteBuffer.wrap("435Jan333fghj 999".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
 		assertEquals("435", event.getParm("a").getValue().getContent());
@@ -354,7 +354,7 @@ public class BufferParserTest {
 	 */
 	@Test
 	public void testGrokWithAdjacentEscape() {
-		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("\\5%{INTEGER:a}\\%\\%%{MONTH:b}\\f"));
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("\\5%{INT:a}\\%\\%%{MONTH:b}\\f"));
 
 		Event event = parser.parse(ByteBuffer.wrap("56666%%Febf".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
 		assertEquals("6666", event.getParm("a").getValue().getContent());
@@ -392,35 +392,35 @@ public class BufferParserTest {
 	@Test
 	public void testGrokRadixTree() {
 		RadixTreeParser radixParser = new RadixTreeParser();
-//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
-//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
+//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
+//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+//		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{TIMESTAMP_ISO8601:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
 
 		// RFC 5424
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{INTEGER:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:structureddata} %{STRING:message}").toArray(new ParserStage[0]));
 
 		// RFC 3164
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{STRING:repeatedmonth} %{INTEGER:repeatedday} %{INTEGER:repeatedhour}:%{INTEGER:repeatedminute}:%{INTEGER:repeatedsecond} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{MONTH:month} %{INTEGER:day} %{INTEGER:hour}:%{INTEGER:minute}:%{INTEGER:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}[%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} [%{INTEGER:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}> %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{STRING:repeatedmonth} %{INT:repeatedday} %{INT:repeatedhour}:%{INT:repeatedminute}:%{INT:repeatedsecond} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}[%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 
 		System.out.println("Parser tree: " + radixParser.tree.toString());
 		System.out.println("Parser tree size: " + radixParser.tree.size());
@@ -429,7 +429,7 @@ public class BufferParserTest {
 	@Test
 	public void testParseSingleMessage() {
 		RadixTreeParser radixParser = new RadixTreeParser();
-		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INTEGER:facilityPriority}>%{STRING:messageId}: %{INTEGER:year}-%{INTEGER:month}-%{INTEGER:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{STRING:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:processName}: %{STRING:message}").toArray(new ParserStage[0]));
 		EventBuilder bldr = radixParser.parse(ByteBuffer.wrap("<31>main: 2010-08-19 localhost foo%d: load test %d on tty1".getBytes(StandardCharsets.US_ASCII))).join();
 		assertNotNull(bldr);
 		Event event = bldr.getEvent();

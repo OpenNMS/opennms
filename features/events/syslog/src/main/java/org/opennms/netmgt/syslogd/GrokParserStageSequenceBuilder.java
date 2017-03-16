@@ -48,7 +48,7 @@ public abstract class GrokParserStageSequenceBuilder {
 
 	private static enum GrokPattern {
 		STRING,
-		INTEGER,
+		INT,
 		MONTH
 	}
 
@@ -458,7 +458,7 @@ SNMP-only:
 					case STRING:
 						// TODO: We need to peek forward to the escaped character and then do the same as the default case
 						throw new UnsupportedOperationException("Cannot support escape sequence directly after a pattern yet");
-					case INTEGER:
+					case INT:
 						factory.integer(semanticIntegerToEventBuilder(semanticString));
 						break;
 					case MONTH:
@@ -474,7 +474,7 @@ SNMP-only:
 					case STRING:
 						// TODO: Can we handle this case?
 						throw new IllegalArgumentException(String.format("Invalid pattern: %s:%s does not have a trailing delimiter, cannot determine end of string", patternString, semanticString));
-					case INTEGER:
+					case INT:
 						factory.integer(semanticIntegerToEventBuilder(semanticString));
 						break;
 					case MONTH:
@@ -491,7 +491,7 @@ SNMP-only:
 						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
 						factory.whitespace();
 						break;
-					case INTEGER:
+					case INT:
 						factory.intUntilWhitespace(semanticIntegerToEventBuilder(semanticString));
 						factory.whitespace();
 						break;
@@ -507,7 +507,7 @@ SNMP-only:
 						factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
 						factory.character(c);
 						break;
-					case INTEGER:
+					case INT:
 						factory.integer(semanticIntegerToEventBuilder(semanticString));
 						factory.character(c);
 						break;
@@ -535,7 +535,7 @@ SNMP-only:
 			case STRING:
 				factory.terminal().string(semanticStringToEventBuilder(semanticString));
 				break;
-			case INTEGER:
+			case INT:
 				factory.terminal().integer(semanticIntegerToEventBuilder(semanticString));
 				break;
 			case MONTH:
