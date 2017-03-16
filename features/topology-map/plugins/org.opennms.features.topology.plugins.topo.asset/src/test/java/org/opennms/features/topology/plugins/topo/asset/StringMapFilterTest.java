@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.*;
 
@@ -8,16 +8,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.junit.Test;
-import org.opennms.features.topology.plugins.topo.asset.repo.NodeInfoRepository;
 import org.opennms.features.topology.plugins.topo.asset.repo.StringMapFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
 
 /**
  * TEST  filter name value pair

@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.*;
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.List;
 import java.util.Map;
@@ -35,10 +35,11 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 
-import org.opennms.features.topology.plugins.topo.asset.DataProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.repo.xml.NodeInfoRepositoryXML;
+import org.opennms.features.topology.plugins.topo.asset.util.AssetBuilder;
+import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class TestDataProvider implements DataProvider {

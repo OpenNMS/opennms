@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.List;
 
@@ -40,6 +40,7 @@ import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.features.topology.plugins.topo.asset.layers.PersistenceDataProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.definition.Layers;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.NodeDao;

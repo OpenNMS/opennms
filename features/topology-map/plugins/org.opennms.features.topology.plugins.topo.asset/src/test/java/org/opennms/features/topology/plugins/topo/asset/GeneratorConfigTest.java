@@ -1,12 +1,12 @@
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 
 public class GeneratorConfigTest {
 

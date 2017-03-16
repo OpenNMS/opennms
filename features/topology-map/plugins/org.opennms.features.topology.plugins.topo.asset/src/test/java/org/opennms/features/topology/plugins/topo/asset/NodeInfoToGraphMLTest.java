@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.topo.asset.test;
+package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,11 +13,9 @@ import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
-import org.opennms.features.topology.plugins.topo.asset.AssetGraphGenerator;
-import org.opennms.features.topology.plugins.topo.asset.DataProvider;
-import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerMapping;
 import org.opennms.features.topology.plugins.topo.asset.repo.NodeParamLabels;
+import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
