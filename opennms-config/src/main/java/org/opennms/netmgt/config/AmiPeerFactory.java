@@ -49,13 +49,13 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
 import org.opennms.netmgt.config.ami.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is the main repository for AMI configuration information used by
@@ -397,7 +397,7 @@ public class AmiPeerFactory {
     
                 // check the ranges
                 for (final Range rng : def.getRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
+                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress().orElse(null)), rng.getBegin(), rng.getEnd())) {
                         setAmiAgentConfig(agentConfig, def );
                         break DEFLOOP;
                     }
@@ -445,12 +445,7 @@ public class AmiPeerFactory {
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(final Definition def) {
-        if (def.getUsername() != null) {
-            return def.getUsername();
-        } else if (m_config.getUsername() != null) {
-            return m_config.getUsername();
-        }
-        return AmiAgentConfig.DEFAULT_USERNAME;
+        return def.getUsername().orElse(m_config.getUsername().orElse(AmiAgentConfig.DEFAULT_USERNAME));
     }
 
      /**
@@ -459,12 +454,7 @@ public class AmiPeerFactory {
      * @return a string containing the password. will return the default if none is set.
      */
     private String determinePassword(final Definition def) {
-        if (def.getPassword() != null) {
-            return def.getPassword();
-        } else if (m_config.getPassword() != null) {
-            return def.getPassword();
-        }
-        return AmiAgentConfig.DEFAULT_PASSWORD;
+        return def.getPassword().orElse(m_config.getPassword().orElse(AmiAgentConfig.DEFAULT_PASSWORD));
     }
 
     /**
@@ -473,17 +463,17 @@ public class AmiPeerFactory {
      * @return a long containing the timeout, AmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
     private long determineTimeout(final Definition def) {
-        if (def.hasTimeout() && def.getTimeout() != 0) {
-            return def.getTimeout().longValue();
-        } else if (m_config.getTimeout() != 0) {
-            return (long)m_config.getTimeout();
+        if (def.getTimeout().isPresent() && def.getTimeout().get() != 0) {
+            return def.getTimeout().get();
+        } else if (m_config.getTimeout() != null && m_config.getTimeout() != 0) {
+            return m_config.getTimeout();
         }
         return (long) AmiAgentConfig.DEFAULT_TIMEOUT;
     }
 
-    private int determineRetries(final Definition def) {        
-        if (def.hasRetry() && def.getRetry() != 0) {
-            return def.getRetry();
+    private int determineRetries(final Definition def) {   
+        if (def.getRetry().isPresent() && def.getRetry().get() != 0) {
+            return def.getRetry().get();
         } else if (m_config.getRetry() != 0) {
             return m_config.getRetry();
         }

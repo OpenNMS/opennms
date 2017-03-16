@@ -126,9 +126,9 @@ public class AsteriskSIPPeerMonitor extends AbstractServiceMonitor {
 
 		//setting up AMI connection	
 		LOG.debug("{}: Creating new AMI-Connection: {}:{}, {}/{}", svc.getSvcName(), svc.getIpAddr(), amiConfig.getPort(), amiConfig.getUsername(), amiConfig.getPassword());
-		ManagerConnectionFactory factory = new ManagerConnectionFactory(svc.getIpAddr(), amiConfig.getPort(), amiConfig.getUsername(), amiConfig.getPassword());
+		ManagerConnectionFactory factory = new ManagerConnectionFactory(svc.getIpAddr(), amiConfig.getPort().orElse(null), amiConfig.getUsername().orElse(null), amiConfig.getPassword().orElse(null));
 		ManagerConnection managerConnection;
-		if(amiConfig.getUseTls())
+		if(amiConfig.getUseTls().orElse(false))
 		{
 			managerConnection = factory.createSecureManagerConnection();
 		}

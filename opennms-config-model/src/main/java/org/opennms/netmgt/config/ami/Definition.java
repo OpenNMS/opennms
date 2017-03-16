@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -366,8 +367,8 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Password'.
      */
-    public String getPassword() {
-        return this._password;
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(this._password);
     }
 
     /**
@@ -375,8 +376,8 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Port'.
      */
-    public Integer getPort() {
-        return this._port;
+    public Optional<Integer> getPort() {
+        return Optional.ofNullable(this._port);
     }
 
     /**
@@ -437,8 +438,8 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Retry'.
      */
-    public Integer getRetry() {
-        return this._retry;
+    public Optional<Integer> getRetry() {
+        return Optional.ofNullable(this._retry);
     }
 
     /**
@@ -500,8 +501,8 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Timeout'.
      */
-    public Integer getTimeout() {
-        return this._timeout;
+    public Optional<Integer> getTimeout() {
+        return Optional.ofNullable(this._timeout);
     }
 
     /**
@@ -518,8 +519,8 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Username'.
      */
-    public String getUsername() {
-        return this._username;
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(this._username);
     }
 
     /**

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.ami;
 
 import java.net.InetAddress;
+import java.util.Optional;
 
 /**
  * <p>AmiAgentConfig class.</p>
@@ -53,12 +54,12 @@ public class AmiAgentConfig {
     public static final boolean DEFAULT_USE_TLS = false;
     
     private InetAddress m_address;
-    private int m_timeout;
-    private int m_retries;
+    private Integer m_timeout;
+    private Integer m_retries;
     private String m_username;
     private String m_password;
-    private int m_port;
-    private boolean m_useTls;
+    private Integer m_port;
+    private Boolean m_useTls;
     
     String user = "";
 	String pass = "";
@@ -113,8 +114,8 @@ public class AmiAgentConfig {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public InetAddress getAddress() {
-        return m_address;
+    public Optional<InetAddress> getAddress() {
+        return Optional.ofNullable(m_address);
     }
 
     /**
@@ -129,46 +130,37 @@ public class AmiAgentConfig {
     /**
      * <p>getTimeout</p>
      *
-     * @return a int.
+     * @return an Integer.
      */
-    public int getTimeout() {
-        return m_timeout;
+    public Optional<Integer> getTimeout() {
+        return Optional.ofNullable(m_timeout);
     }
 
     /**
      * <p>setTimeout</p>
      *
-     * @param timeout a int.
+     * @param timeout an Integer.
      */
-    public void setTimeout(int timeout) {
+    public void setTimeout(final Integer timeout) {
         m_timeout = timeout;
     }
 
     /**
      * <p>getRetries</p>
      *
-     * @return a int.
+     * @return an Integer.
      */
-    public int getRetries() {
-        return m_retries;
+    public Optional<Integer> getRetries() {
+        return Optional.ofNullable(m_retries);
     }
 
     /**
      * <p>setRetries</p>
      *
-     * @param retries a int.
+     * @param retries an Integer.
      */
-    public void setRetries(int retries) {
+    public void setRetries(final Integer retries) {
         m_retries = retries;
-    }
-
-    /**
-     * <p>setPassword</p>
-     *
-     * @param password a {@link java.lang.String} object.
-     */
-    public void setPassword(String password) {
-        m_password = password;
     }
 
     /**
@@ -176,18 +168,27 @@ public class AmiAgentConfig {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getPassword() {
-        return m_password;
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(m_password);
     }
 
+
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
+    public void setPassword(final String password) {
+        m_password = password;
+    }
 
     /**
      * <p>getUsername</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getUsername() {
-        return m_username;
+    public Optional<String> getUsername() {
+        return Optional.ofNullable(m_username);
     }
     
     /**
@@ -195,35 +196,35 @@ public class AmiAgentConfig {
      *
      * @param username a {@link java.lang.String} object.
      */
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
     	m_username = username;
     }
     
     /**
      * <p>getPort</p>
      *
-     * @return a int.
+     * @return an Integer.
      */
-    public int getPort() {
-        return m_port;
+    public Optional<Integer> getPort() {
+        return Optional.ofNullable(m_port);
     }
     
     /**
      * <p>setPort</p>
      *
-     * @param port a int.
+     * @param port an Integer.
      */
-    public void setPort(int port) {
+    public void setPort(final Integer port) {
         m_port = port;
     }
     
     /**
      * <p>getUseTls</p>
      *
-     * @return a boolean.
+     * @return a Boolean.
      */
-    public boolean getUseTls() {
-        return m_useTls;
+    public Optional<Boolean> getUseTls() {
+        return Optional.ofNullable(m_useTls);
     }
 
     /**
@@ -231,7 +232,7 @@ public class AmiAgentConfig {
      *
      * @param useTls a boolean.
      */
-    public void setUseTls(boolean useTls) {
+    public void setUseTls(final Boolean useTls) {
         m_useTls = useTls;
     }
 }
