@@ -79,25 +79,29 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
         logSizes = registry.histogram("eventlogs.sizes");
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
-     */
-    /** {@inheritDoc} */
     @Override
     public EventHandlerRunnable createRunnable(Log eventLog) {
-        return new EventHandlerRunnable(eventLog);
+        return new EventHandlerRunnable(eventLog, false);
     }
 
-    public class EventHandlerRunnable implements Runnable {
+    @Override
+    public EventHandlerRunnable createRunnable(Log eventLog, boolean synchronous) {
+        return new EventHandlerRunnable(eventLog, synchronous);
+    }
+
+    private class EventHandlerRunnable implements Runnable {
         /**
          * log of events
          */
         private final Log m_eventLog;
 
-        public EventHandlerRunnable(Log eventLog) {
+        private final boolean m_synchronous;
+
+        public EventHandlerRunnable(Log eventLog, boolean synchronous) {
             Assert.notNull(eventLog, "eventLog argument must not be null");
             
             m_eventLog = eventLog;
+            m_synchronous = synchronous;
         }
         
         /**
@@ -148,7 +152,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             try (Timer.Context context = processTimer.time()) {
                 for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
-                        eventProcessor.process(m_eventLog);
+                        eventProcessor.process(m_eventLog, m_synchronous);
                         logSizes.update(events.getEventCount());
                     } catch (EventProcessorException e) {
                         LOG.warn("Unable to process event using processor {}; not processing with any later processors.", eventProcessor, e);
