@@ -72,6 +72,11 @@ public class LayerBuilder {
         return this;
     }
 
+    public LayerBuilder withVertexStatusProvider(boolean vertexStatusProvider) {
+        layer.setVertexStatusProvider(vertexStatusProvider);
+        return this;
+    }
+
     public Layer build() {
         return layer;
     }

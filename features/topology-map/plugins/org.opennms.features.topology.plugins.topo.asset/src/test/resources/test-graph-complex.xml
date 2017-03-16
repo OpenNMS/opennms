@@ -18,8 +18,9 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-region</data>
-        <data key="description"></data>
-        <data key="vertex-status-provider">true</data>
+        <data key="label">Region</data>
+        <data key="description">Displays all regions of the topology</data>
+        <data key="vertex-status-provider">false</data>
         <data key="semantic-zoom-level">0</data>
         <node id="region_A">
             <data key="label">region_A</data>
@@ -41,9 +42,10 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-building</data>
-        <data key="description"></data>
-        <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">1</data>
+        <data key="label">Building</data>
+        <data key="description">Displays all buildings of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="region_A.21">
             <data key="label">21</data>
         </node>
@@ -93,9 +95,10 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-rack</data>
-        <data key="description"></data>
-        <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">2</data>
+        <data key="label">Rack</data>
+        <data key="description">Displays all racks of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="region_A.21.A">
             <data key="label">A</data>
         </node>
@@ -290,9 +293,10 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:nodes</data>
-        <data key="description"></data>
+        <data key="label">Nodes</data>
+        <data key="description">The nodes in the hierarchy of the topology</data>
         <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">3</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="nodes:25:2102-0502">
             <data key="foreignID">630878819443779</data>
             <data key="label">2102-0502</data>
@@ -1126,7 +1130,7 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:unallocated_Nodes</data>
-        <data key="description">A graph containing all nodes which cannot be placed in topology hierarchy</data>
+        <data key="description">All nodes which cannot be placed in topology hierarchy</data>
         <data key="vertex-status-provider">true</data>
         <data key="semantic-zoom-level">0</data>
     </graph>

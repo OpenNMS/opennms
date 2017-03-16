@@ -72,6 +72,7 @@ public class AssetGraphGenerator {
 				.withItemProvider(node -> node)
 				.withIdGenerator(IdGenerator.SIMPLE)
 				.withSemanticZoomLevel(0)
+				.withVertexStatusProvider(true)
 				.build()
 		);
 

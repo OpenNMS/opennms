@@ -16,8 +16,9 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-region</data>
-        <data key="description"></data>
-        <data key="vertex-status-provider">true</data>
+        <data key="label">Region</data>
+        <data key="description">Displays all regions of the topology</data>
+        <data key="vertex-status-provider">false</data>
         <data key="semantic-zoom-level">0</data>
         <node id="Stuttgart">
             <data key="label">Stuttgart</data>
@@ -38,9 +39,10 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:asset-building</data>
-        <data key="description"></data>
-        <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">1</data>
+        <data key="label">Building</data>
+        <data key="description">Displays all buildings of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="Stuttgart.S1">
             <data key="label">S1</data>
         </node>
@@ -66,9 +68,10 @@
         <data key="preferred-layout">Grid Layout</data>
         <data key="focus-strategy">ALL</data>
         <data key="namespace">asset:nodes</data>
-        <data key="description"></data>
+        <data key="label">Nodes</data>
+        <data key="description">The nodes in the hierarchy of the topology</data>
         <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">2</data>
+        <data key="semantic-zoom-level">0</data>
         <node id="nodes:1:Node 1">
             <data key="label">Node 1</data>
             <data key="nodeID">1</data>
