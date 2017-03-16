@@ -33,41 +33,46 @@ package org.opennms.features.topology.plugins.topo.asset.layers;
  *
  * @author mvrueden
  */
-public class LayerDefinitionBuilder {
+public class LayerBuilder {
 
-    private DefaultLayer definition = new DefaultLayer();
+    private DefaultLayer layer = new DefaultLayer();
 
-    public LayerDefinitionBuilder withId(String id) {
-        definition.setId(id);
+    public LayerBuilder withId(String id) {
+        layer.setId(id);
         return this;
     }
 
-    public LayerDefinitionBuilder withNamespace(String namespace) {
-        definition.setNamespace(namespace);
+    public LayerBuilder withNamespace(String namespace) {
+        layer.setNamespace(namespace);
         return this;
     }
 
-    public LayerDefinitionBuilder withLabel(String label) {
-        definition.setLabel(label);
+    public LayerBuilder withLabel(String label) {
+        layer.setLabel(label);
         return this;
     }
 
-    public LayerDefinitionBuilder withDescription(String description) {
-        definition.setDescription(description);
+    public LayerBuilder withSemanticZoomLevel(int szl) {
+        layer.setSzl(szl);
         return this;
     }
 
-    public LayerDefinitionBuilder withItemProvider(ItemProvider itemProvider) {
-        definition.setItemProvider(itemProvider);
+    public LayerBuilder withDescription(String description) {
+        layer.setDescription(description);
         return this;
     }
 
-    public LayerDefinitionBuilder withIdGenerator(IdGenerator idGenerator) {
-        definition.setIdGenerator(idGenerator);
+    public LayerBuilder withItemProvider(ItemProvider itemProvider) {
+        layer.setItemProvider(itemProvider);
+        return this;
+    }
+
+    public LayerBuilder withIdGenerator(IdGenerator idGenerator) {
+        layer.setIdGenerator(idGenerator);
         return this;
     }
 
     public Layer build() {
-        return definition;
+        return layer;
     }
 }

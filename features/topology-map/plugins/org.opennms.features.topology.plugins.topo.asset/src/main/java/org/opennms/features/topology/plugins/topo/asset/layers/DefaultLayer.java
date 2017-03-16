@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
+import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.decorator.NodeItemNodeDecorator;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -42,6 +43,9 @@ public class DefaultLayer implements Layer {
     private String label;
     private String namespace;
     private String description;
+    private int szl = 0;
+    private boolean vertexStatusProvider = false;
+    private FocusStrategy focusStrategy = FocusStrategy.ALL;
     private ItemProvider<OnmsNode> itemProvider;
     private IdGenerator idGenerator;
 
@@ -69,6 +73,14 @@ public class DefaultLayer implements Layer {
         this.idGenerator = idGenerator;
     }
 
+    protected void setSzl(int szl) {
+        this.szl = szl;
+    }
+
+    protected void setVertexStatusProvider(boolean vertexStatusProvider) {
+        this.vertexStatusProvider = vertexStatusProvider;
+    }
+
     @Override
     public String getId() {
         return id;
@@ -87,6 +99,21 @@ public class DefaultLayer implements Layer {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean hasVertexStatusProvider() {
+        return vertexStatusProvider;
+    }
+
+    @Override
+    public int getSemanticZoomLevel() {
+        return szl;
+    }
+
+    @Override
+    public FocusStrategy getFocusStrategy() {
+        return focusStrategy;
     }
 
     @Override

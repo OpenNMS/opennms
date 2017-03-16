@@ -41,7 +41,6 @@ public class GeneratorConfigBuilder {
     private String label;
     private String breadcrumbStrategy;
     private String providerId;
-    private String filter;
     private String includeUnassignedNodes;
     private String preferredLayout;
     private String hierarchy;
@@ -58,11 +57,6 @@ public class GeneratorConfigBuilder {
 
     public GeneratorConfigBuilder withProviderId(String providerId) {
         this.providerId = providerId;
-        return this;
-    }
-
-    public GeneratorConfigBuilder withFilter(String filter) {
-        this.filter = filter;
         return this;
     }
 
@@ -89,9 +83,6 @@ public class GeneratorConfigBuilder {
         if (providerId != null) {
             config.setProviderId(providerId);
         }
-        if (filter != null) {
-            config.setFilter(filter);
-        }
         if (includeUnassignedNodes != null) {
             config.setGenerateUnallocated(Boolean.valueOf(includeUnassignedNodes));
         }
@@ -116,7 +107,6 @@ public class GeneratorConfigBuilder {
         final String label = EventUtils.getParm(e, EventParameterNames.LABEL);
         final String breadcrumbStrategy = EventUtils.getParm(e, EventParameterNames.BREADCRUMB_STRATEGY);
         final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
-        final String filter = EventUtils.getParm(e, EventParameterNames.FILTER);
         final String includeUnassignedNodes = EventUtils.getParm(e, EventParameterNames.INCLUDE_UNASSIGNED_NODES);
         final String preferredLayout = EventUtils.getParm(e, EventParameterNames.PREFERRED_LAYOUT);
         final String hierarchy = EventUtils.getParm(e, EventParameterNames.HIERARCHY);
@@ -125,7 +115,6 @@ public class GeneratorConfigBuilder {
                 .withLabel(label)
                 .withBreadcrumbStrategy(breadcrumbStrategy)
                 .withProviderId(providerId)
-                .withFilter(filter)
                 .withIncludeUnassingedNodes(includeUnassignedNodes)
                 .withPreferredLayout(preferredLayout)
                 .withHierarchy(hierarchy)

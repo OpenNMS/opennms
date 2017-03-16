@@ -45,23 +45,21 @@ public class GeneratorConfig {
     private String breadcrumbStrategy = BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT.name();
     private String providerId = "asset";
     private String preferredLayout = "Grid Layout";
-    private String filter = "";
     private boolean generateUnallocated;
-    private List<String> layerHierarchy = Lists.newArrayList(
+    private List<String> layerHierarchies = Lists.newArrayList(
             NodeParamLabels.ASSET_REGION,
             NodeParamLabels.ASSET_BUILDING,
             NodeParamLabels.ASSET_RACK);
 
-    // TODO MVR make it bean compliant
-    public boolean getGenerateUnallocated() {
-		return generateUnallocated;
-	}
-
-	public void setGenerateUnallocated(boolean generateUnallocated) {
+    public void setGenerateUnallocated(boolean generateUnallocated) {
 		this.generateUnallocated = generateUnallocated;
 	}
 
-	public String getLabel() {
+    public boolean isGenerateUnallocated() {
+        return generateUnallocated;
+    }
+
+    public String getLabel() {
         return label;
     }
 
@@ -94,11 +92,11 @@ public class GeneratorConfig {
     }
 
     public List<String> getLayerHierarchies() {
-        return layerHierarchy;
+        return layerHierarchies;
     }
 
     public void setLayerHierarchies(List<String> layers) {
-        this.layerHierarchy = layers;
+        this.layerHierarchies = layers;
     }
 
     public void setAssetLayers(String assetLayers) {
@@ -111,25 +109,9 @@ public class GeneratorConfig {
         }
     }
 
-    public String getFilter() {
-		return filter;
-	}
-
-	public void setFilter(String filter) {
-		this.filter = filter;
-	}
-	
-    public List<String> getFilterList() {
-    	if(filter == null || filter.isEmpty()) return null;
-        return Arrays.asList(filter.split("&")).stream()
-                .filter(h -> h != null && !h.trim().isEmpty())
-                .map(h -> h.trim())
-                .collect(Collectors.toList());
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(label, breadcrumbStrategy, providerId, preferredLayout, filter, generateUnallocated, layerHierarchy);
+        return Objects.hash(label, breadcrumbStrategy, providerId, preferredLayout, generateUnallocated, layerHierarchies);
     }
 
     @Override
@@ -143,8 +125,7 @@ public class GeneratorConfig {
                     && Objects.equals(breadcrumbStrategy, other.breadcrumbStrategy)
                     && Objects.equals(providerId, other.providerId)
                     && Objects.equals(preferredLayout, other.preferredLayout)
-                    && Objects.equals(filter, other.filter)
-                    && Objects.equals(layerHierarchy, other.layerHierarchy);
+                    && Objects.equals(layerHierarchies, other.layerHierarchies);
         }
         return false;
     }
@@ -154,8 +135,7 @@ public class GeneratorConfig {
         return MoreObjects.toStringHelper(this)
                 .add("providerId", providerId)
                 .add("label", label)
-                .add("layerHierarchy", layerHierarchy)
-                .add("filter", filter)
+                .add("layerHierarchies", layerHierarchies)
                 .add("breadcrumbStrategy", breadcrumbStrategy)
                 .add("preferredLayout", preferredLayout)
                 .add("generateUnallocated", generateUnallocated)

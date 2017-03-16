@@ -2,7 +2,6 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,23 +10,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
-import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.features.topology.plugins.topo.asset.util.TestNodeProvider;
 import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class AssetGraphGeneratorTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphGeneratorTest.class);
-
-	public static final String GRAPHML_TEST_TOPOLOGY_FILE_NAME="/graphmlTestTopology.xml";
+	public static final String GRAPHML_TEST_TOPOLOGY_FILE_NAME="/test-graph-complex.xml";
 
 	@Test
 	public void verifyGenerationWithNoHierarchies() throws InvalidGraphException, FileNotFoundException {
@@ -93,11 +87,10 @@ public class AssetGraphGeneratorTest {
 		final GeneratorConfig config = new GeneratorConfig();
 		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION, NodeParamLabels.ASSET_BUILDING));
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
-		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/simple.xml"));
+		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-simple.xml"));
 		Assert.assertEquals(generatedGraphML, expectedGraphML);
 	}
 
-	// TODO MVR rip out?!
 	@Test
 	public void verifyGraphGenerationWithCategories() throws InvalidGraphException {
 		final NodeProvider nodeProvider = new NodeProvider() {
@@ -114,8 +107,8 @@ public class AssetGraphGeneratorTest {
 		final GeneratorConfig config = new GeneratorConfig();
 		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION, NodeParamLabels.ASSET_BUILDING, NodeParamLabels.NODE_CATEGORIES));
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
-
-		GraphMLWriter.write(generatedGraphML, new File("/Users/mvrueden/Desktop/bla.xml"));
+		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-categories.xml"));
+		Assert.assertEquals(expectedGraphML, generatedGraphML);
 	}
 
 }

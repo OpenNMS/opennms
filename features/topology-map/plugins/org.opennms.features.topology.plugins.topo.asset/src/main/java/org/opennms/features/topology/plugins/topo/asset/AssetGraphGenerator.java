@@ -37,10 +37,11 @@ import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerBuilder;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinitionBuilder;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -63,11 +64,14 @@ public class AssetGraphGenerator {
 		final List<Layer> layers = layerMappings.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
 
 		// Add last Layer for Nodes
-		layers.add(new LayerDefinitionBuilder()
+		layers.add(new LayerBuilder()
 				.withId("nodes")
 				.withNamespace("nodes")
+				.withLabel("Nodes")
+				.withDescription("The nodes in the hierarchy of the topology")
 				.withItemProvider(node -> node)
 				.withIdGenerator(IdGenerator.SIMPLE)
+				.withSemanticZoomLevel(0)
 				.build()
 		);
 
@@ -95,11 +99,11 @@ public class AssetGraphGenerator {
 			layerGraph.setId(config.getProviderId() + ":" + layer.getId());
 			layerGraph.setProperty(GraphMLProperties.NAMESPACE, config.getProviderId() + ":" + layer.getNamespace());
 			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
-//            layerGraph.setProperty(GraphMLProperties.DESCRIPTION, layer.getDescription());
-			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "");
-			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
-			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, index);
-			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
+			layerGraph.setProperty(GraphMLProperties.LABEL, layer.getLabel());
+            layerGraph.setProperty(GraphMLProperties.DESCRIPTION, layer.getDescription());
+			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, layer.getFocusStrategy().name());
+			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, layer.getSemanticZoomLevel());
+			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, layer.hasVertexStatusProvider());
 
 			// Build layer for nodes
 			for (OnmsNode eachNode : nodes) {
@@ -124,7 +128,7 @@ public class AssetGraphGenerator {
 			nodes.forEach(n -> {
 				List<GraphMLNode> path = getPath(n, graphML.getGraphs(), layers);
 				if (path.size() != graphML.getGraphs().size() ) {
-					throw new IllegalStateException("TODO MVR");
+					throw new IllegalStateException("");
 				}
 				for (int i=0; i<path.size() - 1; i++) {
 					GraphMLNode sourceNode = path.get(i);
@@ -143,13 +147,13 @@ public class AssetGraphGenerator {
 		}
 
 		// Add nodes for unallocated elements
-		if (!config.getLayerHierarchies().isEmpty() && config.getGenerateUnallocated()) {
+		if (!config.getLayerHierarchies().isEmpty() && config.isGenerateUnallocated()) {
 			GraphMLGraph layerGraph = new GraphMLGraph();
 			layerGraph.setId(config.getProviderId() + ":unallocated_Nodes");
 			layerGraph.setProperty(GraphMLProperties.NAMESPACE, layerGraph.getId());
 			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
-			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "A graph containing all nodes which cannot be placed in topology hierarchy");
-			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, "ALL");
+			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "All nodes which cannot be placed in topology hierarchy");
+			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.ALL.name());
 			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, 0);
 			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
 			graphML.addGraph(layerGraph);
@@ -158,11 +162,22 @@ public class AssetGraphGenerator {
 		return graphML;
 	}
 
+	/**
+	 * Calculates a path through all layers (from top to bottom) to the given <code>node</code>.
+	 *
+	 * Ensure that this path exist, otherwise an Exception is thrown.
+	 *
+	 * @param node The node to calculate the path to.
+	 * @param graphs All generated graphs, containing all nodes created.
+	 * @param layers All layers from which the graphs were created.
+	 *
+	 * @return A list of {@link GraphMLNode}s (the path) through all layers to the given <code>node</code>.
+	 */
 	private static List<GraphMLNode> getPath(OnmsNode node, List<GraphMLGraph> graphs, List<Layer> layers) {
+		// The graphs were created based on the layers. If the count differs, the path cannot be calculated
 		if (graphs.size() != layers.size()) {
-			// TODO MVR not computable
+			throw new IllegalArgumentException("Cannot calculate path. There are more layers than graphs, but the count must be identical");
 		}
-
 		final List<GraphMLNode> path = new ArrayList<>();
 		for (int i=0; i<graphs.size(); i++) {
 			final GraphMLGraph graph = graphs.get(i); // the layer graph
@@ -177,7 +192,7 @@ public class AssetGraphGenerator {
 			if (GraphMlNode != null) {
 				path.add(GraphMlNode);
 			} else {
-				// TODO MVR should never occur?!
+				throw new IllegalStateException(String.format("Could not find a node with id {} in graph with id {}.", nodeId, graph.getId()));
 			}
 		}
 		return path;

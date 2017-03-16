@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
+import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.decorator.AssetItemNodeDecorator;
 
 public abstract class AssetLayer implements Layer<String> {
@@ -38,11 +39,6 @@ public abstract class AssetLayer implements Layer<String> {
     }
 
     @Override
-    public String getDescription() {
-        return "";
-    }
-
-    @Override
     public NodeDecorator<String> getNodeDecorator() {
         return new AssetItemNodeDecorator();
     }
@@ -50,5 +46,20 @@ public abstract class AssetLayer implements Layer<String> {
     @Override
     public IdGenerator getIdGenerator() {
         return IdGenerator.HIERARCHY;
+    }
+
+    @Override
+    public FocusStrategy getFocusStrategy() {
+        return FocusStrategy.ALL;
+    }
+
+    @Override
+    public int getSemanticZoomLevel() {
+        return 0;
+    }
+
+    @Override
+    public boolean hasVertexStatusProvider() {
+        return false;
     }
 }

@@ -54,12 +54,6 @@ public class AssetGraphMLProvider implements EventListener {
 
 	private static final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY);
 
-	// folder created in OpenNMS to store asset topology info for debugging
-	public static final String TEMP_FOLDER = "data/tmp";
-
-	// file  generated for debugging
-	public static final String ASSET_LIST_XML_FILE = "AssetListFile.xml";
-
 	private final EventIpcManager eventIpcManager;
 
 	private final GraphmlRepository graphmlRepository;
@@ -99,7 +93,7 @@ public class AssetGraphMLProvider implements EventListener {
 
 	/**
 	 * Removes the AssetTopology defined by the config
-	 * @param config if null the default config is used
+	 * @param providerId The providerId to delete.
 	 */
 	public synchronized void removeAssetTopology(String providerId){
 		Objects.requireNonNull(providerId);

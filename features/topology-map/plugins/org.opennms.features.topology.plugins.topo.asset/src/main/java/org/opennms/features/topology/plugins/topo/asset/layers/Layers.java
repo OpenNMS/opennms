@@ -50,6 +50,11 @@ public enum Layers {
         }
 
         @Override
+        public String getDescription() {
+            return "Displays all country fields of the topology";
+        }
+
+        @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getGeolocation().getCountry();
         }
@@ -67,6 +72,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Address 1";
+        }
+
+        public String getDescription() {
+            return "Displays all address 1 fields of the topology";
         }
 
         @Override
@@ -89,6 +98,10 @@ public enum Layers {
             return "Address 2";
         }
 
+        public String getDescription() {
+            return "Displays all address 2 fields of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getGeolocation().getAddress2();
@@ -107,6 +120,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "City";
+        }
+
+        public String getDescription() {
+            return "Displays all city fields of the topology";
         }
 
         @Override
@@ -129,6 +146,10 @@ public enum Layers {
             return "Zip";
         }
 
+        public String getDescription() {
+            return "Displays all zips of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getGeolocation().getZip();
@@ -149,6 +170,10 @@ public enum Layers {
             return "State";
         }
 
+        public String getDescription() {
+            return "Displays all state fields of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getGeolocation().getState();
@@ -167,6 +192,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Latitude";
+        }
+
+        public String getDescription() {
+            return "Displays all latitude fields of the topology";
         }
 
         @Override
@@ -192,6 +221,10 @@ public enum Layers {
             return "Longitude";
         }
 
+        public String getDescription() {
+            return "Displays all longitude fields of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> {
@@ -215,6 +248,10 @@ public enum Layers {
             return "Building";
         }
 
+        public String getDescription() {
+            return "Displays all buildings of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getBuilding();
@@ -233,6 +270,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Region";
+        }
+
+        public String getDescription() {
+            return "Displays all regions of the topology";
         }
 
         @Override
@@ -255,6 +296,10 @@ public enum Layers {
             return "Division";
         }
 
+        public String getDescription() {
+            return "Displays all divisions of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getDivision();
@@ -273,6 +318,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Department";
+        }
+
+        public String getDescription() {
+            return "Displays all departments of the topology";
         }
 
         @Override
@@ -295,6 +344,10 @@ public enum Layers {
             return "Floor";
         }
 
+        public String getDescription() {
+            return "Displays all floors of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getFloor();
@@ -313,6 +366,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Room";
+        }
+
+        public String getDescription() {
+            return "Displays all rooms of the topology";
         }
 
         @Override
@@ -334,6 +391,10 @@ public enum Layers {
             return "Rack";
         }
 
+        public String getDescription() {
+            return "Displays all racks of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getRack();
@@ -351,6 +412,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Slot";
+        }
+
+        public String getDescription() {
+            return "Displays all slots of the topology";
         }
 
         @Override
@@ -372,6 +437,10 @@ public enum Layers {
             return "Port";
         }
 
+        public String getDescription() {
+            return "Displays all ports of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getPort();
@@ -389,6 +458,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Circuit ID";
+        }
+
+        public String getDescription() {
+            return "Displays all circuit ids of the topology";
         }
 
         @Override
@@ -410,6 +483,10 @@ public enum Layers {
             return "Category";
         }
 
+        public String getDescription() {
+            return "Displays all categories of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getCategory();
@@ -427,6 +504,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Display Category";
+        }
+
+        public String getDescription() {
+            return "Displays all display categories of the topology";
         }
 
         @Override
@@ -448,6 +529,10 @@ public enum Layers {
             return "Notify Category";
         }
 
+        public String getDescription() {
+            return "Displays all notify categories of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getNotifyCategory();
@@ -465,6 +550,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Poller Category";
+        }
+
+        public String getDescription() {
+            return "Displays all poller categories of the topology";
         }
 
         @Override
@@ -486,6 +575,10 @@ public enum Layers {
             return "Threshold Category";
         }
 
+        public String getDescription() {
+            return "Displays all threshold categories of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getThresholdCategory();
@@ -503,6 +596,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Managed Object Type";
+        }
+
+        public String getDescription() {
+            return "Displays all managed object types of the topology";
         }
 
         @Override
@@ -524,6 +621,10 @@ public enum Layers {
             return "Managed Object Instance";
         }
 
+        public String getDescription() {
+            return "Displays all managed object instances of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getManagedObjectInstance();
@@ -541,6 +642,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Manufacturer";
+        }
+
+        public String getDescription() {
+            return "Displays all manufacturers of the topology";
         }
 
         @Override
@@ -562,6 +667,10 @@ public enum Layers {
             return "Vendor";
         }
 
+        public String getDescription() {
+            return "Displays all vendors of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getVendor();
@@ -579,6 +688,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Model Number";
+        }
+
+        public String getDescription() {
+            return "Displays all model numbers of the topology";
         }
 
         @Override
@@ -600,6 +713,10 @@ public enum Layers {
             return "Description";
         }
 
+        public String getDescription() {
+            return "Displays all descriptions of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getAssetRecord().getDescription();
@@ -617,6 +734,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Operating System";
+        }
+
+        public String getDescription() {
+            return "Displays all operating systems of the topology";
         }
 
         @Override
@@ -638,6 +759,10 @@ public enum Layers {
             return "Node Label";
         }
 
+        public String getDescription() {
+            return "Displays all node labels of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getLabel();
@@ -655,6 +780,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Node ID";
+        }
+
+        public String getDescription() {
+            return "Displays all node ids of the topology";
         }
 
         @Override
@@ -676,6 +805,10 @@ public enum Layers {
             return "Node Foreign Source";
         }
 
+        public String getDescription() {
+            return "Displays all node foreign sources of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getForeignSource();
@@ -693,6 +826,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Node Foreign ID";
+        }
+
+        public String getDescription() {
+            return "Displays all node foreign id of the topology";
         }
 
         @Override
@@ -714,6 +851,10 @@ public enum Layers {
             return "Node System Name";
         }
 
+        public String getDescription() {
+            return "Displays all node system names of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getSysName();
@@ -730,7 +871,11 @@ public enum Layers {
 
         @Override
         public String getLabel() {
-            return "Node Syslocation";
+            return "Node System Location";
+        }
+
+        public String getDescription() {
+            return "Displays all node system locations id of the topology";
         }
 
         @Override
@@ -752,6 +897,10 @@ public enum Layers {
             return "Node Operating System";
         }
 
+        public String getDescription() {
+            return "Displays all node operating systems of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getOperatingSystem();
@@ -769,6 +918,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Parent Node Label";
+        }
+
+        public String getDescription() {
+            return "Displays all parent node labels of the topology";
         }
 
         @Override
@@ -790,6 +943,10 @@ public enum Layers {
             return "Parent Node ID";
         }
 
+        public String getDescription() {
+            return "Displays all parent node ids of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getParent().getNodeId();
@@ -807,6 +964,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Parent Foreign Source";
+        }
+
+        public String getDescription() {
+            return "Displays all parent foreign sources of the topology";
         }
 
         @Override
@@ -828,6 +989,10 @@ public enum Layers {
             return "Parent Foreign ID";
         }
 
+        public String getDescription() {
+            return "Displays all parent foreign ids of the topology";
+        }
+
         @Override
         public ItemProvider<String> getItemProvider() {
             return node -> node.getParent().getForeignId();
@@ -845,6 +1010,10 @@ public enum Layers {
         @Override
         public String getLabel() {
             return "Node Categories";
+        }
+
+        public String getDescription() {
+            return "Displays all node categories of the topology";
         }
 
         @Override

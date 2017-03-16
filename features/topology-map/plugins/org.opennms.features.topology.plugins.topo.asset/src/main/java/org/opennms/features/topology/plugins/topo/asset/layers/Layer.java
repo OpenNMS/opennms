@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
+import org.opennms.features.topology.api.support.FocusStrategy;
+
 public interface Layer<T> {
     // The id of the layer
     String getId();
@@ -40,6 +42,15 @@ public interface Layer<T> {
 
     // The description of the layer
     String getDescription();
+
+    // Enable/disable VertexStatusProvider
+    boolean hasVertexStatusProvider();
+
+    // The SZL
+    int getSemanticZoomLevel();
+
+    // The focus strategy
+    FocusStrategy getFocusStrategy();
 
     // Decorator to build the node for this layer
     NodeDecorator<T> getNodeDecorator();

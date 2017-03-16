@@ -73,10 +73,9 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
-			GeneratorConfig config = new GeneratorConfigBuilder()
+			final GeneratorConfig config = new GeneratorConfigBuilder()
 					.withProviderId(providerId)
 					.withHierarchy(assetLayers)
-					.withFilter(filter)
 					.withIncludeUnassingedNodes(generateUnallocatedStr)
 					.withLabel(label)
 					.withBreadcrumbStrategy(breadcrumbStrategy)
