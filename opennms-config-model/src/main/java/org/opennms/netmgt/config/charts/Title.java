@@ -30,21 +30,18 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Title.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "title")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Title implements java.io.Serializable {
-    private static final long serialVersionUID = -7301367239608014864L;
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "value", required = true)
     private String value;
@@ -99,8 +96,8 @@ public class Title implements java.io.Serializable {
      * 
      * @return the value of field 'Font'.
      */
-    public String getFont() {
-        return this.font;
+    public Optional<String> getFont() {
+        return Optional.ofNullable(this.font);
     }
 
     /**
@@ -108,8 +105,8 @@ public class Title implements java.io.Serializable {
      * 
      * @return the value of field 'Pitch'.
      */
-    public Integer getPitch() {
-        return this.pitch;
+    public Optional<Integer> getPitch() {
+        return Optional.ofNullable(this.pitch);
     }
 
     /**
@@ -117,8 +114,8 @@ public class Title implements java.io.Serializable {
      * 
      * @return the value of field 'Rgb'.
      */
-    public Rgb getRgb() {
-        return this.rgb;
+    public Optional<Rgb> getRgb() {
+        return Optional.ofNullable(this.rgb);
     }
 
     /**
@@ -126,8 +123,8 @@ public class Title implements java.io.Serializable {
      * 
      * @return the value of field 'Style'.
      */
-    public String getStyle() {
-        return this.style;
+    public Optional<String> getStyle() {
+        return Optional.ofNullable(this.style);
     }
 
     /**
@@ -206,6 +203,9 @@ public class Title implements java.io.Serializable {
      * @param value the value of field 'value'.
      */
     public void setValue(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'value' is a required attribute!");
+        }
         this.value = value;
     }
 

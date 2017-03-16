@@ -30,21 +30,18 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class SeriesDef.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "series-def")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SeriesDef implements java.io.Serializable {
-    private static final long serialVersionUID = 2460163616969173117L;
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "number", required = true)
     private Integer number;
@@ -123,8 +120,8 @@ public class SeriesDef implements java.io.Serializable {
      * 
      * @return the value of field 'Rgb'.
      */
-    public Rgb getRgb() {
-        return this.rgb;
+    public Optional<Rgb> getRgb() {
+        return Optional.ofNullable(this.rgb);
     }
 
     /**
@@ -194,6 +191,9 @@ public class SeriesDef implements java.io.Serializable {
      * @param jdbcDataSet the value of field 'jdbcDataSet'.
      */
     public void setJdbcDataSet(final JdbcDataSet jdbcDataSet) {
+        if (seriesName == null) {
+            throw new IllegalArgumentException("'jdbc-data-set' is a required element!");
+        }
         this.jdbcDataSet = jdbcDataSet;
     }
 
@@ -203,6 +203,9 @@ public class SeriesDef implements java.io.Serializable {
      * @param number the value of field 'number'.
      */
     public void setNumber(final Integer number) {
+        if (seriesName == null) {
+            throw new IllegalArgumentException("'number' is a required attribute!");
+        }
         this.number = number;
     }
 
@@ -221,6 +224,9 @@ public class SeriesDef implements java.io.Serializable {
      * @param seriesName the value of field 'seriesName'.
      */
     public void setSeriesName(final String seriesName) {
+        if (seriesName == null) {
+            throw new IllegalArgumentException("'series-name' is a required attribute!");
+        }
         this.seriesName = seriesName;
     }
 
