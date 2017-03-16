@@ -66,8 +66,8 @@ public class RangeChunker {
 
     public Map<String, List<DiscoveryJob>> chunk(final DiscoveryConfiguration config) {
 
-        final int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE;
-        final double packetsPerSecond = (config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
+        final int chunkSize = (config.getChunkSize() != null && config.getChunkSize() > 0) ? config.getChunkSize() : DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE;
+        final double packetsPerSecond = (config.getPacketsPerSecond() != null && config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
 
         // If the foreign source for the discovery config is not set than use 
         // a value of null so that non-requisitioned nodes are created.

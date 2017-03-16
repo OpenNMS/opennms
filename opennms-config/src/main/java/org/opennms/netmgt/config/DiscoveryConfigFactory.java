@@ -327,26 +327,26 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             Long defaultTimeout = null;
             Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            if (getConfiguration().getTimeout() != null) defaultTimeout = getConfiguration().getTimeout();
+            if (getConfiguration().getRetries() != null) defaultRetries = getConfiguration().getRetries();
 
-            for (final IncludeUrl url : getConfiguration().getIncludeUrlCollection()) {
+            for (final IncludeUrl url : getConfiguration().getIncludeUrls()) {
 
                 long timeout = DEFAULT_TIMEOUT;
-                if (url.hasTimeout()) {
+                if (url.getTimeout() != null) {
                     timeout = url.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = getConfiguration().getTimeout();
                 }
 
                 int retries = DEFAULT_RETRIES;
-                if (url.hasRetries()) {
+                if (url.getRetries() != null) {
                     retries = url.getRetries();
                 } else if (defaultRetries != null) {
                     retries = defaultRetries;
                 }
 
-                addToSpecificsFromURL(specifics, url.getContent(), url.getForeignSource(), url.getLocation(), timeout, retries);
+                addToSpecificsFromURL(specifics, url.getUrl(), url.getForeignSource(), url.getLocation(), timeout, retries);
             }
 
             return specifics;
@@ -368,10 +368,10 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             Long defaultTimeout = null;
             Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            if (getConfiguration().getTimeout() != null) defaultTimeout = getConfiguration().getTimeout();
+            if (getConfiguration().getRetries() != null) defaultRetries = getConfiguration().getRetries();
 
-            for (final IncludeRange ir : getConfiguration().getIncludeRangeCollection()) {
+            for (final IncludeRange ir : getConfiguration().getIncludeRanges()) {
 
                 // Validate IP range; if invalid, then log and discard this range
                 try {
@@ -389,14 +389,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 long timeout = DEFAULT_TIMEOUT;
-                if (ir.hasTimeout()) {
+                if (ir.getTimeout() != null) {
                     timeout = ir.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
                 int retries = DEFAULT_RETRIES;
-                if (ir.hasRetries()) {
+                if (ir.getRetries() != null) {
                     retries = ir.getRetries();
                 } else if (defaultRetries != null) {
                     retries = defaultRetries;
@@ -428,26 +428,26 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             Long defaultTimeout = null;
             Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            if (getConfiguration().getTimeout() != null) defaultTimeout = getConfiguration().getTimeout();
+            if (getConfiguration().getRetries() != null) defaultRetries = getConfiguration().getRetries();
 
-            for (final Specific s : getConfiguration().getSpecificCollection()) {
+            for (final Specific s : getConfiguration().getSpecifics()) {
 
                 long timeout = DEFAULT_TIMEOUT;
-                if (s.hasTimeout()) {
+                if (s.getTimeout() != null) {
                     timeout = s.getTimeout();
                 } else if (defaultTimeout != null) {
                     timeout = defaultTimeout;
                 }
 
                 int retries = DEFAULT_RETRIES;
-                if (s.hasRetries()) {
+                if (s.getRetries() != null) {
                     retries = s.getRetries();
                 } else if (defaultRetries != null) {
                     retries = defaultRetries;
                 }
 
-                final String address = s.getContent();
+                final String address = s.getAddress();
 
                 try {
                     specifics.add(new IPPollAddress(s.getForeignSource(), s.getLocation(), InetAddressUtils.addr(address), timeout, retries));
@@ -471,7 +471,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public boolean isExcluded(final InetAddress address) {
         getReadLock().lock();
         try {
-            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRangeCollection();
+            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRanges();
             if (excludeRange != null) {
                 final byte[] laddr = address.getAddress();
 
@@ -493,9 +493,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             LOG.debug("Looking for matching foreign source specific IP or IP range with address: {}...", address);
     
-            List<Specific> specificCollection = getConfiguration().getSpecificCollection();
+            List<Specific> specificCollection = getConfiguration().getSpecifics();
             for (Specific specific : specificCollection) {
-                String ipAddr = specific.getContent();
+                String ipAddr = specific.getAddress();
     
                 if (ipAddr.equals(InetAddressUtils.str(address))) {
     
@@ -507,7 +507,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     
             final byte[] laddr = address.getAddress();
     
-            List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRangeCollection();
+            List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRanges();
             for (IncludeRange range : includeRangeCollection) {
     
                 if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
@@ -518,9 +518,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
             }
     
-            List<IncludeUrl> includeUrlCollection = getConfiguration().getIncludeUrlCollection();
+            List<IncludeUrl> includeUrlCollection = getConfiguration().getIncludeUrls();
             for (IncludeUrl includeUrl : includeUrlCollection) {
-                String ipAddr = includeUrl.getContent();
+                String ipAddr = includeUrl.getUrl();
                 if (ipAddr.equals(InetAddressUtils.str(address))) {
     
                     String foreignSource = includeUrl.getForeignSource();

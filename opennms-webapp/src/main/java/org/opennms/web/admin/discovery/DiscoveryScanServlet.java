@@ -100,7 +100,7 @@ public class DiscoveryScanServlet extends HttpServlet {
         	String foreignSource = request.getParameter("specificforeignsource");
         	String location = request.getParameter("specificlocation");
         	Specific newSpecific = new Specific();
-        	newSpecific.setContent(ipAddr);
+        	newSpecific.setAddress(ipAddr);
         	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
@@ -183,7 +183,7 @@ public class DiscoveryScanServlet extends HttpServlet {
             String location = request.getParameter("iulocation");
 
             IncludeUrl iu = new IncludeUrl();
-            iu.setContent(url);
+            iu.setUrl(url);
             if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }

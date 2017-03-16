@@ -71,6 +71,6 @@ public class DiscoveryConfigurationMigratorOfflineTest {
         final String xml = FileUtils.readFileToString(configFile);
         final DiscoveryConfiguration config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileReader(configFile));
         Assert.assertNotNull(config);
-        Assert.assertEquals(1, config.getIncludeRangeCount());
+        Assert.assertEquals(1, config.getIncludeRanges().size());
     }
 }

@@ -67,14 +67,14 @@ public class RangeChunkerTest {
 		range.setForeignSource("Routers");
 		range.setLocation("Raleigh");
 		range.setRetries(2);
-		range.setTimeout(500);
+		range.setTimeout(500l);
 
 		IncludeUrl url = new IncludeUrl();
-		url.setContent("file:src/test/resources/included_ip_addresses");
+		url.setUrl("file:src/test/resources/included_ip_addresses");
 		url.setForeignSource("Switches");
 		url.setLocation("Durham");
 		url.setRetries(1);
-		url.setTimeout(5000);
+		url.setTimeout(5000l);
 
 		ExcludeRange excludes = new ExcludeRange();
 		excludes.setBegin("10.1.3.0");
@@ -85,18 +85,18 @@ public class RangeChunkerTest {
 		excludes2.setEnd("10.1.1.150");
 
 		Specific specific = new Specific();
-		specific.setContent("10.1.3.5");
+		specific.setAddress("10.1.3.5");
 		specific.setForeignSource("Gateway");
 		specific.setLocation("Co-lo");
 		specific.setRetries(5);
-		specific.setTimeout(1000);
+		specific.setTimeout(1000l);
 
 		Specific specific2 = new Specific();
-		specific.setContent("10.1.2.5");
-		specific.setForeignSource("Routers");
-		specific.setLocation("Raleigh");
-		specific.setRetries(5);
-		specific.setTimeout(1000);
+		specific2.setAddress("10.1.2.5");
+		specific2.setForeignSource("Routers");
+		specific2.setLocation("Raleigh");
+		specific2.setRetries(5);
+		specific2.setTimeout(1000l);
 
 		config.addExcludeRange(excludes);
 		config.addExcludeRange(excludes2);
@@ -118,11 +118,11 @@ public class RangeChunkerTest {
 
 		for (int i = 0; i < 5; i++) {
 			Specific specific = new Specific();
-			specific.setContent("10.0.0." + i);
+			specific.setAddress("10.0.0." + i);
 			specific.setForeignSource("ABC");
 			specific.setLocation("123");
 			specific.setRetries(1);
-			specific.setTimeout(1000);
+			specific.setTimeout(1000l);
 			config.addSpecific(specific);
 		}
 
@@ -144,11 +144,11 @@ public class RangeChunkerTest {
 
 		for (int i = 0; i < 5; i++) {
 			Specific specific = new Specific();
-			specific.setContent("10.0.0." + i);
+			specific.setAddress("10.0.0." + i);
 			specific.setForeignSource(i % 2 == 0 ? "ABC" : "DEF");
 			specific.setLocation("123");
 			specific.setRetries(1);
-			specific.setTimeout(1000);
+			specific.setTimeout(1000l);
 			config.addSpecific(specific);
 		}
 
@@ -166,11 +166,11 @@ public class RangeChunkerTest {
 
 		for (int i = 0; i < 5; i++) {
 			Specific specific = new Specific();
-			specific.setContent("10.0.0." + i);
+			specific.setAddress("10.0.0." + i);
 			specific.setForeignSource("ABC");
 			specific.setLocation(i % 2 == 0 ? "123" : "456");
 			specific.setRetries(1);
-			specific.setTimeout(1000);
+			specific.setTimeout(1000l);
 			config.addSpecific(specific);
 		}
 
@@ -186,9 +186,9 @@ public class RangeChunkerTest {
 	public void testConsecutiveSpecificsWithDifferentTimeouts() {
 		DiscoveryConfiguration config = new DiscoveryConfiguration();
 
-		for (int i = 0; i < 5; i++) {
+		for (long i = 0; i < 5; i++) {
 			Specific specific = new Specific();
-			specific.setContent("10.0.0." + i);
+			specific.setAddress("10.0.0." + i);
 			specific.setForeignSource("ABC");
 			specific.setLocation("123");
 			specific.setRetries(5);
@@ -209,11 +209,11 @@ public class RangeChunkerTest {
 
 		for (int i = 0; i < 5; i++) {
 			Specific specific = new Specific();
-			specific.setContent("10.0.0." + i);
+			specific.setAddress("10.0.0." + i);
 			specific.setForeignSource("ABC");
 			specific.setLocation("123");
 			specific.setRetries(i);
-			specific.setTimeout(1000);
+			specific.setTimeout(1000l);
 			config.addSpecific(specific);
 		}
 
