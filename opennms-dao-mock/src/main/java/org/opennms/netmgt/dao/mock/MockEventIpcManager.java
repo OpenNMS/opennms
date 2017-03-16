@@ -229,9 +229,12 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         return m_listeners.size();
     }
 
-    @Override
     public void broadcastNow(final Event event) {
-    	
+        broadcastNow(event, false);
+    }
+
+    @Override
+    public void broadcastNow(final Event event, boolean synchronous) {
     	LOG.debug("Sending: {}", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
         for (final ListenerKeeper k : listeners) {
@@ -279,7 +282,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      */
     public void sendEventToListeners(final Event event) {
         m_eventWriter.writeEvent(event);
-        broadcastNow(event);
+        broadcastNow(event, false);
     }
 
     public void setSynchronous(final boolean syncState) {
@@ -331,7 +334,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                     }
 
                     m_eventWriter.writeEvent(event);
-                    broadcastNow(event);
+                    broadcastNow(event, false);
                     m_anticipator.eventProcessed(event);
                 } finally {
                     synchronized(MockEventIpcManager.this) {
