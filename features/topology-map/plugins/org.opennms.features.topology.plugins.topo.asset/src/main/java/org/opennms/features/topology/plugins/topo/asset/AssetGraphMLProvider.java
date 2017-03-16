@@ -82,7 +82,7 @@ public class AssetGraphMLProvider implements EventListener {
 			if (graphmlRepository.exists("asset")) {
 				throw new IllegalStateException(String.format("Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
 			}
-			final GraphML graphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
+			final GraphML graphML = transactionOperations.execute(status -> new AssetGraphGenerator(nodeProvider).generateGraphs(config));
 			final GraphmlType graphmlType = GraphMLWriter.convert(graphML);
 			graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
 		} catch (Exception ex){
