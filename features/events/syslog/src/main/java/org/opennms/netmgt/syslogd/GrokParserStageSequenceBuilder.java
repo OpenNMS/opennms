@@ -34,8 +34,13 @@ import java.util.function.BiConsumer;
 
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchInteger;
+import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchUntil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class GrokParserStageSequenceBuilder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(GrokParserStageSequenceBuilder.class);
 
 	private static enum GrokState {
 		TEXT,
@@ -47,9 +52,10 @@ public abstract class GrokParserStageSequenceBuilder {
 	}
 
 	private static enum GrokPattern {
-		STRING,
 		INT,
-		MONTH
+		MONTH,
+		NOSPACE,
+		STRING
 	}
 
 	/**
@@ -339,16 +345,28 @@ SNMP-only:
 			case messageId:
 				// Unique to this parser
 				return (s,v) -> {
-					s.builder.setParam("messageid", v);
+					if ("-".equals(v.trim())) {
+						// Ignore
+					} else {
+						s.builder.setParam("messageid", v);
+					}
 				};
 			case processId:
 				// processId can be an integer or string
 				return (s,v) -> {
-					s.builder.setParam("processid", v);
+					if ("-".equals(v.trim())) {
+						// Ignore
+					} else {
+						s.builder.setParam("processid", v);
+					}
 				};
 			case processName:
 				return (s,v) -> {
-					s.builder.setParam("process", v);
+					if ("-".equals(v.trim())) {
+						// Ignore
+					} else {
+						s.builder.setParam("process", v);
+					}
 				};
 			case secondFraction:
 				return (s,v) -> {
@@ -455,9 +473,18 @@ SNMP-only:
 				switch(c) {
 				case '\\':
 					switch(patternType) {
+					case NOSPACE:
+						// TODO: We need to peek forward to the escaped character and then do the same as the default case
+						// factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToEventBuilder(semanticString));
+						// factory.character(c);
+						// break;
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a NOSPACE pattern yet");
 					case STRING:
 						// TODO: We need to peek forward to the escaped character and then do the same as the default case
-						throw new UnsupportedOperationException("Cannot support escape sequence directly after a pattern yet");
+						// factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
+						// factory.character(c);
+						// break;
+						throw new UnsupportedOperationException("Cannot support escape sequence directly after a STRING pattern yet");
 					case INT:
 						factory.integer(semanticIntegerToEventBuilder(semanticString));
 						break;
@@ -471,6 +498,12 @@ SNMP-only:
 					continue;
 				case '%':
 					switch(patternType) {
+					case NOSPACE:
+						// This is probably not an intended behavior
+						LOG.warn("NOSPACE pattern followed immediately by another pattern will greedily consume until whitespace is encountered");
+						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
+						factory.whitespace();
+						break;
 					case STRING:
 						// TODO: Can we handle this case?
 						throw new IllegalArgumentException(String.format("Invalid pattern: %s:%s does not have a trailing delimiter, cannot determine end of string", patternString, semanticString));
@@ -487,6 +520,7 @@ SNMP-only:
 					continue;
 				case ' ':
 					switch(patternType) {
+					case NOSPACE:
 					case STRING:
 						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
 						factory.whitespace();
@@ -503,6 +537,10 @@ SNMP-only:
 					break;
 				default:
 					switch(patternType) {
+					case NOSPACE:
+						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToEventBuilder(semanticString));
+						factory.character(c);
+						break;
 					case STRING:
 						factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
 						factory.character(c);
@@ -532,6 +570,7 @@ SNMP-only:
 			GrokPattern patternType = GrokPattern.valueOf(patternString);
 
 			switch(patternType) {
+			case NOSPACE:
 			case STRING:
 				factory.terminal().string(semanticStringToEventBuilder(semanticString));
 				break;
