@@ -28,15 +28,17 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -64,10 +66,11 @@ import java.util.Objects;
     "httpCollection"
 })
 @XmlRootElement(name = "http-datacollection-config")
-public class HttpDatacollectionConfig {
+public class HttpDatacollectionConfig implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "http-collection")
-    protected List<HttpCollection> httpCollection;
+    protected List<HttpCollection> httpCollection = new ArrayList<>();
     @XmlAttribute(name = "rrdRepository", required = true)
     protected String rrdRepository;
 
@@ -94,9 +97,6 @@ public class HttpDatacollectionConfig {
      * 
      */
     public List<HttpCollection> getHttpCollection() {
-        if (httpCollection == null) {
-            httpCollection = new ArrayList<HttpCollection>();
-        }
         return this.httpCollection;
     }
 
@@ -121,6 +121,9 @@ public class HttpDatacollectionConfig {
      *     
      */
     public void setRrdRepository(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'rrd-repository' is a required attribute!");
+        }
         this.rrdRepository = value;
     }
 

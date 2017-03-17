@@ -28,13 +28,17 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -68,8 +72,11 @@ public class HttpCollection {
 
     @XmlElement(required = true)
     protected Rrd rrd;
-    @XmlElement(required = true)
-    protected Uris uris;
+
+    @XmlElementWrapper(name="uris")
+    @XmlElement(name="uri", required = true)
+    protected List<Uri> uris = new ArrayList<>();
+
     @XmlAttribute(name = "name")
     protected String name;
 
@@ -94,31 +101,18 @@ public class HttpCollection {
      *     
      */
     public void setRrd(Rrd value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'rrd' is a required element!");
+        }
         this.rrd = value;
     }
 
-    /**
-     * Gets the value of the uris property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Uris }
-     *     
-     */
-    public Uris getUris() {
+    public List<Uri> getUris() {
         return uris;
     }
 
-    /**
-     * Sets the value of the uris property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Uris }
-     *     
-     */
-    public void setUris(Uris value) {
-        this.uris = value;
+    public void setUris(final List<Uri> value) {
+        this.uris = value == null? new ArrayList<>() : value;
     }
 
     /**

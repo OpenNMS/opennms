@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -57,7 +59,8 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "post")
-public class Post {
+public class Post implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "parm", required = true)
     protected String parm;
@@ -85,6 +88,9 @@ public class Post {
      *     
      */
     public void setParm(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'parm' is a required attribute!");
+        }
         this.parm = value;
     }
 
@@ -109,6 +115,9 @@ public class Post {
      *     
      */
     public void setValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'value' is a required attribute!");
+        }
         this.value = value;
     }
 

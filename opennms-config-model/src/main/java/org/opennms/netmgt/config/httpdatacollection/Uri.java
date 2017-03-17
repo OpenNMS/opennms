@@ -28,13 +28,19 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -64,11 +70,14 @@ import java.util.Objects;
     "attributes"
 })
 @XmlRootElement(name = "uri")
-public class Uri {
+public class Uri implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(required = true)
     protected Url url;
-    protected Attributes attributes;
+    @XmlElementWrapper(name="attributes")
+    @XmlElement(name="attrib")
+    protected List<Attrib> attributes;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -92,20 +101,15 @@ public class Uri {
      *     {@link Url }
      *     
      */
-    public void setUrl(Url value) {
+    public void setUrl(final Url value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'url' is a required attribute!");
+        }
         this.url = value;
     }
 
-    /**
-     * Gets the value of the attributes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Attributes }
-     *     
-     */
-    public Attributes getAttributes() {
-        return attributes;
+    public List<Attrib> getAttributes() {
+        return attributes == null? Collections.emptyList() : attributes;
     }
 
     /**
@@ -116,8 +120,8 @@ public class Uri {
      *     {@link Attributes }
      *     
      */
-    public void setAttributes(Attributes value) {
-        this.attributes = value;
+    public void setAttributes(List<Attrib> value) {
+        this.attributes = value == null? new ArrayList<>() : value;
     }
 
     /**
@@ -140,7 +144,10 @@ public class Uri {
      *     {@link String }
      *     
      */
-    public void setName(String value) {
+    public void setName(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         this.name = value;
     }
 

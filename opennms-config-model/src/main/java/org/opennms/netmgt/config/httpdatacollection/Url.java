@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,20 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -87,9 +95,12 @@ import java.util.Objects;
     "parameters"
 })
 @XmlRootElement(name = "url")
-public class Url {
+public class Url implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    protected Parameters parameters;
+    @XmlElementWrapper(name = "parameters")
+    @XmlElement(name = "parameter")
+    protected List<Parameter> parameters;
     @XmlAttribute(name = "method")
     protected String method;
     @XmlAttribute(name = "http-version")
@@ -133,28 +144,12 @@ public class Url {
     @XmlAttribute(name = "unix-lines")
     protected Boolean unixLines;
 
-    /**
-     * Gets the value of the parameters property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Parameters }
-     *     
-     */
-    public Parameters getParameters() {
-        return parameters;
+    public List<Parameter> getParameters() {
+        return parameters == null? Collections.emptyList() : parameters;
     }
 
-    /**
-     * Sets the value of the parameters property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Parameters }
-     *     
-     */
-    public void setParameters(Parameters value) {
-        this.parameters = value;
+    public void setParameters(List<Parameter> value) {
+        this.parameters = value == null? new ArrayList<>() : value;
     }
 
     /**
@@ -221,8 +216,8 @@ public class Url {
      *     {@link String }
      *     
      */
-    public String getUserAgent() {
-        return userAgent;
+    public Optional<String> getUserAgent() {
+        return Optional.ofNullable(userAgent);
     }
 
     /**
@@ -245,8 +240,8 @@ public class Url {
      *     {@link String }
      *     
      */
-    public String getVirtualHost() {
-        return virtualHost;
+    public Optional<String> getVirtualHost() {
+        return Optional.ofNullable(virtualHost);
     }
 
     /**
@@ -297,8 +292,8 @@ public class Url {
      *     {@link String }
      *     
      */
-    public String getUserInfo() {
-        return userInfo;
+    public Optional<String> getUserInfo() {
+        return Optional.ofNullable(userInfo);
     }
 
     /**
@@ -390,6 +385,9 @@ public class Url {
      *     
      */
     public void setPath(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'path' is a required attribute!");
+        }
         this.path = value;
     }
 
@@ -401,8 +399,8 @@ public class Url {
      *     {@link String }
      *     
      */
-    public String getQuery() {
-        return query;
+    public Optional<String> getQuery() {
+        return Optional.ofNullable(query);
     }
 
     /**
@@ -425,8 +423,8 @@ public class Url {
      *     {@link String }
      *     
      */
-    public String getFragment() {
-        return fragment;
+    public Optional<String> getFragment() {
+        return Optional.ofNullable(fragment);
     }
 
     /**

@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 
 /**
@@ -64,7 +66,8 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "attrib")
-public class Attrib {
+public class Attrib implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
@@ -93,7 +96,10 @@ public class Attrib {
      *     {@link String }
      *     
      */
-    public void setAlias(String value) {
+    public void setAlias(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'alias' is a required attribute!");
+        }
         this.alias = value;
     }
 
@@ -134,6 +140,9 @@ public class Attrib {
      *     
      */
     public void setType(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'type' is a required attribute!");
+        }
         this.type = value;
     }
 
