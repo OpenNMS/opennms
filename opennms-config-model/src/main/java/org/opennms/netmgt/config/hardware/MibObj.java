@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.hardware;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,6 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.OptionalStringAdapter;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
@@ -50,13 +53,13 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 public class MibObj implements Serializable {
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 4849169529250761780L;
+    private static final long serialVersionUID = 1L;
 
     /** The OID. */
     private SnmpObjId oid;
 
     /** The type or attribute class (defaults to 'string'). */
-    private String type = "string";
+    private String type;
 
     /** The alias. */
     private String alias;
@@ -125,7 +128,7 @@ public class MibObj implements Serializable {
      */
     @XmlAttribute(name="type", required=false)
     public String getType() {
-        return type;
+        return type == null? "string" : type;
     }
 
     /**
@@ -162,8 +165,13 @@ public class MibObj implements Serializable {
      * @return the replace
      */
     @XmlAttribute(name="replace", required=false)
-    public String getReplace() {
-        return replace;
+    @XmlJavaTypeAdapter(OptionalStringAdapter.class)
+    public Optional<String> getReplace() {
+        return Optional.ofNullable(replace);
+    }
+
+    public void setReplace(final Optional<String> replace) {
+        setReplace(replace.orElse(null));
     }
 
     /**
@@ -173,16 +181,34 @@ public class MibObj implements Serializable {
      *
      * @param replace the replace
      */
-    public void setReplace(String replace) {
+    public void setReplace(final String replace) {
         if (replace != null && !replace.startsWith("entPhysical")) {
             throw new IllegalArgumentException("Invalid replace field " + replace);
         }
         this.replace = replace;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj instanceof MibObj) {
+            final MibObj that = (MibObj)obj;
+            return Objects.equals(this.oid, that.oid) &&
+                    Objects.equals(this.type, that.type) &&
+                    Objects.equals(this.alias, that.alias) &&
+                    Objects.equals(this.replace, that.replace);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(oid, type, alias, replace);
+    }
+
     @Override
     public String toString() {
         return "MibObj [oid=" + oid + ", type=" + type + ", alias=" + alias + ", replace=" + replace + "]";

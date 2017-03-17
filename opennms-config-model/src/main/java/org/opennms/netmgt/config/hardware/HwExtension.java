@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.hardware;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,7 +49,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class HwExtension implements Serializable {
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 3230325207779649291L;
+    private static final long serialVersionUID = 1L;
 
     /** The name. */
     private String name;
@@ -91,6 +92,9 @@ public class HwExtension implements Serializable {
      * @param name the name
      */
     public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         this.name = name;
     }
 
@@ -110,6 +114,9 @@ public class HwExtension implements Serializable {
      * @param sysOidMask the system OID mask
      */
     public void setSysOidMask(String sysOidMask) {
+        if (sysOidMask == null) {
+            throw new IllegalArgumentException("'sysOidMask' is a required attribute!");
+        }
         this.sysOidMask = sysOidMask;
     }
 
@@ -175,14 +182,26 @@ public class HwExtension implements Serializable {
         mibObjects.add(mibObj);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    /**
-     * To string.
-     *
-     * @return the string
-     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj instanceof HwExtension) {
+            final HwExtension that = (HwExtension)obj;
+            return Objects.equals(this.name, that.name) &&
+                    Objects.equals(this.sysOidMask, that.sysOidMask) &&
+                    Objects.equals(this.mibObjects, that.mibObjects);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, sysOidMask, mibObjects);
+    }
+
     @Override
     public String toString() {
         return "HwExtension [name=" + name + ", sysOidMask=" + sysOidMask + ", mibObjects=" + mibObjects + "]";

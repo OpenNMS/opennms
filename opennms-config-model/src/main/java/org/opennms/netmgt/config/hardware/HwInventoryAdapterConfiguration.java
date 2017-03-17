@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -51,7 +52,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 public class HwInventoryAdapterConfiguration implements Serializable {
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 3072173311787052813L;
+    private static final long serialVersionUID = 1L;
 
     /** The extensions. */
     List<HwExtension> extensions = new ArrayList<HwExtension>();
@@ -72,7 +73,7 @@ public class HwInventoryAdapterConfiguration implements Serializable {
      * @param extensions the extensions
      */
     public void setExtensions(List<HwExtension> extensions) {
-        this.extensions = extensions;
+        this.extensions = extensions == null? new ArrayList<>() : extensions;
     }
 
     /**
@@ -111,17 +112,31 @@ public class HwInventoryAdapterConfiguration implements Serializable {
         final Map<String,String> replacementMap = new HashMap<String,String>();
         for (HwExtension ext : getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
-                if (obj.getReplace() != null && !obj.getReplace().trim().isEmpty()) {
-                    replacementMap.put(obj.getAlias(), obj.getReplace());
+                if (obj.getReplace().isPresent() && !obj.getReplace().get().trim().isEmpty()) {
+                    replacementMap.put(obj.getAlias(), obj.getReplace().get());
                 }
             }
         }
         return replacementMap;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj instanceof HwInventoryAdapterConfiguration) {
+            final HwInventoryAdapterConfiguration that = (HwInventoryAdapterConfiguration)obj;
+            return Objects.equals(this.extensions, that.extensions);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(extensions);
+    }
     @Override
     public String toString() {
         return "HwInventoryAdapterConfiguration [extensions=" + extensions + "]";
