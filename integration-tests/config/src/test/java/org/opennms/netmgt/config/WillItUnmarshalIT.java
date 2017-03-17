@@ -204,8 +204,8 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
