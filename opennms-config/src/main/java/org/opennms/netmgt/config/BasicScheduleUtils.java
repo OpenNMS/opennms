@@ -40,14 +40,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.poller.outages.Outage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>BasicScheduleUtils class.</p>
@@ -109,7 +109,7 @@ public abstract class BasicScheduleUtils {
     
             final Time oTime = (Time) e.nextElement();
     
-            final String oTimeDay = oTime.getDay();
+            final String oTimeDay = oTime.getDay().orElse(null);
             final String begins = oTime.getBegins();
             final String ends = oTime.getEnds();
     
@@ -254,11 +254,11 @@ public abstract class BasicScheduleUtils {
 
             final Time oTime = en.nextElement();
 
-            final String oTimeDay = oTime.getDay();
+            final String oTimeDay = oTime.getDay().orElse(null);
             final String begins = oTime.getBegins();
             final String ends = oTime.getEnds();
 
-            if (oTimeDay != null) {
+            if (oTime.getDay().isPresent()) {
                 // see if outage time was specified as sunday/monday..
                 final Integer dayInMap = getDayOfWeekIndex(oTimeDay);
                 if (dayInMap != null) {
@@ -315,7 +315,7 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isDaily(final Time time) {
-    	return time.getDay() == null && !isSpecific(time);
+    	return !time.getDay().isPresent() && !isSpecific(time);
     }
     
     /**
@@ -325,7 +325,7 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isWeekly(final Time time) {
-        return time.getDay() != null && getDayOfWeekIndex(time.getDay()) != null;
+        return getDayOfWeekIndex(time.getDay().orElse(null)) != null;
     }
     
     /**
@@ -335,7 +335,7 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isMonthly(final Time time) {
-        return time.getDay() != null && getDayOfWeekIndex(time.getDay()) == null; 
+        return time.getDay().isPresent() && getDayOfWeekIndex(time.getDay().get()) == null; 
     }
     
     /**
@@ -345,7 +345,7 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isSpecific(final Time time) {
-        if (time.getDay() == null) {
+        if (!time.getDay().isPresent()) {
             return SPECIFIC_DATE_PATTERN.matcher(time.getBegins()).matches();
         }
         return false;
@@ -418,14 +418,18 @@ public abstract class BasicScheduleUtils {
      * @return a {@link org.opennms.core.utils.OwnedInterval} object.
      */
     public static OwnedInterval getInterval(final Date ref, final Time time, final Owner owner) {
+        final String begins = time.getBegins();
+        final String ends = time.getEnds();
+        final String day = time.getDay().orElse(null);
+
         if (isWeekly(time)) {
-            return new OwnedInterval(owner, getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
+            return new OwnedInterval(owner, getWeeklyTime(ref, day, begins), getWeeklyTime(ref, day, ends));
         } else if (isMonthly(time)) {
-            return new OwnedInterval(owner, getMonthlyTime(ref, time.getDay(), time.getBegins()), getMonthlyTime(ref, time.getDay(), time.getEnds()));
+            return new OwnedInterval(owner, getMonthlyTime(ref, day, begins), getMonthlyTime(ref, day, ends));
         } else if (isDaily(time)) {
-            return new OwnedInterval(owner, getDailyTime(ref, time.getBegins()), getDailyTime(ref, time.getEnds()));
+            return new OwnedInterval(owner, getDailyTime(ref, begins), getDailyTime(ref, ends));
         } else {
-            return new OwnedInterval(owner, getSpecificTime(time.getBegins()), getSpecificTime(time.getEnds()));
+            return new OwnedInterval(owner, getSpecificTime(begins), getSpecificTime(ends));
         }
     }
     
@@ -570,7 +574,7 @@ public abstract class BasicScheduleUtils {
 		basicSchedule.setType(schedule.getType());
 		final Collection<Time> times = new ArrayList<Time>();
 		for (final org.opennms.netmgt.config.groups.Time time : schedule.getTimes()) {
-			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}
 		basicSchedule.setTimeCollection(times);
 		

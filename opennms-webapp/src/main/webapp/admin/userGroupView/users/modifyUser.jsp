@@ -154,7 +154,8 @@
             var beginValue = new Number(document.modifyUser.elements[beginName].value);
             var endValue = new Number(document.modifyUser.elements[endName].value);
 
-            var beginHour = Math.floor(beginValue / 100), endHour = Math.floor(endValue / 100);
+            var beginHour = Math.floor(beginValue / 100);
+            var endHour = Math.floor(endValue / 100);
             var beginMin = beginValue % 100, endMin = endValue % 100
             var duration = ((endHour * 60) + endMin) - ((beginHour * 60) + beginMin);
 

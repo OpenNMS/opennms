@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -71,6 +72,9 @@ public class Role implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         m_name = name;
     }
 
@@ -79,6 +83,9 @@ public class Role implements Serializable {
     }
 
     public void setMembershipGroup(final String membershipGroup) {
+        if (membershipGroup == null) {
+            throw new IllegalArgumentException("'membership-group' is a required attribute!");
+        }
         m_membershipGroup = membershipGroup;
     }
 
@@ -87,11 +94,14 @@ public class Role implements Serializable {
     }
 
     public void setSupervisor(final String supervisor) {
+        if (supervisor == null) {
+            throw new IllegalArgumentException("'supervisor' is a required attribute!");
+        }
         m_supervisor = supervisor;
     }
 
-    public String getDescription() {
-        return m_description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(m_description);
     }
 
     public void setDescription(final String description) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -55,8 +55,9 @@ public class Groupinfo implements Serializable {
     @XmlElement(name = "group")
     private List<Group> m_groups = new ArrayList<>();
 
-    @XmlElement(name = "roles")
-    private Roles m_roles;
+    @XmlElementWrapper(name = "roles")
+    @XmlElement(name = "role")
+    private List<Role> m_roles = new ArrayList<>();
 
     public Groupinfo() {
     }
@@ -81,12 +82,12 @@ public class Groupinfo implements Serializable {
         m_groups.add(group);
     }
 
-    public Roles getRoles() {
+    public List<Role> getRoles() {
         return m_roles;
     }
 
-    public void setRoles(final Roles roles) {
-        m_roles = roles;
+    public void setRoles(final List<Role> roles) {
+        m_roles = roles == null? new ArrayList<>() : roles;
     }
 
     @Override

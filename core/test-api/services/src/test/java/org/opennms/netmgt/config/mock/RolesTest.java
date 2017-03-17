@@ -196,7 +196,7 @@ public class RolesTest extends IntervalTestCase {
 
     private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
-        assertEquals(role.getDescription(), webRole.getDescription());
+        assertEquals(role.getDescription().orElse(null), webRole.getDescription());
         assertNotNull(webRole.getMembershipGroup());
         assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
         assertNotNull(webRole.getDefaultUser());

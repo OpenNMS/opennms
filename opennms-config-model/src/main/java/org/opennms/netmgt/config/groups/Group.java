@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -70,19 +71,22 @@ public class Group implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required element!");
+        }
         m_name = name;
     }
 
-    public String getDefaultMap() {
-        return m_defaultMap;
+    public Optional<String> getDefaultMap() {
+        return Optional.ofNullable(m_defaultMap);
     }
 
     public void setDefaultMap(final String defaultMap) {
         m_defaultMap = defaultMap;
     }
 
-    public String getComments() {
-        return m_comments;
+    public Optional<String> getComments() {
+        return Optional.ofNullable(m_comments);
     }
 
     public void setComments(final String comments) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -64,10 +64,9 @@ public class BasicSchedule implements Serializable {
      * defines start/end time for the outage
      */
     @XmlElement(name = "time", required = true)
-    private List<Time> m_times;
+    private List<Time> m_times = new ArrayList<>();
 
     public BasicSchedule() {
-        m_times = new ArrayList<Time>();
     }
 
     public String getName() {
@@ -75,6 +74,9 @@ public class BasicSchedule implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         m_name = name;
     }
 
@@ -83,6 +85,9 @@ public class BasicSchedule implements Serializable {
     }
 
     public void setType(final String type) {
+        if (type == null) {
+            throw new IllegalArgumentException("'type' is a required attribute!");
+        }
         m_type = type;
     }
 

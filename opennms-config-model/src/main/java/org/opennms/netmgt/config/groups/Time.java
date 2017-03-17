@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.groups;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -71,16 +72,16 @@ public class Time implements Serializable {
     public Time() {
     }
 
-    public String getId() {
-        return m_id;
+    public Optional<String> getId() {
+        return Optional.ofNullable(m_id);
     }
 
     public void setId(final String id) {
         m_id = id;
     }
 
-    public String getDay() {
-        return m_day;
+    public Optional<String> getDay() {
+        return Optional.ofNullable(m_day);
     }
 
     public void setDay(final String day) {
@@ -92,6 +93,9 @@ public class Time implements Serializable {
     }
 
     public void setBegins(final String begins) {
+        if (begins == null) {
+            throw new IllegalArgumentException("'begins' is a required attribute!");
+        }
         m_begins = begins;
     }
 
@@ -100,6 +104,9 @@ public class Time implements Serializable {
     }
 
     public void setEnds(final String ends) {
+        if (ends == null) {
+            throw new IllegalArgumentException("'ends' is a required attribute!");
+        }
         m_ends = ends;
     }
 
