@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.eventd;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -129,8 +130,8 @@ public class EventdConfiguration implements Serializable {
     public EventdConfiguration() {
     }
 
-    public String getTCPAddress() {
-        return m_tcpAddress;
+    public Optional<String> getTCPAddress() {
+        return Optional.ofNullable(m_tcpAddress);
     }
 
     public void setTCPAddress(final String TCPAddress) {
@@ -142,11 +143,14 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setTCPPort(final Integer TCPPort) {
+        if (TCPPort == null) {
+            throw new IllegalArgumentException("'TCPPort' is a required attribute!");
+        }
         m_tcpPort = TCPPort;
     }
 
-    public String getUDPAddress() {
-        return m_udpAddress;
+    public Optional<String> getUDPAddress() {
+        return Optional.ofNullable(m_udpAddress);
     }
 
     public void setUDPAddress(final String UDPAddress) {
@@ -158,6 +162,9 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setUDPPort(final Integer UDPPort) {
+        if (UDPPort == null) {
+            throw new IllegalArgumentException("'UDPPort' is a required attribute!");
+        }
         m_udpPort = UDPPort;
     }
 
@@ -166,19 +173,22 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setReceivers(final Integer receivers) {
+        if (receivers == null) {
+            throw new IllegalArgumentException("'receivers' is a required attribute!");
+        }
         m_receivers = receivers;
     }
 
-    public Integer getQueueLength() {
-        return m_queueLength;
+    public Optional<Integer> getQueueLength() {
+        return Optional.ofNullable(m_queueLength);
     }
 
     public void setQueueLength(final Integer queueLength) {
         m_queueLength = queueLength;
     }
 
-    public String getGetNextEventID() {
-        return m_getNextEventID;
+    public Optional<String> getGetNextEventID() {
+        return Optional.ofNullable(m_getNextEventID);
     }
 
     public void setGetNextEventID(final String getNextEventID) {
@@ -190,11 +200,14 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setSocketSoTimeoutRequired(final String socketSoTimeoutRequired) {
+        if (socketSoTimeoutRequired == null) {
+            throw new IllegalArgumentException("'socketSoTimeoutRequired' is a required attribute!");
+        }
         m_socketSoTimeoutRequired = socketSoTimeoutRequired;
     }
 
-    public Integer getSocketSoTimeoutPeriod() {
-        return m_socketSoTimeoutPeriod;
+    public Optional<Integer> getSocketSoTimeoutPeriod() {
+        return Optional.ofNullable(m_socketSoTimeoutPeriod);
     }
 
     public void setSocketSoTimeoutPeriod(final Integer socketSoTimeoutPeriod) {
