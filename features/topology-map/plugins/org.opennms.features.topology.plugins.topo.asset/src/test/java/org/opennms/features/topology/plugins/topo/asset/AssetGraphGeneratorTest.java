@@ -11,7 +11,9 @@ import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
+import org.opennms.features.topology.plugins.topo.asset.filter.EqFilter;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.Layers;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.features.topology.plugins.topo.asset.util.TestNodeProvider;
@@ -31,7 +33,7 @@ public class AssetGraphGeneratorTest {
 		config.setLabel("testgraph");
 		config.setPreferredLayout("Grid Layout");
 		config.setGenerateUnallocated(true);
-		config.setAssetLayers(""); // empty layers
+		config.setLayerHierarchies(new ArrayList<>()); // empty layers
 
 		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestNodeProvider());
 
@@ -71,7 +73,7 @@ public class AssetGraphGeneratorTest {
 	public void verifySimpleGraphGeneration() throws InvalidGraphException {
 		final NodeProvider nodeProvider = new NodeProvider() {
 			@Override
-			public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
+			public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
 				List<OnmsNode> nodes = new ArrayList<>();
 				nodes.add(new NodeBuilder().withId(1).withLabel("Node 1").withAssets().withRegion("Stuttgart").withBuilding("S1").done().getNode());
 				nodes.add(new NodeBuilder().withId(2).withLabel("Node 2").withAssets().withRegion("Stuttgart").withBuilding("S2").done().getNode());
@@ -95,7 +97,7 @@ public class AssetGraphGeneratorTest {
 	public void verifyGraphGenerationWithCategories() throws InvalidGraphException {
 		final NodeProvider nodeProvider = new NodeProvider() {
 			@Override
-			public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
+			public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
 				List<OnmsNode> nodes = new ArrayList<>();
 				nodes.add(new NodeBuilder().withId(1).withLabel("Node 1").withCategories("Server").withAssets().withRegion("Stuttgart").withBuilding("S1").done().getNode());
 				nodes.add(new NodeBuilder().withId(2).withLabel("Node 2").withCategories("Server").withAssets().withRegion("Stuttgart").withBuilding("S2").done().getNode());
@@ -109,6 +111,29 @@ public class AssetGraphGeneratorTest {
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-categories.xml"));
 		Assert.assertEquals(expectedGraphML, generatedGraphML);
+	}
+
+	@Test
+	public void verifyFilter() throws InvalidGraphException {
+		final NodeProvider nodeProvider = new NodeProvider() {
+			@Override
+			public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
+				List<OnmsNode> nodes = new ArrayList<>();
+				nodes.add(new NodeBuilder().withId(1).withLabel("Node 1").withAssets().withRegion("Stuttgart").withBuilding("S1").done().getNode());
+				nodes.add(new NodeBuilder().withId(2).withLabel("Node 2").withAssets().withRegion("Fulda").withBuilding("F1").done().getNode());
+				return nodes;
+			}
+		};
+
+		final GeneratorConfig config = new GeneratorConfig();
+		final List<LayerDefinition> layerDefinitions = Lists.newArrayList(
+				new LayerDefinition(NodeParamLabels.ASSET_REGION, Layers.ASSET_REGION.getLayer(), new EqFilter("Stuttgart"))
+		);
+
+		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config, nodeProvider.getNodes(null), layerDefinitions);
+		Assert.assertEquals(2, generatedGraphML.getGraphs().size());
+		Assert.assertEquals(1, generatedGraphML.getGraphs().get(0).getNodes().size());
+		Assert.assertEquals(1, generatedGraphML.getGraphs().get(1).getNodes().size());
 	}
 
 }

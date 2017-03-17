@@ -38,6 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinitionRepository;
 import org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layers;
 import org.opennms.features.topology.plugins.topo.asset.layers.Restriction;
@@ -50,6 +51,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -136,7 +139,7 @@ public class PersistenceNodeProviderIT {
      */
     @Test
     public void verifyLayerRestrictions() throws Exception {
-        List<LayerDefinition.Mapping> mapping = new LayerDefinition().getMapping(NodeParamLabels.ALL_KEYS);
+        List<LayerDefinition> mapping = new LayerDefinitionRepository().getDefinitions(NodeParamLabels.ALL_KEYS, Lists.newArrayList());
         Assert.assertEquals(NodeParamLabels.ALL_KEYS.size(), Layers.values().length);
         Assert.assertEquals(Layers.values().length, mapping.size());
 

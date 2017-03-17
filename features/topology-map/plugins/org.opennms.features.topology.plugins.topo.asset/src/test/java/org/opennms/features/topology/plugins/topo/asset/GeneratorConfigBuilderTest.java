@@ -34,6 +34,8 @@ import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
+import com.google.common.collect.Lists;
+
 public class GeneratorConfigBuilderTest {
 
     @Test
@@ -53,7 +55,7 @@ public class GeneratorConfigBuilderTest {
         expectedConfig.setPreferredLayout("D3 Layout");
         expectedConfig.setBreadcrumbStrategy(BreadcrumbStrategy.NONE.name());
         expectedConfig.setGenerateUnallocated(true);
-        expectedConfig.setAssetLayers("a,b,c");
+        expectedConfig.setLayerHierarchies(Lists.newArrayList("a", "b", "c"));
 
         final GeneratorConfig actualConfig = GeneratorConfigBuilder.buildFrom(e);
         Assert.assertEquals(expectedConfig, actualConfig);

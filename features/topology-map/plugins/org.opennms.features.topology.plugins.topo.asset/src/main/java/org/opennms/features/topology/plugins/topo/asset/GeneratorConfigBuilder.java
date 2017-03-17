@@ -28,6 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.asset;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -44,6 +48,7 @@ public class GeneratorConfigBuilder {
     private String includeUnassignedNodes;
     private String preferredLayout;
     private String hierarchy;
+    private String filter;
 
     public GeneratorConfigBuilder withLabel(String label) {
         this.label = label;
@@ -75,6 +80,11 @@ public class GeneratorConfigBuilder {
         return this;
     }
 
+    public GeneratorConfigBuilder withFilter(String filter) {
+        this.filter = filter;
+        return this;
+    }
+
     public GeneratorConfig build() {
         final GeneratorConfig config = new GeneratorConfig();
         if (label != null) {
@@ -90,7 +100,19 @@ public class GeneratorConfigBuilder {
             config.setPreferredLayout(preferredLayout);
         }
         if (hierarchy != null && !hierarchy.trim().isEmpty()) {
-            config.setAssetLayers(hierarchy);
+            final List<String> layers = Arrays.asList(hierarchy.split(",")).stream()
+                    .filter(h -> h != null && !h.trim().isEmpty())
+                    .map(h -> h.trim())
+                    .collect(Collectors.toList());
+            config.setLayerHierarchies(layers);
+        }
+
+        if(filter != null && !filter.isEmpty()) {
+            final List<String> filters = Arrays.asList(filter.split("&")).stream()
+                    .filter(h -> h != null && !h.trim().isEmpty())
+                    .map(h -> h.trim())
+                    .collect(Collectors.toList());
+            config.setFilters(filters);
         }
         if (breadcrumbStrategy != null) {
             try {

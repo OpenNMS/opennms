@@ -80,6 +80,7 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 					.withLabel(label)
 					.withBreadcrumbStrategy(breadcrumbStrategy)
 					.withPreferredLayout(preferredLayout)
+					.withFilter(filter)
 					.build();
 
 			System.out.println("Creating Asset Topology from configuration " + config);

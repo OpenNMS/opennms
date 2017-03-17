@@ -26,28 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset;
+package org.opennms.features.topology.plugins.topo.asset.filter;
 
-import java.util.List;
+import java.util.HashMap;
 
-import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.netmgt.model.OnmsNode;
+import org.junit.Assert;
+import org.junit.Test;
 
-/**
- * Provides {@link OnmsNode}s which the Asset Topology is build from.
- *
- * @author mvrueden
- */
-public interface NodeProvider {
-    /**
-     * Returns all nodes for which the given mapping applies.
-     *
-     * The returned list SHOULD NOT contain any nodes, where any value from {@link org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider#getItem(OnmsNode)} would return null.
-     * If the returned list contains those nodes anyways, they will be filtered out later.
-     * This is considered a BAD PRACTISE and should only be used if absolutely necessary (e.g. tests)
-     *
-     * @param definitions
-     * @return all nodes for which the given mapping applies.
-     */
-    List<OnmsNode> getNodes(List<LayerDefinition> definitions);
+import com.google.common.collect.Lists;
+
+public class FilterParserTest {
+
+    @Test
+    public void verifyParse() {
+        Assert.assertEquals(new HashMap<>(), new FilterParser().parse(Lists.newArrayList()));
+    }
+
 }

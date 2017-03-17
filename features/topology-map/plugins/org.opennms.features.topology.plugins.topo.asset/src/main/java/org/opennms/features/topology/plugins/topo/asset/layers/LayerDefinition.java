@@ -28,50 +28,46 @@
 
 package org.opennms.features.topology.plugins.topo.asset.layers;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import org.opennms.features.topology.plugins.topo.asset.filter.Filter;
 
 public class LayerDefinition {
 
-    public static class Mapping {
+    private final String key;
+    private final Layer layer;
+    private final String restriction;
+    private Filter filter;
 
-        private final Layer layer;
-        private final String restriction;
-
-        public Mapping(Layer layer, String restriction) {
-            this.layer = Objects.requireNonNull(layer);
-            this.restriction = restriction;
-        }
-
-        public String getRestriction() {
-            return restriction;
-        }
-
-        public Layer getLayer() {
-            return layer;
-        }
+    public LayerDefinition(String key, Layer layer, String restriction) {
+        this.layer = Objects.requireNonNull(layer);
+        this.key = Objects.requireNonNull(key);
+        this.restriction = restriction;
     }
 
-    final Map<String, Mapping> mapping = new HashMap<>();
-
-    public LayerDefinition() {
-        for (Layers layer : Layers.values()) {
-            try {
-                final Field enumField = layer.getClass().getField(layer.name());
-                final Key key = enumField.getAnnotation(Key.class);
-                final Restriction restriction = enumField.getAnnotation(Restriction.class);
-                mapping.put(key == null ? layer.getLayer().getId() : key.value(), new Mapping(layer.getLayer(), restriction == null ? null : restriction.hql()));
-            } catch (NoSuchFieldException e) {
-                // swallow, should not happen
-            }
-        }
+    public LayerDefinition(String key, Layer layer, Filter filter) {
+        this(key, layer, (String) null);
+        this.filter = filter;
     }
 
-    public List<Mapping> getMapping(List<String> layerKeys) {
-        return layerKeys.stream().map(key -> mapping.get(key)).filter(definition -> definition != null).collect(Collectors.toList());
+    public String getRestriction() {
+        return restriction;
+    }
+
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public Layer getLayer() {
+        return layer;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 }

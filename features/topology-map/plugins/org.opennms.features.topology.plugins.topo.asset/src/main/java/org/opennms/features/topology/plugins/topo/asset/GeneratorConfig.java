@@ -28,10 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.asset;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
@@ -45,6 +43,7 @@ public class GeneratorConfig {
     private String breadcrumbStrategy = BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT.name();
     private String providerId = "asset";
     private String preferredLayout = "Grid Layout";
+    private List<String> filters;
     private boolean generateUnallocated;
     private List<String> layerHierarchies = Lists.newArrayList(
             NodeParamLabels.ASSET_REGION,
@@ -99,14 +98,12 @@ public class GeneratorConfig {
         this.layerHierarchies = layers;
     }
 
-    public void setAssetLayers(String assetLayers) {
-        if (assetLayers != null) {
-            List<String> layers = Arrays.asList(assetLayers.split(",")).stream()
-                    .filter(h -> h != null && !h.trim().isEmpty())
-                    .map(h -> h.trim())
-                    .collect(Collectors.toList());
-            setLayerHierarchies(layers);
-        }
+    public void setFilters(List<String> filters) {
+        this.filters = filters;
+    }
+
+    public List<String> getFilters() {
+        return filters;
     }
 
     @Override
@@ -136,6 +133,7 @@ public class GeneratorConfig {
                 .add("providerId", providerId)
                 .add("label", label)
                 .add("layerHierarchies", layerHierarchies)
+                .add("filter", filters)
                 .add("breadcrumbStrategy", breadcrumbStrategy)
                 .add("preferredLayout", preferredLayout)
                 .add("generateUnallocated", generateUnallocated)

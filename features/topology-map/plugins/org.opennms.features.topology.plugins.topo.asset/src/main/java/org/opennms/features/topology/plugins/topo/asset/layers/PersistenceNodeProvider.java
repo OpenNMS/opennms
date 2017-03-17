@@ -48,9 +48,9 @@ public class PersistenceNodeProvider implements NodeProvider {
     }
 
     @Override
-    public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
+    public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
         final StringBuilder queryBuilder = new StringBuilder("Select n from OnmsNode n join n.assetRecord assetRecord");
-        final List<String> restrictions = mappings.stream().map(eachMapping -> eachMapping.getRestriction()).filter(hql -> hql != null).collect(Collectors.toList());
+        final List<String> restrictions = definitions.stream().map(eachMapping -> eachMapping.getRestriction()).filter(hql -> hql != null).collect(Collectors.toList());
         if (!restrictions.isEmpty()) {
             queryBuilder.append(" WHERE ");
             queryBuilder.append(restrictions.stream().map(restriction -> "n." + restriction).collect(Collectors.joining(" AND ")));

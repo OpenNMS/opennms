@@ -45,7 +45,7 @@ public class TestNodeProvider implements NodeProvider {
     private static final String NODE_TEST_DATA_FILE_NAME="/mock-testdata.xml";
 
     @Override
-    public List<OnmsNode> getNodes(List<LayerDefinition.Mapping> mappings) {
+    public List<OnmsNode> getNodes(List<LayerDefinition> definitions) {
             NodeInfoRepositoryXML nodeInfoRepositoryXML = JAXB.unmarshal(getClass().getResourceAsStream(NODE_TEST_DATA_FILE_NAME), NodeInfoRepositoryXML.class);
             final List<OnmsNode> nodes = nodeInfoRepositoryXML.getNodeInfoList().stream().map(eachEntry -> {
                 final NodeBuilder nodeBuilder = new NodeBuilder().withId(eachEntry.getNodeId());

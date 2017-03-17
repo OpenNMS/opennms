@@ -39,9 +39,11 @@ import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
 import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
+import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerBuilder;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
+import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinitionRepository;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -57,11 +59,14 @@ public class AssetGraphGenerator {
 	}
 
 	public GraphML generateGraphs(GeneratorConfig config) {
-		final List<LayerDefinition.Mapping> layerMappings = new LayerDefinition().getMapping(config.getLayerHierarchies());
-		final List<OnmsNode> nodes = nodeProvider.getNodes(layerMappings);
+		final List<LayerDefinition> layerDefinitions = new LayerDefinitionRepository().getDefinitions(config.getLayerHierarchies(), config.getFilters());
+		final List<OnmsNode> nodes = nodeProvider.getNodes(layerDefinitions);
+		return generateGraphs(config, nodes, layerDefinitions);
+	}
 
+	protected GraphML generateGraphs(GeneratorConfig config, List<OnmsNode> nodes, List<LayerDefinition> layerDefinitions) {
 		// Define Layers
-		final List<Layer> layers = layerMappings.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
+		final List<Layer> layers = layerDefinitions.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
 
 		// Add last Layer for Nodes
 		layers.add(new LayerBuilder()
@@ -77,15 +82,33 @@ public class AssetGraphGenerator {
 		);
 
 		// Ensure that all elements in the nodes do have values set
-		layers.forEach(layerDefinition -> {
-			List<OnmsNode> nodeWithNullValues = nodes.stream().filter(n -> layerDefinition.getItemProvider().getItem(n) == null).collect(Collectors.toList());
+		layers.forEach(layer -> {
+			List<OnmsNode> nodeWithNullValues = nodes.stream().filter(n -> layer.getItemProvider().getItem(n) == null).collect(Collectors.toList());
 			if (!nodeWithNullValues.isEmpty()) {
 				LOG.debug("Found nodes with null value for layer (id: {}, label: {}). Removing nodes {}",
-						layerDefinition.getId(), layerDefinition.getLabel(),
+						layer.getId(), layer.getLabel(),
 						nodeWithNullValues.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
 				nodes.removeAll(nodeWithNullValues);
 			}
 		});
+
+		// Apply additional filters
+		layerDefinitions.stream()
+				.filter(layerDefinition -> layerDefinition.getFilter() != null)
+				.forEach(
+					layerDefinition -> {
+						final List<OnmsNode> filteredNodes = nodes.stream().filter(n -> {
+							ItemProvider itemProvider = layerDefinition.getLayer().getItemProvider();
+							return layerDefinition.getFilter().apply(itemProvider.getItem(n));
+						}).collect(Collectors.toList());
+						if (!filteredNodes.isEmpty()) {
+							final Layer layer = layerDefinition.getLayer();
+							LOG.debug("Found nodes to remove due to filter settings for layer (id: {}, label: {}). Removing nodes {}",
+									layer.getId(), layer.getLabel(),
+									filteredNodes.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
+							nodes.removeAll(filteredNodes);
+						}
+					});
 
 		// Start generating the hierarchy
 		// Overall graphml object
