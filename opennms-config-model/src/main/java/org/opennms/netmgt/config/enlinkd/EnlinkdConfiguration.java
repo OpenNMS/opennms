@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.enlinkd;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -38,9 +40,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Top-level element for the enlinkd-configuration.xml
  *  configuration file.
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "enlinkd-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -211,8 +210,8 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * 
      * @return the value of field 'Initial_sleep_time'.
      */
-    public Long getInitialSleepTime() {
-        return this.initial_sleep_time;
+    public Optional<Long> getInitialSleepTime() {
+        return Optional.ofNullable(this.initial_sleep_time);
     }
 
     /**
@@ -483,6 +482,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * @param initial_sleep_time the value of field 'initial_sleep_time'.
      */
     public void setInitialSleepTime(final Long initial_sleep_time) {
+        if (initial_sleep_time == null) {
+            throw new IllegalArgumentException("'initial_sleep_time' is a required attribute!");
+        }
         this.initial_sleep_time = initial_sleep_time;
     }
 
@@ -506,6 +508,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * @param rescan_interval the value of field 'rescan_interval'.
      */
     public void setRescanInterval(final Long rescan_interval) {
+        if (rescan_interval == null) {
+            throw new IllegalArgumentException("'rescan_interval' is a required attribute!");
+        }
         this.rescan_interval = rescan_interval;
     }
 
@@ -518,6 +523,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * @param threads the value of field 'threads'.
      */
     public void setThreads(final Integer threads) {
+        if (threads == null) {
+            throw new IllegalArgumentException("'threads' is a required attribute!");
+        }
         this.threads = threads;
     }
 

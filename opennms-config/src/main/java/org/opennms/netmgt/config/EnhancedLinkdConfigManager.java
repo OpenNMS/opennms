@@ -138,8 +138,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     
 
     public long getInitialSleepTime() {
-        if (m_config.hasInitialSleepTime()) return m_config.getInitialSleepTime();
-        return 1800000;
+        return m_config.getInitialSleepTime().orElse(1800000l);
     }
 
     public long getRescanInterval() {
