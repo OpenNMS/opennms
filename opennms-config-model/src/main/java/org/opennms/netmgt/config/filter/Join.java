@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.filter;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -142,6 +143,9 @@ public class Join implements java.io.Serializable {
      * @param column the value of field 'column'.
      */
     public void setColumn(final String column) {
+        if (column == null) {
+            throw new IllegalArgumentException("'column' is a required attribute!");
+        }
         this.column = column;
     }
 
@@ -151,6 +155,9 @@ public class Join implements java.io.Serializable {
      * @param table the value of field 'table'.
      */
     public void setTable(final String table) {
+        if (table == null) {
+            throw new IllegalArgumentException("'table' is a required attribute!");
+        }
         this.table = table;
     }
 
@@ -160,6 +167,9 @@ public class Join implements java.io.Serializable {
      * @param tableColumn the value of field 'tableColumn'.
      */
     public void setTableColumn(final String tableColumn) {
+        if (tableColumn == null) {
+            throw new IllegalArgumentException("'table-column' is a required attribute!");
+        }
         this.tableColumn = tableColumn;
     }
 

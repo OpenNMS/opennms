@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,18 +29,15 @@
 package org.opennms.netmgt.config.filter;
 
 
+import java.util.ArrayList;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Table.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "table")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Table implements java.io.Serializable {
@@ -59,14 +56,12 @@ public class Table implements java.io.Serializable {
     private String key;
 
     @XmlElement(name = "join")
-    private java.util.List<Join> joinList;
+    private java.util.List<Join> joinList = new ArrayList<>();
 
     @XmlElement(name = "column", required = true)
-    private java.util.List<Column> columnList;
+    private java.util.List<Column> columnList = new ArrayList<>();
 
     public Table() {
-        this.joinList = new java.util.ArrayList<Join>();
-        this.columnList = new java.util.ArrayList<Column>();
     }
 
     /**
@@ -428,7 +423,7 @@ public class Table implements java.io.Serializable {
      * @param columnList the Vector to set.
      */
     public void setColumnCollection(final java.util.List<Column> columnList) {
-        this.columnList = columnList;
+        this.columnList = columnList == null? new ArrayList<>() : columnList;
     }
 
     /**
@@ -483,7 +478,7 @@ public class Table implements java.io.Serializable {
      * @param joinList the Vector to set.
      */
     public void setJoinCollection(final java.util.List<Join> joinList) {
-        this.joinList = joinList;
+        this.joinList = joinList == null? new ArrayList<>() : joinList;
     }
 
     /**
@@ -501,6 +496,9 @@ public class Table implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         this.name = name;
     }
 

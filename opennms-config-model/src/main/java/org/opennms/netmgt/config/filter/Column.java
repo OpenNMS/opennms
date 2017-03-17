@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,18 +29,16 @@
 package org.opennms.netmgt.config.filter;
 
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Column.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "column")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Column implements java.io.Serializable {
@@ -61,14 +59,12 @@ public class Column implements java.io.Serializable {
     private String visible;
 
     @XmlElement(name = "alias")
-    private java.util.List<Alias> aliasList;
+    private java.util.List<Alias> aliasList = new ArrayList<>();
 
     @XmlElement(name = "constraint")
-    private java.util.List<Constraint> constraintList;
+    private java.util.List<Constraint> constraintList = new ArrayList<>();
 
     public Column() {
-        this.aliasList = new java.util.ArrayList<Alias>();
-        this.constraintList = new java.util.ArrayList<Constraint>();
     }
 
     /**
@@ -267,8 +263,8 @@ public class Column implements java.io.Serializable {
      * 
      * @return the value of field 'JavaType'.
      */
-    public String getJavaType() {
-        return this.javaType;
+    public Optional<String> getJavaType() {
+        return Optional.ofNullable(this.javaType);
     }
 
     /**
@@ -285,8 +281,8 @@ public class Column implements java.io.Serializable {
      * 
      * @return the value of field 'SqlType'.
      */
-    public String getSqlType() {
-        return this.sqlType;
+    public Optional<String> getSqlType() {
+        return Optional.ofNullable(this.sqlType);
     }
 
     /**
@@ -441,7 +437,7 @@ public class Column implements java.io.Serializable {
      * @param aliasList the Vector to set.
      */
     public void setAliasCollection(final java.util.List<Alias> aliasList) {
-        this.aliasList = aliasList;
+        this.aliasList = aliasList == null? new ArrayList<>() : aliasList;
     }
 
     /**
@@ -496,8 +492,8 @@ public class Column implements java.io.Serializable {
      * @param constraintList the Vector to set.
      */
     public void setConstraintCollection(final java.util.List<Constraint> constraintList) {
-        this.constraintList = constraintList;
-    }
+        this.constraintList = constraintList == null? new ArrayList<>() : constraintList;
+     }
 
     /**
      * Sets the value of field 'javaType'.
@@ -514,6 +510,9 @@ public class Column implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         this.name = name;
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,16 +30,12 @@ package org.opennms.netmgt.config.filter;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Alias.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "alias")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Alias implements java.io.Serializable {
@@ -112,6 +108,9 @@ public class Alias implements java.io.Serializable {
      * @param name the value of field 'name'.
      */
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         this.name = name;
     }
 
@@ -121,6 +120,9 @@ public class Alias implements java.io.Serializable {
      * @param value the value of field 'value'.
      */
     public void setValue(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'value' is a required attribute!");
+        }
         this.value = value;
     }
 

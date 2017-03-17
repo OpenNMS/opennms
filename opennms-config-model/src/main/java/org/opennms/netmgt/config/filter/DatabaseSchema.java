@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,7 +29,9 @@
 package org.opennms.netmgt.config.filter;
 
 
+import java.util.ArrayList;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,8 +40,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Top-level element for the database-schema.xml
  *  configuration file.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "database-schema")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -47,10 +47,9 @@ public class DatabaseSchema implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "table")
-    private java.util.List<Table> tableList;
+    private java.util.List<Table> tableList = new ArrayList<>();
 
     public DatabaseSchema() {
-        this.tableList = new java.util.ArrayList<Table>();
     }
 
     /**
@@ -257,7 +256,7 @@ public class DatabaseSchema implements java.io.Serializable {
      * @param tableList the Vector to set.
      */
     public void setTableCollection(final java.util.List<Table> tableList) {
-        this.tableList = tableList;
+        this.tableList = tableList == null? new ArrayList<>() : tableList;
     }
 
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,16 +30,12 @@ package org.opennms.netmgt.config.filter;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Constraint.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "constraint")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Constraint implements java.io.Serializable {
@@ -98,6 +94,9 @@ public class Constraint implements java.io.Serializable {
      * @param sql the value of field 'sql'.
      */
     public void setSql(final String sql) {
+        if (sql == null) {
+            throw new IllegalArgumentException("'sql' is a required attribute!");
+        }
         this.sql = sql;
     }
 
