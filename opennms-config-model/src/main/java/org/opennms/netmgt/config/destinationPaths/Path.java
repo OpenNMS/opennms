@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -73,11 +74,14 @@ public class Path implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         m_name = name;
     }
 
-    public String getInitialDelay() {
-        return m_initialDelay;
+    public Optional<String> getInitialDelay() {
+        return Optional.ofNullable(m_initialDelay);
     }
 
     public void setInitialDelay(final String initialDelay) {

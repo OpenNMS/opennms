@@ -62,6 +62,9 @@ public class Escalate implements Serializable {
     }
 
     public void setDelay(final String delay) {
+        if (delay == null) {
+            throw new IllegalArgumentException("'delay' is a required attribute!");
+        }
         m_delay = delay;
     }
 

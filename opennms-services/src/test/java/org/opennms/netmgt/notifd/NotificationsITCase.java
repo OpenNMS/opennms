@@ -267,8 +267,8 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     }
 
     protected long computeInterval() throws IOException {
-        String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
-        return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
+        final String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval().orElse(Target.DEFAULT_INTERVAL);
+        return TimeConverter.convertToMillis(interval);
     }
 
     @Override

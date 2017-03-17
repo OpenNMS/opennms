@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -71,8 +72,8 @@ public class Target implements Serializable {
         }
     }
 
-    public String getInterval() {
-        return m_interval;
+    public Optional<String> getInterval() {
+        return Optional.ofNullable(m_interval);
     }
 
     public void setInterval(final String interval) {
@@ -84,11 +85,14 @@ public class Target implements Serializable {
     }
 
     public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
         m_name = name;
     }
 
-    public String getAutoNotify() {
-        return m_autoNotify;
+    public Optional<String> getAutoNotify() {
+        return Optional.ofNullable(m_autoNotify);
     }
 
     public void setAutoNotify(final String autoNotify) {
@@ -108,8 +112,6 @@ public class Target implements Serializable {
         m_commands.add(command);
     }
 
-    /**
-     */
     public void clearCommands() {
         m_commands.clear();
     }

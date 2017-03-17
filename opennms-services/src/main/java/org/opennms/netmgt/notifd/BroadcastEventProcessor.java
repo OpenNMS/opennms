@@ -554,7 +554,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             LOG.error("Could not get destination path for {}, please check the destinationPath.xml for errors.", notification.getDestinationPath(), e);
                             return;
                         }
-                        String initialDelay = (path.getInitialDelay() == null ? Path.DEFAULT_INITIAL_DELAY : path.getInitialDelay());
+                        final String initialDelay = path.getInitialDelay().orElse(Path.DEFAULT_INITIAL_DELAY);
                         Target[] targets = path.getTargets().toArray(new Target[0]);
                         Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
@@ -773,11 +773,12 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException {
         for (int i = 0; i < targets.length; i++) {
-            String interval = (targets[i].getInterval() == null ? Target.DEFAULT_INTERVAL : targets[i].getInterval());
+            String interval = (targets[i].getInterval().orElse(Target.DEFAULT_INTERVAL));
 
             String targetName = targets[i].getName();
-            String autoNotify = targets[i].getAutoNotify();
-            if(autoNotify != null) {
+            String autoNotify = null;
+            if (targets[i].getAutoNotify().isPresent()) {
+                autoNotify = targets[i].getAutoNotify().get();
                 if(autoNotify.equalsIgnoreCase("on")) {
                     autoNotify = "Y";
                 } else if(autoNotify.equalsIgnoreCase("off")) {
@@ -785,7 +786,8 @@ public final class BroadcastEventProcessor implements EventListener {
                 } else {
                     autoNotify = "C";
                 }
-            } else {
+            }
+            if (autoNotify == null) {
                 autoNotify = "C";
             }
             LOG.debug("Processing target {}:{}", targetName, interval);
