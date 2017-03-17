@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -109,52 +110,20 @@ public class SendmailProtocol implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof SendmailProtocol) {
-            SendmailProtocol temp = (SendmailProtocol)obj;
-            if (this._charSet != null) {
-                if (temp._charSet == null) return false;
-                else if (!(this._charSet.equals(temp._charSet))) 
-                    return false;
-            }
-            else if (temp._charSet != null)
-                return false;
-            if (this._mailer != null) {
-                if (temp._mailer == null) return false;
-                else if (!(this._mailer.equals(temp._mailer))) 
-                    return false;
-            }
-            else if (temp._mailer != null)
-                return false;
-            if (this._messageContentType != null) {
-                if (temp._messageContentType == null) return false;
-                else if (!(this._messageContentType.equals(temp._messageContentType))) 
-                    return false;
-            }
-            else if (temp._messageContentType != null)
-                return false;
-            if (this._messageEncoding != null) {
-                if (temp._messageEncoding == null) return false;
-                else if (!(this._messageEncoding.equals(temp._messageEncoding))) 
-                    return false;
-            }
-            else if (temp._messageEncoding != null)
-                return false;
-            if (this._quitWait != temp._quitWait)
-                return false;
-            if (this._transport != null) {
-                if (temp._transport == null) return false;
-                else if (!(this._transport.equals(temp._transport))) 
-                    return false;
-            }
-            else if (temp._transport != null)
-                return false;
-            if (this._sslEnable != temp._sslEnable)
-                return false;
-            if (this._startTls != temp._startTls)
-                return false;
-            return true;
+            final SendmailProtocol temp = (SendmailProtocol)obj;
+            return Objects.equals(temp._charSet, _charSet)
+                    && Objects.equals(temp._mailer, _mailer)
+                    && Objects.equals(temp._messageContentType, _messageContentType)
+                    && Objects.equals(temp._messageEncoding, _messageEncoding)
+                    && Objects.equals(temp._quitWait, _quitWait)
+                    && Objects.equals(temp._transport, _transport)
+                    && Objects.equals(temp._sslEnable, _sslEnable)
+                    && Objects.equals(temp._startTls, _startTls);
         }
         return false;
     }
@@ -231,31 +200,9 @@ public class SendmailProtocol implements Serializable {
         return this._transport == null ? "smtp" : this._transport;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        int result = 17;
-        if (_charSet != null) {
-            result = 37 * result + _charSet.hashCode();
-        }
-        if (_mailer != null) {
-            result = 37 * result + _mailer.hashCode();
-        }
-        if (_messageContentType != null) {
-            result = 37 * result + _messageContentType.hashCode();
-        }
-        if (_messageEncoding != null) {
-            result = 37 * result + _messageEncoding.hashCode();
-        }
-        result = 37 * result + (_quitWait?0:1);
-        if (_transport != null) {
-            result = 37 * result + _transport.hashCode();
-        }
-        result = 37 * result + (_sslEnable?0:1);
-        result = 37 * result + (_startTls?0:1);
-        return result;
+        return Objects.hash(_charSet, _mailer, _messageContentType, _messageEncoding, _quitWait, _transport, _sslEnable, _startTls);
     }
 
     /**

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ReadmailHost implements Serializable {
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8670433466056274889L;
+    private static final long serialVersionUID = 1L;
 
     /** The host. */
     @XmlAttribute(name="host")
@@ -82,27 +83,15 @@ public class ReadmailHost implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof ReadmailHost) {
-            ReadmailHost temp = (ReadmailHost)obj;
-            if (this._host != null) {
-                if (temp._host == null) return false;
-                else if (!(this._host.equals(temp._host))) 
-                    return false;
-            }
-            else if (temp._host != null)
-                return false;
-            if (this._port != temp._port)
-                return false;
-            if (this._readmailProtocol != null) {
-                if (temp._readmailProtocol == null) return false;
-                else if (!(this._readmailProtocol.equals(temp._readmailProtocol))) 
-                    return false;
-            }
-            else if (temp._readmailProtocol != null)
-                return false;
-            return true;
+            final ReadmailHost temp = (ReadmailHost)obj;
+            return Objects.equals(temp._host, _host)
+                    && Objects.equals(temp._port, _port)
+                    && Objects.equals(temp._readmailProtocol, _readmailProtocol);
         }
         return false;
     }
@@ -140,15 +129,7 @@ public class ReadmailHost implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_host != null) {
-            result = 37 * result + _host.hashCode();
-        }
-        result = 37 * result + (int)(_port^(_port>>>32));
-        if (_readmailProtocol != null) {
-            result = 37 * result + _readmailProtocol.hashCode();
-        }
-        return result;
+        return Objects.hash(_host, _port, _readmailProtocol);
     }
 
     /**

@@ -41,7 +41,6 @@ import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -107,11 +106,12 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         }
 
         // Saving a local copy of the templates, as they will be overridden every time a new email has to be sent.
-        if (m_sendmail != null && m_sendmail.getSendmailMessage() != null) {
-            m_emailSubjectFormat = m_sendmail.getSendmailMessage().getSubject();
-            m_emailBodyFormat = m_sendmail.getSendmailMessage().getBody();
-            m_emailFrom = m_sendmail.getSendmailMessage().getFrom();
-            m_emailTo = m_sendmail.getSendmailMessage().getTo();
+        if (m_sendmail != null && m_sendmail.getSendmailMessage().isPresent()) {
+            final SendmailMessage sendmailMessage = m_sendmail.getSendmailMessage().get();
+            m_emailSubjectFormat = sendmailMessage.getSubject();
+            m_emailBodyFormat = sendmailMessage.getBody();
+            m_emailFrom = sendmailMessage.getFrom();
+            m_emailTo = sendmailMessage.getTo();
         }
     }
 

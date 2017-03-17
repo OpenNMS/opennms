@@ -36,6 +36,8 @@ import javax.mail.internet.MimeMessage;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
+import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.slf4j.Logger;
@@ -72,17 +74,25 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
             }
             JavaSendMailer sm = new JavaSendMailer(config);
             MimeMessage msg = new MimeMessage(sm.getSession());
-            MimeMessageHelper helper = new MimeMessageHelper(msg, true, config.getSendmailProtocol().getCharSet());
-            helper.setFrom(config.getSendmailMessage().getFrom());
-            helper.setTo(report.getRecipient());
-            helper.setSubject("OpenNMS Report: " + report.getReportName());
-            if ("text/html".equals(config.getSendmailProtocol().getMessageContentType().toLowerCase())) {
-                helper.setText(config.getSendmailMessage().getBody().replaceAll("\\<[^>]*>",""), config.getSendmailMessage().getBody());
+
+            if (config.getSendmailMessage().isPresent() && config.getSendmailProtocol().isPresent()) {
+                final SendmailMessage sendmailMessage = config.getSendmailMessage().get();
+                final SendmailProtocol sendmailProtocol = config.getSendmailProtocol().get();
+
+                MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
+                helper.setFrom(sendmailMessage.getFrom());
+                helper.setTo(report.getRecipient());
+                helper.setSubject("OpenNMS Report: " + report.getReportName());
+                if ("text/html".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {
+                    helper.setText(sendmailMessage.getBody().replaceAll("\\<[^>]*>",""), sendmailMessage.getBody());
+                } else {
+                    helper.setText(sendmailMessage.getBody());
+                }
+                helper.addAttachment(fileName, new File(fileName));
+                sm.send(msg);
             } else {
-                helper.setText(config.getSendmailMessage().getBody());
+                LOG.error("sendmail-message or sendmail-protocol is not configured!");
             }
-            helper.addAttachment(fileName, new File(fileName));
-            sm.send(msg);
 
         } catch (JavaMailerException e) {
             LOG.error("Problem with JavaMailer {}", e.getMessage(), e);

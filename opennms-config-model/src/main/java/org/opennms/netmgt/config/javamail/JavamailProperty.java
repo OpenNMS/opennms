@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -79,25 +80,14 @@ public class JavamailProperty implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof JavamailProperty) {
-            JavamailProperty temp = (JavamailProperty)obj;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._value != null) {
-                if (temp._value == null) return false;
-                else if (!(this._value.equals(temp._value))) 
-                    return false;
-            }
-            else if (temp._value != null)
-                return false;
-            return true;
+            final JavamailProperty temp = (JavamailProperty)obj;
+            return Objects.equals(temp._name, _name)
+                    && Objects.equals(temp._value, _value);
         }
         return false;
     }
@@ -125,14 +115,7 @@ public class JavamailProperty implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_value != null) {
-            result = 37 * result + _value.hashCode();
-        }
-        return result;
+        return Objects.hash(_name, _value);
     }
 
     /**

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -49,7 +51,7 @@ public class End2endMailConfig implements Serializable {
     //--------------------------/
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 7455703918730317290L;
+    private static final long serialVersionUID = 1L;
 
     /** The name. */
     @XmlAttribute(name="name")
@@ -83,32 +85,15 @@ public class End2endMailConfig implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof End2endMailConfig) {
-            End2endMailConfig temp = (End2endMailConfig)obj;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._sendmailConfigName != null) {
-                if (temp._sendmailConfigName == null) return false;
-                else if (!(this._sendmailConfigName.equals(temp._sendmailConfigName))) 
-                    return false;
-            }
-            else if (temp._sendmailConfigName != null)
-                return false;
-            if (this._readmailConfigName != null) {
-                if (temp._readmailConfigName == null) return false;
-                else if (!(this._readmailConfigName.equals(temp._readmailConfigName))) 
-                    return false;
-            }
-            else if (temp._readmailConfigName != null)
-                return false;
-            return true;
+            final End2endMailConfig temp = (End2endMailConfig)obj;
+            return Objects.equals(temp._name, _name)
+                    && Objects.equals(temp._sendmailConfigName, _sendmailConfigName)
+                    && Objects.equals(temp._readmailConfigName, _readmailConfigName);
         }
         return false;
     }
@@ -118,8 +103,8 @@ public class End2endMailConfig implements Serializable {
      * 
      * @return the value of field 'Name'.
      */
-    public String getName() {
-        return this._name;
+    public Optional<String> getName() {
+        return Optional.ofNullable(this._name);
     }
 
     /**
@@ -127,8 +112,8 @@ public class End2endMailConfig implements Serializable {
      * 
      * @return the value of field 'ReadmailConfigName'.
      */
-    public String getReadmailConfigName() {
-        return this._readmailConfigName;
+    public Optional<String> getReadmailConfigName() {
+        return Optional.ofNullable(this._readmailConfigName);
     }
 
     /**
@@ -136,8 +121,8 @@ public class End2endMailConfig implements Serializable {
      * 
      * @return the value of field 'SendmailConfigName'.
      */
-    public String getSendmailConfigName() {
-        return this._sendmailConfigName;
+    public Optional<String> getSendmailConfigName() {
+        return Optional.ofNullable(this._sendmailConfigName);
     }
 
     /* (non-Javadoc)
@@ -145,17 +130,7 @@ public class End2endMailConfig implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_sendmailConfigName != null) {
-            result = 37 * result + _sendmailConfigName.hashCode();
-        }
-        if (_readmailConfigName != null) {
-            result = 37 * result + _readmailConfigName.hashCode();
-        }
-        return result;
+        return Objects.hash(_name, _sendmailConfigName, _readmailConfigName);
     }
 
     /**

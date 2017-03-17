@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,7 +57,7 @@ public class ReadmailConfig implements Serializable {
     //--------------------------/
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -8838663418389605178L;
+    private static final long serialVersionUID = 1L;
 
     /** The debug flag. */
     @XmlAttribute(name="debug")
@@ -81,7 +83,7 @@ public class ReadmailConfig implements Serializable {
      * Use these name value pairs to configure free-form properties from the JavaMail class.
      */
     @XmlElement(name="javamail-property")
-    private List<JavamailProperty> _javamailPropertyList;
+    private List<JavamailProperty> _javamailPropertyList = new ArrayList<>();
 
     /**
      * Define the host and port of a service for reading email.
@@ -146,52 +148,20 @@ public class ReadmailConfig implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof ReadmailConfig) {
-            ReadmailConfig temp = (ReadmailConfig)obj;
-            if (this._debug != temp._debug)
-                return false;
-            if (this._mailFolder != null) {
-                if (temp._mailFolder == null) return false;
-                else if (!(this._mailFolder.equals(temp._mailFolder))) 
-                    return false;
-            }
-            else if (temp._mailFolder != null)
-                return false;
-            if (this._attemptInterval != temp._attemptInterval)
-                return false;
-            if (this._deleteAllMail != temp._deleteAllMail)
-                return false;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._javamailPropertyList != null) {
-                if (temp._javamailPropertyList == null) return false;
-                else if (!(this._javamailPropertyList.equals(temp._javamailPropertyList))) 
-                    return false;
-            }
-            else if (temp._javamailPropertyList != null)
-                return false;
-            if (this._readmailHost != null) {
-                if (temp._readmailHost == null) return false;
-                else if (!(this._readmailHost.equals(temp._readmailHost))) 
-                    return false;
-            }
-            else if (temp._readmailHost != null)
-                return false;
-            if (this._userAuth != null) {
-                if (temp._userAuth == null) return false;
-                else if (!(this._userAuth.equals(temp._userAuth))) 
-                    return false;
-            }
-            else if (temp._userAuth != null)
-                return false;
-            return true;
+            final ReadmailConfig temp = (ReadmailConfig)obj;
+            return Objects.equals(temp._debug, _debug)
+                    && Objects.equals(temp._mailFolder, _mailFolder)
+                    && Objects.equals(temp._attemptInterval, _attemptInterval)
+                    && Objects.equals(temp._deleteAllMail, _deleteAllMail)
+                    && Objects.equals(temp._name, _name)
+                    && Objects.equals(temp._javamailPropertyList, _javamailPropertyList)
+                    && Objects.equals(temp._readmailHost, _readmailHost)
+                    && Objects.equals(temp._userAuth, _userAuth);
         }
         return false;
     }
@@ -282,8 +252,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @return the value of field 'Name'.
      */
-    public String getName() {
-        return this._name;
+    public Optional<String> getName() {
+        return Optional.ofNullable(this._name);
     }
 
     /**
@@ -291,8 +261,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @return the value of field 'ReadmailHost'.
      */
-    public ReadmailHost getReadmailHost() {
-        return this._readmailHost;
+    public Optional<ReadmailHost> getReadmailHost() {
+        return Optional.ofNullable(this._readmailHost);
     }
 
     /**
@@ -300,8 +270,8 @@ public class ReadmailConfig implements Serializable {
      *  
      * @return the value of field 'UserAuth'.
      */
-    public UserAuth getUserAuth() {
-        return this._userAuth;
+    public Optional<UserAuth> getUserAuth() {
+        return Optional.ofNullable(this._userAuth);
     }
 
     /* (non-Javadoc)
@@ -309,26 +279,7 @@ public class ReadmailConfig implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        result = 37 * result + (_debug?0:1);
-        if (_mailFolder != null) {
-            result = 37 * result + _mailFolder.hashCode();
-        }
-        result = 37 * result + (int)(_attemptInterval^(_attemptInterval>>>32));
-        result = 37 * result + (_deleteAllMail?0:1);
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_javamailPropertyList != null) {
-            result = 37 * result + _javamailPropertyList.hashCode();
-        }
-        if (_readmailHost != null) {
-            result = 37 * result + _readmailHost.hashCode();
-        }
-        if (_userAuth != null) {
-            result = 37 * result + _userAuth.hashCode();
-        }
-        return result;
+        return Objects.hash(_debug, _mailFolder, _attemptInterval, _deleteAllMail, _name, _javamailPropertyList, _readmailHost, _userAuth);
     }
 
     /**
@@ -440,7 +391,7 @@ public class ReadmailConfig implements Serializable {
      * @deprecated 
      */
     public void setJavamailPropertyCollection(final List<JavamailProperty> javamailPropertyList) {
-        this._javamailPropertyList = javamailPropertyList;
+        this._javamailPropertyList = javamailPropertyList == null? new ArrayList<>() : javamailPropertyList;
     }
 
     /**

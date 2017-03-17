@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -83,22 +84,15 @@ public class ReadmailProtocol implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof ReadmailProtocol) {
-            ReadmailProtocol temp = (ReadmailProtocol)obj;
-            if (this._transport != null) {
-                if (temp._transport == null) return false;
-                else if (!(this._transport.equals(temp._transport))) 
-                    return false;
-            }
-            else if (temp._transport != null)
-                return false;
-            if (this._sslEnable != temp._sslEnable)
-                return false;
-            if (this._startTls != temp._startTls)
-                return false;
-            return true;
+            final ReadmailProtocol temp = (ReadmailProtocol)obj;
+            return Objects.equals(temp._transport, _transport)
+                    && Objects.equals(temp._sslEnable, _sslEnable)
+                    && Objects.equals(temp._startTls, _startTls);
         }
         return false;
     }
@@ -135,13 +129,7 @@ public class ReadmailProtocol implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_transport != null) {
-            result = 37 * result + _transport.hashCode();
-        }
-        result = 37 * result + (_sslEnable?0:1);
-        result = 37 * result + (_startTls?0:1);
-        return result;
+        return Objects.hash(_transport, _sslEnable, _startTls);
     }
 
     /**

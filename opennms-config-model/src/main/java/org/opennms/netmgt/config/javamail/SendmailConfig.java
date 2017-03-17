@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,7 +57,7 @@ public class SendmailConfig implements Serializable {
     //--------------------------/
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 2586518402195556647L;
+    private static final long serialVersionUID = 1L;
 
     /** The debug flag. */
     @XmlAttribute(name="debug")
@@ -81,7 +83,7 @@ public class SendmailConfig implements Serializable {
      * Use these name value pairs to configure free-form properties from the JavaMail class.
      */
     @XmlElement(name="javamail-property")
-    private List<JavamailProperty> _javamailPropertyList;
+    private List<JavamailProperty> _javamailPropertyList = new ArrayList<>();
 
     /** Configuration for a sendmail host. */
     @XmlElement(name="sendmail-host")
@@ -113,8 +115,6 @@ public class SendmailConfig implements Serializable {
      * Instantiates a new sendmail configuration.
      */
     public SendmailConfig() {
-        super();
-        this._javamailPropertyList = new ArrayList<JavamailProperty>();
     }
 
     //-----------/
@@ -157,61 +157,22 @@ public class SendmailConfig implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof SendmailConfig) {
-            SendmailConfig temp = (SendmailConfig)obj;
-            if (this._debug != temp._debug)
-                return false;
-            if (this._useAuthentication != temp._useAuthentication)
-                return false;
-            if (this._useJmta != temp._useJmta)
-                return false;
-            if (this._attemptInterval != temp._attemptInterval)
-                return false;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._javamailPropertyList != null) {
-                if (temp._javamailPropertyList == null) return false;
-                else if (!(this._javamailPropertyList.equals(temp._javamailPropertyList))) 
-                    return false;
-            }
-            else if (temp._javamailPropertyList != null)
-                return false;
-            if (this._sendmailHost != null) {
-                if (temp._sendmailHost == null) return false;
-                else if (!(this._sendmailHost.equals(temp._sendmailHost))) 
-                    return false;
-            }
-            else if (temp._sendmailHost != null)
-                return false;
-            if (this._sendmailProtocol != null) {
-                if (temp._sendmailProtocol == null) return false;
-                else if (!(this._sendmailProtocol.equals(temp._sendmailProtocol))) 
-                    return false;
-            }
-            else if (temp._sendmailProtocol != null)
-                return false;
-            if (this._sendmailMessage != null) {
-                if (temp._sendmailMessage == null) return false;
-                else if (!(this._sendmailMessage.equals(temp._sendmailMessage))) 
-                    return false;
-            }
-            else if (temp._sendmailMessage != null)
-                return false;
-            if (this._userAuth != null) {
-                if (temp._userAuth == null) return false;
-                else if (!(this._userAuth.equals(temp._userAuth))) 
-                    return false;
-            }
-            else if (temp._userAuth != null)
-                return false;
-            return true;
+            final SendmailConfig temp = (SendmailConfig)obj;
+            return Objects.equals(temp._debug, _debug)
+                    && Objects.equals(temp._useAuthentication, _useAuthentication)
+                    && Objects.equals(temp._useJmta, _useJmta)
+                    && Objects.equals(temp._attemptInterval, _attemptInterval)
+                    && Objects.equals(temp._name, _name)
+                    && Objects.equals(temp._javamailPropertyList, _javamailPropertyList)
+                    && Objects.equals(temp._sendmailHost, _sendmailHost)
+                    && Objects.equals(temp._sendmailProtocol, _sendmailProtocol)
+                    && Objects.equals(temp._sendmailMessage, _sendmailMessage)
+                    && Objects.equals(temp._userAuth, _userAuth);
         }
         return false;
     }
@@ -285,8 +246,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'Name'.
      */
-    public String getName() {
-        return this._name;
+    public Optional<String> getName() {
+        return Optional.ofNullable(this._name);
     }
 
     /**
@@ -295,8 +256,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'SendmailHost'.
      */
-    public SendmailHost getSendmailHost() {
-        return this._sendmailHost;
+    public Optional<SendmailHost> getSendmailHost() {
+        return Optional.ofNullable(this._sendmailHost);
     }
 
     /**
@@ -305,8 +266,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'SendmailMessage'.
      */
-    public SendmailMessage getSendmailMessage() {
-        return this._sendmailMessage;
+    public Optional<SendmailMessage> getSendmailMessage() {
+        return Optional.ofNullable(this._sendmailMessage);
     }
 
     /**
@@ -315,8 +276,8 @@ public class SendmailConfig implements Serializable {
      *  
      * @return the value of field 'SendmailProtocol'.
      */
-    public SendmailProtocol getSendmailProtocol() {
-        return this._sendmailProtocol;
+    public Optional<SendmailProtocol> getSendmailProtocol() {
+        return Optional.ofNullable(this._sendmailProtocol);
     }
 
     /**
@@ -342,39 +303,13 @@ public class SendmailConfig implements Serializable {
      *  
      * @return the value of field 'UserAuth'.
      */
-    public UserAuth getUserAuth() {
-        return this._userAuth;
+    public Optional<UserAuth> getUserAuth() {
+        return Optional.ofNullable(this._userAuth);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override()
     public int hashCode() {
-        int result = 17;
-        result = 37 * result + (_debug?0:1);
-        result = 37 * result + (_useAuthentication?0:1);
-        result = 37 * result + (_useJmta?0:1);
-        result = 37 * result + (int)(_attemptInterval^(_attemptInterval>>>32));
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_javamailPropertyList != null) {
-            result = 37 * result + _javamailPropertyList.hashCode();
-        }
-        if (_sendmailHost != null) {
-            result = 37 * result + _sendmailHost.hashCode();
-        }
-        if (_sendmailProtocol != null) {
-            result = 37 * result + _sendmailProtocol.hashCode();
-        }
-        if (_sendmailMessage != null) {
-            result = 37 * result + _sendmailMessage.hashCode();
-        }
-        if (_userAuth != null) {
-            result = 37 * result + _userAuth.hashCode();
-        }
-        return result;
+        return Objects.hash(_debug, _useAuthentication, _useJmta, _attemptInterval, _name, _javamailPropertyList, _sendmailHost, _sendmailProtocol, _sendmailMessage, _userAuth);
     }
 
     /**
@@ -477,7 +412,7 @@ public class SendmailConfig implements Serializable {
      * @deprecated 
      */
     public void setJavamailPropertyCollection(final List<JavamailProperty> javamailPropertyList) {
-        this._javamailPropertyList = javamailPropertyList;
+        this._javamailPropertyList = javamailPropertyList == null? new ArrayList<>() : javamailPropertyList;
     }
 
     /**

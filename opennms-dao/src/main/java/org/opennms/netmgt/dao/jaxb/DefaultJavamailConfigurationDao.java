@@ -80,7 +80,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public ReadmailConfig getDefaultReadmailConfig() {
-        String name = getContainer().getObject().getDefaultReadConfigName();
+        String name = getContainer().getObject().getDefaultReadConfigName().orElse(null);
         return getReadMailConfig(name);
     }
 
@@ -103,7 +103,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<ReadmailConfig> configs = getReadmailConfigs();
 
         for (ReadmailConfig readmailConfig : configs) {
-            if (readmailConfig.getName().equals(name)) {
+            if (readmailConfig.getName().isPresent() && readmailConfig.getName().get().equals(name)) {
                 config = readmailConfig;
             }
         }
@@ -123,7 +123,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public SendmailConfig getDefaultSendmailConfig() {
-        String name = getContainer().getObject().getDefaultSendConfigName();
+        String name = getContainer().getObject().getDefaultSendConfigName().orElse(null);
         return getSendMailConfig(name);
     }
 
@@ -146,7 +146,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<SendmailConfig> configs = getSendmailConfigs();
 
         for (SendmailConfig sendmailConfig : configs) {
-            if (sendmailConfig.getName().equals(name)) {
+            if (sendmailConfig.getName().isPresent() && sendmailConfig.getName().get().equals(name)) {
                 config = sendmailConfig;
             }
         }
@@ -161,7 +161,8 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<SendmailConfig> configs = getSendmailConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().equals(sendmailConfig.getName())) {
+            final SendmailConfig c = configs.get(i);
+            if (c.getName().equals(sendmailConfig.getName())) {
                 index = i;
                 break;
             }
@@ -182,7 +183,8 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<SendmailConfig> configs = getSendmailConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().equals(sendmailConfig)) {
+            final SendmailConfig c = configs.get(i);
+            if (c.getName().isPresent() && c.getName().get().equals(sendmailConfig)) {
                 index = i;
                 break;
             }
@@ -211,7 +213,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<End2endMailConfig> configs = getEnd2EndConfigs();
 
         for (End2endMailConfig end2endMailConfig : configs) {
-            if (end2endMailConfig.getName().equals(name)) {
+            if (end2endMailConfig.getName().isPresent() && end2endMailConfig.getName().get().equals(name)) {
                 config = end2endMailConfig;
             }
         }
@@ -247,7 +249,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<ReadmailConfig> configs = getReadmailConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().equals(readmailConfig)) {
+            if (configs.get(i).getName().isPresent() && configs.get(i).getName().get().equals(readmailConfig)) {
                 index = i;
                 break;
             }
@@ -296,7 +298,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().equals(end2endConfig)) {
+            if (configs.get(i).getName().isPresent() && configs.get(i).getName().get().equals(end2endConfig)) {
                 index = i;
                 break;
             }

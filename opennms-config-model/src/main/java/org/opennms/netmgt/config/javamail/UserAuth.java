@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config.javamail;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -77,25 +79,14 @@ public class UserAuth implements java.io.Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof UserAuth) {
-            UserAuth temp = (UserAuth)obj;
-            if (this._userName != null) {
-                if (temp._userName == null) return false;
-                else if (!(this._userName.equals(temp._userName))) 
-                    return false;
-            }
-            else if (temp._userName != null)
-                return false;
-            if (this._password != null) {
-                if (temp._password == null) return false;
-                else if (!(this._password.equals(temp._password))) 
-                    return false;
-            }
-            else if (temp._password != null)
-                return false;
-            return true;
+            final UserAuth temp = (UserAuth)obj;
+            return Objects.equals(temp._userName, _userName)
+                    && Objects.equals(temp._password, _password);
         }
         return false;
     }
@@ -118,19 +109,9 @@ public class UserAuth implements java.io.Serializable {
         return this._userName == null ? "opennms" : this._userName;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        int result = 17;
-        if (_userName != null) {
-            result = 37 * result + _userName.hashCode();
-        }
-        if (_password != null) {
-            result = 37 * result + _password.hashCode();
-        }
-        return result;
+        return Objects.hash(_userName, _password);
     }
 
     /**

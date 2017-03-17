@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -90,41 +91,17 @@ public class SendmailMessage implements Serializable {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof SendmailMessage) {
-            SendmailMessage temp = (SendmailMessage)obj;
-            if (this._to != null) {
-                if (temp._to == null) return false;
-                else if (!(this._to.equals(temp._to))) 
-                    return false;
-            }
-            else if (temp._to != null)
-                return false;
-            if (this._from != null) {
-                if (temp._from == null) return false;
-                else if (!(this._from.equals(temp._from))) 
-                    return false;
-            }
-            else if (temp._from != null)
-                return false;
-            if (this._subject != null) {
-                if (temp._subject == null) return false;
-                else if (!(this._subject.equals(temp._subject))) 
-                    return false;
-            }
-            else if (temp._subject != null)
-                return false;
-            if (this._body != null) {
-                if (temp._body == null) return false;
-                else if (!(this._body.equals(temp._body))) 
-                    return false;
-            }
-            else if (temp._body != null)
-                return false;
-            return true;
+            final SendmailMessage temp = (SendmailMessage)obj;
+            return Objects.equals(temp._to, _to)
+                    && Objects.equals(temp._from, _from)
+                    && Objects.equals(temp._subject, _subject)
+                    && Objects.equals(temp._body, _body);
         }
         return false;
     }
@@ -170,20 +147,7 @@ public class SendmailMessage implements Serializable {
      */
     @Override
     public int hashCode() {
-        int result = 17;
-        if (_to != null) {
-            result = 37 * result + _to.hashCode();
-        }
-        if (_from != null) {
-            result = 37 * result + _from.hashCode();
-        }
-        if (_subject != null) {
-            result = 37 * result + _subject.hashCode();
-        }
-        if (_body != null) {
-            result = 37 * result + _body.hashCode();
-        }
-        return result;
+        return Objects.hash(_to, _from, _subject, _body);
     }
 
     /**

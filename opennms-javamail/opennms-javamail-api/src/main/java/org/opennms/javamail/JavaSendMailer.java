@@ -30,6 +30,7 @@ package org.opennms.javamail;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,8 +45,10 @@ import javax.mail.internet.MimeMessage;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailHost;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.config.javamail.SendmailProtocol;
+import org.opennms.netmgt.config.javamail.UserAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -87,7 +90,11 @@ public class JavaSendMailer extends JavaMailer2 {
         m_config = config;
         try {
             m_session = Session.getInstance(createProps(useJmProps), createAuthenticator());
-            m_message = buildMimeMessage(config.getSendmailMessage());
+            if (config.getSendmailMessage().isPresent()) {
+                m_message = buildMimeMessage(config.getSendmailMessage().get());
+            } else {
+                throw new JavaMailerException("Unable to build mime message: sendmail-message missing from config!");
+            }
             if (m_config.isDebug()) {
                 m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream()));
             }
@@ -116,20 +123,28 @@ public class JavaSendMailer extends JavaMailer2 {
      * @param msg the sendmail message
      * @return the mime message
      */
-    public MimeMessage buildMimeMessage(SendmailMessage msg) {
-        //no need to set the same object again
-        if (m_config.getSendmailMessage() != msg) {
+    public MimeMessage buildMimeMessage(final SendmailMessage msg) {
+        MimeMessage mimeMsg = new MimeMessage(m_session);
+        if (m_config.getSendmailMessage().orElse(null) != msg) {
             m_config.setSendmailMessage(msg);
         }
-        MimeMessage mimeMsg = new MimeMessage(m_session);
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, m_config.getSendmailProtocol().getCharSet());
-            helper.setFrom(m_config.getSendmailMessage().getFrom());
-            helper.setTo(m_config.getSendmailMessage().getTo());
-            helper.setSubject(m_config.getSendmailMessage().getSubject());
-        } catch (MessagingException e) {
-            LOG.warn("found a problem building message: {}", e.getMessage());
+
+        if (m_config.getSendmailMessage().isPresent()) {
+            final SendmailMessage configMsg = m_config.getSendmailMessage().get();
+
+            try {
+                final String charset = m_config.getSendmailProtocol().isPresent()? m_config.getSendmailProtocol().get().getCharSet() : Charset.defaultCharset().name();
+                final MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, charset);
+                helper.setFrom(configMsg.getFrom());
+                helper.setTo(configMsg.getTo());
+                helper.setSubject(configMsg.getSubject());
+            } catch (final MessagingException e) {
+                LOG.warn("found a problem building message: {}", e.getMessage());
+            }
+        } else {
+            LOG.warn("Missing sendmail message configuration. This MIME message will probably be wrong.");
         }
+
         return mimeMsg;
     }
 
@@ -144,7 +159,12 @@ public class JavaSendMailer extends JavaMailer2 {
             auth = new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+                    if (m_config.getUserAuth().isPresent()) {
+                        final UserAuth userAuth = m_config.getUserAuth().get();
+                        return new PasswordAuthentication(userAuth.getUserName(), userAuth.getPassword());
+                    }
+                    LOG.debug("No user authentication configured.");
+                    return new PasswordAuthentication(null,null);
                 }
             };
         } else {
@@ -207,21 +227,33 @@ public class JavaSendMailer extends JavaMailer2 {
              */
             if (useJmProps) {
                 m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.isDebug()));
-                m_config.getSendmailHost().setHost(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailHost", m_config.getSendmailHost().getHost()));
+                if (m_config.getSendmailHost().isPresent()) {
+                    final SendmailHost sendmailHost = m_config.getSendmailHost().get();
+                    sendmailHost.setHost(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailHost", sendmailHost.getHost()));
+                    sendmailHost.setPort(PropertiesUtils.getProperty(props, "org.opennms.core.utils.smtpport", sendmailHost.getPort()));
+                }
+                if (m_config.getSendmailProtocol().isPresent()) {
+                    final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol().get();
+                    sendmailProtocol.setMailer(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailer", sendmailProtocol.getMailer()));
+                    sendmailProtocol.setTransport(PropertiesUtils.getProperty(props, "org.opennms.core.utils.transport", sendmailProtocol.getTransport()));
+                    sendmailProtocol.setMessageContentType(PropertiesUtils.getProperty(props, "org.opennms.core.utils.messageContentType", sendmailProtocol.getMessageContentType()));
+                    sendmailProtocol.setCharSet(PropertiesUtils.getProperty(props, "org.opennms.core.utils.charset", sendmailProtocol.getCharSet()));
+                    sendmailProtocol.setMessageEncoding(PropertiesUtils.getProperty(props, "org.opennms.core.utils.encoding", sendmailProtocol.getMessageEncoding()));
+                    sendmailProtocol.setStartTls(PropertiesUtils.getProperty(props, "org.opennms.core.utils.starttls.enable", sendmailProtocol.isStartTls()));
+                    sendmailProtocol.setQuitWait(PropertiesUtils.getProperty(props, "org.opennms.core.utils.quitwait", sendmailProtocol.isQuitWait()));
+                    sendmailProtocol.setSslEnable(PropertiesUtils.getProperty(props, "org.opennms.core.utils.smtpssl.enable", sendmailProtocol.isSslEnable()));
+                }
+                if (m_config.getUserAuth().isPresent()) {
+                    final UserAuth userAuth = m_config.getUserAuth().get();
+                    userAuth.setUserName(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticateUser", userAuth.getUserName()));
+                    userAuth.setPassword(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticatePassword", userAuth.getPassword()));
+                }
+                if (m_config.getSendmailMessage().isPresent()) {
+                    final SendmailMessage sendmailMessage = m_config.getSendmailMessage().get();
+                    sendmailMessage.setFrom(PropertiesUtils.getProperty(props, "org.opennms.core.utils.fromAddress", sendmailMessage.getFrom()));
+                }
                 m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.isUseJmta()));
-                m_config.getSendmailProtocol().setMailer(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailer", m_config.getSendmailProtocol().getMailer()));
-                m_config.getSendmailProtocol().setTransport(PropertiesUtils.getProperty(props, "org.opennms.core.utils.transport", m_config.getSendmailProtocol().getTransport()));
-                m_config.getSendmailMessage().setFrom(PropertiesUtils.getProperty(props, "org.opennms.core.utils.fromAddress", m_config.getSendmailMessage().getFrom()));
                 m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.isUseAuthentication()));
-                m_config.getUserAuth().setUserName(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticateUser", m_config.getUserAuth().getUserName()));
-                m_config.getUserAuth().setPassword(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticatePassword", m_config.getUserAuth().getPassword()));
-                m_config.getSendmailProtocol().setMessageContentType(PropertiesUtils.getProperty(props, "org.opennms.core.utils.messageContentType", m_config.getSendmailProtocol().getMessageContentType()));
-                m_config.getSendmailProtocol().setCharSet(PropertiesUtils.getProperty(props, "org.opennms.core.utils.charset", m_config.getSendmailProtocol().getCharSet()));
-                m_config.getSendmailProtocol().setMessageEncoding(PropertiesUtils.getProperty(props, "org.opennms.core.utils.encoding", m_config.getSendmailProtocol().getMessageEncoding()));
-                m_config.getSendmailProtocol().setStartTls(PropertiesUtils.getProperty(props, "org.opennms.core.utils.starttls.enable", m_config.getSendmailProtocol().isStartTls()));
-                m_config.getSendmailProtocol().setQuitWait(PropertiesUtils.getProperty(props, "org.opennms.core.utils.quitwait", m_config.getSendmailProtocol().isQuitWait()));
-                m_config.getSendmailHost().setPort(PropertiesUtils.getProperty(props, "org.opennms.core.utils.smtpport", m_config.getSendmailHost().getPort()));
-                m_config.getSendmailProtocol().setSslEnable(PropertiesUtils.getProperty(props, "org.opennms.core.utils.smtpssl.enable", m_config.getSendmailProtocol().isSslEnable()));
             }
         } catch (IOException e) {
             LOG.info("configureProperties: could not load javamail.properties, continuing for is no longer required", e);
@@ -234,33 +266,37 @@ public class JavaSendMailer extends JavaMailer2 {
 
         props.putAll(sendmailConfigDefinedProps);
 
-        if (!props.containsKey("mail.smtp.auth")) {
-            props.setProperty("mail.smtp.auth", String.valueOf(m_config.isUseAuthentication()));
-        }
-        if (!props.containsKey("mail.smtp.starttls.enable")) {
-            props.setProperty("mail.smtp.starttls.enable", String.valueOf(m_config.getSendmailProtocol().isStartTls()));
-        }
-        if (!props.containsKey("mail.smtp.quitwait")) {
-            props.setProperty("mail.smtp.quitwait", String.valueOf(m_config.getSendmailProtocol().isQuitWait()));
-        }
-        if (!props.containsKey("mail.smtp.port")) {
-            props.setProperty("mail.smtp.port", String.valueOf(m_config.getSendmailHost().getPort()));
-        }
-        if (m_config.getSendmailProtocol().isSslEnable()) {
-            if (!props.containsKey("mail.smtps.auth")) {
-                props.setProperty("mail.smtps.auth", String.valueOf(m_config.isUseAuthentication()));
+        if (m_config.getSendmailProtocol().isPresent()) {
+            final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol().get();
+            if (!props.containsKey("mail.smtp.starttls.enable")) {
+                props.setProperty("mail.smtp.starttls.enable", String.valueOf(sendmailProtocol.isStartTls()));
             }
-            if (!props.containsKey("mail.smtps.socketFactory.class")) {
-                props.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            if (!props.containsKey("mail.smtp.quitwait")) {
+                props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
             }
-            if (!props.containsKey("mail.smtps.socketFactory.port")) {
-                props.setProperty("mail.smtps.socketFactory.port", String.valueOf(m_config.getSendmailHost().getPort()));
+            if (!props.containsKey("mail.smtp.quitwait")) {
+                props.setProperty("mail.smtp.quitwait", String.valueOf(sendmailProtocol.isQuitWait()));
+            }
+            if (sendmailProtocol.isSslEnable()) {
+                if (!props.containsKey("mail.smtps.auth")) {
+                    props.setProperty("mail.smtps.auth", String.valueOf(m_config.isUseAuthentication()));
+                }
+                if (!props.containsKey("mail.smtps.socketFactory.class")) {
+                    props.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+                }
+                if (!props.containsKey("mail.smtps.socketFactory.port") && m_config.getSendmailHost().isPresent()) {
+                    props.setProperty("mail.smtps.socketFactory.port", String.valueOf(m_config.getSendmailHost().get().getPort()));
+                }
             }
         }
 
-        if (!props.containsKey("mail.smtp.quitwait")) {
-            props.setProperty("mail.smtp.quitwait", String.valueOf(m_config.getSendmailProtocol().isQuitWait()));
+        if (!props.containsKey("mail.smtp.auth")) {
+            props.setProperty("mail.smtp.auth", String.valueOf(m_config.isUseAuthentication()));
         }
+        if (!props.containsKey("mail.smtp.port") && m_config.getSendmailHost().isPresent()) {
+            props.setProperty("mail.smtp.port", String.valueOf(m_config.getSendmailHost().get().getPort()));
+        }
+
 
     }
 
@@ -270,13 +306,18 @@ public class JavaSendMailer extends JavaMailer2 {
      * @throws JavaMailerException the java mailer exception
      */
     public void send() throws JavaMailerException {
+        if (!m_config.getSendmailProtocol().isPresent() || !m_config.getSendmailMessage().isPresent()) {
+            throw new JavaMailerException("sendmail-protocol or sendmail-message are not configured!");
+        }
         try {
-            if ("text/plain".equals(m_config.getSendmailProtocol().getMessageContentType().toLowerCase())) {
-                m_message.setText(m_config.getSendmailMessage().getBody());
+            final SendmailProtocol sendmailProtocol = m_config.getSendmailProtocol().get();
+            final String body = m_config.getSendmailMessage().get().getBody();
+            if ("text/plain".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {
+                m_message.setText(body);
             } else {
-                m_message.setContent(m_config.getSendmailMessage().getBody(), m_config.getSendmailProtocol().getMessageContentType());
+                m_message.setContent(body, sendmailProtocol.getMessageContentType());
             }
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             LOG.error("Java Mailer messaging exception: {}", e, e);
             throw new JavaMailerException("Java Mailer messaging exception: " + e, e);
         }
@@ -291,23 +332,30 @@ public class JavaSendMailer extends JavaMailer2 {
      */
     public void send(MimeMessage message) throws JavaMailerException {
         Transport t = null;
+        if (!m_config.getSendmailProtocol().isPresent() || !m_config.getSendmailHost().isPresent()) {
+            throw new JavaMailerException("sendmail-protocol or sendmail-host are not configured!");
+        }
         try {
-            SendmailProtocol protoConfig = m_config.getSendmailProtocol();
+            SendmailProtocol protoConfig = m_config.getSendmailProtocol().get();
             t = m_session.getTransport(protoConfig.getTransport());
             LOG.debug("for transport name '{}' got: {}@{}", protoConfig.getTransport(), t.getClass().getName(), Integer.toHexString(t.hashCode()));
 
             LoggingTransportListener listener = new LoggingTransportListener();
             t.addTransportListener(listener);
 
-            if (t.getURLName().getProtocol().equals("mta")) {
+            if ("mta".equals(t.getURLName().getProtocol())) {
                 // JMTA throws an AuthenticationFailedException if we call connect()
                 LOG.debug("transport is 'mta', not trying to connect()");
-            } else if (m_config.isUseAuthentication()) {
-                LOG.debug("authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
             } else {
-                LOG.debug("not authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), null, null);
+                final SendmailHost sendmailHost = m_config.getSendmailHost().get();
+                if (m_config.isUseAuthentication() && m_config.getUserAuth().isPresent()) {
+                    LOG.debug("authenticating to {}", sendmailHost.getHost());
+                    final UserAuth userAuth = m_config.getUserAuth().get();
+                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), userAuth.getUserName(), userAuth.getPassword());
+                } else {
+                    LOG.debug("not authenticating to {}", sendmailHost.getHost());
+                    t.connect(sendmailHost.getHost(), sendmailHost.getPort(), null, null);
+                }
             }
 
             t.sendMessage(message, message.getAllRecipients());

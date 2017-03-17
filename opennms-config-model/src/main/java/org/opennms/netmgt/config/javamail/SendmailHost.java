@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -78,24 +79,15 @@ public class SendmailHost implements Serializable {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
             return true;
+        }
 
         if (obj instanceof SendmailHost) {
-
-            SendmailHost temp = (SendmailHost)obj;
-            if (this._host != null) {
-                if (temp._host == null) return false;
-                else if (!(this._host.equals(temp._host))) 
-                    return false;
-            }
-            else if (temp._host != null)
-                return false;
-            if (this._port != temp._port)
-                return false;
-            return true;
+            final SendmailHost temp = (SendmailHost)obj;
+            return Objects.equals(temp._host, _host)
+                    && Objects.equals(temp._port, _port);
         }
         return false;
     }

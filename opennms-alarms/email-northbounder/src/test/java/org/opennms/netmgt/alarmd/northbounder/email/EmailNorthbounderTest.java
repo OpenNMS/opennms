@@ -133,9 +133,9 @@ public class EmailNorthbounderTest {
         // Verify the nortbound alarm and send it to the test receiver
         Assert.assertTrue(nbi.accepts(alarm));
         SendmailConfig sendmail = nbi.getSendmailConfig(alarm);
-        Assert.assertEquals("noc@networksRus.com", sendmail.getSendmailMessage().getTo());
-        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS", sendmail.getSendmailMessage().getSubject());
-        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS: Test log message\nDescription: Test description", sendmail.getSendmailMessage().getBody());
+        Assert.assertEquals("noc@networksRus.com", sendmail.getSendmailMessage().get().getTo());
+        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS", sendmail.getSendmailMessage().get().getSubject());
+        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS: Test log message\nDescription: Test description", sendmail.getSendmailMessage().get().getBody());
     }
 
     /**
@@ -181,9 +181,9 @@ public class EmailNorthbounderTest {
         // Verify the nortbound alarm and send it to the test receiver
         Assert.assertTrue(nbi.accepts(alarm));
         SendmailConfig sendmail = nbi.getSendmailConfig(alarm);
-        Assert.assertEquals("tarus@opennms.org, jeff@opennms.org", sendmail.getSendmailMessage().getTo());
-        Assert.assertEquals("my-test-router : Something is wrong!", sendmail.getSendmailMessage().getSubject());
-        Assert.assertEquals("Test log message - Test description", sendmail.getSendmailMessage().getBody());
+        Assert.assertEquals("tarus@opennms.org, jeff@opennms.org", sendmail.getSendmailMessage().get().getTo());
+        Assert.assertEquals("my-test-router : Something is wrong!", sendmail.getSendmailMessage().get().getSubject());
+        Assert.assertEquals("Test log message - Test description", sendmail.getSendmailMessage().get().getBody());
     }
 
 }

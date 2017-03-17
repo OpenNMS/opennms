@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,7 +57,7 @@ public class JavamailConfiguration implements Serializable {
     //--------------------------/
 
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8472645276569340824L;
+    private static final long serialVersionUID = 1L;
 
     /** The default send configuration name. */
     @XmlAttribute(name="default-send-config-name")
@@ -72,15 +74,15 @@ public class JavamailConfiguration implements Serializable {
      *  an attribute for every javamail property possible (some are fairly obscure).
      */
     @XmlElement(name="sendmail-config")
-    private List<SendmailConfig> _sendmailConfigList;
+    private List<SendmailConfig> _sendmailConfigList = new ArrayList<>();
 
     /** Configuration container for configuration all settings for reading email. */
     @XmlElement(name="readmail-config")
-    private List<ReadmailConfig> _readmailConfigList;
+    private List<ReadmailConfig> _readmailConfigList = new ArrayList<>();
 
     /** Read and Send configuration list. */
     @XmlElement(name="end2end-mail-config")
-    private List<End2endMailConfig> _end2endMailConfigList;
+    private List<End2endMailConfig> _end2endMailConfigList = new ArrayList<>();
 
     //----------------/
     //- Constructors -/
@@ -195,46 +197,17 @@ public class JavamailConfiguration implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+
         if (obj instanceof JavamailConfiguration) {
-            JavamailConfiguration temp = (JavamailConfiguration)obj;
-            if (this._defaultSendConfigName != null) {
-                if (temp._defaultSendConfigName == null) return false;
-                else if (!(this._defaultSendConfigName.equals(temp._defaultSendConfigName))) 
-                    return false;
-            }
-            else if (temp._defaultSendConfigName != null)
-                return false;
-            if (this._defaultReadConfigName != null) {
-                if (temp._defaultReadConfigName == null) return false;
-                else if (!(this._defaultReadConfigName.equals(temp._defaultReadConfigName))) 
-                    return false;
-            }
-            else if (temp._defaultReadConfigName != null)
-                return false;
-            if (this._sendmailConfigList != null) {
-                if (temp._sendmailConfigList == null) return false;
-                else if (!(this._sendmailConfigList.equals(temp._sendmailConfigList))) 
-                    return false;
-            }
-            else if (temp._sendmailConfigList != null)
-                return false;
-            if (this._readmailConfigList != null) {
-                if (temp._readmailConfigList == null) return false;
-                else if (!(this._readmailConfigList.equals(temp._readmailConfigList))) 
-                    return false;
-            }
-            else if (temp._readmailConfigList != null)
-                return false;
-            if (this._end2endMailConfigList != null) {
-                if (temp._end2endMailConfigList == null) return false;
-                else if (!(this._end2endMailConfigList.equals(temp._end2endMailConfigList))) 
-                    return false;
-            }
-            else if (temp._end2endMailConfigList != null)
-                return false;
-            return true;
+            final JavamailConfiguration temp = (JavamailConfiguration)obj;
+            return Objects.equals(temp._defaultSendConfigName, _defaultSendConfigName)
+                    && Objects.equals(temp._defaultReadConfigName, _defaultReadConfigName)
+                    && Objects.equals(temp._sendmailConfigList, _sendmailConfigList)
+                    && Objects.equals(temp._readmailConfigList, _readmailConfigList)
+                    && Objects.equals(temp._end2endMailConfigList, _end2endMailConfigList);
         }
         return false;
     }
@@ -244,8 +217,8 @@ public class JavamailConfiguration implements Serializable {
      * 
      * @return the value of field 'DefaultReadConfigName'.
      */
-    public String getDefaultReadConfigName() {
-        return this._defaultReadConfigName;
+    public Optional<String> getDefaultReadConfigName() {
+        return Optional.ofNullable(this._defaultReadConfigName);
     }
 
     /**
@@ -253,8 +226,8 @@ public class JavamailConfiguration implements Serializable {
      * 
      * @return the value of field 'DefaultSendConfigName'.
      */
-    public String getDefaultSendConfigName() {
-        return this._defaultSendConfigName;
+    public Optional<String> getDefaultSendConfigName() {
+        return Optional.ofNullable(this._defaultSendConfigName);
     }
 
     /**
@@ -397,23 +370,7 @@ public class JavamailConfiguration implements Serializable {
      */
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_defaultSendConfigName != null) {
-            result = 37 * result + _defaultSendConfigName.hashCode();
-        }
-        if (_defaultReadConfigName != null) {
-            result = 37 * result + _defaultReadConfigName.hashCode();
-        }
-        if (_sendmailConfigList != null) {
-            result = 37 * result + _sendmailConfigList.hashCode();
-        }
-        if (_readmailConfigList != null) {
-            result = 37 * result + _readmailConfigList.hashCode();
-        }
-        if (_end2endMailConfigList != null) {
-            result = 37 * result + _end2endMailConfigList.hashCode();
-        }
-        return result;
+        return Objects.hash(_defaultSendConfigName, _defaultReadConfigName, _sendmailConfigList, _readmailConfigList, _end2endMailConfigList);
     }
 
     /**
@@ -593,7 +550,7 @@ public class JavamailConfiguration implements Serializable {
      */
     public void setEnd2endMailConfigCollection(
             final List<End2endMailConfig> end2endMailConfigList) {
-        this._end2endMailConfigList = end2endMailConfigList;
+        this._end2endMailConfigList = end2endMailConfigList == null? new ArrayList<>() : end2endMailConfigList;
     }
 
     /**
@@ -642,7 +599,7 @@ public class JavamailConfiguration implements Serializable {
      * @deprecated 
      */
     public void setReadmailConfigCollection(final List<ReadmailConfig> readmailConfigList) {
-        this._readmailConfigList = readmailConfigList;
+        this._readmailConfigList = readmailConfigList == null? new ArrayList<>() : readmailConfigList;
     }
 
     /**
@@ -691,7 +648,7 @@ public class JavamailConfiguration implements Serializable {
      * @deprecated 
      */
     public void setSendmailConfigCollection(final List<SendmailConfig> sendmailConfigList) {
-        this._sendmailConfigList = sendmailConfigList;
+        this._sendmailConfigList = sendmailConfigList == null? new ArrayList<>() : sendmailConfigList;
     }
 
 }
