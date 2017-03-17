@@ -45,7 +45,7 @@ public class GeneratorConfigBuilderTest {
                 .addParam(EventParameterNames.LABEL, "Custom Asset Topology")
                 .addParam(EventParameterNames.PREFERRED_LAYOUT, "D3 Layout")
                 .addParam(EventParameterNames.BREADCRUMB_STRATEGY, "NONE")
-                .addParam(EventParameterNames.INCLUDE_UNASSIGNED_NODES, "true")
+                .addParam(EventParameterNames.FILTERS, "a=x&b=y")
                 .addParam(EventParameterNames.HIERARCHY, "a,b,c")
                 .getEvent();
 
@@ -54,8 +54,8 @@ public class GeneratorConfigBuilderTest {
         expectedConfig.setLabel("Custom Asset Topology");
         expectedConfig.setPreferredLayout("D3 Layout");
         expectedConfig.setBreadcrumbStrategy(BreadcrumbStrategy.NONE.name());
-        expectedConfig.setGenerateUnallocated(true);
         expectedConfig.setLayerHierarchies(Lists.newArrayList("a", "b", "c"));
+        expectedConfig.setFilters(Lists.newArrayList("a=x","b=y"));
 
         final GeneratorConfig actualConfig = GeneratorConfigBuilder.buildFrom(e);
         Assert.assertEquals(expectedConfig, actualConfig);

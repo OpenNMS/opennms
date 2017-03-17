@@ -45,7 +45,6 @@ public class GeneratorConfigBuilder {
     private String label;
     private String breadcrumbStrategy;
     private String providerId;
-    private String includeUnassignedNodes;
     private String preferredLayout;
     private String hierarchy;
     private String filter;
@@ -65,11 +64,6 @@ public class GeneratorConfigBuilder {
         return this;
     }
 
-    public GeneratorConfigBuilder withIncludeUnassingedNodes(String includeUnassignedNodes) {
-        this.includeUnassignedNodes = includeUnassignedNodes;
-        return this;
-    }
-
     public GeneratorConfigBuilder withPreferredLayout(String preferredLayout) {
         this.preferredLayout = preferredLayout;
         return this;
@@ -80,7 +74,7 @@ public class GeneratorConfigBuilder {
         return this;
     }
 
-    public GeneratorConfigBuilder withFilter(String filter) {
+    public GeneratorConfigBuilder withFilters(String filter) {
         this.filter = filter;
         return this;
     }
@@ -92,9 +86,6 @@ public class GeneratorConfigBuilder {
         }
         if (providerId != null) {
             config.setProviderId(providerId);
-        }
-        if (includeUnassignedNodes != null) {
-            config.setGenerateUnallocated(Boolean.valueOf(includeUnassignedNodes));
         }
         if (preferredLayout != null) {
             config.setPreferredLayout(preferredLayout);
@@ -129,7 +120,7 @@ public class GeneratorConfigBuilder {
         final String label = EventUtils.getParm(e, EventParameterNames.LABEL);
         final String breadcrumbStrategy = EventUtils.getParm(e, EventParameterNames.BREADCRUMB_STRATEGY);
         final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
-        final String includeUnassignedNodes = EventUtils.getParm(e, EventParameterNames.INCLUDE_UNASSIGNED_NODES);
+        final String filters = EventUtils.getParm(e, EventParameterNames.FILTERS);
         final String preferredLayout = EventUtils.getParm(e, EventParameterNames.PREFERRED_LAYOUT);
         final String hierarchy = EventUtils.getParm(e, EventParameterNames.HIERARCHY);
 
@@ -137,9 +128,9 @@ public class GeneratorConfigBuilder {
                 .withLabel(label)
                 .withBreadcrumbStrategy(breadcrumbStrategy)
                 .withProviderId(providerId)
-                .withIncludeUnassingedNodes(includeUnassignedNodes)
                 .withPreferredLayout(preferredLayout)
                 .withHierarchy(hierarchy)
+                .withFilters(filters)
                 .build();
     }
 }

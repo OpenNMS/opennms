@@ -37,7 +37,6 @@ import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
-import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
 import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
@@ -169,20 +168,6 @@ public class AssetGraphGenerator {
 				}
 			});
 		}
-
-		// Add nodes for unallocated elements
-		if (!config.getLayerHierarchies().isEmpty() && config.isGenerateUnallocated()) {
-			GraphMLGraph layerGraph = new GraphMLGraph();
-			layerGraph.setId(config.getProviderId() + ":unallocated_Nodes");
-			layerGraph.setProperty(GraphMLProperties.NAMESPACE, layerGraph.getId());
-			layerGraph.setProperty(GraphMLProperties.PREFERRED_LAYOUT, config.getPreferredLayout());
-			layerGraph.setProperty(GraphMLProperties.DESCRIPTION, "All nodes which cannot be placed in topology hierarchy");
-			layerGraph.setProperty(GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.ALL.name());
-			layerGraph.setProperty(GraphMLProperties.SEMANTIC_ZOOM_LEVEL, 0);
-			layerGraph.setProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, true);
-			graphML.addGraph(layerGraph);
-		}
-
 		return graphML;
 	}
 

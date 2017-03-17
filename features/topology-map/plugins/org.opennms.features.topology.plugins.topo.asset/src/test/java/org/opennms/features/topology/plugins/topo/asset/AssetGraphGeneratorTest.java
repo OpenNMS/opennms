@@ -32,7 +32,6 @@ public class AssetGraphGeneratorTest {
 		config.setProviderId("asset");
 		config.setLabel("testgraph");
 		config.setPreferredLayout("Grid Layout");
-		config.setGenerateUnallocated(true);
 		config.setLayerHierarchies(new ArrayList<>()); // empty layers
 
 		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestNodeProvider());
@@ -50,7 +49,6 @@ public class AssetGraphGeneratorTest {
 		config.setProviderId("asset");
 		config.setLabel("testgraph");
 		config.setPreferredLayout("Grid Layout");
-		config.setGenerateUnallocated(true);
 		config.setLayerHierarchies(Lists.newArrayList(
 				NodeParamLabels.ASSET_REGION,
 				NodeParamLabels.ASSET_BUILDING,

@@ -32,7 +32,7 @@ public interface EventParameterNames {
     String LABEL = "label";
     String BREADCRUMB_STRATEGY = "breadcrumbStrategy";
     String PROVIDER_ID = "id";
-    String INCLUDE_UNASSIGNED_NODES = "includeUnassignedNodes";
+    String FILTERS = "filters";
     String PREFERRED_LAYOUT = "preferredLayout";
     String HIERARCHY = "hierarchy";
 }

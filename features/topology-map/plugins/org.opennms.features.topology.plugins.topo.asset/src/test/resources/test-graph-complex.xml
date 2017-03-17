@@ -1126,12 +1126,4 @@
             <data key="foreignSource">TestOpenNMSInventory</data>
         </node>
     </graph>
-    <graph id="asset:unallocated_Nodes">
-        <data key="preferred-layout">Grid Layout</data>
-        <data key="focus-strategy">ALL</data>
-        <data key="namespace">asset:unallocated_Nodes</data>
-        <data key="description">All nodes which cannot be placed in topology hierarchy</data>
-        <data key="vertex-status-provider">true</data>
-        <data key="semantic-zoom-level">0</data>
-    </graph>
 </graphml>

@@ -58,9 +58,6 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
 	String filter;
 
-	@Option(name = "-u", aliases = "--unallocatedGraph", description = "Generate Unallocated Nodes Graph", required = false, multiValued = false)
-	String generateUnallocatedStr;
-
 	@Option(name = "-l", aliases = "--label", description = "Asset Topology label (shows in topology menu)", required = false, multiValued = false)
 	String label;
 
@@ -76,11 +73,10 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 			final GeneratorConfig config = new GeneratorConfigBuilder()
 					.withProviderId(providerId)
 					.withHierarchy(assetLayers)
-					.withIncludeUnassingedNodes(generateUnallocatedStr)
 					.withLabel(label)
 					.withBreadcrumbStrategy(breadcrumbStrategy)
 					.withPreferredLayout(preferredLayout)
-					.withFilter(filter)
+					.withFilters(filter)
 					.build();
 
 			System.out.println("Creating Asset Topology from configuration " + config);

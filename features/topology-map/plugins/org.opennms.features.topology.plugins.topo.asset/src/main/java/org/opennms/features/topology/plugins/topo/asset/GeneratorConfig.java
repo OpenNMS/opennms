@@ -44,19 +44,10 @@ public class GeneratorConfig {
     private String providerId = "asset";
     private String preferredLayout = "Grid Layout";
     private List<String> filters;
-    private boolean generateUnallocated;
     private List<String> layerHierarchies = Lists.newArrayList(
             NodeParamLabels.ASSET_REGION,
             NodeParamLabels.ASSET_BUILDING,
             NodeParamLabels.ASSET_RACK);
-
-    public void setGenerateUnallocated(boolean generateUnallocated) {
-		this.generateUnallocated = generateUnallocated;
-	}
-
-    public boolean isGenerateUnallocated() {
-        return generateUnallocated;
-    }
 
     public String getLabel() {
         return label;
@@ -108,7 +99,7 @@ public class GeneratorConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(label, breadcrumbStrategy, providerId, preferredLayout, generateUnallocated, layerHierarchies);
+        return Objects.hash(label, breadcrumbStrategy, providerId, filters, preferredLayout, layerHierarchies);
     }
 
     @Override
@@ -117,10 +108,10 @@ public class GeneratorConfig {
         if (obj == null) return false;
         if (obj instanceof GeneratorConfig) {
             GeneratorConfig other = (GeneratorConfig) obj;
-            return Objects.equals(generateUnallocated, other.generateUnallocated)
-                    && Objects.equals(label, other.label)
+            return Objects.equals(label, other.label)
                     && Objects.equals(breadcrumbStrategy, other.breadcrumbStrategy)
                     && Objects.equals(providerId, other.providerId)
+                    && Objects.equals(filters, other.filters)
                     && Objects.equals(preferredLayout, other.preferredLayout)
                     && Objects.equals(layerHierarchies, other.layerHierarchies);
         }
@@ -133,10 +124,9 @@ public class GeneratorConfig {
                 .add("providerId", providerId)
                 .add("label", label)
                 .add("layerHierarchies", layerHierarchies)
-                .add("filter", filters)
+                .add("filters", filters)
                 .add("breadcrumbStrategy", breadcrumbStrategy)
                 .add("preferredLayout", preferredLayout)
-                .add("generateUnallocated", generateUnallocated)
                 .toString();
 	}
 }
