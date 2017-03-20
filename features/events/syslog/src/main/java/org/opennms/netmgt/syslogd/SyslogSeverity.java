@@ -75,7 +75,7 @@ public enum SyslogSeverity {
     public static SyslogSeverity getSeverity(final int severity) {
         final SyslogSeverity[] severities = SyslogSeverity.values();
         if (severities.length < severity) {
-            return null;
+            return SyslogSeverity.UNKNOWN;
         }
         return severities[severity];
     }
