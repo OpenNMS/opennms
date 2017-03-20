@@ -35,7 +35,7 @@ import org.opennms.features.topology.plugins.topo.graphml.GraphMLProperties;
 import org.opennms.netmgt.model.OnmsNode;
 
 public enum Layers {
-    @Key("asset-country")
+    @Key(NodeParamLabels.ASSET_COUNTRY)
     @Restriction(hql = "assetRecord.geolocation.country is not null")
     ASSET_COUNTRY(new AssetLayer() {
 
@@ -60,7 +60,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-address1")
+    @Key(NodeParamLabels.ASSET_ADDRESS1)
     @Restriction(hql = "assetRecord.geolocation.address1 is not null")
     ASSET_ADDRESS1(new AssetLayer() {
 
@@ -84,7 +84,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-address2")
+    @Key(NodeParamLabels.ASSET_ADDRESS2)
     @Restriction(hql = "assetRecord.geolocation.address2 is not null")
     ASSET_ADDRESS2(new AssetLayer() {
 
@@ -108,7 +108,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-city")
+    @Key(NodeParamLabels.ASSET_CITY)
     @Restriction(hql = "assetRecord.geolocation.city is not null")
     ASSET_CITY(new AssetLayer() {
 
@@ -132,7 +132,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-zip")
+    @Key(NodeParamLabels.ASSET_ZIP)
     @Restriction(hql = "assetRecord.geolocation.zip is not null")
     ASSET_ZIP(new AssetLayer() {
 
@@ -156,7 +156,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-state")
+    @Key(NodeParamLabels.ASSET_STATE)
     @Restriction(hql = "assetRecord.geolocation.state is not null")
     ASSET_STATE(new AssetLayer() {
 
@@ -180,7 +180,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-latitude")
+    @Key(NodeParamLabels.ASSET_LATITUDE)
     @Restriction(hql = "assetRecord.geolocation.latitude is not null")
     ASSET_LATITUDE(new AssetLayer() {
 
@@ -207,7 +207,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-longitude")
+    @Key(NodeParamLabels.ASSET_LONGITUDE)
     @Restriction(hql = "assetRecord.geolocation.longitude is not null")
     ASSET_LONGITUDE(new AssetLayer() {
 
@@ -234,7 +234,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-building")
+    @Key(NodeParamLabels.ASSET_BUILDING)
     @Restriction(hql = "assetRecord.building is not null")
     ASSET_BUILDING(new AssetLayer() {
 
@@ -258,7 +258,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-region")
+    @Key(NodeParamLabels.ASSET_REGION)
     @Restriction(hql = "assetRecord.region is not null")
     ASSET_REGION(new AssetLayer() {
 
@@ -282,7 +282,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-division")
+    @Key(NodeParamLabels.ASSET_DIVISION)
     @Restriction(hql = "assetRecord.division is not null")
     ASSET_DIVISION(new AssetLayer() {
 
@@ -306,7 +306,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-department")
+    @Key(NodeParamLabels.ASSET_DEPARTMENT)
     @Restriction(hql = "assetRecord.department is not null")
     ASSET_DEPARTMENT(new AssetLayer() {
 
@@ -330,7 +330,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-floor")
+    @Key(NodeParamLabels.ASSET_FLOOR)
     @Restriction(hql = "assetRecord.floor is not null")
     ASSET_FLOOR(new AssetLayer() {
 
@@ -354,7 +354,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-room")
+    @Key(NodeParamLabels.ASSET_ROOM)
     @Restriction(hql = "assetRecord.room is not null")
     ASSET_ROOM(new AssetLayer() {
 
@@ -378,7 +378,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-rack")
+    @Key(NodeParamLabels.ASSET_RACK)
     @Restriction(hql = "assetRecord.rack is not null")
     ASSET_RACK(new AssetLayer() {
         @Override
@@ -401,7 +401,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-slot")
+    @Key(NodeParamLabels.ASSET_SLOT)
     @Restriction(hql = "assetRecord.slot is not null")
     ASSET_SLOT(new AssetLayer() {
         @Override
@@ -424,7 +424,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-port")
+    @Key(NodeParamLabels.ASSET_PORT)
     @Restriction(hql = "assetRecord.port is not null")
     ASSET_PORT(new AssetLayer() {
         @Override
@@ -447,7 +447,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-circuitid")
+    @Key(NodeParamLabels.ASSET_CIRCUITID)
     @Restriction(hql = "assetRecord.circuitId is not null")
     ASSET_CIRCUIT_ID(new AssetLayer() {
         @Override
@@ -470,7 +470,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-category")
+    @Key(NodeParamLabels.ASSET_CATEGORY)
     @Restriction(hql = "assetRecord.category is not null")
     ASSET_CATEGORY(new AssetLayer() {
         @Override
@@ -493,7 +493,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-displaycategory")
+    @Key(NodeParamLabels.ASSET_DISPLAYCATEGORY)
     @Restriction(hql = "assetRecord.displayCategory is not null")
     ASSET_DISPLAY_CATEGORY(new AssetLayer() {
         @Override
@@ -516,7 +516,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-notifycategory")
+    @Key(NodeParamLabels.ASSET_NOTIFYCATEGORY)
     @Restriction(hql = "assetRecord.notifyCategory is not null")
     ASSET_NOTIFY_CATEGORY(new AssetLayer() {
         @Override
@@ -539,7 +539,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-pollercategory")
+    @Key(NodeParamLabels.ASSET_POLLERCATEGORY)
     @Restriction(hql = "assetRecord.pollerCategory is not null")
     ASSET_POLLER_CATEGORY(new AssetLayer() {
         @Override
@@ -562,7 +562,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-thresholdcategory")
+    @Key(NodeParamLabels.ASSET_THRESHOLDCATEGORY)
     @Restriction(hql = "assetRecord.thresholdCategory is not null")
     ASSET_THRESHOLD_CATEGORY(new AssetLayer() {
         @Override
@@ -585,7 +585,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-managedobjecttype")
+    @Key(NodeParamLabels.ASSET_MANAGEDOBJECTTYPE)
     @Restriction(hql = "assetRecord.managedObjectType is not null")
     ASSET_MANAGED_OBJECT_TYPE(new AssetLayer() {
         @Override
@@ -608,7 +608,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-managedobjectinstance")
+    @Key(NodeParamLabels.ASSET_MANAGEDOBJECTINSTANCE)
     @Restriction(hql = "assetRecord.managedObjectInstance is not null")
     ASSET_MANAGED_OBJECT_INSTANCE(new AssetLayer() {
         @Override
@@ -631,7 +631,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-manufacturer")
+    @Key(NodeParamLabels.ASSET_MANUFACTURER)
     @Restriction(hql = "assetRecord.manufacturer is not null")
     ASSET_MANUFACTURER(new AssetLayer() {
         @Override
@@ -654,7 +654,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-vendor")
+    @Key(NodeParamLabels.ASSET_VENDOR)
     @Restriction(hql = "assetRecord.vendor is not null")
     ASSET_VENDOR(new AssetLayer() {
         @Override
@@ -677,7 +677,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-modelnumber")
+    @Key(NodeParamLabels.ASSET_MODELNUMBER)
     @Restriction(hql = "assetRecord.modelNumber is not null")
     ASSET_MODEL_NUMBER(new AssetLayer() {
         @Override
@@ -700,7 +700,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-description")
+    @Key(NodeParamLabels.ASSET_DESCRIPTION)
     @Restriction(hql = "assetRecord.description is not null")
     ASSET_DESCRIPTION(new AssetLayer() {
         @Override
@@ -723,7 +723,7 @@ public enum Layers {
         }
     }),
 
-    @Key("asset-operatingsystem")
+    @Key(NodeParamLabels.ASSET_OPERATINGSYSTEM)
     @Restriction(hql = "assetRecord.operatingSystem is not null")
     ASSET_OPERATING_SYSTEM(new AssetLayer() {
         @Override
@@ -746,7 +746,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-nodelabel")
+    @Key(NodeParamLabels.NODE_NODELABEL)
     @Restriction(hql = "label is not null")
     NODE_LABEL(new AssetLayer() {
         @Override
@@ -769,7 +769,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-nodeid")
+    @Key(NodeParamLabels.NODE_NODEID)
     @Restriction(hql = "id is not null")
     NODE_ID(new AssetLayer() {
         @Override
@@ -792,7 +792,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-foreignsource")
+    @Key(NodeParamLabels.NODE_FOREIGNSOURCE)
     @Restriction(hql = "foreignSource is not null")
     NODE_FOREIGN_SOURCE(new AssetLayer() {
         @Override
@@ -815,7 +815,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-foreignid")
+    @Key(NodeParamLabels.NODE_FOREIGNID)
     @Restriction(hql = "foreignId is not null")
     NODE_FOREIGN_ID(new AssetLayer() {
         @Override
@@ -838,7 +838,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-nodesysname")
+    @Key(NodeParamLabels.NODE_NODESYSNAME)
     @Restriction(hql = "sysName is not null")
     NODE_SYSTEM_NAME(new AssetLayer() {
         @Override
@@ -861,7 +861,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-nodesyslocation")
+    @Key(NodeParamLabels.NODE_NODESYSLOCATION)
     @Restriction(hql = "sysLocation is not null")
     NODE_SYSTEM_LOCATION(new AssetLayer() {
         @Override
@@ -884,7 +884,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-operatingsystem")
+    @Key(NodeParamLabels.NODE_OPERATINGSYSTEM)
     @Restriction(hql = "operatingSystem is not null")
     NODE_OPERATING_SYSTEM(new AssetLayer() {
         @Override
@@ -907,7 +907,7 @@ public enum Layers {
         }
     }),
 
-    @Key("parent-nodelabel")
+    @Key(NodeParamLabels.PARENT_NODELABEL)
     @Restriction(hql = "parent.label is not null")
     PARENT_NODE_LABEL(new AssetLayer() {
         @Override
@@ -930,7 +930,7 @@ public enum Layers {
         }
     }),
 
-    @Key("parent-nodeid")
+    @Key(NodeParamLabels.PARENT_NODEID)
     @Restriction(hql = "parent.id is not null")
     PARENT_NODE_ID(new AssetLayer() {
         @Override
@@ -953,7 +953,7 @@ public enum Layers {
         }
     }),
 
-    @Key("parent-foreignsource")
+    @Key(NodeParamLabels.PARENT_FOREIGNSOURCE)
     @Restriction(hql = "parent.foreignSource is not null")
     PARENT_FOREIGN_SOURCE(new AssetLayer() {
         @Override
@@ -976,7 +976,7 @@ public enum Layers {
         }
     }),
 
-    @Key("parent-foreignid")
+    @Key(NodeParamLabels.PARENT_FOREIGNID)
     @Restriction(hql = "parent.foreignId is not null")
     PARENT_FOREIGN_ID(new AssetLayer() {
         @Override
@@ -999,7 +999,7 @@ public enum Layers {
         }
     }),
 
-    @Key("node-categories")
+    @Key(NodeParamLabels.NODE_CATEGORIES)
     @Restriction(hql = "categories is not empty")
     NODE_CATEGORIES(new AssetLayer() {
         @Override
