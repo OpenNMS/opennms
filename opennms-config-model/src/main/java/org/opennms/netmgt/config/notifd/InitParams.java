@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,36 +30,55 @@ package org.opennms.netmgt.config.notifd;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class InitParams.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "init-params")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("notifd-configuration.xsd")
 public class InitParams implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "param-name", required = true)
-    private String paramName;
+    private String m_paramName;
 
     @XmlElement(name = "param-value", required = true)
-    private String paramValue;
+    private String m_paramValue;
 
     public InitParams() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getParamName() {
+        return m_paramName;
+    }
+
+    public void setParamName(final String paramName) {
+        if (paramName == null) {
+            throw new IllegalArgumentException("paramName is a required field!");
+        }
+        m_paramName = paramName;
+    }
+
+    public String getParamValue() {
+        return m_paramValue;
+    }
+
+    public void setParamValue(final String paramValue) {
+        m_paramValue = paramValue;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            m_paramName, 
+            m_paramValue);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -67,64 +86,11 @@ public class InitParams implements java.io.Serializable {
         }
         
         if (obj instanceof InitParams) {
-            InitParams temp = (InitParams)obj;
-            boolean equals = Objects.equals(temp.paramName, paramName)
-                && Objects.equals(temp.paramValue, paramValue);
-            return equals;
+            final InitParams that = (InitParams)obj;
+            return Objects.equals(this.m_paramName, that.m_paramName)
+                && Objects.equals(this.m_paramValue, that.m_paramValue);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'paramName'.
-     * 
-     * @return the value of field 'ParamName'.
-     */
-    public String getParamName() {
-        return this.paramName;
-    }
-
-    /**
-     * Returns the value of field 'paramValue'.
-     * 
-     * @return the value of field 'ParamValue'.
-     */
-    public String getParamValue() {
-        return this.paramValue;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            paramName, 
-            paramValue);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'paramName'.
-     * 
-     * @param paramName the value of field 'paramName'.
-     */
-    public void setParamName(final String paramName) {
-        if (paramName == null) {
-            throw new IllegalArgumentException("paramName is a required field!");
-        }
-        this.paramName = paramName;
-    }
-
-    /**
-     * Sets the value of field 'paramValue'.
-     * 
-     * @param paramValue the value of field 'paramValue'.
-     */
-    public void setParamValue(final String paramValue) {
-        this.paramValue = paramValue;
     }
 
 }

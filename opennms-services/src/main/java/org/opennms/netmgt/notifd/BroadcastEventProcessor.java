@@ -294,12 +294,12 @@ public final class BroadcastEventProcessor implements EventListener {
                     try {
                         LOG.debug("Acknowledging event {} {}:{}:{}", curAck.getAcknowledge(), event.getNodeid(), event.getInterface(), event.getService());
                         
-                        Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatches().toArray(new String[0]));
                         processed = true;
                         try {
                             // only send resolution notifications if notifications are globally turned on
                             if (curAck.getNotify() && notifsOn) {
-                                sendResolvedNotifications(notifIDs, event, curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                                sendResolvedNotifications(notifIDs, event, curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().getNumericSkipResolutionPrefix());
                             }
                         } catch (Throwable e) {
                             LOG.error("Failed to send resolution notifications.", e);
@@ -318,14 +318,14 @@ public final class BroadcastEventProcessor implements EventListener {
                 return;
             }
             final AutoAcknowledgeAlarm autoAck = getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm().get();
-            if (autoAck.getUeiCollection().isEmpty() && !autoAck.getUeiCollection().contains(event.getUei())) {
+            if ( autoAck.getUeis().isEmpty() || !autoAck.getUeis().contains(event.getUei()) ) {
                 return;
             }
             Collection<Integer> notifIDs = getNotificationManager().acknowledgeNoticeBasedOnAlarms(event);
             try {
                 // only send resolution notifications if notifications are globally turned on
                 if (autoAck.getNotify() && !notifIDs.isEmpty() && notifsOn) {
-                    sendResolvedNotifications(notifIDs, event, autoAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                    sendResolvedNotifications(notifIDs, event, autoAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().getNumericSkipResolutionPrefix());
                 }
             } catch (Throwable e) {
                 LOG.error("Failed to send resolution notifications.", e);

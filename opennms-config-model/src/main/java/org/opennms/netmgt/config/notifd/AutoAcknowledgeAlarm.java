@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,9 +29,6 @@
 package org.opennms.netmgt.config.notifd;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,73 +38,56 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class AutoAcknowledgeAlarm.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "auto-acknowledge-alarm")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("notifd-configuration.xsd")
 public class AutoAcknowledgeAlarm implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_RESOLUTION_PREFIX = "RESOLVED: ";
 
     @XmlAttribute(name = "resolution-prefix")
-    private String resolutionPrefix;
+    private String m_resolutionPrefix;
 
     @XmlAttribute(name = "notify")
-    private Boolean notify;
+    private Boolean m_notify;
 
     @XmlElement(name = "uei")
-    private List<String> ueiList = new ArrayList<>();
+    private List<String> m_ueis = new ArrayList<>();
 
     public AutoAcknowledgeAlarm() { }
 
-    /**
-     * 
-     * 
-     * @param vUei
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addUei(final String vUei) throws IndexOutOfBoundsException {
-        this.ueiList.add(vUei);
+    public String getResolutionPrefix() {
+        return m_resolutionPrefix != null ? m_resolutionPrefix : DEFAULT_RESOLUTION_PREFIX;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vUei
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addUei(final int index, final String vUei) throws IndexOutOfBoundsException {
-        this.ueiList.add(index, vUei);
+    public void setResolutionPrefix(final String resolutionPrefix) {
+        m_resolutionPrefix = resolutionPrefix;
     }
 
-    /**
-     */
-    public void deleteNotify() {
-        this.notify= null;
+    public Boolean getNotify() {
+        return m_notify != null ? m_notify : Boolean.valueOf("true");
     }
 
-    /**
-     * Method enumerateUei.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<String> enumerateUei() {
-        return Collections.enumeration(this.ueiList);
+    public void setNotify(final Boolean notify) {
+        m_notify = notify;
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public List<String> getUeis() {
+        return m_ueis;
+    }
+
+    public void setUei(final List<String> ueis) {
+        m_ueis.clear();
+        m_ueis.addAll(ueis);
+    }
+
+    public void addUei(final String uei) {
+        m_ueis.add(uei);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -115,222 +95,20 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
         }
         
         if (obj instanceof AutoAcknowledgeAlarm) {
-            AutoAcknowledgeAlarm temp = (AutoAcknowledgeAlarm)obj;
-            boolean equals = Objects.equals(temp.resolutionPrefix, resolutionPrefix)
-                && Objects.equals(temp.notify, notify)
-                && Objects.equals(temp.ueiList, ueiList);
-            return equals;
+            final AutoAcknowledgeAlarm that = (AutoAcknowledgeAlarm)obj;
+            return Objects.equals(this.m_resolutionPrefix, that.m_resolutionPrefix)
+                && Objects.equals(this.m_notify, that.m_notify)
+                && Objects.equals(this.m_ueis, that.m_ueis);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'notify'.
-     * 
-     * @return the value of field 'Notify'.
-     */
-    public Boolean getNotify() {
-        return this.notify != null ? this.notify : Boolean.valueOf("true");
-    }
-
-    /**
-     * Returns the value of field 'resolutionPrefix'.
-     * 
-     * @return the value of field 'ResolutionPrefix'.
-     */
-    public String getResolutionPrefix() {
-        return this.resolutionPrefix != null ? this.resolutionPrefix : DEFAULT_RESOLUTION_PREFIX;
-    }
-
-    /**
-     * Method getUei.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the String at the given index
-     */
-    public String getUei(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.ueiList.size()) {
-            throw new IndexOutOfBoundsException("getUei: Index value '" + index + "' not in range [0.." + (this.ueiList.size() - 1) + "]");
-        }
-        
-        return (String) ueiList.get(index);
-    }
-
-    /**
-     * Method getUei.Returns the contents of the collection in an Array.  <p>Note:
-     *  Just in case the collection contents are changing in another thread, we
-     * pass a 0-length Array of the correct type into the API call.  This way we
-     * <i>know</i> that the Array returned is of exactly the correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public String[] getUei() {
-        String[] array = new String[0];
-        return (String[]) this.ueiList.toArray(array);
-    }
-
-    /**
-     * Method getUeiCollection.Returns a reference to 'ueiList'. No type checking
-     * is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<String> getUeiCollection() {
-        return this.ueiList;
-    }
-
-    /**
-     * Method getUeiCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getUeiCount() {
-        return this.ueiList.size();
-    }
-
-    /**
-     * Method hasNotify.
-     * 
-     * @return true if at least one Notify has been added
-     */
-    public boolean hasNotify() {
-        return this.notify != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            resolutionPrefix, 
-            notify, 
-            ueiList);
-        return hash;
-    }
-
-    /**
-     * Returns the value of field 'notify'.
-     * 
-     * @return the value of field 'Notify'.
-     */
-    public Boolean isNotify() {
-        return this.notify != null ? this.notify : Boolean.valueOf("true");
-    }
-
-    /**
-     * Method iterateUei.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<String> iterateUei() {
-        return this.ueiList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllUei() {
-        this.ueiList.clear();
-    }
-
-    /**
-     * Method removeUei.
-     * 
-     * @param vUei
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeUei(final String vUei) {
-        boolean removed = ueiList.remove(vUei);
-        return removed;
-    }
-
-    /**
-     * Method removeUeiAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public String removeUeiAt(final int index) {
-        Object obj = this.ueiList.remove(index);
-        return (String) obj;
-    }
-
-    /**
-     * Sets the value of field 'notify'.
-     * 
-     * @param notify the value of field 'notify'.
-     */
-    public void setNotify(final Boolean notify) {
-        this.notify = notify;
-    }
-
-    /**
-     * Sets the value of field 'resolutionPrefix'.
-     * 
-     * @param resolutionPrefix the value of field 'resolutionPrefix'.
-     */
-    public void setResolutionPrefix(final String resolutionPrefix) {
-        this.resolutionPrefix = resolutionPrefix;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vUei
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setUei(final int index, final String vUei) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.ueiList.size()) {
-            throw new IndexOutOfBoundsException("setUei: Index value '" + index + "' not in range [0.." + (this.ueiList.size() - 1) + "]");
-        }
-        
-        this.ueiList.set(index, vUei);
-    }
-
-    /**
-     * 
-     * 
-     * @param vUeiArray
-     */
-    public void setUei(final String[] vUeiArray) {
-        //-- copy array
-        ueiList.clear();
-        
-        for (int i = 0; i < vUeiArray.length; i++) {
-                this.ueiList.add(vUeiArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'ueiList' by copying the given Vector. All elements will
-     * be checked for type safety.
-     * 
-     * @param vUeiList the Vector to copy.
-     */
-    public void setUei(final List<String> vUeiList) {
-        // copy vector
-        this.ueiList.clear();
-        
-        this.ueiList.addAll(vUeiList);
-    }
-
-    /**
-     * Sets the value of 'ueiList' by setting it to the given Vector. No type
-     * checking is performed.
-     * @deprecated
-     * 
-     * @param ueiList the Vector to set.
-     */
-    public void setUeiCollection(final List<String> ueiList) {
-        this.ueiList = ueiList == null? new ArrayList<>() : ueiList;
+        return Objects.hash(
+            m_resolutionPrefix, 
+            m_notify, 
+            m_ueis);
     }
 
 }

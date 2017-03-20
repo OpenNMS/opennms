@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,130 +30,86 @@ package org.opennms.netmgt.config.notifd;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Queue.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "queue")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("notifd-configuration.xsd")
 public class Queue implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @XmlElement(name = "queue-id", required = true)
-    private String queueId;
+    private String m_queueId;
 
     @XmlElement(name = "interval", required = true)
-    private String interval;
+    private String m_interval;
 
     @XmlElement(name = "handler-class", required = true)
-    private HandlerClass handlerClass;
+    private HandlerClass m_handlerClass;
 
     public Queue() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getQueueId() {
+        return m_queueId;
+    }
+
+    public void setQueueId(final String queueId) {
+        if (queueId == null) {
+            throw new IllegalArgumentException("Queue ID is a required field!");
+        }
+        m_queueId = queueId;
+    }
+
+    public String getInterval() {
+        return m_interval;
+    }
+
+    public void setInterval(final String interval) {
+        if (interval == null) {
+            throw new IllegalArgumentException("Interval is a required field!");
+        }
+        m_interval = interval;
+    }
+
+    public HandlerClass getHandlerClass() {
+        return m_handlerClass;
+    }
+
+    public void setHandlerClass(final HandlerClass handlerClass) {
+        if (handlerClass == null) {
+            throw new IllegalArgumentException("HandlerClass is a required field!");
+        }
+        m_handlerClass = handlerClass;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                            m_queueId, 
+                            m_interval, 
+                            m_handlerClass);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Queue) {
-            Queue temp = (Queue)obj;
-            boolean equals = Objects.equals(temp.queueId, queueId)
-                && Objects.equals(temp.interval, interval)
-                && Objects.equals(temp.handlerClass, handlerClass);
-            return equals;
+            final Queue that = (Queue)obj;
+            return Objects.equals(this.m_queueId, that.m_queueId)
+                    && Objects.equals(this.m_interval, that.m_interval)
+                    && Objects.equals(this.m_handlerClass, that.m_handlerClass);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'handlerClass'.
-     * 
-     * @return the value of field 'HandlerClass'.
-     */
-    public HandlerClass getHandlerClass() {
-        return this.handlerClass;
-    }
-
-    /**
-     * Returns the value of field 'interval'.
-     * 
-     * @return the value of field 'Interval'.
-     */
-    public String getInterval() {
-        return this.interval;
-    }
-
-    /**
-     * Returns the value of field 'queueId'.
-     * 
-     * @return the value of field 'QueueId'.
-     */
-    public String getQueueId() {
-        return this.queueId;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            queueId, 
-            interval, 
-            handlerClass);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'handlerClass'.
-     * 
-     * @param handlerClass the value of field 'handlerClass'.
-     */
-    public void setHandlerClass(final HandlerClass handlerClass) {
-        if (handlerClass == null) {
-            throw new IllegalArgumentException("HandlerClass is a required field!");
-        }
-        this.handlerClass = handlerClass;
-    }
-
-    /**
-     * Sets the value of field 'interval'.
-     * 
-     * @param interval the value of field 'interval'.
-     */
-    public void setInterval(final String interval) {
-        if (interval == null) {
-            throw new IllegalArgumentException("Interval is a required field!");
-        }
-        this.interval = interval;
-    }
-
-    /**
-     * Sets the value of field 'queueId'.
-     * 
-     * @param queueId the value of field 'queueId'.
-     */
-    public void setQueueId(final String queueId) {
-        if (queueId == null) {
-            throw new IllegalArgumentException("Queue ID is a required field!");
-        }
-        this.queueId = queueId;
     }
 
 }

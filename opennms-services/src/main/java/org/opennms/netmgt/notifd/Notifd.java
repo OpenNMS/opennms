@@ -30,6 +30,7 @@ package org.opennms.netmgt.notifd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.NotifdConfigManager;
@@ -104,9 +105,9 @@ public final class Notifd extends AbstractServiceDaemon {
         try {
             LOG.info("Notification status = {}", getConfigManager().getNotificationStatus());
 
-            Queue[] queues = getConfigManager().getConfiguration().getQueue();
-            for (Queue queue : queues) {
-                NoticeQueue curQueue = new NoticeQueue();
+            final List<Queue> queues = getConfigManager().getConfiguration().getQueues();
+            for (final Queue queue : queues) {
+                final NoticeQueue curQueue = new NoticeQueue();
 
                 Class<?> handlerClass = Class.forName(queue.getHandlerClass().getName());
                 NotifdQueueHandler handlerQueue = (NotifdQueueHandler) handlerClass.newInstance();
