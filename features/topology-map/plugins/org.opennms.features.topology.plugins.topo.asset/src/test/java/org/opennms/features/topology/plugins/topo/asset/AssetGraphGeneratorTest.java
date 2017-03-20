@@ -11,9 +11,7 @@ import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
-import org.opennms.features.topology.plugins.topo.asset.filter.EqFilter;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
-import org.opennms.features.topology.plugins.topo.asset.layers.Layers;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.opennms.features.topology.plugins.topo.asset.util.NodeBuilder;
 import org.opennms.features.topology.plugins.topo.asset.util.TestNodeProvider;
@@ -124,11 +122,10 @@ public class AssetGraphGeneratorTest {
 		};
 
 		final GeneratorConfig config = new GeneratorConfig();
-		final List<LayerDefinition> layerDefinitions = Lists.newArrayList(
-				new LayerDefinition(NodeParamLabels.ASSET_REGION, Layers.ASSET_REGION.getLayer(), new EqFilter("Stuttgart"))
-		);
+		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION));
+		config.setFilters(Lists.newArrayList(String.format("%s=Stuttgart", NodeParamLabels.ASSET_REGION)));
 
-		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config, nodeProvider.getNodes(null), layerDefinitions);
+		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 		Assert.assertEquals(2, generatedGraphML.getGraphs().size());
 		Assert.assertEquals(1, generatedGraphML.getGraphs().get(0).getNodes().size());
 		Assert.assertEquals(1, generatedGraphML.getGraphs().get(1).getNodes().size());

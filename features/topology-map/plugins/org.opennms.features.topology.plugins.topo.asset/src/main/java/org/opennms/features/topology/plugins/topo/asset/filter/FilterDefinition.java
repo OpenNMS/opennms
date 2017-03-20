@@ -26,31 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.asset.layers;
+package org.opennms.features.topology.plugins.topo.asset.filter;
 
-import java.util.Objects;
-
-public class LayerDefinition {
-
-    private final String key;
-    private final Layer layer;
-    private final String restriction;
-
-    public LayerDefinition(String key, Layer layer, String restriction) {
-        this.layer = Objects.requireNonNull(layer);
-        this.key = Objects.requireNonNull(key);
-        this.restriction = restriction;
-    }
-
-    public String getRestriction() {
-        return restriction;
-    }
-
-    public Layer getLayer() {
-        return layer;
-    }
-
-    public String getKey() {
-        return key;
-    }
+public class FilterDefinition {
 }

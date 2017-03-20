@@ -30,26 +30,24 @@ package org.opennms.features.topology.plugins.topo.asset.layers;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.opennms.features.topology.plugins.topo.asset.filter.Filter;
-import org.opennms.features.topology.plugins.topo.asset.filter.FilterParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LayerDefinitionRepository {
+
+    private static Logger LOG = LoggerFactory.getLogger(LayerDefinitionRepository.class);
 
     public LayerDefinitionRepository() {
 
     }
 
-    public List<LayerDefinition> getDefinitions(List<String> layerKeys, List<String> filter) {
-        final Map<String, Filter> filterMap = new FilterParser().parse(filter);
+    public List<LayerDefinition> getDefinitions(Collection<String> layerKeys) {
         final List<LayerDefinition> layerDefinitions = new ArrayList<>();
         for (String layerKey : layerKeys) {
             LayerDefinition layerDefinition = getLayerDefinition(layerKey);
-            if (layerDefinition != null) {
-                layerDefinition.setFilter(filterMap.get(layerKey));
-            }
             layerDefinitions.add(layerDefinition);
         }
         return layerDefinitions;
@@ -70,6 +68,7 @@ public class LayerDefinitionRepository {
             }
 
         }
+        LOG.warn("No layer definition found for layer key {}. Skipping.", layerKey);
         return null;
     }
 }

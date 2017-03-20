@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,8 @@ import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.plugins.topo.asset.filter.Filter;
+import org.opennms.features.topology.plugins.topo.asset.filter.FilterParser;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
 import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
@@ -58,12 +61,10 @@ public class AssetGraphGenerator {
 	}
 
 	public GraphML generateGraphs(GeneratorConfig config) {
-		final List<LayerDefinition> layerDefinitions = new LayerDefinitionRepository().getDefinitions(config.getLayerHierarchies(), config.getFilters());
+		final LayerDefinitionRepository layerDefinitionRepository = new LayerDefinitionRepository();
+		final List<LayerDefinition> layerDefinitions = layerDefinitionRepository.getDefinitions(config.getLayerHierarchies());
 		final List<OnmsNode> nodes = nodeProvider.getNodes(layerDefinitions);
-		return generateGraphs(config, nodes, layerDefinitions);
-	}
 
-	protected GraphML generateGraphs(GeneratorConfig config, List<OnmsNode> nodes, List<LayerDefinition> layerDefinitions) {
 		// Define Layers
 		final List<Layer> layers = layerDefinitions.stream().map(mapping -> mapping.getLayer()).collect(Collectors.toList());
 
@@ -92,18 +93,20 @@ public class AssetGraphGenerator {
 		});
 
 		// Apply additional filters
-		layerDefinitions.stream()
-				.filter(layerDefinition -> layerDefinition.getFilter() != null)
+		final Map<String, Filter> filterMap = new FilterParser().parse(config.getFilters());
+		final List<LayerDefinition> layersToFilter = layerDefinitionRepository.getDefinitions(filterMap.keySet());
+		layersToFilter.stream()
+				.filter(layerToFilter -> filterMap.get(layerToFilter.getKey()) != null)
 				.forEach(
-					layerDefinition -> {
+					layerToFilter -> {
 						final List<OnmsNode> filteredNodes = nodes.stream().filter(n -> {
-							ItemProvider itemProvider = layerDefinition.getLayer().getItemProvider();
-							return layerDefinition.getFilter().apply(itemProvider.getItem(n));
+							ItemProvider itemProvider = layerToFilter.getLayer().getItemProvider();
+							Filter filter = filterMap.get(layerToFilter.getKey());
+							return filter.apply(itemProvider.getItem(n));
 						}).collect(Collectors.toList());
 						if (!filteredNodes.isEmpty()) {
-							final Layer layer = layerDefinition.getLayer();
-							LOG.debug("Found nodes to remove due to filter settings for layer (id: {}, label: {}). Removing nodes {}",
-									layer.getId(), layer.getLabel(),
+							final Layer layer = layerToFilter.getLayer();
+							LOG.debug("Found nodes to remove due to filter settings. Removing nodes {}",
 									filteredNodes.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
 							nodes.removeAll(filteredNodes);
 						}

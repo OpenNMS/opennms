@@ -52,8 +52,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.Lists;
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -139,7 +137,7 @@ public class PersistenceNodeProviderIT {
      */
     @Test
     public void verifyLayerRestrictions() throws Exception {
-        List<LayerDefinition> mapping = new LayerDefinitionRepository().getDefinitions(NodeParamLabels.ALL_KEYS, Lists.newArrayList());
+        List<LayerDefinition> mapping = new LayerDefinitionRepository().getDefinitions(NodeParamLabels.ALL_KEYS);
         Assert.assertEquals(NodeParamLabels.ALL_KEYS.size(), Layers.values().length);
         Assert.assertEquals(Layers.values().length, mapping.size());
 
