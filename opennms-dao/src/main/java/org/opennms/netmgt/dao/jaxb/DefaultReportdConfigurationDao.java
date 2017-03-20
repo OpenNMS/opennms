@@ -65,12 +65,12 @@ public class DefaultReportdConfigurationDao extends AbstractJaxbConfigDao<Report
     /**
      * <p>translateConfig</p>
      *
-     * @param castorConfig a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
+     * @param config a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
      * @return a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
      */
     @Override
-    public ReportdConfiguration translateConfig(ReportdConfiguration castorConfig) {
-        return castorConfig;
+    public ReportdConfiguration translateConfig(ReportdConfiguration config) {
+        return config;
     }
     
     

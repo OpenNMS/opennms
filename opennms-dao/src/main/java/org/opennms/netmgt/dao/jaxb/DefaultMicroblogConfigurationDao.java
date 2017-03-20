@@ -73,8 +73,8 @@ public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<Micr
 
     /** {@inheritDoc} */
     @Override
-    public MicroblogConfiguration translateConfig(MicroblogConfiguration castorConfig) {
-        return castorConfig;
+    public MicroblogConfiguration translateConfig(MicroblogConfiguration config) {
+        return config;
     }
 
     /**

@@ -169,8 +169,8 @@ implements OnmsReportConfigDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<Report> translateConfig(OpennmsReports castorConfig) {
-        return Collections.unmodifiableList(castorConfig.getReportCollection());
+    public List<Report> translateConfig(OpennmsReports config) {
+        return Collections.unmodifiableList(config.getReportCollection());
     }
     
 }

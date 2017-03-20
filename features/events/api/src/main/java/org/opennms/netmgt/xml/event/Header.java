@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.xml.event;
 
   //---------------------------------/

@@ -120,7 +120,7 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
     @BeforeClass
     public static void setUpSnmpConfig() {
         Properties props = new Properties();
-        props.setProperty("log4j.logger.org.opennms.netmgt.dao.castor.DataCollectionConfigParser", "WARN");
+        props.setProperty("log4j.logger.org.opennms.netmgt.config.DataCollectionConfigParser", "WARN");
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "INFO");

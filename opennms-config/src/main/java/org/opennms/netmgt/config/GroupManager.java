@@ -79,11 +79,11 @@ public abstract class GroupManager implements GroupConfig {
 
         public Group map(OnmsGroup inputGroup) {
             if (inputGroup == null) return null;
-            Group castorGroup = new Group();
-            castorGroup.setName(inputGroup.getName());
-            castorGroup.setComments(inputGroup.getComments());
-            castorGroup.setUsers(inputGroup.getUsers());
-            return castorGroup;
+            Group xmlGroup = new Group();
+            xmlGroup.setName(inputGroup.getName());
+            xmlGroup.setComments(inputGroup.getComments());
+            xmlGroup.setUsers(inputGroup.getUsers());
+            return xmlGroup;
         }
 
         public OnmsGroup map(Group inputGroup) {
@@ -187,21 +187,21 @@ public abstract class GroupManager implements GroupConfig {
     }
 
     public OnmsGroup getOnmsGroup(final String groupName) throws IOException {
-        final Group castorGroup = getGroup(groupName);
-        if (castorGroup == null) return null;
-        return new OnmsGroupMapper().map(castorGroup);
+        final Group xmlGroup = getGroup(groupName);
+        if (xmlGroup == null) return null;
+        return new OnmsGroupMapper().map(xmlGroup);
     }
 
     public synchronized void save(final OnmsGroup group) throws Exception {
-        Group castorGroup = getGroup(group.getName());
-        if (castorGroup == null) {
-            castorGroup = new Group();
-            castorGroup.setName(group.getName());
+        Group xmlGroup = getGroup(group.getName());
+        if (xmlGroup == null) {
+            xmlGroup = new Group();
+            xmlGroup.setName(group.getName());
         }
-        castorGroup.setComments(group.getComments());
-        castorGroup.setUsers(group.getUsers());
+        xmlGroup.setComments(group.getComments());
+        xmlGroup.setUsers(group.getUsers());
         
-        saveGroup(group.getName(), castorGroup);
+        saveGroup(group.getName(), xmlGroup);
     }
 
     /**

@@ -119,7 +119,7 @@ public class ViewsDisplayFactory {
     }
 
     /**
-     * Parses the viewsdisplay.xml via the Castor classes
+     * Parses the viewsdisplay.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.

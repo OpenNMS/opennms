@@ -77,8 +77,8 @@ public class DefaultTl1ConfigurationDao extends AbstractJaxbConfigDao<Tl1dConfig
 
     /** {@inheritDoc} */
     @Override
-    public Tl1dConfiguration translateConfig(Tl1dConfiguration castorConfig) {
-        return castorConfig;
+    public Tl1dConfiguration translateConfig(Tl1dConfiguration config) {
+        return config;
     }
 
 }
