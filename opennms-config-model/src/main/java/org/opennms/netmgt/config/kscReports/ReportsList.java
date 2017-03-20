@@ -258,7 +258,7 @@ public class ReportsList implements java.io.Serializable {
      * @param reportList the Vector to set.
      */
     public void setReportCollection(final List<Report> reportList) {
-        this.reportList = reportList;
+        this.reportList = reportList == null? new ArrayList<>() : reportList;
     }
 
 }

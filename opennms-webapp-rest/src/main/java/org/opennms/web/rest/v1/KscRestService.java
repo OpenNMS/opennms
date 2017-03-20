@@ -227,7 +227,7 @@ public class KscRestService extends OnmsRestService {
             super();
             for (final Report report : reportList.values()) {
                 if (terse) {
-                    add(new KscReport(report.getId(), report.getTitle()));
+                    add(new KscReport(report.getId().orElse(null), report.getTitle()));
                 } else {
                     add(new KscReport(report));
                 }
@@ -271,11 +271,11 @@ public class KscRestService extends OnmsRestService {
         }
 
         public KscReport(Report report) {
-            m_id = report.getId();
+            m_id = report.getId().orElse(null);
             m_label = report.getTitle();
-            m_show_timespan_button = report.getShowTimespanButton();
-            m_show_graphtype_button = report.getShowGraphtypeButton();
-            m_graphs_per_line = report.getGraphsPerLine();
+            m_show_timespan_button = report.getShowTimespanButton().orElse(null);
+            m_show_graphtype_button = report.getShowGraphtypeButton().orElse(null);
+            m_graphs_per_line = report.getGraphsPerLine().orElse(null);
             m_graphs.clear();
 
             for(Graph graph : report.getGraphCollection()) {
@@ -371,12 +371,12 @@ public class KscRestService extends OnmsRestService {
             m_title = graph.getTitle();
             m_timespan = graph.getTimespan();
             m_graphtype = graph.getGraphtype();
-            m_resourceId = graph.getResourceId();
-            m_nodeId = graph.getNodeId();
-            m_nodeSource = graph.getNodeSource();
-            m_domain = graph.getDomain();
-            m_interfaceId = graph.getInterfaceId();
-            m_extlink = graph.getExtlink();
+            m_resourceId = graph.getResourceId().orElse(null);
+            m_nodeId = graph.getNodeId().orElse(null);
+            m_nodeSource = graph.getNodeSource().orElse(null);
+            m_domain = graph.getDomain().orElse(null);
+            m_interfaceId = graph.getInterfaceId().orElse(null);
+            m_extlink = graph.getExtlink().orElse(null);
         }
 
         public Graph buildGraph() {

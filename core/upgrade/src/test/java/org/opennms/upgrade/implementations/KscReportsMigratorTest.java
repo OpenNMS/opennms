@@ -88,7 +88,8 @@ public class KscReportsMigratorTest {
                 return interfaces;
             }
         };
-        Assert.assertEquals("node[1].interfaceSnmp[eth0]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId());
+        Assert.assertTrue(KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId().isPresent());
+        Assert.assertEquals("node[1].interfaceSnmp[eth0]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId().orElse(null));
         try {
             obj.preExecute();
             obj.execute();
@@ -97,7 +98,8 @@ public class KscReportsMigratorTest {
             obj.rollback();
             Assert.fail();
         }
-        Assert.assertEquals("node[1].interfaceSnmp[eth0-005056c00008]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId());
+        Assert.assertTrue(KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId().isPresent());
+        Assert.assertEquals("node[1].interfaceSnmp[eth0-005056c00008]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraph(0).getResourceId().orElse(null));
     }
 
     /**

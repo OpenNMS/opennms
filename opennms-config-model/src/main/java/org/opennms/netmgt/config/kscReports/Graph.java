@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.kscReports;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -108,8 +110,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'Domain'.
      */
-    public String getDomain() {
-        return this.domain;
+    public Optional<String> getDomain() {
+        return Optional.ofNullable(this.domain);
     }
 
     /**
@@ -117,8 +119,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'Extlink'.
      */
-    public String getExtlink() {
-        return this.extlink;
+    public Optional<String> getExtlink() {
+        return Optional.ofNullable(this.extlink);
     }
 
     /**
@@ -135,8 +137,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'InterfaceId'.
      */
-    public String getInterfaceId() {
-        return this.interfaceId;
+    public Optional<String> getInterfaceId() {
+        return Optional.ofNullable(this.interfaceId);
     }
 
     /**
@@ -144,8 +146,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'NodeId'.
      */
-    public String getNodeId() {
-        return this.nodeId;
+    public Optional<String> getNodeId() {
+        return Optional.ofNullable(this.nodeId);
     }
 
     /**
@@ -153,8 +155,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'NodeSource'.
      */
-    public String getNodeSource() {
-        return this.nodeSource;
+    public Optional<String> getNodeSource() {
+        return Optional.ofNullable(this.nodeSource);
     }
 
     /**
@@ -162,8 +164,8 @@ public class Graph implements java.io.Serializable {
      * 
      * @return the value of field 'ResourceId'.
      */
-    public String getResourceId() {
-        return this.resourceId;
+    public Optional<String> getResourceId() {
+        return Optional.ofNullable(this.resourceId);
     }
 
     /**
@@ -228,6 +230,9 @@ public class Graph implements java.io.Serializable {
      * @param graphtype the value of field 'graphtype'.
      */
     public void setGraphtype(final String graphtype) {
+        if (graphtype == null) {
+            throw new IllegalArgumentException("'graphtype' is a required attribute!");
+        }
         this.graphtype = graphtype;
     }
 
@@ -273,6 +278,9 @@ public class Graph implements java.io.Serializable {
      * @param timespan the value of field 'timespan'.
      */
     public void setTimespan(final String timespan) {
+        if (timespan == null) {
+            throw new IllegalArgumentException("'timespan' is a required attribute!");
+        }
         this.timespan = timespan;
     }
 
@@ -282,6 +290,9 @@ public class Graph implements java.io.Serializable {
      * @param title the value of field 'title'.
      */
     public void setTitle(final String title) {
+        if (title == null) {
+            throw new IllegalArgumentException("'title' is a required attribute!");
+        }
         this.title = title;
     }
 

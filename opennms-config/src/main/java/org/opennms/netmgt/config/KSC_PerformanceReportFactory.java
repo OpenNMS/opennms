@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -163,8 +164,8 @@ public class KSC_PerformanceReportFactory {
 
         // Make sure that i is larger than the highest report ID
         for (Report report : m_config.getReportCollection()) {
-            if (report.hasId() && report.getId() >= i) {
-                i = report.getId() + 1;
+            if (report.hasId() && report.getId().get() >= i) {
+                i = report.getId().get() + 1;
             }
         }
 
@@ -230,7 +231,7 @@ public class KSC_PerformanceReportFactory {
             if (reports.containsKey(report.getId())) {
                 throw new IllegalArgumentException("Report id " + report.getId() + " is used by multiple reports in configuration file");
             }
-            reports.put(report.getId(), report);
+            reports.put(report.getId().get(), report);
         }
 
         return reports;
@@ -253,7 +254,7 @@ public class KSC_PerformanceReportFactory {
         });
 
         for (Report report : reportList) {
-            reports.put(report.getId(), report.getTitle());
+            reports.put(report.getId().get(), report.getTitle());
         }
 
         return Collections.unmodifiableMap(reports);
@@ -268,7 +269,7 @@ public class KSC_PerformanceReportFactory {
         Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReportCount());
 
         for (Report report : m_config.getReportCollection()) {
-            reports.put(report.getId(), report);
+            reports.put(report.getId().get(), report);
         }
 
         return Collections.unmodifiableMap(reports);
@@ -305,7 +306,7 @@ public class KSC_PerformanceReportFactory {
 
         // Make sure we preserve the existing ID, if it exists (which it should)
         if (m_config.getReport(arrayIndex).hasId()) {
-            report.setId(m_config.getReport(arrayIndex).getId());
+            report.setId(m_config.getReport(arrayIndex).getId().orElse(null));
         }
 
         m_config.setReport(arrayIndex, report);
@@ -315,7 +316,7 @@ public class KSC_PerformanceReportFactory {
     private int getArrayIndex(int index) {
         int i = 0;
         for (Report report : m_config.getReportCollection()) {
-            if (report.getId() == index) {
+            if (report.getId().isPresent() && report.getId().get() == index) {
                 return i;
             }
 

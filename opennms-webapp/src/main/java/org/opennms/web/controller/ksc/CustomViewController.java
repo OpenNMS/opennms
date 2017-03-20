@@ -49,10 +49,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -238,7 +238,7 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);
         
-        if (report.getShowTimespanButton()) {
+        if (report.getShowTimespanButton().orElse(false)) {
             if (overrideTimespan == null || !getKscReportService().getTimeSpans(true).containsKey(overrideTimespan)) {
                 modelAndView.addObject("timeSpan", "none");
             } else {
@@ -250,7 +250,7 @@ public class CustomViewController extends AbstractController implements Initiali
             modelAndView.addObject("timeSpan", null);
         }
 
-        if (report.getShowGraphtypeButton()) {
+        if (report.getShowGraphtypeButton().orElse(false)) {
             LinkedHashMap<String, String> graphTypes = new LinkedHashMap<String, String>();
             graphTypes.put("none", "none");
             for (PrefabGraph graphOption : prefabGraphs) {
@@ -270,7 +270,7 @@ public class CustomViewController extends AbstractController implements Initiali
         
         modelAndView.addObject("showCustomizeButton", ( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole(Authentication.ROLE_READONLY) ) && (request.getRemoteUser() != null));
 
-        if (report.getGraphsPerLine() > 0) {
+        if (report.hasGraphsPerLine() && report.getGraphsPerLine().get() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphsPerLine());
         } else {
             modelAndView.addObject("graphsPerLine", getDefaultGraphsPerLine());

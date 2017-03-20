@@ -219,7 +219,7 @@ public class KscReportEditor implements Serializable {
      */
     public void unloadWorkingReport(KSC_PerformanceReportFactory factory) {
         if (getWorkingReport().hasId()) {
-            factory.setReport(getWorkingReport().getId(), getWorkingReport());
+            factory.setReport(getWorkingReport().getId().get(), getWorkingReport());
         } else {
             factory.addReport(getWorkingReport());
         }

@@ -147,9 +147,10 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
             log("  Checking report %s\n", report.getTitle());
             for (Graph graph : report.getGraphCollection()) {
                 for (SnmpInterface intf : interfacesToMerge) {
-                    if (intf.shouldUpdate(graph.getResourceId())) {
+                    final String resourceId = graph.getResourceId().orElse(null);
+                    if (intf.shouldUpdate(resourceId)) {
                         changed = true;
-                        log("  replacing resource ID %s with %s for %s\n", graph.getResourceId(), intf.getNewResourceId(), graph.getTitle());
+                        log("  replacing resource ID %s with %s for %s\n", resourceId, intf.getNewResourceId(), graph.getTitle());
                         graph.setResourceId(intf.getNewResourceId());
                     }
                 }

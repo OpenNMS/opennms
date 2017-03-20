@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -206,8 +207,8 @@ public class Report implements java.io.Serializable {
      * 
      * @return the value of field 'Graphs_per_line'.
      */
-    public Integer getGraphsPerLine() {
-        return this.graphs_per_line;
+    public Optional<Integer> getGraphsPerLine() {
+        return Optional.ofNullable(this.graphs_per_line);
     }
 
     /**
@@ -215,8 +216,8 @@ public class Report implements java.io.Serializable {
      * 
      * @return the value of field 'Id'.
      */
-    public Integer getId() {
-        return this.id;
+    public Optional<Integer> getId() {
+        return Optional.ofNullable(this.id);
     }
 
     /**
@@ -224,8 +225,8 @@ public class Report implements java.io.Serializable {
      * 
      * @return the value of field 'Show_graphtype_button'.
      */
-    public Boolean getShowGraphtypeButton() {
-        return this.show_graphtype_button;
+    public Optional<Boolean> getShowGraphtypeButton() {
+        return Optional.ofNullable(this.show_graphtype_button);
     }
 
     /**
@@ -233,8 +234,8 @@ public class Report implements java.io.Serializable {
      * 
      * @return the value of field 'Show_timespan_button'.
      */
-    public Boolean getShowTimespanButton() {
-        return this.show_timespan_button;
+    public Optional<Boolean> getShowTimespanButton() {
+        return Optional.ofNullable(this.show_timespan_button);
     }
 
     /**
@@ -451,6 +452,9 @@ public class Report implements java.io.Serializable {
      * @param title the value of field 'title'.
      */
     public void setTitle(final String title) {
+        if (title == null) {
+            throw new IllegalArgumentException("'title' is a required attribute!");
+        }
         this.title = title;
     }
 
