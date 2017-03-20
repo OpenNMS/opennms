@@ -28,11 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-  //---------------------------------/
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
+  import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -46,14 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.xml.eventconf.EventOrdering.EventOrderIndex;
-import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -488,18 +478,6 @@ public class Event implements Serializable, Comparable<Event> {
         return m_parameters.size();
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
     public Iterator<Autoaction> iterateAutoaction() {
         return m_autoactions.iterator();
     }
@@ -526,14 +504,6 @@ public class Event implements Serializable, Comparable<Event> {
 
     public Iterator<Parameter> iterateParameter() {
         return m_parameters.iterator();
-    }
-
-    public void marshal(final Writer out)  throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     public void removeAllAutoaction() {
@@ -817,15 +787,6 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setParameterCollection(final List<Parameter> decodes) {
         setParameterCollection(decodes);
-    }
-
-    public static Event unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Event) Unmarshaller.unmarshal(Event.class, reader);
-    }
-
-    public void validate()
-    throws ValidationException {
-        new Validator().validate(this);
     }
 
 	@Override

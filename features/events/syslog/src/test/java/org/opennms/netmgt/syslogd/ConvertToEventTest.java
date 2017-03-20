@@ -45,8 +45,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -70,13 +68,11 @@ public class ConvertToEventTest {
 
     /**
      * Test method which calls the ConvertToEvent constructor.
-     * 
-     * @throws MarshalException
-     * @throws ValidationException
+     *
      * @throws IOException
      */
     @Test
-    public void testConvertToEvent() throws MarshalException, ValidationException, IOException {
+    public void testConvertToEvent() throws IOException {
 
         InterfaceToNodeCacheDaoImpl.setInstance(new MockInterfaceToNodeCache());
 
@@ -120,7 +116,7 @@ public class ConvertToEventTest {
     }
 
     @Test
-    public void testCiscoEventConversion() throws MarshalException, ValidationException, IOException {
+    public void testCiscoEventConversion() throws IOException {
 
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-cisco-configuration.xml");
         SyslogdConfig config = new SyslogdConfigFactory(stream);
@@ -142,7 +138,7 @@ public class ConvertToEventTest {
     }
 
     @Test
-    public void testNms5984() throws MarshalException, ValidationException, IOException {
+    public void testNms5984() throws IOException {
 
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-nms5984-configuration.xml");
         SyslogdConfig config = new SyslogdConfigFactory(stream);

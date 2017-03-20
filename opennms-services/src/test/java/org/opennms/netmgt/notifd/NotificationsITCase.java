@@ -33,8 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -174,11 +172,11 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return network;
     }
 
-    private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException, IOException {
+    private MockUserManager createUserManager(MockGroupManager groupManager) throws IOException {
         return new MockUserManager(groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "users.xml"));
     }
 
-    private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
+    private MockGroupManager createGroupManager() throws IOException {
         return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "groups.xml"));
     }
     
@@ -215,12 +213,12 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return anticipateNotificationsForRole(subject, textMsg, groupName, startTime.getTime(), interval);
     }
 
-    protected long anticipateNotificationsForRole(String subject, String textMsg, String roleName, long startTime, long interval) throws MarshalException, ValidationException, IOException {
+    protected long anticipateNotificationsForRole(String subject, String textMsg, String roleName, long startTime, long interval) throws IOException {
         String[] users = m_userManager.getUsersScheduledForRole(roleName, new Date(startTime));
         return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
 
-    protected long anticipateNotificationsForUsers(String[] users, String subject, String textMsg, long startTime, long interval) throws IOException, MarshalException, ValidationException {
+    protected long anticipateNotificationsForUsers(String[] users, String subject, String textMsg, long startTime, long interval) throws IOException {
         long expectedTime = startTime;
         for (int i = 0; i < users.length; i++) {
             User user = m_userManager.getUser(users[i]);
@@ -268,7 +266,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return notification;
     }
 
-    protected long computeInterval() throws IOException, MarshalException, ValidationException {
+    protected long computeInterval() throws IOException {
         String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
         return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
     }

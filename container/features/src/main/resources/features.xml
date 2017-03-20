@@ -171,16 +171,6 @@
       <bundle>wrap:mvn:com.zaxxer/HikariCP/${hikaricpVersion}$Bundle-SymbolicName=HikariCP&amp;Bundle-Version=${hikaricpVersion}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
-    <feature name="castor" description="Castor" version="1.1.2.1">
-      <!-- This castor.properties file overrides the default settings for Castor so that it works with JDK5+ -->
-      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.castor-properties/${project.version}</bundle>
-      <bundle dependency="true">wrap:mvn:oro/oro/${oroVersion}</bundle>
-      <!--
-        We must make sure that the Bundle-SymbolicName matches the Fragment-Host of org.opennms.core.castor-properties.
-      -->
-      <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
-    </feature>
-
     <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
       <feature>commons-collections</feature>
 
@@ -422,7 +412,6 @@
       <feature version="[4.0,4.1)">spring</feature>
       <feature version="[4.0,4.1)">spring-orm</feature>
 
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
@@ -467,7 +456,6 @@
       <feature>atomikos</feature>
       <feature>c3p0</feature>
       <feature>hikari-cp</feature>
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>postgresql</feature>
 
@@ -495,7 +483,6 @@
       <feature version="[4.0,4.1)">spring-orm</feature>
       <feature version="[4.0,4.1)">spring-tx</feature>
 
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>commons-lang</feature>
       <feature>dnsjava</feature>
@@ -640,7 +627,6 @@
     </feature>
 
     <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
-      <feature>castor</feature>
       <feature version="${guavaVersion}">guava</feature>
       <feature>opennms-core-ipc-rpc</feature>
 
@@ -655,7 +641,6 @@
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
-      <feature>castor</feature>
       <feature>commons-lang</feature>
       <feature>jaxb</feature>
 
@@ -784,7 +769,6 @@
     </feature>
 
     <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
-      <feature>castor</feature>
       <feature>commons-beanutils</feature>
       <feature>commons-io</feature>
       <feature>fop</feature>

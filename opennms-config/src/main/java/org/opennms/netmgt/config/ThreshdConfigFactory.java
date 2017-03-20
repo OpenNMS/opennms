@@ -135,8 +135,6 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
           * <p>reloadXML</p>
           *
           * @throws java.io.IOException if any.
-          * @throws org.exolab.castor.xml.MarshalException if any.
-          * @throws org.exolab.castor.xml.ValidationException if any.
           */
     @Override
          public void reloadXML() throws IOException {

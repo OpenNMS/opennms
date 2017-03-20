@@ -36,8 +36,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.web.charts.ChartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,10 +108,6 @@ public class PurdyChartServlet extends HttpServlet {
         
         try {
                 ChartUtils.getBarChartPNG(chartName, out);
-        } catch (MarshalException e) {
-            LOG.error("Error marshalling chart-configuration.xml: ",e);
-        } catch (ValidationException e) {
-            LOG.error("Error validating chart-configuration.xml: ",e);
         } catch (IOException e) {
             LOG.error("Error reading chart-configuration.xml: ",e);
         } catch (SQLException e) {

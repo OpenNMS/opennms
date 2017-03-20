@@ -39,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -112,13 +110,11 @@ public abstract class DataSourceFactory {
      * @deprecated This function is no longer necessary for DataSourceFactory initialization
      * 
      * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws ClassNotFoundException
      * @throws PropertyVetoException
      * @throws SQLException
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+    public static synchronized void init() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
     }
 
     /**

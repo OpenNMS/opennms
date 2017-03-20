@@ -39,8 +39,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +134,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         m_cache.clear();
     }
 
-    private SyslogdConfigFactory loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
+    private SyslogdConfigFactory loadSyslogConfiguration(final String configuration) throws IOException {
         try (InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration)) {
             return new SyslogdConfigFactory(stream);
         }

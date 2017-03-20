@@ -723,10 +723,6 @@
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
     </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-    </dependency>
     <!-- dependencies for XML/JSON collector -->
     <dependency>
       <groupId>commons-jxpath</groupId>

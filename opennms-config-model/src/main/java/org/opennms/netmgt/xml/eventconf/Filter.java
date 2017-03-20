@@ -28,23 +28,14 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="filter")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -76,26 +67,6 @@ public class Filter implements Serializable {
         return m_replacement;
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
     public void setEventparm(final String eventparm) {
         m_eventparm = eventparm.intern();
     }
@@ -106,14 +77,6 @@ public class Filter implements Serializable {
 
     public void setReplacement(final String replacement) {
         m_replacement = replacement.intern();
-    }
-
-    public static Filter unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Filter) Unmarshaller.unmarshal(Filter.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 	@Override

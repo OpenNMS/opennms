@@ -39,8 +39,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
@@ -139,7 +137,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         scheduleAutomations();
     }
 
-    private void initializeDataSources() throws MarshalException, ValidationException, IOException, ClassNotFoundException, PropertyVetoException, SQLException {
+    private void initializeDataSources() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
         for (Trigger trigger : getVacuumdConfig().getTriggers()) {
             DataSourceFactory.init(trigger.getDataSource());
         }

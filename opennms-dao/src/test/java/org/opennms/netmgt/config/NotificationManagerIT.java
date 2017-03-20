@@ -35,8 +35,6 @@ import java.io.IOException;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

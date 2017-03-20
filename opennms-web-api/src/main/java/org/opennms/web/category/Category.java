@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -304,11 +302,9 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @XmlElement(name="outage-class")
-    public String getOutageClass() throws IOException, MarshalException, ValidationException {
+    public String getOutageClass() throws IOException {
         if (m_lastUpdated == null) {
             return "Indeterminate";
         } else {
@@ -321,11 +317,9 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @XmlElement(name="availability-class")
-    public String getAvailClass() throws IOException, MarshalException, ValidationException {
+    public String getAvailClass() throws IOException {
         if (m_lastUpdated == null) {
             return "Indeterminate";
         } else {

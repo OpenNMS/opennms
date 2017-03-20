@@ -32,8 +32,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.jaxb.SiteStatusViewsFactory;
 
@@ -53,7 +51,7 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 		super.tearDown();
 	}
 	
-	public void testGetName() throws MarshalException, ValidationException, IOException {
+	public void testGetName() throws IOException {
 		String viewName = "default";
 		View view = m_factory.getView(viewName);
 		assertNotNull(view);

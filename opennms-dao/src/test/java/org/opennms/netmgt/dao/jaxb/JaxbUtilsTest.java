@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -43,20 +42,19 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JaxbUtilsTest {
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtilsTest.class);
@@ -137,59 +135,6 @@ public class JaxbUtilsTest {
 		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
 		assertEquals(1300739661000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
-
-    /**
-     * This test can be used to compare the performance of JAXB vs. Castor in XML unmarshalling speed.
-     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
-     * roughly 30% faster than Castor.
-     */
-    @Test
-    @Ignore
-    public void testUnmarshalLogCastorVersusJaxb() throws Exception {
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            JaxbUtils.unmarshal(Log.class, m_logXml);
-        }
-        long jaxbTime = System.currentTimeMillis() - startTime;
-
-        final byte[] logBytes = m_logXml.getBytes();
-        startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(logBytes));
-        }
-        long castorTime = System.currentTimeMillis() - startTime;
-        
-        System.out.printf("JAXB unmarshal: %dms, Castor unmarshal: %dms\n", jaxbTime, castorTime);
-    }
-    
-    /**
-     * This test can be used to compare the performance of JAXB vs. Castor in XML marshalling speed.
-     * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
-     * roughly 8 times faster than Castor.
-     */
-    @Test
-    @Ignore
-    public void testMarshalLogCastorVersusJaxb() throws Exception {
-        Log log = JaxbUtils.unmarshal(Log.class, m_logXml);
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            JaxbUtils.marshal(log);
-            // If you want to see the marshalled XML output...
-            //System.out.println(JaxbUtils.marshal(log));
-        }
-        long jaxbTime = System.currentTimeMillis() - startTime;
-
-        log = CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(m_logXml.getBytes()));
-        startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            CastorUtils.marshalWithTranslatedExceptions(log, new StringWriter());
-            // If you want to see the marshalled XML output...
-            //CastorUtils.marshalWithTranslatedExceptions(log, new OutputStreamWriter(System.out));
-        }
-        long castorTime = System.currentTimeMillis() - startTime;
-        
-        System.out.printf("JAXB marshal: %dms, Castor marshal: %dms\n", jaxbTime, castorTime);
-    }
 
 	@Test
 	public void testUnmarshalLogNoNamespace() throws Exception {
