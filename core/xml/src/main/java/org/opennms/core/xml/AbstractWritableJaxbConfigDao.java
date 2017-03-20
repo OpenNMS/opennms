@@ -79,11 +79,7 @@ public abstract class AbstractWritableJaxbConfigDao<K,V> extends AbstractJaxbCon
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
      * @throws java.io.IOException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
      *             if any.
      */
     public void saveCurrent() throws IOException {

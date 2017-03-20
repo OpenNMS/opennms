@@ -1,5 +1,0 @@
-#Wed Apr 27 16:09:14 EDT 2011
-org.opennms.netmgt.config.snmp.Definition=org.opennms.netmgt.config.snmp.descriptors.DefinitionDescriptor
-org.opennms.netmgt.config.snmp.Configuration=org.opennms.netmgt.config.snmp.descriptors.ConfigurationDescriptor
-org.opennms.netmgt.config.snmp.SnmpConfig=org.opennms.netmgt.config.snmp.descriptors.SnmpConfigDescriptor
-org.opennms.netmgt.config.snmp.Range=org.opennms.netmgt.config.snmp.descriptors.RangeDescriptor

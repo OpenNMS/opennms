@@ -1,7 +1,0 @@
-#Thu Mar 09 14:40:08 EST 2017
-org.opennms.netmgt.config.siteStatusViews.RowDef=org.opennms.netmgt.config.siteStatusViews.descriptors.RowDefDescriptor
-org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration=org.opennms.netmgt.config.siteStatusViews.descriptors.SiteStatusViewConfigurationDescriptor
-org.opennms.netmgt.config.siteStatusViews.Rows=org.opennms.netmgt.config.siteStatusViews.descriptors.RowsDescriptor
-org.opennms.netmgt.config.siteStatusViews.Category=org.opennms.netmgt.config.siteStatusViews.descriptors.CategoryDescriptor
-org.opennms.netmgt.config.siteStatusViews.View=org.opennms.netmgt.config.siteStatusViews.descriptors.ViewDescriptor
-org.opennms.netmgt.config.siteStatusViews.Views=org.opennms.netmgt.config.siteStatusViews.descriptors.ViewsDescriptor

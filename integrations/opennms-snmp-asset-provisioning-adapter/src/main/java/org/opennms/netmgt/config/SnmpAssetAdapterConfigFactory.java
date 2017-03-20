@@ -37,8 +37,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +52,7 @@ public class SnmpAssetAdapterConfigFactory {
 	 */
 	private final SnmpAssetAdapterConfigManager m_config;
 
-	public SnmpAssetAdapterConfigFactory() throws MarshalException, ValidationException, IOException {
+	public SnmpAssetAdapterConfigFactory() throws IOException {
 	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
 		LOG.debug("init: config file path: {}", cfgFile.getPath());
 		final InputStream reader = new FileInputStream(cfgFile);
@@ -67,15 +65,9 @@ public class SnmpAssetAdapterConfigFactory {
 	 *
 	 * @exception java.io.IOException
 	 *                Thrown if the specified config file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException
-	 *                Thrown if the file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException
-	 *                Thrown if the contents do not match the required schema.
 	 * @throws java.io.IOException if any.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 */
-	public void reload() throws IOException, MarshalException, ValidationException {
+	public void reload() throws IOException {
 		m_config.update();
 	}
 

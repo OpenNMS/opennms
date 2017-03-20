@@ -1,7 +1,0 @@
-#Fri Mar 10 11:48:53 EST 2017
-org.opennms.netmgt.config.reporting.DefaultTime=org.opennms.netmgt.config.reporting.descriptors.DefaultTimeDescriptor
-org.opennms.netmgt.config.reporting.StringParm=org.opennms.netmgt.config.reporting.descriptors.StringParmDescriptor
-org.opennms.netmgt.config.reporting.DateParm=org.opennms.netmgt.config.reporting.descriptors.DateParmDescriptor
-org.opennms.netmgt.config.reporting.Parameters=org.opennms.netmgt.config.reporting.descriptors.ParametersDescriptor
-org.opennms.netmgt.config.reporting.Time=org.opennms.netmgt.config.reporting.descriptors.TimeDescriptor
-org.opennms.netmgt.config.reporting.IntParm=org.opennms.netmgt.config.reporting.descriptors.IntParmDescriptor

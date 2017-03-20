@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -62,14 +60,12 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         EnhancedLinkdConfig config = new EnhancedLinkdConfigManager() {
             
             @Override
-            public void save() throws MarshalException, IOException,
-                    ValidationException {
+            public void save() throws IOException {
                 
             }
             
             @Override
-            public void reload() throws IOException, MarshalException,
-                    ValidationException {
+            public void reload() throws IOException {
                 m_config = new EnlinkdConfiguration();
                 m_config.setInitialSleepTime(1000L);
                 m_config.setRescanInterval(10000L);

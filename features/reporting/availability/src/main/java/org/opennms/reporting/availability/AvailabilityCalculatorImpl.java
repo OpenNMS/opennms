@@ -40,8 +40,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.Marshaller;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.slf4j.Logger;
@@ -317,9 +317,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                 public Void call() throws Exception {
                     try {
                         Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
-                        Marshaller marshaller = new Marshaller(fileWriter);
-                        marshaller.setSuppressNamespaces(true);
-                        marshaller.marshal(m_report);
+                        JaxbUtils.marshal(m_report, fileWriter);
                         LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
                         fileWriter.close();
                     } catch (final Exception e) {
@@ -342,9 +340,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                 public Void call() throws Exception {
                     try {
                         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-                        Marshaller marshaller = new Marshaller(writer);
-                        marshaller.setSuppressNamespaces(true);
-                        marshaller.marshal(m_report);
+                        JaxbUtils.marshal(m_report, writer);
                         LOG.debug("The xml marshalled from the castor classes has been written to the output stream");
                         writer.flush();
                     } catch (final Exception e) {

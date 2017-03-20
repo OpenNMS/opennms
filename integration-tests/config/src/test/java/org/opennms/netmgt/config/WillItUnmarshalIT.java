@@ -38,13 +38,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
-import org.exolab.castor.util.LocalConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
@@ -142,7 +139,6 @@ import junit.framework.AssertionFailedError;
  */
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalIT {
-    private static final String CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY = "org.exolab.castor.xml.lenient.sequence.order";
 
     /**
      * Possible implementations for resource loading.
@@ -158,8 +154,7 @@ public class WillItUnmarshalIT {
      * Possible implementation used for unmarshalling.
      */
     public static enum Impl {
-        JAXB,
-        CASTOR
+        JAXB
     }
 
     /**
@@ -193,7 +188,7 @@ public class WillItUnmarshalIT {
 
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.JAXB);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -202,12 +197,12 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, Impl.JAXB);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, Impl.JAXB);
-        addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, Impl.JAXB);
+        addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.JAXB);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
-        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.JAXB);
@@ -256,7 +251,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.JAXB);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
@@ -305,10 +300,6 @@ public class WillItUnmarshalIT {
                     file.getPath(),
                     Events.class,
                     Impl.JAXB);
-            addFile(Source.ABSOLUTE,
-                    file.getPath(),
-                    Events.class,
-                    Impl.CASTOR);
         }
 
         // Add all datacollection group files
@@ -381,7 +372,6 @@ public class WillItUnmarshalIT {
     private final String file;
     private final Class<?> clazz;
     private final Impl impl;
-    private final boolean lenient;
     private final String exception;
 
     public WillItUnmarshalIT(final Source source,
@@ -394,24 +384,12 @@ public class WillItUnmarshalIT {
         this.file = file;
         this.clazz = clazz;
         this.impl = impl;
-        this.lenient = lenient;
         this.exception = exception;
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        // Reload castor properties every time
-        LocalConfiguration.getInstance().getProperties().clear();
-        LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
     }
 
     @Test
     public void testUnmarshalling() {
         // Be conservative about what we ship, so don't be lenient
-        if (this.lenient == false) {
-            LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-        }
-
         final Resource resource = this.createResource();
 
         // Assert that resource is valied
@@ -421,10 +399,6 @@ public class WillItUnmarshalIT {
         Object result = null;
         try {
             switch (impl) {
-            case CASTOR:
-                result = CastorUtils.unmarshal(this.clazz, resource);
-                break;
-
             case JAXB:
                 result = JaxbUtils.unmarshal(this.clazz, resource);
                 break;

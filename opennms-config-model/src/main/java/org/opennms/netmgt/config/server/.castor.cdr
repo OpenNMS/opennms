@@ -1,2 +1,0 @@
-#Tue Jan 14 13:23:47 EST 2014
-org.opennms.netmgt.config.server.LocalServer=org.opennms.netmgt.config.server.descriptors.LocalServerDescriptor

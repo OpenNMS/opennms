@@ -57,8 +57,6 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * <p>Constructor for LinkdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {

@@ -34,8 +34,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +47,10 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     /**
      * @param stream A configuration file as an {@link InputStream}.
      * @param dsName The data source's name.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
      */
-    protected BaseConnectionFactory(final JdbcDataSource ds) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    protected BaseConnectionFactory(final JdbcDataSource ds) throws PropertyVetoException, SQLException {
         initializePool(ds);
     }
 

@@ -35,7 +35,7 @@ import java.util.ListIterator;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
@@ -137,7 +137,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<Micr
         FileWriter writer = null;
         try {
             writer = new FileWriter(file);
-            CastorUtils.marshalWithTranslatedExceptions(config, writer);
+            JaxbUtils.marshal(config, writer);
         } finally {
             IOUtils.closeQuietly(writer);
         }
