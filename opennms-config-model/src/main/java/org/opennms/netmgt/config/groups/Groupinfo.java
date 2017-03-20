@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.groups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,11 +54,11 @@ public class Groupinfo implements Serializable {
 
     @XmlElementWrapper(name = "groups")
     @XmlElement(name = "group")
-    private List<Group> m_groups = new ArrayList<>();
+    private List<Group> m_groups;
 
     @XmlElementWrapper(name = "roles")
     @XmlElement(name = "role")
-    private List<Role> m_roles = new ArrayList<>();
+    private List<Role> m_roles;
 
     public Groupinfo() {
     }
@@ -71,7 +72,7 @@ public class Groupinfo implements Serializable {
     }
 
     public List<Group> getGroups() {
-        return m_groups;
+        return m_groups == null? Collections.emptyList() : m_groups;
     }
 
     public void setGroups(final List<Group> groups) {
@@ -79,15 +80,18 @@ public class Groupinfo implements Serializable {
     }
 
     public void addGroup(final Group group) {
+        if (m_groups == null && group != null) {
+            m_groups = new ArrayList<>();
+        }
         m_groups.add(group);
     }
 
     public List<Role> getRoles() {
-        return m_roles;
+        return m_roles == null? Collections.emptyList() : m_roles;
     }
 
     public void setRoles(final List<Role> roles) {
-        m_roles = roles == null? new ArrayList<>() : roles;
+        m_roles = roles;
     }
 
     @Override
