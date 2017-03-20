@@ -115,6 +115,31 @@ public class EventBuilder {
         setTime(now);
     }
 
+    public Date currentEventTime() {
+        if (m_event.getTime() == null && calendarBuilder != null) {
+            Calendar calendar = calendarBuilder.build();
+
+            // TODO: If some Calendar.Builder fields have not been set,
+            // intelligently set them so that we generate a observed 
+            // timestamp that is less than or slightly greater than 
+            // System.currentTimeMillis() (due to clock skew). For instance,
+            // around midnight on Dec 31, 2017, we do not want to generate
+            // timestamps of Dec 31, 2018 at the instant that:
+            // 
+            // Calendar.getInstance().get(YEAR)
+            // 
+            // starts returning 2018.
+            //
+            if (!hasCalendarBuilderYear) {
+                calendar.set(YEAR, Calendar.getInstance().get(YEAR));
+            }
+
+            return calendar.getTime();
+        } else {
+            return m_event.getTime();
+        }
+    }
+
     /**
      * <p>getEvent</p>
      *
