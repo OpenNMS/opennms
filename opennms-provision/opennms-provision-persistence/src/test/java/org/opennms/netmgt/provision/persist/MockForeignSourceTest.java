@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -65,5 +66,10 @@ public class MockForeignSourceTest {
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", "imported:", foreignSources.get(0).getName());
         assertEquals("get() returns the foreign source", foreignSource, m_foreignSourceRepository.getForeignSource("imported:"));
+    }
+
+    @Test
+    public void testDefaultForeignSource() {
+        Assert.assertNotNull(m_foreignSourceRepository.getDefaultForeignSource());
     }
 }

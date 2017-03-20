@@ -94,7 +94,7 @@ public class MockForeignSourceService implements ForeignSourceService {
 
     @Override
     public ForeignSourceEntity getDefaultForeignSource() {
-        final ForeignSourceEntity fs = getForeignSource("default");
+        final ForeignSourceEntity fs = m_foreignSources.get("default");
         if (fs == null) {
             try {
                 ForeignSource defaultFs = JAXB.unmarshal(new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml").getInputStream(), ForeignSource.class);
