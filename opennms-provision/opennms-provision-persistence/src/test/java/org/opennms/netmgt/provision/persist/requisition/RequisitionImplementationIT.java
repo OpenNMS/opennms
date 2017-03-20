@@ -54,16 +54,32 @@ public class RequisitionImplementationIT implements InitializingBean, Applicatio
         LOG.info("Test context prepared.");
     }
 
-    interface RepositoryTest<T> {
-        void test(T t);
+    interface RepositoryTest {
+        void test(RequisitionService rs);
     }
 
-    protected <T> void runTest(final RepositoryTest<RequisitionService> rt) {
+    protected void runTest(final RepositoryTest rt) {
+        runTest(rt, null);
+    }
+
+    private void runTest(final RepositoryTest rt, final Class<? extends Exception> expectedException) {
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final RequisitionService fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
-            rt.test(fsr);
+            try {
+                rt.test(fsr);
+            } catch (Exception ex) {
+                if (expectedException != null) {
+                    LOG.debug("expected: {}, got: {}", expectedException, ex);
+                    if (!ex.getClass().getCanonicalName().equals(expectedException.getCanonicalName())) {
+                        throw new RuntimeException("Expected throwable " + expectedException.getName() + " when running test against " + bundleName + ", but got " + ex.getClass() + " instead!", ex);
+                    }
+                } else {
+                    // we didn't expect a failure, but got one... rethrow it
+                    throw ex;
+                }
+            }
         });
     }
 
@@ -106,7 +122,8 @@ public class RequisitionImplementationIT implements InitializingBean, Applicatio
                     final RequisitionEntity req = new RequisitionEntity("foo/bar");
                     req.setForeignSource("foo/bar");
                     fsr.saveOrUpdateRequisition(req);
-                }
+                },
+                IllegalStateException.class
         );
     }
 

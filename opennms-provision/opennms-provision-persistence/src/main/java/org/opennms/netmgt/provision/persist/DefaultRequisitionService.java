@@ -37,6 +37,7 @@ import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
+import org.opennms.netmgt.model.requisition.RequisitionNodeEntity;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,9 +114,15 @@ public class DefaultRequisitionService implements RequisitionService {
     }
 
     private void validate(RequisitionEntity requisition) {
-        // Originally the validate method was used to ensure that the requisition names and foreign ids do not contain "/"
-        // in their names/ids. Now this limitation does not apply anymore (due to database persistence).
-        // The validate method was still kept and can be used to add custom validations, e.g. Bean-Validation
-        // in the future.
+        final String foreignSource = requisition.getForeignSource();
+        if (foreignSource.contains("/")) {
+            throw new IllegalStateException("Foreign Source (" + foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        for (final RequisitionNodeEntity node : requisition.getNodes()) {
+            final String foreignId = node.getForeignId();
+            if (foreignId.contains("/")) {
+                throw new IllegalStateException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " contains invalid characters. '/' is forbidden.)");
+            }
+        }
     }
 }

@@ -35,12 +35,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 
-import javax.xml.bind.JAXB;
 import javax.xml.bind.ValidationException;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -85,7 +85,7 @@ public class ResourceRequisitionProvider implements RequisitionProvider {
 
     @Override
     public RequisitionEntity getRequisition() throws IOException {
-        Requisition requisition = JAXB.unmarshal(this.resource.getInputStream(), Requisition.class);
+        Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         try {
             requisition.validate();
         } catch (ValidationException e) {

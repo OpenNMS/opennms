@@ -80,13 +80,29 @@ public class ForeignSourceImplementationIT implements InitializingBean, Applicat
         void test(T t);
     }
 
-    protected <T> void runTest(final RepositoryTest<ForeignSourceService> rt) {
+    protected void runTest(final RepositoryTest<ForeignSourceService> rt) {
+        runTest(rt, null);
+    }
+
+    private void runTest(final RepositoryTest<ForeignSourceService> rt, final Class<? extends Exception> expectedException) {
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final ForeignSourceService fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
             fsr.resetDefaultForeignSource();
-            rt.test(fsr);
+            try {
+                rt.test(fsr);
+            } catch (Exception ex) {
+                if (expectedException != null) {
+                    LOG.debug("expected: {}, got: {}", expectedException, ex);
+                    if (!ex.getClass().getCanonicalName().equals(expectedException.getCanonicalName())) {
+                        throw new RuntimeException("Expected throwable " + expectedException.getName() + " when running test against " + bundleName + ", but got " + ex.getClass() + " instead!", ex);
+                    }
+                } else {
+                    // we didn't expect a failure, but got one... rethrow it
+                    throw ex;
+                }
+            }
         });
     }
 
@@ -128,7 +144,8 @@ public class ForeignSourceImplementationIT implements InitializingBean, Applicat
                     final ForeignSourceEntity saved = fsr.getForeignSource("foo/bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
-                }
+                },
+                IllegalStateException.class
         );
     }
 
