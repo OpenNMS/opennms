@@ -122,7 +122,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
 
         List<JavamailProperty> propertyList = new ArrayList<JavamailProperty>();
         if (readTest != null) {
-            propertyList = readTest.getJavamailPropertyCollection();
+            propertyList = readTest.getJavamailProperties();
         }
 
         final SendmailTest sendTest = mailParms.getSendTest();

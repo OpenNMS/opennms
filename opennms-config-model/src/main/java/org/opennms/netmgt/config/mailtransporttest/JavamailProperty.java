@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.mailtransporttest;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="javamail-property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JavamailProperty implements Serializable {
-    private static final long serialVersionUID = -3716889757544640520L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Field m_name.
@@ -62,82 +63,50 @@ public class JavamailProperty implements Serializable {
     }
 
     public JavamailProperty(final String name, final String value) {
+        if (name == null || value == null) {
+            throw new IllegalArgumentException("'name' and 'value' are required attributes!");
+        }
         m_name = name;
         m_value = value;
     }
 
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
         return m_name;
     }
 
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
+    public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
+        m_name = name;
+    }
+
     public String getValue() {
         return m_value;
     }
 
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
     public void setValue(final String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("'value' is a required attribute!");
+        }
         m_value = value;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
-        return result;
+        return Objects.hash(m_name, m_value);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+        if (this == obj) return true;
+
+        if (obj instanceof JavamailProperty) {
+            final JavamailProperty that = (JavamailProperty) obj;
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_value, that.m_value);
         }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof JavamailProperty)) {
-            return false;
-        }
-        final JavamailProperty other = (JavamailProperty) obj;
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        if (m_value == null) {
-            if (other.m_value != null) {
-                return false;
-            }
-        } else if (!m_value.equals(other.m_value)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

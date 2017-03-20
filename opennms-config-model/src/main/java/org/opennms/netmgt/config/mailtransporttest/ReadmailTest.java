@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,9 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="readmail-test")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReadmailTest implements Serializable {
-    private static final long serialVersionUID = -737845064838033210L;
-
-    private static final JavamailProperty[] EMPTY_LIST_OF_JAVAMAIL_PROPERTIES = new JavamailProperty[0];
+    private static final long serialVersionUID = 1L;
 
     /**
      * Field m_debug.
@@ -106,7 +106,7 @@ public class ReadmailTest implements Serializable {
      *  
      *  
      */
-    @XmlElement(name="user-auth", required=true)
+    @XmlElement(name="user-auth")
     private UserAuth m_userAuth;
 
     public ReadmailTest() {
@@ -296,51 +296,14 @@ public class ReadmailTest implements Serializable {
     }
 
     /**
-     * Method getJavamailProperty.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * JavamailProperty
-     * at the given index
-     */
-    public JavamailProperty getJavamailProperty(final int index) throws IndexOutOfBoundsException {
-        return m_javamailProperties.get(index);
-    }
-
-    /**
-     * Method getJavamailProperty.Returns the contents of the
-     * collection in an Array.  <p>Note:  Just in case the
-     * collection contents are changing in another thread, we pass
-     * a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of
-     * exactly the correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public JavamailProperty[] getJavamailProperty() {
-        return (JavamailProperty[]) m_javamailProperties.toArray(EMPTY_LIST_OF_JAVAMAIL_PROPERTIES);
-    }
-
-    /**
      * Method getJavamailPropertyCollection.Returns a reference to
      * 'm_javamailProperties'. No type checking is performed on
      * any modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
-    public List<JavamailProperty> getJavamailPropertyCollection() {
+    public List<JavamailProperty> getJavamailProperties() {
         return new ArrayList<JavamailProperty>(m_javamailProperties);
-    }
-
-    /**
-     * Method getJavamailPropertyCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getJavamailPropertyCount() {
-        return m_javamailProperties.size();
     }
 
     /**
@@ -385,74 +348,13 @@ public class ReadmailTest implements Serializable {
      * 
      * @return the value of field 'UserAuth'.
      */
-    public UserAuth getUserAuth() {
-        return m_userAuth;
+    public Optional<UserAuth> getUserAuth() {
+        return Optional.ofNullable(m_userAuth);
     }
 
-    /**
-     * Method hasAttemptInterval.
-     * 
-     * @return true if at least one AttemptInterval has been added
-     */
-    public boolean hasAttemptInterval() {
-        return m_attemptInterval != null;
-    }
-
-    /**
-     * Method hasDebug.
-     * 
-     * @return true if at least one Debug has been added
-     */
-    public boolean hasDebug() {
-        return m_debug != null;
-    }
-
-    /**
-     * Method hasDeleteAllMail.
-     * 
-     * @return true if at least one DeleteAllMail has been added
-     */
-    public boolean hasDeleteAllMail() {
-        return m_deleteAllMail != null;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
+    @Override
     public int hashCode() {
-        int result = 17;
-        
-        if (m_debug != null) {
-            result = 37 * result + m_debug.hashCode();
-         }
-        if (m_mailFolder != null) {
-           result = 37 * result + m_mailFolder.hashCode();
-        }
-        if (m_subjectMatch != null) {
-           result = 37 * result + m_subjectMatch.hashCode();
-        }
-        if (m_attemptInterval != null) {
-           result = 37 * result + m_attemptInterval.hashCode();
-        }
-        if (m_deleteAllMail != null) {
-           result = 37 * result + m_deleteAllMail.hashCode();
-        }
-        if (m_javamailProperties != null) {
-           result = 37 * result + m_javamailProperties.hashCode();
-        }
-        if (m_readmailHost != null) {
-           result = 37 * result + m_readmailHost.hashCode();
-        }
-        if (m_userAuth != null) {
-           result = 37 * result + m_userAuth.hashCode();
-        }
-        
-        return result;
+        return Objects.hash(m_debug, m_mailFolder, m_subjectMatch, m_attemptInterval, m_deleteAllMail, m_javamailProperties, m_readmailHost, m_userAuth);
     }
 
     /**
@@ -484,32 +386,6 @@ public class ReadmailTest implements Serializable {
     }
 
     /**
-     */
-    public void removeAllJavamailProperty() {
-        m_javamailProperties.clear();
-    }
-
-    /**
-     * Method removeJavamailProperty.
-     * 
-     * @param javamailProperty
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeJavamailProperty(final JavamailProperty javamailProperty) {
-        return m_javamailProperties.remove(javamailProperty);
-    }
-
-    /**
-     * Method removeJavamailPropertyAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public JavamailProperty removeJavamailPropertyAt(final int index) {
-        return m_javamailProperties.remove(index);
-    }
-
-    /**
      * Sets the value of field 'attemptInterval'.
      * 
      * @param attemptInterval the value of field 'attemptInterval'.
@@ -537,51 +413,18 @@ public class ReadmailTest implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param javamailProperty
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void setJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
-        m_javamailProperties.set(index, javamailProperty);
-    }
-
-    /**
-     * 
-     * 
-     * @param javamailProperties
-     */
-    public void setJavamailProperty(final JavamailProperty[] javamailProperties) {
-        m_javamailProperties.clear();
-        for (final JavamailProperty prop : javamailProperties) {
-            m_javamailProperties.add(prop);
-        }
-    }
-
-    /**
-     * Sets the value of 'm_javamailProperties' by copying the
-     * given Vector. All elements will be checked for type safety.
-     * 
-     * @param javamailProperties the Vector to copy.
-     */
-    public void setJavamailProperty(final List<JavamailProperty> javamailProperties) {
-        if (javamailProperties != m_javamailProperties) {
-            m_javamailProperties.clear();
-            m_javamailProperties.addAll(javamailProperties);
-        }
-    }
-
-    /**
      * Sets the value of 'm_javamailProperties' by setting it to
      * the given Vector. No type checking is performed.
      * @deprecated
      * 
      * @param javamailProperties the Vector to set.
      */
-    public void setJavamailPropertyCollection(final List<JavamailProperty> javamailProperties) {
-        m_javamailProperties = new ArrayList<JavamailProperty>(javamailProperties);
+    public void setJavamailProperties(final List<JavamailProperty> javamailProperties) {
+        if (javamailProperties == null) {
+            m_javamailProperties.clear();
+        } else {
+            m_javamailProperties = new ArrayList<>(javamailProperties);
+        }
     }
 
     /**
@@ -605,6 +448,9 @@ public class ReadmailTest implements Serializable {
      * @param readmailHost the value of field 'readmailHost'.
      */
     public void setReadmailHost(final ReadmailHost readmailHost) {
+        if (readmailHost == null) {
+            throw new IllegalArgumentException("'readmail-host' is a required element!");
+        }
         m_readmailHost = readmailHost;
     }
 

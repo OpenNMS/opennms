@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,202 +44,66 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="readmail-protocol")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReadmailProtocol implements Serializable {
-    private static final long serialVersionUID = 8023143379589483011L;
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Field m_transport.
-     */
     @XmlAttribute(name="transport")
     private String m_transport;
 
-    /**
-     * Field m_sslEnable.
-     */
     @XmlAttribute(name="ssl-enable")
     private Boolean m_sslEnable;
 
-    /**
-     * Field m_startTls.
-     */
     @XmlAttribute(name="start-tls")
-    private Boolean m_startTls;
+    private Boolean m_startTLS;
 
     public ReadmailProtocol() {
-        super();
     }
 
     public ReadmailProtocol(final String transport, final Boolean sslEnable, final Boolean startTls) {
-        super();
         m_transport = transport;
         m_sslEnable = sslEnable;
-        m_startTls = startTls;
+        m_startTLS = startTls;
     }
 
-    public void deleteSslEnable() {
-        m_sslEnable = null;
-    }
-
-    public void deleteStartTls() {
-        m_startTls = null;
-    }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj ) return true;
-        
-        if (obj instanceof ReadmailProtocol) {
-            final ReadmailProtocol temp = (ReadmailProtocol)obj;
-            if (m_transport != null) {
-                if (temp.m_transport == null) {
-                    return false;
-                } else if (!(m_transport.equals(temp.m_transport))) {
-                    return false;
-                }
-            } else if (temp.m_transport != null) {
-                return false;
-            }
-            if (m_sslEnable != null) {
-                if (temp.m_sslEnable == null) {
-                    return false;
-                } else if (!(m_sslEnable.equals(temp.m_sslEnable))) {
-                    return false;
-                }
-            } else if (temp.m_sslEnable != null) {
-                return false;
-            }
-            if (m_startTls != null) {
-                if (temp.m_startTls == null) {
-                    return false;
-                } else if (!(m_startTls.equals(temp.m_startTls))) {
-                    return false;
-                }
-            } else if (temp.m_startTls != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public Boolean getSslEnable() {
-        return m_sslEnable == null? false : m_sslEnable;
-    }
-
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public Boolean getStartTls() {
-        return m_startTls == null? false : m_startTls;
-    }
-
-    /**
-     * Returns the value of field 'transport'.
-     * 
-     * @return the value of field 'Transport'.
-     */
     public String getTransport() {
         return m_transport == null? "pop3" : m_transport;
     }
 
-    /**
-     * Method hasSslEnable.
-     * 
-     * @return true if at least one SslEnable has been added
-     */
-    public boolean hasSslEnable() {
-        return m_sslEnable != null;
+    public void setTransport(final String transport) {
+        m_transport = transport;
     }
 
-    /**
-     * Method hasStartTls.
-     * 
-     * @return true if at least one StartTls has been added
-     */
-    public boolean hasStartTls() {
-        return m_startTls != null;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        int result = 17;
-        
-        if (m_transport != null) {
-            result = 37 * result + m_transport.hashCode();
-         }
-        if (m_sslEnable != null) {
-            result = 37 * result + m_sslEnable.hashCode();
-         }
-        if (m_startTls != null) {
-            result = 37 * result + m_startTls.hashCode();
-         }
-        
-        return result;
-    }
-
-    /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public Boolean isSslEnable() {
+    public Boolean isSslEnabled() {
         return m_sslEnable == null? false : m_sslEnable;
     }
 
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public Boolean isStartTls() {
-        return m_startTls == null? false : m_startTls;
-    }
-
-    /**
-     * Sets the value of field 'sslEnable'.
-     * 
-     * @param sslEnable the value of field 'sslEnable'.
-     */
-    public void setSslEnable(final Boolean sslEnable) {
+    public void setSslEnabled(final Boolean sslEnable) {
         m_sslEnable = sslEnable;
     }
 
-    /**
-     * Sets the value of field 'startTls'.
-     * 
-     * @param startTls the value of field 'startTls'.
-     */
-    public void setStartTls(final Boolean startTls) {
-        m_startTls = startTls;
+    public Boolean shouldStartTLS() {
+        return m_startTLS == null? false : m_startTLS;
     }
 
-    /**
-     * Sets the value of field 'transport'.
-     * 
-     * @param transport the value of field 'transport'.
-     */
-    public void setTransport(final String transport) {
-        m_transport = transport;
+    public void setStartTLS(final Boolean startTLS) {
+        m_startTLS = startTLS;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_transport, m_sslEnable, m_startTLS);
+    }
+
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) return true;
+
+        if (obj instanceof ReadmailProtocol) {
+            final ReadmailProtocol that = (ReadmailProtocol)obj;
+            return Objects.equals(this.m_transport, that.m_transport) &&
+                    Objects.equals(this.m_sslEnable, that.m_sslEnable) &&
+                    Objects.equals(this.m_startTLS, that.m_startTLS);
+        }
+        return false;
     }
 
 }

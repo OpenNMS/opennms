@@ -30,10 +30,9 @@ package org.opennms.netmgt.config.mailtransporttest;
 
   import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -55,9 +54,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="sendmail-test")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SendmailTest implements Serializable {
-    private static final long serialVersionUID = 8076651227806492951L;
-
-    private static final JavamailProperty[] EMPTY_LIST_OF_JAVAMAIL_PROPERTIES = new JavamailProperty[0];
+    private static final long serialVersionUID = 1L;
 
     /**
      * Field m_debug.
@@ -99,7 +96,7 @@ public class SendmailTest implements Serializable {
      *  
      *  
      */
-    @XmlElement(name="sendmail-host")
+    @XmlElement(name="sendmail-host", required = true)
     private SendmailHost m_sendmailHost;
 
     /**
@@ -108,7 +105,7 @@ public class SendmailTest implements Serializable {
      *  
      *  
      */
-    @XmlElement(name="sendmail-protocol")
+    @XmlElement(name="sendmail-protocol", required = true)
     private SendmailProtocol m_sendmailProtocol;
 
     /**
@@ -118,7 +115,7 @@ public class SendmailTest implements Serializable {
      *  
      *  
      */
-    @XmlElement(name="sendmail-message")
+    @XmlElement(name="sendmail-message", required = true)
     private SendmailMessage m_sendmailMessage;
 
     /**
@@ -133,9 +130,9 @@ public class SendmailTest implements Serializable {
         super();
     }
 
-    public SendmailTest(final Long attemptInternal, final Boolean debug, final Boolean useAuthentication, final Boolean useJmta) {
+    public SendmailTest(final Long attemptInterval, final Boolean debug, final Boolean useAuthentication, final Boolean useJmta) {
         super();
-        m_attemptInterval = attemptInternal;
+        m_attemptInterval = attemptInterval;
         m_debug = debug;
         m_useAuthentication = useAuthentication;
         m_useJmta = useJmta;
@@ -150,18 +147,6 @@ public class SendmailTest implements Serializable {
      */
     public void addJavamailProperty(final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
         m_javamailProperties.add(javamailProperty);
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param javamailProperty
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
-        m_javamailProperties.add(index, javamailProperty);
     }
 
     public void addJavamailProperty(final String name, final String value) {
@@ -185,16 +170,6 @@ public class SendmailTest implements Serializable {
     }
 
     /**
-     * Method enumerateJavamailProperty.
-     * 
-     * @return an Enumeration over all possible elements of this
-     * collection
-     */
-    public Enumeration<JavamailProperty> enumerateJavamailProperty() {
-        return Collections.enumeration(m_javamailProperties);
-    }
-
-    /**
      * Overrides the Object.equals method.
      * 
      * @param obj
@@ -205,90 +180,16 @@ public class SendmailTest implements Serializable {
         if ( this == obj ) return true;
         
         if (obj instanceof SendmailTest) {
-            final SendmailTest temp = (SendmailTest)obj;
-
-            if (m_debug != null) {
-                if (temp.m_debug == null) {
-                    return false;
-                } else if (!(m_debug.equals(temp.m_debug))) {
-                    return false;
-                }
-            } else if (temp.m_debug != null) {
-                return false;
-            }
-            if (m_useAuthentication != null) {
-                if (temp.m_useAuthentication == null) {
-                    return false;
-                } else if (!(m_useAuthentication.equals(temp.m_useAuthentication))) {
-                    return false;
-                }
-            } else if (temp.m_useAuthentication != null) {
-                return false;
-            }
-            if (m_useJmta != null) {
-                if (temp.m_useJmta == null) {
-                    return false;
-                } else if (!(m_useJmta.equals(temp.m_useJmta))) {
-                    return false;
-                }
-            } else if (temp.m_useJmta != null) {
-                return false;
-            }
-            if (m_attemptInterval != null) {
-                if (temp.m_attemptInterval == null) {
-                    return false;
-                } else if (!(m_attemptInterval.equals(temp.m_attemptInterval))) {
-                    return false;
-                }
-            } else if (temp.m_attemptInterval != null) {
-                return false;
-            }
-            if (m_javamailProperties != null) {
-                if (temp.m_javamailProperties == null) {
-                    return false;
-                } else if (!(m_javamailProperties.equals(temp.m_javamailProperties))) {
-                    return false;
-                }
-            } else if (temp.m_javamailProperties != null) {
-                return false;
-            }
-            if (m_sendmailHost != null) {
-                if (temp.m_sendmailHost == null) {
-                    return false;
-                } else if (!(m_sendmailHost.equals(temp.m_sendmailHost))) {
-                    return false;
-                }
-            } else if (temp.m_sendmailHost != null) {
-                return false;
-            }
-            if (m_sendmailProtocol != null) {
-                if (temp.m_sendmailProtocol == null) {
-                    return false;
-                } else if (!(m_sendmailProtocol.equals(temp.m_sendmailProtocol))) {
-                    return false;
-                }
-            } else if (temp.m_sendmailProtocol != null) {
-                return false;
-            }
-            if (m_sendmailMessage != null) {
-                if (temp.m_sendmailMessage == null) {
-                    return false;
-                } else if (!(m_sendmailMessage.equals(temp.m_sendmailMessage))) {
-                    return false;
-                }
-            } else if (temp.m_sendmailMessage != null) {
-                return false;
-            }
-            if (m_userAuth != null) {
-                if (temp.m_userAuth == null) {
-                    return false;
-                } else if (!(m_userAuth.equals(temp.m_userAuth))) {
-                    return false;
-                }
-            } else if (temp.m_userAuth != null) {
-                return false;
-            }
-            return true;
+            final SendmailTest that = (SendmailTest)obj;
+            return Objects.equals(this.m_debug, that.m_debug) &&
+                    Objects.equals(this.m_useAuthentication, that.m_useAuthentication) &&
+                    Objects.equals(this.m_useJmta, that.m_useJmta) &&
+                    Objects.equals(this.m_attemptInterval, that.m_attemptInterval) &&
+                    Objects.equals(this.m_javamailProperties, that.m_javamailProperties) &&
+                    Objects.equals(this.m_sendmailHost, that.m_sendmailHost) &&
+                    Objects.equals(this.m_sendmailProtocol, that.m_sendmailProtocol) &&
+                    Objects.equals(this.m_sendmailMessage, that.m_sendmailMessage) &&
+                    Objects.equals(this.m_userAuth, that.m_userAuth);
         }
         return false;
     }
@@ -312,34 +213,6 @@ public class SendmailTest implements Serializable {
     }
 
     /**
-     * Method getJavamailProperty.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * JavamailProperty
-     * at the given index
-     */
-    public JavamailProperty getJavamailProperty(final int index) throws IndexOutOfBoundsException {
-        return m_javamailProperties.get(index);
-    }
-
-    /**
-     * Method getJavamailProperty.Returns the contents of the
-     * collection in an Array.  <p>Note:  Just in case the
-     * collection contents are changing in another thread, we pass
-     * a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of
-     * exactly the correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public JavamailProperty[] getJavamailProperty() {
-        return m_javamailProperties.toArray(EMPTY_LIST_OF_JAVAMAIL_PROPERTIES);
-    }
-
-    /**
      * Method getJavamailPropertyCollection.Returns a reference to
      * 'm_javamailProperties'. No type checking is performed on
      * any modifications to the Vector.
@@ -347,16 +220,7 @@ public class SendmailTest implements Serializable {
      * @return a reference to the Vector backing this class
      */
     public List<JavamailProperty> getJavamailPropertyCollection() {
-        return new ArrayList<JavamailProperty>(m_javamailProperties);
-    }
-
-    /**
-     * Method getJavamailPropertyCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getJavamailPropertyCount() {
-        return m_javamailProperties.size();
+        return new ArrayList<>(m_javamailProperties);
     }
 
     /**
@@ -430,87 +294,13 @@ public class SendmailTest implements Serializable {
      * 
      * @return the value of field 'UserAuth'.
      */
-    public UserAuth getUserAuth() {
-        return m_userAuth;
+    public Optional<UserAuth> getUserAuth() {
+        return Optional.ofNullable(m_userAuth);
     }
 
-    /**
-     * Method hasAttemptInterval.
-     * 
-     * @return true if at least one AttemptInterval has been added
-     */
-    public boolean hasAttemptInterval() {
-        return m_attemptInterval != null;
-    }
-
-    /**
-     * Method hasDebug.
-     * 
-     * @return true if at least one Debug has been added
-     */
-    public boolean hasDebug() {
-        return m_debug != null;
-    }
-
-    /**
-     * Method hasUseAuthentication.
-     * 
-     * @return true if at least one UseAuthentication has been added
-     */
-    public boolean hasUseAuthentication() {
-        return m_useAuthentication != null;
-    }
-
-    /**
-     * Method hasUseJmta.
-     * 
-     * @return true if at least one UseJmta has been added
-     */
-    public boolean hasUseJmta() {
-        return m_useJmta != null;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        int result = 17;
-        
-        if (m_debug != null) {
-            result = 37 * result + m_debug.hashCode();
-         }
-        if (m_useAuthentication != null) {
-            result = 37 * result + m_useAuthentication.hashCode();
-         }
-        if (m_useJmta != null) {
-            result = 37 * result + m_useJmta.hashCode();
-         }
-        if (m_attemptInterval != null) {
-            result = 37 * result + m_attemptInterval.hashCode();
-         }
-        if (m_javamailProperties != null) {
-           result = 37 * result + m_javamailProperties.hashCode();
-        }
-        if (m_sendmailHost != null) {
-           result = 37 * result + m_sendmailHost.hashCode();
-        }
-        if (m_sendmailProtocol != null) {
-           result = 37 * result + m_sendmailProtocol.hashCode();
-        }
-        if (m_sendmailMessage != null) {
-           result = 37 * result + m_sendmailMessage.hashCode();
-        }
-        if (m_userAuth != null) {
-           result = 37 * result + m_userAuth.hashCode();
-        }
-        
-        return result;
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_debug, m_useAuthentication, m_useJmta, m_attemptInterval, m_javamailProperties, m_sendmailHost, m_sendmailProtocol, m_sendmailMessage, m_userAuth);
     }
 
     /**
@@ -538,16 +328,6 @@ public class SendmailTest implements Serializable {
      */
     public Boolean isUseJmta() {
         return m_useJmta == null? true : m_useJmta;
-    }
-
-    /**
-     * Method iterateJavamailProperty.
-     * 
-     * @return an Iterator over all possible elements in this
-     * collection
-     */
-    public Iterator<JavamailProperty> iterateJavamailProperty() {
-        return m_javamailProperties.iterator();
     }
 
     /**
@@ -595,51 +375,18 @@ public class SendmailTest implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param index
-     * @param javamailProperty
-     * @throws IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void setJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
-        m_javamailProperties.set(index, javamailProperty);
-    }
-
-    /**
-     * 
-     * 
-     * @param javamailProperties
-     */
-    public void setJavamailProperty(final JavamailProperty[] javamailProperties) {
-        m_javamailProperties.clear();
-        for (final JavamailProperty prop : javamailProperties) {
-            m_javamailProperties.add(prop);
-        }
-    }
-
-    /**
      * Sets the value of 'm_javamailProperties' by copying the
      * given Vector. All elements will be checked for type safety.
      * 
      * @param javamailProperties the Vector to copy.
      */
-    public void setJavamailProperty(final List<JavamailProperty> javamailProperties) {
-        if (javamailProperties != m_javamailProperties) {
+    public void setJavamailProperties(final List<JavamailProperty> javamailProperties) {
+        if (javamailProperties == null) {
+            m_javamailProperties.clear();
+        } else if (javamailProperties != m_javamailProperties) {
             m_javamailProperties.clear();
             m_javamailProperties.addAll(javamailProperties);
         }
-    }
-
-    /**
-     * Sets the value of 'm_javamailProperties' by setting it to
-     * the given Vector. No type checking is performed.
-     * @deprecated
-     * 
-     * @param javamailProperties the Vector to set.
-     */
-    public void setJavamailPropertyCollection(final List<JavamailProperty> javamailProperties) {
-        m_javamailProperties = new ArrayList<JavamailProperty>(javamailProperties);
     }
 
     /**
@@ -654,6 +401,9 @@ public class SendmailTest implements Serializable {
      * @param sendmailHost the value of field 'sendmailHost'.
      */
     public void setSendmailHost(final SendmailHost sendmailHost) {
+        if (sendmailHost == null) {
+            throw new IllegalArgumentException("'sendmail-host' is a required element!");
+        }
         m_sendmailHost = sendmailHost;
     }
 
@@ -673,6 +423,9 @@ public class SendmailTest implements Serializable {
      * @param sendmailMessage the value of field 'sendmailMessage'.
      */
     public void setSendmailMessage(final SendmailMessage sendmailMessage) {
+        if (sendmailMessage == null) {
+            throw new IllegalArgumentException("'sendmail-message' is a required element!");
+        }
         m_sendmailMessage = sendmailMessage;
     }
 
@@ -687,6 +440,9 @@ public class SendmailTest implements Serializable {
      * @param sendmailProtocol the value of field 'sendmailProtocol'
      */
     public void setSendmailProtocol(final SendmailProtocol sendmailProtocol) {
+        if (sendmailProtocol == null) {
+            throw new IllegalArgumentException("'sendmail-protocol' is a required element!");
+        }
         m_sendmailProtocol = sendmailProtocol;
     }
 

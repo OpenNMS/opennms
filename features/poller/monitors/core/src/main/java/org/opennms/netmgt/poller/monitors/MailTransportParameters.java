@@ -89,10 +89,6 @@ public class MailTransportParameters {
         return m_transportTest;
     }
 
-    private String getStringParm(String key, String deflt) {
-        return ParameterMap.getKeyedString(this.getParameterMap(), key, deflt);
-    }
-    
     private int getIntParm(String key, int defValue) {
         return ParameterMap.getKeyedInteger(getParameterMap()  , key, defValue);
     }
@@ -121,7 +117,10 @@ public class MailTransportParameters {
      * @return a {@link java.lang.String} object.
      */
     public String getReadTestPassword() {
-        return getReadTest().getUserAuth().getPassword();
+        if (getReadTest().getUserAuth().isPresent()) {
+            return getReadTest().getUserAuth().get().getPassword();
+        }
+        return null;
     }
 
     ReadmailTest getReadTest() {
@@ -275,7 +274,10 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().getUserAuth().getPassword();
+        if (getSendTest().getUserAuth().isPresent()) {
+            return getSendTest().getUserAuth().get().getPassword();
+        }
+        return null;
     }
 
     /**
@@ -370,7 +372,7 @@ public class MailTransportParameters {
      */
     public boolean isSendTestUseJmta() {
         if (getSendTest() == null) {
-            throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
+            throw new IllegalStateException("Request for sendmail parameters invalid due to no sendmail specification in config");
         }
         return getSendTest().isUseJmta();
     }
@@ -382,9 +384,12 @@ public class MailTransportParameters {
      */
     public String getSendTestUserName() {
         if (getSendTest() == null) {
-            throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
+            throw new IllegalStateException("Request for sendmail parameters invalid due to no sendmail specification in config");
         }
-        return getSendTest().getUserAuth().getUserName();
+        if (getSendTest().getUserAuth().isPresent()) {
+            return getSendTest().getUserAuth().get().getUserName();
+        }
+        return null;
     }
 
     SendmailTest getSendTest() {
@@ -421,7 +426,10 @@ public class MailTransportParameters {
      * @return a {@link java.lang.String} object.
      */
     public String getReadTestUserName() {
-        return getReadTest().getUserAuth().getUserName();
+        if (getReadTest().getUserAuth().isPresent()) {
+            return getReadTest().getUserAuth().get().getUserName();
+        }
+        return null;
     }
 
     /**
@@ -448,7 +456,7 @@ public class MailTransportParameters {
      * @return a boolean.
      */
     public boolean isReadTestStartTlsEnabled() {
-        return getReadTest().getReadmailHost().getReadmailProtocol().isStartTls();
+        return getReadTest().getReadmailHost().getReadmailProtocol().shouldStartTLS();
     }
     
     /**
@@ -457,7 +465,7 @@ public class MailTransportParameters {
      * @return a boolean.
      */
     public boolean isReadTestSslEnabled() {
-        return getReadTest().getReadmailHost().getReadmailProtocol().isSslEnable();
+        return getReadTest().getReadmailHost().getReadmailProtocol().isSslEnabled();
     }
 
     /**

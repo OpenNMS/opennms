@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.mailtransporttest;
 
   import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -60,99 +61,44 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("mail-transport-test.xsd")
 public class MailTransportTest implements Serializable {
-    private static final long serialVersionUID = -1213778109324747604L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Defines a use case for testing mail. If both a send and a
-     * read test are
-     *  configured, then the use case (d) will be executed.
+     * read test are configured, then the use case (d) will be executed.
      *  
      */
     @XmlElement(name="mail-test")
     private MailTest m_mailTest;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
     public MailTransportTest() {
-        super();
     }
 
+    public MailTest getMailTest() {
+        return m_mailTest;
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void setMailTest(final MailTest mailTest) {
+        if (mailTest == null) {
+            throw new IllegalArgumentException("'mail-test' is a required element!");
+        }
+        m_mailTest = mailTest;
+    }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_mailTest);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) return true;
         
         if (obj instanceof MailTransportTest) {
-            final MailTransportTest temp = (MailTransportTest)obj;
-            if (m_mailTest != null) {
-                if (temp.m_mailTest == null) {
-                    return false;
-                } else if (!(m_mailTest.equals(temp.m_mailTest))) {
-                    return false;
-                }
-            } else if (temp.m_mailTest != null) {
-                return false;
-            }
-            return true;
+            final MailTransportTest that = (MailTransportTest)obj;
+            return Objects.equals(this.m_mailTest, that.m_mailTest);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'mailTest'. The field 'mailTest'
-     * has the following description: Defines a use case for
-     * testing mail. If both a send and a read test are
-     *  configured, then the use case (d) will be executed.
-     *  
-     * 
-     * @return the value of field 'MailTest'.
-     */
-    public MailTest getMailTest() {
-        return m_mailTest;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode() {
-        int result = 17;
-        
-        if (m_mailTest != null) {
-           result = 37 * result + m_mailTest.hashCode();
-        }
-        
-        return result;
-    }
-
-    /**
-     * Sets the value of field 'mailTest'. The field 'mailTest' has
-     * the following description: Defines a use case for testing
-     * mail. If both a send and a read test are
-     *  configured, then the use case (d) will be executed.
-     *  
-     * 
-     * @param mailTest the value of field 'mailTest'.
-     */
-    public void setMailTest(final MailTest mailTest) {
-        m_mailTest = mailTest;
     }
 
 }
