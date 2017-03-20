@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.microblog;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -74,51 +76,6 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        
-        if (obj instanceof MicroblogProfile) {
-            MicroblogProfile temp = (MicroblogProfile)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.serviceUrl, serviceUrl)
-                && Objects.equals(temp.authenUsername, authenUsername)
-                && Objects.equals(temp.authenPassword, authenPassword)
-                && Objects.equals(temp.oauthConsumerKey, oauthConsumerKey)
-                && Objects.equals(temp.oauthConsumerSecret, oauthConsumerSecret)
-                && Objects.equals(temp.oauthAccessToken, oauthAccessToken)
-                && Objects.equals(temp.oauthAccessTokenSecret, oauthAccessTokenSecret);
-            return equals;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'authenPassword'.
-     * 
-     * @return the value of field 'AuthenPassword'.
-     */
-    public String getAuthenPassword() {
-        return this.authenPassword;
-    }
-
-    /**
-     * Returns the value of field 'authenUsername'.
-     * 
-     * @return the value of field 'AuthenUsername'.
-     */
-    public String getAuthenUsername() {
-        return this.authenUsername;
-    }
-
-    /**
      * Returns the value of field 'name'.
      * 
      * @return the value of field 'Name'.
@@ -128,39 +85,15 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
-     * Returns the value of field 'oauthAccessToken'.
+     * Sets the value of field 'name'.
      * 
-     * @return the value of field 'OauthAccessToken'.
+     * @param name the value of field 'name'.
      */
-    public String getOauthAccessToken() {
-        return this.oauthAccessToken;
-    }
-
-    /**
-     * Returns the value of field 'oauthAccessTokenSecret'.
-     * 
-     * @return the value of field 'OauthAccessTokenSecret'.
-     */
-    public String getOauthAccessTokenSecret() {
-        return this.oauthAccessTokenSecret;
-    }
-
-    /**
-     * Returns the value of field 'oauthConsumerKey'.
-     * 
-     * @return the value of field 'OauthConsumerKey'.
-     */
-    public String getOauthConsumerKey() {
-        return this.oauthConsumerKey;
-    }
-
-    /**
-     * Returns the value of field 'oauthConsumerSecret'.
-     * 
-     * @return the value of field 'OauthConsumerSecret'.
-     */
-    public String getOauthConsumerSecret() {
-        return this.oauthConsumerSecret;
+    public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("'name' is a required attribute!");
+        }
+        this.name = name;
     }
 
     /**
@@ -173,31 +106,24 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
-     * Method hashCode.
+     * Sets the value of field 'serviceUrl'.
      * 
-     * @return a hash code value for the object.
+     * @param serviceUrl the value of field 'serviceUrl'.
      */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            serviceUrl, 
-            authenUsername, 
-            authenPassword, 
-            oauthConsumerKey, 
-            oauthConsumerSecret, 
-            oauthAccessToken, 
-            oauthAccessTokenSecret);
-        return hash;
+    public void setServiceUrl(final String serviceUrl) {
+        if (serviceUrl == null) {
+            throw new IllegalArgumentException("'service-url' is a required attribute!");
+        }
+        this.serviceUrl = serviceUrl;
     }
 
     /**
-     * Sets the value of field 'authenPassword'.
+     * Returns the value of field 'authenUsername'.
      * 
-     * @param authenPassword the value of field 'authenPassword'.
+     * @return the value of field 'AuthenUsername'.
      */
-    public void setAuthenPassword(final String authenPassword) {
-        this.authenPassword = authenPassword;
+    public Optional<String> getAuthenUsername() {
+        return Optional.ofNullable(this.authenUsername);
     }
 
     /**
@@ -210,30 +136,30 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
-     * Sets the value of field 'name'.
+     * Returns the value of field 'authenPassword'.
      * 
-     * @param name the value of field 'name'.
+     * @return the value of field 'AuthenPassword'.
      */
-    public void setName(final String name) {
-        this.name = name;
+    public Optional<String> getAuthenPassword() {
+        return Optional.ofNullable(this.authenPassword);
     }
 
     /**
-     * Sets the value of field 'oauthAccessToken'.
+     * Sets the value of field 'authenPassword'.
      * 
-     * @param oauthAccessToken the value of field 'oauthAccessToken'.
+     * @param authenPassword the value of field 'authenPassword'.
      */
-    public void setOauthAccessToken(final String oauthAccessToken) {
-        this.oauthAccessToken = oauthAccessToken;
+    public void setAuthenPassword(final String authenPassword) {
+        this.authenPassword = authenPassword;
     }
 
     /**
-     * Sets the value of field 'oauthAccessTokenSecret'.
+     * Returns the value of field 'oauthConsumerKey'.
      * 
-     * @param oauthAccessTokenSecret the value of field 'oauthAccessTokenSecret'.
+     * @return the value of field 'OauthConsumerKey'.
      */
-    public void setOauthAccessTokenSecret(final String oauthAccessTokenSecret) {
-        this.oauthAccessTokenSecret = oauthAccessTokenSecret;
+    public Optional<String> getOauthConsumerKey() {
+        return Optional.ofNullable(this.oauthConsumerKey);
     }
 
     /**
@@ -246,6 +172,15 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
+     * Returns the value of field 'oauthConsumerSecret'.
+     * 
+     * @return the value of field 'OauthConsumerSecret'.
+     */
+    public Optional<String> getOauthConsumerSecret() {
+        return Optional.ofNullable(this.oauthConsumerSecret);
+    }
+
+    /**
      * Sets the value of field 'oauthConsumerSecret'.
      * 
      * @param oauthConsumerSecret the value of field 'oauthConsumerSecret'.
@@ -255,12 +190,72 @@ public class MicroblogProfile implements java.io.Serializable {
     }
 
     /**
-     * Sets the value of field 'serviceUrl'.
+     * Returns the value of field 'oauthAccessToken'.
      * 
-     * @param serviceUrl the value of field 'serviceUrl'.
+     * @return the value of field 'OauthAccessToken'.
      */
-    public void setServiceUrl(final String serviceUrl) {
-        this.serviceUrl = serviceUrl;
+    public Optional<String> getOauthAccessToken() {
+        return Optional.ofNullable(this.oauthAccessToken);
+    }
+
+    /**
+     * Sets the value of field 'oauthAccessToken'.
+     * 
+     * @param oauthAccessToken the value of field 'oauthAccessToken'.
+     */
+    public void setOauthAccessToken(final String oauthAccessToken) {
+        this.oauthAccessToken = oauthAccessToken;
+    }
+
+    /**
+     * Returns the value of field 'oauthAccessTokenSecret'.
+     * 
+     * @return the value of field 'OauthAccessTokenSecret'.
+     */
+    public Optional<String> getOauthAccessTokenSecret() {
+        return Optional.ofNullable(this.oauthAccessTokenSecret);
+    }
+
+    /**
+     * Sets the value of field 'oauthAccessTokenSecret'.
+     * 
+     * @param oauthAccessTokenSecret the value of field 'oauthAccessTokenSecret'.
+     */
+    public void setOauthAccessTokenSecret(final String oauthAccessTokenSecret) {
+        this.oauthAccessTokenSecret = oauthAccessTokenSecret;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            name, 
+            serviceUrl, 
+            authenUsername, 
+            authenPassword, 
+            oauthConsumerKey, 
+            oauthConsumerSecret, 
+            oauthAccessToken, 
+            oauthAccessTokenSecret);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        
+        if (obj instanceof MicroblogProfile) {
+            final MicroblogProfile that = (MicroblogProfile)obj;
+            return Objects.equals(that.name, name)
+                && Objects.equals(that.serviceUrl, serviceUrl)
+                && Objects.equals(that.authenUsername, authenUsername)
+                && Objects.equals(that.authenPassword, authenPassword)
+                && Objects.equals(that.oauthConsumerKey, oauthConsumerKey)
+                && Objects.equals(that.oauthConsumerSecret, oauthConsumerSecret)
+                && Objects.equals(that.oauthAccessToken, oauthAccessToken)
+                && Objects.equals(that.oauthAccessTokenSecret, oauthAccessTokenSecret);
+        }
+        return false;
     }
 
 }
