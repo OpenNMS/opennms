@@ -224,18 +224,18 @@ public class AmiPeerFactory {
         
         try {
             // First pass: Remove empty definition elements
-            for (final Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
+            for (final Iterator<Definition> definitionsIterator = m_config.getDefinitions().iterator(); definitionsIterator.hasNext();) {
                 final Definition definition = definitionsIterator.next();
-                if (definition.getSpecificCount() == 0
-                    && definition.getRangeCount() == 0) {
+                if (definition.getSpecifics().size() == 0
+                    && definition.getRanges().size() == 0) {
                     LOG.debug("optimize: Removing empty definition element");
                     definitionsIterator.remove();
                 }
             }
     
             // Second pass: Replace single IP range elements with specific elements
-            for (Definition definition : m_config.getDefinitionCollection()) {
-                for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+            for (Definition definition : m_config.getDefinitions()) {
+                for (Iterator<Range> rangesIterator = definition.getRanges().iterator(); rangesIterator.hasNext();) {
                     Range range = rangesIterator.next();
                     if (range.getBegin().equals(range.getEnd())) {
                         definition.addSpecific(range.getBegin());
@@ -246,16 +246,16 @@ public class AmiPeerFactory {
     
             // Third pass: Sort specific and range elements for improved XML
             // readability and then combine them into fewer elements where possible
-            for (final Definition definition : m_config.getDefinitionCollection()) {
+            for (final Definition definition : m_config.getDefinitions()) {
                 // Sort specifics
                 final TreeMap<InetAddress,String> specificsMap = new TreeMap<InetAddress,String>(new InetAddressComparator());
-                for (final String specific : definition.getSpecificCollection()) {
+                for (final String specific : definition.getSpecifics()) {
                     specificsMap.put(InetAddressUtils.getInetAddress(specific), specific.trim());
                 }
     
                 // Sort ranges
                 final TreeMap<InetAddress,Range> rangesMap = new TreeMap<InetAddress,Range>(new InetAddressComparator());
-                for (final Range range : definition.getRangeCollection()) {
+                for (final Range range : definition.getRanges()) {
                     rangesMap.put(InetAddressUtils.getInetAddress(range.getBegin()), range);
                 }
     
@@ -358,8 +358,8 @@ public class AmiPeerFactory {
                 }
     
                 // Update changes made to sorted maps
-                definition.setSpecific(specificsMap.values().toArray(new String[0]));
-                definition.setRange(rangesMap.values().toArray(new Range[0]));
+                definition.setSpecifics(new ArrayList<>(specificsMap.values()));
+                definition.setRanges(new ArrayList<>(rangesMap.values()));
             }
         } finally {
             getWriteLock().unlock();
@@ -384,9 +384,9 @@ public class AmiPeerFactory {
             setAmiAgentConfig(agentConfig, new Definition());
     
             // Attempt to locate the node
-            DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
+            DEFLOOP: for (final Definition def : m_config.getDefinitions()) {
                 // check the specifics first
-                for (String saddr : def.getSpecificCollection()) {
+                for (String saddr : def.getSpecifics()) {
                     saddr = saddr.trim();
                     final InetAddress addr = InetAddressUtils.addr(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -396,7 +396,7 @@ public class AmiPeerFactory {
                 }
     
                 // check the ranges
-                for (final Range rng : def.getRangeCollection()) {
+                for (final Range rng : def.getRanges()) {
                     if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress().orElse(null)), rng.getBegin(), rng.getEnd())) {
                         setAmiAgentConfig(agentConfig, def );
                         break DEFLOOP;
@@ -404,7 +404,7 @@ public class AmiPeerFactory {
                 }
                 
                 // check the matching IP expressions
-                for (final String ipMatch : def.getIpMatchCollection()) {
+                for (final String ipMatch : def.getIpMatches()) {
                     if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
                         setAmiAgentConfig(agentConfig, def);
                         break DEFLOOP;
