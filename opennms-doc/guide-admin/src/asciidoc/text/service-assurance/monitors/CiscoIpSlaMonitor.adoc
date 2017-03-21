@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== CiscoIpSlaMonitor
 
 This monitor can be used to monitor IP SLA configurations on your Cisco devices.
@@ -32,12 +35,11 @@ If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is mar
 [options="header, autowidth"]
 |===
 | Parameter       | Description                                                                                         | Required | Default value
-| `retry`         | Number of retries to get the information from the SNMP agent before the service is marked as
-                    _down_.                                                                                             | optional | from `snmp-config.xml`
-| `timeout`       | Time in milliseconds to wait for the result from the SNMP agent before making the next attempt.     | optional | from `snmp-config.xml`
 | `admin-tag`     | The `tag` attribute from your _IP SLA_ configuration you want to monitor.                           | required | `-`
 | `ignore-thresh` | Boolean indicates if just the status or configured threshold should be monitored.                   | required | ``
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Example for HTTP and ICMP echo reply
 

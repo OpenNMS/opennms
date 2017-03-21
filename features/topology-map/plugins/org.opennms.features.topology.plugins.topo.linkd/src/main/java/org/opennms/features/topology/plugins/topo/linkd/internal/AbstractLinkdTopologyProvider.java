@@ -28,33 +28,19 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.WrappedEdge;
-import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedGroup;
-import org.opennms.features.topology.api.topo.WrappedLeafVertex;
-import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -89,7 +75,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
 
     static {
-        m_nodeStatusMap = new EnumMap<OnmsNode.NodeType, String>(OnmsNode.NodeType.class);
+        m_nodeStatusMap = new EnumMap<>(OnmsNode.NodeType.class);
         m_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");
         m_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
         m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
@@ -107,7 +93,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
      };
 
     protected final boolean m_aclEnabled;
-    protected String m_configurationFile;
     protected TransactionOperations m_transactionOperations;
     protected NodeDao m_nodeDao;
     protected SnmpInterfaceDao m_snmpInterfaceDao;
@@ -173,12 +158,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return formatter.format(displaySpeed) + " " + units;
     }
 
-    protected static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
-        JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
-        Unmarshaller u = jc.createUnmarshaller();
-        return (WrappedGraph) u.unmarshal(file.toURI().toURL());
-    }
-
     public static String getIconName(String nodeSysObjectId) {
         if (nodeSysObjectId == null) {
             return "linkd.system";
@@ -218,14 +197,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         }
         return tooltipText.toString();
 
-    }
-
-    public String getConfigurationFile() {
-        return m_configurationFile;
-    }
-
-    public void setConfigurationFile(String configurationFile) {
-        m_configurationFile = configurationFile;
     }
 
     public TransactionOperations getTransactionOperations() {
@@ -327,27 +298,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return m_ipInterfaceDao;
     }
 
-    @Override
-    public void save() {
-        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
-        for (Vertex vertex : getVertices()) {
-            if (vertex.isGroup()) {
-                vertices.add(new WrappedGroup(vertex));
-            } else {
-                vertices.add(new WrappedLeafVertex(vertex));
-            }
-        }
-        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
-        for (Edge edge : getEdges()) {
-            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
-            edges.add(newEdge);
-        }
-
-        WrappedGraph graph = new WrappedGraph(getEdgeNamespace(), vertices, edges);
-
-        JAXB.marshal(graph, new File(getConfigurationFile()));
-    }
-
     public LinkdHopCriteriaFactory getLinkdHopCriteriaFactory() {
         return m_criteriaHopFactory;
     }
@@ -390,9 +340,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         vertex.setTooltipText(tooltipText);
         return vertex;
     }
-
-    @Override
-    public abstract void load(String filename) throws MalformedURLException, JAXBException;
 
     @Override
     public Defaults getDefaults() {

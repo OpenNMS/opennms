@@ -57,13 +57,6 @@
         catch( java.io.IOException e ) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
-        catch( org.exolab.castor.xml.MarshalException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }        
-
     }
 %>
 
@@ -86,11 +79,8 @@
 
     // put the nodes in a tree map to sort by name
     TreeMap<String,Node> nodeMap = new TreeMap<String,Node>();
-    Enumeration<Node> nodeEnum = category.enumerateNode();
-    
-    while (nodeEnum.hasMoreElements()) {
-        Node node = nodeEnum.nextElement();
-        int nodeId = (int)node.getNodeid();
+    for (Node node : category.getNode()) {
+        int nodeId = (int)(node.getNodeid());
         String nodeLabel =
 		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
         // nodeMap.put( nodeLabel, node );

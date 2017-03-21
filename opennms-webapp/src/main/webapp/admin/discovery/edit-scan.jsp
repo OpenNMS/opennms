@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -199,18 +199,18 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
         <div class="list-group-item">
         <div class="col-xs-12 input-group">
           <label for="retries" class="control-label">Timeout (milliseconds):</label>
-          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
+          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
         </div> <!-- input-group -->
         <div class="col-xs-12 input-group">
           <label for="retries" class="control-label">Retries:</label>
-          <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
+          <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
         </div> <!-- input-group -->
         <div class="col-xs-12 input-group">
           <label for="foreignsource" class="control-label">Foreign Source:</label>
           <select id="foreignsource" class="form-control" name="foreignsource">
-            <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
+            <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
             <% for (String key : foreignsources.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource())) out.print("selected");%>><%=foreignsources.get(key)%></option>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
             <% } %>
           </select>
         </div> <!-- input-group -->
@@ -218,7 +218,7 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
           <label for="location" class="control-label">Location:</label>
           <select id="location" class="form-control" name="location">
             <% for (String key : locations.keySet()) { %>
-              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation()) || (key.equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) && currConfig.getLocation() == null)) out.print("selected");%>><%=locations.get(key)%></option>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
             <% } %>
           </select>
         </div> <!-- input-group -->
@@ -228,7 +228,7 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
         <h4 class="list-group-item-heading">Advanced configuration</h4>
         <div class="col-xs-12 input-group">
           <label for="chunksize" class="control-label">Task chunk size:</label>
-          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE:currConfig.getChunkSize())%>"/>
+          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
         </div> <!-- input-group -->
         </div>
       </div>
@@ -242,8 +242,8 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Specific Addresses</h3>
       </div>
-      <%if(currConfig.getSpecificCount()>0){
-            Specific[] specs = currConfig.getSpecific();
+      <%if(currConfig.getSpecifics().size()>0){
+            Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
       %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
@@ -256,11 +256,11 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr class="text-center">
-					  <td><%=specs[i].getContent()%></td>
-					  <td><%=specs[i].hasTimeout() ? "" + specs[i].getTimeout() : "<i>Use Default</i>" %></td>
-					  <td><%=specs[i].hasRetries() ? "" + specs[i].getRetries() : "<i>Use Default</i>" %></td>
-					  <td><%=(specs[i].getForeignSource() != null) ? specs[i].getForeignSource() : "<i>Use Default</i>" %></td>
-					  <td><%=(specs[i].getLocation() != null) ? specs[i].getLocation() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getAddress()%></td>
+					  <td><%=specs[i].getTimeout().isPresent() ? "" + specs[i].getTimeout().get() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getForeignSource().isPresent() ? specs[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
+					  <td><%=specs[i].getLocation().isPresent() ? specs[i].getLocation().get() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
@@ -283,8 +283,8 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Include URLs</h3>
       </div>
-			    <%if(currConfig.getIncludeUrlCount()>0){
-			        IncludeUrl[] urls = currConfig.getIncludeUrl();
+			    <%if(currConfig.getIncludeUrls().size()>0){
+			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
@@ -297,11 +297,11 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr class="text-center">
-					  <td><%=urls[i].getContent()%></td>
-					  <td><%=urls[i].hasTimeout() ? "" + urls[i].getTimeout() : "<i>Use Default</i>" %></td>
-					  <td><%=urls[i].hasRetries() ? "" + urls[i].getRetries() : "<i>Use Default</i>" %></td>
-					  <td><%=(urls[i].getForeignSource() != null) ? urls[i].getForeignSource() : "<i>Use Default</i>" %></td>
-					  <td><%=(urls[i].getLocation() != null) ? urls[i].getLocation() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getUrl()%></td>
+					  <td><%=urls[i].getTimeout().isPresent() ? "" + urls[i].getTimeout().get() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
+					  <td><%=urls[i].getLocation().isPresent() ? urls[i].getLocation().get() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
@@ -324,8 +324,8 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Include Ranges</h3>
       </div>
-				    <%if(currConfig.getIncludeRangeCount()>0){
-					    IncludeRange[] irange = currConfig.getIncludeRange();
+				    <%if(currConfig.getIncludeRanges().size()>0){
+					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
 				    %>
 					    <table class="table table-bordered table-condensed">
 					      <tr>
@@ -343,10 +343,10 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
 						 <tr class="text-center">
 						  <td><%=irange[i].getBegin()%></td>
 						  <td><%=irange[i].getEnd()%></td>
-						  <td><%=(irange[i].hasTimeout()) ? "" + irange[i].getTimeout() : "<i>Use Default</i>" %></td>
-						  <td><%=(irange[i].hasRetries()) ? "" + irange[i].getRetries() : "<i>Use Default</i>" %></td>
-						  <td><%=(irange[i].getForeignSource() != null) ? irange[i].getForeignSource() : "<i>Use Default</i>" %></td>
-						  <td><%=(irange[i].getLocation() != null) ? irange[i].getLocation() : "<i>Use Default</i>" %></td>
+						  <td><%=irange[i].getTimeout().isPresent() ? "" + irange[i].getTimeout().get() : "<i>Use Default</i>" %></td>
+						  <td><%=irange[i].getRetries().isPresent() ? "" + irange[i].getRetries().get() : "<i>Use Default</i>" %></td>
+						  <td><%=irange[i].getForeignSource().isPresent() ? irange[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
+						  <td><%=irange[i].getLocation().isPresent() ? irange[i].getLocation().get() : "<i>Use Default</i>" %></td>
 						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
@@ -369,8 +369,8 @@ for (RequisitionEntity requisition : reqAccessService.getRequisitions()) {
       <div class="panel-heading">
         <h3 class="panel-title">Exclude Ranges</h3>
       </div>
-			    <%if(currConfig.getExcludeRangeCount()>0){
-				    ExcludeRange[] irange = currConfig.getExcludeRange();
+			    <%if(currConfig.getExcludeRanges().size()>0){
+				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>

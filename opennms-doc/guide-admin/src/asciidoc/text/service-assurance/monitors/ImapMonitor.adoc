@@ -1,10 +1,13 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[poller-imap-monitor]]
 ==== ImapMonitor
 
-This monitor checks if an IMAP server is functional.
-The test is done by initializing a very simple IMAP conversation.
-The ImapMonitor establishes a TCP connection, sends a logout command and test the IMAP server responses.
+This monitor checks if an _IMAP_ server is functional.
+The test is done by initializing a very simple _IMAP_ conversation.
+The ImapMonitor establishes a _TCP_ connection, sends a logout command and test the _IMAP_ server responses.
 
 The behavior can be simulated with `telnet`:
 
@@ -39,9 +42,10 @@ If one of the tests in the sample above fails the service is marked _down_.
 |===
 | Parameter   | Description                                                                                          | Required | Default value
 | `retry`     | Number of attempts to get a valid IMAP response                                                      | optional | `0`
-| `timeout`   | Time in milliseconds to wait retrieving the banner from TCP connection before trying a next attempt. | optional | `3000`
 | `port`      | The port of the IMAP server.                                                                         | optional | `143`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

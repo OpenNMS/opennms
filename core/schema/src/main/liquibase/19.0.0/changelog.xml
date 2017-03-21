@@ -5,6 +5,11 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="seth" id="19.0.0-insert-default-monitoringlocation">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(id) FROM monitoringlocations WHERE id='localhost';
+      </sqlCheck>
+    </preConditions>
     <insert tableName="monitoringlocations">
       <column name="id" value="localhost"/>
       <column name="monitoringarea" value="localhost"/>

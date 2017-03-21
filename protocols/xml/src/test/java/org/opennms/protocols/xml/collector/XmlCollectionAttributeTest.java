@@ -31,6 +31,7 @@ package org.opennms.protocols.xml.collector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.protocols.xml.config.XmlObject;
 
 /**
@@ -45,7 +46,7 @@ public class XmlCollectionAttributeTest {
      */
     @Test
     public void testNumericValuesWithUnits() {
-        XmlObject object = new XmlObject("test", "gauge");
+        XmlObject object = new XmlObject("test", AttributeType.GAUGE);
         AttributeGroupType group = new AttributeGroupType("xml-data", AttributeGroupType.IF_TYPE_ALL);
         final XmlCollectionAttributeType type = new XmlCollectionAttributeType(object, group);
         

@@ -39,13 +39,11 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -230,17 +228,14 @@ public class AvailabilityReportIT extends TestCase {
 
     }
 
-    public void testBuiltClassicReport () throws IOException, MarshalException, ValidationException {
+    public void testBuiltClassicReport () throws IOException {
 
         Report report = buildReport(calendar,"classic");
         
         assertNotNull("report", report);
-        
+
         Writer fileWriter = new OutputStreamWriter(System.out, "UTF-8");
-        Marshaller marshaller = new Marshaller(fileWriter);
-        marshaller.setSuppressNamespaces(true);
-        marshaller.setValidation(false);
-        marshaller.marshal(report);
+        JaxbUtils.marshal(report, fileWriter);
 
         Categories categories = report.getCategories();
         assertNotNull("report categories", report.getCategories());
@@ -249,9 +244,9 @@ public class AvailabilityReportIT extends TestCase {
         assertEquals("category count", 1,categories.getCategoryCount());
 
         // basic tests
-        assertEquals("category node count", 2,category.getNodeCount());
-        assertEquals("category ip address count", 3, category.getIpaddrCount());
-        assertEquals("category service count", 3, category.getServiceCount());
+        assertEquals("category node count", Integer.valueOf(2),category.getNodeCount());
+        assertEquals("category ip address count", Integer.valueOf(3), category.getIpaddrCount());
+        assertEquals("category service count", Integer.valueOf(3), category.getServiceCount());
 
         Section section = getSectionByName(category,"LastMonthsDailyAvailability");
         assertNull("calendar table", section.getCalendarTable());
@@ -273,9 +268,9 @@ public class AvailabilityReportIT extends TestCase {
         Category category = categories.getCategory(0);
         assertEquals("category count", 1,categories.getCategoryCount());
 
-        assertEquals("category node count", 2,category.getNodeCount());
-        assertEquals("category ip address count", 3,category.getIpaddrCount());
-        assertEquals("category service count", 3,category.getServiceCount());
+        assertEquals("category node count", Integer.valueOf(2),category.getNodeCount());
+        assertEquals("category ip address count", Integer.valueOf(3),category.getIpaddrCount());
+        assertEquals("category service count", Integer.valueOf(3),category.getServiceCount());
 
         // Section calSection = getSectionByName(category,"LastMonthsDailyAvailability");
 
@@ -301,31 +296,31 @@ public class AvailabilityReportIT extends TestCase {
         assertNotNull("day 0,5 object", day);
         assertEquals("day 0,5 percentage value", oneHundred, day.getPctValue(), 0);
         assertTrue("day 0,5 visibility", day.getVisible());
-        assertEquals("day 0,5 date", 1,day.getDate());
+        assertEquals("day 0,5 date", Integer.valueOf(1),day.getDate());
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",0,6);
         assertNotNull("day 0,6 object", day);
         assertEquals("day 0,6 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
         assertTrue("day 0,6 visibility", day.getVisible());
-        assertEquals("day 0,6 date", 2,day.getDate());
+        assertEquals("day 0,6 date", Integer.valueOf(2),day.getDate());
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,0);
         assertNotNull("day 1,0 object", day);
         assertEquals("day 1,0 percentage value", 97.2454, fourDec(day.getPctValue()), 0);
         assertTrue("day 1,0 visibility", day.getVisible());
-        assertEquals("day 1,0 date", 3,day.getDate());
+        assertEquals("day 1,0 date", Integer.valueOf(3),day.getDate());
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,1);
         assertNotNull("day 1,1 object", day);
         assertEquals("day 1,1 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
         assertTrue("day 1,1 visibility", day.getVisible());
-        assertEquals("day 1,1 date", 4,day.getDate());
+        assertEquals("day 1,1 date", Integer.valueOf(4),day.getDate());
 
         day = getCalSectionDay(category,"LastMonthsDailyAvailability",1,2);
         assertNotNull("day 1,2 object", day);
         assertEquals("day 1,2 percentage value", 99.3056, fourDec(day.getPctValue()), 0);
         assertTrue("day 1,2 visibility", day.getVisible());
-        assertEquals("day 1,2 date", 5,day.getDate());
+        assertEquals("day 1,2 date", Integer.valueOf(5),day.getDate());
 
     }
 

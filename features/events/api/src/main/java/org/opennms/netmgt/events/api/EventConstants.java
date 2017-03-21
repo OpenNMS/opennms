@@ -536,6 +536,11 @@ public abstract class EventConstants {
     public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     /**
+     * Reload topology UEI.
+     */
+    public static final String RELOAD_TOPOLOGY_UEI = "uei.opennms.org/internal/reloadTopology";
+
+    /**
      * Reload Daemon configuration UEI.
      */
     public static final String RELOAD_DAEMON_CONFIG_UEI = "uei.opennms.org/internal/reloadDaemonConfig";
@@ -663,6 +668,8 @@ public abstract class EventConstants {
     public static final String PARAM_MONITORING_SYSTEM_ID = "monitoringSystemId";
     public static final String PARAM_MONITORING_SYSTEM_LOCATION = "monitoringSystemLocation";
     public static final String PARAM_MONITORING_SYSTEM_PREV_LOCATION = "monitoringSystemPreviousLocation";
+
+    public static final String PARAM_TOPOLOGY_NAMESPACE = "namespace";
     //
     // end eventUEIs
     //

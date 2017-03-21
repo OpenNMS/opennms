@@ -31,9 +31,9 @@ package org.opennms.netmgt.config.statsd.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.config.statsd.PackageReportStatus;
 import org.opennms.netmgt.config.statsd.Parameter;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
-import org.opennms.netmgt.config.statsd.types.PackageReportStatusType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -85,7 +85,7 @@ public class StatsdConfig {
                 r.setDescription(packageReport.getDescription());
                 r.setRetainInterval(Long.parseLong(packageReport.getRetainInterval()));
                 r.setSchedule(packageReport.getSchedule());
-                r.setEnabled(packageReport.getStatus().equals(PackageReportStatusType.ON));
+                r.setEnabled(packageReport.getStatus().equals(PackageReportStatus.on));
                 for (Parameter parameter : getParametersForPackageReport(packageReport)) {
                     r.addParameter(parameter.getKey(), parameter.getValue());
                 }

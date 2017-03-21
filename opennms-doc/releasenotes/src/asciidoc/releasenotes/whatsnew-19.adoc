@@ -1,5 +1,5 @@
 [[releasenotes-19]]
-== OpenNMS 19
+== What's New in OpenNMS Horizon 19
 
 === System Requirements
 
@@ -71,3 +71,4 @@ If you use the Remote Poller, you will need to install the `opennms-webapp-remot
 * The JIRA ticketer has been improved.
 * The default database connection pool has been switched from c3p0 to HikariCP (http://brettwooldridge.github.io/HikariCP/) to increase performance.
 * Our ICMP libraries are now capable of being run by non-root users (although OpenNMS is not yet configured to support this).
+

@@ -34,8 +34,6 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -180,16 +178,6 @@ public class Discovery extends AbstractServiceDaemon {
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             this.stop();
             this.start();
-        } catch (MarshalException e) {
-            LOG.error("Unable to initialize the discovery configuration factory", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
-            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-        } catch (ValidationException e) {
-            LOG.error("Unable to initialize the discovery configuration factory", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
-            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
             LOG.error("Unable to initialize the discovery configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());

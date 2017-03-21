@@ -31,8 +31,6 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,12 +56,6 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 	    // Load up the configuration for the scheduled outages.
 	    try {
 	        PollOutagesConfigFactory.reload();
-	    } catch (MarshalException ex) {
-	        LOG.error("init: Failed to load poll-outage configuration", ex);
-	        throw new UndeclaredThrowableException(ex);
-	    } catch (ValidationException ex) {
-	        LOG.error("init: Failed to load poll-outage configuration", ex);
-	        throw new UndeclaredThrowableException(ex);
 	    } catch (IOException ex) {
 	        LOG.error("init: Failed to load poll-outage configuration", ex);
 	        throw new UndeclaredThrowableException(ex);

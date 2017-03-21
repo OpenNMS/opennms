@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -72,12 +70,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
 
         try {
             EventTranslatorConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("Could not unmarshall configuration", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-        	LOG.error("validation error ", e);
-            throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
         	LOG.error("IOException: ", e);
             throw new UndeclaredThrowableException(e);

@@ -39,14 +39,18 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.server.RMISocketFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
@@ -61,13 +65,14 @@ public abstract class Bootstrap {
      */
     private static final boolean DEBUG = Boolean.getBoolean("opennms.bootstrap.debug");
 
+    protected static final Path VERSION_PROPERTIES = Paths.get("jetty-webapps", "opennms", "WEB-INF", "version.properties");
     protected static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
     protected static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
     protected static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
     protected static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
     protected static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     protected static final String OPENNMS_HOME_PROPERTY = "opennms.home";
-    
+
     /**
      * Matches any file that is a directory.
      */
@@ -98,6 +103,47 @@ public abstract class Bootstrap {
             return name.endsWith(".properties");
         }
     };
+
+    /**
+     * A list of sub-folders found in $OPENNMS_HOME that should always be excluded
+     * from the class-loader
+     */
+    private static final List<String> OPENNMS_HOME_CLASSLOADER_EXCLUDES = Arrays.asList(
+            "data", // Temporary directory and Karaf cache
+            "logs", // Logz
+            "jetty-webapps",  // Handled by Jetty
+            "share", // RRD files, MIBs, Reports, etc..
+            "system" // Handled by Karaf
+            );
+
+    /**
+     * The list of canonical files that should be excluded from the class-loader.
+     */
+    private static final Set<File> CLASSLOADER_DIRECTORY_EXCLUDES = new HashSet<>();
+
+    static {
+        // Here we determine the canonical files for the excluded sub-folders under
+        // $OPENNMS_HOME, and add them to the list of excludes
+        try {
+            final File opennmsHome = Bootstrap.findOpenNMSHome();
+            for (final String subfolder : OPENNMS_HOME_CLASSLOADER_EXCLUDES) {
+                final File dir = new File(opennmsHome, subfolder);
+                try {
+                    CLASSLOADER_DIRECTORY_EXCLUDES.add(dir.getCanonicalFile());
+                } catch (IOException e) {
+                    if (DEBUG) {
+                        System.err.printf("Failed to determine the canonical file for '%s'. This directory will not be excluded from the class-path.\n",  dir);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (DEBUG) {
+                System.err.println("Failed to determine $OPENNMS_HOME. Skipping class-loader excludes.");
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Create a ClassLoader with the JARs found in dirStr.
@@ -183,6 +229,24 @@ public abstract class Bootstrap {
      * @throws java.net.MalformedURLException if any.
      */
     public static void loadClasses(File dir, boolean recursive, List<URL> urls) throws MalformedURLException {
+        try {
+            // Attempt to resolve the canonical file for the given directory
+            // and avoid loading any classes if the corresponding directory
+            // is excluded
+            final File canonicalDir = dir.getCanonicalFile();
+            if (CLASSLOADER_DIRECTORY_EXCLUDES.contains(canonicalDir)) {
+                if (DEBUG) {
+                   System.err.println("Skipping excluded directory: " + canonicalDir);
+                }
+                return;
+            }
+        } catch (IOException e) {
+            if (DEBUG) {
+                System.err.printf("Failed to determine the canonical path for '%s'.\n", dir);
+                e.printStackTrace();
+            }
+        }
+
         // Add the directory
         urls.add(dir.toURI().toURL());
 
@@ -220,6 +284,7 @@ public abstract class Bootstrap {
     protected static List<File> getPropertiesFiles(File opennmsHome) {
         final File etc = new File(opennmsHome, "etc");
         final List<File> propertiesFiles = new ArrayList<>();
+        propertiesFiles.add(VERSION_PROPERTIES.toFile());
         propertiesFiles.add(new File(etc, BOOT_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, RRD_PROPERTIES_NAME));
         propertiesFiles.add(new File(etc, LIBRARY_PROPERTIES_NAME));
@@ -319,7 +384,7 @@ public abstract class Bootstrap {
         }
 
         // Otherwise, attempt to infer the path from the location of this code-base
-        File opennmsHome = findOpenNMSHome();
+        File opennmsHome = findOpenNMSHomeUsingJarPath();
         if (opennmsHome == null) {
             System.err.println("Could not determine OpenNMS home "
                     + "directory.  Use \"-Dopennms.home=...\" "

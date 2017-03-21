@@ -88,7 +88,6 @@
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
-        <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
 </beans>
 

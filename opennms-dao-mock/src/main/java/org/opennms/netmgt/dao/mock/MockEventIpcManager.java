@@ -192,7 +192,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     private List<ListenerKeeper> m_listeners = new ArrayList<ListenerKeeper>();
 
-    private int m_pendingEvents;
+    private AtomicInteger m_pendingEvents = new AtomicInteger();
 
     private volatile int m_eventDelay = 20;
 
@@ -229,9 +229,12 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         return m_listeners.size();
     }
 
-    @Override
     public void broadcastNow(final Event event) {
-    	
+        broadcastNow(event, false);
+    }
+
+    @Override
+    public void broadcastNow(final Event event, boolean synchronous) {
     	LOG.debug("Sending: {}", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
         for (final ListenerKeeper k : listeners) {
@@ -279,7 +282,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      */
     public void sendEventToListeners(final Event event) {
         m_eventWriter.writeEvent(event);
-        broadcastNow(event);
+        broadcastNow(event, false);
     }
 
     public void setSynchronous(final boolean syncState) {
@@ -316,7 +319,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         if (m_expander != null) {
             m_expander.expandEvent(event);
         }
-        m_pendingEvents++;
+        m_pendingEvents.incrementAndGet();
         LOG.debug("StartEvent processing ({} remaining)", m_pendingEvents);
         LOG.debug("Received: {}", new EventWrapper(event));
         m_anticipator.eventReceived(event);
@@ -331,11 +334,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                     }
 
                     m_eventWriter.writeEvent(event);
-                    broadcastNow(event);
+                    broadcastNow(event, false);
                     m_anticipator.eventProcessed(event);
                 } finally {
                     synchronized(MockEventIpcManager.this) {
-                        m_pendingEvents--;
+                        m_pendingEvents.decrementAndGet();
                         LOG.debug("Finished processing event ({} remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
                     }
@@ -392,7 +395,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             m_sendNowHook.finishProcessingEvents();
         }
 
-        while (m_pendingEvents > 0) {
+        while (m_pendingEvents.get() > 0) {
         	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {
                 wait();
@@ -419,6 +422,9 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     
     
 
+    /**
+     * Resets the event listeners and resets the event anticipator.
+     */
     public void reset() {
         m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();

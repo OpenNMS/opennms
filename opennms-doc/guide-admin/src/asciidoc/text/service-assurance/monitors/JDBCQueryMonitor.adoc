@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCQueryMonitor
 
 The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.
@@ -25,16 +28,17 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `password` | Database password                                                  | required | `empty string`
 | `query`    | The SQL query to run                                               | required | `-`
 | `action`   | What evaluation action to perform                                  | required | `row_count`
-| `column`   | The result column to evaluate against                              | optional | `-`
+| `column`   | The result column to evaluate against                              | required | `-`
 | `operator` | Operator to use for the evaluation                                 | required | `>=`
 | `operand`  | The operand to compare against the SQL query result                | required | depends on the action
 | `message`  | The message to use if the service is down.
                Both operands and the operator are added to the message too.       | optional | generic message depending on the action
-| `timeout`  | Timeout in ms for the database connection                          | optional | `3000`
 | `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
 
 NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Available _action_ parameters and their default _operand_
 [options="header, autowidth"]

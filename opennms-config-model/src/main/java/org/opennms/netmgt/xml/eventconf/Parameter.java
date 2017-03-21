@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.Reader;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,10 +35,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
 
 /**
@@ -97,15 +92,6 @@ public class Parameter implements Serializable {
 
     public void setExpand(final Boolean expand) {
         m_expand = expand;
-    }
-
-    public static Parameter unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Parameter) Unmarshaller.unmarshal(Parameter.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        Validator validator = new Validator();
-        validator.validate(this);
     }
 
     @Override

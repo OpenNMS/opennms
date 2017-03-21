@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;

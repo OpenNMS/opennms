@@ -107,6 +107,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.google.common.base.Strings;
+
 /**
  * DefaultProvisionService
  *
@@ -775,6 +777,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             }
 
             node.setCategories(dbCategories);
+
+            if (node.getLocation() == null || Strings.isNullOrEmpty(node.getLocation().getLocationName())) {
+                node.setLocation(m_monitoringLocationDao.getDefaultLocation());
+            }
 
             // fill in real service types
             node.visit(new ServiceTypeFulfiller());

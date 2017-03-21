@@ -30,7 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
 
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
@@ -49,20 +49,20 @@ public class ManualLayoutAlgorithm implements LayoutAlgorithm {
     }
 
     @Override
-	public void updateLayout(GraphContainer graphContainer) {
-        final LayoutEntity layoutEntity = layoutManager != null ? layoutManager.loadLayout(graphContainer) : null;
+	public void updateLayout(Graph graph) {
+        final LayoutEntity layoutEntity = layoutManager != null ? layoutManager.loadLayout(graph) : null;
         if (layoutEntity != null) {
             // if we have a persisted layout, we apply it ...
-            final Layout layout = graphContainer.getGraph().getLayout();
-            final Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
+            final Layout layout = graph.getLayout();
+            final Collection<Vertex> vertices = graph.getDisplayVertices();
             for (Vertex vertex : vertices) {
                 PointEntity pointEntity = layoutEntity.getPosition(vertex.getNamespace(), vertex.getId());
                 layout.setLocation(vertex, new Point(pointEntity.getX(), pointEntity.getY()));
             }
         } else {
             // otherwise we apply the manual layout ...
-            final Collection<Vertex> vertices = graphContainer.getGraph().getDisplayVertices();
-            final Layout layout = graphContainer.getGraph().getLayout();
+            final Collection<Vertex> vertices = graph.getDisplayVertices();
+            final Layout layout = graph.getLayout();
             final long notLayedOutCount = vertices.stream().filter(v -> {
                 Point location = layout.getLocation(v);
                 return location.getX() == 0 && location.getY() == 0;
@@ -76,7 +76,7 @@ public class ManualLayoutAlgorithm implements LayoutAlgorithm {
             // If nothing was manually layed out before, or the vertices do not have x,y coordinates assigned, we
             // manually apply the Grid Layout
             if (notLayedOutCount == vertices.size() && noVertexLocationCount == vertices.size()) {
-                new GridLayoutAlgorithm().updateLayout(graphContainer);
+                new GridLayoutAlgorithm().updateLayout(graph);
             } else if(noVertexLocationCount != vertices.size()) {
                 // If we have at least one vertex with coordinates != (0,0), we apply them to the layout
                 for (Vertex vertex : vertices) {

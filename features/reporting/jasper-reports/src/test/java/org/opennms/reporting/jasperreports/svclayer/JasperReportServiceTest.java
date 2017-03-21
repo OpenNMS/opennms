@@ -46,7 +46,6 @@ import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.JasperReportConfigDao;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +66,6 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 @ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
 public class JasperReportServiceTest implements InitializingBean {
 
-    @Autowired
-    JasperReportConfigDao m_configDao;
     @Autowired
     JasperReportService m_reportService;
 

@@ -488,4 +488,8 @@ public abstract class JaxbUtils {
             return null;
         }
     }
+
+    public static <T> T duplicateObject(T obj, final Class<T> clazz) {
+        return unmarshal(clazz, marshal(obj));
+    }
 }

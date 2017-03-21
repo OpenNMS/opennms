@@ -77,10 +77,10 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
-                url = new JMXServiceURL(protocol, InetAddressUtils.str(ipAddress), Integer.parseInt(port), urlPath);
+                url = new JMXServiceURL(protocol, InetAddressUtils.toUrlIpAddress(ipAddress), Integer.parseInt(port), urlPath);
             } else {
                 // Fallback, building a URL for RMI
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
             LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());

@@ -63,41 +63,31 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public void save() {
-        // Do nothing
-    }
-
-    @Override
     public void refresh() {
-        // Do nothing
+        clearEdges();
+        clearVertices();
+
+        List<TestVertex> vertices = new ArrayList<TestVertex>();
+
+        String vId1 = getNextVertexId();
+        TestVertex v1 = new TestVertex(vId1, 0, 0);
+        v1.setLabel("a leaf vertex");
+
+        vertices.add(v1);
+
+        String vId2 = getNextVertexId();
+        TestVertex v2 = new TestVertex(vId2, 0, 0);
+        v2.setLabel("another leaf");
+        vertices.add(v2);
+
+        addVertices(vertices.toArray(new Vertex[0]));
+
+        connectVertices(v1, v2);
     }
 
     @Override
     public Defaults getDefaults() {
         return new Defaults();
-    }
-
-    @Override
-    public void load(String filename) {
-        clearEdges();
-        clearVertices();
-        
-        List<TestVertex> vertices = new ArrayList<TestVertex>();
-        
-        String vId1 = getNextVertexId();
-        TestVertex v1 = new TestVertex(vId1, 0, 0);
-        v1.setLabel("a leaf vertex");
-        
-        vertices.add(v1);
-        
-        String vId2 = getNextVertexId();
-        TestVertex v2 = new TestVertex(vId2, 0, 0);
-        v2.setLabel("another leaf");
-        vertices.add(v2);
-        
-        addVertices(vertices.toArray(new Vertex[0]));
-        
-        connectVertices(v1, v2);
     }
 
     @Override

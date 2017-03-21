@@ -95,23 +95,23 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 			// Expose the MetaTopologyProvider
 			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(m_serviceAccessor);
 			metaTopologyProvider.setTopologyLocation(location);
-			metaTopologyProvider.load();
+			metaTopologyProvider.reload();
 			registerService(pid, MetaTopologyProvider.class, metaTopologyProvider, metaData);
 
 			// Create and register additional services
 			final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
-					.map(eachProvider -> eachProvider.getVertexNamespace())
+					.map(eachProvider -> eachProvider.getNamespace())
 					.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
 					.map(eachVertex -> eachVertex.getIconKey())
 					.filter(eachIconKey -> eachIconKey != null)
 					.collect(Collectors.toSet());
 			registerService(pid, IconRepository.class, new GraphMLIconRepository(iconKeys));
 
-			// Create a OSGi aware script engine manager
+			// Create an OSGi aware script engine manager
 			final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
 			metaTopologyProvider.getGraphProviders().forEach(it -> {
 				// Find Topology Provider
-				final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getVertexNamespace());
+				final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getNamespace());
 
 				// EdgeStatusProvider
 				registerService(pid, EdgeStatusProvider.class, new GraphMLEdgeStatusProvider(rawTopologyProvider, scriptEngineManager, m_serviceAccessor));
@@ -123,7 +123,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 				// Only add status provider if explicitly set in GraphML document
 				if (rawTopologyProvider.requiresStatusProvider()) {
 					GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
-							rawTopologyProvider.getVertexNamespace(),
+							rawTopologyProvider.getNamespace(),
 							(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
 					registerService(pid, StatusProvider.class, statusProvider);
 				}

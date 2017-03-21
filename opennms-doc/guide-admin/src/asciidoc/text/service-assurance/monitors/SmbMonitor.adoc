@@ -1,9 +1,12 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SmbMonitor
 
-This monitor is used to test the _NetBIOS over TCP/IP_ name resolution in Microsoft Windows environments.
+This monitor is used to test the _NetBIOS over TCP/IP_ name resolution in _Microsoft Windows_ environments.
 The monitor tries to retrieve a _NetBIOS name_ for the IP address of the interface.
-Name services for _NetBIOS_ in Microsoft Windows are provided on port 137/UDP or 137/TCP.
+Name services for _NetBIOS_ in _Microsoft Windows_ are provided on port 137/UDP or 137/TCP.
 
 The service uses the IP address of the interface, where the monitor is assigned to.
 The service is _up_ if for the given IP address a _NetBIOS name_ is registered and can be resolved.
@@ -26,11 +29,11 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 .Monitor specific parameters for the SmbMonitor
 [options="header, autowidth"]
 |===
-| Parameter        | Description                                                   | Required | Default value
-| `retry`          | Number of attempts to get a valid response                    | required | `-`
-| `timeout`        | Timeout in milliseconds for TCP connection establishment      | required | `-`
-| `do-node-status` | Try to get the NetBIOS node status type for the given address | optional | `true`
+| Parameter        | Description                                                     | Required | Default value
+| `do-node-status` | Try to get the _NetBIOS_ node status type for the given address | optional | `true`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

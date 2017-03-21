@@ -28,25 +28,25 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.Persister;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
-import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
+import org.opennms.netmgt.collection.support.NumericAttributeUtils;
+import org.opennms.netmgt.model.ResourcePath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A fluent API for building a {@link CollectionSet}.
@@ -59,10 +59,13 @@ import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
  */
 public class CollectionSetBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSetBuilder.class);
+
     private final CollectionAgent m_agent;
     private CollectionStatus m_status = CollectionStatus.SUCCEEDED;
     private Date m_timestamp = new Date();
     private Map<Resource, List<Attribute<?>>> m_attributesByResource = new LinkedHashMap<>();
+    private boolean m_disableCounterPersistence = false;
 
     public CollectionSetBuilder(CollectionAgent agent) {
         m_agent = Objects.requireNonNull(agent, "agent cannot be null");
@@ -79,106 +82,93 @@ public class CollectionSetBuilder {
     }
 
     public CollectionSetBuilder withNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
-        return withAttribute(new NumericAttribute(resource, group, name, value, type));
+        return withAttribute(resource, new NumericAttribute(group, name, value, type, null));
     }
 
     public CollectionSetBuilder withStringAttribute(Resource resource, String group, String name, String value) {
-        return withAttribute(new StringAttribute(resource, group, name, value));
+        return withAttribute(resource, new StringAttribute(group, name, value, null));
     }
 
-    private CollectionSetBuilder withAttribute(Attribute<?> attribute) {
-        if (m_attributesByResource.containsKey(attribute.getResource())) {
+    public CollectionSetBuilder withIdentifiedNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String metricId) {
+        return withAttribute(resource, new NumericAttribute(group, name, value, type, metricId));
+    }
+
+    public CollectionSetBuilder withIdentifiedStringAttribute(Resource resource, String group, String name, String value, String metricId) {
+        return withAttribute(resource, new StringAttribute(group, name, value, metricId));
+    }
+
+    public CollectionSetBuilder withAttribute(Resource resource, String group, String name, String value, AttributeType type) {
+        if (value == null) {
+            LOG.info("Ignoring null value for attribute '{}' in group '{}' on resource '{}'", name, group, resource);
+            return this;
+        } else if (type.isNumeric()) {
+            return withNumericAttribute(resource, group, name, NumericAttributeUtils.parseNumericValue(value), type);
+        } else {
+            return withStringAttribute(resource, group, name, value);
+        }
+    }
+
+    private CollectionSetBuilder withAttribute(Resource resource, Attribute<?> attribute) {
+        if (m_attributesByResource.containsKey(resource)) {
             // Insert
-            m_attributesByResource.get(attribute.getResource()).add(attribute);
+            m_attributesByResource.get(resource).add(attribute);
         } else {
             // Append
             List<Attribute<?>> attributes = new ArrayList<>();
             attributes.add(attribute);
-            m_attributesByResource.put(attribute.getResource(), attributes);
+            m_attributesByResource.put(resource, attributes);
         }
         return this;
     }
 
-    public CollectionSet build() {
-        MultiResourceCollectionSet<CollectionResource> collectionSet = new MultiResourceCollectionSet<CollectionResource>() {};
-        collectionSet.setCollectionTimestamp(m_timestamp);
-        collectionSet.setStatus(m_status.getCode());
-        for (final Entry<Resource, List<Attribute<?>>> entry : m_attributesByResource.entrySet()) {
-            final Resource resource = entry.getKey();
-            final AbstractCollectionResource collectionResource = new AbstractCollectionResource(m_agent) {
-                @Override
-                public String getResourceTypeName() {
-                    return resource.getTypeName();
-                }
+    public CollectionSetBuilder disableCounterPersistence(boolean disableCounterPersistence) {
+        m_disableCounterPersistence = disableCounterPersistence;
+        return this;
+    }
 
-                @Override
-                public String getInstance() {
-                    return resource.getInstance();
-                }
+    public CollectionSetDTO build() {
+        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource, m_disableCounterPersistence);
+    }
 
-                @Override
-                public Path getPath() {
-                    return super.getPath().resolve(resource.getPath(this));
-                }
-
-                @Override
-                public String toString() {
-                    return String.format("Resource[%s]/Node[%d]", resource, m_agent.getNodeId());
-                }
-            };
-    
-            for (Attribute<?> attribute : entry.getValue()) {
-                final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
-                final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {
-                    @Override
-                    public String getType() {
-                        return attribute.getType().getName();
-                    }
-
-                    @Override
-                    public String getName() {
-                        return attribute.getName();
-                    }
-
-                    @Override
-                    public void storeAttribute(CollectionAttribute collectionAttribute, Persister persister) {
-                        if (attribute.getType() == AttributeType.STRING) {
-                            persister.persistStringAttribute(collectionAttribute);
-                        } else {
-                            persister.persistNumericAttribute(collectionAttribute);
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return String.format("AttributeType[%s]/type[%s]", getName(), getType());
-                    }
-                };
-
-                collectionResource.addAttribute(new AbstractCollectionAttribute(attributeType, collectionResource) {
-                    @Override
-                    public String getMetricIdentifier() {
-                        return attribute.getName();
-                    }
-
-                    @Override
-                    public Number getNumericValue() {
-                        return attribute.getNumericValue();
-                    }
-
-                    @Override
-                    public String getStringValue() {
-                        return attribute.getStringValue();
-                    }
-
-                    @Override
-                    public String toString() {
-                        return String.format("Attribute[%s:%s]", getMetricIdentifier(), attribute.getValue());
-                    }
-                });
+    public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {
+        return new AbstractCollectionResource(agent) {
+            @Override
+            public String getResourceTypeName() {
+                return resource.getTypeName();
             }
-            collectionSet.getCollectionResources().add(collectionResource);
-        }
-        return collectionSet;
+
+            @Override
+            public String getInstance() {
+                return resource.getInstance();
+            }
+
+            @Override
+            public ResourcePath getPath() {
+                return ResourcePath.get(super.getPath(), resource.getPath(this));
+            }
+
+            @Override
+            public TimeKeeper getTimeKeeper() {
+                if (resource.getTimestamp() != null) {
+                    return new ConstantTimeKeeper(resource.getTimestamp());
+                }
+                return null;
+            }
+
+            @Override
+            public String toString() {
+                return resource.toString();
+            }
+        };
+    }
+
+    public int getNumResources() {
+        return m_attributesByResource.keySet().size();
+    }
+
+    public int getNumAttributes() {
+        return m_attributesByResource.values().stream()
+                    .mapToInt(attrs -> attrs.size())
+                    .sum();
     }
 }

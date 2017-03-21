@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.netmgt.collection.api.AttributeType;
 
 
 /**
@@ -76,7 +79,7 @@ public class Attrib {
     @XmlAttribute(name = "wmiObject", required = true)
     protected String wmiObject;
     @XmlAttribute(name = "type", required = true)
-    protected String type;
+    protected AttributeType type;
     @XmlAttribute(name = "maxval")
     protected String maxval;
     @XmlAttribute(name = "minval")
@@ -154,27 +157,11 @@ public class Attrib {
         this.wmiObject = value;
     }
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
+    public AttributeType getType() {
         return type;
     }
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
+    public void setType(AttributeType value) {
         this.type = value;
     }
 

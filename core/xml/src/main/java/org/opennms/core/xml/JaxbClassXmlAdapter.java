@@ -28,8 +28,6 @@
 
 package org.opennms.core.xml;
 
-import java.io.StringWriter;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
@@ -56,17 +54,9 @@ public class JaxbClassXmlAdapter extends XmlAdapter<String, Object> {
     public String marshal(final Object obj) throws Exception {
         LOG.trace("marshal: object = {}", obj);
         if (obj == null) return "";
-        try {
-            final String text = JaxbUtils.marshal(obj);
-            LOG.debug("marshal: text = {}", text);
-            return text == null? "" : text;
-        } catch (final Exception e) {
-            final StringWriter sw = new StringWriter();
-            CastorUtils.marshalWithTranslatedExceptions(obj, sw);
-            final String text = sw.toString();
-            LOG.debug("marshal: text = {}", text);
-            return text == null? "" : text;
-        }
+        final String text = JaxbUtils.marshal(obj);
+        LOG.debug("marshal: text = {}", text);
+        return text == null? "" : text;
     }
 
 }

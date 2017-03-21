@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
@@ -42,24 +41,21 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleLayoutAlgorithm.class);
 
 	@Override
-    public void updateLayout(GraphContainer graphContainer) {
-
-    	Graph g = graphContainer.getGraph();
-    	
-		Layout layout = g.getLayout();
+    public void updateLayout(Graph graph) {
+		Layout layout = graph.getLayout();
 
         int r = 100;
         int cx = 500;
         int cy = 500;
         
 		int i = 0;
-		for(Vertex vertex : g.getDisplayVertices()) {
+		for(Vertex vertex : graph.getDisplayVertices()) {
             s_log.debug("Laying out vertex id : {}", vertex);
 			if(i == 0) {
 				layout.setLocation(vertex, new Point(cx, cy));
             } else {
     	        int n = i - 1;
-    	        double a = (2*Math.PI)/(g.getDisplayVertices().size() -1);
+    	        double a = (2*Math.PI)/(graph.getDisplayVertices().size() -1);
     	        
     	        int x = (int) (r * Math.cos(n*a) + cx);
     	        int y = (int) (r * Math.sin(n*a) + cy);

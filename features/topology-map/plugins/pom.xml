@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.topology</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,6 @@
 
   <modules>
     <module>org.opennms.features.topology.plugins.browsers</module>
-    <module>org.opennms.features.topology.plugins.devutils</module>
     <module>org.opennms.features.topology.plugins.layout</module>
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>

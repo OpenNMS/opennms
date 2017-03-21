@@ -9,9 +9,9 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.drools.core.spi.KnowledgeHelper;
 
-global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
+global DroolsCorrelationEngine engine;
 
-declare org.opennms.netmgt.xml.event.Event
+declare Event
     @role(event)
     @timestamp(creationTime)
 end
@@ -23,15 +23,15 @@ end
 rule "test-got-something"
         salience 300
 when
-        $e : org.opennms.netmgt.xml.event.Event(uei matches "uei.opennms.org/nodes/nodeLostService")
+        $e : Event(uei matches "uei.opennms.org/nodes/nodeLostService")
 then
         System.err.println("9247 got one: " + $e);
         EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/nodes/nodeUp", "Component Correlator");
-        eventBuilder.addParam("nodeid", $e.getNodeid().toString());
+        eventBuilder.setNodeid($e.getNodeid());
         insert(eventBuilder.getEvent());
         insert(new Thing());
         insert(new Thing());
-//        engine.sendEvent(eventBuilder.getEvent());
+        engine.sendEvent(eventBuilder.getEvent());
 end
 
 rule "test-two-things-in-a-hmmm-wtf"
@@ -44,15 +44,6 @@ then
         insert(new String("Test"));
 end
 
-//rule "test-two-events-in-a-hmmm-wtf"
-//        salience 100
-//when
-//        accumulate( Event() over window:length(2);
-//            $cnt: count(1); $cnt == 2)
-//then
-//        System.err.println("9247 got two things in time: " + $cnt);
-//        insert(new String("Test"));
-//end
 
 // this rule causes a clastcast exception that is deep in the drools framework
 // https://issues.jboss.org/browse/JBRULES-2735

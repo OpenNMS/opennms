@@ -18,17 +18,18 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.api.topo;
 
 public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
+    private boolean hierarchical;
     protected String name = "Undefined";
     protected String description = "No description available";
 
@@ -50,11 +51,20 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
         return description;
     }
 
+    @Override
+    public boolean isHierarchical() {
+        return hierarchical;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setHierarchical(boolean hierarchical) {
+        this.hierarchical = hierarchical;
     }
 }

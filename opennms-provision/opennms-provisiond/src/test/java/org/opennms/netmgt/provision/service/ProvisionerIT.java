@@ -100,10 +100,9 @@ import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.MockForeignSourceService;
-import org.opennms.netmgt.provision.persist.MockRequisitionService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMerger;
 import org.opennms.netmgt.provision.persist.RequisitionService;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
@@ -114,7 +113,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -1793,6 +1791,50 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         // The interface should remain
         assertEquals(1, node.getIpInterfaces().size());
+    }
+
+    private void testLocationChanges(String path1, String location1, String path2, String location2) throws Exception {
+        importFromResource(path1, Boolean.TRUE.toString());
+        List<OnmsNode> nodes1 = m_nodeDao.findAll();
+        assertEquals(1, nodes1.size());
+        assertNotNull(nodes1.get(0));
+        assertNotNull(nodes1.get(0).getLocation());
+        assertEquals(location1, nodes1.get(0).getLocation().getLocationName());
+
+        importFromResource(path2, Boolean.TRUE.toString());
+        List<OnmsNode> nodes2 = m_nodeDao.findAll();
+        assertEquals(1, nodes2.size());
+        assertNotNull(nodes2.get(0));
+        assertNotNull(nodes2.get(0).getLocation());
+        assertEquals(location2, nodes2.get(0).getLocation().getLocationName());
+    }
+
+    @Test(timeout = 300000)
+    public void testLocationChangeFromFoobarToEmpty() throws Exception {
+        testLocationChanges("classpath:/import_dummy-foobar.xml", "foobar", "classpath:/import_dummy-empty.xml", "Default");
+        List<OnmsMonitoringLocation> locations = m_locationDao.findAll();
+        assertEquals(2, locations.size());
+    }
+
+    @Test(timeout = 300000)
+    public void testLocationChangeFromNullToFoobar() throws Exception {
+        testLocationChanges("classpath:/import_dummy-null.xml", "Default", "classpath:/import_dummy-foobar.xml", "foobar");
+        List<OnmsMonitoringLocation> locations = m_locationDao.findAll();
+        assertEquals(2, locations.size());
+    }
+
+    @Test(timeout = 300000)
+    public void testLocationChangeFromFoobarToNull() throws Exception {
+        testLocationChanges("classpath:/import_dummy-foobar.xml", "foobar", "classpath:/import_dummy-null.xml", "Default");
+        List<OnmsMonitoringLocation> locations = m_locationDao.findAll();
+        assertEquals(2, locations.size());
+    }
+
+    @Test(timeout = 300000)
+    public void testLocationChangeFromEmptyToFoobar() throws Exception {
+        testLocationChanges("classpath:/import_dummy-empty.xml", "Default", "classpath:/import_dummy-foobar.xml", "foobar");
+        List<OnmsMonitoringLocation> locations = m_locationDao.findAll();
+        assertEquals(2, locations.size());
     }
 
     private Event nodeScanAborted(final int nodeId) {

@@ -5,3 +5,20 @@
 To support several specific applications and management agents, _Pollerd_ executes _Service Monitors_.
 This section describes all available built-in _Service Monitors_ which are available and can be configured to allow complex monitoring.
 For information how these can be extended, see _Development Guide_ of the _OpenNMS_ documentation.
+
+[[ga-service-assurance-monitors-common-parameters]]
+==== Common Configuration Parameter
+
+Application or Device specific _Monitors_ are based on a generic API which provide common configuration parameters.
+These minimal configuration parameters are available in all _Monitors_ and describe the behavior for timeouts, retries, etc.
+
+.Common implemented configuration parameters
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                         | Required | Default value
+| `retry`   | Number of attempts to test a _Service_ to be up or down.            | optional | `3`
+| `timeout` | Timeout for the isReachable method, in milliseconds.                | optional | `3000`
+| `invert-status` | Invert the up/down behavior of the monitor                    | optional | `false`
+|===
+
+TIP: In case the _Monitor_ is using the _SNMP Protocol_ the default configuration for `timeout` and `retry` are used from the _SNMP Configuration_ (`snmp-config.xml`).

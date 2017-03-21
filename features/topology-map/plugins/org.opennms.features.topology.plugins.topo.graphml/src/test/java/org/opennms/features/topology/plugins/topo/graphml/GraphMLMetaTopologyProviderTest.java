@@ -63,7 +63,7 @@ public class GraphMLMetaTopologyProviderTest {
         // Initialize the meta topology provider
         final GraphMLMetaTopologyProvider metaTopoProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
-        metaTopoProvider.load();
+        metaTopoProvider.reload();
 
         // Verify Breadcrumb-Strategy
         Assert.assertEquals(BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT, metaTopoProvider.getBreadcrumbStrategy());
@@ -75,7 +75,7 @@ public class GraphMLMetaTopologyProviderTest {
 
         // The first graph should be 'regions'
         GraphProvider regionsGraphProvider = it.next();
-        assertEquals("acme:regions", regionsGraphProvider.getVertexNamespace());
+        assertEquals("acme:regions", regionsGraphProvider.getNamespace());
         assertEquals("regions", regionsGraphProvider.getTopologyProviderInfo().getName());
         assertNull(regionsGraphProvider.getDefaults().getPreferredLayout());
         assertEquals(GraphMLTopologyProvider.DEFAULT_DESCRIPTION, regionsGraphProvider.getTopologyProviderInfo().getDescription());
@@ -89,7 +89,7 @@ public class GraphMLMetaTopologyProviderTest {
 
         // The second graph should be 'markets'
         GraphProvider marketsGraphProvider = it.next();
-        assertEquals("acme:markets", marketsGraphProvider.getVertexNamespace());
+        assertEquals("acme:markets", marketsGraphProvider.getNamespace());
         assertEquals("Markets", marketsGraphProvider.getTopologyProviderInfo().getName());
         assertEquals("The Markets Layer", marketsGraphProvider.getTopologyProviderInfo().getDescription());
         assertEquals("Some Layout", marketsGraphProvider.getDefaults().getPreferredLayout());

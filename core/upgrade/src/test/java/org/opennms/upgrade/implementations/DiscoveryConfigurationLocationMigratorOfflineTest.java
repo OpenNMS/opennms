@@ -41,7 +41,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
@@ -71,32 +71,32 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
         task.postExecute();
 
         final File configFile = new File(m_tempFolder.getRoot(), "etc/discovery-configuration.xml");
-        final DiscoveryConfiguration discoveryConfiguration = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileReader(configFile));
+        final DiscoveryConfiguration discoveryConfiguration = JaxbUtils.unmarshal(DiscoveryConfiguration.class, new FileReader(configFile));
         Assert.assertNotNull(discoveryConfiguration);
-        Assert.assertEquals(3, discoveryConfiguration.getIncludeRangeCount());
-        Assert.assertEquals(3, discoveryConfiguration.getExcludeRangeCount());
-        Assert.assertEquals(3, discoveryConfiguration.getSpecificCount());
-        Assert.assertEquals(3, discoveryConfiguration.getIncludeUrlCount());
+        Assert.assertEquals(3, discoveryConfiguration.getIncludeRanges().size());
+        Assert.assertEquals(3, discoveryConfiguration.getExcludeRanges().size());
+        Assert.assertEquals(3, discoveryConfiguration.getSpecifics().size());
+        Assert.assertEquals(3, discoveryConfiguration.getIncludeUrls().size());
 
         int pittsboroLocation = 0;
         int oldDefaultLocation = 0;
         int newDefaultLocation = 0;
         int nullLocation = 0;
 
-        for(IncludeRange e :discoveryConfiguration.getIncludeRangeCollection()) {
-            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation())) {
+        for(IncludeRange e :discoveryConfiguration.getIncludeRanges()) {
+            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 newDefaultLocation++;
             }
 
-            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation())) {
+            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 oldDefaultLocation++;
             }
 
-            if (e.getLocation() == null) {
+            if (!e.getLocation().isPresent()) {
                 nullLocation++;
             }
 
-            if ("pittsboro".equals(e.getLocation())) {
+            if ("pittsboro".equals(e.getLocation().orElse(null))) {
                 pittsboroLocation++;
             }
         }
@@ -111,20 +111,20 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
         newDefaultLocation = 0;
         nullLocation = 0;
 
-        for(Specific e : discoveryConfiguration.getSpecificCollection()) {
-            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation())) {
+        for(Specific e : discoveryConfiguration.getSpecifics()) {
+            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 newDefaultLocation++;
             }
 
-            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation())) {
+            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 oldDefaultLocation++;
             }
 
-            if (e.getLocation() == null) {
+            if (!e.getLocation().isPresent()) {
                 nullLocation++;
             }
 
-            if ("pittsboro".equals(e.getLocation())) {
+            if ("pittsboro".equals(e.getLocation().orElse(null))) {
                 pittsboroLocation++;
             }
         }
@@ -139,20 +139,20 @@ public class DiscoveryConfigurationLocationMigratorOfflineTest {
         newDefaultLocation = 0;
         nullLocation = 0;
 
-        for(IncludeUrl e : discoveryConfiguration.getIncludeUrlCollection()) {
-            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation())) {
+        for(IncludeUrl e : discoveryConfiguration.getIncludeUrls()) {
+            if (DiscoveryConfigurationLocationMigratorOffline.NEW_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 newDefaultLocation++;
             }
 
-            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation())) {
+            if (DiscoveryConfigurationLocationMigratorOffline.OLD_DEFAULT_LOCATION.equals(e.getLocation().orElse(null))) {
                 oldDefaultLocation++;
             }
 
-            if (e.getLocation() == null) {
+            if (!e.getLocation().isPresent()) {
                 nullLocation++;
             }
 
-            if ("pittsboro".equals(e.getLocation())) {
+            if ("pittsboro".equals(e.getLocation().orElse(null))) {
                 pittsboroLocation++;
             }
         }

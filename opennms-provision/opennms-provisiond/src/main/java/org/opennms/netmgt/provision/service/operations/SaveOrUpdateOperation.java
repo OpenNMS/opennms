@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service.operations;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -47,6 +48,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 
+import com.google.common.base.Strings;
+
 public abstract class SaveOrUpdateOperation extends ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(SaveOrUpdateOperation.class);
 
@@ -59,7 +62,13 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
         super(provisionService);
 
-        m_node = new OnmsNode(new OnmsMonitoringLocation(location, location), nodeLabel);
+        m_node = new OnmsNode();
+
+        m_node.setLocation(Strings.isNullOrEmpty(location) ?
+                new OnmsMonitoringLocation(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) :
+                new OnmsMonitoringLocation(location, location));
+
+        m_node.setLabel(nodeLabel);
         m_node.setId(nodeId);
         m_node.setLabelSource(NodeLabelSource.USER);
         m_node.setType(NodeType.ACTIVE);

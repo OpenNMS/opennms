@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -50,14 +51,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SFreeTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+
+    public enum Type {
+        ErdosRenis, BarabasiAlbert;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SFreeTopologyProvider.class);
 
     private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
-    public static final String ERDOS_RENIS = "ErdosReniy";
-    public static final String BARABASI_ALBERT = "BarabasiAlbert";
-    
+
     private int m_nodeCount = 200;
+
     private double m_connectedness = 4.0;
+
+    private Type type = Type.BarabasiAlbert;
 
     public SFreeTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_SFREE);
@@ -79,30 +86,30 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 		m_connectedness = connectedness;
 	}
 
-	@Override
-    public void save() {
-        // Do nothing
+	public void setType(Type type) {
+        this.type = Objects.requireNonNull(type);
     }
 
     @Override
     public void refresh() {
-        // Do nothing
+        clearVertices();
+        clearEdges();
+
+        switch (type) {
+            case ErdosRenis:
+                createERRandomTopology(m_nodeCount, m_connectedness);
+                break;
+            case BarabasiAlbert:
+                createBARandomTopology(m_nodeCount, m_connectedness);
+                break;
+            default:
+                throw new IllegalStateException("Type not supported");
+        }
     }
 
     @Override
     public Defaults getDefaults() {
         return new Defaults();
-    }
-
-    @Override
-    public void load(String filename) {
-        clearVertices();
-        clearEdges();
-
-        if (filename.equals(ERDOS_RENIS))
-            createERRandomTopology(m_nodeCount,m_connectedness);		
-        else if (filename.equals(BARABASI_ALBERT))
-            createBARandomTopology(m_nodeCount,m_connectedness);
     }
 
     private void createBARandomTopology(int numberOfNodes, double averageNumberofNeighboors) {

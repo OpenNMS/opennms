@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>19.0.0-SNAPSHOT</version>
+  <version>20.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -106,6 +106,9 @@
     <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
+    <!-- build -->
+    <module>checkstyle</module>
+
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
@@ -221,54 +224,6 @@
             <goals><goal>generate-features-xml</goal></goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <staleMillis>1000</staleMillis>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>castor-dependencies</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <type>pom</type>
-            <exclusions>
-              <exclusion>
-                <groupId>javax.jms</groupId>
-                <artifactId>jms</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jdmk</groupId>
-                <artifactId>jmxtools</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jmx</groupId>
-                <artifactId>jmxri</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-            <version>${oroVersion}</version>
-            <scope>runtime</scope>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -654,24 +609,15 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.opennms.maven.plugins</groupId>
-                  <artifactId>castor-maven-plugin</artifactId>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-checkstyle-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
                   <goals>
-                    <!--
-                    <goal>add-test-source</goal>
-                    <goal>add-resource</goal>
-                    <goal>add-test-resource</goal>
-                    -->
-                    <goal>add-source</goal>
-                    <goal>generate</goal>
+                    <goal>check</goal>
                   </goals>
                 </pluginExecutionFilter>
                 <action>
-                  <execute>
-                    <runOnConfiguration>true</runOnConfiguration>
-                    <runOnIncremental>true</runOnIncremental>
-                  </execute>
+                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -1099,7 +1045,7 @@
         <version>0.12.3</version>
       </plugin>
     </plugins>
-  </build>
+ </build>
 
 
  <reporting>
@@ -1244,7 +1190,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>19.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>20.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1318,7 +1264,6 @@
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <camelVersion>2.14.1</camelVersion>
-    <elasticsearchVersion>1.0.0_4</elasticsearchVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
@@ -1376,7 +1321,6 @@
     <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
-    <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2</owaspEncoderVersion>
@@ -1384,8 +1328,8 @@
     <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.21</slf4jVersion>
-    <snmp4jVersion>2.4.3</snmp4jVersion>
-    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
+    <snmp4jVersion>2.5.5</snmp4jVersion>
+    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
@@ -1576,6 +1520,79 @@
         <runPingTests>true</runPingTests>
       </properties>
     </profile>
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <property>
+          <name>!disable.checkstyle</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>2.17</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>7.6</version>
+              </dependency>
+              <dependency>
+                <groupId>org.opennms</groupId>
+                <artifactId>org.opennms.checkstyle</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>com.github.sevntu.checkstyle</groupId>
+                <artifactId>sevntu-checkstyle-maven-plugin</artifactId>
+                <version>1.23.1</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <configLocation>nms_checks.xml</configLocation>
+              <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+              <!-- <sourceDirectory> is needed so that checkstyle ignores the
+                   generated sources directory -->
+              <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+              <includeResources>true</includeResources>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
+              <includeTestResources>true</includeTestResources>
+              <failsOnError>false</failsOnError>
+              <consoleOutput>true</consoleOutput>
+            </configuration>
+            <executions>
+              <execution>
+                <id>check-license</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>process-sources</phase>
+                <configuration>
+                  <configLocation>check-license.xml</configLocation>
+                  <suppressionsLocation>license-suppressions.xml</suppressionsLocation>
+                  <headerLocation>AGPL-LICENSE.regexp.txt</headerLocation>
+                  <includeResources>false</includeResources>
+                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                  <includeTestResources>false</includeTestResources>
+                  <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                  <failsOnError>false</failsOnError>
+                  <consoleOutput>true</consoleOutput>
+                </configuration>
+              </execution>
+              <execution>
+                <id>check-style</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>process-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <dependencyManagement>
     <dependencies>
@@ -1602,6 +1619,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.checkstyle</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.api</artifactId>
         <version>${project.version}</version>
@@ -1619,11 +1641,6 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.camel</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.castor-properties</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1754,6 +1771,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.camel</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.collection</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1929,7 +1952,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.collectors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.client-rpc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.test-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2345,12 +2383,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>castor-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-bsf</artifactId>
         <version>${project.version}</version>
@@ -2403,6 +2435,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-provision-command</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-requisition-service</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3787,11 +3824,6 @@
         <version>4.0.3</version>
       </dependency>
       <dependency>
-        <groupId>oro</groupId>
-        <artifactId>oro</artifactId>
-        <version>${oroVersion}</version>
-      </dependency>
-      <dependency>
         <groupId>poi</groupId>
         <artifactId>poi</artifactId>
         <version>2.5.1-final-20040804</version>
@@ -3951,6 +3983,11 @@
       <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
+    <pluginRepository>
+      <id>sevntu-maven</id>
+      <name>sevntu-maven</name>
+      <url>http://sevntu-checkstyle.github.io/sevntu.checkstyle/maven2</url>
+    </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
     <site>

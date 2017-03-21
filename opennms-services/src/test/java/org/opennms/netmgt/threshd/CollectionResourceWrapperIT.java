@@ -61,7 +61,9 @@ import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.Parameter;
@@ -74,6 +76,7 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -112,7 +115,7 @@ public class CollectionResourceWrapperIT {
         
         // Add Gauge Attribute
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, "myGauge", "gauge", "0", "100");
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, "myGauge", AttributeType.GAUGE, "0", "100");
         attributes.put(attribute.getName(), attribute);
 
         // Create Wrapper
@@ -156,7 +159,7 @@ public class CollectionResourceWrapperIT {
         String attributeName = "myCounter";
         String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "1000");
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", "1000");
         attributes.put(attribute.getName(), attribute);
         
         //We manipulate the Date objects passed to the CollectionResourceWrapper to simulate various collection intervals
@@ -171,7 +174,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(1000.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "2500");
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", "2500");
         attributes.put(attribute.getName(), attribute);
         //Next wrapper is told the data was collected 5 minutes in the future (300 seconds)
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime()+300000));
@@ -189,7 +192,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(2500.0), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "5500");
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", "5500");
         attributes.put(attribute.getName(), attribute);
         //Next wrapper is told the data was collected 10 minutes in the future (600 seconds), or after the first collection
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime()+600000));
@@ -224,7 +227,7 @@ public class CollectionResourceWrapperIT {
 		String attributeName = "myCounter";
 	        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
 		Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
-		SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "1000");
+		SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", "1000");
 		attributes.put(attribute.getName(), attribute);
 
 		// We manipulate the Date objects passed to the
@@ -245,7 +248,7 @@ public class CollectionResourceWrapperIT {
 				CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", "2500");
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", "2500");
         attributes.put(attribute.getName(), attribute);
         //Next wrapper is told the data was collected 5 minutes in the future (300 seconds)
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime()+300000));
@@ -264,7 +267,7 @@ public class CollectionResourceWrapperIT {
 		// expecting null result and no cache updates
 		attributes = new HashMap<String, CollectionAttribute>();
 		attribute = addAttributeToCollectionResource(resource, "notMyCounter",
-		                "counter", "0", "1000"); // We want a value, just not one called "myCounter"
+		        AttributeType.COUNTER, "0", "1000"); // We want a value, just not one called "myCounter"
 		attributes.put(attribute.getName(), attribute);
 		// Next collection is 10 minutes (600 seconds) after the first.
 		wrapper = createWrapper(resource, attributes,
@@ -282,7 +285,7 @@ public class CollectionResourceWrapperIT {
 		// change divided by two collection cycles
 		attributes = new HashMap<String, CollectionAttribute>();
 		attribute = addAttributeToCollectionResource(resource, attributeName,
-				"counter", "0", "7300");
+		        AttributeType.COUNTER, "0", "7300");
 		attributes.put(attribute.getName(), attribute);
 		
 		// Next collection is 15 minutes (900 seconds) after the first.
@@ -322,7 +325,7 @@ public class CollectionResourceWrapperIT {
         String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         BigInteger initialValue = new BigDecimal(Math.pow(2, 32) - 20000).toBigInteger();
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", initialValue);
         attributes.put(attribute.getName(), attribute);
         
         // Get counter value - first time
@@ -333,7 +336,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(initialValue.doubleValue()), CollectionResourceWrapper.s_cache.get(attributeId).getValue());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("40000"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("40000"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 300000));
 
@@ -395,7 +398,7 @@ public class CollectionResourceWrapperIT {
 
         // Creating Resource
         SnmpCollectionResource resource = new IfInfo(resourceType, agent, ifData);
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, "ifInOctets", "counter", "ifIndex", "5000");
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, "ifInOctets", AttributeType.COUNTER, "ifIndex", "5000");
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         attributes.put(attribute.getName(), attribute);
         
@@ -438,8 +441,8 @@ public class CollectionResourceWrapperIT {
         GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, rt);
 
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, resourceType.getName(), new SnmpInstId(100));
-        SnmpAttribute used = addAttributeToCollectionResource(resource, "hrStorageUsed", "gauge", "hrStorageIndex", "5000");
-        SnmpAttribute label = addAttributeToCollectionResource(resource, "hrStorageLabel", "string", "hrStorageIndex", "/opt");
+        SnmpAttribute used = addAttributeToCollectionResource(resource, "hrStorageUsed", AttributeType.GAUGE, "hrStorageIndex", "5000");
+        SnmpAttribute label = addAttributeToCollectionResource(resource, "hrStorageLabel", AttributeType.STRING, "hrStorageIndex", "/opt");
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         attributes.put(used.getName(), used);
         attributes.put(label.getName(), label);
@@ -471,9 +474,9 @@ public class CollectionResourceWrapperIT {
         GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, rt);
 
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, resourceType.getName(), new SnmpInstId(100));
-        SnmpAttribute total = addAttributeToCollectionResource(resource, "ns-dskTotal", "gauge", "dskIndex", "10000");
-        SnmpAttribute used = addAttributeToCollectionResource(resource, "ns-dskUsed", "gauge", "dskIndex", "5000");
-        SnmpAttribute label = addAttributeToCollectionResource(resource, "ns-dskPath", "string", "dskIndex", "/opt");
+        SnmpAttribute total = addAttributeToCollectionResource(resource, "ns-dskTotal", AttributeType.GAUGE, "dskIndex", "10000");
+        SnmpAttribute used = addAttributeToCollectionResource(resource, "ns-dskUsed", AttributeType.GAUGE, "dskIndex", "5000");
+        SnmpAttribute label = addAttributeToCollectionResource(resource, "ns-dskPath", AttributeType.STRING, "dskIndex", "/opt");
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         attributes.put(used.getName(), used);
         attributes.put(total.getName(), total);
@@ -498,7 +501,7 @@ public class CollectionResourceWrapperIT {
         String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         BigInteger initialValue = new BigInteger("300");
-        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);
+        SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", initialValue);
         attributes.put(attribute.getName(), attribute);
 
         // Get counter value - first time
@@ -510,7 +513,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
 
         // Increase counter
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("600"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("600"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 300000));
         Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
@@ -518,7 +521,7 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 600 - 300 / 300 = 1.0
 
         // Increase counter again
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("900"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("900"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 600000));
         Assert.assertFalse(CollectionResourceWrapper.s_cache.get(attributeId).getValue().isNaN());
@@ -526,14 +529,14 @@ public class CollectionResourceWrapperIT {
         Assert.assertEquals(Double.valueOf(1.0), wrapper.getAttributeValue(attributeName)); // 900 - 600 / 300 = 1.0
 
         // Emulate a sysUpTime restart
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("60"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("60"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 900000));
         wrapper.setCounterReset(true);
         Assert.assertTrue(wrapper.getAttributeValue(attributeName).isNaN());
 
         // Increase counter again
-        attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", new BigInteger("120"));
+        attribute = addAttributeToCollectionResource(resource, attributeName, AttributeType.COUNTER, "0", new BigInteger("120"));
         attributes.put(attribute.getName(), attribute);
         wrapper = createWrapper(resource, attributes, new Date(baseDate.getTime() + 1200000));
         Assert.assertEquals(Double.valueOf(0.2), wrapper.getAttributeValue(attributeName)); // 120 - 60 / 300 = 0.2
@@ -565,26 +568,39 @@ public class CollectionResourceWrapperIT {
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.expect(agent.getForeignSource()).andReturn("JUnit").anyTimes();
         EasyMock.expect(agent.getForeignId()).andReturn("T001").anyTimes();
-        EasyMock.expect(agent.getStorageDir()).andReturn(new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY + File.separator + "JUnit" + File.separator + "T001")).anyTimes();
+        EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, "JUnit", "T001")).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }
 
-    private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, String attributeType, String attributeInstance, String value) {
+    private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, AttributeType attributeType, String attributeInstance, String value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
-        SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
+        SnmpAttributeType objectType = null;
+
         SnmpValue snmpValue = null;
-        if (attributeType.equals("string")) {
+        if (AttributeType.STRING.equals(attributeType)) {
+            objectType = new SnmpAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE)) {
+                @Override
+                public AttributeType getType() {
+                    return AttributeType.STRING;
+                }
+
+                @Override
+                public void storeAttribute(CollectionAttribute attribute, Persister persister) {
+                    persister.persistStringAttribute(attribute);
+                }
+            };
             snmpValue = SnmpUtils.getValueFactory().getOctetString(value.getBytes());
         } else {
+            objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
             long v = Long.parseLong(value);
-            snmpValue = attributeType.equals("counter") ? SnmpUtils.getValueFactory().getCounter32(v) : SnmpUtils.getValueFactory().getGauge32(v);
+            snmpValue = AttributeType.COUNTER.equals(attributeType) ? SnmpUtils.getValueFactory().getCounter32(v) : SnmpUtils.getValueFactory().getGauge32(v);
         }
         resource.setAttributeValue(objectType, snmpValue);
         return new SnmpAttribute(resource, objectType, snmpValue);
     }
 
-    private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, String attributeType, String attributeInstance, BigInteger value) {
+    private SnmpAttribute addAttributeToCollectionResource(SnmpCollectionResource resource, String attributeName, AttributeType attributeType, String attributeInstance, BigInteger value) {
         MibObject object = createMibObject(attributeType, attributeName, attributeInstance);
         SnmpAttributeType objectType = new NumericAttributeType(resource.getResourceType(), "default", object, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         SnmpValue snmpValue = SnmpUtils.getValueFactory().getCounter64(value);
@@ -592,11 +608,11 @@ public class CollectionResourceWrapperIT {
         return new SnmpAttribute(resource, objectType, snmpValue);
     }
 
-    private MibObject createMibObject(String type, String alias, String instance) {
+    private MibObject createMibObject(AttributeType type, String alias, String instance) {
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.1.1.1");
         mibObject.setAlias(alias);
-        mibObject.setType(type);
+        mibObject.setType(type.toString());
         mibObject.setInstance(instance);
         mibObject.setMaxval(null);
         mibObject.setMinval(null);

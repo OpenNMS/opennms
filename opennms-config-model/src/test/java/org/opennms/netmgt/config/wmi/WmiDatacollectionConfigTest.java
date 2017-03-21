@@ -34,6 +34,7 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollectionConfig> {
 
@@ -72,7 +73,7 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
         attrib.setName("AvailableBytes");
         attrib.setAlias("wmiOSMemAvailBytes");
         attrib.setWmiObject("AvailableBytes");
-        attrib.setType("gauge");
+        attrib.setType(AttributeType.GAUGE);
         wpm.getAttrib().add(attrib);
 
         config.getWmiCollection().add(wmiCollection);

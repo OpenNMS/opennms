@@ -220,8 +220,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getState().setActiveTool(m_activeTool);
 
         Graph graph = getGraph();
-        //Set Status provider from the graph container because I may move it later
-        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getVertexStatusProvider(), getState());
+        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, getState());
         try {
             graph.visit(painter);
         } catch (Exception e) {
@@ -365,7 +364,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
 
-        }else {
+        } else {
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
     }

@@ -177,7 +177,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             String dsMax = dataSource.getMax();
             double min = (dsMin == null || "U".equals(dsMin) ? Double.NaN : Double.parseDouble(dsMin));
             double max = (dsMax == null || "U".equals(dsMax) ? Double.NaN : Double.parseDouble(dsMax));
-            def.addDatasource(dataSource.getName(), dataSource.getType(), dataSource.getHeartBeat(), min, max);
+            def.addDatasource(dataSource.getName(), dataSource.getType().toString(), dataSource.getHeartBeat(), min, max);
         }
 
         for (String rra : rraList) {

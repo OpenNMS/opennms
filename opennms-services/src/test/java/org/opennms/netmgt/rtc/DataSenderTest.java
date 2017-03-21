@@ -34,8 +34,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +55,7 @@ public class DataSenderTest {
      */
     @Test
     @Ignore
-    public void testSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
+    public void testSendData() throws IOException, FilterParseException, SAXException, SQLException, RTCException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
         RTCConfigFactory configFactory = new RTCConfigFactory(stream);
         stream.close();
@@ -76,8 +74,8 @@ public class DataSenderTest {
         Category category = new Category();
         category.setLabel(categoryName);
         category.setComment("Some database servers.  Exciting, eh?");
-        category.setNormal(99.0);
-        category.setWarning(97.0);
+        category.setNormalThreshold(99.0);
+        category.setWarningThreshold(97.0);
         RTCCategory rtcCategory = new RTCCategory(category, categoryName);
         Map<String, RTCCategory> rtcCategories = new HashMap<String, RTCCategory>();
         rtcCategories.put(categoryName, rtcCategory);

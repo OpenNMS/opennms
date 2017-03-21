@@ -52,8 +52,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
@@ -595,12 +593,6 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             logger.info("No credentials found for connecting to host {}, trying anonymously...", m_hostname);
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(m_hostname);
-            } catch (MarshalException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
-                return null;
-            } catch (ValidationException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
-                return null;
             } catch (IOException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", m_hostname, e.getMessage());
                 return null;

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,6 +39,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.api.AttributeType;
+
 import java.util.Objects;
 
 @XmlRootElement(name="attrib")
@@ -53,7 +57,7 @@ public class Attrib implements java.io.Serializable {
     private String _alias;
 
     @XmlAttribute(name="type", required=true)
-    private String _type;
+    private AttributeType _type;
 
     @XmlAttribute(name="maxval")
     private String _maxval;
@@ -94,7 +98,7 @@ public class Attrib implements java.io.Serializable {
         return this._name;
     }
 
-    public String getType() {
+    public AttributeType getType() {
         return this._type;
     }
 
@@ -119,7 +123,7 @@ public class Attrib implements java.io.Serializable {
         this._name = name;
     }
 
-    public void setType(final String type) {
+    public void setType(final AttributeType type) {
         this._type = type;
     }
 }

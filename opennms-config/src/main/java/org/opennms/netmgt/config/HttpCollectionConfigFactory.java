@@ -88,9 +88,7 @@ public class HttpCollectionConfigFactory {
      * <p>Constructor for HttpCollectionConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException 
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException
      */
     public HttpCollectionConfigFactory(InputStream stream) throws IOException {
         initialize(stream);
@@ -108,8 +106,6 @@ public class HttpCollectionConfigFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, FileNotFoundException {
         
@@ -151,8 +147,6 @@ public class HttpCollectionConfigFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException, FileNotFoundException {
         m_instance = null;
@@ -165,8 +159,6 @@ public class HttpCollectionConfigFactory {
      * read it.
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void updateFromFile() throws IOException {
         if (m_loadedFromFile) {
@@ -202,6 +194,12 @@ public class HttpCollectionConfigFactory {
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpCollection} object.
      */
     public HttpCollection getHttpCollection(String collectionName) {
+        try {
+            updateFromFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         List<HttpCollection> collections = m_config.getHttpCollection();
         HttpCollection collection = null;
         for (HttpCollection coll : collections) {

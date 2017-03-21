@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import static org.opennms.netmgt.xml.eventconf.EventMatchers.*;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.field;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueEqualsMatcher;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueMatchesRegexMatcher;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueStartsWithMatcher;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -46,13 +46,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * The mask element
@@ -193,28 +187,8 @@ public class Maskelement implements Serializable {
         return m_values.size();
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
     public Iterator<String> iterateMevalue() {
         return m_values.iterator();
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     public void removeAllMevalue() {
@@ -259,14 +233,6 @@ public class Maskelement implements Serializable {
         for (final String value : values) {
             m_values.add(value.intern());
         }
-    }
-
-    public static Maskelement unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Maskelement) Unmarshaller.unmarshal(Maskelement.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 	@Override

@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.model.events;
 
+import static java.util.Calendar.YEAR;
+
 import java.net.InetAddress;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -57,12 +61,25 @@ import org.springframework.util.StringUtils;
  * <p>EventBuilder class.</p>
  */
 public class EventBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(EventBuilder.class);
 
-    
+    private static final Logger LOG = LoggerFactory.getLogger(EventBuilder.class);
+
     private Event m_event;
-    
+
+    private Calendar.Builder calendarBuilder = null;
+
+    private boolean hasCalendarBuilderYear = false;
+
+    /**
+     * <p>Constructor for EventBuilder.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     * @param source a {@link java.lang.String} object.
+     */
+    public EventBuilder() {
+        m_event = new Event();
+    }
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
@@ -104,6 +121,27 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event getEvent() {
+        if (m_event.getTime() == null && calendarBuilder != null) {
+            Calendar calendar = calendarBuilder.build();
+
+            // TODO: If some Calendar.Builder fields have not been set,
+            // intelligently set them so that we generate a observed 
+            // timestamp that is less than or slightly greater than 
+            // System.currentTimeMillis() (due to clock skew). For instance,
+            // around midnight on Dec 31, 2017, we do not want to generate
+            // timestamps of Dec 31, 2018 at the instant that:
+            // 
+            // Calendar.getInstance().get(YEAR)
+            // 
+            // starts returning 2018.
+            //
+            if (!hasCalendarBuilderYear) {
+                calendar.set(YEAR, Calendar.getInstance().get(YEAR));
+            }
+
+            m_event.setTime(calendar.getTime());
+        }
+
         if (m_event.getCreationTime() == null) {
             // The creation time has been used as the time when the event
             // is stored in the database so update it right before we return
@@ -143,6 +181,55 @@ public class EventBuilder {
     public EventBuilder setTime(final Date date) {
        m_event.setTime(date);
        return this;
+    }
+
+    protected Calendar.Builder getCalendarBuilder() {
+        if (calendarBuilder == null) {
+            calendarBuilder = new Calendar.Builder();
+        }
+        return calendarBuilder;
+    }
+
+    public EventBuilder setYear(final int value) {
+        getCalendarBuilder().set(Calendar.YEAR, value);
+        hasCalendarBuilderYear = true;
+        return this;
+    }
+
+    public EventBuilder setMonth(final int value) {
+        // Subtract 1 since Calendar months are zero-based
+        getCalendarBuilder().set(Calendar.MONTH, value - 1);
+        return this;
+    }
+
+    public EventBuilder setDayOfMonth(final int value) {
+        getCalendarBuilder().set(Calendar.DAY_OF_MONTH, value);
+        return this;
+    }
+
+    public EventBuilder setHourOfDay(final int value) {
+        getCalendarBuilder().set(Calendar.HOUR_OF_DAY, value);
+        return this;
+    }
+
+    public EventBuilder setMinute(final int value) {
+        getCalendarBuilder().set(Calendar.MINUTE, value);
+        return this;
+    }
+
+    public EventBuilder setSecond(final int value) {
+        getCalendarBuilder().set(Calendar.SECOND, value);
+        return this;
+    }
+
+    public EventBuilder setMillisecond(final int value) {
+        getCalendarBuilder().set(Calendar.MILLISECOND, value);
+        return this;
+    }
+
+    public EventBuilder setTimeZone(final TimeZone value) {
+        getCalendarBuilder().setTimeZone(value);
+        return this;
     }
 
     /**
@@ -307,6 +394,17 @@ public class EventBuilder {
         }
 
         return addParam(parmName, val);
+    }
+
+    /**
+     * <p>setParam</p>
+     *
+     * @param parmName a {@link java.lang.String} object.
+     * @param val a int.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public EventBuilder setParam(final String parmName, final int val) {
+        return setParam(parmName, Integer.toString(val));
     }
 
     /**

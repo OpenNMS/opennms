@@ -39,8 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -58,16 +56,17 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DataSourceFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataSourceFactory.class);
 
-       //private static final Class<?> DEFAULT_FACTORY_CLASS = AtomikosDataSourceFactory.class;
-       private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
+    //private static final Class<?> DEFAULT_FACTORY_CLASS = AtomikosDataSourceFactory.class;
+    //private static final Class<?> DEFAULT_FACTORY_CLASS = HikariCPConnectionFactory.class;
+    private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
 
-	private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
-	
-    private static final Map<String, DataSource> m_dataSources = new ConcurrentHashMap<String, DataSource>();
-    
-    private static final List<Runnable> m_closers = new LinkedList<Runnable>();
+    private static DataSourceConfigurationFactory m_dataSourceConfigFactory;
+
+    private static final Map<String, DataSource> m_dataSources = new ConcurrentHashMap<>();
+
+    private static final List<Runnable> m_closers = new LinkedList<>();
 
     private static ClosableDataSource parseDataSource(final String dsName) {
         String factoryClass = null;
@@ -111,13 +110,11 @@ public abstract class DataSourceFactory {
      * @deprecated This function is no longer necessary for DataSourceFactory initialization
      * 
      * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws ClassNotFoundException
      * @throws PropertyVetoException
      * @throws SQLException
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+    public static synchronized void init() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
     }
 
     /**
@@ -205,7 +202,10 @@ public abstract class DataSourceFactory {
      * @param ds a {@link javax.sql.DataSource} object.
      */
     public static synchronized void setInstance(final String dsName, final DataSource ds) {
-        m_dataSources.put(dsName, ds);
+        DataSource oldDs = m_dataSources.put(dsName, ds);
+        if (oldDs != null) {
+            // TODO: Call the closer Runnable?
+        }
     }
 
     /**

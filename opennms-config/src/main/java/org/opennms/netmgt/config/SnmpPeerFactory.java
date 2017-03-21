@@ -208,8 +208,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * Saves the current settings to disk
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void saveCurrent() throws IOException {
         saveToFile(getFile());

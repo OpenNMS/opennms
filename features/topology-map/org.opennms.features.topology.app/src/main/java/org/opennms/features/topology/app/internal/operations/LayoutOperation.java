@@ -59,6 +59,7 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
      */
     private void execute(GraphContainer container) {
         container.setLayoutAlgorithm(m_factory.getLayoutAlgorithm());
+        container.redoLayout();
     }
 
     @Override

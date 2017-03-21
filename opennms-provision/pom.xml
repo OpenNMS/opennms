@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision</artifactId>
@@ -16,6 +16,7 @@
     <module>opennms-detector-simple</module>
     <module>opennms-snmp-scanners</module>
     <module>opennms-provisiond</module>
+    <module>opennms-provision-geolocation</module>
     <module>opennms-provision-persistence</module>
     <module>opennms-provision-shell</module>
     <module>opennms-detector-registry</module>
@@ -27,6 +28,7 @@
     <module>opennms-detector-web</module>
     <module>opennms-detector-bsf</module>
     <module>opennms-detectorclient-rpc</module>
+    <module>opennms-requisition-service</module>
   </modules>
   <dependencyManagement>
     <dependencies>

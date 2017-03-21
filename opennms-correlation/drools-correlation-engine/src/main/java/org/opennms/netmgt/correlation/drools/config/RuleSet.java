@@ -1,29 +1,31 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
- * 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
- */
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.correlation.drools.config;
 
 import java.io.IOException;
@@ -47,11 +49,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.drools.ConfigFileApplicationContext;
@@ -61,6 +58,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.xml.sax.ContentHandler;
+
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * Class RuleSet.
@@ -405,20 +404,6 @@ public class RuleSet implements Serializable {
     }
 
     /**
-     * Method isValid.
-     *
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateEvent.
      *
      * @return an Iterator over all possible elements in this collection
@@ -443,37 +428,6 @@ public class RuleSet implements Serializable {
      */
     public Iterator<String> iterateRuleFile() {
         return this._ruleFileList.iterator();
-    }
-
-    /**
-     *
-     *
-     * @param out
-     * @throws MarshalException if object is null or if any SAXException is
-     * thrown during marshaling
-     * @throws ValidationException if this object is an invalid instance
-     * according to the schema
-     */
-    public void marshal(
-            final Writer out)
-            throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     *
-     *
-     * @param handler
-     * @throws IOException if an IOException occurs during marshaling
-     * @throws ValidationException if this object is an invalid instance
-     * according to the schema
-     * @throws MarshalException if object is null or if any SAXException is
-     * thrown during marshaling
-     */
-    public void marshal(
-            final ContentHandler handler)
-            throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -740,31 +694,6 @@ public class RuleSet implements Serializable {
         this._ruleFileList = ruleFileList;
     }
 
-    /**
-     * Method unmarshal.
-     *
-     * @param reader
-     * @throws MarshalException if object is null or if any SAXException is
-     * thrown during marshaling
-     * @throws ValidationException if this object is an invalid instance
-     * according to the schema
-     * @return the unmarshaled RuleSet
-     */
-    public static RuleSet unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (RuleSet) Unmarshaller.unmarshal(RuleSet.class, reader);
-    }
-
-    /**
-     *
-     *
-     * @throws ValidationException if this object is an invalid instance
-     * according to the schema
-     */
-    public void validate() throws ValidationException {
-        Validator validator = new Validator();
-        validator.validate(this);
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -831,11 +760,10 @@ public class RuleSet implements Serializable {
         return true;
     }
 
-    public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager) {
+    public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
         final ApplicationContext configContext = new ConfigFileApplicationContext(basePath, getConfigLocation(), appContext);
 
-        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
-        engine.setName(getName());
+        final DroolsCorrelationEngine engine = new DroolsCorrelationEngine(getName(), metricRegistry);
         engine.setAssertBehaviour(getAssertBehaviour());
         engine.setEventProcessingMode(getEventProcessingMode());
         engine.setEventIpcManager(eventIpcManager);
