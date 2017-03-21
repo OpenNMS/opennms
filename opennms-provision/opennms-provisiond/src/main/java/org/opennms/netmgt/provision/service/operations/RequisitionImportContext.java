@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 public class RequisitionImportContext {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionImportContext.class);
     private Throwable m_throwable;
-    private boolean rescanExisting;
     private ImportRequest importRequest;
     private String foreignSource;
 
@@ -63,7 +62,7 @@ public class RequisitionImportContext {
         if (m_throwable == null) {
             m_throwable = t;
         } else {
-            LOG.warn("Requisition {} has already been aborted, but we received another abort message.  Ignoring.", foreignSource, t);
+            LOG.warn("Requisition {} has already been aborted, but we received another abort message. Ignoring.", foreignSource, t);
         }
     }
 
@@ -73,6 +72,6 @@ public class RequisitionImportContext {
     }
 
     public boolean isRescanExisting() {
-        return importRequest.getRescanExisting() == null || Boolean.valueOf(importRequest.getRescanExisting());
+        return importRequest.getRescanExisting() == null || Boolean.valueOf(importRequest.getRescanExisting()) || "dbonly".equals(importRequest.getRescanExisting());
     }
 }
