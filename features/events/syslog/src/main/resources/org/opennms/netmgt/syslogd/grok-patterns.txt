@@ -62,10 +62,12 @@
 
 
 # RFC 5424 with secondFraction
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} - %{STRING:message}
 <%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:message}
 <%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
 
 # RFC 5424
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} - %{STRING:message}
 <%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:message}
 <%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
 

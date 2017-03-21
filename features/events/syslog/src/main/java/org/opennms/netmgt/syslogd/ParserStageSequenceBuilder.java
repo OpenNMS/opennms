@@ -258,17 +258,20 @@ public class ParserStageSequenceBuilder {
 
 		public abstract AcceptResult acceptChar(ParserStageState state, char c);
 
-		public final ParserState apply(final ParserState state) {
-			if (state == null) {
+		public final ParserState apply(final ParserState incomingState) {
+			if (incomingState == null) {
 				return null;
 			} else {
 				LOG.trace("Starting stage: " + this);
 			}
 
+			ParserState state = incomingState.clone();
+
 			// Create a new state for the current ParserStage.
 			// Use ByteBuffer.duplicate() to create a buffer with marks
 			// and positions that only this stage will use.
-			ParserStageState stageState = new ParserStageState(state.getBuffer().duplicate()); 
+//			ParserStageState stageState = new ParserStageState(state.getBuffer().duplicate()); 
+			ParserStageState stageState = new ParserStageState(state.getBuffer()); 
 
 			while(true) {
 				stageState.buffer.mark();
@@ -285,7 +288,8 @@ public class ParserStageSequenceBuilder {
 //						// Reset any local state if necessary
 //						reset(stageState);
 
-						return new ParserState(stageState.buffer, state.builder);
+						LOG.trace("End of buffer with terminal match");
+						return new ParserState(stageState.buffer, state.message);
 					} else if (m_optional) {
 //						// TODO: Should we reset the buffer here? It probably
 //						// doesn't matter since we're at the end of the buffer.
@@ -294,7 +298,8 @@ public class ParserStageSequenceBuilder {
 //						// Reset any local state if necessary
 //						reset(stageState);
 
-						return new ParserState(stageState.buffer, state.builder);
+						LOG.trace("End of buffer with optional match");
+						return new ParserState(stageState.buffer, state.message);
 					} else {
 						// Reached end of buffer, match failed
 						LOG.trace("Parse failed due to buffer underflow: " + this);
@@ -313,7 +318,7 @@ public class ParserStageSequenceBuilder {
 //						// Reset any local state if necessary
 //						reset(stageState);
 
-						return new ParserState(stageState.buffer, state.builder);
+						return new ParserState(stageState.buffer, state.message);
 					case COMPLETE_WITHOUT_CONSUMING:
 						if (m_resultConsumer != null) {
 							m_resultConsumer.accept(state, getValue(stageState));
@@ -325,7 +330,7 @@ public class ParserStageSequenceBuilder {
 						// Move the mark back before the current character
 						stageState.buffer.reset();
 
-						return new ParserState(stageState.buffer, state.builder);
+						return new ParserState(stageState.buffer, state.message);
 					case CANCEL:
 						if (m_optional) {
 							stageState.buffer.reset();
@@ -333,7 +338,7 @@ public class ParserStageSequenceBuilder {
 							// Reset any local state if necessary
 							reset(stageState);
 
-							return new ParserState(stageState.buffer, state.builder);
+							return new ParserState(stageState.buffer, state.message);
 						} else {
 							// Match failed
 							LOG.trace("Parse failed: " + this);

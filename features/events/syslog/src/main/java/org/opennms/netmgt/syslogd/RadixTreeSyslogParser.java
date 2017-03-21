@@ -33,7 +33,6 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
  * This parser reads a set of grok patterns that are stored in the 
@@ -71,12 +70,7 @@ public class RadixTreeSyslogParser extends SyslogParser {
 	}
 
 	@Override
-	public EventBuilder parseToEventBuilder(String systemId, String location) {
-		EventBuilder bldr = radixParser.parse(getText()).join();
-		if (bldr != null) {
-			bldr.setDistPoller(systemId);
-			// TODO: Set nodeid based on location
-		}
-		return bldr;
+	public SyslogMessage parse() {
+		return radixParser.parse(getText()).join();
 	}
 }

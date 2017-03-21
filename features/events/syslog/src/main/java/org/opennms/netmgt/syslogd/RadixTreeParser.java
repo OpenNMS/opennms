@@ -37,8 +37,6 @@ import java.util.concurrent.CompletionStage;
 import org.opennms.core.collections.RadixTree;
 import org.opennms.core.collections.RadixTreeImpl;
 import org.opennms.core.collections.RadixTreeNode;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Seth
  */
-public class RadixTreeParser implements ByteBufferParser<EventBuilder> {
+public class RadixTreeParser implements ByteBufferParser<SyslogMessage> {
 
 	final static Logger LOG = LoggerFactory.getLogger(RadixTreeParser.class);
 
@@ -85,18 +83,13 @@ public class RadixTreeParser implements ByteBufferParser<EventBuilder> {
 	}
 
 	@Override
-	public CompletableFuture<EventBuilder> parse(ByteBuffer incoming) {
-		ParserState state = new ParserState(incoming, new EventBuilder());
-
-// TODO
-//		state.builder.setDistPoller(systemId);
-		state.builder.setLogDest("logndisplay");
-		state.builder.setSource(Syslogd.LOG4J_CATEGORY);
-		// Set event host
-		state.builder.setHost(InetAddressUtils.getLocalHostName());
-
+	public CompletableFuture<SyslogMessage> parse(ByteBuffer incoming) {
+		ParserState state = new ParserState(incoming);
 
 		// TODO: Use better collection than ArrayList?
+		// We have to make sure that this list maintains the insertion order
+		// so that the first future that completes is definitely returned by
+		// {@link RadixTreeParser#firstNonNullResult()}
 		final List<CompletableFuture<ParserState>> finishedFutures = new ArrayList<>();
 
 		// Top of future tree is parser state
@@ -109,7 +102,7 @@ public class RadixTreeParser implements ByteBufferParser<EventBuilder> {
 			if (s == null) {
 				return null;
 			} else {
-				return s.builder;
+				return s.message;
 			}
 		});
 	}
@@ -159,6 +152,8 @@ public class RadixTreeParser implements ByteBufferParser<EventBuilder> {
 					if (t != null) {
 						if (!parent.complete(t)) {
 							LOG.trace("More than one future completed with a non-null result");
+						} else {
+							LOG.trace("Non-null result returned");
 						}
 					}
 				})

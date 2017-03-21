@@ -174,7 +174,7 @@ public class CustomSyslogParser extends SyslogParser {
         final int colonIdx = message.indexOf(':');
         final int spaceIdx = message.indexOf(' ');
 
-        Integer processId = null;
+        String processId = null;
         String processName = null;
 
         // If statement has been reversed in order to make the decision faster
@@ -185,9 +185,8 @@ public class CustomSyslogParser extends SyslogParser {
             message = message.substring(colonIdx + 2);
         } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
-            String processIdStr = message.substring(lbIdx + 1, rbIdx);
+            processId = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
-            processId = parseInt(processIdStr, "Bad process id '{}'");
         }
 
         if (processId != null) {

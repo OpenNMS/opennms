@@ -80,12 +80,7 @@ public class JuniperSyslogParser extends SyslogParser {
 
         message.setHostName(matcher.group(3));
         message.setProcessName(matcher.group(4));
-        try {
-            final Integer pid = Integer.parseInt(matcher.group(5));
-            message.setProcessId(pid);
-        } catch (final NumberFormatException nfe) {
-            LOG.debug("Unable to parse '{}' as a process ID.", matcher.group(5), nfe);
-        }
+        message.setProcessId(matcher.group(5));
         message.setMessage(matcher.group(6).trim());
 
         return message;

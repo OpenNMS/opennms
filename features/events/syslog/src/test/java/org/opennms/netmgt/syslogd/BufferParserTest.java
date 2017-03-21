@@ -47,7 +47,6 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchChar;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchMonth;
 import org.opennms.netmgt.xml.event.Event;
@@ -75,35 +74,33 @@ public class BufferParserTest {
 
 		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
 		//BufferParserFactory grokFactory = parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
-		ByteBufferParser<EventBuilder> grokParser = new SingleSequenceParser(grokStages);
+		ByteBufferParser<SyslogMessage> grokParser = new SingleSequenceParser(grokStages);
 
 		// SyslogNG format
 		List<ParserStage> parserStages = new ParserStageSequenceBuilder()
 			.intBetweenDelimiters('<', '>', (s,v) -> {
-				String facilityTxt = SyslogFacility.getFacilityForCode(v).toString();
-				String priorityTxt = SyslogSeverity.getSeverityForCode(v).toString();
+				SyslogFacility facility = SyslogFacility.getFacilityForCode(v);
+				SyslogSeverity priority = SyslogSeverity.getSeverityForCode(v);
 
-				s.builder.setParam("service", facilityTxt);
-				s.builder.setParam("severity", priorityTxt);
-				s.builder.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+				s.message.setFacility(facility);
+				s.message.setSeverity(priority);
 			})
 			.whitespace()
-			.monthString((s,v) -> { s.builder.setMonth(v); })
+			.monthString((s,v) -> { s.message.setMonth(v); })
 			.whitespace()
-			.integer((s,v) -> { s.builder.setDayOfMonth(v); })
+			.integer((s,v) -> { s.message.setDayOfMonth(v); })
 			.whitespace()
-			.integer((s,v) -> { s.builder.setHourOfDay(v); })
+			.integer((s,v) -> { s.message.setHourOfDay(v); })
 			.character(':')
-			.integer((s,v) -> { s.builder.setMinute(v); })
+			.integer((s,v) -> { s.message.setMinute(v); })
 			.character(':')
-			.integer((s,v) -> { s.builder.setSecond(v); })
+			.integer((s,v) -> { s.message.setSecond(v); })
 			.whitespace()
-			// TODO: This is not correct
-			.stringUntilWhitespace((s,v) -> { s.builder.setHost(v); })
+			.stringUntilWhitespace((s,v) -> { s.message.setHostName(v); })
 			.whitespace()
-			.stringUntil("\\s[:", (s,v) -> { s.builder.addParam("processName", v); })
+			.stringUntil("\\s[:", (s,v) -> { s.message.setProcessName(v); })
 			.optional().character('[')
-			.optional().integer((s,v) -> { s.builder.addParam("processId", v); })
+			.optional().integer((s,v) -> { s.message.setProcessId(String.valueOf(v)); })
 			.optional().character(']')
 			.optional().character(':')
 			.whitespace()
@@ -116,21 +113,19 @@ public class BufferParserTest {
 			.stringUntilWhitespace(null) // Original time zone
 			.whitespace()
 			.character('%')
-			.stringUntilChar('-', (s,v) -> { s.builder.addParam("facility", v); })
+			.stringUntilChar('-', (s,v) -> { s.message.setParam("facility", v); })
 			.character('-')
-			.stringUntilChar('-', (s,v) -> { s.builder.addParam("severity", v); })
+			.stringUntilChar('-', (s,v) -> { s.message.setParam("severity", v); })
 			.character('-')
-			.stringUntilChar(':', (s,v) -> { s.builder.addParam("mnemonic", v); })
+			.stringUntilChar(':', (s,v) -> { s.message.setParam("mnemonic", v); })
 			.character(':')
 			.whitespace()
 			.terminal().string((s,v) -> {
-				s.builder.setLogMessage(v);
-				// Using parms provides configurability.
-				s.builder.setParam("syslogmessage", v);
+				s.message.setMessage(v);
 			 })
 			.getStages()
 			;
-		ByteBufferParser<EventBuilder> parser = new SingleSequenceParser(parserStages);
+		ByteBufferParser<SyslogMessage> parser = new SingleSequenceParser(parserStages);
 
 		RadixTreeParser radixParser = new RadixTreeParser();
 		//radixParser.teach(grokStages.toArray(new ParserStage[0]));
@@ -160,7 +155,7 @@ public class BufferParserTest {
 		int iterations = 100000;
 
 		{
-			CompletableFuture<EventBuilder> event = null;
+			CompletableFuture<SyslogMessage> event = null;
 			Event lastEvent = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
@@ -175,17 +170,17 @@ public class BufferParserTest {
 			}
 			// Wait for the last future to complete
 			try {
-				lastEvent = event.get().getEvent();
+				event.get();
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("RADIX: " + (end - start) + "ms");
-			System.out.println(lastEvent.toString());
+//			System.out.println(lastEvent.toString());
 		}
 
 		{
-			CompletableFuture<EventBuilder> event = null;
+			CompletableFuture<SyslogMessage> event = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				event = parser.parse(incoming.asReadOnlyBuffer());
@@ -208,7 +203,7 @@ public class BufferParserTest {
 		}
 
 		{
-			CompletableFuture<EventBuilder> event = null;
+			CompletableFuture<SyslogMessage> event = null;
 			long start = System.currentTimeMillis();
 			for (int i = 0; i < iterations; i++) {
 				event = grokParser.parse(incoming.asReadOnlyBuffer());
@@ -334,15 +329,15 @@ public class BufferParserTest {
 	 */
 	@Test
 	public void testGrokWithAdjacentPatterns() {
-		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("%{INT:a}%{MONTH:b}%{INT:c}%{STRING:d} %{INT:e}"));
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("%{INT:year}%{MONTH:month}%{INT:day}%{STRING:messageId} %{INT:hour}"));
 
-		Event event = parser.parse(ByteBuffer.wrap("435Jan333fghj 999".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
-		assertEquals("435", event.getParm("a").getValue().getContent());
+		SyslogMessage message = parser.parse(ByteBuffer.wrap("435Jan333fghj 999".getBytes(StandardCharsets.US_ASCII))).join();
+		assertEquals(435, message.getYear().intValue());
 		// January
-		assertEquals("1", event.getParm("b").getValue().getContent());
-		assertEquals("333", event.getParm("c").getValue().getContent());
-		assertEquals("fghj", event.getParm("d").getValue().getContent());
-		assertEquals("999", event.getParm("e").getValue().getContent());
+		assertEquals(1, message.getMonth().intValue());
+		assertEquals(333, message.getDayOfMonth().intValue());
+		assertEquals("fghj", message.getMessageID());
+		assertEquals(999, message.getHourOfDay().intValue());
 
 		assertNull(parser.parse(ByteBuffer.wrap("Feb12345".getBytes(StandardCharsets.US_ASCII))).join());
 	}
@@ -354,12 +349,12 @@ public class BufferParserTest {
 	 */
 	@Test
 	public void testGrokWithAdjacentEscape() {
-		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("\\5%{INT:a}\\%\\%%{MONTH:b}\\f"));
+		SingleSequenceParser parser = new SingleSequenceParser(GrokParserStageSequenceBuilder.parseGrok("\\5%{INT:day}\\%\\%%{MONTH:month}\\f"));
 
-		Event event = parser.parse(ByteBuffer.wrap("56666%%Febf".getBytes(StandardCharsets.US_ASCII))).join().getEvent();
-		assertEquals("6666", event.getParm("a").getValue().getContent());
+		SyslogMessage message = parser.parse(ByteBuffer.wrap("56666%%Febf".getBytes(StandardCharsets.US_ASCII))).join();
+		assertEquals(6666, message.getDayOfMonth().intValue());
 		// February
-		assertEquals("2", event.getParm("b").getValue().getContent());
+		assertEquals(2, message.getMonth().intValue());
 
 		assertNull(parser.parse(ByteBuffer.wrap("5abc%%Febf".getBytes(StandardCharsets.US_ASCII))).join());
 	}
@@ -383,7 +378,7 @@ public class BufferParserTest {
 
 		System.out.println(treeParser.toString());
 
-		CompletableFuture<EventBuilder> root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
+		CompletableFuture<SyslogMessage> root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
 		assertNotNull("One pattern should match", root.join());
 		root = treeParser.parse(ByteBuffer.wrap("bbd".getBytes()));
 		assertNull("No pattern should match", root.join());
@@ -430,9 +425,19 @@ public class BufferParserTest {
 	public void testParseSingleMessage() {
 		RadixTreeParser radixParser = new RadixTreeParser();
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}").toArray(new ParserStage[0]));
-		EventBuilder bldr = radixParser.parse(ByteBuffer.wrap("<31>main: 2010-08-19 localhost foo%d: load test %d on tty1".getBytes(StandardCharsets.US_ASCII))).join();
-		assertNotNull(bldr);
-		Event event = bldr.getEvent();
+		SyslogMessage message = radixParser.parse(ByteBuffer.wrap("<31>main: 2010-08-19 localhost foo%d: load test %d on tty1".getBytes(StandardCharsets.US_ASCII))).join();
+		assertNotNull(message);
+		assertEquals("main", message.getMessageID());
+		assertEquals("foo%d", message.getProcessName());
+		assertEquals(2010, message.getYear().intValue());
+		assertEquals(8, message.getMonth().intValue());
+		assertEquals(19, message.getDayOfMonth().intValue());
+		assertNull(message.getHourOfDay());
+		assertNull(message.getMinute());
+		assertNull(message.getSecond());
+		assertNull(message.getMillisecond());
+		assertNull(message.getTimeZone());
+		Event event = SyslogParser.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("main", event.getParm("messageid").getValue().getContent());
 		assertEquals("foo%d", event.getParm("process").getValue().getContent());
 	}

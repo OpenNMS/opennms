@@ -202,9 +202,11 @@ public class ConvertToEventTest {
                 return;
             }
 
-            // Replace the "\x00" tokens with null characters. This allows us to store the 
-            // syslogMessages.txt file as text instead of binary in git
-            syslog = syslog.replaceAll("\\x00", "\0");
+            // Replace the "\u0000" tokens with null characters. This allows us to store the 
+            // syslogMessages.txt file as text instead of binary in git.
+            syslog = syslog.replaceAll("\\\\u0000", "\u0000");
+            // Similarly, replace the "\uFEFF" tokens with UTF-16 byte order marker characters. 
+            syslog = syslog.replaceAll("\\\\uFEFF", "\uFEFF");
 
             final Event[] events = new Event[5];
             try {
@@ -260,30 +262,21 @@ public class ConvertToEventTest {
                 }
 
                 // Make sure that all parsers that match are emitting the same events
-//                assertTrue("UEIs do not match", compare("uei", ueis.toArray(new String[0])));
-//                assertTrue("times do not match", compare("time", times.toArray(new Date[0])));
-//                assertTrue("nodeIds do not match", compare("nodeId", nodeIds.toArray(new Long[0])));
-//                assertTrue("interfaces do not match", compare("interface", interfaces.toArray(new String[0])));
-//                assertTrue("messageid parms do not match", compare("messageid", messageids.toArray(new String[0])));
-//                assertTrue("severity parms do not match", compare("severity", severities.toArray(new String[0])));
-//                assertTrue("timestamp parms do not match", compare("timestamp", timestamps.toArray(new String[0])));
-//                assertTrue("process parms do not match", compare("process", processes.toArray(new String[0])));
-//                assertTrue("service parms do not match", compare("service", services.toArray(new String[0])));
-//                assertTrue("processid parms do not match", compare("processid", processids.toArray(new String[0])));
-//                assertTrue("parm counts do not match", compare("parm count", parmcounts.toArray(new Long[0])));
-//                assertTrue("logmsgs do not match", compare("logmsg", logmsgs.toArray(new String[0])));
-//                assertTrue("syslogmessage parms do not match", compare("syslogmessage", syslogmessages.toArray(new String[0])));
-                compare("uei", ueis.toArray(new String[0]));
+                assertTrue("UEIs do not match", compare("uei", ueis.toArray(new String[0])));
+//              assertTrue("times do not match", compare("time", times.toArray(new Date[0])));
                 compare("time", times.toArray(new Date[0]));
-                compare("nodeId", nodeIds.toArray(new Long[0]));
-                compare("interface", interfaces.toArray(new String[0]));
-                compare("messageid", messageids.toArray(new String[0]));
-                compare("severity", severities.toArray(new String[0]));
+                assertTrue("nodeIds do not match", compare("nodeId", nodeIds.toArray(new Long[0])));
+                assertTrue("interfaces do not match", compare("interface", interfaces.toArray(new String[0])));
+                assertTrue("messageid parms do not match", compare("messageid", messageids.toArray(new String[0])));
+                assertTrue("severity parms do not match", compare("severity", severities.toArray(new String[0])));
+//              assertTrue("timestamp parms do not match", compare("timestamp", timestamps.toArray(new String[0])));
                 compare("timestamp", timestamps.toArray(new String[0]));
-                compare("process", processes.toArray(new String[0]));
-                compare("service", services.toArray(new String[0]));
-                compare("processid", processids.toArray(new String[0]));
-                compare("parm count", parmcounts.toArray(new Long[0]));
+                assertTrue("process parms do not match", compare("process", processes.toArray(new String[0])));
+                assertTrue("service parms do not match", compare("service", services.toArray(new String[0])));
+                assertTrue("processid parms do not match", compare("processid", processids.toArray(new String[0])));
+                assertTrue("parm counts do not match", compare("parm count", parmcounts.toArray(new Long[0])));
+//              assertTrue("logmsgs do not match", compare("logmsg", logmsgs.toArray(new String[0])));
+//              assertTrue("syslogmessage parms do not match", compare("syslogmessage", syslogmessages.toArray(new String[0])));
                 compare("logmsg", logmsgs.toArray(new String[0]));
                 compare("syslogmessage", syslogmessages.toArray(new String[0]));
             } catch (Throwable e) {

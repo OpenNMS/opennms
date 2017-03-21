@@ -32,25 +32,30 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The state of the entire parse operation. This state
  * should include all of the finished tokens generated
  * by {@link ParserStage} operations.
  */
-public class ParserState {
+public class ParserState implements Cloneable {
+
+	private final static Logger LOG = LoggerFactory.getLogger(ParserState.class);
+
 	private final ByteBuffer buffer;
 
 	// TODO: Replace with a strategy
-	public final EventBuilder builder;
+	public final SyslogMessage message;
 
 	public ParserState(ByteBuffer input) {
-		this(input, new EventBuilder());
+		this(input, new SyslogMessage());
 	}
 
-	public ParserState(ByteBuffer input, EventBuilder builder) {
+	public ParserState(ByteBuffer input, SyslogMessage message) {
 		this.buffer = input;
-		this.builder = builder;
+		this.message = message;
 	}
 
 	public ByteBuffer getBuffer() {
@@ -61,7 +66,15 @@ public class ParserState {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
-			.append("builder", builder)
+			.append("message", message)
 			.toString();
+	}
+	
+	@Override
+	public ParserState clone() {
+		ParserState retval = new ParserState(buffer.duplicate(), message.clone());
+		LOG.trace("ORIGINAL: {}", this);
+		LOG.trace("CLONE   : {}", retval);
+		return retval;
 	}
 }

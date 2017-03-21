@@ -37,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,10 +150,6 @@ public class SyslogParser {
         return message;
     }
 
-    public EventBuilder parseToEventBuilder(String systemId, String location) throws SyslogParserException {
-        return toEventBuilder(parse(), systemId, location);
-    }
-
     protected Matcher getMatcher() {
         if (m_matcher == null) {
             m_matcher = getPattern().matcher(SyslogParser.fromByteBuffer(getText()));
@@ -171,8 +166,9 @@ public class SyslogParser {
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
 
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
-
+        EventBuilder bldr = new EventBuilder();
+        bldr.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+        bldr.setSource("syslogd");
 
         // Set constant values in EventBuilder
 
@@ -202,7 +198,18 @@ public class SyslogParser {
             bldr.setInterface(hostAddress);
         }
 
-        bldr.setTime(message.getDate());
+        if (message.getDate() == null) {
+            if (message.getYear() != null) bldr.setYear(message.getYear());
+            if (message.getMonth() != null) bldr.setMonth(message.getMonth());
+            if (message.getDayOfMonth() != null) bldr.setDayOfMonth(message.getDayOfMonth());
+            if (message.getHourOfDay() != null) bldr.setHourOfDay(message.getHourOfDay());
+            if (message.getMinute() != null) bldr.setMinute(message.getMinute());
+            if (message.getSecond() != null) bldr.setSecond(message.getSecond());
+            if (message.getMillisecond() != null) bldr.setMillisecond(message.getMillisecond());
+            if (message.getTimeZone() != null) bldr.setTimeZone(message.getTimeZone());
+        } else {
+            bldr.setTime(message.getDate());
+        }
 
         bldr.setLogMessage(message.getMessage());
         // Using parms provides configurability.
@@ -210,7 +217,11 @@ public class SyslogParser {
 
         bldr.addParam("severity", priorityTxt);
 
-        bldr.addParam("timestamp", message.getRfc3164FormattedDate());
+        bldr.addParam("timestamp", SyslogMessage.getRfc3164FormattedDate(bldr.currentEventTime()));
+
+        if (message.getMessageID() != null) {
+            bldr.addParam("messageid", message.getMessageID());
+        }
 
         if (message.getProcessName() != null) {
             bldr.addParam("process", message.getProcessName());

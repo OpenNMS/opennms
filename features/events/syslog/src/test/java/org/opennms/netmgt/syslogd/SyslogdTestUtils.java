@@ -29,6 +29,7 @@
 package org.opennms.netmgt.syslogd;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -49,6 +50,10 @@ public abstract class SyslogdTestUtils {
     }
 
     public static ByteBuffer toByteBuffer(String string) {
-        return ByteBuffer.wrap(string.getBytes(StandardCharsets.US_ASCII));
+        return toByteBuffer(string, StandardCharsets.US_ASCII);
+    }
+
+    public static ByteBuffer toByteBuffer(String string, Charset charset) {
+        return ByteBuffer.wrap(string.getBytes(charset));
     }
 }

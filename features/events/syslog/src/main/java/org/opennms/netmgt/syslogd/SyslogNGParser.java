@@ -88,12 +88,7 @@ public class SyslogNGParser extends SyslogParser {
         message.setHostName(matcher.group(4));
         message.setProcessName(matcher.group(5));
         if (matcher.group(6) != null) {
-            try {
-                final Integer pid = Integer.parseInt(matcher.group(6));
-                message.setProcessId(pid);
-            } catch (final NumberFormatException nfe) {
-                LOG.debug("Unable to parse '{}' as a process ID.", matcher.group(6), nfe);
-            }
+            message.setProcessId(matcher.group(6));
         }
         message.setMessage(matcher.group(7).trim());
 

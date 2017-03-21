@@ -146,15 +146,15 @@ public class ConvertToEvent {
         if (!parser.find()) {
             throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
         }
-        EventBuilder bldr;
+        SyslogMessage message;
         try {
-            bldr = parser.parseToEventBuilder(systemId, location);
+            message = parser.parse();
         } catch (final SyslogParserException ex) {
             LOG.debug("Unable to parse '{}'", SyslogParser.fromByteBuffer(buffer), ex);
             throw new MessageDiscardedException(ex);
         }
 
-        if (bldr == null) {
+        if (message == null) {
             throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
         }
 
@@ -162,9 +162,8 @@ public class ConvertToEvent {
             LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
         }
 
-        // TODO: Remove these
-        final String priorityTxt = bldr.getEvent().getParm("severity") == null ? null : bldr.getEvent().getParm("severity").getValue().getContent();
-        final String facilityTxt = bldr.getEvent().getParm("service") == null ? null : bldr.getEvent().getParm("service").getValue().getContent();
+        final String priorityTxt = message.getSeverity().toString();
+        final String facilityTxt = message.getFacility().toString();
 
         // Post-process the message based on the SyslogdConfig
 
@@ -187,36 +186,35 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
+        EventBuilder bldr = SyslogParser.toEventBuilder(message, systemId, location);
+
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
         for (final UeiMatch uei : ueiMatch) {
             final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
                                               containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
-                                              matchProcess(uei.getProcessMatch(), bldr.getEvent().getParm("process") == null ? null : bldr.getEvent().getParm("process").getValue().getContent()) &&
-                                              matchHostname(uei.getHostnameMatch(), bldr.getEvent().getParm("hostname") == null ? null : bldr.getEvent().getParm("hostname").getValue().getContent()) &&
-                                              matchHostAddr(uei.getHostaddrMatch(), str(bldr.getEvent().getInterfaceAddress()));
+                                              matchProcess(uei.getProcessMatch(), message.getProcessName()) &&
+                                              matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
+                                              matchHostAddr(uei.getHostaddrMatch(), str(message.getHostAddress()));
 
             if (messageMatchesUeiListEntry) {
                 if (uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(bldr.getEvent().getParm("syslogmessage") == null ? null : bldr.getEvent().getParm("syslogmessage").getValue().getContent(), uei, bldr, config.getDiscardUei())) {
+                    if (matchSubstring(message.getMessage(), uei, bldr, config.getDiscardUei())) {
                         break;
                     }
                 } else if ((uei.getMatch().getType().startsWith("regex"))) {
-                    if (matchRegex(bldr.getEvent().getParm("syslogmessage") == null ? null : bldr.getEvent().getParm("syslogmessage").getValue().getContent(), uei, bldr, config.getDiscardUei())) {
+                    if (matchRegex(message.getMessage(), uei, bldr, config.getDiscardUei())) {
                         break;
                     }
                 }
             }
         }
 
-
         // Time to verify if we need to hide the message
         final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages().getHideMatchCollection());
         boolean doHide = false;
         if (hideMatch.size() > 0) {
             // Match this regex against the full string of the message
-// TODO: FIGURE OUT HOW TO GENERATE THIS VALUE
-//            final String fullText = message.asRfc3164Message();
-            final String fullText = bldr.getEvent().getParm("syslogmessage") == null ? null : bldr.getEvent().getParm("syslogmessage").getValue().getContent();
+            final String fullText = message.asRfc3164Message();
 
             for (final HideMatch hide : hideMatch) {
                 if (hide.getMatch().getType().equals("substr")) {

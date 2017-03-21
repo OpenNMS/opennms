@@ -250,58 +250,56 @@ SNMP-only:
 
 		if (semanticType == null) {
 			return (s,v) -> {
-				s.builder.setParam(semanticString, v);
+				s.message.setParam(semanticString, v);
 			};
 		} else {
 			switch(semanticType) {
 			case day:
 				return (s,v) -> {
-					s.builder.setDayOfMonth(v);
+					s.message.setDayOfMonth(v);
 				};
 			case facilityPriority:
 				return (s,v) -> {
-					String facilityTxt = SyslogFacility.getFacilityForCode(v).toString();
-					String priorityTxt = SyslogSeverity.getSeverityForCode(v).toString();
+					SyslogFacility facility = SyslogFacility.getFacilityForCode(v);
+					SyslogSeverity priority = SyslogSeverity.getSeverityForCode(v);
 
-					s.builder.setParam("service", facilityTxt);
-					s.builder.setParam("severity", priorityTxt);
-					s.builder.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+					s.message.setFacility(facility);
+					s.message.setSeverity(priority);
 				};
 			case hour:
 				return (s,v) -> {
-					s.builder.setHourOfDay(v);
+					s.message.setHourOfDay(v);
 				};
 			case minute:
 				return (s,v) -> {
-					s.builder.setMinute(v);
+					s.message.setMinute(v);
 				};
 			case month:
 				return (s,v) -> {
-					s.builder.setMonth(v);
+					s.message.setMonth(v);
 				};
 			case processId:
 				// processId can be an integer or string
 				return (s,v) -> {
-					s.builder.setParam("processid", v);
+					s.message.setProcessId(String.valueOf(v));
 				};
 			case second:
 				return (s,v) -> {
-					s.builder.setSecond(v);
+					s.message.setSecond(v);
 				};
 			// TODO: This should be handled as a string... this is only
 			// in here as a stopgap until we create a DIGITS pattern type.
 			case secondFraction:
 				return (s,v) -> {
-					s.builder.setMillisecond(v);
+					s.message.setMillisecond(v);
 				};
 			case version:
-				// Unique to this parser
 				return (s,v) -> {
-					s.builder.setParam("syslogversion", v);
+					s.message.setVersion(v);
 				};
 			case year:
 				return (s,v) -> {
-					s.builder.setYear(v);
+					s.message.setYear(v);
 				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have an integer value", semanticString));
@@ -309,8 +307,6 @@ SNMP-only:
 		}
 
 	}
-
-	private static final BiConsumer<ParserState,String> NOOP = (s,v) -> {};
 
 	/**
 	 * This function maps {@link SemanticType} values of type String to {@link EventBuilder}
@@ -329,18 +325,17 @@ SNMP-only:
 
 		if (semanticType == null) {
 			return (s,v) -> {
-				s.builder.setParam(semanticString, v);
+				s.message.setParam(semanticString, v);
 			};
 		} else {
 			switch(semanticType) {
 			case hostname:
-				// TODO
-				return NOOP;
+				return (s,v) -> {
+					s.message.setHostName(v);
+				};
 			case message:
 				return (s,v) -> {
-					s.builder.setLogMessage(v);
-					// Using parms provides configurability.
-					s.builder.setParam("syslogmessage", v);
+					s.message.setMessage(v);
 				};
 			case messageId:
 				// Unique to this parser
@@ -348,7 +343,7 @@ SNMP-only:
 					if ("-".equals(v.trim())) {
 						// Ignore
 					} else {
-						s.builder.setParam("messageid", v);
+						s.message.setMessageID(v);
 					}
 				};
 			case processId:
@@ -357,7 +352,7 @@ SNMP-only:
 					if ("-".equals(v.trim())) {
 						// Ignore
 					} else {
-						s.builder.setParam("processid", v);
+						s.message.setProcessId(v);
 					}
 				};
 			case processName:
@@ -365,7 +360,7 @@ SNMP-only:
 					if ("-".equals(v.trim())) {
 						// Ignore
 					} else {
-						s.builder.setParam("process", v);
+						s.message.setProcessName(v);
 					}
 				};
 			case secondFraction:
@@ -374,38 +369,39 @@ SNMP-only:
 					// is the best resolution that EventBuilder can handle
 					switch(v.length()) {
 					case 1:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) * 100);
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v) * 100);
 						break;
 					case 2:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) * 10);
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v) * 10);
 						break;
 					case 3:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v));
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v));
 						break;
 					case 4:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 10);
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v) / 10);
 						break;
 					case 5:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 100);
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v) / 100);
 						break;
 					case 6:
-						s.builder.setMillisecond(MatchInteger.trimAndConvert(v) / 1000);
+						s.message.setMillisecond(MatchInteger.trimAndConvert(v) / 1000);
 						break;
 					}
 				};
 			case timezone:
 				return (s,v) -> {
 					// TODO: Make sure this works for all variants
-					s.builder.setTimeZone(TimeZone.getTimeZone(v));
+					if (v.charAt(0) == 'Z' && v.length() == 1) {
+						s.message.setTimeZone(TimeZone.getTimeZone("UTC"));
+					} else {
+						s.message.setTimeZone(TimeZone.getTimeZone(v));
+					}
 				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));
 			}
 		}
 	}
-
-//	TODO: Figure out how to add a timestamp parm to the event
-//	bldr.addParam("timestamp", message.getSyslogFormattedDate());
 
 	public static List<ParserStage> parseGrok(String grok) {
 		GrokState state = GrokState.TEXT;

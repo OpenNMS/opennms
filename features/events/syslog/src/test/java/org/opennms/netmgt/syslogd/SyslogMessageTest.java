@@ -35,14 +35,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -83,7 +84,7 @@ public class SyslogMessageTest {
         assertEquals("test", message.getMessageID());
         assertEquals("127.0.0.1", message.getHostName());
         assertEquals("OpenNMS", message.getProcessName());
-        assertEquals(1234, message.getProcessId().intValue());
+        assertEquals("1234", message.getProcessId());
         assertEquals("A SyslogNG style message", message.getMessage());
     }
 
@@ -122,7 +123,7 @@ public class SyslogMessageTest {
         assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
         assertEquals("mgmtd", message.getProcessName());
-        assertEquals(8326, message.getProcessId().intValue());
+        assertEquals("8326", message.getProcessId());
         assertEquals("[mgmtd.NOTICE]: Configuration saved to database initial", message.getMessage());
     }
     
@@ -200,7 +201,7 @@ public class SyslogMessageTest {
         assertEquals(date, message.getDate());
         assertEquals("127.0.0.1", message.getHostName());
         assertEquals("OpenNMS", message.getProcessName());
-        assertEquals(1234, message.getProcessId().intValue());
+        assertEquals("1234", message.getProcessId());
         assertEquals("A SyslogNG style message", message.getMessage());
     }
 
@@ -249,13 +250,13 @@ public class SyslogMessageTest {
         assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
         assertEquals("mgmtd", message.getProcessName());
-        assertEquals(8326, message.getProcessId().intValue());
+        assertEquals("8326", message.getProcessId());
         assertEquals("[mgmtd.NOTICE]: Configuration saved to database initial", message.getMessage());
     }
 
     @Test
     public void testRfc5424ParserExample1() throws Exception {
-        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<34>1 2003-10-11T22:14:15.000Z mymachine.example.com su - ID47 - BOM'su root' failed for lonvick on /dev/pts/8"));
+        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<34>1 2003-10-11T22:14:15.000Z mymachine.example.com su - ID47 - 'su root' failed for lonvick on /dev/pts/8"));
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
         final Date date = new Date(1065910455000L);
@@ -269,7 +270,25 @@ public class SyslogMessageTest {
         assertEquals("ID47", message.getMessageID());
         assertEquals("'su root' failed for lonvick on /dev/pts/8", message.getMessage());
     }
-    
+
+    @Test
+    @Ignore("We cannot handle byte order mark (BOM) characters yet because we always decode the message buffer as US_ASCII in SyslogParser.fromByteBuffer()")
+    public void testRfc5424ParserExampleWithByteOrderMark() throws Exception {
+        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<34>1 2003-10-11T22:14:15.000Z mymachine.example.com su - ID47 - \uFEFF'su root' failed for lonvick on /dev/pts/8", StandardCharsets.UTF_16));
+        assertTrue(parser.find());
+        final SyslogMessage message = parser.parse();
+        final Date date = new Date(1065910455000L);
+
+        assertEquals(1, message.getVersion().intValue());
+        assertEquals(SyslogFacility.AUTH, message.getFacility());
+        assertEquals(SyslogSeverity.CRITICAL, message.getSeverity());
+        assertEquals(date, message.getDate());
+        assertEquals("mymachine.example.com", message.getHostName());
+        assertEquals("su", message.getProcessName());
+        assertEquals("ID47", message.getMessageID());
+        assertEquals("'su root' failed for lonvick on /dev/pts/8", message.getMessage());
+    }
+
     @Test
     public void testRfc5424ParserExample2() throws Exception {
         final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<165>1 2003-10-11T22:14:15.000003-00:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts."));
@@ -283,14 +302,30 @@ public class SyslogMessageTest {
         assertEquals(date, message.getDate());
         assertEquals("192.0.2.1", message.getHostName());
         assertEquals("myproc", message.getProcessName());
-        assertEquals(8710, message.getProcessId().intValue());
+        assertEquals("8710", message.getProcessId());
         assertEquals(null, message.getMessageID());
         assertEquals("%% It's time to make the do-nuts.", message.getMessage());
     }
     
     @Test
     public void testRfc5424ParserExample3() throws Exception {
-        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry..."));
+        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] An application event log entry..."));
+        assertTrue(parser.find());
+        final SyslogMessage message = parser.parse();
+        assertEquals(SyslogFacility.LOCAL4, message.getFacility());
+        assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
+        assertEquals(1, message.getVersion().intValue());
+        assertEquals("mymachine.example.com", message.getHostName());
+        assertEquals("evntslog", message.getProcessName());
+        assertEquals(null, message.getProcessId());
+        assertEquals("ID47", message.getMessageID());
+        assertEquals("An application event log entry...", message.getMessage());
+    }
+
+    @Test
+    @Ignore("We cannot handle byte order mark (BOM) characters yet because we always decode the message buffer as US_ASCII in SyslogParser.fromByteBuffer()")
+    public void testRfc5424ParserExampleWithStructuredDataAndByteOrderMark() throws Exception {
+        final SyslogParser parser = new Rfc5424SyslogParser(m_config, SyslogdTestUtils.toByteBuffer("<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] \uFEFFAn application event log entry...", StandardCharsets.UTF_16));
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
         assertEquals(SyslogFacility.LOCAL4, message.getFacility());
@@ -341,7 +376,7 @@ public class SyslogMessageTest {
         assertEquals(SyslogSeverity.ERROR, message.getSeverity());
         assertEquals("junos-mx80-2-space", message.getHostName());
         assertEquals("cfmd", message.getProcessName());
-        assertEquals(Integer.valueOf(1317), message.getProcessId());
+        assertEquals("1317", message.getProcessId());
         assertEquals("CFMD_CCM_DEFECT_RMEP", message.getMessageID());
     }
 }
