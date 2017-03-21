@@ -30,9 +30,9 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,12 +89,8 @@ final class UdpReceivedEvent {
      * 
      * @param packet
      *            The datagram received from the remote agent.
-     * 
-     * @throws java.io.UnsupportedEncodingException
-     *             Thrown if the data buffer cannot be decoded using the
-     *             US-ASCII encoding.
      */
-    static UdpReceivedEvent make(DatagramPacket packet) throws UnsupportedEncodingException {
+    static UdpReceivedEvent make(DatagramPacket packet) {
         return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength());
     }
 
@@ -111,16 +107,12 @@ final class UdpReceivedEvent {
      *            The XML data in US-ASCII encoding.
      * @param len
      *            The length of the XML data in the buffer.
-     * 
-     * @throws java.io.UnsupportedEncodingException
-     *             Thrown if the data buffer cannot be decoded using the
-     *             US-ASCII encoding.
      */
-    static UdpReceivedEvent make(InetAddress addr, int port, byte[] data, int len) throws UnsupportedEncodingException {
+    static UdpReceivedEvent make(InetAddress addr, int port, byte[] data, int len) {
         UdpReceivedEvent e = new UdpReceivedEvent();
         e.m_sender = addr;
         e.m_port = port;
-        e.m_eventXML = new String(Arrays.copyOf(data, data.length), 0, len, "US-ASCII");
+        e.m_eventXML = new String(Arrays.copyOf(data, data.length), 0, len, StandardCharsets.US_ASCII);
         e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
         return e;

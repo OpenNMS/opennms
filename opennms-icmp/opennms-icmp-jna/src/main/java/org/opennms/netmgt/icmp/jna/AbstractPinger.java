@@ -52,7 +52,6 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
 
-    @SuppressWarnings("unused")
     protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
         m_pingerId = pingerId;
         m_pingSocket = pingSocket;

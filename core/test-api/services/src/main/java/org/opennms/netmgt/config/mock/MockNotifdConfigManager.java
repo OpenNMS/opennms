@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.mock;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.opennms.netmgt.config.NotifdConfigManager;
 
@@ -52,7 +53,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      * @throws IOException
      */
     public MockNotifdConfigManager(String configString) throws IOException {
-        InputStream reader = new ByteArrayInputStream(configString.getBytes("UTF-8"));
+        InputStream reader = new ByteArrayInputStream(configString.getBytes(StandardCharsets.UTF_8));
         parseXml(reader);
         reader.close();
     }

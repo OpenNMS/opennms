@@ -39,6 +39,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -375,7 +376,7 @@ final class TcpStreamHandler implements Runnable {
                 if (hasReceipt) {
                     // Transform it to XML and send it to the socket in one call
                     try {
-                    	final Writer writer = new BufferedWriter(new OutputStreamWriter(m_connection.getOutputStream(), "UTF-8"));
+                    	final Writer writer = new BufferedWriter(new OutputStreamWriter(m_connection.getOutputStream(), StandardCharsets.UTF_8));
                     	JaxbUtils.marshal(receipt, writer);
                         writer.flush();
 

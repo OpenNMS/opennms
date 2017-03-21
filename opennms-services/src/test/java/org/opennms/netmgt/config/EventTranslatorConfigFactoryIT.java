@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +66,7 @@ public class EventTranslatorConfigFactoryIT extends OpenNMSITCase {
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes("UTF-8"));
+        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes(StandardCharsets.UTF_8));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
 

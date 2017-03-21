@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
@@ -130,7 +131,7 @@ public class MailTransportMonitorTest {
                 .append("<entry key=\"foo\">1</entry>\n") 
                 .append("<entry key=\"fu\">baz</entry>\n") 
                 .append("</properties>");
-        InputStream stream = new ByteArrayInputStream(reader.toString().getBytes("UTF-8"));
+        InputStream stream = new ByteArrayInputStream(reader.toString().getBytes(StandardCharsets.UTF_8));
         props.loadFromXML(stream);
         assertEquals("1", props.get("foo"));
     }

@@ -37,6 +37,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.io.IOUtils;
@@ -225,7 +226,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         try {
             if (marshalledConfig != null) {
                 out = new FileOutputStream(file);
-                fileWriter = new OutputStreamWriter(out, "UTF-8");
+                fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
                 fileWriter.close();

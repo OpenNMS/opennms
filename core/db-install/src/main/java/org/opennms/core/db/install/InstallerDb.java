@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +52,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -180,7 +180,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public void readTables() throws Exception {
-        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), "UTF-8"));
+        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), StandardCharsets.UTF_8));
     }
 
     /**
@@ -547,7 +547,7 @@ public class InstallerDb {
         		throw new Exception(message);
         	}
         	
-        	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, "UTF-8"));
+        	final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
         	final StringBuffer createFunction = new StringBuffer();
         	String line;
         	while ((line = in.readLine()) != null) {
@@ -612,7 +612,7 @@ public class InstallerDb {
 
             m_out.print("\n  - " + element.getName() + "... ");
 
-            final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), "UTF-8"));
+            final BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), StandardCharsets.UTF_8));
             while ((line = r.readLine()) != null) {
                 line = line.trim();
 

@@ -32,7 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.opennms.netmgt.config.DestinationPathManager;
 /**
@@ -41,8 +41,8 @@ import org.opennms.netmgt.config.DestinationPathManager;
 
 public class MockDestinationPathManager extends DestinationPathManager {
     
-    public MockDestinationPathManager(String xmlString) throws IOException, UnsupportedEncodingException {
-        InputStream reader = new ByteArrayInputStream(xmlString.getBytes("UTF-8"));
+    public MockDestinationPathManager(String xmlString) throws IOException {
+        InputStream reader = new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8));
         parseXML(reader);
     }
 
