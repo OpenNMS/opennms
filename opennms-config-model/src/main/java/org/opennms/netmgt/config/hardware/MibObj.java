@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.xml.OptionalStringAdapter;
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
@@ -50,55 +52,31 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 @XmlRootElement(name="MibObj")
 @XmlType(propOrder={"oid", "type", "alias", "replace"})
 @XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("snmp-hardware-inventory-adapter-configuration.xsd")
 public class MibObj implements Serializable {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /** The OID. */
-    private SnmpObjId oid;
+    private SnmpObjId m_oid;
 
     /** The type or attribute class (defaults to 'string'). */
-    private String type;
+    private String m_type;
 
-    /** The alias. */
-    private String alias;
+    private String m_alias;
 
-    /** The replace. */
-    private String replace;
+    private String m_replace;
 
-    /**
-     * The Constructor.
-     */
     public MibObj() {}
 
-    /**
-     * The Constructor.
-     *
-     * @param oid the SNMP Object ID
-     * @param type the type
-     * @param alias the alias
-     */
-    public MibObj(SnmpObjId oid, String type, String alias) {
-        this.oid = oid;
-        this.type = type;
-        this.alias = alias;
+    public MibObj(final SnmpObjId oid, final String type, final String alias) {
+        setOid(oid);
+        setType(type);
+        setAlias(alias);
     }
 
-    /**
-     * The Constructor.
-     *
-     * @param oid the SNMP Object ID
-     * @param type the type
-     * @param alias the alias
-     * @param replace the replace
-     */
-    public MibObj(SnmpObjId oid, String type, String alias, String replace) {
+    public MibObj(final SnmpObjId oid, final String type, final String alias, final String replace) {
         this(oid, type, alias);
-        if (!replace.startsWith("entPhysical")) {
-            throw new IllegalArgumentException("Invalid replace field " + replace);
-        }
-        this.replace = replace;
+        setReplace(replace);
     }
 
     /**
@@ -109,65 +87,40 @@ public class MibObj implements Serializable {
     @XmlAttribute(name="oid", required=true)
     @XmlJavaTypeAdapter(SnmpObjIdAdapter.class)
     public SnmpObjId getOid() {
-        return oid;
+        return m_oid;
     }
 
     /**
      * Sets the SNMP object ID.
      *
-     * @param oid the SNMP object ID
+     * @param m_oid the SNMP object ID
      */
-    public void setOid(SnmpObjId oid) {
-        this.oid = oid;
+    public void setOid(final SnmpObjId oid) {
+        m_oid = ConfigUtils.assertNotNull(oid, "OID");
     }
 
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
     @XmlAttribute(name="type", required=false)
     public String getType() {
-        return type == null? "string" : type;
+        return m_type == null? "string" : m_type;
     }
 
-    /**
-     * Sets the type.
-     *
-     * @param type the type
-     */
-    public void setType(String type) {
-        this.type = type;
+    public void setType(final String type) {
+        m_type = ConfigUtils.normalizeString(type);
     }
 
-    /**
-     * Gets the alias.
-     *
-     * @return the alias
-     */
     @XmlAttribute(name="alias", required=true)
     public String getAlias() {
-        return alias;
+        return m_alias;
     }
 
-    /**
-     * Sets the alias.
-     *
-     * @param alias the alias
-     */
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setAlias(final String alias) {
+        m_alias = ConfigUtils.assertNotEmpty(alias, "alias");
     }
 
-    /**
-     * Gets the replace.
-     * 
-     * @return the replace
-     */
     @XmlAttribute(name="replace", required=false)
     @XmlJavaTypeAdapter(OptionalStringAdapter.class)
     public Optional<String> getReplace() {
-        return Optional.ofNullable(replace);
+        return Optional.ofNullable(m_replace);
     }
 
     public void setReplace(final Optional<String> replace) {
@@ -175,17 +128,14 @@ public class MibObj implements Serializable {
     }
 
     /**
-     * Sets the replace.
-     * <p>Most be a valid attribute of <code>org.opennms.netmgt.model.OnmsHwEntity</code>.
+     * <p>Must be a valid attribute of <code>org.opennms.netmgt.model.OnmsHwEntity</code>.
      * Otherwise, an IllegalArgumentException will be thrown.</p>
-     *
-     * @param replace the replace
      */
     public void setReplace(final String replace) {
         if (replace != null && !replace.startsWith("entPhysical")) {
             throw new IllegalArgumentException("Invalid replace field " + replace);
         }
-        this.replace = replace;
+        m_replace = ConfigUtils.normalizeString(replace);
     }
 
     @Override
@@ -193,25 +143,25 @@ public class MibObj implements Serializable {
         if (this == obj) {
             return true;
         }
-        
+
         if (obj instanceof MibObj) {
             final MibObj that = (MibObj)obj;
-            return Objects.equals(this.oid, that.oid) &&
-                    Objects.equals(this.type, that.type) &&
-                    Objects.equals(this.alias, that.alias) &&
-                    Objects.equals(this.replace, that.replace);
+            return Objects.equals(this.m_oid, that.m_oid) &&
+                    Objects.equals(this.m_type, that.m_type) &&
+                    Objects.equals(this.m_alias, that.m_alias) &&
+                    Objects.equals(this.m_replace, that.m_replace);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(oid, type, alias, replace);
+        return Objects.hash(m_oid, m_type, m_alias, m_replace);
     }
 
     @Override
     public String toString() {
-        return "MibObj [oid=" + oid + ", type=" + type + ", alias=" + alias + ", replace=" + replace + "]";
+        return "MibObj [oid=" + m_oid + ", type=" + m_type + ", alias=" + m_alias + ", replace=" + m_replace + "]";
     }
 
 }

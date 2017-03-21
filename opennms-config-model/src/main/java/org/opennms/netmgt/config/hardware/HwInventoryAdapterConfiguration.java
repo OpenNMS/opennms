@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
@@ -49,40 +50,27 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  */
 @XmlRootElement(name="hardware-inventory-adapter-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("snmp-hardware-inventory-adapter-configuration.xsd")
 public class HwInventoryAdapterConfiguration implements Serializable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    /** The extensions. */
-    List<HwExtension> extensions = new ArrayList<HwExtension>();
+    List<HwExtension> m_extensions = new ArrayList<HwExtension>();
 
-    /**
-     * Gets the extensions.
-     *
-     * @return the extensions
-     */
     @XmlElement(name="hw-extension")
     public List<HwExtension> getExtensions() {
-        return extensions;
+        return m_extensions;
     }
 
-    /**
-     * Sets the extensions.
-     *
-     * @param extensions the extensions
-     */
-    public void setExtensions(List<HwExtension> extensions) {
-        this.extensions = extensions == null? new ArrayList<>() : extensions;
+    public void setExtensions(final List<HwExtension> extensions) {
+        if (extensions == m_extensions) return;
+        m_extensions.clear();
+        if (extensions != null) m_extensions.addAll(extensions);
     }
 
-    /**
-     * Adds the extension.
-     *
-     * @param extension the extension
-     */
-    public void addExtension(HwExtension extension) {
-        extensions.add(extension);
+    public void addExtension(final HwExtension extension) {
+        m_extensions.add(extension);
     }
 
     /**
@@ -91,11 +79,11 @@ public class HwInventoryAdapterConfiguration implements Serializable {
      * @param nodeSysOid the node system OID
      * @return the vendor OID
      */
-    public List<SnmpObjId> getVendorOid(String nodeSysOid) {
+    public List<SnmpObjId> getVendorOid(final String nodeSysOid) {
         final List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
-        for (HwExtension ext : getExtensions()) {
+        for (final HwExtension ext : getExtensions()) {
             if (nodeSysOid.startsWith(ext.getSysOidMask())) {
-                for (MibObj obj : ext.getMibObjects()) {
+                for (final MibObj obj : ext.getMibObjects()) {
                     vendorOidList.add(obj.getOid());
                 }
             }
@@ -110,8 +98,8 @@ public class HwInventoryAdapterConfiguration implements Serializable {
      */
     public Map<String,String> getReplacementMap() {
         final Map<String,String> replacementMap = new HashMap<String,String>();
-        for (HwExtension ext : getExtensions()) {
-            for (MibObj obj : ext.getMibObjects()) {
+        for (final HwExtension ext : getExtensions()) {
+            for (final MibObj obj : ext.getMibObjects()) {
                 if (obj.getReplace().isPresent() && !obj.getReplace().get().trim().isEmpty()) {
                     replacementMap.put(obj.getAlias(), obj.getReplace().get());
                 }
@@ -125,21 +113,21 @@ public class HwInventoryAdapterConfiguration implements Serializable {
         if (this == obj) {
             return true;
         }
-        
+
         if (obj instanceof HwInventoryAdapterConfiguration) {
             final HwInventoryAdapterConfiguration that = (HwInventoryAdapterConfiguration)obj;
-            return Objects.equals(this.extensions, that.extensions);
+            return Objects.equals(this.m_extensions, that.m_extensions);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(extensions);
+        return Objects.hash(m_extensions);
     }
     @Override
     public String toString() {
-        return "HwInventoryAdapterConfiguration [extensions=" + extensions + "]";
+        return "HwInventoryAdapterConfiguration [extensions=" + m_extensions + "]";
     }
 
 }

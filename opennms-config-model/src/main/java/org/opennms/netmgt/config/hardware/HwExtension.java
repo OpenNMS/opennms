@@ -39,6 +39,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * The Class HwExtension.
  * 
@@ -46,56 +49,34 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="hw-extension")
 @XmlAccessorType(XmlAccessType.NONE)
+@ValidateUsing("snmp-hardware-inventory-adapter-configuration.xsd")
 public class HwExtension implements Serializable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
-    /** The name. */
-    private String name;
+    private String m_name;
 
     /** The system OID mask. */
-    private String sysOidMask;
+    private String m_sysOidMask;
 
     /** The MIB objects. */
-    private List<MibObj> mibObjects = new ArrayList<MibObj>();
+    private List<MibObj> m_mibObjects = new ArrayList<>();
 
-    /**
-     * The Constructor.
-     */
     public HwExtension() {}
 
-    /**
-     * The Constructor.
-     *
-     * @param name the name
-     * @param sysOidMask the system OID mask
-     */
-    public HwExtension(String name, String sysOidMask) {
-        this.name = name;
-        this.sysOidMask = sysOidMask;
+    public HwExtension(final String name, final String sysOidMask) {
+        setName(name);
+        setSysOidMask(sysOidMask);
     }
 
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
     @XmlAttribute(name="name", required=true)
     public String getName() {
-        return name;
+        return m_name;
     }
 
-    /**
-     * Sets the name.
-     *
-     * @param name the name
-     */
-    public void setName(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        this.name = name;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     /**
@@ -105,19 +86,16 @@ public class HwExtension implements Serializable {
      */
     @XmlAttribute(name="sysOidMask", required=true)
     public String getSysOidMask() {
-        return sysOidMask;
+        return m_sysOidMask;
     }
 
     /**
      * Sets the system OID mask.
      *
-     * @param sysOidMask the system OID mask
+     * @param m_sysOidMask the system OID mask
      */
     public void setSysOidMask(String sysOidMask) {
-        if (sysOidMask == null) {
-            throw new IllegalArgumentException("'sysOidMask' is a required attribute!");
-        }
-        this.sysOidMask = sysOidMask;
+        m_sysOidMask = ConfigUtils.assertNotEmpty(sysOidMask, "sysOidMask");
     }
 
     /**
@@ -127,22 +105,19 @@ public class HwExtension implements Serializable {
      */
     @XmlElement(name="mibObj", required=true)
     public List<MibObj> getMibObjects() {
-        return mibObjects;
+        return m_mibObjects;
     }
 
     /**
      * Gets the MIB object by alias.
      *
-     * @param name the name
+     * @param m_name the m_name
      * @return the MIB object by alias
      */
-    public MibObj getMibObjectByAlias(String name) {
-        for (MibObj obj : mibObjects) {
-            if (obj.getAlias().equals(name)) {
-                return obj;
-            }
-        }
-        return null;
+    public MibObj getMibObjectByAlias(final String name) {
+        return m_mibObjects.stream().filter(obj -> {
+            return name.equals(obj.getAlias());
+        }).findFirst().orElse(null);
     }
 
     /**
@@ -151,26 +126,21 @@ public class HwExtension implements Serializable {
      * @param oid the OID
      * @return the MIB object by OID
      */
-    public MibObj getMibObjectByOid(String oid) {
-        for (MibObj obj : mibObjects) {
-            if (obj.getOid().toString().equals(oid)) {
-                return obj;
-            }
-        }
-        return null;
+    public MibObj getMibObjectByOid(final String oid) {
+        return m_mibObjects.stream().filter(obj -> {
+            return oid.equals(obj.getOid().toString());
+        }).findFirst().orElse(null);
     }
 
     /**
      * Sets the MIB objects.
      *
-     * @param mibObjects the MIB objects
+     * @param m_mibObjects the MIB objects
      */
-    public void setMibObjects(List<MibObj> mibObjects) {
-        if (mibObjects == null) {
-            this.mibObjects.clear(); 
-        } else {
-            this.mibObjects = mibObjects;
-        }
+    public void setMibObjects(final List<MibObj> mibObjects) {
+        if (mibObjects == m_mibObjects) return;
+        m_mibObjects.clear();
+        if (mibObjects != null) m_mibObjects.addAll(mibObjects);
     }
 
     /**
@@ -178,8 +148,8 @@ public class HwExtension implements Serializable {
      *
      * @param mibObj the MIB object
      */
-    public void addMibObject(MibObj mibObj) {
-        mibObjects.add(mibObj);
+    public void addMibObject(final MibObj mibObj) {
+        m_mibObjects.add(mibObj);
     }
 
     @Override
@@ -187,24 +157,24 @@ public class HwExtension implements Serializable {
         if (this == obj) {
             return true;
         }
-        
+
         if (obj instanceof HwExtension) {
             final HwExtension that = (HwExtension)obj;
-            return Objects.equals(this.name, that.name) &&
-                    Objects.equals(this.sysOidMask, that.sysOidMask) &&
-                    Objects.equals(this.mibObjects, that.mibObjects);
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_sysOidMask, that.m_sysOidMask) &&
+                    Objects.equals(this.m_mibObjects, that.m_mibObjects);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, sysOidMask, mibObjects);
+        return Objects.hash(m_name, m_sysOidMask, m_mibObjects);
     }
 
     @Override
     public String toString() {
-        return "HwExtension [name=" + name + ", sysOidMask=" + sysOidMask + ", mibObjects=" + mibObjects + "]";
+        return "HwExtension [m_name=" + m_name + ", m_sysOidMask=" + m_sysOidMask + ", m_mibObjects=" + m_mibObjects + "]";
     }
 
 }
