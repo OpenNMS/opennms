@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -270,8 +270,7 @@
 
         <h3>User Information</h3>
 	<%
-	String tuiPin = null;
-	String email = null;
+        String email = null;
         String pagerEmail = null;
         String xmppAddress = null;
         String numericPage = null;
@@ -284,6 +283,7 @@
         String microblog = null;
         String fullName = null;
         String comments = null;
+        String tuiPin = null;
         List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
         Collections.sort(availableRoles);
         List<String> configuredRoles = new ArrayList<String>();
@@ -304,29 +304,29 @@
                     List<Contact> contacts = user.getContacts();
                     for (int i = 0; i < contacts.size(); i++) {
                             if (contacts.get(i).getType().equals("email")) {
-                                    email = contacts.get(i).getInfo();
+                                    email = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("pagerEmail")) {
-                                    pagerEmail = contacts.get(i).getInfo();
+                                    pagerEmail = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("xmppAddress")) {
-                                    xmppAddress = contacts.get(i).getInfo();
+                                    xmppAddress = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("numericPage")) {
-                                    numericPage = contacts.get(i).getInfo();
+                                    numericPage = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("textPage")) {
-                                    textPage = contacts.get(i).getInfo();
+                                    textPage = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("workPhone")) {
-                                    workPhone = contacts.get(i).getInfo();
+                                    workPhone = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("mobilePhone")) {
-                                    mobilePhone = contacts.get(i).getInfo();
+                                    mobilePhone = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("homePhone")) {
-                                    homePhone = contacts.get(i).getInfo();
+                                    homePhone = contacts.get(i).getInfo().orElse(null);
                             } else if (contacts.get(i).getType().equals("microblog")) {
-                            		microblog = contacts.get(i).getInfo();
+                            		microblog = contacts.get(i).getInfo().orElse(null);
                             }
                     }
             }
-            fullName = user.getFullName();
-            comments = user.getUserComments();
-            tuiPin = user.getTuiPin();
+            fullName = user.getFullName().orElse(null);
+            comments = user.getUserComments().orElse(null);
+            tuiPin = user.getTuiPin().orElse(null);
 
             configuredRoles = user.getRoles();
             for (String role : configuredRoles) {
@@ -340,14 +340,14 @@
 	<div class="form-group">
           <label for="fullName" class="col-sm-2 control-label">Full Name:</label>
           <div class="col-sm-10">
-            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%=(fullName == null ? "":fullName) %>" />
+            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" />
           </div>
         </div>
 
 	<div class="form-group">
           <label for="userComments" class="col-sm-2 control-label">Comments:</label>
           <div class="col-sm-10">
-            <textarea class="form-control" rows="5" id="userComments" name="userComments"><%=(comments == null ? "" : comments)%></textarea>
+            <textarea class="form-control" rows="5" id="userComments" name="userComments"><%= (comments == null? "" : comments) %></textarea>
           </div>
         </div>
 
@@ -368,7 +368,7 @@
 	<div class="form-group">
           <label for="tuiPin" class="col-sm-2 control-label">Telephone PIN:</label>
           <div class="col-sm-10">
-            <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%=(tuiPin == null ? "" : tuiPin)%>" />
+            <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
           </div>
         </div>
 

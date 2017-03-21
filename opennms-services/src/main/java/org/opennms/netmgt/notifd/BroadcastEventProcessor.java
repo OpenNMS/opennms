@@ -61,6 +61,7 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -958,6 +959,8 @@ public final class BroadcastEventProcessor implements EventListener {
     }
     
     boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
+        ConfigUtils.assertNotEmpty(user, "user");
+        ConfigUtils.assertNotEmpty(contactType, "contactType");
         boolean retVal = false;
         for (Contact c : user.getContacts()) {
             if (contactType.equalsIgnoreCase(c.getType())) {

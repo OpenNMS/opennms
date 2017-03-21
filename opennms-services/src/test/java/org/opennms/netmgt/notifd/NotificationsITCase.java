@@ -226,7 +226,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
             for (int j = 0; j < contacts.length; j++) {
                 Contact contact = contacts[j];
                 if ("email".equals(contact.getType())) {
-                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo()));
+                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo().orElse(null)));
                 }
             }
             expectedTime += interval;
