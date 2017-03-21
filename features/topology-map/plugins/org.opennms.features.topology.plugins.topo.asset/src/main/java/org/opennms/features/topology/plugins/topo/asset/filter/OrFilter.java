@@ -28,19 +28,32 @@
 
 package org.opennms.features.topology.plugins.topo.asset.filter;
 
+import java.util.List;
 import java.util.Objects;
 
 public class OrFilter<T> implements Filter<T> {
-    private Filter right;
-    private Filter left;
+	private Filter right;
+	private Filter left;
+	private List<Filter> orFilters=null;
 
-    public OrFilter(Filter left, Filter right) {
-        this.left = Objects.requireNonNull(left);
-        this.right = Objects.requireNonNull(right);
-    }
+	public OrFilter(Filter left, Filter right) {
+		this.left = Objects.requireNonNull(left);
+		this.right = Objects.requireNonNull(right);
+	}
 
-    @Override
-    public boolean apply(T value) {
-        return left.apply(value) || right.apply(value);
-    }
+	public OrFilter(List<Filter> orFilters){
+		this.orFilters= Objects.requireNonNull(orFilters);
+	}
+
+	@Override
+	public boolean apply(T value) {
+		if(orFilters==null){
+			return left.apply(value) || right.apply(value);
+		} else {
+			for(Filter f:orFilters){
+				if(f.apply(value)) return true;
+			}
+		}
+		return false;
+	}
 }

@@ -31,6 +31,7 @@ public class AssetGraphGeneratorTest {
 		config.setLabel("testgraph");
 		config.setPreferredLayout("Grid Layout");
 		config.setLayerHierarchies(new ArrayList<>()); // empty layers
+		config.setFilters(new ArrayList<>()); // empty filters
 
 		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestNodeProvider());
 
@@ -51,6 +52,7 @@ public class AssetGraphGeneratorTest {
 				NodeParamLabels.ASSET_REGION,
 				NodeParamLabels.ASSET_BUILDING,
 				NodeParamLabels.ASSET_RACK));
+		config.setFilters(new ArrayList<>()); // empty filters
 
 		final AssetGraphGenerator assetGraphGenerator = new AssetGraphGenerator(new TestNodeProvider());
 		final GraphML generatedGraphML = assetGraphGenerator.generateGraphs(config);
@@ -84,6 +86,7 @@ public class AssetGraphGeneratorTest {
 
 		final GeneratorConfig config = new GeneratorConfig();
 		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION, NodeParamLabels.ASSET_BUILDING));
+		config.setFilters(new ArrayList<>()); // empty filters
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-simple.xml"));
 		Assert.assertEquals(generatedGraphML, expectedGraphML);
@@ -104,6 +107,7 @@ public class AssetGraphGeneratorTest {
 
 		final GeneratorConfig config = new GeneratorConfig();
 		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION, NodeParamLabels.ASSET_BUILDING, NodeParamLabels.NODE_CATEGORIES));
+		config.setFilters(new ArrayList<>()); // empty filters
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-categories.xml"));
 		Assert.assertEquals(expectedGraphML, generatedGraphML);

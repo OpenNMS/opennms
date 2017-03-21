@@ -28,50 +28,81 @@
 
 package org.opennms.features.topology.plugins.topo.asset.filter;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class FilterTest {
 
-    @Test
-    public void verifyNot() {
-        Filter filter = new NotFilter(new EqFilter<>("Stuttgart"));
-        Assert.assertEquals(false, filter.apply("Stuttgart"));
-        Assert.assertEquals(true, filter.apply("Fulda"));
-    }
+	@Test
+	public void verifyNot() {
+		Filter filter = new NotFilter(new EqFilter<>("Stuttgart"));
+		Assert.assertEquals(false, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Fulda"));
+	}
 
-    @Test
-    public void verifyRegExp() {
-        Filter filter = new RegExFilter(".*gar(t|d)");
-        Assert.assertEquals(false, filter.apply("Fulda"));
-        Assert.assertEquals(true, filter.apply("Stuttgart"));
-        Assert.assertEquals(true, filter.apply("Isengard"));
-    }
+	@Test
+	public void verifyRegExp() {
+		Filter filter = new RegExFilter(".*gar(t|d)");
+		Assert.assertEquals(false, filter.apply("Fulda"));
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Isengard"));
+	}
 
-    @Test
-    public void verifyEq() {
-        Filter filter = new EqFilter<>("Stuttgart");
-        Assert.assertEquals(true, filter.apply("Stuttgart"));
-        Assert.assertEquals(false, filter.apply("Fulda"));
-    }
+	@Test
+	public void verifyEq() {
+		Filter filter = new EqFilter<>("Stuttgart");
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(false, filter.apply("Fulda"));
+	}
 
-    @Test
-    public void verifyAnd() {
-        Filter filter = new AndFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
-        Assert.assertEquals(true, filter.apply("Stuttgart"));
-        Assert.assertEquals(false, filter.apply("Isengard"));
-        Assert.assertEquals(false, filter.apply("Fulda"));
-    }
+	@Test
+	public void verifyAnd() {
+		Filter filter = new AndFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(false, filter.apply("Isengard"));
+		Assert.assertEquals(false, filter.apply("Fulda"));
+	}
 
-    @Test
-    public void verifyOr() {
-        Filter filter = new OrFilter(new EqFilter("Stuttgart"), new EqFilter("Fulda"));
-        Assert.assertEquals(true, filter.apply("Stuttgart"));
-        Assert.assertEquals(true, filter.apply("Fulda"));
-        Assert.assertEquals(false, filter.apply("Isengard"));
+	@Test
+	public void verifyMultiAnd() {
+		List<Filter> filters=Arrays.asList(
+				new EqFilter("Stuttgart"),
+				new RegExFilter(".*gar(t|d)")
+				);
 
-        filter = new OrFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
-        Assert.assertEquals(true, filter.apply("Stuttgart"));
-        Assert.assertEquals(true, filter.apply("Isengard"));
-    }
+		Filter filter = new AndFilter(filters);
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(false, filter.apply("Isengard"));
+		Assert.assertEquals(false, filter.apply("Fulda"));
+		Assert.assertEquals(false, filter.apply("Southampton"));
+	}
+
+	@Test
+	public void verifyOr() {
+		Filter filter = new OrFilter(new EqFilter("Stuttgart"), new EqFilter("Fulda"));
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Fulda"));
+		Assert.assertEquals(false, filter.apply("Isengard"));
+
+		filter = new OrFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Isengard"));
+	}
+	
+	@Test
+	public void verifyMultiOr() {
+		List<Filter> filters=Arrays.asList(
+				new EqFilter("Stuttgart"),
+				new RegExFilter(".*gar(t|d)"),
+				new EqFilter("Southampton")
+				);
+		Filter filter = new OrFilter(filters);
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Isengard"));
+		Assert.assertEquals(true, filter.apply("Southampton"));
+		Assert.assertEquals(false, filter.apply("Fulda"));
+	}
 }
