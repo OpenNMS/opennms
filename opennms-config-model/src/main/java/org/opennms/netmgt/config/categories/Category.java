@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "category")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -102,22 +103,21 @@ public class Category implements Serializable {
     }
 
     public Category(final String label, final String comment, final Double normalThreshold, final Double warningThreshold, final String rule, final String... services) {
-        m_label = label;
-        m_comment = comment;
-        m_normalThreshold = normalThreshold;
-        m_warningThreshold = warningThreshold;
-        m_rule = rule;
+        setLabel(label);
+        setComment(comment);
+        setNormalThreshold(normalThreshold);
+        setWarningThreshold(warningThreshold);
+        setRule(rule);
 
         m_services.addAll(Arrays.asList(services));
     }
 
     public String getLabel() {
-        Objects.requireNonNull(m_label);
         return m_label;
     }
 
     public void setLabel(final String label) {
-        m_label = label;
+        m_label = ConfigUtils.assertNotEmpty(label, "label");
     }
 
     public Optional<String> getComment() {
@@ -125,25 +125,23 @@ public class Category implements Serializable {
     }
 
     public void setComment(final String comment) {
-        m_comment = comment;
+        m_comment = ConfigUtils.normalizeString(comment);
     }
 
     public Double getNormalThreshold() {
-        Objects.requireNonNull(m_normalThreshold);
         return m_normalThreshold;
     }
 
     public void setNormalThreshold(final Double normal) {
-        m_normalThreshold = normal;
+        m_normalThreshold = ConfigUtils.assertNotNull(normal, "normal-threshold");
     }
 
     public Double getWarningThreshold() {
-        Objects.requireNonNull(m_warningThreshold);
         return m_warningThreshold;
     }
 
     public void setWarningThreshold(final Double warning) {
-        m_warningThreshold = warning;
+        m_warningThreshold = ConfigUtils.assertNotNull(warning, "warning-threshold");
     }
 
     public List<String> getServices() {
@@ -151,8 +149,9 @@ public class Category implements Serializable {
     }
 
     public void setServices(final List<String> services) {
+        if (services == m_services) return;
         m_services.clear();
-        m_services.addAll(services);
+        if (services != null) m_services.addAll(services);
     }
 
     public void addService(final String service) {
@@ -170,7 +169,7 @@ public class Category implements Serializable {
     }
 
     public void setRule(final String rule) {
-        m_rule = rule;
+        m_rule = ConfigUtils.assertNotEmpty(rule, "rule");
     }
 
     public boolean isValid() {

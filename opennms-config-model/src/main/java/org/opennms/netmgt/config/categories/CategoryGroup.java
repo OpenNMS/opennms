@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,13 +42,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * A category group containing categories. The only parts of
  *  the category group that seem to be used are the common element and the
  *  list of categories.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "categorygroup")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -66,7 +66,7 @@ public class CategoryGroup implements Serializable {
      * A comment describing the category group. This is
      *  seemingly unused.
      */
-    @XmlElement(name = "comment", required = true)
+    @XmlElement(name = "comment")
     private String m_comment;
 
     /**
@@ -88,7 +88,7 @@ public class CategoryGroup implements Serializable {
     }
 
     public CategoryGroup(final String name) {
-        m_name = name;
+        setName(name);
     }
 
     public String getName() {
@@ -96,20 +96,14 @@ public class CategoryGroup implements Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("name is a required field!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    public String getComment() {
-        return m_comment;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(m_comment);
     }
 
     public void setComment(final String comment) {
-        if (comment == null) {
-            throw new IllegalArgumentException("comment is a required field!");
-        }
         m_comment = comment;
     }
 
@@ -137,7 +131,9 @@ public class CategoryGroup implements Serializable {
     }
 
     public void setCategories(final List<Category> categories) {
-        m_categories = categories;
+        if (categories == m_categories) return;
+        m_categories.clear();
+        if (categories != null) m_categories.addAll(categories);
     }
 
     public void addCategory(final Category cat) {
