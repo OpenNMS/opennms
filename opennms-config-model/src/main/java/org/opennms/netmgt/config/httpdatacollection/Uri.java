@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config.httpdatacollection;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +40,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -66,89 +68,44 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "url",
-    "attributes"
+        "m_url",
+        "m_attributes"
 })
 @XmlRootElement(name = "uri")
+@ValidateUsing("http-datacollection-config.xsd")
 public class Uri implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(required = true)
-    protected Url url;
+    @XmlElement(name = "url", required = true)
+    protected Url m_url;
     @XmlElementWrapper(name="attributes")
     @XmlElement(name="attrib")
-    protected List<Attrib> attributes;
+    protected List<Attrib> m_attributes;
     @XmlAttribute(name = "name", required = true)
-    protected String name;
+    protected String m_name;
 
-    /**
-     * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Url }
-     *     
-     */
     public Url getUrl() {
-        return url;
+        return m_url;
     }
 
-    /**
-     * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Url }
-     *     
-     */
     public void setUrl(final Url value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'url' is a required attribute!");
-        }
-        this.url = value;
+        m_url = ConfigUtils.assertNotNull(value, "url");
     }
 
     public List<Attrib> getAttributes() {
-        return attributes == null? Collections.emptyList() : attributes;
+        return m_attributes == null? Collections.emptyList() : m_attributes;
     }
 
-    /**
-     * Sets the value of the attributes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Attributes }
-     *     
-     */
-    public void setAttributes(List<Attrib> value) {
-        this.attributes = value == null? new ArrayList<>() : value;
+    public void setAttributes(final List<Attrib> value) {
+        m_attributes = value;
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getName() {
-        return name;
+        return m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
     public void setName(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        this.name = value;
+        m_name = ConfigUtils.assertNotEmpty(value, "name");
     }
 
     @Override
@@ -156,14 +113,15 @@ public class Uri implements Serializable {
         if (!(other instanceof Uri)) {
             return false;
         }
-        Uri castOther = (Uri) other;
-        return Objects.equals(url, castOther.url) && Objects.equals(attributes, castOther.attributes)
-                && Objects.equals(name, castOther.name);
+        final Uri that = (Uri) other;
+        return Objects.equals(this.m_url, that.m_url)
+                && Objects.equals(this.m_attributes, that.m_attributes)
+                && Objects.equals(this.m_name, that.m_name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, attributes, name);
+        return Objects.hash(m_url, m_attributes, m_name);
     }
 
 }

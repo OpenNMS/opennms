@@ -37,6 +37,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -59,66 +62,29 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "parameter")
+@ValidateUsing("http-datacollection-config.xsd")
 public class Parameter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "key", required = true)
-    protected String key;
+    protected String m_key;
     @XmlAttribute(name = "value", required = true)
-    protected String value;
+    protected String m_value;
 
-    /**
-     * Gets the value of the key property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getKey() {
-        return key;
+        return m_key;
     }
 
-    /**
-     * Sets the value of the key property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKey(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'key' is a required attribute!");
-        }
-        this.key = value;
+    public void setKey(final String value) {
+        m_key = ConfigUtils.assertNotEmpty(value, "key");
     }
 
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getValue() {
-        return value;
+        return m_value;
     }
 
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'value' is a required attribute!");
-        }
-        this.value = value;
+    public void setValue(final String value) {
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
@@ -126,13 +92,14 @@ public class Parameter implements Serializable {
         if (!(other instanceof Parameter)) {
             return false;
         }
-        Parameter castOther = (Parameter) other;
-        return Objects.equals(key, castOther.key) && Objects.equals(value, castOther.value);
+        final Parameter that = (Parameter) other;
+        return Objects.equals(this.m_key, that.m_key)
+                && Objects.equals(this.m_value, that.m_value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(m_key, m_value);
     }
 
 }

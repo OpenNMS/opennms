@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config.httpdatacollection;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +41,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -92,631 +94,233 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "parameters"
+        "m_parameters"
 })
 @XmlRootElement(name = "url")
+@ValidateUsing("http-datacollection-config.xsd")
 public class Url implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElementWrapper(name = "parameters")
     @XmlElement(name = "parameter")
-    protected List<Parameter> parameters;
+    protected List<Parameter> m_parameters;
     @XmlAttribute(name = "method")
-    protected String method;
+    protected String m_method;
     @XmlAttribute(name = "http-version")
-    protected String httpVersion;
+    protected String m_httpVersion;
     @XmlAttribute(name = "user-agent")
-    protected String userAgent;
+    protected String m_userAgent;
     @XmlAttribute(name = "virtual-host")
-    protected String virtualHost;
+    protected String m_virtualHost;
     @XmlAttribute(name = "scheme")
-    protected String scheme;
+    protected String m_scheme;
     @XmlAttribute(name = "user-info")
-    protected String userInfo;
+    protected String m_userInfo;
     @XmlAttribute(name = "host")
-    protected String host;
+    protected String m_host;
     @XmlAttribute(name = "port")
-    protected Integer port;
+    protected Integer m_port;
     @XmlAttribute(name = "path", required = true)
-    protected String path;
+    protected String m_path;
     @XmlAttribute(name = "query")
-    protected String query;
+    protected String m_query;
     @XmlAttribute(name = "fragment")
-    protected String fragment;
+    protected String m_fragment;
     @XmlAttribute(name = "matches")
-    protected String matches;
+    protected String m_matches;
     @XmlAttribute(name = "response-range")
-    protected String responseRange;
+    protected String m_responseRange;
     @XmlAttribute(name = "canonical-equivalence")
-    protected Boolean canonicalEquivalence;
+    protected Boolean m_canonicalEquivalence;
     @XmlAttribute(name = "case-insensitive")
-    protected Boolean caseInsensitive;
+    protected Boolean m_caseInsensitive;
     @XmlAttribute(name = "comments")
-    protected Boolean comments;
+    protected Boolean m_comments;
     @XmlAttribute(name = "dotall")
-    protected Boolean dotall;
+    protected Boolean m_dotall;
     @XmlAttribute(name = "literal")
-    protected Boolean literal;
+    protected Boolean m_literal;
     @XmlAttribute(name = "multiline")
-    protected Boolean multiline;
+    protected Boolean m_multiline;
     @XmlAttribute(name = "unicode-case")
-    protected Boolean unicodeCase;
+    protected Boolean m_unicodeCase;
     @XmlAttribute(name = "unix-lines")
-    protected Boolean unixLines;
+    protected Boolean m_unixLines;
 
     public List<Parameter> getParameters() {
-        return parameters == null? Collections.emptyList() : parameters;
+        return m_parameters == null? Collections.emptyList() : m_parameters;
     }
 
     public void setParameters(List<Parameter> value) {
-        this.parameters = value == null? new ArrayList<>() : value;
+        m_parameters = value;
     }
 
-    /**
-     * Gets the value of the method property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getMethod() {
-        if (method == null) {
-            return "GET";
-        } else {
-            return method;
-        }
+        return m_method == null? "GET" : m_method;
     }
 
-    /**
-     * Sets the value of the method property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMethod(String value) {
-        this.method = value;
+    public void setMethod(final String value) {
+        m_method = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the httpVersion property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getHttpVersion() {
-        if (httpVersion == null) {
-            return "1.1";
-        } else {
-            return httpVersion;
-        }
+        return m_httpVersion == null? "1.1" : m_httpVersion;
     }
 
-    /**
-     * Sets the value of the httpVersion property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHttpVersion(String value) {
-        this.httpVersion = value;
+    public void setHttpVersion(final String value) {
+        m_httpVersion = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the userAgent property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public Optional<String> getUserAgent() {
-        return Optional.ofNullable(userAgent);
+        return Optional.ofNullable(m_userAgent);
     }
 
-    /**
-     * Sets the value of the userAgent property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUserAgent(String value) {
-        this.userAgent = value;
+    public void setUserAgent(final String value) {
+        m_userAgent = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the virtualHost property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public Optional<String> getVirtualHost() {
-        return Optional.ofNullable(virtualHost);
+        return Optional.ofNullable(m_virtualHost);
     }
 
-    /**
-     * Sets the value of the virtualHost property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setVirtualHost(String value) {
-        this.virtualHost = value;
+    public void setVirtualHost(final String value) {
+        m_virtualHost = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the scheme property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getScheme() {
-        if (scheme == null) {
-            return "http";
-        } else {
-            return scheme;
-        }
+        return m_scheme == null? "http" : m_scheme;
     }
 
-    /**
-     * Sets the value of the scheme property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setScheme(String value) {
-        this.scheme = value;
+    public void setScheme(final String value) {
+        m_scheme = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the userInfo property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public Optional<String> getUserInfo() {
-        return Optional.ofNullable(userInfo);
+        return Optional.ofNullable(m_userInfo);
     }
 
-    /**
-     * Sets the value of the userInfo property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUserInfo(String value) {
-        this.userInfo = value;
+    public void setUserInfo(final String value) {
+        m_userInfo = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the host property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getHost() {
-        if (host == null) {
-            return "${ipaddr}";
-        } else {
-            return host;
-        }
+        return m_host == null? "${ipaddr}" : m_host;
     }
 
-    /**
-     * Sets the value of the host property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHost(String value) {
-        this.host = value;
+    public void setHost(final String value) {
+        m_host = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the port property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
     public int getPort() {
-        if (port == null) {
-            return  80;
-        } else {
-            return port;
-        }
+        return m_port == null? 80 : m_port;
     }
 
-    /**
-     * Sets the value of the port property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setPort(Integer value) {
-        this.port = value;
+    public void setPort(final Integer value) {
+        m_port = value;
     }
 
-    /**
-     * Gets the value of the path property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getPath() {
-        return path;
+        return m_path;
     }
 
-    /**
-     * Sets the value of the path property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPath(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'path' is a required attribute!");
-        }
-        this.path = value;
+    public void setPath(final String value) {
+        m_path = ConfigUtils.assertNotEmpty(value, "path");
     }
 
-    /**
-     * Gets the value of the query property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public Optional<String> getQuery() {
-        return Optional.ofNullable(query);
+        return Optional.ofNullable(m_query);
     }
 
-    /**
-     * Sets the value of the query property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setQuery(String value) {
-        this.query = value;
+    public void setQuery(final String value) {
+        m_query = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the fragment property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public Optional<String> getFragment() {
-        return Optional.ofNullable(fragment);
+        return Optional.ofNullable(m_fragment);
     }
 
-    /**
-     * Sets the value of the fragment property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFragment(String value) {
-        this.fragment = value;
+    public void setFragment(final String value) {
+        m_fragment = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the matches property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getMatches() {
-        if (matches == null) {
-            return "(.*)";
-        } else {
-            return matches;
-        }
+        return m_matches == null? "(.*)" : m_matches;
     }
 
-    /**
-     * Sets the value of the matches property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMatches(String value) {
-        this.matches = value;
+    public void setMatches(final String value) {
+        m_matches = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the responseRange property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getResponseRange() {
-        if (responseRange == null) {
-            return "100-399";
-        } else {
-            return responseRange;
-        }
+        return m_responseRange == null? "100-399" : m_responseRange;
     }
 
-    /**
-     * Sets the value of the responseRange property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setResponseRange(String value) {
-        this.responseRange = value;
+    public void setResponseRange(final String value) {
+        m_responseRange = ConfigUtils.normalizeString(value);
     }
 
-    /**
-     * Gets the value of the canonicalEquivalence property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isCanonicalEquivalence() {
-        if (canonicalEquivalence == null) {
-            return false;
-        } else {
-            return canonicalEquivalence;
-        }
+        return m_canonicalEquivalence == null? false : m_canonicalEquivalence;
     }
 
-    /**
-     * Sets the value of the canonicalEquivalence property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setCanonicalEquivalence(Boolean value) {
-        this.canonicalEquivalence = value;
+    public void setCanonicalEquivalence(final Boolean value) {
+        m_canonicalEquivalence = value;
     }
 
-    /**
-     * Gets the value of the caseInsensitive property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isCaseInsensitive() {
-        if (caseInsensitive == null) {
-            return false;
-        } else {
-            return caseInsensitive;
-        }
+        return m_caseInsensitive == null? false : m_caseInsensitive;
     }
 
-    /**
-     * Sets the value of the caseInsensitive property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setCaseInsensitive(Boolean value) {
-        this.caseInsensitive = value;
+    public void setCaseInsensitive(final Boolean value) {
+        m_caseInsensitive = value;
     }
 
-    /**
-     * Gets the value of the comments property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isComments() {
-        if (comments == null) {
-            return false;
-        } else {
-            return comments;
-        }
+        return m_comments == null? false : m_comments;
     }
 
-    /**
-     * Sets the value of the comments property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setComments(Boolean value) {
-        this.comments = value;
+    public void setComments(final Boolean value) {
+        m_comments = value;
     }
 
-    /**
-     * Gets the value of the dotall property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isDotall() {
-        if (dotall == null) {
-            return false;
-        } else {
-            return dotall;
-        }
+        return m_dotall == null? false : m_dotall;
     }
 
-    /**
-     * Sets the value of the dotall property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setDotall(Boolean value) {
-        this.dotall = value;
+    public void setDotall(final Boolean value) {
+        m_dotall = value;
     }
 
-    /**
-     * Gets the value of the literal property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isLiteral() {
-        if (literal == null) {
-            return false;
-        } else {
-            return literal;
-        }
+        return m_literal == null? false : m_literal;
     }
 
-    /**
-     * Sets the value of the literal property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setLiteral(Boolean value) {
-        this.literal = value;
+    public void setLiteral(final Boolean value) {
+        m_literal = value;
     }
 
-    /**
-     * Gets the value of the multiline property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isMultiline() {
-        if (multiline == null) {
-            return false;
-        } else {
-            return multiline;
-        }
+        return m_multiline == null? false : m_multiline;
     }
 
-    /**
-     * Sets the value of the multiline property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setMultiline(Boolean value) {
-        this.multiline = value;
+    public void setMultiline(final Boolean value) {
+        m_multiline = value;
     }
 
-    /**
-     * Gets the value of the unicodeCase property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isUnicodeCase() {
-        if (unicodeCase == null) {
-            return false;
-        } else {
-            return unicodeCase;
-        }
+        return m_unicodeCase == null? false : m_unicodeCase;
     }
 
-    /**
-     * Sets the value of the unicodeCase property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setUnicodeCase(Boolean value) {
-        this.unicodeCase = value;
+    public void setUnicodeCase(final Boolean value) {
+        m_unicodeCase = value;
     }
 
-    /**
-     * Gets the value of the unixLines property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
     public boolean isUnixLines() {
-        if (unixLines == null) {
-            return false;
-        } else {
-            return unixLines;
-        }
+        return m_unixLines == null? false : m_unixLines;
     }
 
-    /**
-     * Sets the value of the unixLines property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setUnixLines(Boolean value) {
-        this.unixLines = value;
+    public void setUnixLines(final Boolean value) {
+        m_unixLines = value;
     }
 
     @Override
@@ -724,26 +328,26 @@ public class Url implements Serializable {
         if (!(other instanceof Url)) {
             return false;
         }
-        Url castOther = (Url) other;
-        return Objects.equals(parameters, castOther.parameters) && Objects.equals(method, castOther.method)
-                && Objects.equals(httpVersion, castOther.httpVersion) && Objects.equals(userAgent, castOther.userAgent)
-                && Objects.equals(virtualHost, castOther.virtualHost) && Objects.equals(scheme, castOther.scheme)
-                && Objects.equals(userInfo, castOther.userInfo) && Objects.equals(host, castOther.host)
-                && Objects.equals(port, castOther.port) && Objects.equals(path, castOther.path)
-                && Objects.equals(query, castOther.query) && Objects.equals(fragment, castOther.fragment)
-                && Objects.equals(matches, castOther.matches) && Objects.equals(responseRange, castOther.responseRange)
-                && Objects.equals(canonicalEquivalence, castOther.canonicalEquivalence)
-                && Objects.equals(caseInsensitive, castOther.caseInsensitive)
-                && Objects.equals(comments, castOther.comments) && Objects.equals(dotall, castOther.dotall)
-                && Objects.equals(literal, castOther.literal) && Objects.equals(multiline, castOther.multiline)
-                && Objects.equals(unicodeCase, castOther.unicodeCase) && Objects.equals(unixLines, castOther.unixLines);
+        final Url that = (Url) other;
+        return Objects.equals(this.m_parameters, that.m_parameters) && Objects.equals(this.m_method, that.m_method)
+                && Objects.equals(this.m_httpVersion, that.m_httpVersion) && Objects.equals(this.m_userAgent, that.m_userAgent)
+                && Objects.equals(this.m_virtualHost, that.m_virtualHost) && Objects.equals(this.m_scheme, that.m_scheme)
+                && Objects.equals(this.m_userInfo, that.m_userInfo) && Objects.equals(this.m_host, that.m_host)
+                && Objects.equals(this.m_port, that.m_port) && Objects.equals(this.m_path, that.m_path)
+                && Objects.equals(this.m_query, that.m_query) && Objects.equals(this.m_fragment, that.m_fragment)
+                && Objects.equals(this.m_matches, that.m_matches) && Objects.equals(this.m_responseRange, that.m_responseRange)
+                && Objects.equals(this.m_canonicalEquivalence, that.m_canonicalEquivalence)
+                && Objects.equals(this.m_caseInsensitive, that.m_caseInsensitive)
+                && Objects.equals(this.m_comments, that.m_comments) && Objects.equals(this.m_dotall, that.m_dotall)
+                && Objects.equals(this.m_literal, that.m_literal) && Objects.equals(this.m_multiline, that.m_multiline)
+                && Objects.equals(this.m_unicodeCase, that.m_unicodeCase) && Objects.equals(this.m_unixLines, that.m_unixLines);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parameters, method, httpVersion, userAgent, virtualHost, scheme, userInfo, host, port, path,
-                query, fragment, matches, responseRange, canonicalEquivalence, caseInsensitive, comments, dotall,
-                literal, multiline, unicodeCase, unixLines);
+        return Objects.hash(m_parameters, m_method, m_httpVersion, m_userAgent, m_virtualHost, m_scheme, m_userInfo, m_host, m_port, m_path,
+                            m_query, m_fragment, m_matches, m_responseRange, m_canonicalEquivalence, m_caseInsensitive, m_comments, m_dotall,
+                            m_literal, m_multiline, m_unicodeCase, m_unixLines);
     }
 
 }

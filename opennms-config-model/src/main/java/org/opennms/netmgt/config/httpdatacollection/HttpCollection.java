@@ -40,6 +40,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -64,83 +67,47 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "rrd",
-    "uris"
+        "m_rrd",
+        "m_uris"
 })
 @XmlRootElement(name = "http-collection")
+@ValidateUsing("http-datacollection-config.xsd")
 public class HttpCollection {
 
-    @XmlElement(required = true)
-    protected Rrd rrd;
+    @XmlElement(name = "rrd", required = true)
+    protected Rrd m_rrd;
 
     @XmlElementWrapper(name="uris")
     @XmlElement(name="uri", required = true)
-    protected List<Uri> uris = new ArrayList<>();
+    protected List<Uri> m_uris = new ArrayList<>();
 
     @XmlAttribute(name = "name")
-    protected String name;
+    protected String m_name;
 
-    /**
-     * Gets the value of the rrd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Rrd }
-     *     
-     */
     public Rrd getRrd() {
-        return rrd;
+        return m_rrd;
     }
 
-    /**
-     * Sets the value of the rrd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Rrd }
-     *     
-     */
-    public void setRrd(Rrd value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'rrd' is a required element!");
-        }
-        this.rrd = value;
+    public void setRrd(final Rrd value) {
+        m_rrd = ConfigUtils.assertNotNull(value, "rrd");
     }
 
     public List<Uri> getUris() {
-        return uris;
+        return m_uris;
     }
 
     public void setUris(final List<Uri> value) {
-        this.uris = value == null? new ArrayList<>() : value;
+        if (value == m_uris) return;
+        m_uris.clear();
+        if (value != null) m_uris.addAll(value);
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getName() {
-        if (name == null) {
-            return "default";
-        } else {
-            return name;
-        }
+        return m_name == null? "default" : m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
+    public void setName(final String value) {
+        m_name = ConfigUtils.normalizeString(value);
     }
 
     @Override
@@ -148,14 +115,15 @@ public class HttpCollection {
         if (!(other instanceof HttpCollection)) {
             return false;
         }
-        HttpCollection castOther = (HttpCollection) other;
-        return Objects.equals(rrd, castOther.rrd) && Objects.equals(uris, castOther.uris)
-                && Objects.equals(name, castOther.name);
+        final HttpCollection that = (HttpCollection) other;
+        return Objects.equals(this.m_rrd, that.m_rrd)
+                && Objects.equals(this.m_uris, that.m_uris)
+                && Objects.equals(this.m_name, that.m_name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rrd, uris, name);
+        return Objects.hash(m_rrd, m_uris, m_name);
     }
 
 }
