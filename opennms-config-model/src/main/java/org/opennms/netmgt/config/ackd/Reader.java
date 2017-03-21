@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,10 @@
 
 package org.opennms.netmgt.config.ackd;
 
-//---------------------------------/
-//- Imported classes and packages -/
-//---------------------------------/
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,384 +39,111 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Reader.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "reader")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("ackd-configuration.xsd")
 public class Reader implements Serializable {
-    private static final long serialVersionUID = -7392047026243024472L;
+    private static final long serialVersionUID = 2L;
 
     public static final boolean DEFAULT_ENABLED_FLAG = true;
-
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
 
     /**
      * The reader name is the value returned by the getName() method required
      * by the AckReader interface. Readers are currently wired in using
      * Spring.
-     * 
      */
     @XmlAttribute(name = "reader-name")
-    private String _readerName;
+    private String m_readerName;
 
     /**
-     * Field _enabled.
+     * Field m_enabled.
      */
     @XmlAttribute(name = "enabled")
-    private Boolean _enabled;
+    private Boolean m_enabled;
 
     /**
      * A very basic configuration for defining simple input to a schedule
-     * (java.lang.concurrent)
-     * 
      */
     @XmlElement(name = "reader-schedule")
-    private ReaderSchedule _readerSchedule;
+    private ReaderSchedule m_readerSchedule;
 
     /**
      * Parameters to be used for collecting this service. Parameters are
-     * specfic to the service monitor.
+     * specific to the service monitor.
      */
     @XmlElement(name = "parameter")
-    private List<Parameter> _parameterList = new ArrayList<Parameter>(0);
+    private List<Parameter> m_parameters = new ArrayList<Parameter>();
 
-    // ----------------/
-    // - Constructors -/
-    // ----------------/
 
     public Reader() {
-        super();
     }
 
-    public Reader(final String name, final boolean enabled,
-            final ReaderSchedule schedule, final List<Parameter> parameters) {
-        super();
+    public Reader(final String name, final boolean enabled, final ReaderSchedule schedule, final List<Parameter> parameters) {
         setReaderName(name);
         setEnabled(enabled);
         setReaderSchedule(schedule);
-        setParameter(parameters);
+        setParameters(parameters);
     }
 
-    // -----------/
-    // - Methods -/
-    // -----------/
-
-    /**
-     * 
-     * 
-     * @param vParameter
-     * @throws java.lang.IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void addParameter(final Parameter vParameter)
-            throws IndexOutOfBoundsException {
-        this._parameterList.add(vParameter);
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vParameter
-     * @throws java.lang.IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void addParameter(final int index, final Parameter vParameter)
-            throws IndexOutOfBoundsException {
-        this._parameterList.add(index, vParameter);
-    }
-
-    /**
-     * Method enumerateParameter.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Parameter> enumerateParameter() {
-        return Collections.enumeration(this._parameterList);
-    }
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Reader other = (Reader) obj;
-        if (_enabled == null) {
-            if (other._enabled != null)
-                return false;
-        } else if (!_enabled.equals(other._enabled))
-            return false;
-        if (_parameterList == null) {
-            if (other._parameterList != null)
-                return false;
-        } else if (!_parameterList.equals(other._parameterList))
-            return false;
-        if (_readerName == null) {
-            if (other._readerName != null)
-                return false;
-        } else if (!_readerName.equals(other._readerName))
-            return false;
-        if (_readerSchedule == null) {
-            if (other._readerSchedule != null)
-                return false;
-        } else if (!_readerSchedule.equals(other._readerSchedule))
-            return false;
-        return true;
-    }
-
-    /**
-     * Returns the value of field 'enabled'.
-     * 
-     * @return the value of field 'Enabled'.
-     */
-    public boolean getEnabled() {
-        return _enabled == null ? DEFAULT_ENABLED_FLAG : _enabled;
-    }
-
-    /**
-     * Method getParameter.
-     * 
-     * @param index
-     * @throws java.lang.IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     * @return the value of the org.opennms.netmgt.config.ackd.Parameter at
-     *         the given index
-     */
-    public Parameter getParameter(final int index)
-            throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._parameterList.size()) {
-            throw new IndexOutOfBoundsException("getParameter: Index value '"
-                    + index + "' not in range [0.."
-                    + (this._parameterList.size() - 1) + "]");
-        }
-
-        return (Parameter) _parameterList.get(index);
-    }
-
-    /**
-     * Method getParameter.Returns the contents of the collection in an Array.
-     * <p>
-     * Note: Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call.
-     * This way we <i>know</i> that the Array returned is of exactly the
-     * correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public Parameter[] getParameter() {
-        Parameter[] array = new Parameter[0];
-        return (Parameter[]) this._parameterList.toArray(array);
-    }
-
-    /**
-     * Method getParameterCollection.Returns a reference to '_parameterList'.
-     * No type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Parameter> getParameterCollection() {
-        return this._parameterList;
-    }
-
-    /**
-     * Method getParameterCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getParameterCount() {
-        return this._parameterList.size();
-    }
-
-    /**
-     * Returns the value of field 'readerName'. The field 'readerName' has the
-     * following description: The reader name is the value returned by the
-     * getName() method required by the AckReader interface. Readers are
-     * currently wired in using Spring.
-     * 
-     * 
-     * @return the value of field 'ReaderName'.
-     */
     public String getReaderName() {
-        return this._readerName;
+        return m_readerName;
     }
 
-    /**
-     * Returns the value of field 'readerSchedule'. The field 'readerSchedule'
-     * has the following description: A very basic configuration for defining
-     * simple input to a schedule (java.lang.concurrent)
-     * 
-     * 
-     * @return the value of field 'ReaderSchedule'.
-     */
+    public void setReaderName(final String readerName) {
+        m_readerName = readerName;
+    }
+
+    public boolean getEnabled() {
+        return m_enabled == null ? DEFAULT_ENABLED_FLAG : m_enabled;
+    }
+
+    public void setEnabled(final Boolean enabled) {
+        m_enabled = enabled;
+    }
+
     public ReaderSchedule getReaderSchedule() {
-        return this._readerSchedule;
+        return m_readerSchedule;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming Language
-     * Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
+    public void setReaderSchedule(final ReaderSchedule readerSchedule) {
+        m_readerSchedule = readerSchedule;
+    }
+
+    public List<Parameter> getParameters() {
+        return m_parameters;
+    }
+
+    public void setParameters(final List<Parameter> parameters) {
+        if (m_parameters == parameters) {
+            return;
+        }
+        m_parameters.clear();
+        if (parameters != null) m_parameters.addAll(parameters);
+    }
+
+    public void addParameter(final Parameter parameter) {
+        m_parameters.add(parameter);
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((_enabled == null) ? 0 : _enabled.hashCode());
-        result = prime * result
-                + ((_parameterList == null) ? 0 : _parameterList.hashCode());
-        result = prime * result
-                + ((_readerName == null) ? 0 : _readerName.hashCode());
-        result = prime
-                * result
-                + ((_readerSchedule == null) ? 0 : _readerSchedule.hashCode());
-        return result;
+        return Objects.hash(m_readerName, m_enabled, m_readerSchedule, m_parameters);
     }
 
-    /**
-     * Returns the value of field 'enabled'.
-     * 
-     * @return the value of field 'Enabled'.
-     */
-    public boolean isEnabled() {
-        return _enabled == null ? DEFAULT_ENABLED_FLAG : _enabled;
-    }
-
-    /**
-     * Method iterateParameter.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Parameter> iterateParameter() {
-        return this._parameterList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllParameter() {
-        this._parameterList.clear();
-    }
-
-    /**
-     * Method removeParameter.
-     * 
-     * @param vParameter
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeParameter(final Parameter vParameter) {
-        return _parameterList.remove(vParameter);
-    }
-
-    /**
-     * Method removeParameterAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Parameter removeParameterAt(final int index) {
-        return this._parameterList.remove(index);
-    }
-
-    /**
-     * Sets the value of field 'enabled'.
-     * 
-     * @param enabled
-     *            the value of field 'enabled'.
-     */
-    public void setEnabled(final boolean enabled) {
-        this._enabled = enabled;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vParameter
-     * @throws java.lang.IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void setParameter(final int index, final Parameter vParameter)
-            throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._parameterList.size()) {
-            throw new IndexOutOfBoundsException("setParameter: Index value '"
-                    + index + "' not in range [0.."
-                    + (this._parameterList.size() - 1) + "]");
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-
-        this._parameterList.set(index, vParameter);
-    }
-
-    /**
-     * 
-     * 
-     * @param vParameterArray
-     */
-    public void setParameter(final Parameter[] vParameterArray) {
-        // -- copy array
-        _parameterList.clear();
-
-        for (int i = 0; i < vParameterArray.length; i++) {
-            this._parameterList.add(vParameterArray[i]);
+        if (obj instanceof Reader) {
+            final Reader that = (Reader) obj;
+            return Objects.equals(this.m_readerName, that.m_readerName) &&
+                    Objects.equals(this.m_enabled, that.m_enabled) &&
+                    Objects.equals(this.m_readerSchedule, that.m_readerSchedule) &&
+                    Objects.equals(this.m_parameters, that.m_parameters);
         }
-    }
-
-    /**
-     * Sets the value of '_parameterList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     * 
-     * @param vParameterList
-     *            the Vector to copy.
-     */
-    public void setParameter(final List<Parameter> vParameterList) {
-        // copy vector
-        this._parameterList.clear();
-
-        this._parameterList.addAll(vParameterList);
-    }
-
-    /**
-     * Sets the value of field 'readerName'. The field 'readerName' has the
-     * following description: The reader name is the value returned by the
-     * getName() method required by the AckReader interface. Readers are
-     * currently wired in using Spring.
-     * 
-     * 
-     * @param readerName
-     *            the value of field 'readerName'.
-     */
-    public void setReaderName(final String readerName) {
-        this._readerName = readerName;
-    }
-
-    /**
-     * Sets the value of field 'readerSchedule'. The field 'readerSchedule'
-     * has the following description: A very basic configuration for defining
-     * simple input to a schedule (java.lang.concurrent)
-     * 
-     * 
-     * @param readerSchedule
-     *            the value of field 'readerSchedule'.
-     */
-    public void setReaderSchedule(final ReaderSchedule readerSchedule) {
-        this._readerSchedule = readerSchedule;
+        return false;
     }
 }
