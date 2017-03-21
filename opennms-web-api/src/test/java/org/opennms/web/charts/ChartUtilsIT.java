@@ -49,12 +49,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.charts.ChartUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -63,6 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })

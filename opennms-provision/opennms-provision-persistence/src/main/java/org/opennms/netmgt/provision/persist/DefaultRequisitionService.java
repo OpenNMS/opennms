@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.RequisitionDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -56,9 +55,6 @@ public class DefaultRequisitionService implements RequisitionService {
 
     @Autowired
     private RequisitionDao requisitionDao;
-
-    @Autowired
-    private NodeDao nodeDao;
 
     @Autowired
     private EventProxy eventProxy;
