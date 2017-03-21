@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.filter;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,68 +37,45 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "constraint")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Constraint implements java.io.Serializable {
+@ValidateUsing("database-schema.xsd")
+public class Constraint implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "sql", required = true)
-    private String sql;
+    private String m_sql;
 
     public Constraint() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getSql() {
+        return m_sql;
+    }
+
+    public void setSql(final String sql) {
+        m_sql = ConfigUtils.assertNotEmpty(sql, "sql");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_sql);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Constraint) {
-            Constraint temp = (Constraint)obj;
-            boolean equals = Objects.equals(temp.sql, sql);
-            return equals;
+            final Constraint that = (Constraint)obj;
+            return Objects.equals(this.m_sql, that.m_sql);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'sql'.
-     * 
-     * @return the value of field 'Sql'.
-     */
-    public String getSql() {
-        return this.sql;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            sql);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'sql'.
-     * 
-     * @param sql the value of field 'sql'.
-     */
-    public void setSql(final String sql) {
-        if (sql == null) {
-            throw new IllegalArgumentException("'sql' is a required attribute!");
-        }
-        this.sql = sql;
     }
 
 }

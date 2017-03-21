@@ -27,12 +27,12 @@
  *******************************************************************************/
 
 @XmlSchema(
-    namespace = "http://xmlns.opennms.org/xsd/config/filter",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/filter")
-    }
-)
+           namespace = "http://xmlns.opennms.org/xsd/config/filter",
+           elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+           xmlns={
+                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/filter")
+           }
+        )
 package org.opennms.netmgt.config.filter;
 
 import javax.xml.bind.annotation.XmlNs;
