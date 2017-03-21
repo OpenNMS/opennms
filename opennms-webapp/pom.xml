@@ -23,73 +23,6 @@
   <build>
     <plugins>
       <plugin>
-        <!-- https://github.com/eirslett/frontend-maven-plugin -->
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>${frontendPluginVersion}</version>
-        <configuration>
-          <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-          <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-          <installDirectory>target</installDirectory>
-          <triggerfiles>
-            <triggerfile>package.json</triggerfile>
-          </triggerfiles>
-        </configuration>
-        <executions>
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <nodeVersion>${nodeVersion}</nodeVersion>
-              <npmVersion>${npmVersion}</npmVersion>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install nodejs dependencies</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install bower dependencies</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>install --allow-root</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy third-party dependencies</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>vendor</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>execute karma tests</id>
-            <goals>
-              <goal>karma</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>start</arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.jasig.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
         <version>${sass.maven.plugin.version}</version>
@@ -419,6 +352,86 @@
     </pluginManagement>
   </build>
   <profiles>
+    <profile>
+      <id>runJSTests</id>
+      <activation>
+        <property>
+          <name>skipITs</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- https://github.com/eirslett/frontend-maven-plugin -->
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontendPluginVersion}</version>
+            <configuration>
+              <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
+              <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
+              <installDirectory>target</installDirectory>
+              <triggerfiles>
+                <triggerfile>package.json</triggerfile>
+              </triggerfiles>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <nodeVersion>${nodeVersion}</nodeVersion>
+                  <npmVersion>${npmVersion}</npmVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install nodejs dependencies</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install bower dependencies</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install --allow-root</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy third-party dependencies</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>vendor</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>execute karma tests</id>
+                <goals>
+                  <goal>karma</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>start</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>runInPlace</id>
       <activation><activeByDefault>false</activeByDefault></activation>
