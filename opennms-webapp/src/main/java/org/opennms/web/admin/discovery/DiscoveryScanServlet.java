@@ -126,7 +126,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Specific");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	Specific spec= config.getSpecific(index);
+            final int index1 = index;
+        	Specific spec= config.getSpecifics().get(index1);
         	boolean result = config.removeSpecific(spec);
         	LOG.debug("Removing Specific result = {}", result);
         } 
@@ -169,7 +170,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Include Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	IncludeRange ir= config.getIncludeRange(index);
+            final int index1 = index;
+        	IncludeRange ir= config.getIncludeRanges().get(index1);
         	boolean result = config.removeIncludeRange(ir);
         	LOG.debug("Removing Include Range result = {}", result);
         } 
@@ -209,7 +211,8 @@ public class DiscoveryScanServlet extends HttpServlet {
             LOG.debug("Removing Include URL");
             String specificIndex = request.getParameter("index");
             int index = WebSecurityUtils.safeParseInt(specificIndex);
-            IncludeUrl iu = config.getIncludeUrl(index);
+            final int index1 = index;
+            IncludeUrl iu = config.getIncludeUrls().get(index1);
             boolean result = config.removeIncludeUrl(iu);
             LOG.debug("Removing Include URL result = {}", result);
         } 
@@ -230,7 +233,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Exclude Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	ExcludeRange er= config.getExcludeRange(index);
+            final int index1 = index;
+        	ExcludeRange er= config.getExcludeRanges().get(index1);
         	boolean result = config.removeExcludeRange(er);
         	LOG.debug("Removing Exclude Range result = {}", result);
         }
