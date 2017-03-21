@@ -93,7 +93,12 @@ public class ImportOperationsManager {
 
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String location, final String building, final String city) {
         final Integer nodeId = processForeignId(foreignId);
-        final UpdateOperation updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+        final UpdateOperation updateOperation;
+        if (m_rescanExisting) {
+            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+        } else {
+            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, location, building, city, m_provisionService, m_rescanExisting);
+        }
         m_updates.add(updateOperation);
         return updateOperation;
     }
