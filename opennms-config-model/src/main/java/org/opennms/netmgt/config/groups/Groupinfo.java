@@ -97,9 +97,9 @@ public class Groupinfo implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_header, 
-            m_groups, 
-            m_roles);
+                            m_header, 
+                            m_groups, 
+                            m_roles);
     }
 
     @Override
@@ -107,12 +107,12 @@ public class Groupinfo implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Groupinfo) {
-            final Groupinfo temp = (Groupinfo)obj;
-            return Objects.equals(temp.m_header, m_header)
-                && Objects.equals(temp.m_groups, m_groups)
-                && Objects.equals(temp.m_roles, m_roles);
+            final Groupinfo that = (Groupinfo)obj;
+            return Objects.equals(this.m_header, that.m_header)
+                    && Objects.equals(this.m_groups, that.m_groups)
+                    && Objects.equals(this.m_roles, that.m_roles);
         }
         return false;
     }

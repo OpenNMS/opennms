@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "time")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -93,10 +94,7 @@ public class Time implements Serializable {
     }
 
     public void setBegins(final String begins) {
-        if (begins == null) {
-            throw new IllegalArgumentException("'begins' is a required attribute!");
-        }
-        m_begins = begins;
+        m_begins = ConfigUtils.assertNotEmpty(begins, "begins");
     }
 
     public String getEnds() {
@@ -104,19 +102,16 @@ public class Time implements Serializable {
     }
 
     public void setEnds(final String ends) {
-        if (ends == null) {
-            throw new IllegalArgumentException("'ends' is a required attribute!");
-        }
-        m_ends = ends;
+        m_ends = ConfigUtils.assertNotEmpty(ends, "ends");
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_id, 
-            m_day, 
-            m_begins, 
-            m_ends);
+                            m_id, 
+                            m_day, 
+                            m_begins, 
+                            m_ends);
     }
 
     @Override
@@ -124,13 +119,13 @@ public class Time implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Time) {
-            final Time temp = (Time)obj;
-            return Objects.equals(temp.m_id, m_id)
-                && Objects.equals(temp.m_day, m_day)
-                && Objects.equals(temp.m_begins, m_begins)
-                && Objects.equals(temp.m_ends, m_ends);
+            final Time that = (Time)obj;
+            return Objects.equals(this.m_id, that.m_id)
+                    && Objects.equals(this.m_day, that.m_day)
+                    && Objects.equals(this.m_begins, that.m_begins)
+                    && Objects.equals(this.m_ends, that.m_ends);
         }
         return false;
     }

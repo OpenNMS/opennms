@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "group")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,10 +72,7 @@ public class Group implements Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required element!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public Optional<String> getDefaultMap() {
@@ -82,7 +80,7 @@ public class Group implements Serializable {
     }
 
     public void setDefaultMap(final String defaultMap) {
-        m_defaultMap = defaultMap;
+        m_defaultMap = ConfigUtils.normalizeString(defaultMap);
     }
 
     public Optional<String> getComments() {
@@ -90,7 +88,7 @@ public class Group implements Serializable {
     }
 
     public void setComments(final String comments) {
-        m_comments = comments;
+        m_comments = ConfigUtils.normalizeString(comments);
     }
 
     public List<String> getUsers() {
@@ -98,8 +96,9 @@ public class Group implements Serializable {
     }
 
     public void setUsers(final List<String> users) {
+        if (users == m_users) return;
         m_users.clear();
-        m_users.addAll(users);
+        if (users != null) m_users.addAll(users);
     }
 
     public void addUser(final String user) {
@@ -119,8 +118,9 @@ public class Group implements Serializable {
     }
 
     public void setDutySchedules(final List<String> dutySchedules) {
+        if (dutySchedules == m_dutySchedules) return;
         m_dutySchedules.clear();
-        m_dutySchedules.addAll(dutySchedules);
+        if (dutySchedules != null) m_dutySchedules.addAll(dutySchedules);
     }
 
     public void addDutySchedule(final String dutySchedule) {
@@ -133,12 +133,11 @@ public class Group implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_name, 
-            m_defaultMap, 
-            m_comments, 
-            m_users, 
-            m_dutySchedules);
+        return Objects.hash(m_name, 
+                            m_defaultMap, 
+                            m_comments, 
+                            m_users, 
+                            m_dutySchedules);
     }
 
     @Override
@@ -146,14 +145,14 @@ public class Group implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Group) {
-            final Group temp = (Group)obj;
-            return Objects.equals(temp.m_name, m_name)
-                && Objects.equals(temp.m_defaultMap, m_defaultMap)
-                && Objects.equals(temp.m_comments, m_comments)
-                && Objects.equals(temp.m_users, m_users)
-                && Objects.equals(temp.m_dutySchedules, m_dutySchedules);
+            final Group that = (Group)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_defaultMap, that.m_defaultMap)
+                    && Objects.equals(this.m_comments, that.m_comments)
+                    && Objects.equals(this.m_users, that.m_users)
+                    && Objects.equals(this.m_dutySchedules, that.m_dutySchedules);
         }
         return false;
     }

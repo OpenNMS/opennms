@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -72,10 +73,7 @@ public class Role implements Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getMembershipGroup() {
@@ -83,10 +81,7 @@ public class Role implements Serializable {
     }
 
     public void setMembershipGroup(final String membershipGroup) {
-        if (membershipGroup == null) {
-            throw new IllegalArgumentException("'membership-group' is a required attribute!");
-        }
-        m_membershipGroup = membershipGroup;
+        m_membershipGroup = ConfigUtils.assertNotEmpty(membershipGroup, "membership-group");
     }
 
     public String getSupervisor() {
@@ -94,10 +89,7 @@ public class Role implements Serializable {
     }
 
     public void setSupervisor(final String supervisor) {
-        if (supervisor == null) {
-            throw new IllegalArgumentException("'supervisor' is a required attribute!");
-        }
-        m_supervisor = supervisor;
+        m_supervisor = ConfigUtils.assertNotEmpty(supervisor, "supervisor");
     }
 
     public Optional<String> getDescription() {
@@ -105,7 +97,7 @@ public class Role implements Serializable {
     }
 
     public void setDescription(final String description) {
-        m_description = description;
+        m_description = ConfigUtils.normalizeString(description);
     }
 
     public List<Schedule> getSchedules() {
@@ -113,8 +105,9 @@ public class Role implements Serializable {
     }
 
     public void setSchedules(final List<Schedule> schedules) {
+        if (schedules == m_schedules) return;
         m_schedules.clear();
-        m_schedules.addAll(schedules);
+        if (schedules != null) m_schedules.addAll(schedules);
     }
 
     public void addSchedule(final Schedule schedule) {
@@ -127,12 +120,11 @@ public class Role implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_name, 
-            m_membershipGroup, 
-            m_supervisor, 
-            m_description, 
-            m_schedules);
+        return Objects.hash(m_name, 
+                            m_membershipGroup, 
+                            m_supervisor, 
+                            m_description, 
+                            m_schedules);
     }
 
     @Override
@@ -140,14 +132,14 @@ public class Role implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Role) {
-            final Role temp = (Role)obj;
-            return Objects.equals(temp.m_name, m_name)
-                && Objects.equals(temp.m_membershipGroup, m_membershipGroup)
-                && Objects.equals(temp.m_supervisor, m_supervisor)
-                && Objects.equals(temp.m_description, m_description)
-                && Objects.equals(temp.m_schedules, m_schedules);
+            final Role that = (Role)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_membershipGroup, that.m_membershipGroup)
+                    && Objects.equals(this.m_supervisor, that.m_supervisor)
+                    && Objects.equals(this.m_description, that.m_description)
+                    && Objects.equals(this.m_schedules, that.m_schedules);
         }
         return false;
     }
