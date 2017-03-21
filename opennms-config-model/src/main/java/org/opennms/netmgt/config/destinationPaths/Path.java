@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "path")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -74,10 +75,7 @@ public class Path implements Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public Optional<String> getInitialDelay() {
@@ -85,7 +83,7 @@ public class Path implements Serializable {
     }
 
     public void setInitialDelay(final String initialDelay) {
-        m_initialDelay = initialDelay;
+        m_initialDelay = ConfigUtils.normalizeString(initialDelay);
     }
 
     public List<Target> getTargets() {
@@ -93,8 +91,9 @@ public class Path implements Serializable {
     }
 
     public void setTargets(final List<Target> targets) {
+        if (targets == m_targets) return;
         m_targets.clear();
-        m_targets.addAll(targets);
+        if (targets != null) m_targets.addAll(targets);
     }
 
     public void addTarget(final Target target) {
@@ -114,8 +113,9 @@ public class Path implements Serializable {
     }
 
     public void setEscalates(final List<Escalate> escalates) {
+        if (escalates == m_escalates) return;
         m_escalates.clear();
-        m_escalates.addAll(escalates);
+        if (escalates != null) m_escalates.addAll(escalates);
     }
 
     public void addEscalate(final Escalate escalate) {

@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "escalate")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -62,10 +63,7 @@ public class Escalate implements Serializable {
     }
 
     public void setDelay(final String delay) {
-        if (delay == null) {
-            throw new IllegalArgumentException("'delay' is a required attribute!");
-        }
-        m_delay = delay;
+        m_delay = ConfigUtils.assertNotEmpty(delay, "delay");
     }
 
     public List<Target> getTargets() {
@@ -73,8 +71,9 @@ public class Escalate implements Serializable {
     }
 
     public void setTargets(final List<Target> targets) {
+        if (targets == m_targets) return;
         m_targets.clear();
-        m_targets.addAll(targets);
+        if (targets != null) m_targets.addAll(targets);
     }
 
     public void addTarget(final Target target) {
