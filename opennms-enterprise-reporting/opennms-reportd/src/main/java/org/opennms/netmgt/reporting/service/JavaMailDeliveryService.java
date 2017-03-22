@@ -75,9 +75,9 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
             JavaSendMailer sm = new JavaSendMailer(config);
             MimeMessage msg = new MimeMessage(sm.getSession());
 
-            if (config.getSendmailMessage().isPresent() && config.getSendmailProtocol().isPresent()) {
-                final SendmailMessage sendmailMessage = config.getSendmailMessage().get();
-                final SendmailProtocol sendmailProtocol = config.getSendmailProtocol().get();
+            if (config.getSendmailMessage() != null && config.getSendmailProtocol() != null) {
+                final SendmailMessage sendmailMessage = config.getSendmailMessage();
+                final SendmailProtocol sendmailProtocol = config.getSendmailProtocol();
 
                 MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
                 helper.setFrom(sendmailMessage.getFrom());

@@ -96,8 +96,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         public SendmailConfigList(List<SendmailConfig> sendmailConfigs) {
             sendmailConfigs.forEach(d -> {
-                if (d.getName().isPresent()) {
-                    add(d.getName().get());
+                if (d.getName() != null) {
+                    add(d.getName());
                 }
             });
         }
@@ -132,8 +132,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         public ReadmailConfigList(List<ReadmailConfig> sendmailConfigs) {
             sendmailConfigs.forEach(d -> {
-                if (d.getName().isPresent()) {
-                    add(d.getName().get());
+                if (d.getName() != null) {
+                    add(d.getName());
                 }
             });
         }
@@ -168,8 +168,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         public End2endConfigList(List<End2endMailConfig> end2endConfigs) {
             end2endConfigs.forEach(d -> {
-                if (d.getName().isPresent()) {
-                    add(d.getName().get());
+                if (d.getName() != null) {
+                    add(d.getName());
                 }
             });
         }
@@ -228,7 +228,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         if (config == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        return Response.ok(config.getName().orElse(null)).build();
+        return Response.ok(config.getName()).build();
     }
 
     /**

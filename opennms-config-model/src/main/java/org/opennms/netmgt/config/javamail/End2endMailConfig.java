@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,12 +30,14 @@ package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class End2endMailConfig.
@@ -44,45 +46,51 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="end2end-mail-config", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class End2endMailConfig implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
+    @XmlAttribute(name="name", required=true)
+    private String m_name;
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    @XmlAttribute(name="sendmail-config-name", required=true)
+    private String m_sendmailConfigName;
 
-    /** The name. */
-    @XmlAttribute(name="name")
-    private String _name;
+    @XmlAttribute(name="readmail-config-name", required=true)
+    private String m_readmailConfigName;
 
-    /** The sendmail configuration name. */
-    @XmlAttribute(name="sendmail-config-name")
-    private String _sendmailConfigName;
-
-    /** The readmail configuration name. */
-    @XmlAttribute(name="readmail-config-name")
-    private String _readmailConfigName;
-
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new end2end mail configuration.
-     */
     public End2endMailConfig() {
-        super();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
+    public String getName() {
+        return m_name;
+    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getSendmailConfigName() {
+        return m_sendmailConfigName;
+    }
+
+    public void setSendmailConfigName(final String sendmailConfigName) {
+        m_sendmailConfigName = ConfigUtils.assertNotEmpty(sendmailConfigName, "sendmail-config-name");
+    }
+
+    public String getReadmailConfigName() {
+        return m_readmailConfigName;
+    }
+
+    public void setReadmailConfigName(final String readmailConfigName) {
+        m_readmailConfigName = ConfigUtils.assertNotEmpty(readmailConfigName, "readmail-config-name");
+    }
+
+    @Override()
+    public int hashCode() {
+        return Objects.hash(m_name, m_sendmailConfigName, m_readmailConfigName);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -90,74 +98,12 @@ public class End2endMailConfig implements Serializable {
         }
 
         if (obj instanceof End2endMailConfig) {
-            final End2endMailConfig temp = (End2endMailConfig)obj;
-            return Objects.equals(temp._name, _name)
-                    && Objects.equals(temp._sendmailConfigName, _sendmailConfigName)
-                    && Objects.equals(temp._readmailConfigName, _readmailConfigName);
+            final End2endMailConfig that = (End2endMailConfig)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_sendmailConfigName, that.m_sendmailConfigName)
+                    && Objects.equals(this.m_readmailConfigName, that.m_readmailConfigName);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public Optional<String> getName() {
-        return Optional.ofNullable(this._name);
-    }
-
-    /**
-     * Returns the value of field 'readmailConfigName'.
-     * 
-     * @return the value of field 'ReadmailConfigName'.
-     */
-    public Optional<String> getReadmailConfigName() {
-        return Optional.ofNullable(this._readmailConfigName);
-    }
-
-    /**
-     * Returns the value of field 'sendmailConfigName'.
-     * 
-     * @return the value of field 'SendmailConfigName'.
-     */
-    public Optional<String> getSendmailConfigName() {
-        return Optional.ofNullable(this._sendmailConfigName);
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override()
-    public int hashCode() {
-        return Objects.hash(_name, _sendmailConfigName, _readmailConfigName);
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this._name = name;
-    }
-
-    /**
-     * Sets the value of field 'readmailConfigName'.
-     * 
-     * @param readmailConfigName the value of field 'readmailConfigName'.
-     */
-    public void setReadmailConfigName(final String readmailConfigName) {
-        this._readmailConfigName = readmailConfigName;
-    }
-
-    /**
-     * Sets the value of field 'sendmailConfigName'.
-     * 
-     * @param sendmailConfigName the value of field 'sendmailConfigName'.
-     */
-    public void setSendmailConfigName(final String sendmailConfigName) {
-        this._sendmailConfigName = sendmailConfigName;
     }
 
 }

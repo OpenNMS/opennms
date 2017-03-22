@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,18 +30,17 @@ package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class ReadmailConfig.
@@ -50,102 +49,124 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="readmail-config", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class ReadmailConfig implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    /** The debug flag. */
     @XmlAttribute(name="debug")
-    private Boolean _debug;
+    private Boolean m_debug;
 
-    /** The mail folder. */
     @XmlAttribute(name="mail-folder")
-    private String _mailFolder;
+    private String m_mailFolder;
 
-    /** The attempt interval. */
     @XmlAttribute(name="attempt-interval")
-    private Long _attemptInterval;
+    private Long m_attemptInterval;
 
-    /** The delete all mail flag. */
     @XmlAttribute(name="delete-all-mail")
-    private Boolean _deleteAllMail;
+    private Boolean m_deleteAllMail;
 
-    /** The name. */
-    @XmlAttribute(name="name")
-    private String _name;
+    @XmlAttribute(name="name", required=true)
+    private String m_name;
 
     /**
      * Use these name value pairs to configure free-form properties from the JavaMail class.
      */
     @XmlElement(name="javamail-property")
-    private List<JavamailProperty> _javamailPropertyList = new ArrayList<>();
+    private List<JavamailProperty> m_javamailProperties = new ArrayList<>();
 
     /**
      * Define the host and port of a service for reading email.
      */
-    @XmlElement(name="readmail-host")
-    private ReadmailHost _readmailHost;
+    @XmlElement(name="readmail-host", required=true)
+    private ReadmailHost m_readmailHost;
 
     /**
      * Configure user based authentication.
      */
-    @XmlElement(name="user-auth")
-    private UserAuth _userAuth;
+    @XmlElement(name="user-auth", required=true)
+    private UserAuth m_userAuth;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new readmail config.
-     */
     public ReadmailConfig() {
-        super();
-        this._javamailPropertyList = new ArrayList<JavamailProperty>();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
-
-    /**
-     * Adds the javamail property.
-     *
-     * @param vJavamailProperty the javamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void addJavamailProperty(final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        this._javamailPropertyList.add(vJavamailProperty);
+    public Boolean isDebug() {
+        return m_debug == null ? Boolean.TRUE : m_debug;
     }
 
-    /**
-     * Adds the javamail property.
-     *
-     * @param index the index
-     * @param vJavamailProperty the javamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void addJavamailProperty(final int index, final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        this._javamailPropertyList.add(index, vJavamailProperty);
+    public void setDebug(final Boolean debug) {
+        m_debug = debug;
     }
 
-    /**
-     * Method enumerateJavamailProperty.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<JavamailProperty> enumerateJavamailProperty() {
-        return Collections.enumeration(this._javamailPropertyList);
+    public String getMailFolder() {
+        return m_mailFolder == null ? "INBOX" : m_mailFolder;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public void setMailFolder(final String mailFolder) {
+        m_mailFolder = mailFolder;
+    }
+
+    public Long getAttemptInterval() {
+        return m_attemptInterval == null ? 1000l : m_attemptInterval;
+    }
+
+    public void setAttemptInterval(final Long attemptInterval) {
+        m_attemptInterval = attemptInterval;
+    }
+
+    public Boolean isDeleteAllMail() {
+        return m_deleteAllMail ? Boolean.FALSE : m_deleteAllMail;
+    }
+
+    public void setDeleteAllMail(final Boolean deleteAllMail) {
+        m_deleteAllMail = deleteAllMail;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public List<JavamailProperty> getJavamailProperties() {
+        return m_javamailProperties;
+    }
+
+    public void setJavamailProperties(final List<JavamailProperty> properties) {
+        if (properties == m_javamailProperties) return;
+        m_javamailProperties.clear();
+        if (properties != null) m_javamailProperties.addAll(properties);
+    }
+
+    public ReadmailHost getReadmailHost() {
+        return m_readmailHost;
+    }
+
+    public void setReadmailHost(final ReadmailHost readmailHost) {
+        m_readmailHost = ConfigUtils.assertNotNull(readmailHost, "readmail-host");
+    }
+
+    public UserAuth getUserAuth() {
+        return m_userAuth;
+    }
+
+    public void setUserAuth(final UserAuth userAuth) {
+        m_userAuth = ConfigUtils.assertNotNull(userAuth, "user-auth");
+    }
+
+    @Override()
+    public int hashCode() {
+        return Objects.hash(m_debug,
+                            m_mailFolder,
+                            m_attemptInterval,
+                            m_deleteAllMail,
+                            m_name,
+                            m_javamailProperties,
+                            m_readmailHost,
+                            m_userAuth);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -153,281 +174,17 @@ public class ReadmailConfig implements Serializable {
         }
 
         if (obj instanceof ReadmailConfig) {
-            final ReadmailConfig temp = (ReadmailConfig)obj;
-            return Objects.equals(temp._debug, _debug)
-                    && Objects.equals(temp._mailFolder, _mailFolder)
-                    && Objects.equals(temp._attemptInterval, _attemptInterval)
-                    && Objects.equals(temp._deleteAllMail, _deleteAllMail)
-                    && Objects.equals(temp._name, _name)
-                    && Objects.equals(temp._javamailPropertyList, _javamailPropertyList)
-                    && Objects.equals(temp._readmailHost, _readmailHost)
-                    && Objects.equals(temp._userAuth, _userAuth);
+            final ReadmailConfig that = (ReadmailConfig)obj;
+            return Objects.equals(this.m_debug, that.m_debug)
+                    && Objects.equals(this.m_mailFolder, that.m_mailFolder)
+                    && Objects.equals(this.m_attemptInterval, that.m_attemptInterval)
+                    && Objects.equals(this.m_deleteAllMail, that.m_deleteAllMail)
+                    && Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_javamailProperties, that.m_javamailProperties)
+                    && Objects.equals(this.m_readmailHost, that.m_readmailHost)
+                    && Objects.equals(this.m_userAuth, that.m_userAuth);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'attemptInterval'.
-     * 
-     * @return the value of field 'AttemptInterval'.
-     */
-    public Long getAttemptInterval() {
-        return this._attemptInterval == null ? 1000 : this._attemptInterval;
-    }
-
-    /**
-     * Returns the value of field 'debug'.
-     * 
-     * @return the value of field 'Debug'.
-     */
-    public Boolean isDebug() {
-        return this._debug == null ? Boolean.TRUE : this._debug;
-    }
-
-    /**
-     * Returns the value of field 'deleteAllMail'.
-     * 
-     * @return the value of field 'DeleteAllMail'.
-     */
-    public Boolean isDeleteAllMail() {
-        return this._deleteAllMail ? Boolean.FALSE : this._deleteAllMail;
-    }
-
-    /**
-     * Method getJavamailProperty.
-     *
-     * @param index the index
-     * @return the value of the JavamailProperty at the given index
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public JavamailProperty getJavamailProperty(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._javamailPropertyList.size()) {
-            throw new IndexOutOfBoundsException("getJavamailProperty: Index value '" + index + "' not in range [0.." + (this._javamailPropertyList.size() - 1) + "]");
-        }
-        return _javamailPropertyList.get(index);
-    }
-
-    /**
-     * Method getJavamailProperty.Returns the contents of the collection in an Array.
-     * <p>Note:  Just in case the collection contents are changing in another thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct length.</p>
-     * 
-     * @return this collection as an Array
-     */
-    public JavamailProperty[] getJavamailProperty() {
-        JavamailProperty[] array = new JavamailProperty[0];
-        return this._javamailPropertyList.toArray(array);
-    }
-
-    /**
-     * Method getJavamailPropertyCollection.Returns a reference to '_javamailPropertyList'. No type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<JavamailProperty> getJavamailPropertyCollection() {
-        return this._javamailPropertyList;
-    }
-
-    /**
-     * Method getJavamailPropertyCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getJavamailPropertyCount() {
-        return this._javamailPropertyList.size();
-    }
-
-    /**
-     * Returns the value of field 'mailFolder'.
-     * 
-     * @return the value of field 'MailFolder'.
-     */
-    public String getMailFolder() {
-        return this._mailFolder == null ? "INBOX" : this._mailFolder;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public Optional<String> getName() {
-        return Optional.ofNullable(this._name);
-    }
-
-    /**
-     * Returns the value of field 'readmailHost'. The field 'readmailHost' has the following description: Define the host and port of a service for reading email.
-     * 
-     * @return the value of field 'ReadmailHost'.
-     */
-    public Optional<ReadmailHost> getReadmailHost() {
-        return Optional.ofNullable(this._readmailHost);
-    }
-
-    /**
-     * Returns the value of field 'userAuth'. The field 'userAuth' has the following description: Configure user based authentication.
-     *  
-     * @return the value of field 'UserAuth'.
-     */
-    public Optional<UserAuth> getUserAuth() {
-        return Optional.ofNullable(this._userAuth);
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override()
-    public int hashCode() {
-        return Objects.hash(_debug, _mailFolder, _attemptInterval, _deleteAllMail, _name, _javamailPropertyList, _readmailHost, _userAuth);
-    }
-
-    /**
-     * Method iterateJavamailProperty.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<JavamailProperty> iterateJavamailProperty() {
-        return this._javamailPropertyList.iterator();
-    }
-
-    /**
-     * Removes the all javamail property.
-     */
-    public void removeAllJavamailProperty() {
-        this._javamailPropertyList.clear();
-    }
-
-    /**
-     * Method removeJavamailProperty.
-     *
-     * @param vJavamailProperty the v javamail property
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeJavamailProperty(final JavamailProperty vJavamailProperty) {
-        return _javamailPropertyList.remove(vJavamailProperty);
-    }
-
-    /**
-     * Method removeJavamailPropertyAt.
-     *
-     * @param index the index
-     * @return the element removed from the collection
-     */
-    public JavamailProperty removeJavamailPropertyAt(final int index) {
-        return this._javamailPropertyList.remove(index);
-    }
-
-    /**
-     * Sets the value of field 'attemptInterval'.
-     * 
-     * @param attemptInterval the value of field 'attemptInterval'.
-     */
-    public void setAttemptInterval(final Long attemptInterval) {
-        this._attemptInterval = attemptInterval;
-    }
-
-    /**
-     * Sets the value of field 'debug'.
-     * 
-     * @param debug the value of field 'debug'.
-     */
-    public void setDebug(final Boolean debug) {
-        this._debug = debug;
-    }
-
-    /**
-     * Sets the value of field 'deleteAllMail'.
-     * 
-     * @param deleteAllMail the value of field 'deleteAllMail'.
-     */
-    public void setDeleteAllMail(final Boolean deleteAllMail) {
-        this._deleteAllMail = deleteAllMail;
-    }
-
-    /**
-     * Sets the javamail property.
-     *
-     * @param index the index
-     * @param vJavamailProperty the javamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void setJavamailProperty(final int index, final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._javamailPropertyList.size()) {
-            throw new IndexOutOfBoundsException("setJavamailProperty: Index value '" + index + "' not in range [0.." + (this._javamailPropertyList.size() - 1) + "]");
-        }
-        this._javamailPropertyList.set(index, vJavamailProperty);
-    }
-
-    /**
-     * Sets the javamail property.
-     *
-     * @param vJavamailPropertyArray the new javamail property
-     */
-    public void setJavamailProperty(final JavamailProperty[] vJavamailPropertyArray) {
-        //-- copy array
-        _javamailPropertyList.clear();
-        for (int i = 0; i < vJavamailPropertyArray.length; i++) {
-            this._javamailPropertyList.add(vJavamailPropertyArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of '_javamailPropertyList' by copying the given Vector. All elements will be checked for type safety.
-     * 
-     * @param vJavamailPropertyList the Vector to copy.
-     */
-    public void setJavamailProperty(final List<JavamailProperty> vJavamailPropertyList) {
-        // copy vector
-        this._javamailPropertyList.clear();
-        this._javamailPropertyList.addAll(vJavamailPropertyList);
-    }
-
-    /**
-     * Sets the value of '_javamailPropertyList' by setting it to the given Vector. No type checking is performed.
-     *
-     * @param javamailPropertyList the Vector to set.
-     * @deprecated 
-     */
-    public void setJavamailPropertyCollection(final List<JavamailProperty> javamailPropertyList) {
-        this._javamailPropertyList = javamailPropertyList == null? new ArrayList<>() : javamailPropertyList;
-    }
-
-    /**
-     * Sets the value of field 'mailFolder'.
-     * 
-     * @param mailFolder the value of field 'mailFolder'.
-     */
-    public void setMailFolder(final String mailFolder) {
-        this._mailFolder = mailFolder;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this._name = name;
-    }
-
-    /**
-     * Sets the value of field 'readmailHost'. The field 'readmailHost' has the following description: Define the host and port of a service for reading email.
-     *  
-     * @param readmailHost the value of field 'readmailHost'.
-     */
-    public void setReadmailHost(final ReadmailHost readmailHost) {
-        this._readmailHost = readmailHost;
-    }
-
-    /**
-     * Sets the value of field 'userAuth'. The field 'userAuth' has the following description: Configure user based authentication.
-     *  
-     * @param userAuth the value of field 'userAuth'.
-     */
-    public void setUserAuth(final UserAuth userAuth) {
-        this._userAuth = userAuth;
     }
 
 }

@@ -30,18 +30,17 @@ package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class SendmailConfig.
@@ -50,111 +49,151 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sendmail-config", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class SendmailConfig implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    /** The debug flag. */
     @XmlAttribute(name="debug")
-    private Boolean _debug;
+    private Boolean m_debug;
 
-    /** The use authentication flag. */
     @XmlAttribute(name="use-authentication")
-    private Boolean _useAuthentication;
+    private Boolean m_useAuthentication;
 
-    /** The use JMTA flag. */
     @XmlAttribute(name="use-jmta")
-    private Boolean _useJmta;
+    private Boolean m_useJmta;
 
-    /** The attempt interval. */
     @XmlAttribute(name="attempt-interval")
-    private Long _attemptInterval;
+    private Long m_attemptInterval;
 
-    /** The name. */
-    @XmlAttribute(name="name")
-    private String _name;
+    @XmlAttribute(name="name", required=true)
+    private String m_name;
 
     /**
      * Use these name value pairs to configure free-form properties from the JavaMail class.
      */
     @XmlElement(name="javamail-property")
-    private List<JavamailProperty> _javamailPropertyList = new ArrayList<>();
+    private List<JavamailProperty> m_javamailProperties = new ArrayList<>();
 
-    /** Configuration for a sendmail host. */
-    @XmlElement(name="sendmail-host")
-    private SendmailHost _sendmailHost;
+    @XmlElement(name="sendmail-host", required=true)
+    private SendmailHost m_sendmailHost;
 
     /**
      * Basically attributes that help setup the javamailer's confusion set of properties.
      */
-    @XmlElement(name="sendmail-protocol")
-    private SendmailProtocol _sendmailProtocol;
+    @XmlElement(name="sendmail-protocol", required=true)
+    private SendmailProtocol m_sendmailProtocol;
 
     /**
      * Define the To, From, Subject, and body of a message. If not defined, one will be defined for your benefit (or confusion ;-)
      */
-    @XmlElement(name="sendmail-message")
-    private SendmailMessage _sendmailMessage;
+    @XmlElement(name="sendmail-message", required=true)
+    private SendmailMessage m_sendmailMessage;
 
     /**
      * Configure user based authentication.
      */
-    @XmlElement(name="user-auth")
-    private UserAuth _userAuth;
+    @XmlElement(name="user-auth", required=true)
+    private UserAuth m_userAuth;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new sendmail configuration.
-     */
     public SendmailConfig() {
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
-
-    /**
-     * Adds the javamail property.
-     *
-     * @param vJavamailProperty the javamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void addJavamailProperty(final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        this._javamailPropertyList.add(vJavamailProperty);
+    public Boolean isDebug() {
+        return m_debug == null ? Boolean.TRUE : m_debug;
     }
 
-    /**
-     * Adds the javamail property.
-     *
-     * @param index the index
-     * @param vJavamailProperty the javamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void addJavamailProperty(final int index, final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        this._javamailPropertyList.add(index, vJavamailProperty);
+    public void setDebug(final Boolean debug) {
+        m_debug = debug;
     }
 
-    /**
-     * Method enumerateJavamailProperty.
-     * 
-     * @return an Enumeration over all possible elements of this
-     * collection
-     */
-    public Enumeration<JavamailProperty> enumerateJavamailProperty() {
-        return Collections.enumeration(this._javamailPropertyList);
+    public Boolean isUseAuthentication() {
+        return m_useAuthentication == null ? Boolean.FALSE : m_useAuthentication;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public void setUseAuthentication(final Boolean useAuthentication) {
+        m_useAuthentication = useAuthentication;
+    }
+
+    public Boolean isUseJmta() {
+        return m_useJmta == null ? Boolean.TRUE : m_useJmta;
+    }
+
+    public void setUseJmta(final Boolean useJmta) {
+        m_useJmta = useJmta;
+    }
+
+    public Long getAttemptInterval() {
+        return m_attemptInterval == null ? 3000 : m_attemptInterval;
+    }
+
+    public void setAttemptInterval(final Long attemptInterval) {
+        m_attemptInterval = attemptInterval;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name,"name");
+    }
+
+    public List<JavamailProperty> getJavamailProperties() {
+        return this.m_javamailProperties;
+    }
+
+    public void setJavamailProperties(final List<JavamailProperty> properties) {
+        if (properties == m_javamailProperties) return;
+        m_javamailProperties.clear();
+        if (properties != null) m_javamailProperties.addAll(properties);
+    }
+
+    public SendmailHost getSendmailHost() {
+        return m_sendmailHost;
+    }
+
+    public void setSendmailHost(final SendmailHost sendmailHost) {
+        m_sendmailHost = ConfigUtils.assertNotNull(sendmailHost, "sendmail-host");
+    }
+
+    public SendmailProtocol getSendmailProtocol() {
+        return m_sendmailProtocol;
+    }
+
+    public void setSendmailProtocol(final SendmailProtocol sendmailProtocol) {
+        m_sendmailProtocol = ConfigUtils.assertNotNull(sendmailProtocol, "sendmail-protocol");
+    }
+
+    public SendmailMessage getSendmailMessage() {
+        return m_sendmailMessage;
+    }
+
+    public void setSendmailMessage(final SendmailMessage sendmailMessage) {
+        m_sendmailMessage = ConfigUtils.assertNotNull(sendmailMessage, "sendmail-message");
+    }
+
+    public UserAuth getUserAuth() {
+        return m_userAuth;
+    }
+
+    public void setUserAuth(final UserAuth userAuth) {
+        m_userAuth = ConfigUtils.assertNotNull(userAuth, "user-auth");
+    }
+
+    @Override()
+    public int hashCode() {
+        return Objects.hash(m_debug,
+                            m_useAuthentication,
+                            m_useJmta,
+                            m_attemptInterval,
+                            m_name,
+                            m_javamailProperties,
+                            m_sendmailHost,
+                            m_sendmailProtocol,
+                            m_sendmailMessage,
+                            m_userAuth);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -162,322 +201,19 @@ public class SendmailConfig implements Serializable {
         }
 
         if (obj instanceof SendmailConfig) {
-            final SendmailConfig temp = (SendmailConfig)obj;
-            return Objects.equals(temp._debug, _debug)
-                    && Objects.equals(temp._useAuthentication, _useAuthentication)
-                    && Objects.equals(temp._useJmta, _useJmta)
-                    && Objects.equals(temp._attemptInterval, _attemptInterval)
-                    && Objects.equals(temp._name, _name)
-                    && Objects.equals(temp._javamailPropertyList, _javamailPropertyList)
-                    && Objects.equals(temp._sendmailHost, _sendmailHost)
-                    && Objects.equals(temp._sendmailProtocol, _sendmailProtocol)
-                    && Objects.equals(temp._sendmailMessage, _sendmailMessage)
-                    && Objects.equals(temp._userAuth, _userAuth);
+            final SendmailConfig that = (SendmailConfig)obj;
+            return Objects.equals(this.m_debug, that.m_debug)
+                    && Objects.equals(this.m_useAuthentication, that.m_useAuthentication)
+                    && Objects.equals(this.m_useJmta, that.m_useJmta)
+                    && Objects.equals(this.m_attemptInterval, that.m_attemptInterval)
+                    && Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_javamailProperties, that.m_javamailProperties)
+                    && Objects.equals(this.m_sendmailHost, that.m_sendmailHost)
+                    && Objects.equals(this.m_sendmailProtocol, that.m_sendmailProtocol)
+                    && Objects.equals(this.m_sendmailMessage, that.m_sendmailMessage)
+                    && Objects.equals(this.m_userAuth, that.m_userAuth);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'attemptInterval'.
-     * 
-     * @return the value of field 'AttemptInterval'.
-     */
-    public Long getAttemptInterval() {
-        return this._attemptInterval == null ? 3000 : this._attemptInterval;
-    }
-
-    /**
-     * Returns the value of field 'debug'.
-     * 
-     * @return the value of field 'Debug'.
-     */
-    public Boolean isDebug() {
-        return this._debug == null ? Boolean.TRUE : this._debug;
-    }
-
-    /**
-     * Method getJavamailProperty.
-     *
-     * @param index the index
-     * @return the value of the JavamailProperty at the given index
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public JavamailProperty getJavamailProperty(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._javamailPropertyList.size()) {
-            throw new IndexOutOfBoundsException("getJavamailProperty: Index value '" + index + "' not in range [0.." + (this._javamailPropertyList.size() - 1) + "]");
-        }
-        return _javamailPropertyList.get(index);
-    }
-
-    /**
-     * Method getJavamailProperty.Returns the contents of the collection in an Array
-     * <p>Note:  Just in case the  collection contents are changing in another thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct length.</p>
-     * 
-     * @return this collection as an Array
-     */
-    public JavamailProperty[] getJavamailProperty() {
-        JavamailProperty[] array = new JavamailProperty[0];
-        return this._javamailPropertyList.toArray(array);
-    }
-
-    /**
-     * Method getJavamailPropertyCollection.Returns a reference to '_javamailPropertyList'. No type checking is performed on
-     * any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<JavamailProperty> getJavamailPropertyCollection() {
-        return this._javamailPropertyList;
-    }
-
-    /**
-     * Method getJavamailPropertyCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getJavamailPropertyCount() {
-        return this._javamailPropertyList.size();
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public Optional<String> getName() {
-        return Optional.ofNullable(this._name);
-    }
-
-    /**
-     * Returns the value of field 'sendmailHost'. The field 'sendmailHost' has the following description: Configuration
-     * for a sendmail host
-     * 
-     * @return the value of field 'SendmailHost'.
-     */
-    public Optional<SendmailHost> getSendmailHost() {
-        return Optional.ofNullable(this._sendmailHost);
-    }
-
-    /**
-     * Returns the value of field 'sendmailMessage'. The field 'sendmailMessage' has the following description: Define the
-     * To, From, Subject, and body of a message. If not defined, one will be defined for your benefit (or confusion ;-)
-     * 
-     * @return the value of field 'SendmailMessage'.
-     */
-    public Optional<SendmailMessage> getSendmailMessage() {
-        return Optional.ofNullable(this._sendmailMessage);
-    }
-
-    /**
-     * Returns the value of field 'sendmailProtocol'. The field 'sendmailProtocol' has the following description: Basically
-     * attributes that help setup the javamailer's confusion set of properties.
-     *  
-     * @return the value of field 'SendmailProtocol'.
-     */
-    public Optional<SendmailProtocol> getSendmailProtocol() {
-        return Optional.ofNullable(this._sendmailProtocol);
-    }
-
-    /**
-     * Returns the value of field 'useAuthentication'.
-     * 
-     * @return the value of field 'UseAuthentication'.
-     */
-    public Boolean isUseAuthentication() {
-        return this._useAuthentication == null ? Boolean.FALSE : this._useAuthentication;
-    }
-
-    /**
-     * Returns the value of field 'useJmta'.
-     * 
-     * @return the value of field 'UseJmta'.
-     */
-    public Boolean isUseJmta() {
-        return this._useJmta == null ? Boolean.TRUE : this._useJmta;
-    }
-
-    /**
-     * Returns the value of field 'userAuth'. The field 'userAuth' has the following description: Configure user based authentication.
-     *  
-     * @return the value of field 'UserAuth'.
-     */
-    public Optional<UserAuth> getUserAuth() {
-        return Optional.ofNullable(this._userAuth);
-    }
-
-    @Override()
-    public int hashCode() {
-        return Objects.hash(_debug, _useAuthentication, _useJmta, _attemptInterval, _name, _javamailPropertyList, _sendmailHost, _sendmailProtocol, _sendmailMessage, _userAuth);
-    }
-
-    /**
-     * Method iterateJavamailProperty.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<JavamailProperty> iterateJavamailProperty() {
-        return this._javamailPropertyList.iterator();
-    }
-
-    /**
-     * Removes the all javamail property.
-     */
-    public void removeAllJavamailProperty() {
-        this._javamailPropertyList.clear();
-    }
-
-    /**
-     * Method removeJavamailProperty.
-     *
-     * @param vJavamailProperty the javamail property
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeJavamailProperty(final JavamailProperty vJavamailProperty) {
-        return _javamailPropertyList.remove(vJavamailProperty);
-    }
-
-    /**
-     * Method removeJavamailPropertyAt.
-     *
-     * @param index the index
-     * @return the element removed from the collection
-     */
-    public JavamailProperty removeJavamailPropertyAt(final int index) {
-        return this._javamailPropertyList.remove(index);
-    }
-
-    /**
-     * Sets the value of field 'attemptInterval'.
-     * 
-     * @param attemptInterval the value of field 'attemptInterval'.
-     */
-    public void setAttemptInterval(final Long attemptInterval) {
-        this._attemptInterval = attemptInterval;
-    }
-
-    /**
-     * Sets the value of field 'debug'.
-     * 
-     * @param debug the value of field 'debug'.
-     */
-    public void setDebug(final Boolean debug) {
-        this._debug = debug;
-    }
-
-    /**
-     * Sets the javamail property.
-     *
-     * @param index the index
-     * @param vJavamailProperty the avamail property
-     * @throws IndexOutOfBoundsException if the index given is outside the bounds of the collection
-     */
-    public void setJavamailProperty(final int index, final JavamailProperty vJavamailProperty) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._javamailPropertyList.size()) {
-            throw new IndexOutOfBoundsException("setJavamailProperty: Index value '" + index + "' not in range [0.." + (this._javamailPropertyList.size() - 1) + "]");
-        }
-        this._javamailPropertyList.set(index, vJavamailProperty);
-    }
-
-    /**
-     * Sets the javamail property.
-     *
-     * @param vJavamailPropertyArray the new javamail property
-     */
-    public void setJavamailProperty(final JavamailProperty[] vJavamailPropertyArray) {
-        //-- copy array
-        _javamailPropertyList.clear();
-        for (int i = 0; i < vJavamailPropertyArray.length; i++) {
-            this._javamailPropertyList.add(vJavamailPropertyArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of '_javamailPropertyList' by copying the given Vector. All elements will be checked for type safety.
-     * 
-     * @param vJavamailPropertyList the Vector to copy.
-     */
-    public void setJavamailProperty(final List<JavamailProperty> vJavamailPropertyList) {
-        // copy vector
-        this._javamailPropertyList.clear();
-        this._javamailPropertyList.addAll(vJavamailPropertyList);
-    }
-
-    /**
-     * Sets the value of '_javamailPropertyList' by setting it to the given Vector. No type checking is performed.
-     *
-     * @param javamailPropertyList the Vector to set.
-     * @deprecated 
-     */
-    public void setJavamailPropertyCollection(final List<JavamailProperty> javamailPropertyList) {
-        this._javamailPropertyList = javamailPropertyList == null? new ArrayList<>() : javamailPropertyList;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this._name = name;
-    }
-
-    /**
-     * Sets the value of field 'sendmailHost'. The field 'sendmailHost' has the following description: Configuration for a sendmail host
-     *  
-     * @param sendmailHost the value of field 'sendmailHost'.
-     */
-    public void setSendmailHost(final SendmailHost sendmailHost) {
-        this._sendmailHost = sendmailHost;
-    }
-
-    /**
-     * Sets the value of field 'sendmailMessage'. The field 'sendmailMessage' has the following description: Define the
-     * To, From, Subject, and body of a message. If not defined, one will be defined for your benefit (or confusion ;-)
-     *  
-     * @param sendmailMessage the value of field 'sendmailMessage'.
-     */
-    public void setSendmailMessage(final SendmailMessage sendmailMessage) {
-        this._sendmailMessage = sendmailMessage;
-    }
-
-    /**
-     * Sets the value of field 'sendmailProtocol'. The field 'sendmailProtocol' has the following description: Basically
-     * attributes that help setup the javamailer's confusion set of properties.
-     * 
-     * @param sendmailProtocol the value of field 'sendmailProtocol'
-     */
-    public void setSendmailProtocol(final SendmailProtocol sendmailProtocol) {
-        this._sendmailProtocol = sendmailProtocol;
-    }
-
-    /**
-     * Sets the value of field 'useAuthentication'.
-     * 
-     * @param useAuthentication the value of field 'useAuthentication'.
-     */
-    public void setUseAuthentication(final boolean useAuthentication) {
-        this._useAuthentication = useAuthentication;
-    }
-
-    /**
-     * Sets the value of field 'useJmta'.
-     * 
-     * @param useJmta the value of field 'useJmta'.
-     */
-    public void setUseJmta(final Boolean useJmta) {
-        this._useJmta = useJmta;
-    }
-
-    /**
-     * Sets the value of field 'userAuth'. The field 'userAuth' has the following description: Configure user based authentication.
-     * 
-     * @param userAuth the value of field 'userAuth'.
-     */
-    public void setUserAuth(final UserAuth userAuth) {
-        this._userAuth = userAuth;
     }
 
 }

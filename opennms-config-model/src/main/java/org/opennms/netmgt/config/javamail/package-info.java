@@ -27,12 +27,12 @@
  *******************************************************************************/
 
 @XmlSchema(
-    namespace = "http://xmlns.opennms.org/xsd/config/javamail-configuration",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/javamail-configuration")
-    }
-)
+           namespace = "http://xmlns.opennms.org/xsd/config/javamail-configuration",
+           elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+           xmlns={
+                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/javamail-configuration")
+           }
+        )
 package org.opennms.netmgt.config.javamail;
 
 import javax.xml.bind.annotation.XmlNs;

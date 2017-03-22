@@ -82,12 +82,12 @@ public class DefaultJavamailConfigurationDaoIT implements InitializingBean {
 
     @Test
     public void testMarshalling() {
-        Assert.assertEquals("localhost", m_jmcDao.getDefaultReadmailConfig().getName().get());
-        Assert.assertEquals("localhost", m_jmcDao.getDefaultSendmailConfig().getName().get());
-        Assert.assertEquals("false", m_jmcDao.getDefaultReadmailConfig().getJavamailProperty(0).getValue());
+        Assert.assertEquals("localhost", m_jmcDao.getDefaultReadmailConfig().getName());
+        Assert.assertEquals("localhost", m_jmcDao.getDefaultSendmailConfig().getName());
+        Assert.assertEquals("false", m_jmcDao.getDefaultReadmailConfig().getJavamailProperties().get(0).getValue());
         Assert.assertNotNull(m_jmcDao.getEnd2endConfig("default"));
-        Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getReadmailConfigName().get());
-        Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getSendmailConfigName().get());
+        Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getReadmailConfigName());
+        Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getSendmailConfigName());
     }
     
 }

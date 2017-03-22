@@ -106,8 +106,8 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         }
 
         // Saving a local copy of the templates, as they will be overridden every time a new email has to be sent.
-        if (m_sendmail != null && m_sendmail.getSendmailMessage().isPresent()) {
-            final SendmailMessage sendmailMessage = m_sendmail.getSendmailMessage().get();
+        if (m_sendmail != null && m_sendmail.getSendmailMessage() != null) {
+            final SendmailMessage sendmailMessage = m_sendmail.getSendmailMessage();
             m_emailSubjectFormat = sendmailMessage.getSubject();
             m_emailBodyFormat = sendmailMessage.getBody();
             m_emailFrom = sendmailMessage.getFrom();

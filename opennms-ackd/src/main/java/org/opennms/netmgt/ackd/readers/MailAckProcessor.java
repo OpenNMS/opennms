@@ -278,9 +278,9 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        if (readMailConfig.getReadmailHost().isPresent()) {
-            final ReadmailHost readmailHost = readMailConfig.getReadmailHost().get();
-            final UserAuth userAuth = readMailConfig.getUserAuth().orElse(null);
+        if (readMailConfig.getReadmailHost() != null) {
+            final ReadmailHost readmailHost = readMailConfig.getReadmailHost();
+            final UserAuth userAuth = readMailConfig.getUserAuth();
             LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName(), userAuth == null? null : userAuth.getPassword());
         }
         

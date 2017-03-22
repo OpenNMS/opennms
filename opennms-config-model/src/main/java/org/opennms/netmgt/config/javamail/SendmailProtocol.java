@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * The Class SendmailProtocol.
  * 
@@ -43,56 +46,35 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sendmail-protocol", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class SendmailProtocol implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -562952928846549040L;
-
-    /** The char set. */
     @XmlAttribute(name="char-set")
-    private String _charSet;
+    private String m_charSet;
 
-    /** The mailer. */
     @XmlAttribute(name="mailer")
-    private String _mailer;
+    private String m_mailer;
 
-    /** The message content type. */
     @XmlAttribute(name="message-content-type")
-    private String _messageContentType;
+    private String m_messageContentType;
 
-    /** The message encoding. */
     @XmlAttribute(name="message-encoding")
-    private String _messageEncoding;
+    private String m_messageEncoding;
 
-    /** The quit wait flag. */
     @XmlAttribute(name="quit-wait")
-    private Boolean _quitWait;
+    private Boolean m_quitWait;
 
-    /** The transport. */
     @XmlAttribute(name="transport")
-    private String _transport;
+    private String m_transport;
 
-    /** The SSL enable flag. */
     @XmlAttribute(name="ssl-enable")
-    private Boolean _sslEnable;
+    private Boolean m_sslEnable;
 
-    /** The start TLS flag. */
     @XmlAttribute(name="start-tls")
-    private Boolean _startTls;
+    private Boolean m_startTls;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new sendmail protocol.
-     */
     public SendmailProtocol() {
-        super();
         setCharSet("us-ascii");
         setMailer("smtpsend");
         setMessageContentType("text/plain");
@@ -100,14 +82,75 @@ public class SendmailProtocol implements Serializable {
         setTransport("smtp");
     }
 
+    public String getCharSet() {
+        return m_charSet == null ? "us-ascii" : m_charSet;
+    }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
+    public void setCharSet(final String charSet) {
+        m_charSet = ConfigUtils.normalizeString(charSet);
+    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public String getMailer() {
+        return m_mailer == null ? "smtpsend" : m_mailer;
+    }
+
+    public void setMailer(final String mailer) {
+        m_mailer = ConfigUtils.normalizeString(mailer);
+    }
+
+    public String getMessageContentType() {
+        return m_messageContentType == null ? "text/plain" : m_messageContentType;
+    }
+
+    public void setMessageContentType(final String messageContentType) {
+        m_messageContentType = ConfigUtils.normalizeString(messageContentType);
+    }
+
+    public String getMessageEncoding() {
+        return m_messageEncoding == null ? "7-bit" : m_messageEncoding;
+    }
+
+    public void setMessageEncoding(final String messageEncoding) {
+        m_messageEncoding = ConfigUtils.normalizeString(messageEncoding);
+    }
+
+    public Boolean isQuitWait() {
+        return m_quitWait == null ? Boolean.TRUE : m_quitWait;
+    }
+
+    public void setQuitWait(final Boolean quitWait) {
+        m_quitWait = quitWait;
+    }
+
+    public String getTransport() {
+        return m_transport == null ? "smtp" : m_transport;
+    }
+
+    public void setTransport(final String transport) {
+        m_transport = ConfigUtils.normalizeString(transport);
+    }
+
+    public Boolean isSslEnable() {
+        return m_sslEnable == null ? Boolean.FALSE : m_sslEnable;
+    }
+
+    public void setSslEnable(final Boolean sslEnable) {
+        m_sslEnable = sslEnable;
+    }
+
+    public Boolean isStartTls() {
+        return m_startTls == null ? Boolean.FALSE : m_startTls;
+    }
+
+    public void setStartTls(final Boolean startTls) {
+        m_startTls = startTls;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_charSet, m_mailer, m_messageContentType, m_messageEncoding, m_quitWait, m_transport, m_sslEnable, m_startTls);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -115,166 +158,17 @@ public class SendmailProtocol implements Serializable {
         }
 
         if (obj instanceof SendmailProtocol) {
-            final SendmailProtocol temp = (SendmailProtocol)obj;
-            return Objects.equals(temp._charSet, _charSet)
-                    && Objects.equals(temp._mailer, _mailer)
-                    && Objects.equals(temp._messageContentType, _messageContentType)
-                    && Objects.equals(temp._messageEncoding, _messageEncoding)
-                    && Objects.equals(temp._quitWait, _quitWait)
-                    && Objects.equals(temp._transport, _transport)
-                    && Objects.equals(temp._sslEnable, _sslEnable)
-                    && Objects.equals(temp._startTls, _startTls);
+            final SendmailProtocol that = (SendmailProtocol)obj;
+            return Objects.equals(this.m_charSet, that.m_charSet)
+                    && Objects.equals(this.m_mailer, that.m_mailer)
+                    && Objects.equals(this.m_messageContentType, that.m_messageContentType)
+                    && Objects.equals(this.m_messageEncoding, that.m_messageEncoding)
+                    && Objects.equals(this.m_quitWait, that.m_quitWait)
+                    && Objects.equals(this.m_transport, that.m_transport)
+                    && Objects.equals(this.m_sslEnable, that.m_sslEnable)
+                    && Objects.equals(this.m_startTls, that.m_startTls);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'charSet'.
-     * 
-     * @return the value of field 'CharSet'.
-     */
-    public String getCharSet() {
-        return this._charSet == null ? "us-ascii" : this._charSet;
-    }
-
-    /**
-     * Returns the value of field 'mailer'.
-     * 
-     * @return the value of field 'Mailer'.
-     */
-    public String getMailer() {
-        return this._mailer == null ? "smtpsend" : this._mailer;
-    }
-
-    /**
-     * Returns the value of field 'messageContentType'.
-     * 
-     * @return the value of field 'MessageContentType'.
-     */
-    public String getMessageContentType() {
-        return this._messageContentType == null ? "text/plain" : this._messageContentType;
-    }
-
-    /**
-     * Returns the value of field 'messageEncoding'.
-     * 
-     * @return the value of field 'MessageEncoding'.
-     */
-    public String getMessageEncoding() {
-        return this._messageEncoding == null ? "7-bit" : this._messageEncoding;
-    }
-
-    /**
-     * Returns the value of field 'quitWait'.
-     * 
-     * @return the value of field 'QuitWait'.
-     */
-    public Boolean isQuitWait() {
-        return this._quitWait == null ? Boolean.TRUE : this._quitWait;
-    }
-
-    /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public Boolean isSslEnable() {
-        return this._sslEnable == null ? Boolean.FALSE : this._sslEnable;
-    }
-
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public Boolean isStartTls() {
-        return this._startTls == null ? Boolean.FALSE : this._startTls;
-    }
-
-    /**
-     * Returns the value of field 'transport'.
-     * 
-     * @return the value of field 'Transport'.
-     */
-    public String getTransport() {
-        return this._transport == null ? "smtp" : this._transport;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_charSet, _mailer, _messageContentType, _messageEncoding, _quitWait, _transport, _sslEnable, _startTls);
-    }
-
-    /**
-     * Sets the value of field 'charSet'.
-     * 
-     * @param charSet the value of field 'charSet'.
-     */
-    public void setCharSet(final String charSet) {
-        this._charSet = charSet;
-    }
-
-    /**
-     * Sets the value of field 'mailer'.
-     * 
-     * @param mailer the value of field 'mailer'.
-     */
-    public void setMailer(final String mailer) {
-        this._mailer = mailer;
-    }
-
-    /**
-     * Sets the value of field 'messageContentType'.
-     * 
-     * @param messageContentType the value of field 'messageContentType'.
-     */
-    public void setMessageContentType(final String messageContentType) {
-        this._messageContentType = messageContentType;
-    }
-
-    /**
-     * Sets the value of field 'messageEncoding'.
-     * 
-     * @param messageEncoding the value of field 'messageEncoding'.
-     */
-    public void setMessageEncoding(final String messageEncoding) {
-        this._messageEncoding = messageEncoding;
-    }
-
-    /**
-     * Sets the value of field 'quitWait'.
-     * 
-     * @param quitWait the value of field 'quitWait'.
-     */
-    public void setQuitWait(final Boolean quitWait) {
-        this._quitWait = quitWait;
-    }
-
-    /**
-     * Sets the value of field 'sslEnable'.
-     * 
-     * @param sslEnable the value of field 'sslEnable'.
-     */
-    public void setSslEnable(final Boolean sslEnable) {
-        this._sslEnable = sslEnable;
-    }
-
-    /**
-     * Sets the value of field 'startTls'.
-     * 
-     * @param startTls the value of field 'startTls'.
-     */
-    public void setStartTls(final Boolean startTls) {
-        this._startTls = startTls;
-    }
-
-    /**
-     * Sets the value of field 'transport'.
-     * 
-     * @param transport the value of field 'transport'.
-     */
-    public void setTransport(final String transport) {
-        this._transport = transport;
     }
 
 }

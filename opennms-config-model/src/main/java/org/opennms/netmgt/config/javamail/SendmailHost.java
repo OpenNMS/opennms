@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * The Class SendmailHost.
  * 
@@ -43,41 +46,41 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sendmail-host", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class SendmailHost implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -5485735390486221449L;
-
-    /** The host. */
     @XmlAttribute(name="host")
-    private String _host;
+    private String m_host;
 
     /** The port. */
     @XmlAttribute(name="port")
-    private Integer _port;
+    private Integer m_port;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new sendmail host.
-     */
     public SendmailHost() {
-        super();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
+    public String getHost() {
+        return m_host == null ? "127.0.0.1" : m_host;
+    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public void setHost(final String host) {
+        m_host = ConfigUtils.normalizeString(host);
+    }
+
+    public Integer getPort() {
+        return m_port == null ? 25 : m_port;
+    }
+
+    public void setPort(final Integer port) {
+        m_port = port;
+    }
+
+    @Override()
+    public int hashCode() {
+        return Objects.hash(m_host, m_port);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -85,60 +88,11 @@ public class SendmailHost implements Serializable {
         }
 
         if (obj instanceof SendmailHost) {
-            final SendmailHost temp = (SendmailHost)obj;
-            return Objects.equals(temp._host, _host)
-                    && Objects.equals(temp._port, _port);
+            final SendmailHost that = (SendmailHost)obj;
+            return Objects.equals(this.m_host, that.m_host)
+                    && Objects.equals(this.m_port, that.m_port);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'host'.
-     * 
-     * @return the value of field 'Host'.
-     */
-    public String getHost() {
-        return this._host == null ? "127.0.0.1" : this._host;
-    }
-
-    /**
-     * Returns the value of field 'port'.
-     * 
-     * @return the value of field 'Port'.
-     */
-    public Integer getPort() {
-        return this._port == null ? 25 : this._port;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override()
-    public int hashCode() {
-        int result = 17;
-        if (_host != null) {
-            result = 37 * result + _host.hashCode();
-        }
-        result = 37 * result + (int)(_port^(_port>>>32));
-        return result;
-    }
-
-    /**
-     * Sets the value of field 'host'.
-     * 
-     * @param host the value of field 'host'.
-     */
-    public void setHost(final String host) {
-        this._host = host;
-    }
-
-    /**
-     * Sets the value of field 'port'.
-     * 
-     * @param port the value of field 'port'.
-     */
-    public void setPort(final Integer port) {
-        this._port = port;
     }
 
 }

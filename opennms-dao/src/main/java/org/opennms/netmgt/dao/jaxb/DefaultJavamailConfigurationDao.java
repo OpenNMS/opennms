@@ -80,8 +80,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public ReadmailConfig getDefaultReadmailConfig() {
-        String name = getContainer().getObject().getDefaultReadConfigName().orElse(null);
-        return getReadMailConfig(name);
+        return getReadMailConfig(getContainer().getObject().getDefaultReadConfigName());
     }
 
     /* (non-Javadoc)
@@ -103,7 +102,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<ReadmailConfig> configs = getReadmailConfigs();
 
         for (ReadmailConfig readmailConfig : configs) {
-            if (readmailConfig.getName().isPresent() && readmailConfig.getName().get().equals(name)) {
+            if (readmailConfig.getName() != null && readmailConfig.getName().equals(name)) {
                 config = readmailConfig;
             }
         }
@@ -115,7 +114,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public List<ReadmailConfig> getReadmailConfigs() {
-        return getContainer().getObject().getReadmailConfigCollection();
+        return getContainer().getObject().getReadmailConfigs();
     }
 
     /* (non-Javadoc)
@@ -123,8 +122,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public SendmailConfig getDefaultSendmailConfig() {
-        String name = getContainer().getObject().getDefaultSendConfigName().orElse(null);
-        return getSendMailConfig(name);
+        return getSendMailConfig(getContainer().getObject().getDefaultSendConfigName());
     }
 
     /* (non-Javadoc)
@@ -146,7 +144,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<SendmailConfig> configs = getSendmailConfigs();
 
         for (SendmailConfig sendmailConfig : configs) {
-            if (sendmailConfig.getName().isPresent() && sendmailConfig.getName().get().equals(name)) {
+            if (sendmailConfig.getName() != null && sendmailConfig.getName().equals(name)) {
                 config = sendmailConfig;
             }
         }
@@ -184,7 +182,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<SendmailConfig> configs = getSendmailConfigs();
         for (int i = 0; i < configs.size(); i++) {
             final SendmailConfig c = configs.get(i);
-            if (c.getName().isPresent() && c.getName().get().equals(sendmailConfig)) {
+            if (c.getName() != null && c.getName().equals(sendmailConfig)) {
                 index = i;
                 break;
             }
@@ -201,7 +199,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public List<SendmailConfig> getSendmailConfigs() {
-        return getContainer().getObject().getSendmailConfigCollection();
+        return getContainer().getObject().getSendmailConfigs();
     }
 
     /* (non-Javadoc)
@@ -213,7 +211,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         List<End2endMailConfig> configs = getEnd2EndConfigs();
 
         for (End2endMailConfig end2endMailConfig : configs) {
-            if (end2endMailConfig.getName().isPresent() && end2endMailConfig.getName().get().equals(name)) {
+            if (end2endMailConfig.getName() != null && end2endMailConfig.getName().equals(name)) {
                 config = end2endMailConfig;
             }
         }
@@ -249,7 +247,8 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<ReadmailConfig> configs = getReadmailConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().isPresent() && configs.get(i).getName().get().equals(readmailConfig)) {
+            final String name = configs.get(i).getName();
+            if (name != null && name.equals(readmailConfig)) {
                 index = i;
                 break;
             }
@@ -266,7 +265,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      */
     @Override
     public List<End2endMailConfig> getEnd2EndConfigs() {
-        return getContainer().getObject().getEnd2endMailConfigCollection();
+        return getContainer().getObject().getEnd2endMailConfigs();
     }
 
     /* (non-Javadoc)
@@ -298,7 +297,8 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         int index = -1;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
         for (int i = 0; i < configs.size(); i++) {
-            if (configs.get(i).getName().isPresent() && configs.get(i).getName().get().equals(end2endConfig)) {
+            final String name = configs.get(i).getName();
+            if (name != null && name.equals(end2endConfig)) {
                 index = i;
                 break;
             }

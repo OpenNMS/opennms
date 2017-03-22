@@ -202,7 +202,7 @@ public class JavaReadMailer extends JavaMailer2 {
         props.setProperty("mail.debug", String.valueOf(m_config.isDebug()));
         
         //first set the actual properties defined in the sendmail configuration
-        List<JavamailProperty> jmps = m_config.getJavamailPropertyCollection();
+        List<JavamailProperty> jmps = m_config.getJavamailProperties();
         for (JavamailProperty jmp : jmps) {
             props.setProperty(jmp.getName(), jmp.getValue());
         }
@@ -318,17 +318,17 @@ public class JavaReadMailer extends JavaMailer2 {
     }
 
     private UserAuth getUserAuth(final ReadmailConfig config) throws JavaMailerException {
-        if (!config.getUserAuth().isPresent()) {
+        if (config.getUserAuth() == null) {
             throw new JavaMailerException("user-auth is not configured!");
         }
-        return config.getUserAuth().get();
+        return config.getUserAuth();
     }
 
     private ReadmailHost getReadmailHost(final ReadmailConfig config) throws JavaMailerException {
-        if (!config.getReadmailHost().isPresent()) {
+        if (config.getReadmailHost() == null) {
             throw new JavaMailerException("readmail-host is not configured!");
         }
-        return config.getReadmailHost().get();
+        return config.getReadmailHost();
     }
 
 }

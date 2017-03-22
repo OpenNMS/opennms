@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * The Class SendmailMessage.
  * 
@@ -43,53 +46,66 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sendmail-message", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class SendmailMessage implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -1343557787012712270L;
-
-    /** The to. */
     @XmlAttribute(name="to")
-    private String _to;
+    private String m_to;
 
-    /** The from. */
     @XmlAttribute(name="from")
-    private String _from;
+    private String m_from;
 
-    /** The subject. */
     @XmlAttribute(name="subject")
-    private String _subject;
+    private String m_subject;
 
-    /** The body. */
     @XmlAttribute(name="body")
-    private String _body;
+    private String m_body;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new sendmail message.
-     */
     public SendmailMessage() {
-        super();
         setTo("root@localhost");
         setFrom("root@[127.0.0.1]");
         setSubject("OpenNMS Test Message");
         setBody("This is an OpenNMS test message.");
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
+    public String getTo() {
+        return m_to == null ? "root@localhost" : m_to;
+    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    public void setTo(final String to) {
+        m_to = ConfigUtils.normalizeString(to);
+    }
+
+    public String getFrom() {
+        return m_from == null ? "root@[127.0.0.1]" : m_from;
+    }
+
+    public void setFrom(final String from) {
+        m_from = ConfigUtils.normalizeString(from);
+    }
+
+    public String getSubject() {
+        return m_subject == null ? "OpenNMS Test Message" : m_subject;
+    }
+
+    public void setSubject(final String subject) {
+        m_subject = ConfigUtils.normalizeString(subject);
+    }
+
+    public String getBody() {
+        return m_body == null ? "This is an OpenNMS test message." : m_body;
+    }
+
+    public void setBody(final String body) {
+        m_body = ConfigUtils.normalizeString(body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_to, m_from, m_subject, m_body);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -97,93 +113,13 @@ public class SendmailMessage implements Serializable {
         }
 
         if (obj instanceof SendmailMessage) {
-            final SendmailMessage temp = (SendmailMessage)obj;
-            return Objects.equals(temp._to, _to)
-                    && Objects.equals(temp._from, _from)
-                    && Objects.equals(temp._subject, _subject)
-                    && Objects.equals(temp._body, _body);
+            final SendmailMessage that = (SendmailMessage)obj;
+            return Objects.equals(this.m_to, that.m_to)
+                    && Objects.equals(this.m_from, that.m_from)
+                    && Objects.equals(this.m_subject, that.m_subject)
+                    && Objects.equals(this.m_body, that.m_body);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'body'.
-     * 
-     * @return the value of field 'Body'.
-     */
-    public String getBody() {
-        return this._body == null ? "This is an OpenNMS test message." : this._body;
-    }
-
-    /**
-     * Returns the value of field 'from'.
-     * 
-     * @return the value of field 'From'.
-     */
-    public String getFrom() {
-        return this._from == null ? "root@[127.0.0.1]" : this._from;
-    }
-
-    /**
-     * Returns the value of field 'subject'.
-     * 
-     * @return the value of field 'Subject'.
-     */
-    public String getSubject() {
-        return this._subject == null ? "OpenNMS Test Message" : this._subject;
-    }
-
-    /**
-     * Returns the value of field 'to'.
-     * 
-     * @return the value of field 'To'.
-     */
-    public String getTo() {
-        return this._to == null ? "root@localhost" : this._to;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(_to, _from, _subject, _body);
-    }
-
-    /**
-     * Sets the value of field 'body'.
-     * 
-     * @param body the value of field 'body'.
-     */
-    public void setBody(final String body) {
-        this._body = body;
-    }
-
-    /**
-     * Sets the value of field 'from'.
-     * 
-     * @param from the value of field 'from'.
-     */
-    public void setFrom(final String from) {
-        this._from = from;
-    }
-
-    /**
-     * Sets the value of field 'subject'.
-     * 
-     * @param subject the value of field 'subject'.
-     */
-    public void setSubject(final String subject) {
-        this._subject = subject;
-    }
-
-    /**
-     * Sets the value of field 'to'.
-     * 
-     * @param to the value of field 'to'.
-     */
-    public void setTo(final String to) {
-        this._to = to;
     }
 
 }
