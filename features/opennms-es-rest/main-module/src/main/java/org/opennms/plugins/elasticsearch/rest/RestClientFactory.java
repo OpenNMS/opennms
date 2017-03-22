@@ -91,8 +91,8 @@ public class RestClientFactory {
 				timeoutTracker.startAttempt();
 				try {
 					return m_delegate.execute(clientRequest);
-				} catch (Throwable e) {
-					LOG.warn("Exception while trying to execute REST operation", e);
+				} catch (Exception e) {
+					LOG.warn("Exception while trying to execute REST operation (attempt {})", timeoutTracker.getAttempt() + 1, e);
 				}
 			}
 			return null;
