@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,8 @@
 package org.opennms.netmgt.config.poller.outages;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,254 +39,80 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
-
-/**
- * Class BasicSchedule.
- * 
- */
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name="basicSchedule", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class BasicSchedule implements java.io.Serializable {
-    private static final long serialVersionUID = 4415207395024013808L;
-
-    private static final Time[] EMPTY_TIME_LIST = new Time[0];
+    private static final long serialVersionUID = 2L;
 
     /**
      * outage name
      */
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String m_name;
 
     /**
      * outage type
      */
-    @XmlAttribute(name="type")
+    @XmlAttribute(name="type", required=true)
     private String m_type;
 
     /**
      * defines start/end time for the outage
      */
-    @XmlElement(name="time")
-    private List<Time> m_times = new ArrayList<Time>();
+    @XmlElement(name="time", required=true)
+    private List<Time> m_times = new ArrayList<>();
 
 
     public BasicSchedule() {
-        super();
     }
 
-    /**
-     * 
-     * 
-     * @param time
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addTime(final Time time) throws IndexOutOfBoundsException {
-        m_times.add(time);
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param time
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void addTime(final int index, final Time time) throws IndexOutOfBoundsException {
-        m_times.add(index, time);
-    }
-
-    /**
-     * Method enumerateTime.
-     * 
-     * @return an Enumeration over all possible elements of this
-     * collection
-     */
-    public Enumeration<Time> enumerateTime() {
-        return Collections.enumeration(m_times);
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the
-     * following description: outage name
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
         return m_name;
     }
 
-    /**
-     * Method getTime.
-     * 
-     * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.config.poller.Time at the given index
-     */
-    public Time getTime(final int index) throws IndexOutOfBoundsException {
-        return m_times.get(index);
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Method getTime.Returns the contents of the collection in an
-     * Array.  <p>Note:  Just in case the collection contents are
-     * changing in another thread, we pass a 0-length Array of the
-     * correct type into the API call.  This way we <i>know</i>
-     * that the Array returned is of exactly the correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public Time[] getTime() {
-        return m_times.toArray(EMPTY_TIME_LIST);
-    }
-
-    /**
-     * Method getTimeCollection.Returns a reference to 'm_times'.
-     * No type checking is performed on any modifications to the
-     * Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Time> getTimeCollection() {
-        return new ArrayList<Time>(m_times);
-    }
-
-    /**
-     * Method getTimeCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getTimeCount() {
-        return m_times.size();
-    }
-
-    /**
-     * Returns the value of field 'type'. The field 'type' has the
-     * following description: outage type
-     * 
-     * @return the value of field 'Type'.
-     */
     public String getType() {
         return m_type;
     }
 
-    /**
-     * Method iterateTime.
-     * 
-     * @return an Iterator over all possible elements in this
-     * collection
-     */
-    public Iterator<Time> iterateTime() {
-        return m_times.iterator();
+    public void setType(final String type) {
+        if (!"specific".equals(type) && !"daily".equals(type) && !"weekly".equals(type) && !"monthly".equals(type)) {
+            throw new IllegalArgumentException("'type' is a required field and must be one of 'specific', 'daily', 'weekly', or 'monthly'.");
+        }
+        m_type = type;
     }
 
-    /**
-     */
-    public void removeAllTime() {
+    public List<Time> getTimes() {
+        return m_times;
+    }
+
+    public void setTimes(final List<Time> times) {
+        if (times == m_times) return;
         m_times.clear();
+        if (times != null) m_times.addAll(times);
     }
 
-    /**
-     * Method removeTime.
-     * 
-     * @param time
-     * @return true if the object was removed from the collection.
-     */
+    public void addTime(final Time time) {
+        m_times.add(time);
+    }
+
     public boolean removeTime(final Time time) {
         return m_times.remove(time);
     }
 
-    /**
-     * Method removeTimeAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Time removeTimeAt(final int index) {
-        return m_times.remove(index);
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the
-     * following description: outage name
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param time
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     */
-    public void setTime(final int index, final Time time) throws IndexOutOfBoundsException {
-        m_times.set(index, time);
-    }
-
-    /**
-     * 
-     * 
-     * @param times
-     */
-    public void setTime(final Time[] times) {
+    public void clearTimes() {
         m_times.clear();
-        for (final Time time : times) {
-            m_times.add(time);
-        }
-    }
-
-    /**
-     * Sets the value of 'm_times' by copying the given Vector.
-     * All elements will be checked for type safety.
-     * 
-     * @param times the Vector to copy.
-     */
-    public void setTime(final List<Time> times) {
-        if (times != m_times) {
-            m_times.clear();
-            m_times.addAll(times);
-        }
-    }
-
-    /**
-     * Sets the value of 'm_times' by setting it to the given
-     * Vector. No type checking is performed.
-     * @deprecated
-     * 
-     * @param times the Vector to set.
-     */
-    public void setTimeCollection(final List<Time> times) {
-        m_times = new ArrayList<Time>(times);
-    }
-
-    /**
-     * Sets the value of field 'type'. The field 'type' has the
-     * following description: outage type
-     * 
-     * @param type the value of field 'type'.
-     */
-    public void setType(final String type) {
-        m_type = type;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-        result = prime * result + ((m_times == null) ? 0 : m_times.hashCode());
-        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
-        return result;
+        return Objects.hash(m_name, m_type, m_times);
     }
 
     @Override
@@ -296,35 +120,13 @@ public class BasicSchedule implements java.io.Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof BasicSchedule) {
+            final BasicSchedule that = (BasicSchedule) obj;
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_type, that.m_type) &&
+                    Objects.equals(this.m_times, that.m_times);
         }
-        if (!(obj instanceof BasicSchedule)) {
-            return false;
-        }
-        final BasicSchedule other = (BasicSchedule) obj;
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        if (m_times == null) {
-            if (other.m_times != null) {
-                return false;
-            }
-        } else if (!m_times.equals(other.m_times)) {
-            return false;
-        }
-        if (m_type == null) {
-            if (other.m_type != null) {
-                return false;
-            }
-        } else if (!m_type.equals(other.m_type)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

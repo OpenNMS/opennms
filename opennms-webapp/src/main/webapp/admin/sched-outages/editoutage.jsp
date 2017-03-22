@@ -67,7 +67,7 @@
 		try {
 			org.opennms.netmgt.config.poller.outages.Node newNode = new org.opennms.netmgt.config.poller.outages.Node();
 			newNode.setId(newNodeId);
-			if (!theOutage.getNodeCollection().contains(newNode)) {
+			if (!theOutage.getNodes().contains(newNode)) {
 				theOutage.addNode(newNode);
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
 			}
@@ -79,7 +79,7 @@
 	}
 	
 	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.outages.Interface newInterface) {
-		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
+		if (!theOutage.getInterfaces().contains(newInterface)) {
 			theOutage.addInterface(newInterface);
 			try {
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
@@ -316,7 +316,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 
 	if (request.getParameter("deleteOutageType") != null) {
 		theOutage.setType(null);
-		theOutage.removeAllTime();
+		theOutage.clearTimes();
 	} else {
 	    if (request.getParameter("outageType") != null) {
 			theOutage.setType(request.getParameter("outageType"));
@@ -485,8 +485,8 @@ Could not find an outage to edit because no outage name parameter was specified 
 				}
 			} else if (request.getParameter("matchAny") != null) {
 				//To turn on matchAny, all normal nodes and interfaces are removed
-				theOutage.removeAllInterface();
-				theOutage.removeAllNode();
+				theOutage.clearInterfaces();
+				theOutage.clearNodes();
 				theOutage.addInterface(matchAnyInterface);
 			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
 				if (theOutage.getType().equalsIgnoreCase("specific")) {
@@ -556,7 +556,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 						String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
 						try {
 							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeNodeAt(index);
+							theOutage.removeNode(theOutage.getNodes().get(index));
 						} catch (NumberFormatException e) {
 							//Ignore - nothing we can do
 							continue;
@@ -569,7 +569,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 						String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
 						try {
 							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeInterfaceAt(index);
+							theOutage.removeInterface(theOutage.getInterfaces().get(index));
 						} catch (NumberFormatException e) {
 							//Ignore - nothing we can do
 							continue;
@@ -582,7 +582,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 						String indexStr = paramName.substring("deleteTime".length(), paramName.indexOf("."));
 						try {
 							int index = WebSecurityUtils.safeParseInt(indexStr);
-							theOutage.removeTime(theOutage.getTime(index));
+							theOutage.removeTime(theOutage.getTimes().get(index));
 						} catch (NumberFormatException e) {
 							//Ignore - nothing we can do
 							continue;
@@ -597,7 +597,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 		}
 
 	} //end if form submission
-	boolean hasMatchAny = theOutage.getInterfaceCollection().contains(matchAnyInterface);
+	boolean hasMatchAny = theOutage.getInterfaces().contains(matchAnyInterface);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
@@ -767,15 +767,15 @@ function updateOutageTypeDisplay(selectElement) {
 							<p><i>All nodes</i></p>
 							<%
 							    } else { 
-														org.opennms.netmgt.config.poller.outages.Node[] outageNodes = theOutage.getNode();
+														List<org.opennms.netmgt.config.poller.outages.Node> outageNodes = theOutage.getNodes();
 
-														if (outageNodes.length > 0) {
+														if (outageNodes.size() > 0) {
 							%>
 								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
 								<input type="hidden" name="formSubmission" value="true" />
 								<%
-								    for (int i = 0; i < outageNodes.length; i++) {
-																	org.opennms.netmgt.config.poller.outages.Node node = outageNodes[i];
+								    for (int i = 0; i < outageNodes.size(); i++) {
+																	org.opennms.netmgt.config.poller.outages.Node node = outageNodes.get(i);
 																	int nodeId = node.getId();
 																	out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
 																	OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
@@ -811,12 +811,12 @@ function updateOutageTypeDisplay(selectElement) {
 						if (hasMatchAny) { %>
 							<p><i>All interfaces</i></p>
 						<% } else {
-							org.opennms.netmgt.config.poller.outages.Interface[] outageInterfaces = theOutage.getInterface();
-							if (outageInterfaces.length > 0) { %>
+							List<org.opennms.netmgt.config.poller.outages.Interface> outageInterfaces = theOutage.getInterfaces();
+							if (outageInterfaces.size() > 0) { %>
 								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
 									<input type="hidden" name="formSubmission" value="true" />
-									<% for (int i = 0; i < outageInterfaces.length; i++) {
-										org.opennms.netmgt.config.poller.outages.Interface iface = outageInterfaces[i];
+									<% for (int i = 0; i < outageInterfaces.size(); i++) {
+										org.opennms.netmgt.config.poller.outages.Interface iface = outageInterfaces.get(i);
 										String addr = iface.getAddress();
 										org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(addr);
 										if (interfaces.length > 0) {
@@ -863,7 +863,7 @@ function updateOutageTypeDisplay(selectElement) {
 					</td>
 				</tr>
 				<% } %>
-				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
+				<% if (!hasMatchAny && theOutage.getInterfaces().size() == 0 && theOutage.getNodes().size() == 0) { %>
 					<tr>
 						<td colspan="2"><span class="text-danger">You must select at least one node or interface for this scheduled outage.</span></td>
 					</tr>
@@ -896,16 +896,16 @@ function updateOutageTypeDisplay(selectElement) {
 		<label>Time:</label>
 			<table class="table table-condensed table-borderless">
 				<%
-				org.opennms.netmgt.config.poller.outages.Time[] outageTimes = theOutage.getTime();
-					for (int i = 0; i < outageTimes.length; i++) {
-						org.opennms.netmgt.config.poller.outages.Time thisTime = outageTimes[i];
+				List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = theOutage.getTimes();
+					for (int i = 0; i < outageTimes.size(); i++) {
+						org.opennms.netmgt.config.poller.outages.Time thisTime = outageTimes.get(i);
 				%>
 				<tr>
 					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" />
 						<%
 							StringBuffer outputBuffer = new StringBuffer();
-							if (thisTime.getDay() != null) {
-								if (thisTime.getDay().contains("day")) {
+							if (thisTime.getDay().isPresent()) {
+								if (thisTime.getDay().get().contains("day")) {
 									// weekly
 									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay())).append(",&nbsp;");
 								} else {
@@ -998,7 +998,7 @@ function updateOutageTypeDisplay(selectElement) {
 						<input type="submit" class="btn btn-default" value="Add Outage" name="addOutage" />
 					</td>
 				</tr>
-				<% if (theOutage.getTimeCount() == 0) { %>
+				<% if (theOutage.getTimes().size() == 0) { %>
 					<tr>
 						<td><span class="text-danger">You must have at least one time span defined.</span></td>
 					</tr>
@@ -1072,9 +1072,9 @@ function updateOutageTypeDisplay(selectElement) {
                    <div class="col-md-12">
 			<%
 				if (theOutage != null
-						&& theOutage.getTimeCount() > 0
+						&& theOutage.getTimes().size() > 0
 						&& theOutage.getType() != null
-						&& (hasMatchAny || (theOutage.getInterfaceCount() > 0) || (theOutage.getNodeCount() > 0))
+						&& (hasMatchAny || (theOutage.getInterfaces().size() > 0) || (theOutage.getNodes().size() > 0))
 						) {
 			%><input type="submit" class="btn btn-default" value="Save" name="saveButton" /><% } %>
 			<input type="submit" class="btn btn-default" value="Cancel" name="cancelButton" />

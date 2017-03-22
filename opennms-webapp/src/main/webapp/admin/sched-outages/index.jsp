@@ -155,7 +155,7 @@
 				pollFactory.getReadLock().lock();
 
 				try {
-					Outage[] outages = pollFactory.getOutages();
+					List<Outage> outages = pollFactory.getOutages();
 			
 					Collection<String> notificationOutages = NotifdConfigFactory.getInstance().getConfiguration().getOutageCalendars();
 			
@@ -179,8 +179,8 @@
 						collectionOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
-					for (int i = 0; i < outages.length; i++) {
-						Outage thisOutage = outages[i];
+					for (int i = 0; i < outages.size(); i++) {
+						Outage thisOutage = outages.get(i);
 						String rowClass   = pollFactory.isCurTimeInOutage(thisOutage) ? "severity-Critical" : "severity-Cleared";
 						String outageName = thisOutage.getName();
 	%>
@@ -189,16 +189,16 @@
 		<td><%=pollFactory.getOutageType(outageName)%></td>
 		<td><ul class="list-unstyled">
 		<%
-		    org.opennms.netmgt.config.poller.outages.Node[] nodeList = pollFactory.getNodeIds(outageName);
-						for (int j = 0; j < nodeList.length; j++) {
-							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
-		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
+		    List<org.opennms.netmgt.config.poller.outages.Node> nodeList = pollFactory.getNodeIds(outageName);
+						for (int j = 0; j < nodeList.size(); j++) {
+							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList.get(j).getId());
+		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
 		<%
 		    }
-						org.opennms.netmgt.config.poller.outages.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
-						for (int j = 0; j < interfaceList.length; j++) {
+						List<org.opennms.netmgt.config.poller.outages.Interface> interfaceList = pollFactory.getInterfaces(outageName);
+						for (int j = 0; j < interfaceList.size(); j++) {
 							StringBuffer display;
-							String rawAddress = interfaceList[j].getAddress();
+							String rawAddress = interfaceList.get(j).getAddress();
 							if ("match-any".equals(rawAddress)) {
 								display = new StringBuffer("All nodes/interfaces");
 							} else {
@@ -231,10 +231,10 @@
 		</td>
 		<td><ul class="list-unstyled">
 		<%
-		    org.opennms.netmgt.config.poller.outages.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
-						for (int j = 0; j < outageTimes.length; j++) {
-							org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes[j];
-							String rawDay = thisOutageTime.getDay();
+		    List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = pollFactory.getOutageTimes(outageName);
+						for (int j = 0; j < outageTimes.size(); j++) {
+							org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes.get(j);
+							String rawDay = thisOutageTime.getDay().orElse("");
 							String day = rawDay;
 							if ("daily".equals(pollFactory.getOutageType(outageName)))
 								day = "";

@@ -204,8 +204,8 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         String url = "/sched-outages";
         Outages outages = getXmlObject(m_jaxbContext, url, 200, Outages.class);
         Assert.assertNotNull(outages);
-        Assert.assertEquals(1, outages.getOutageCount());
-        Assert.assertEquals("match-any", outages.getOutage(0).getInterface(0).getAddress());
+        Assert.assertEquals(1, outages.getOutages().size());
+        Assert.assertEquals("match-any", outages.getOutages().get(0).getInterfaces().get(0).getAddress());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         String url = "/sched-outages/my-junit-test";
         Outage outage = getXmlObject(m_jaxbContext, url, 200, Outage.class);
         Assert.assertNotNull(outage);
-        Assert.assertEquals("match-any", outage.getInterface(0).getAddress());
+        Assert.assertEquals("match-any", outage.getInterfaces().get(0).getAddress());
     }
 
     @Test
@@ -243,7 +243,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
         Outage out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
         Assert.assertNotNull(out);
-        Assert.assertEquals("13:20:00", out.getTime(0).getBegins());
+        Assert.assertEquals("13:20:00", out.getTimes().get(0).getBegins());
 
         // Update the outage slightly
         outage = "<?xml version=\"1.0\"?>" +
@@ -256,7 +256,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
         out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
         Assert.assertNotNull(out);
-        Assert.assertEquals("14:20:00", out.getTime(0).getBegins());
+        Assert.assertEquals("14:20:00", out.getTimes().get(0).getBegins());
     }
 
     @Test

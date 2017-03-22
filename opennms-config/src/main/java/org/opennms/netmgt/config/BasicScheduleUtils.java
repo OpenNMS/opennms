@@ -558,8 +558,8 @@ public abstract class BasicScheduleUtils {
 		schedule.setName(out.getName());
 		schedule.setType(out.getType());
 		final Collection<Time> times = new ArrayList<Time>();
-		for (final org.opennms.netmgt.config.poller.outages.Time time : out.getTimeCollection()) {
-			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+		for (final org.opennms.netmgt.config.poller.outages.Time time : out.getTimes()) {
+			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}
 		schedule.setTimeCollection(times);
 		
