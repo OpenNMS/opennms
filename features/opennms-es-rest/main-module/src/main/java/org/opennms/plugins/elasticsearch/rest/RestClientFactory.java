@@ -52,8 +52,10 @@ import io.searchbox.client.config.HttpClientConfig;
  */
 public class RestClientFactory {
 
-	private JestClientFactory factory = null;
+	private final JestClientFactory factory;
+	private HttpClientConfig config;
 
+	private AtomicInteger m_socketTimeout = new AtomicInteger(0);
 	private AtomicInteger m_timeout = new AtomicInteger(0);
 	private AtomicInteger m_retries = new AtomicInteger(0);
 
@@ -123,31 +125,66 @@ public class RestClientFactory {
 	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ){
 
 		// If multiple URLs are specified in a comma-separated string, split them up
-		HttpClientConfig clientConfig = new HttpClientConfig.Builder(Arrays.asList(elasticSearchURL.split(",")))
+		config = new HttpClientConfig.Builder(Arrays.asList(elasticSearchURL.split(",")))
 				.multiThreaded(true)
 				.defaultCredentials(esusername, espassword)
 				.build();
 
 		factory = new JestClientFactory();
 
-		factory.setHttpClientConfig(clientConfig);
+		factory.setHttpClientConfig(config);
 
-	}
-
-	public int getTimeout() {
-		return m_timeout.get();
-	}
-
-	public void setTimeout(int timeout) {
-		this.m_timeout.set(timeout);
 	}
 
 	public int getRetries() {
 		return m_retries.get();
 	}
 
+	/**
+	 * Set the number of times the REST operation will be retried if
+	 * an exception is thrown during the operation.
+	 * 
+	 * @param retries Number of retries.
+	 */
 	public void setRetries(int retries) {
-		this.m_retries.set(retries);
+		m_retries.set(retries);
+	}
+
+	public int getSocketTimeout() {
+		return m_socketTimeout.get();
+	}
+
+	/**
+	 * Set the socket timeout (SO_TIMEOUT) for the REST connections. This is the
+	 * maximum period of inactivity while waiting for incoming data.
+	 * 
+	 * A default value of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T,K>}.
+	 * 
+	 * @param timeout Timeout in milliseconds.
+	 */
+	public void setSocketTimeout(int timeout) {
+		m_socketTimeout.set(timeout);
+		config = new HttpClientConfig.Builder(config).readTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
+	}
+
+	public int getTimeout() {
+		return m_timeout.get();
+	}
+
+	/**
+	 * Set the connection timeout for the REST connections. A default value 
+	 * of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T,K>}.
+	 * 
+	 * This is also used as the minimum interval between successive retries
+	 * if the connection is refused in a shorter amount of time.
+	 * 
+	 * @param timeout Timeout in milliseconds.
+	 */
+	public void setTimeout(int timeout) {
+		m_timeout.set(timeout);
+		config = new HttpClientConfig.Builder(config).connTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
 	}
 
 	public JestClient getJestClient(){
