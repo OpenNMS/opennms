@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -39,14 +39,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Microblog configuration groups
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "microblog-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("microblog-configuration.xsd")
 public class MicroblogConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -65,10 +66,7 @@ public class MicroblogConfiguration implements Serializable {
     }
 
     public void setDefaultMicroblogProfileName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'default-microblog-profile-name' is a required attribute!");
-        }
-        m_defaultMicroblogProfileName = name;
+        m_defaultMicroblogProfileName = ConfigUtils.assertNotEmpty(name, "default-microblog-profile-name");
     }
 
     public List<MicroblogProfile> getMicroblogProfiles() {
@@ -76,8 +74,9 @@ public class MicroblogConfiguration implements Serializable {
     }
 
     public void setMicroblogProfiles(final List<MicroblogProfile> profiles) {
+        if (profiles == m_profiles) return;
         m_profiles.clear();
-        m_profiles.addAll(profiles);
+        if (profiles != null) m_profiles.addAll(profiles);
     }
 
     public void addMicroblogProfile(final MicroblogProfile profile) {
@@ -89,20 +88,18 @@ public class MicroblogConfiguration implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof MicroblogConfiguration) {
             final MicroblogConfiguration that = (MicroblogConfiguration)obj;
-            return Objects.equals(that.m_defaultMicroblogProfileName, this.m_defaultMicroblogProfileName)
-                && Objects.equals(that.m_profiles, this.m_profiles);
+            return Objects.equals(this.m_defaultMicroblogProfileName, that.m_defaultMicroblogProfileName)
+                    && Objects.equals(this.m_profiles, that.m_profiles);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_defaultMicroblogProfileName, 
-            m_profiles);
+        return Objects.hash(m_defaultMicroblogProfileName, m_profiles);
     }
 
 }

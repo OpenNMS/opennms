@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.microblog;
 
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,205 +38,120 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * This entity defines the parameters for a microblog service.
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "microblog-profile")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MicroblogProfile implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("microblog-configuration.xsd")
+public class MicroblogProfile implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     @XmlAttribute(name = "service-url", required = true)
-    private String serviceUrl;
+    private String m_serviceUrl;
 
     @XmlAttribute(name = "authen-username")
-    private String authenUsername;
+    private String m_authenUsername;
 
     @XmlAttribute(name = "authen-password")
-    private String authenPassword;
+    private String m_authenPassword;
 
     @XmlAttribute(name = "oauth-consumer-key")
-    private String oauthConsumerKey;
+    private String m_oauthConsumerKey;
 
     @XmlAttribute(name = "oauth-consumer-secret")
-    private String oauthConsumerSecret;
+    private String m_oauthConsumerSecret;
 
     @XmlAttribute(name = "oauth-access-token")
-    private String oauthAccessToken;
+    private String m_oauthAccessToken;
 
     @XmlAttribute(name = "oauth-access-token-secret")
-    private String oauthAccessTokenSecret;
+    private String m_oauthAccessTokenSecret;
 
     public MicroblogProfile() {
     }
 
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
-        return this.name;
+        return m_name;
     }
 
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        this.name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Returns the value of field 'serviceUrl'.
-     * 
-     * @return the value of field 'ServiceUrl'.
-     */
     public String getServiceUrl() {
-        return this.serviceUrl;
+        return m_serviceUrl;
     }
 
-    /**
-     * Sets the value of field 'serviceUrl'.
-     * 
-     * @param serviceUrl the value of field 'serviceUrl'.
-     */
     public void setServiceUrl(final String serviceUrl) {
-        if (serviceUrl == null) {
-            throw new IllegalArgumentException("'service-url' is a required attribute!");
-        }
-        this.serviceUrl = serviceUrl;
+        m_serviceUrl = ConfigUtils.assertNotEmpty(serviceUrl, "service-url");
     }
 
-    /**
-     * Returns the value of field 'authenUsername'.
-     * 
-     * @return the value of field 'AuthenUsername'.
-     */
     public Optional<String> getAuthenUsername() {
-        return Optional.ofNullable(this.authenUsername);
+        return Optional.ofNullable(m_authenUsername);
     }
 
-    /**
-     * Sets the value of field 'authenUsername'.
-     * 
-     * @param authenUsername the value of field 'authenUsername'.
-     */
     public void setAuthenUsername(final String authenUsername) {
-        this.authenUsername = authenUsername;
+        m_authenUsername = authenUsername;
     }
 
-    /**
-     * Returns the value of field 'authenPassword'.
-     * 
-     * @return the value of field 'AuthenPassword'.
-     */
     public Optional<String> getAuthenPassword() {
-        return Optional.ofNullable(this.authenPassword);
+        return Optional.ofNullable(m_authenPassword);
     }
 
-    /**
-     * Sets the value of field 'authenPassword'.
-     * 
-     * @param authenPassword the value of field 'authenPassword'.
-     */
     public void setAuthenPassword(final String authenPassword) {
-        this.authenPassword = authenPassword;
+        m_authenPassword = authenPassword;
     }
 
-    /**
-     * Returns the value of field 'oauthConsumerKey'.
-     * 
-     * @return the value of field 'OauthConsumerKey'.
-     */
     public Optional<String> getOauthConsumerKey() {
-        return Optional.ofNullable(this.oauthConsumerKey);
+        return Optional.ofNullable(this.m_oauthConsumerKey);
     }
 
-    /**
-     * Sets the value of field 'oauthConsumerKey'.
-     * 
-     * @param oauthConsumerKey the value of field 'oauthConsumerKey'.
-     */
     public void setOauthConsumerKey(final String oauthConsumerKey) {
-        this.oauthConsumerKey = oauthConsumerKey;
+        m_oauthConsumerKey = oauthConsumerKey;
     }
 
-    /**
-     * Returns the value of field 'oauthConsumerSecret'.
-     * 
-     * @return the value of field 'OauthConsumerSecret'.
-     */
     public Optional<String> getOauthConsumerSecret() {
-        return Optional.ofNullable(this.oauthConsumerSecret);
+        return Optional.ofNullable(m_oauthConsumerSecret);
     }
 
-    /**
-     * Sets the value of field 'oauthConsumerSecret'.
-     * 
-     * @param oauthConsumerSecret the value of field 'oauthConsumerSecret'.
-     */
     public void setOauthConsumerSecret(final String oauthConsumerSecret) {
-        this.oauthConsumerSecret = oauthConsumerSecret;
+        m_oauthConsumerSecret = oauthConsumerSecret;
     }
 
-    /**
-     * Returns the value of field 'oauthAccessToken'.
-     * 
-     * @return the value of field 'OauthAccessToken'.
-     */
     public Optional<String> getOauthAccessToken() {
-        return Optional.ofNullable(this.oauthAccessToken);
+        return Optional.ofNullable(m_oauthAccessToken);
     }
 
-    /**
-     * Sets the value of field 'oauthAccessToken'.
-     * 
-     * @param oauthAccessToken the value of field 'oauthAccessToken'.
-     */
     public void setOauthAccessToken(final String oauthAccessToken) {
-        this.oauthAccessToken = oauthAccessToken;
+        m_oauthAccessToken = oauthAccessToken;
     }
 
-    /**
-     * Returns the value of field 'oauthAccessTokenSecret'.
-     * 
-     * @return the value of field 'OauthAccessTokenSecret'.
-     */
     public Optional<String> getOauthAccessTokenSecret() {
-        return Optional.ofNullable(this.oauthAccessTokenSecret);
+        return Optional.ofNullable(m_oauthAccessTokenSecret);
     }
 
-    /**
-     * Sets the value of field 'oauthAccessTokenSecret'.
-     * 
-     * @param oauthAccessTokenSecret the value of field 'oauthAccessTokenSecret'.
-     */
     public void setOauthAccessTokenSecret(final String oauthAccessTokenSecret) {
-        this.oauthAccessTokenSecret = oauthAccessTokenSecret;
+        m_oauthAccessTokenSecret = oauthAccessTokenSecret;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            name, 
-            serviceUrl, 
-            authenUsername, 
-            authenPassword, 
-            oauthConsumerKey, 
-            oauthConsumerSecret, 
-            oauthAccessToken, 
-            oauthAccessTokenSecret);
+                            m_name, 
+                            m_serviceUrl, 
+                            m_authenUsername, 
+                            m_authenPassword, 
+                            m_oauthConsumerKey, 
+                            m_oauthConsumerSecret, 
+                            m_oauthAccessToken, 
+                            m_oauthAccessTokenSecret);
     }
 
     @Override
@@ -243,17 +159,17 @@ public class MicroblogProfile implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof MicroblogProfile) {
             final MicroblogProfile that = (MicroblogProfile)obj;
-            return Objects.equals(that.name, name)
-                && Objects.equals(that.serviceUrl, serviceUrl)
-                && Objects.equals(that.authenUsername, authenUsername)
-                && Objects.equals(that.authenPassword, authenPassword)
-                && Objects.equals(that.oauthConsumerKey, oauthConsumerKey)
-                && Objects.equals(that.oauthConsumerSecret, oauthConsumerSecret)
-                && Objects.equals(that.oauthAccessToken, oauthAccessToken)
-                && Objects.equals(that.oauthAccessTokenSecret, oauthAccessTokenSecret);
+            return Objects.equals(that.m_name, m_name)
+                    && Objects.equals(that.m_serviceUrl, m_serviceUrl)
+                    && Objects.equals(that.m_authenUsername, m_authenUsername)
+                    && Objects.equals(that.m_authenPassword, m_authenPassword)
+                    && Objects.equals(that.m_oauthConsumerKey, m_oauthConsumerKey)
+                    && Objects.equals(that.m_oauthConsumerSecret, m_oauthConsumerSecret)
+                    && Objects.equals(that.m_oauthAccessToken, m_oauthAccessToken)
+                    && Objects.equals(that.m_oauthAccessTokenSecret, m_oauthAccessTokenSecret);
         }
         return false;
     }
