@@ -291,6 +291,11 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public void reloadDaemon() {
             testCase.clickElement(By.id("reloadButton"));
         }
+
+        public void filter(String filter) {
+            testCase.enterText(By.id("filterTextField"), filter == null ? "" : filter);
+            testCase.findElementById("filterTextField").sendKeys(Keys.ENTER);
+        }
     }
 
     public static class BsmAdminPageEdgeEditWindow {
@@ -876,6 +881,57 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             final String eachServiceName = serviceNames[i];
             bsmAdminPage.delete(eachServiceName, i==0);
         }
+    }
+
+    private void assertBusinessServicesAreVisible(String ... visible) {
+        for(String bs : visible) {
+            findDeleteButton(this, bs);
+        }
+    }
+
+    private void assertBusinessServicesAreHidden(String ... hidden) {
+        for(String bs : hidden) {
+            verifyElementNotPresent(this, By.id("deleteButton-" + bs));
+        }
+    }
+
+    @Test
+    public void testCanFilterBusinessServices() throws InterruptedException {
+        final String bsA = "AAA";
+        final String bsB = "BBB";
+        final String bsC = "CCC";
+        final String bsAB = "AAA BBB";
+
+        bsmAdminPage.openNewDialog(bsA).save();
+        bsmAdminPage.openNewDialog(bsB).save();
+        bsmAdminPage.openNewDialog(bsC).save();
+        bsmAdminPage.openNewDialog(bsAB).save();
+
+        assertBusinessServicesAreVisible(bsA, bsB, bsC, bsAB);
+
+        bsmAdminPage.filter("AAA");
+
+        assertBusinessServicesAreVisible(bsA, bsAB);
+        assertBusinessServicesAreHidden(bsB, bsC);
+
+        bsmAdminPage.filter("BBB");
+
+        assertBusinessServicesAreVisible(bsB, bsAB);
+        assertBusinessServicesAreHidden(bsA, bsC);
+
+        bsmAdminPage.filter("CCC");
+
+        assertBusinessServicesAreVisible(bsC);
+        assertBusinessServicesAreHidden(bsA, bsB, bsAB);
+
+        bsmAdminPage.filter("");
+
+        assertBusinessServicesAreVisible(bsA, bsB, bsC, bsAB);
+
+        bsmAdminPage.delete(bsA);
+        bsmAdminPage.delete(bsB);
+        bsmAdminPage.delete(bsC);
+        bsmAdminPage.delete(bsAB);
     }
 
     /**

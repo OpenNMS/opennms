@@ -45,9 +45,11 @@ import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ContainerHierarchicalWrapper;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
@@ -64,6 +66,7 @@ import com.vaadin.ui.TreeTable;
 public class BusinessServiceTreeTable extends TreeTable {
 
     private final BusinessServiceManager businessServiceManager;
+    private String businessServiceNameFilter = null;
 
     public BusinessServiceTreeTable(BusinessServiceManager businessServiceManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
@@ -170,12 +173,21 @@ public class BusinessServiceTreeTable extends TreeTable {
         return (BeanItem<BusinessServiceRow>) super.getItem(itemId);
     }
 
+    public void setBusinessServiceNameFilter(String businessServiceNameFilter) {
+        this.businessServiceNameFilter = businessServiceNameFilter;
+        refresh();
+    }
+
     /**
      * Refreshes table entries.
      */
     public void refresh() {
         final com.google.common.collect.Table<Long, Optional<Long>, Boolean> expandState = getCurrentExpandState();
         final BusinessServiceContainer newContainer = new BusinessServiceContainer();
+
+        if (!Strings.isNullOrEmpty(businessServiceNameFilter)) {
+            newContainer.addContainerFilter(new SimpleStringFilter("name", businessServiceNameFilter, true, false));
+        }
 
         // Build a graph using all of the business services stored in the database
         // We don't use the existing graph, since it only contains the services know by the state machine
