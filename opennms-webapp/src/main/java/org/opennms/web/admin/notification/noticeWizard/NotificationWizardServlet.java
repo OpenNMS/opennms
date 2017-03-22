@@ -503,7 +503,7 @@ public class NotificationWizardServlet extends HttpServlet {
         newNotice.setStatus(oldNotice.getStatus());
         newNotice.setVarbind(oldNotice.getVarbind());
 
-        for (final Parameter parameter : oldNotice.getParameter()) {
+        for (final Parameter parameter : oldNotice.getParameters()) {
             final Parameter newParam = new Parameter();
             newParam.setName(parameter.getName());
             newParam.setValue(parameter.getValue());
