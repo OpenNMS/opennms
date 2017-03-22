@@ -250,12 +250,8 @@ public class NotificationTask extends Thread {
                                 LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
-                            String binaryCommand = command.getBinary();
-                            if (binaryCommand == null) {
-                                LOG.error("binary flag not set for command: {}.  Guessing false.", command.getExecute());
-                                binaryCommand = "false";
-                            }
-                            if (binaryCommand.equals("true")) {
+                            Boolean binaryCommand = command.getBinary();
+                            if (binaryCommand) {
                                 strategy = new CommandExecutor();
                             } else {
                                 strategy = new ClassExecutor();
@@ -318,16 +314,16 @@ public class NotificationTask extends Thread {
         List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<org.opennms.netmgt.model.notifd.Argument>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch().orElse(null)), Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed());
 
-            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
+            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed()));
         }
 
         return commandArgs;
     }
 
     private List<Argument> getArgumentsForCommand(Command command) {
-        return command.getArgumentCollection();
+        return command.getArguments();
     }
 
     /**
