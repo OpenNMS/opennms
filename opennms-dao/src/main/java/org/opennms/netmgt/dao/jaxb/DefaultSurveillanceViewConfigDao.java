@@ -53,8 +53,8 @@ public class DefaultSurveillanceViewConfigDao extends AbstractJaxbConfigDao<Surv
     
     /** {@inheritDoc} */
     @Override
-    public SurveillanceViewConfig translateConfig(SurveillanceViewConfiguration castorConfig) {
-        return new SurveillanceViewConfig(castorConfig);
+    public SurveillanceViewConfig translateConfig(SurveillanceViewConfiguration config) {
+        return new SurveillanceViewConfig(config);
     }
     
     /** {@inheritDoc} */

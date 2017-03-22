@@ -26,36 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.mailtransporttest;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
+  import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
-import org.xml.sax.ContentHandler;
 
 /**
  * Define the host and port of the sendmail server. If you don't,
@@ -212,48 +191,6 @@ public class ReadmailHost implements Serializable {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
      * Sets the value of field 'host'.
      * 
      * @param host the value of field 'host'.
@@ -283,31 +220,6 @@ public class ReadmailHost implements Serializable {
      */
     public void setReadmailProtocol(final ReadmailProtocol readmailProtocol) {
         m_readmailProtocol = readmailProtocol;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * ReadmailHost
-     */
-    public static ReadmailHost unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (ReadmailHost) Unmarshaller.unmarshal(ReadmailHost.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 }

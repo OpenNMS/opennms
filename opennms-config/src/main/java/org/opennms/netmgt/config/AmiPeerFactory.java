@@ -120,8 +120,6 @@ public class AmiPeerFactory {
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException {
         if (m_loaded) {
@@ -142,8 +140,6 @@ public class AmiPeerFactory {
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException {
         m_singleton = null;

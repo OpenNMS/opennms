@@ -57,8 +57,6 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * <p>Constructor for LinkdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
@@ -140,12 +138,12 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     
 
     public long getInitialSleepTime() {
-        if (m_config.hasInitial_sleep_time()) return m_config.getInitial_sleep_time();
+        if (m_config.hasInitialSleepTime()) return m_config.getInitialSleepTime();
         return 1800000;
     }
 
     public long getRescanInterval() {
-        if (m_config.hasRescan_interval()) return m_config.getRescan_interval();
+        if (m_config.hasRescanInterval()) return m_config.getRescanInterval();
         return 86400000;
     }
 
@@ -160,7 +158,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     }
     
     public int getMaxBft() {
-        if (m_config.hasMax_bft()) return m_config.getMax_bft();
+        if (m_config.hasMaxBft()) return m_config.getMaxBft();
         return 1;
     }
 

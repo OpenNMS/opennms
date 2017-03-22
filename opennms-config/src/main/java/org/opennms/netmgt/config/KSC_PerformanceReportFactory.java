@@ -139,7 +139,7 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * Parses the KSC_PerformanceReport.xml via the Castor classes.
+     * Parses the KSC_PerformanceReport.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.

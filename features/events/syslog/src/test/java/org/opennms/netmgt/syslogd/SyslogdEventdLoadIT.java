@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -150,7 +148,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         MockLogAppender.assertNoErrorOrGreater();
     }
 
-    private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
+    private void loadSyslogConfiguration(final String configuration) throws IOException {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);

@@ -281,7 +281,7 @@ public class EditProvisioningGroupController {
     @ModelAttribute
     private void referenceData(ModelMap map, @RequestParam String groupName) {
 
-        // Fetch the list of possible values out of the Castor enumeration
+        // Fetch the list of possible values
         List<String> choices = new ArrayList<String>();
         for (PrimaryType type : PrimaryType.getAllTypes()) {
             choices.add(type.getCode());

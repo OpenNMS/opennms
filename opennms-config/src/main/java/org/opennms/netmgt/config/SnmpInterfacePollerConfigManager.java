@@ -168,9 +168,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void save() throws IOException {
         // Marshal to a string first, then write the string to the file. This

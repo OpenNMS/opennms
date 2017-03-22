@@ -447,22 +447,12 @@
     <constructor-arg value="file:${opennms.home}/etc/availability-reports.xml" />
   </bean>
   
-  <bean id="availabilityReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao">
+  <bean id="availabilityReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao">
     <property name="configResource" ref="availabilityReportConfigResourceLocation" />
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsReportConfigDao" ref="availabilityReportConfigDao" />
   
-  <bean id="jasperReportConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml" />
-  </bean>
-  
-  <bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
-    <property name="configResource" ref="jasperReportConfigResourceLocation" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
-
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
     <property name="arguments">

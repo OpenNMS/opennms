@@ -173,8 +173,6 @@ public abstract class NotificationManager {
     /**
      * <p>Constructor for NotificationManager.</p>
      *
-     * @throws MarshalException if any.
-     * @throws ValidationException if any.
      * @param configManager a {@link org.opennms.netmgt.config.NotifdConfigManager} object.
      * @param dcf a {@link javax.sql.DataSource} object.
      */

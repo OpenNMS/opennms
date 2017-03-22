@@ -67,7 +67,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
     
     public static class ThresholdEvaluatorStateHighLow extends AbstractThresholdEvaluatorState {
         /**
-         * Castor Threshold object containing threshold configuration data.
+         * Object containing threshold configuration data.
          */
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 

@@ -33,8 +33,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -77,11 +75,11 @@ public class CollectorConfigDaoImplIT extends TestCase {
         return getClass().getResourceAsStream(fileName);
     }
 
-    public void testInstantiate() throws MarshalException, ValidationException, IOException, Exception {
+    public void testInstantiate() throws IOException, Exception {
         initialize();
     }
 
-    private void initialize() throws IOException, MarshalException, ValidationException, Exception {
+    private void initialize() throws IOException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
 
         InputStream stream = null;

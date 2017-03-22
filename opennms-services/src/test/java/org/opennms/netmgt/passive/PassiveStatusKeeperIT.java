@@ -36,8 +36,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,12 +177,10 @@ public class PassiveStatusKeeperIT {
     /**
      * This is a test for the method that verifies valid passive status events
      * for the passive status keeper.
-     * @throws ValidationException 
-     * @throws MarshalException 
      *
      */
     @Test
-    public void testIsPassiveStatusEvent() throws MarshalException, ValidationException {
+    public void testIsPassiveStatusEvent() {
         
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
         assertTrue(m_psk.isPassiveStatusEvent(e));

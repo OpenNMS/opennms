@@ -46,7 +46,6 @@
         org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
-        org.exolab.castor.xml.ValidationException,
         java.net.*,
         java.io.*,
         java.sql.*,
@@ -64,12 +63,11 @@
 		matchAnyInterface.setAddress("match-any");
 	}
 
-	private static void addNode(Outage theOutage, int newNodeId) throws ValidationException {
+	private static void addNode(Outage theOutage, int newNodeId) {
 		try {
 			org.opennms.netmgt.config.poller.outages.Node newNode = new org.opennms.netmgt.config.poller.outages.Node();
 			newNode.setId(newNodeId);
 			if (!theOutage.getNodeCollection().contains(newNode)) {
-				newNode.validate();
 				theOutage.addNode(newNode);
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
 			}
@@ -80,9 +78,8 @@
 		}
 	}
 	
-	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.outages.Interface newInterface) throws ValidationException {
+	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.outages.Interface newInterface) {
 		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
-			newInterface.validate();
 			theOutage.addInterface(newInterface);
 			try {
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
