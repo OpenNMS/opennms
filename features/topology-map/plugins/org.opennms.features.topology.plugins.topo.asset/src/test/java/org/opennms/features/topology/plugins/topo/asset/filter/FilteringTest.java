@@ -30,59 +30,233 @@ import org.slf4j.LoggerFactory;
 public class FilteringTest {
 	private static final Logger LOG = LoggerFactory.getLogger(FilteringTest.class);
 
+	// Tests of simple filters
+
 	@Test
 	public void testMockNodes(){
 		List<OnmsNode> nodelist = getMockNodeList();
 		String s1 = nodelistToString(nodelist);
-		LOG.debug("testMockNodes():"+s1);
+		LOG.debug("End testMockNodes():"+s1);
 	}
-	
+
 	@Test
 	public void testEmptyFilter(){
 		List<OnmsNode> nodeList = getMockNodeList();
-		String s1 = nodelistToString(nodeList);
-		LOG.debug("testEmptyFilter() before:"+s1);
-		
+		String expected = nodelistToString(nodeList);
+		LOG.debug("Start testEmptyFilter() before(and expected):"+expected);
+
 		Map<String, Filter> filterMap=new HashMap<String, Filter>();
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
-		LOG.debug("testEmptyFilter()  after:"+s2);
-		assertEquals(s1,s2);
+		LOG.debug("End testEmptyFilter()  after:"+s2);
+		assertEquals(expected,s2);
 	}
-	
+
 	@Test
 	public void testRawFilter(){
+		String expected="nodeList:{ [0] [5] }";
+
 		List<OnmsNode> nodeList = getMockNodeList();
 		String s1 = nodelistToString(nodeList);
-		LOG.debug("testFilter1() before:"+s1);
-		
+		LOG.debug("Start testRawFilter() before:"+s1+ " expected:"+expected);
+
 		Map<String, Filter> filterMap=new HashMap<String, Filter>();
 		filterMap.put(NodeParamLabels.ASSET_DISPLAYCATEGORY, 
 				new NotFilter<>(new OrFilter<>(new EqFilter<>("asset-displaycategory_0"), new EqFilter<>("asset-displaycategory_5"))));
-		
+
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
-		LOG.debug("testFilter1()  after:"+s2);
-		
-		String expected="nodeList:{ [0] [5] }";
+		LOG.debug("End testRawFilter()  after:"+s2);
+
 		assertEquals(expected,s2);
 	}
-	
+
+	// tests of filter strings
+
+	// test empty filter
+	@Test
+	public void testEmptyFilterString(){
+		String filter="";
+
+		List<OnmsNode> nodeList = getMockNodeList();
+		String expected = nodelistToString(nodeList);
+
+		LOG.debug("Start testEmptyFilterString(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testEmptyFilterString()");
+	}
+
+	// test specific 'or' values
+	// filter=asset-displaycategory=asset-displaycategory_0,asset-displaycategory_5
 	@Test
 	public void testFilterString1(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_0,asset-displaycategory_5";
 		String expected="nodeList:{ [0] [5] }";
-		
+
 		LOG.debug("Start testFilterString1(): filter="+filter+" expected="+expected);
 		String s2 = testFilterParser(filter);
 		assertEquals(expected,s2);
 		LOG.debug("End testFilterString1()");
 	}
-	
 
-	
+	// test specific 'or' values separate entries
+	// filter=asset-displaycategory=asset-displaycategory_0&asset-displaycategory=asset-displaycategory_5
+	@Test
+	public void testFilterString2(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_0"
+				+ "&"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_5";
+		String expected="nodeList:{ [0] [5] }";
+
+		LOG.debug("Start testFilterString2(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString2()");
+	}
+
+	// test not value (all other values wild card)
+	// filter=asset-displaycategory=!testDisplayCategory	
+	@Test
+	public void testFilterString3(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory";
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString3(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString3()");
+	}
+
+	// test multiple not values (all other values wild card)
+	// filter=node-foreignsource=!testForeignSource1,!testForeignSource2,!testForeignSource3	
+	@Test
+	public void testFilterString4(){
+		String filter=NodeParamLabels.NODE_FOREIGNSOURCE+"=!testForeignSource1,!testForeignSource2,!testForeignSource3";
+		String expected="nodeList:{ [0] [1] [2] [3] [4] }";
+
+		LOG.debug("Start testFilterString4(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString4()");
+	}
+
+	// test and separate parameters
+	// filter=asset-pollercategory=testPollerCategory1&node-foreignsource=testForeignSource1,testForeignSource2
+	@Test
+	public void testFilterString5(){
+		String filter=NodeParamLabels.ASSET_POLLERCATEGORY+"=testPollerCategory1"
+				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+
+		String expected="nodeList:{ [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] }";
+
+		LOG.debug("Start testFilterString5(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString5()");
+	}
+
+	// test not value and or values
+	// filter=asset-displaycategory=!testDisplayCategory&node-foreignsource=testForeignSource1,testForeignSource2
+	@Test
+	public void testFilterString6(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
+				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+
+		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString6(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString6()");
+	}
+
+	// test reversing order of not and or values
+	// filter=node-foreignsource=testForeignSource1,testForeignSource2&asset-displaycategory=!testDisplayCategory
+	@Test
+	public void testFilterString7(){
+		String filter=NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2"
+				+ "&"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory";
+
+		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString7(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString7()");
+	}
+
+	// test regex with not
+	// filter=asset-displaycategory=~.*_.*,!asset-displaycategory_5
+	@Test
+	public void testFilterString8(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=~.*_.*,!asset-displaycategory_5";
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString8(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString8()");
+	}
+
+	// test regex with or
+	// filter=asset-displaycategory=testDisplayCategory,~.*_5
+	@Test
+	public void testFilterString9(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=testDisplayCategory,~.*_5";
+		String expected="nodeList:{ [5] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
+
+		LOG.debug("Start testFilterString9(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString9()");
+	}
+
+	// test not regex
+	// filter=asset-displaycategory=testDisplayCategory,~.*_5
+	@Test
+	public void testFilterString10(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!~.*_5";
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
+
+		LOG.debug("Start testFilterString10(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString10()");
+	}
+
+	// test invalid expressions
+	// ------------------------
+
+	// test invalid regex
+	// filter=asset-displaycategory=testDisplayCategory,!~{.*_5
+	@Test
+	public void testFilterString11(){
+		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!~{.*_5";
+
+		LOG.debug("Start testFilterString11() filter="+filter);
+		boolean expectedException=false;
+		try {
+			testFilterParser(filter);
+		} catch ( IllegalArgumentException e){
+			expectedException=true;
+			LOG.debug("    expected IllegalArgumentException thrown="+e.getMessage());
+		}
+		assertEquals(true,expectedException);
+
+		LOG.debug("End testFilterString11()");
+	}
+
+
+	// Utility methods for tests
+	// -------------------------
+
+	/**
+	 * boiler plate test method to test filter strings
+	 * @param filter
+	 * @return
+	 */
 	public String testFilterParser(String filter){
-		
+
 		List<OnmsNode> nodeList = getMockNodeList();
 		String s1 = nodelistToString(nodeList);
 		LOG.debug("  before:"+s1);
@@ -90,15 +264,15 @@ public class FilteringTest {
 		final GeneratorConfig config = new GeneratorConfigBuilder()
 		.withFilters(filter)
 		.build();
-		
+
 		final Map<String, Filter> filterMap = new FilterParser().parse(config.getFilters());
-		
+
 		List<OnmsNode> filteredNodeList = testFilterCode(nodeList, filterMap);
 		String s2 = nodelistToString(filteredNodeList);
 		LOG.debug("   after:"+s2);
 		return s2;
 	}
-	
+
 	/**
 	 * Excerpt from CreateAssetTopology - code which runs filter
 	 * @param nodeList
@@ -141,26 +315,39 @@ public class FilteringTest {
 			OnmsNode n =createNode(id);
 			nodeList.add(n);
 		}
-		
+
 		for( int id = 5;id<10;id++){
 			OnmsNode n =createNode(id);
+			n.setForeignSource("testForeignSource1");
+			n.getAssetRecord().setPollerCategory("testPollerCategory1");
 			nodeList.add(n);
 		}
-		
+
 		for( int id = 10;id<15;id++){
 			OnmsNode n =createNode(id);
+			n.setForeignSource("testForeignSource2");
+			n.getAssetRecord().setPollerCategory("testPollerCategory1");
+			n.getAssetRecord().setDisplayCategory("testDisplayCategory");
 			nodeList.add(n);
 		}
-		
+
+		for( int id = 15;id<20;id++){
+			OnmsNode n =createNode(id);
+			n.setForeignSource("testForeignSource3");
+			n.getAssetRecord().setPollerCategory("testPollerCategory2");
+			n.getAssetRecord().setDisplayCategory("testDisplayCategory");
+			nodeList.add(n);
+		}
+
 		return nodeList;
 	}
 
 
-/**
- * Utility to create and populate a mock opennms node. 
- * @param id used to set unique id and values for node
- * @return
- */
+	/**
+	 * Utility to create and populate a mock opennms node. 
+	 * @param id used to set unique id and values for node
+	 * @return
+	 */
 	public static OnmsNode createNode(int id){
 
 		OnmsNode node = new OnmsNode();
@@ -237,7 +424,7 @@ public class FilteringTest {
 
 		return node;
 	}
-	
+
 	public static String nodelistToString(List<OnmsNode> nodelist){
 		StringBuilder sb= new StringBuilder("nodeList:{ ");
 		for (OnmsNode node:nodelist){
@@ -246,10 +433,10 @@ public class FilteringTest {
 		sb.append("}");
 		return sb.toString();
 	}
-	
-	
-	
-	
+
+
+
+
 }
 
 

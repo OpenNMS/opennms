@@ -34,6 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.slf4j.Logger;
@@ -61,6 +63,9 @@ public class FilterParser {
 		// filterStringMap key=NodeParamLabels value=list of string values for filters 
 		Map<String,List<String>> filterStringMap = new LinkedHashMap<String, List<String>>();
 
+		// if null filter definition then return empty filter map
+		if(filter==null) return filterMap;
+
 		for(String s:filter){
 			String[] x = s.split("=");
 			if(x.length<2) throw new IllegalArgumentException("Cannot parse filter. no '=' in expression:"+s);
@@ -81,45 +86,70 @@ public class FilterParser {
 			}
 		}
 
-		//create filter for each filter string
-		List<Filter> orFilters=new ArrayList<Filter>();
-		List<Filter> andFilters=new ArrayList<Filter>();
-
-
 		for (String nodeParamLabel:filterStringMap.keySet()){
+			//create filter for each filter string
+			List<Filter> includeFilters=new ArrayList<Filter>();
+			List<Filter> excludeFilters=new ArrayList<Filter>();
 			for(String filterValueString: filterStringMap.get(nodeParamLabel)){
 				String valStr=null;
+				String regexStr=null;
 				Filter f=null;
 				if(filterValueString.startsWith("!")){
 					if(filterValueString.startsWith("!~")){
-						valStr=filterValueString.substring(2);
-						f = new NotFilter(new RegExFilter(valStr));
+						regexStr=filterValueString.substring(2);
+						try {
+							f = new RegExFilter(regexStr);
+				        } catch (PatternSyntaxException syntaxException){
+				        	throw new IllegalArgumentException("Cannot parse filter. Illegal Regex expression for '"+nodeParamLabel+ "' value in expression:"+filterValueString,syntaxException);
+				        }
 					} else {
 						valStr=filterValueString.substring(1);
-						f = new NotFilter(new EqFilter(valStr));
+						f = new EqFilter(valStr);
 					}
-					andFilters.add(f);
+					excludeFilters.add(f);
 				} else {
 					if(filterValueString.startsWith("~")){
-						valStr=filterValueString.substring(1);
-						f = new RegExFilter(valStr);
+						regexStr=filterValueString.substring(1);
+						try {
+							f = new RegExFilter(regexStr);
+				        } catch (PatternSyntaxException syntaxException){
+				        	throw new IllegalArgumentException("Cannot parse filter. Illegal Regex expression for '"+nodeParamLabel+ "' value in expression:"+filterValueString,syntaxException);
+				        }
 					} else {
 						valStr=filterValueString;
 						f= new EqFilter(valStr);
 					}
-					orFilters.add(f);
+					includeFilters.add(f);
 				}
-				if (valStr.contains("~")) 
-					throw new IllegalArgumentException("Cannot parse filter. Illegal '~' character for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
-				if (valStr.contains("!")) 
-					throw new IllegalArgumentException("Cannot parse filter. Illegal '!' character for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
-				if (valStr.equals("")) 
-					throw new IllegalArgumentException("Cannot parse filter. Illegal empty value for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+				// check simple equals parameters for illegal characters
+				if(valStr!=null){
+					if (valStr.contains("~")) 
+						throw new IllegalArgumentException("Cannot parse filter. Illegal '~' character for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+					if (valStr.contains("!")) 
+						throw new IllegalArgumentException("Cannot parse filter. Illegal '!' character for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+					if (valStr.equals("")) 
+						throw new IllegalArgumentException("Cannot parse filter. Illegal empty value for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+				}
+				// check regex for illegal characters
+				if(regexStr!=null){
+					if (regexStr.contains("~")) 
+						throw new IllegalArgumentException("Cannot parse filter. Illegal '~' character for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+					if (regexStr.equals("")) 
+						throw new IllegalArgumentException("Cannot parse filter. Illegal empty value for '"+nodeParamLabel+ "' value in expression:"+filterValueString);
+				}
 			}
-			
-			Filter topFilter=new NotFilter(new AndFilter(new OrFilter(orFilters), new AndFilter(andFilters)));
+
+			// Note the node filter removes unwanted nodes rather than includes wanted nodes
+			Filter topFilter;
+			// if include filters empty then pass all nodes and only consider exclude filters
+			if(includeFilters.isEmpty()){
+				topFilter=new OrFilter(excludeFilters);
+			} else {
+				topFilter=new OrFilter(new NotFilter(new OrFilter(includeFilters)), new OrFilter(excludeFilters));
+			}
+
 			filterMap.put(nodeParamLabel, topFilter);
-			
+
 		}
 
 
