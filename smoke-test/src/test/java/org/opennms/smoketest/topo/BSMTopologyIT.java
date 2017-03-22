@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
 
     private BsmAdminPage bsmAdminPage;
     private TopologyUIPage topologyUiPage;
-    private List<String> businessServiceNames;
+    private List<String> businessServiceNames = new ArrayList<>();
 
     @Before
     public void setUp() throws InterruptedException {
