@@ -156,14 +156,14 @@ public class CustomViewController extends AbstractController implements Initiali
             m_kscReportFactory.saveCurrent();
             EventBuilder eb = new EventBuilder(EventConstants.KSC_REPORT_UPDATED_UEI, "Web UI");
             eb.addParam(EventConstants.PARAM_REPORT_TITLE, report.getTitle() == null ? "Report #" + report.getId() : report.getTitle());
-            eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphCount());
+            eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphs().size());
             try {
                 Util.createEventProxy().send(eb.getEvent());
             } catch (Throwable e) {
                 LOG.error("Can't send event " + eb.getEvent(), e);
             }
         }
-        List<Graph> graphCollection = report.getGraphCollection();
+        List<Graph> graphCollection = report.getGraphs();
         if (!graphCollection.isEmpty()) {
             for (Graph graph : graphCollection) {
                 final OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
@@ -176,7 +176,7 @@ public class CustomViewController extends AbstractController implements Initiali
             }
         }
 
-        List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
+        List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphs().size());
         for (Graph graph : graphCollection) {
             OnmsResource resource = resourceMap.get(graph.toString());
             if (resource != null) {
@@ -270,7 +270,7 @@ public class CustomViewController extends AbstractController implements Initiali
         
         modelAndView.addObject("showCustomizeButton", ( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole(Authentication.ROLE_READONLY) ) && (request.getRemoteUser() != null));
 
-        if (report.hasGraphsPerLine() && report.getGraphsPerLine().get() > 0) {
+        if (report.getGraphsPerLine() != null && report.getGraphsPerLine().get() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphsPerLine());
         } else {
             modelAndView.addObject("graphsPerLine", getDefaultGraphsPerLine());
@@ -281,7 +281,7 @@ public class CustomViewController extends AbstractController implements Initiali
     
     // Returns true if the report was modified due to invalid resource IDs. 
     private boolean removeBrokenGraphsFromReport(Report report) {
-        for (Iterator<Graph> itr = report.getGraphCollection().iterator(); itr.hasNext();) {
+        for (Iterator<Graph> itr = report.getGraphs().iterator(); itr.hasNext();) {
             Graph graph = itr.next();
             try {
                 OnmsResource r = getKscReportService().getResourceFromGraph(graph);

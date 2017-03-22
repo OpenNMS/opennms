@@ -278,7 +278,7 @@ public class KscRestService extends OnmsRestService {
             m_graphs_per_line = report.getGraphsPerLine().orElse(null);
             m_graphs.clear();
 
-            for(Graph graph : report.getGraphCollection()) {
+            for(Graph graph : report.getGraphs()) {
                 m_graphs.add(new KscGraph(graph));
             }
         }

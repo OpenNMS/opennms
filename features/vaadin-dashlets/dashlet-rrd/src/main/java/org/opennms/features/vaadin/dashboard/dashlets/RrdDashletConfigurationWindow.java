@@ -499,13 +499,13 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
         int columns = report.getGraphsPerLine().orElse(1);
 
-        int rows = report.getGraphCount() / columns;
+        int rows = report.getGraphs().size() / columns;
 
         if (rows == 0) {
             rows = 1;
         }
 
-        if (report.getGraphCount() % columns > 0) {
+        if (report.getGraphs().size() % columns > 0) {
             rows++;
         }
 
@@ -542,8 +542,9 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                 /**
                  * setting the values if defined in the KSC report
                  */
-                if (i < report.getGraphCount()) {
-                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraph(i));
+                if (i < report.getGraphs().size()) {
+                    final int index = i;
+                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraphs().get(index));
                 }
 
                 rrdGraphEntry.update();

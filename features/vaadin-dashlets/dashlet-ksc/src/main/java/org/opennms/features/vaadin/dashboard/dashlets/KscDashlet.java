@@ -141,13 +141,13 @@ public class KscDashlet extends AbstractDashlet {
 
                     columns = kscReport.getGraphsPerLine().orElse(1);
 
-                    rows = kscReport.getGraphCount() / columns;
+                    rows = kscReport.getGraphs().size() / columns;
 
                     if (rows == 0) {
                         rows = 1;
                     }
 
-                    if (kscReport.getGraphCount() % columns > 0) {
+                    if (kscReport.getGraphs().size() % columns > 0) {
                         rows++;
                     }
 
@@ -170,8 +170,9 @@ public class KscDashlet extends AbstractDashlet {
                     for (int y = 0; y < m_gridLayout.getRows(); y++) {
                         for (int x = 0; x < m_gridLayout.getColumns(); x++) {
 
-                            if (i < kscReport.getGraphCount()) {
-                                Graph graph = kscReport.getGraph(i);
+                            if (i < kscReport.getGraphs().size()) {
+                                final int index = i;
+                                Graph graph = kscReport.getGraphs().get(index);
 
                                 Map<String, String> data = getDataForResourceId(graph.getNodeId().orElse(null), graph.getResourceId().orElse(null));
 
@@ -307,7 +308,7 @@ public class KscDashlet extends AbstractDashlet {
                     accordion.setSizeFull();
                     m_verticalLayout.addComponent(accordion);
 
-                    for (Graph graph : kscReport.getGraph()) {
+                    for (Graph graph : kscReport.getGraphs()) {
                         Map<String, String> data = getDataForResourceId(graph.getNodeId().orElse(null), graph.getResourceId().orElse(null));
 
                         Calendar beginTime = Calendar.getInstance();

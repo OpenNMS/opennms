@@ -119,7 +119,7 @@ public class KscReportEditor implements Serializable {
      * @param index a int.
      */
     public void loadWorkingGraph(int index) {
-        int total_graphs = m_workingReport.getGraphCount();
+        int total_graphs = m_workingReport.getGraphs().size();
         m_workingGraphIndex = index;
         if ((m_workingGraphIndex < 0) || (m_workingGraphIndex >= total_graphs)) {
             // out of range... assume new report needs to be created
@@ -127,7 +127,8 @@ public class KscReportEditor implements Serializable {
             m_workingGraphIndex = -1;
         } else {
             // Create a new and unique instance of the graph for screwing around with
-            m_workingGraph = JaxbUtils.duplicateObject(m_workingReport.getGraph(m_workingGraphIndex), Graph.class);
+            final int index1 = m_workingGraphIndex;
+            m_workingGraph = JaxbUtils.duplicateObject(m_workingReport.getGraphs().get(index1), Graph.class);
         }
     }
 
@@ -139,13 +140,14 @@ public class KscReportEditor implements Serializable {
      * @param requested_graphnum a int.
      */
     public void unloadWorkingGraph(int requested_graphnum) {
-        int total_graphs = m_workingReport.getGraphCount();
+        int total_graphs = m_workingReport.getGraphs().size();
         int insert_location = requested_graphnum--;
 
         // Check range for existing graph and delete if it is in the valid range
         if ((m_workingGraphIndex >= 0) && (m_workingGraphIndex < total_graphs)) {
             // in range... delete existing graph.
-            m_workingReport.removeGraph(m_workingReport.getGraph(m_workingGraphIndex));
+            final int index = m_workingGraphIndex;
+            m_workingReport.removeGraph(m_workingReport.getGraphs().get(index));
         }
 
         // Check range for insertion point
@@ -170,7 +172,7 @@ public class KscReportEditor implements Serializable {
      */
     public void loadWorkingReport(Report report) {
         m_workingReport = JaxbUtils.duplicateObject(report, Report.class);
-        m_workingReport.deleteId();
+        m_workingReport.setId(null);
     }
 
     /**
@@ -199,7 +201,7 @@ public class KscReportEditor implements Serializable {
     public void loadWorkingReportDuplicate(KSC_PerformanceReportFactory factory, int index) {
         loadWorkingReport(factory, index);
 
-        m_workingReport.deleteId();
+        m_workingReport.setId(null);
     }
     
     /**
@@ -207,7 +209,7 @@ public class KscReportEditor implements Serializable {
      */
     public void loadNewWorkingReport() {
         m_workingReport = getNewReport();
-        m_workingReport.deleteId();
+        m_workingReport.setId(null);
     }
 
     /**
@@ -218,7 +220,7 @@ public class KscReportEditor implements Serializable {
      * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
      */
     public void unloadWorkingReport(KSC_PerformanceReportFactory factory) {
-        if (getWorkingReport().hasId()) {
+        if (getWorkingReport().getId() != null) {
             factory.setReport(getWorkingReport().getId().get(), getWorkingReport());
         } else {
             factory.addReport(getWorkingReport());

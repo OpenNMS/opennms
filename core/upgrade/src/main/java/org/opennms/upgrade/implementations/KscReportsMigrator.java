@@ -145,7 +145,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
         for (Integer reportId : KSC_PerformanceReportFactory.getInstance().getReportList().keySet()) {
             Report report = KSC_PerformanceReportFactory.getInstance().getReportByIndex(reportId);
             log("  Checking report %s\n", report.getTitle());
-            for (Graph graph : report.getGraphCollection()) {
+            for (Graph graph : report.getGraphs()) {
                 for (SnmpInterface intf : interfacesToMerge) {
                     final String resourceId = graph.getResourceId().orElse(null);
                     if (intf.shouldUpdate(resourceId)) {
