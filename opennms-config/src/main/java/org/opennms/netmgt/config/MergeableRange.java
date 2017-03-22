@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.snmp.Range;
 
 /**
- * This class wraps the castor generated Range class found in the SnmpConfig class.
+ * This class wraps the JAXB generated Range class found in the SnmpConfig class.
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
  */

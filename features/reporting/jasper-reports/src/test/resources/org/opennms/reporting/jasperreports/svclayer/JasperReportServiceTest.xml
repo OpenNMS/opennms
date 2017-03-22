@@ -6,9 +6,6 @@
 	<bean id="jasperReportService" class="org.opennms.reporting.jasperreports.svclayer.JasperReportService">
 		<property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
 	</bean>
-	<bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
-		<property name="configResource" ref="jasperReportConfigResourceLocation" />
-	</bean>
 	<bean id="jasperReportConfigResourceLocation" class="java.lang.String">
 		<constructor-arg value="classpath:/etc/jasper-reports-testdata.xml" />
 	</bean>

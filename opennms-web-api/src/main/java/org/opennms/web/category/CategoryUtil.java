@@ -31,9 +31,6 @@ package org.opennms.web.category;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
 /**
  * Provides look and feel utilities for the JSPs presenting category (real time
  * console) information.
@@ -82,10 +79,8 @@ public class CategoryUtil extends Object {
      * @param category a {@link org.opennms.web.category.Category} object.
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static String getCategoryClass(Category category) throws IOException, MarshalException, ValidationException {
+    public static String getCategoryClass(Category category) throws IOException {
         if (category == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -101,10 +96,8 @@ public class CategoryUtil extends Object {
      * @param value a double.
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static String getCategoryClass(Category category, double value) throws IOException, MarshalException, ValidationException {
+    public static String getCategoryClass(Category category, double value) throws IOException {
         if (category == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

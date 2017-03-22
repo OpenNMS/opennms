@@ -117,9 +117,6 @@
     <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.exolab.castor" additivity="false" level="INFO">
-      <appender-ref ref="RoutingAppender"/>
-    </logger>
     <logger name="org.gwtwidgets" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>

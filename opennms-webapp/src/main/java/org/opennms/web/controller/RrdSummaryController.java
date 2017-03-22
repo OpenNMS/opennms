@@ -33,7 +33,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.Marshaller;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.attrsummary.Summary;
 import org.opennms.web.svclayer.model.SummarySpecification;
 import org.opennms.web.svclayer.rrd.RrdSummaryService;
@@ -60,7 +60,7 @@ public class RrdSummaryController {
         @Override
         protected void renderMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
             Assert.notNull(model.get("summary"), "summary must not be null.. unable to marshall xml");
-            Marshaller.marshal(model.get("summary"), response.getWriter());
+            JaxbUtils.marshal(model.get("summary"), response.getWriter());
         }
     }
 

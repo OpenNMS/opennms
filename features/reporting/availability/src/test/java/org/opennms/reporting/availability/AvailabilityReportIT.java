@@ -39,13 +39,11 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -230,17 +228,14 @@ public class AvailabilityReportIT extends TestCase {
 
     }
 
-    public void testBuiltClassicReport () throws IOException, MarshalException, ValidationException {
+    public void testBuiltClassicReport () throws IOException {
 
         Report report = buildReport(calendar,"classic");
         
         assertNotNull("report", report);
-        
+
         Writer fileWriter = new OutputStreamWriter(System.out, "UTF-8");
-        Marshaller marshaller = new Marshaller(fileWriter);
-        marshaller.setSuppressNamespaces(true);
-        marshaller.setValidation(false);
-        marshaller.marshal(report);
+        JaxbUtils.marshal(report, fileWriter);
 
         Categories categories = report.getCategories();
         assertNotNull("report categories", report.getCategories());

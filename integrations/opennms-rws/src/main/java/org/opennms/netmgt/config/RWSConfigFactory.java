@@ -145,10 +145,6 @@ public final class RWSConfigFactory extends RWSConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */

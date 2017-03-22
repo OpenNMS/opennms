@@ -37,8 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -65,7 +63,7 @@ public class EventNoticesController extends AbstractController {
                 "notifications", getNotifications());
     }
 
-    private List<EventNotification> getNotifications() throws MarshalException, ValidationException, IOException {
+    private List<EventNotification> getNotifications() throws IOException {
         List<EventNotification> notifications = Lists.newLinkedList();
         Map<String, Notification> noticeMap = m_notificationFactory.getNotifications();
         for(String name : noticeMap.keySet()) {

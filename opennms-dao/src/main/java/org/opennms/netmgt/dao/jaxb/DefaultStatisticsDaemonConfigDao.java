@@ -40,8 +40,8 @@ import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO implementation for accessing the XML configuration for
- * statsd.  The Castor objects are translated into a more friendly
- * set of objects that are exposed through the DAO.  The Castor
+ * statsd.  The objects are translated into a more friendly
+ * set of objects that are exposed through the DAO.  The
  * objects are <i>not</i> exposed.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -58,8 +58,8 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractJaxbConfigDao<Stat
     
     /** {@inheritDoc} */
     @Override
-    public StatsdConfig translateConfig(StatisticsDaemonConfiguration castorConfig) {
-        return new StatsdConfig(castorConfig);
+    public StatsdConfig translateConfig(StatisticsDaemonConfiguration config) {
+        return new StatsdConfig(config);
     }
     
     private StatsdConfig getConfig() {

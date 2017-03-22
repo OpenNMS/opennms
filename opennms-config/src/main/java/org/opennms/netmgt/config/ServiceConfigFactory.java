@@ -53,7 +53,7 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
     private static final Logger LOG = LoggerFactory.getLogger(ServiceConfigFactory.class);
 
     /**
-     * The loaded configuration after is has been unmarshalled by castor.
+     * The loaded configuration after is has been unmarshalled
      */
     private ServiceConfiguration m_config;
 

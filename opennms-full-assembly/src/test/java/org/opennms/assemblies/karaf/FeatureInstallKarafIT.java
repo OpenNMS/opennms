@@ -56,7 +56,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("atomikos");
         installFeature("batik");
         installFeature("c3p0");
-        installFeature("castor");
         installFeature("commons-beanutils");
         installFeature("commons-cli");
         installFeature("commons-codec");

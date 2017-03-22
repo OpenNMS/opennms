@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
@@ -100,20 +101,20 @@ public class DiscoveryScanServlet extends HttpServlet {
         	String foreignSource = request.getParameter("specificforeignsource");
         	String location = request.getParameter("specificlocation");
         	Specific newSpecific = new Specific();
-        	newSpecific.setContent(ipAddr);
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+        	newSpecific.setAddress(ipAddr);
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
         		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
         		newSpecific.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
         		newSpecific.setLocation(location);
         	}
 
@@ -144,19 +145,19 @@ public class DiscoveryScanServlet extends HttpServlet {
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
 
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
         		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
         		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
         		newIR.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
         		newIR.setLocation(location);
         	}
 
@@ -183,20 +184,20 @@ public class DiscoveryScanServlet extends HttpServlet {
             String location = request.getParameter("iulocation");
 
             IncludeUrl iu = new IncludeUrl();
-            iu.setContent(url);
-            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+            iu.setUrl(url);
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
 
-            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
                 iu.setRetries(WebSecurityUtils.safeParseInt(retries));
             }
 
-            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
                 iu.setForeignSource(foreignSource);
             }
 
-            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
                 iu.setLocation(location);
             }
 

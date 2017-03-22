@@ -104,19 +104,19 @@ public class DiscoveryIntegrationIT {
         IncludeRange range = new IncludeRange();
         range.setBegin("127.0.5.1");
         range.setEnd("127.0.5.254");
-        range.setTimeout(5000);
+        range.setTimeout(5000l);
         range.setRetries(0);
         range.setLocation(CUSTOM_LOCATION);
 
         DiscoveryConfiguration config = m_discoveryConfig.getConfiguration();
         // Start immediately
-        config.setInitialSleepTime(0);
+        config.setInitialSleepTime(0l);
 
         // Discover 255 address ~= 10 seconds
         config.setPacketsPerSecond(25.5);
 
         // Add a discovery range to the config
-        config.removeAllIncludeRange();
+        config.clearIncludeRanges();
         config.addIncludeRange(range);
 
         // Don't actually save the config or we'll overwrite the 
@@ -158,14 +158,14 @@ public class DiscoveryIntegrationIT {
         //range.setEnd("127.0.5.254");
         range.setBegin("192.168.99.1");
         range.setEnd("192.168.99.100");
-        range.setTimeout(5000);
+        range.setTimeout(5000l);
         range.setRetries(0);
 
         DiscoveryConfiguration config = new DiscoveryConfiguration();
-        config.setInitialSleepTime(0);
+        config.setInitialSleepTime(0l);
         // 100 addresses at 10 per second should take at least 10 seconds
-        config.setPacketsPerSecond(10);
-        config.removeAllIncludeRange();
+        config.setPacketsPerSecond(10d);
+        config.clearIncludeRanges();
         config.addIncludeRange(range);
 
         // Anticipate newSuspect events for all of the addresses

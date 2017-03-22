@@ -55,7 +55,6 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
                 {
                     getBasicCollectdConfiguration(),
                     "<?xml version=\"1.0\"?>\n" + 
-                            "<?castor class-name=\"org.opennms.netmgt.collectd.CollectdConfiguration\"?>\n" + 
                             "<collectd-configuration threads=\"50\">\n" + 
                             "        <package name=\"example1\" remote=\"false\">\n" +
                             "                <filter>IPADDR != '0.0.0.0'</filter>\n" + 

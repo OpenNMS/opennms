@@ -208,8 +208,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * Saves the current settings to disk
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void saveCurrent() throws IOException {
         saveToFile(getFile());
@@ -357,7 +355,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     /**
      * Enhancement: Allows specific or ranges to be merged into SNMP configuration
-     * with many other attributes.  Uses new classes the wrap Castor-generated code to
+     * with many other attributes.  Uses new classes the wrap JAXB-generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
      *

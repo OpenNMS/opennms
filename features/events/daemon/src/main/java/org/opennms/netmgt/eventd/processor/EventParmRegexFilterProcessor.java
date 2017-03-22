@@ -55,6 +55,15 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
     private EventConfDao m_eventConfDao;
     private Map<String, org.opennms.netmgt.xml.eventconf.Filter> m_filterMap = new HashMap<String, org.opennms.netmgt.xml.eventconf.Filter>();
 
+    /**
+     * This processor is always synchronous so this method just 
+     * delegates to {@link #process(Log)}.
+     */
+    @Override
+    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
+        process(eventLog);
+    }
+
     @Override
     public void process(Log eventLog) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {

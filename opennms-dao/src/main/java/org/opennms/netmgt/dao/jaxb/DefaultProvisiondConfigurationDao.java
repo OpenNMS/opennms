@@ -64,8 +64,8 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
 
     /** {@inheritDoc} */
     @Override
-    public ProvisiondConfiguration translateConfig(ProvisiondConfiguration castorConfig) {
-        return castorConfig;
+    public ProvisiondConfiguration translateConfig(ProvisiondConfiguration config) {
+        return config;
     }
 
     /**

@@ -99,19 +99,19 @@ public abstract class GeneralSettingsLoader {
 		if (retriesStr!=null && (!"".equals(retriesStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_RETRIES).equals(retriesStr.trim()))) {
 			config.setRetries(WebSecurityUtils.safeParseInt(retriesStr));
 		} else {
-			config.deleteRetries();
+			config.setRetries(null);
 		}
 		
 		if (timeoutStr!=null && (!"".equals(timeoutStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_TIMEOUT).equals(timeoutStr.trim()))) {
 			config.setTimeout(Long.valueOf(timeoutStr).longValue());
 		} else {
-			config.deleteTimeout();
+			config.setTimeout(null);
 		}
 		
 		if (chunksizeStr!=null && (!"".equals(chunksizeStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE).equals(chunksizeStr.trim()))) {
 			config.setChunkSize(Integer.valueOf(chunksizeStr));
 		} else {
-			config.deleteChunkSize();
+			config.setChunkSize(null);
 		}
 		
 		LOG.debug("General settings uploaded.");

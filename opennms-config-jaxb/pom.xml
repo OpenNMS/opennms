@@ -62,12 +62,6 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opennms.dependencies</groupId>
-          <artifactId>castor-dependencies</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

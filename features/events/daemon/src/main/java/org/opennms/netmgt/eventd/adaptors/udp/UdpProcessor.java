@@ -30,8 +30,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
@@ -159,18 +157,10 @@ final class UdpProcessor implements Runnable {
             LOG.debug("A new request has arrived");
 
             // Convert the Event
-            Event[] events = null;
-            try {
-                LOG.debug("Event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
-                LOG.debug("Unmarshalling Event text \\{{}{}{}}", System.getProperty("line.separator"), re.getXmlData(), System.getProperty("line.separator"));
-                events = re.unmarshal().getEvents().getEvent();
-            } catch (MarshalException e) {
-                LOG.warn("Failed to unmarshal the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
-                continue;
-            } catch (ValidationException e) {
-                LOG.warn("Failed to validate the event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
-                continue;
-            }
+            LOG.debug("Event from {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
+            LOG.debug("Unmarshalling Event text \\{{}{}{}}", System.getProperty("line.separator"), re.getXmlData(), System.getProperty("line.separator"));
+            final Event[] events = re.unmarshal().getEvents().getEvent();
+
 
             if (events == null || events.length == 0) {
                 LOG.debug("The event log record contained no events");

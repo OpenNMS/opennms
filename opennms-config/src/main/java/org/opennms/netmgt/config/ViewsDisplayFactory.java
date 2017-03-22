@@ -119,7 +119,7 @@ public class ViewsDisplayFactory {
     }
 
     /**
-     * Parses the viewsdisplay.xml via the Castor classes
+     * Parses the viewsdisplay.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
@@ -214,8 +214,6 @@ public class ViewsDisplayFactory {
      * read it.
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void updateFromFile() throws IOException {
         if (m_lastModified != m_viewsDisplayFile.lastModified()) {

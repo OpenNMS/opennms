@@ -48,10 +48,6 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.opennms.dependencies</groupId>
-                    <artifactId>castor-dependencies</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opennms.dependencies</groupId>
                     <artifactId>jasper-dependencies</artifactId>
                 </exclusion>
                 <exclusion>
