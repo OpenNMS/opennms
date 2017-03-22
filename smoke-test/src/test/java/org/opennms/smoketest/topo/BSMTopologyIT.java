@@ -152,6 +152,10 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
         topologyUiPage.clickOnMenuItemsWithLabels("Simulate", "Simulation Mode");
         Assert.assertEquals(Boolean.TRUE, topologyUiPage.isSimulationModeEnabled());
 
+        // Apply default focus before continuing
+        topologyUiPage.clearFocus();
+        topologyUiPage.defaultFocus();
+
         // Verify pre conditions
         Assert.assertTrue("We need at least 3 visible vertices", 3 <= topologyUiPage.getVisibleVertices().size());
         Assert.assertTrue("Only one vertex should be in focus", 1 == topologyUiPage.getFocusedVertices().size());
