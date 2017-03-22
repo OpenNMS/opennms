@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Use this element to define a mail test with the
@@ -44,31 +45,26 @@ import org.opennms.core.xml.ValidateUsing;
  *  use cases for the sequence are:
  *  
  *  a) Class will test that it can successfully send an email.
- *  b) Class will test that it can successfully connect to a mail
- * server and get mailbox contents.
- *  c) Class will test that it can successfully read a new email
- * message from a mail server.
- *  d) Class will test that it can send an email and read that same
- * email from a mail server.
+ *  b) Class will test that it can successfully connect to a mail server and get mailbox contents.
+ *  c) Class will test that it can successfully read a new email message from a mail server.
+ *  d) Class will test that it can send an email and read that same email from a mail server.
  *  
- *  The sequence support a max of one send and one receive server.
- * If each are specified, the complete
- *  sequence is delivery of a message from one mail host to
- * another.
+ *  The sequence support a max of one send and one receive server. If each are specified, the complete
+ *  sequence is delivery of a message from one mail host to another.
  */
 
 @XmlRootElement(name="mail-transport-test")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("mail-transport-test.xsd")
 public class MailTransportTest implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Defines a use case for testing mail. If both a send and a
      * read test are configured, then the use case (d) will be executed.
      *  
      */
-    @XmlElement(name="mail-test")
+    @XmlElement(name="mail-test", required=true)
     private MailTest m_mailTest;
 
     public MailTransportTest() {
@@ -79,10 +75,7 @@ public class MailTransportTest implements Serializable {
     }
 
     public void setMailTest(final MailTest mailTest) {
-        if (mailTest == null) {
-            throw new IllegalArgumentException("'mail-test' is a required element!");
-        }
-        m_mailTest = mailTest;
+        m_mailTest = ConfigUtils.assertNotNull(mailTest, "mail-test");
     }
 
     @Override
@@ -93,7 +86,7 @@ public class MailTransportTest implements Serializable {
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) return true;
-        
+
         if (obj instanceof MailTransportTest) {
             final MailTransportTest that = (MailTransportTest)obj;
             return Objects.equals(this.m_mailTest, that.m_mailTest);

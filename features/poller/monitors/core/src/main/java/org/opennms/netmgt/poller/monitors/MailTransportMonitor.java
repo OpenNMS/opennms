@@ -122,13 +122,12 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
 
         List<JavamailProperty> propertyList = new ArrayList<JavamailProperty>();
         if (readTest != null) {
-            propertyList = readTest.getJavamailProperties();
+            propertyList.addAll(readTest.getJavamailProperties());
         }
 
         final SendmailTest sendTest = mailParms.getSendTest();
         if (sendTest != null) {
-            final List<JavamailProperty> sendTestProperties = sendTest.getJavamailPropertyCollection();
-            propertyList.addAll(sendTestProperties);
+            propertyList.addAll(sendTest.getJavamailProperties());
         }
 
         final Properties props = mailParms.getJavamailProperties();
@@ -306,7 +305,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
                         }
                     }
 
-                    final boolean deleteAllMail = mailParms.getReadTest().isDeleteAllMail();
+                    final boolean deleteAllMail = mailParms.getReadTest().getDeleteAllMail();
                     final boolean foundMTMHeader = mailMessage.match(deleteTerm);
                     LOG.debug("searchMailSubject: deleteAllMail = {}, MTM header found = {}", Boolean.toString(deleteAllMail), Boolean.toString(foundMTMHeader));
 

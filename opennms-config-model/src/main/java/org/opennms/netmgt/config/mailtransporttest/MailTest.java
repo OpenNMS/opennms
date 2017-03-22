@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
 
 /**
  * Defines a use case for testing mail. If both a send and a read
@@ -43,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="mail-test")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class MailTest implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -60,9 +63,6 @@ public class MailTest implements Serializable {
     }
 
     public void setReadmailTest(final ReadmailTest readmailTest) {
-        if (readmailTest == null) {
-            throw new IllegalArgumentException("'readmail-test' is a required element!");
-        }
         m_readmailTest = readmailTest;
     }
 
@@ -71,12 +71,8 @@ public class MailTest implements Serializable {
     }
 
     public void setSendmailTest(final SendmailTest sendmailTest) {
-        if (sendmailTest == null) {
-            throw new IllegalArgumentException("'sendmail-test' is a required element!");
-        }
         m_sendmailTest = sendmailTest;
     }
-
 
     @Override
     public int hashCode() {
@@ -86,7 +82,7 @@ public class MailTest implements Serializable {
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) return true;
-        
+
         if (obj instanceof MailTest) {
             final MailTest that = (MailTest)obj;
             return Objects.equals(this.m_sendmailTest, that.m_sendmailTest) &&

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,26 +37,23 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Define the host and port of the sendmail server. If you don't,
- * defaults will be used and
- *  ${ipaddr} is replaced with the IP address of the service.
+ * defaults will be used and ${ipaddr} is replaced with the IP address of the service.
  */
 
 @XmlRootElement(name="readmail-host")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class ReadmailHost implements Serializable {
-    private static final long serialVersionUID = 1723200582958011828L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_host.
-     */
     @XmlAttribute(name="host")
     private String m_host;
 
-    /**
-     * Field m_port.
-     */
     @XmlAttribute(name="port")
     private Long m_port;
 
@@ -68,13 +65,11 @@ public class ReadmailHost implements Serializable {
     private ReadmailProtocol m_readmailProtocol;
 
     public ReadmailHost() {
-        super();
     }
 
     public ReadmailHost(final String host, final Long port) {
-        super();
-        m_host = host;
-        m_port = port;
+        setHost(host);
+        setPort(port);
     }
 
     public String getHost() {
@@ -82,7 +77,7 @@ public class ReadmailHost implements Serializable {
     }
 
     public void setHost(final String host) {
-        m_host = host;
+        m_host = ConfigUtils.normalizeString(host);
     }
 
     public Long getPort() {
@@ -98,10 +93,7 @@ public class ReadmailHost implements Serializable {
     }
 
     public void setReadmailProtocol(final ReadmailProtocol readmailProtocol) {
-        if (readmailProtocol == null) {
-            throw new IllegalArgumentException("'readmail-protocol' is a required element!");
-        }
-        m_readmailProtocol = readmailProtocol;
+        m_readmailProtocol = ConfigUtils.assertNotNull(readmailProtocol, "readmail-protocol");
     }
 
     @Override
@@ -109,16 +101,10 @@ public class ReadmailHost implements Serializable {
         return Objects.hash(m_host, m_port, m_readmailProtocol);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) return true;
-        
+
         if (obj instanceof ReadmailHost) {
             final ReadmailHost that = (ReadmailHost)obj;
             return Objects.equals(this.m_host, that.m_host) &&

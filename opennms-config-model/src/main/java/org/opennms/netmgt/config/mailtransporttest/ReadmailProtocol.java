@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Basically attributes that help setup the javamailer's confusion
  * set of properties.
@@ -43,8 +46,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="readmail-protocol")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class ReadmailProtocol implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name="transport")
     private String m_transport;
@@ -58,10 +62,10 @@ public class ReadmailProtocol implements Serializable {
     public ReadmailProtocol() {
     }
 
-    public ReadmailProtocol(final String transport, final Boolean sslEnable, final Boolean startTls) {
-        m_transport = transport;
-        m_sslEnable = sslEnable;
-        m_startTLS = startTls;
+    public ReadmailProtocol(final String transport, final Boolean sslEnabled, final Boolean startTls) {
+        setTransport(transport);
+        setSslEnabled(sslEnabled);
+        setStartTLS(startTls);
     }
 
     public String getTransport() {
@@ -69,7 +73,7 @@ public class ReadmailProtocol implements Serializable {
     }
 
     public void setTransport(final String transport) {
-        m_transport = transport;
+        m_transport = ConfigUtils.normalizeString(transport);
     }
 
     public Boolean isSslEnabled() {

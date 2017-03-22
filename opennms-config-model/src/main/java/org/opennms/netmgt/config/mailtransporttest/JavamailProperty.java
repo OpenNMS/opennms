@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Use these name value pairs to configure freeform properties from
  * the JavaMail class.
@@ -43,31 +46,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="javamail-property")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class JavamailProperty implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_name.
-     */
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String m_name;
 
-    /**
-     * Field m_value.
-     */
-    @XmlAttribute(name="value")
+    @XmlAttribute(name="value", required=true)
     private String m_value;
 
     public JavamailProperty() {
-        super();
     }
 
     public JavamailProperty(final String name, final String value) {
-        if (name == null || value == null) {
-            throw new IllegalArgumentException("'name' and 'value' are required attributes!");
-        }
-        m_name = name;
-        m_value = value;
+        setName(name);
+        setValue(value);
     }
 
     public String getName() {
@@ -75,10 +69,7 @@ public class JavamailProperty implements Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required attribute!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getValue() {
@@ -86,10 +77,7 @@ public class JavamailProperty implements Serializable {
     }
 
     public void setValue(final String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("'value' is a required attribute!");
-        }
-        m_value = value;
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override

@@ -180,7 +180,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().isUseAuthentication();
+        return getSendTest().getUseAuthentication();
     }
 
     /**
@@ -215,7 +215,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().isDebug();
+        return getSendTest().getDebug();
     }
 
     /**
@@ -289,7 +289,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().getSendmailProtocol().isQuitWait();
+        return getSendTest().getSendmailProtocol().getQuitWait();
     }
 
     /**
@@ -314,7 +314,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().getSendmailProtocol().isSslEnable();
+        return getSendTest().getSendmailProtocol().getSslEnable();
     }
 
     /**
@@ -326,7 +326,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
-        return getSendTest().getSendmailProtocol().isStartTls();
+        return getSendTest().getSendmailProtocol().getStartTls();
     }
 
     /**
@@ -374,7 +374,7 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for sendmail parameters invalid due to no sendmail specification in config");
         }
-        return getSendTest().isUseJmta();
+        return getSendTest().getUseJmta();
     }
 
     /**
