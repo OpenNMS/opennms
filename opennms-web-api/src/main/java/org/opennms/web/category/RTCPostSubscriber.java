@@ -203,8 +203,6 @@ public class RTCPostSubscriber {
      *
      * @param viewName a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public static void subscribeAll(final String viewName) {

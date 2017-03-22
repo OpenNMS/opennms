@@ -37,7 +37,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.snmp.Range;
 
 /**
- * Use this class to compare two castor generated Range objects from the SnmpConfig class.
+ * Use this class to compare two JAXB-generated Range objects from the SnmpConfig class.
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */

@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * reportStore configured, Availability Calculator will marshal the
  * availability report to either a predefined file on disk, or a file on disk
  * with attendant report locator table entry. This table entry can be used
- * later to retrieve the ready run report. The castor generated object created needs a string
+ * later to retrieve the ready run report. The object needs a string
  * representation for the month in the year. This is unnecessarily complex for
  * the information that it conveys and should be changed.
  *
@@ -109,7 +109,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
     private String m_categoryName;
 
     /**
-     * Castor object that holds all the information required for the
+     * Object that holds all the information required for the
      * generating xml to be translated to the pdf.
      */
 
@@ -318,7 +318,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                     try {
                         Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
                         JaxbUtils.marshal(m_report, fileWriter);
-                        LOG.debug("The xml marshalled from the castor classes is saved in {}", outputFile.getAbsoluteFile());
+                        LOG.debug("The xml marshalled from the JAXB classes is saved in {}", outputFile.getAbsoluteFile());
                         fileWriter.close();
                     } catch (final Exception e) {
                         LOG.error("Failed to write marshal " + outputFile, e);
@@ -341,7 +341,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                     try {
                         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
                         JaxbUtils.marshal(m_report, writer);
-                        LOG.debug("The xml marshalled from the castor classes has been written to the output stream");
+                        LOG.debug("The xml marshalled from the JAXB classes has been written to the output stream");
                         writer.flush();
                     } catch (final Exception e) {
                         LOG.error("Failed to write to output.", e);

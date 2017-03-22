@@ -355,7 +355,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     /**
      * Enhancement: Allows specific or ranges to be merged into SNMP configuration
-     * with many other attributes.  Uses new classes the wrap Castor-generated code to
+     * with many other attributes.  Uses new classes the wrap JAXB-generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
      *

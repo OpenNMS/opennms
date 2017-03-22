@@ -97,8 +97,6 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
 
     /**
      * Private constructor
-     * @throws ValidationException 
-     * @throws MarshalException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read

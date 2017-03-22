@@ -54,7 +54,7 @@ import com.impossibl.postgres.jdbc.PGDataSource;
  * If it is not set then the factory tries to load the file from the class path.
  * 
  * We use DOM parsing to read the datasource-configuration 
- * since the castor XML classes are not in the Karaf classpath
+ * since the JAXB XML classes are not in the Karaf classpath
  * 
  <datasource-configuration>
   <jdbc-data-source name="opennms" 

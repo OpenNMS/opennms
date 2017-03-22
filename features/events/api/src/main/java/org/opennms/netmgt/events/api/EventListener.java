@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.events.api;
 
-// castor generated event class
 import org.opennms.netmgt.xml.event.Event;
 
 /**

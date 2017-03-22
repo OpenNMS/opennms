@@ -1003,8 +1003,6 @@ public final class BroadcastEventProcessor implements EventListener {
      *         or the outage name, if an applicable outage is found (indicating
      *         notification should not be sent).
      * @throws IOException if any.
-     * @throws ValidationException if any.
-     * @throws MarshalException if any.
      * @param nodeId a long.
      * @param theInterface a {@link java.lang.String} object.
      */

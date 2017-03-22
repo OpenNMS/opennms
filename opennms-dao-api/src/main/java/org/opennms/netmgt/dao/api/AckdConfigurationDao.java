@@ -111,7 +111,7 @@ public interface AckdConfigurationDao {
     boolean isReaderEnabled(String readerName);
     
     /**
-     * The underlying Castor based DAO abstraction in the default implementation doesn't provide access to the container so
+     * The underlying JAXB based DAO abstraction in the default implementation doesn't provide access to the container so
      * this method is defined so that access to the container doesn't have to be exposed and a reload can still be controlled
      * by the user.
      *

@@ -114,7 +114,7 @@ public class GroupFactory extends GroupManager {
     }
 
     /**
-     * Parses the groups.xml via the Castor classes
+     * Parses the groups.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.

@@ -71,8 +71,8 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
      */
     @Override
-    public JavamailConfiguration translateConfig(JavamailConfiguration castorConfig) {
-        return castorConfig;
+    public JavamailConfiguration translateConfig(JavamailConfiguration config) {
+        return config;
     }
 
     /* (non-Javadoc)

@@ -65,8 +65,6 @@ public class AmiPeerFactoryTest {
     }
 
     /**
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -96,8 +94,6 @@ public class AmiPeerFactoryTest {
      * This tests the merging of a new specific into a definition that already contains a specific
      * that is adjacent.  The two specifics should be converted to a single range in the definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -225,8 +221,6 @@ public class AmiPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -266,8 +260,6 @@ public class AmiPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -307,8 +299,6 @@ public class AmiPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -345,8 +335,6 @@ public class AmiPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
@@ -383,8 +371,6 @@ public class AmiPeerFactoryTest {
      * This tests the merging of a new definition that contains a range of IP addresses that overlaps
      * the end of one range and the beginning of another range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
