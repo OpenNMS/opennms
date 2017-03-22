@@ -100,8 +100,6 @@ public class SnmpAssetAdapterConfigFactory {
 	 *
 	 * @return The current factory instance.
 	 * @throws IOException 
-	 * @throws ValidationException 
-	 * @throws MarshalException 
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the factory has not yet been initialized.
 	 */

@@ -217,8 +217,8 @@ public class Category {
 
     /**
      * Package protected implementation method that exposes the internal
-     * representation (a Castor-generated object) of the data from the RTC,
-     * strictly for use in marshalling the data back to XML (via Castor). In
+     * representation (a JAXB-generated object) of the data from the RTC,
+     * strictly for use in marshalling the data back to XML (via JAXB). In
      * other words, this method is only for debugging purposes, please do not
      * use in normal situations. Instead please use the public methods of this
      * class.

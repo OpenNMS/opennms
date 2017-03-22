@@ -50,7 +50,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class GroupManagerGroupDao implements GroupDao, InitializingBean {
-    private static final GroupManagerCastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new GroupManagerCastorExceptionTranslator();
+    private static final GroupManagerConfigObjectExceptionTranslator CONFIG_OBJECT_EXCEPTION_TRANSLATOR = new GroupManagerConfigObjectExceptionTranslator();
     
     private GroupManager m_groupManager;
     
@@ -60,7 +60,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.deleteGroup(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting group '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("deleting group '" + name + "'", e);
         }
     }
 
@@ -70,7 +70,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.deleteRole(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting role '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("deleting role '" + name + "'", e);
         }
     }
 
@@ -80,7 +80,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.deleteUser(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting user '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("deleting user '" + name + "'", e);
         }
     }
 
@@ -96,7 +96,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getGroup(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
         }
     }
 
@@ -110,7 +110,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getGroupNames();
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group names", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group names", e);
         }
     }
 
@@ -124,7 +124,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getGroups();
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting groups", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting groups", e);
         }
     }
 
@@ -134,7 +134,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getRole(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting role '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting role '" + name + "'", e);
         }
     }
 
@@ -154,7 +154,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getRoleScheduleEntries(role, start, end);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting scheduled entries for role '" + role + "' between " + start + " and " + end, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting scheduled entries for role '" + role + "' between " + start + " and " + end, e);
         }
     }
 
@@ -168,7 +168,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getRoles();
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting roles", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting roles", e);
         }
     }
 
@@ -178,7 +178,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getSchedulesForRoleAt(role, time);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting schedules for role '" + role + "' at " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting schedules for role '" + role + "' at " + time, e);
         }
     }
 
@@ -188,7 +188,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.getUserSchedulesForRole(user, role);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting user schedules for user '" + user + "' for role '" + role + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting user schedules for user '" + user + "' for role '" + role + "'", e);
         }
     }
 
@@ -198,7 +198,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.groupNextOnDuty(group, time);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting next on duty time for group '" + group + "' after " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting next on duty time for group '" + group + "' after " + time, e);
         }
     }
 
@@ -208,7 +208,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.hasGroup(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
         }
     }
 
@@ -218,7 +218,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + group + "' to see if it is on duty at " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("getting group '" + group + "' to see if it is on duty at " + time, e);
         }
     }
 
@@ -228,7 +228,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.isUserScheduledForRole(user, role, time);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' is schedule for role '" + role + "' at " + time, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' is schedule for role '" + role + "' at " + time, e);
         }
     }
 
@@ -238,7 +238,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.renameGroup(oldName, newName);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
         }
     }
 
@@ -248,7 +248,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.renameUser(oldName, newName);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("renaming user from '" + oldName + "' to '" + newName + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("renaming user from '" + oldName + "' to '" + newName + "'", e);
         }
     }
 
@@ -258,7 +258,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.saveGroup(name, details);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
         }
     }
 
@@ -270,7 +270,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.saveGroups();
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving groups", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving groups", e);
         }
     }
 
@@ -280,7 +280,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             m_groupManager.saveRole(name);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving role '" + name + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving role '" + name + "'", e);
         }
     }
 
@@ -296,7 +296,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         try {
             return m_groupManager.userHasRole(user, role);
         } catch (Throwable e) {
-            throw CASTOR_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' has role '" + role + "'", e);
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' has role '" + role + "'", e);
         }
     }
     
@@ -326,7 +326,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         m_groupManager = groupManager;
     }
     
-    public static class GroupManagerCastorExceptionTranslator extends MarshallingExceptionTranslator {
+    public static class GroupManagerConfigObjectExceptionTranslator extends MarshallingExceptionTranslator {
         public DataAccessException translate(String task, Throwable e) {
             return new ConfigObjectRetrievalFailureException("General error while " + task + ": " + e, e);
         }

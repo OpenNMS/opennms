@@ -193,7 +193,6 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
-        setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
         // One of these is probably unused...

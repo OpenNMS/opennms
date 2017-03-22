@@ -32,12 +32,6 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 public class ConfigObjectRetrievalFailureException extends ObjectRetrievalFailureException {
     private static final long serialVersionUID = -5906087948002738350L;
 
-    /**
-     * <p>Constructor for CastorObjectRetrievalFailureException.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param throwable a {@link java.lang.Throwable} object.
-     */
     public ConfigObjectRetrievalFailureException(String message, Throwable throwable) {
         super(message, throwable);
     }

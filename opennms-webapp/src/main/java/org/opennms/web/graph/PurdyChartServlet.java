@@ -43,8 +43,6 @@ import org.slf4j.LoggerFactory;
  * <p>PurdyChartServlet class.</p>
  *
  * @author david
- * @version $Id: $
- * @since 1.8.1
  */
 public class PurdyChartServlet extends HttpServlet {
 	
@@ -66,10 +64,6 @@ public class PurdyChartServlet extends HttpServlet {
         try {
             ChartConfigFactory.init();
             DataSourceFactory.init();
-        } catch (MarshalException e) {
-            log().error("init: Error marshalling chart-configuration.xml: ",e);
-        } catch (ValidationException e) {
-            log().error("init: Error validating chart-configuration.xml: ",e);
         } catch (IOException e) {
             log().error("init: Error reading chart-configuration.xml: ",e);
         } catch (ClassNotFoundException e) {

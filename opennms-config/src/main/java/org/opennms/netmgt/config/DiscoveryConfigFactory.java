@@ -127,7 +127,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
     /**
      * Reload the config from the default config file.
-     * @throws MarshalException, ValidationException, IOException 
+     * @throws IOException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded

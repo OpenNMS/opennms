@@ -211,7 +211,7 @@ ueiList); </FONT>
 <P STYLE="margin-bottom: 0in"><FONT SIZE=2>The events which qosd
 responds to are determined by the ueiList object which is configured
 by the QosDConfigFactory using and the QoSDConfiguration.xml file in
-the OpenNMS /etc directory. Castor is used to un-marshal the XML into
+the OpenNMS /etc directory. JAXB is used to un-marshal the XML into
 the ueiList according to the QoSDConfiguration.xsd file. </FONT>
 </P>
 <P STYLE="margin-bottom: 0in"><FONT SIZE=2>When an event which qosd
@@ -366,25 +366,6 @@ will be picked up on the next alarm retrieval. </FONT>
 			<TD WIDTH=43%>
 				<P ALIGN=LEFT><FONT SIZE=2>Classes for reading in configuration
 				of QoSD</FONT></P>
-			</TD>
-		</TR>
-		<TR VALIGN=TOP>
-			<TD WIDTH=29%>
-				<P STYLE="margin-bottom: 0in"><FONT SIZE=2>./src/main/castor</FONT></P>
-				<P ALIGN=LEFT><BR>
-				</P>
-			</TD>
-			<TD WIDTH=29%>
-				<P ALIGN=LEFT><FONT SIZE=2>castorbuilder.properties
-				QoSDConfiguration.xsd</FONT></P>
-			</TD>
-			<TD WIDTH=43%>
-				<P ALIGN=LEFT STYLE="margin-bottom: 0in"><FONT SIZE=2>Configuration
-				for Castor XML marshalling framework. </FONT>
-				</P>
-				<P ALIGN=LEFT><FONT SIZE=2>Defines the format and contents of the
-				QoSD-configuration.xml file which sets up which OpenNMS events
-				the qosd daemon listens for</FONT></P>
 			</TD>
 		</TR>
 		<TR VALIGN=TOP>
