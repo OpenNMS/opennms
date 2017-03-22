@@ -191,57 +191,50 @@
       <column name="is_nonconcurrent" type="boolean"/>
     </addColumn>
     <sql>UPDATE qrtz_fired_triggers SET is_nonconcurrent = is_stateful;</sql>
-    <!--
-    <addNotNullConstraint columnName="is_nonconcurrent" tableName="qrtz_fired_triggers"/>
-    <addColumn tableName="qrtz_fired_triggers">
-      <column name="is_update_data" type="boolean"/>
-    </addColumn>
-    <sql>UPDATE qrtz_fired_triggers SET is_update_data = is_stateful;</sql>
-    <addNotNullConstraint columnName="is_update_data" tableName="qrtz_fired_triggers"/>
-    -->
     <dropColumn columnName="is_stateful" tableName="qrtz_fired_triggers"/>
 
 
-    <!-- Add new 'sched_name' column to all tables -->
+    <!-- Add new 'sched_name' column to all tables, make its value match our scheduler name -->
+    <!-- See opennms-webapp/src/main/resources/org/opennms/web/svclayer/applicationContext-svclayer.xml -->
 
     <addColumn tableName="qrtz_blob_triggers">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_blob_triggers" columnName="sched_name"/>
     <addColumn tableName="qrtz_calendars">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_calendars" columnName="sched_name"/>
     <addColumn tableName="qrtz_cron_triggers">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_cron_triggers" columnName="sched_name"/>
     <addColumn tableName="qrtz_fired_triggers">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_fired_triggers" columnName="sched_name"/>
     <addColumn tableName="qrtz_job_details">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_job_details" columnName="sched_name"/>
     <addColumn tableName="qrtz_locks">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_locks" columnName="sched_name"/>
     <addColumn tableName="qrtz_paused_trigger_grps">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_paused_trigger_grps" columnName="sched_name"/>
     <addColumn tableName="qrtz_scheduler_state">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_scheduler_state" columnName="sched_name"/>
     <addColumn tableName="qrtz_simple_triggers">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_simple_triggers" columnName="sched_name"/>
     <addColumn tableName="qrtz_triggers">
-      <column name="sched_name" type="varchar(120)" value="TestScheduler"/>
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
     </addColumn>
     <addNotNullConstraint tableName="qrtz_triggers" columnName="sched_name"/>
 
