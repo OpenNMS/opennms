@@ -81,7 +81,7 @@ public class FilterParser {
 			String[] values = filterValue.split(",");
 			for(String value:values){
 				if("".equals(value))
-					throw new  IllegalArgumentException("Cannot parse filter. cannot have empty value '"+filterValue+ "' in expression:"+s);
+					throw new  IllegalArgumentException("Cannot parse filter. Cannot have empty value '"+value+ "' in expression:"+s);
 				filterStringMap.get(nodeParamLabel).add(value);
 			}
 		}

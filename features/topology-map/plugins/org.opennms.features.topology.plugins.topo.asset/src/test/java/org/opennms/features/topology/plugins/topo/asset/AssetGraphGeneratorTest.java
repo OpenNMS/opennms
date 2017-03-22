@@ -2,6 +2,7 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
+import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
@@ -62,6 +64,9 @@ public class AssetGraphGeneratorTest {
 		Assert.assertEquals(9, generatedGraphML.getGraph(config.getProviderId() + ":" + NodeParamLabels.ASSET_BUILDING).getNodes().size());
 		Assert.assertEquals(17, generatedGraphML.getGraph(config.getProviderId() + ":" + NodeParamLabels.ASSET_RACK).getNodes().size());
 
+		// for debug generate file
+		GraphMLWriter.write(generatedGraphML, new File("target/verifyGenerationWithLayersPopulatedGenerated.graphml"));
+		
 		// verify total graph
 		GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream(GRAPHML_TEST_TOPOLOGY_FILE_NAME));
 		assertEquals(expectedGraphML, generatedGraphML);
@@ -89,6 +94,10 @@ public class AssetGraphGeneratorTest {
 		config.setFilters(new ArrayList<>()); // empty filters
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
 		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-simple.xml"));
+		
+		// for debug generate file
+		GraphMLWriter.write(generatedGraphML, new File("target/verifySimpleGraphGenerationGenerated.graphml"));
+		
 		Assert.assertEquals(generatedGraphML, expectedGraphML);
 	}
 
@@ -109,6 +118,10 @@ public class AssetGraphGeneratorTest {
 		config.setLayerHierarchies(Lists.newArrayList(NodeParamLabels.ASSET_REGION, NodeParamLabels.ASSET_BUILDING, NodeParamLabels.NODE_CATEGORIES));
 		config.setFilters(new ArrayList<>()); // empty filters
 		final GraphML generatedGraphML = new AssetGraphGenerator(nodeProvider).generateGraphs(config);
+		
+		// for debug generate file
+		GraphMLWriter.write(generatedGraphML, new File("target/verifyGraphGenerationWithCategoriesGenerated.graphml"));
+		
 		final GraphML expectedGraphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph-categories.xml"));
 		Assert.assertEquals(expectedGraphML, generatedGraphML);
 	}
