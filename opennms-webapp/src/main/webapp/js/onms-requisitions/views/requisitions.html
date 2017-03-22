@@ -87,46 +87,46 @@
                 <button type="button" class="btn btn-default btn-xs"
                         uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
                         ng-click="edit(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-pencil"> Edit</span>
+                  <span class="glyphicon glyphicon-pencil"></span>
                 </button>
                 <button type="button" class="btn btn-default btn-xs"
                         uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                         ng-disabled="timingStatus.isRunning"
                         ng-click="synchronize(requisition)">
-                  <span class="glyphicon glyphicon-transfer"> Synchronize</span>
+                  <span class="glyphicon glyphicon-transfer"></span>
                 </button>
 
                 <div class="btn-group" uib-dropdown dropdown-append-to-body>
                   <button id="btn-append-to-to-body" uib-tooltip="More actions for requisition {{requisition.foreignSource}}" type="button" class="btn btn-default btn-xs" uib-dropdown-toggle>
-                    <span class="glyphicon glyphicon-option-horizontal"></span> More actions... <span class="caret"></span>
+                    <span class="fa fa-ellipsis-h"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">
-                    <li role="menuitem" ><a href=""
+                    <li role="menuitem" ><a style="padding:1px" href=""
                                            uib-tooltip="Refresh deployed stats for the {{requisition.foreignSource}} Requisition"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="refresh(requisition)">
-                      <span class="glyphicon glyphicon-refresh"/> Refresh deployed stats</a></li>
-                    <li role="menuitem"><a href=""
+                      <span class="glyphicon glyphicon-refresh"/>&nbsp;&nbsp;Refresh deployed stats</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
                                            uib-tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
                                            ng-click="editForeignSource(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-edit"/> Edit detectors &amp; policies</a></li>
-                    <li role="menuitem"><a href=""
+                      <span class="glyphicon glyphicon-edit"/>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
                                            uib-tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-random"/> Clone detectors &amp; policies</a></li>
+                      <span class="glyphicon glyphicon-random"/>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
                     <li class="divider"></li>
-                    <li role="menuitem"><a href=""
+                    <li role="menuitem"><a style="padding:1px" href=""
                                            uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-remove-circle"/> Remove all nodes</a></li>
-                    <li role="menuitem"><a href=""
+                      <span class="glyphicon glyphicon-remove-circle"/>&nbsp;&nbsp;Remove all nodes</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
                                            ng-disabled="requisition.nodesInDatabase > 0"
                                            uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="delete(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-trash"/> Delete requisition</a></li>
+                      <span class="glyphicon glyphicon-trash"/>&nbsp;&nbsp;Delete requisition</a></li>
                   </ul>
                 </div>
               </span>
