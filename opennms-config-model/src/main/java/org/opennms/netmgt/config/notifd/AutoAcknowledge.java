@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "auto-acknowledge")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -70,7 +71,7 @@ public class AutoAcknowledge implements java.io.Serializable {
     }
 
     public void setResolutionPrefix(final String resolutionPrefix) {
-        m_resolutionPrefix = resolutionPrefix;
+        m_resolutionPrefix = ConfigUtils.normalizeString(resolutionPrefix);
     }
 
     public String getUei() {
@@ -78,10 +79,7 @@ public class AutoAcknowledge implements java.io.Serializable {
     }
 
     public void setUei(final String uei) {
-        if (uei == null) {
-            throw new IllegalArgumentException("UEI is a required field!");
-        }
-        m_uei = uei;
+        m_uei = ConfigUtils.assertNotEmpty(uei, "uei");
     }
 
     public String getAcknowledge() {
@@ -89,14 +87,11 @@ public class AutoAcknowledge implements java.io.Serializable {
     }
 
     public void setAcknowledge(final String acknowledge) {
-        if (acknowledge == null) {
-            throw new IllegalArgumentException("'acknowledge' is a required field!");
-        }
-        m_acknowledge = acknowledge;
+        m_acknowledge = ConfigUtils.assertNotEmpty(acknowledge, "acknowledge");
     }
 
     public Boolean getNotify() {
-        return m_notify != null ? m_notify : Boolean.valueOf("true");
+        return m_notify != null ? m_notify : Boolean.TRUE;
     }
 
     public void setNotify(final Boolean notify) {
@@ -108,8 +103,9 @@ public class AutoAcknowledge implements java.io.Serializable {
     }
 
     public void setMatches(final List<String> matches) {
+        if (matches == m_matches) return;
         m_matches.clear();
-        m_matches.addAll(matches);
+        if (matches != null) m_matches.addAll(matches);
     }
 
     public void addMatch(final String match) {
@@ -118,12 +114,11 @@ public class AutoAcknowledge implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_resolutionPrefix, 
-            m_uei, 
-            m_acknowledge, 
-            m_notify, 
-            m_matches);
+        return Objects.hash(m_resolutionPrefix, 
+                            m_uei, 
+                            m_acknowledge, 
+                            m_notify, 
+                            m_matches);
     }
 
     @Override
@@ -131,14 +126,14 @@ public class AutoAcknowledge implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof AutoAcknowledge) {
             final AutoAcknowledge that = (AutoAcknowledge)obj;
             return Objects.equals(this.m_resolutionPrefix, that.m_resolutionPrefix)
-                && Objects.equals(this.m_uei, that.m_uei)
-                && Objects.equals(this.m_acknowledge, that.m_acknowledge)
-                && Objects.equals(this.m_notify, that.m_notify)
-                && Objects.equals(this.m_matches, that.m_matches);
+                    && Objects.equals(this.m_uei, that.m_uei)
+                    && Objects.equals(this.m_acknowledge, that.m_acknowledge)
+                    && Objects.equals(this.m_notify, that.m_notify)
+                    && Objects.equals(this.m_matches, that.m_matches);
         }
         return false;
     }

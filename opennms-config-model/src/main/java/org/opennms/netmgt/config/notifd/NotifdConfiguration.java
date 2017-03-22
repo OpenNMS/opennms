@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Top-level element for the notifd-configuration.xml
@@ -117,10 +118,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setStatus(final String status) {
-        if (status == null) {
-            throw new IllegalArgumentException("'status' is a required attribute!");
-        }
-        m_status = status;
+        m_status = ConfigUtils.assertNotEmpty(status, "status");
     }
 
     public String getPagesSent() {
@@ -128,7 +126,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setPagesSent(final String pagesSent) {
-        m_pagesSent = pagesSent;
+        m_pagesSent = ConfigUtils.normalizeString(pagesSent);
     }
 
     public String getNextNotifId() {
@@ -136,7 +134,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setNextNotifId(final String nextNotifId) {
-        m_nextNotifId = nextNotifId;
+        m_nextNotifId = ConfigUtils.normalizeString(nextNotifId);
     }
 
     public String getNextUserNotifId() {
@@ -144,7 +142,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setNextUserNotifId(final String nextUserNotifId) {
-        m_nextUserNotifId = nextUserNotifId;
+        m_nextUserNotifId = ConfigUtils.normalizeString(nextUserNotifId);
     }
 
     public String getNextGroupId() {
@@ -152,7 +150,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setNextGroupId(final String nextGroupId) {
-        m_nextGroupId = nextGroupId;
+        m_nextGroupId = ConfigUtils.normalizeString(nextGroupId);
     }
 
     public String getServiceIdSql() {
@@ -160,7 +158,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setServiceIdSql(final String serviceIdSql) {
-        m_serviceIdSql = serviceIdSql;
+        m_serviceIdSql = ConfigUtils.normalizeString(serviceIdSql);
     }
 
     public String getOutstandingNoticesSql() {
@@ -168,7 +166,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setOutstandingNoticesSql(final String outstandingNoticesSql) {
-        m_outstandingNoticesSql = outstandingNoticesSql;
+        m_outstandingNoticesSql = ConfigUtils.normalizeString(outstandingNoticesSql);
     }
 
     public String getAcknowledgeIdSql() {
@@ -176,7 +174,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setAcknowledgeIdSql(final String acknowledgeIdSql) {
-        m_acknowledgeIdSql = acknowledgeIdSql;
+        m_acknowledgeIdSql = ConfigUtils.normalizeString(acknowledgeIdSql);
     }
 
     public String getAcknowledgeUpdateSql() {
@@ -184,7 +182,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setAcknowledgeUpdateSql(final String acknowledgeUpdateSql) {
-        m_acknowledgeUpdateSql = acknowledgeUpdateSql;
+        m_acknowledgeUpdateSql = ConfigUtils.normalizeString(acknowledgeUpdateSql);
     }
 
     public Boolean getMatchAll() {
@@ -192,10 +190,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setMatchAll(final Boolean matchAll) {
-        if (matchAll == null) {
-            throw new IllegalArgumentException("match-all is a required field!");
-        }
-        m_matchAll = matchAll;
+        m_matchAll = ConfigUtils.assertNotNull(matchAll, "match-all");
     }
 
     public String getEmailAddressCommand() {
@@ -203,7 +198,7 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setEmailAddressCommand(final String emailAddressCommand) {
-        m_emailAddressCommand = emailAddressCommand;
+        m_emailAddressCommand = ConfigUtils.normalizeString(emailAddressCommand);
     }
 
     public Boolean getNumericSkipResolutionPrefix() {
@@ -240,8 +235,9 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setOutageCalendars(final List<String> calendars) {
+        if (calendars == m_outageCalendars) return;
         m_outageCalendars.clear();
-        m_outageCalendars.addAll(calendars);
+        if (calendars != null) m_outageCalendars.addAll(calendars);
     }
 
     public void addOutageCalendar(final String calendar) {
@@ -257,8 +253,9 @@ public class NotifdConfiguration implements Serializable {
     }
 
     public void setQueues(final List<Queue> queues) {
+        if (queues == m_queues) return;
         m_queues.clear();
-        m_queues.addAll(queues);
+        if (queues != null) m_queues.addAll(queues);
     }
 
     public void addQueue(final Queue queue) {
@@ -267,8 +264,7 @@ public class NotifdConfiguration implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                            m_status, 
+        return Objects.hash(m_status, 
                             m_pagesSent, 
                             m_nextNotifId, 
                             m_nextUserNotifId, 

@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "handler-class")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -58,10 +59,7 @@ public class HandlerClass implements java.io.Serializable {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("'name' is a required element!");
-        }
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public List<InitParams> getInitParams() {
@@ -69,15 +67,14 @@ public class HandlerClass implements java.io.Serializable {
     }
 
     public void setInitParams(final List<InitParams> params) {
+        if (params == m_initParams) return;
         m_initParams.clear();
-        m_initParams.addAll(params);
+        if (params != null) m_initParams.addAll(params);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_name, 
-            m_initParams);
+        return Objects.hash(m_name, m_initParams);
     }
 
     @Override
@@ -85,11 +82,11 @@ public class HandlerClass implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof HandlerClass) {
             final HandlerClass that = (HandlerClass)obj;
             return Objects.equals(this.m_name, that.m_name)
-                && Objects.equals(this.m_initParams, that.m_initParams);
+                    && Objects.equals(this.m_initParams, that.m_initParams);
         }
         return false;
     }

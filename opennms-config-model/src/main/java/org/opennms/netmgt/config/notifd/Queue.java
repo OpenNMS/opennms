@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "queue")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -61,10 +62,7 @@ public class Queue implements java.io.Serializable {
     }
 
     public void setQueueId(final String queueId) {
-        if (queueId == null) {
-            throw new IllegalArgumentException("Queue ID is a required field!");
-        }
-        m_queueId = queueId;
+        m_queueId = ConfigUtils.assertNotEmpty(queueId, "queue-id");
     }
 
     public String getInterval() {
@@ -72,10 +70,7 @@ public class Queue implements java.io.Serializable {
     }
 
     public void setInterval(final String interval) {
-        if (interval == null) {
-            throw new IllegalArgumentException("Interval is a required field!");
-        }
-        m_interval = interval;
+        m_interval = ConfigUtils.assertNotEmpty(interval, "interval");
     }
 
     public HandlerClass getHandlerClass() {
@@ -83,16 +78,12 @@ public class Queue implements java.io.Serializable {
     }
 
     public void setHandlerClass(final HandlerClass handlerClass) {
-        if (handlerClass == null) {
-            throw new IllegalArgumentException("HandlerClass is a required field!");
-        }
-        m_handlerClass = handlerClass;
+        m_handlerClass = ConfigUtils.assertNotNull(handlerClass, "handler-class");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                            m_queueId, 
+        return Objects.hash(m_queueId, 
                             m_interval, 
                             m_handlerClass);
     }

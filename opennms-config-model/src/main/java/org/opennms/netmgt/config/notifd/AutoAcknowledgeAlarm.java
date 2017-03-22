@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "auto-acknowledge-alarm")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -64,11 +65,11 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
     }
 
     public void setResolutionPrefix(final String resolutionPrefix) {
-        m_resolutionPrefix = resolutionPrefix;
+        m_resolutionPrefix = ConfigUtils.normalizeString(resolutionPrefix);
     }
 
     public Boolean getNotify() {
-        return m_notify != null ? m_notify : Boolean.valueOf("true");
+        return m_notify != null ? m_notify : Boolean.TRUE;
     }
 
     public void setNotify(final Boolean notify) {
@@ -80,8 +81,9 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
     }
 
     public void setUei(final List<String> ueis) {
+        if (ueis == m_ueis) return;
         m_ueis.clear();
-        m_ueis.addAll(ueis);
+        if (ueis != null) m_ueis.addAll(ueis);
     }
 
     public void addUei(final String uei) {
@@ -93,22 +95,21 @@ public class AutoAcknowledgeAlarm implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof AutoAcknowledgeAlarm) {
             final AutoAcknowledgeAlarm that = (AutoAcknowledgeAlarm)obj;
             return Objects.equals(this.m_resolutionPrefix, that.m_resolutionPrefix)
-                && Objects.equals(this.m_notify, that.m_notify)
-                && Objects.equals(this.m_ueis, that.m_ueis);
+                    && Objects.equals(this.m_notify, that.m_notify)
+                    && Objects.equals(this.m_ueis, that.m_ueis);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_resolutionPrefix, 
-            m_notify, 
-            m_ueis);
+        return Objects.hash(m_resolutionPrefix, 
+                            m_notify, 
+                            m_ueis);
     }
 
 }

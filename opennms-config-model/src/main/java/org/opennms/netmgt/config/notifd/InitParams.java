@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "init-params")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -58,10 +59,7 @@ public class InitParams implements java.io.Serializable {
     }
 
     public void setParamName(final String paramName) {
-        if (paramName == null) {
-            throw new IllegalArgumentException("paramName is a required field!");
-        }
-        m_paramName = paramName;
+        m_paramName = ConfigUtils.assertNotEmpty(paramName, "param-name");
     }
 
     public String getParamValue() {
@@ -69,14 +67,12 @@ public class InitParams implements java.io.Serializable {
     }
 
     public void setParamValue(final String paramValue) {
-        m_paramValue = paramValue;
+        m_paramValue = ConfigUtils.assertNotEmpty(paramValue, "param-value");
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_paramName, 
-            m_paramValue);
+        return Objects.hash(m_paramName, m_paramValue);
     }
 
     @Override
@@ -84,11 +80,11 @@ public class InitParams implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof InitParams) {
             final InitParams that = (InitParams)obj;
             return Objects.equals(this.m_paramName, that.m_paramName)
-                && Objects.equals(this.m_paramValue, that.m_paramValue);
+                    && Objects.equals(this.m_paramValue, that.m_paramValue);
         }
         return false;
     }
