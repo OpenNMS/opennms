@@ -68,4 +68,14 @@ public abstract class ConfigUtils {
         }
         return value;
     }
+
+    public static <K,T extends Collection<K>> T assertOnlyContains(final T value, final Collection<K> in, final String name) {
+        if (value == null) return value;
+        for (final K entry : value) {
+            if (!in.contains(entry)) {
+                throw new IllegalStateException("'name' cannot contain the value '" + entry.toString() + "'! Must be one of: " + in.toString());
+            }
+        }
+        return value;
+    }
 }
