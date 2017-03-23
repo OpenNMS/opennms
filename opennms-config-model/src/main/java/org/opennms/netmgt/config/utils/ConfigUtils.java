@@ -30,7 +30,12 @@ package org.opennms.netmgt.config.utils;
 
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class ConfigUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigUtils.class);
+
     public static <T> T assertNotNull(final T value, final String name) throws IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException("'" + name + "' cannot be null!");
@@ -44,7 +49,7 @@ public abstract class ConfigUtils {
         assertNotNull(value, name);
         return check;
     }
-    
+
     public static String normalizeString(final String s) {
         if ("".equals(s)) return null;
         return s;
@@ -69,12 +74,22 @@ public abstract class ConfigUtils {
         return value;
     }
 
-    public static <K,T extends Collection<K>> T assertOnlyContains(final T value, final Collection<K> in, final String name) {
+    public static <K,T> T assertOnlyContains(final T value, final Collection<K> in, final String name) {
         if (value == null) return value;
-        for (final K entry : value) {
-            if (!in.contains(entry)) {
-                throw new IllegalStateException("'name' cannot contain the value '" + entry.toString() + "'! Must be one of: " + in.toString());
+        if (value instanceof String) {
+            if (!in.contains(value)) {
+                throw new IllegalStateException("'" + name + "': found '" + value.toString() + "' but expected one of: " + in.toString());
             }
+        } else if (Collection.class.isAssignableFrom(value.getClass())) {
+            @SuppressWarnings("unchecked")
+            final Collection<K> col = (Collection<K>)value;
+            for (final K entry : col) {
+                if (!in.contains(entry)) {
+                    throw new IllegalStateException("'name': found '" + entry.toString() + "' but expected one of: " + in.toString());
+                }
+            }
+        } else {
+            LOG.warn("Unsure how to deal with value type {}", value.getClass());
         }
         return value;
     }

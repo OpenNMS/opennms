@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.provisiond;
 
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -59,6 +61,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("provisiond-configuration.xsd")
 public class RequisitionDef implements Serializable {
+    private static final List<String> RESCAN_EXISTING_OPTIONS = Arrays.asList("true", "false", "dbonly");
+
     private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_RESCAN_EXISTING = "true";
@@ -96,10 +100,7 @@ public class RequisitionDef implements Serializable {
     }
 
     public void setRescanExisting(final String rescanExisting) {
-        if (!isRescanExistingValid(rescanExisting)) {
-            throw new IllegalArgumentException("'rescan-existing' must be null or one of 'true', 'false', or 'dbonly'");
-        }
-        m_rescanExisting = ConfigUtils.normalizeString(rescanExisting);
+        m_rescanExisting = ConfigUtils.assertOnlyContains(ConfigUtils.normalizeString(rescanExisting), RESCAN_EXISTING_OPTIONS, "rescan-existing");
     }
 
     public Optional<String> getCronSchedule() {
@@ -132,11 +133,6 @@ public class RequisitionDef implements Serializable {
                 && Objects.equals(this.m_cronSchedule, that.m_cronSchedule);
         }
         return false;
-    }
-
-    private boolean isRescanExistingValid(final String rescanExisting) {
-        if (rescanExisting == null) return true;
-        return ("true".equalsIgnoreCase(rescanExisting) || "false".equalsIgnoreCase(rescanExisting) || "dbonly".equalsIgnoreCase(rescanExisting));
     }
 
 }

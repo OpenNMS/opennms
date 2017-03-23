@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.poller.outages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +46,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class BasicSchedule implements java.io.Serializable {
+    private static final List<String> VALID_TYPES = Arrays.asList("specific", "daily", "weekly", "monthly");
+
     private static final long serialVersionUID = 2L;
 
     /**
@@ -82,10 +85,7 @@ public class BasicSchedule implements java.io.Serializable {
     }
 
     public void setType(final String type) {
-        if (!"specific".equals(type) && !"daily".equals(type) && !"weekly".equals(type) && !"monthly".equals(type)) {
-            throw new IllegalArgumentException("'type' is a required field and must be one of 'specific', 'daily', 'weekly', or 'monthly'.");
-        }
-        m_type = type;
+        m_type = ConfigUtils.assertOnlyContains(ConfigUtils.assertNotEmpty(type, "type"), VALID_TYPES, "type");
     }
 
     public List<Time> getTimes() {
