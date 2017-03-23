@@ -95,23 +95,8 @@ public class AssetGraphGenerator {
 		// Apply additional filters
 		final Map<String, Filter> filterMap = new FilterParser().parse(config.getFilters());
 		final List<LayerDefinition> layersToFilter = layerDefinitionRepository.getDefinitions(filterMap.keySet());
-		layersToFilter.stream()
-				.filter(layerToFilter -> filterMap.get(layerToFilter.getKey()) != null)
-				.forEach(
-					layerToFilter -> {
-						final List<OnmsNode> filteredNodes = nodes.stream().filter(n -> {
-							ItemProvider itemProvider = layerToFilter.getLayer().getItemProvider();
-							Filter filter = filterMap.get(layerToFilter.getKey());
-							return filter.apply(itemProvider.getItem(n));
-						}).collect(Collectors.toList());
-						if (!filteredNodes.isEmpty()) {
-							final Layer layer = layerToFilter.getLayer();
-							LOG.debug("Found nodes to remove due to filter settings. Removing nodes {}",
-									filteredNodes.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
-							nodes.removeAll(filteredNodes);
-						}
-					});
-
+		applyFilters(nodes,filterMap,layerDefinitionRepository);
+		
 		// Start generating the hierarchy
 		// Overall graphml object
 		final GraphML graphML = new GraphML();
@@ -172,6 +157,32 @@ public class AssetGraphGenerator {
 			});
 		}
 		return graphML;
+	}
+	
+	/**
+	 * Applies filters defined in filterMap to the supplied list of OpenNMS nodes
+	 * @param nodes OpenNMS node list which will be modified by filter
+	 * @param filterMap
+	 * @param layerDefinitionRepository
+	 */
+	public static void applyFilters(List<OnmsNode> nodes, Map<String, Filter> filterMap,LayerDefinitionRepository layerDefinitionRepository){
+		final List<LayerDefinition> layersToFilter = layerDefinitionRepository.getDefinitions(filterMap.keySet());
+		layersToFilter.stream()
+				.filter(layerToFilter -> filterMap.get(layerToFilter.getKey()) != null)
+				.forEach(
+					layerToFilter -> {
+						final List<OnmsNode> filteredNodes = nodes.stream().filter(n -> {
+							ItemProvider itemProvider = layerToFilter.getLayer().getItemProvider();
+							Filter filter = filterMap.get(layerToFilter.getKey());
+							return filter.apply(itemProvider.getItem(n));
+						}).collect(Collectors.toList());
+						if (!filteredNodes.isEmpty()) {
+							final Layer layer = layerToFilter.getLayer();
+							LOG.debug("Found nodes to remove due to filter settings. Removing nodes {}",
+									filteredNodes.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
+							nodes.removeAll(filteredNodes);
+						}
+					});
 	}
 
 	/**

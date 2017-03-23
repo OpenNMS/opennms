@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphGenerator;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
+import org.opennms.features.topology.plugins.topo.asset.NodeProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.ItemProvider;
 import org.opennms.features.topology.plugins.topo.asset.layers.Layer;
 import org.opennms.features.topology.plugins.topo.asset.layers.LayerDefinition;
@@ -362,25 +363,9 @@ public class FilterParserTest {
 	public List<OnmsNode> testFilterCode(List<OnmsNode> nodeList, Map<String, Filter> filterMap) {
 		final LayerDefinitionRepository layerDefinitionRepository = new LayerDefinitionRepository();
 		final List<OnmsNode> nodes = new ArrayList<OnmsNode>(nodeList);
+		
+		AssetGraphGenerator.applyFilters(nodes, filterMap,layerDefinitionRepository);
 
-		// Apply additional filters
-		final List<LayerDefinition> layersToFilter = layerDefinitionRepository.getDefinitions(filterMap.keySet());
-		layersToFilter.stream()
-		.filter(layerToFilter -> filterMap.get(layerToFilter.getKey()) != null)
-		.forEach(
-				layerToFilter -> {
-					final List<OnmsNode> filteredNodes = nodes.stream().filter(n -> {
-						ItemProvider itemProvider = layerToFilter.getLayer().getItemProvider();
-						Filter filter = filterMap.get(layerToFilter.getKey());
-						return filter.apply(itemProvider.getItem(n));
-					}).collect(Collectors.toList());
-					if (!filteredNodes.isEmpty()) {
-						final Layer layer = layerToFilter.getLayer();
-						LOG.debug("Found nodes to remove due to filter settings. Removing nodes {}",
-								filteredNodes.stream().map(n -> String.format("(id: %s, label: %s)", n.getId(), n.getLabel())).collect(Collectors.toList()));
-						nodes.removeAll(filteredNodes);
-					}
-				});
 		return nodes;
 	}
 
