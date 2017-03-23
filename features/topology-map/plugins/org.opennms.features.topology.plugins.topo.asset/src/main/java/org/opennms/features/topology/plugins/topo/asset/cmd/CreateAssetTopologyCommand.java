@@ -58,7 +58,8 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	@Option(name = "-f", aliases =  "--filter", description = "Optional node filter", required = false, multiValued = false)
 	String filter;
 
-	@Option(name = "-l", aliases = "--label", description = "Asset Topology label (shows in topology menu)", required = false, multiValued = false)
+	@Option(name = "-l", aliases = "--label", description = "Asset Topology label which shows in topology menu"
+			+ " (if --providerId is specified it is used instead of the default label when --label is not set)", required = false, multiValued = false)
 	String label;
 
 	@Option(name = "-b", aliases ="--breadcrumbStrategy", description = "Bread Crumb Strategy", required = false, multiValued = false)

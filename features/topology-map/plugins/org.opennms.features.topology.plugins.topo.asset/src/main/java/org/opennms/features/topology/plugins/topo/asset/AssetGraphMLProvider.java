@@ -79,7 +79,7 @@ public class AssetGraphMLProvider implements EventListener {
 		Objects.requireNonNull(config);
 		try {
 			LOG.debug("Creating Asset Topology providerId: {}, label: {}, config: {}", config.getProviderId(), config.getLabel(), config);
-			if (graphmlRepository.exists("asset")) {
+			if (graphmlRepository.exists(config.getProviderId())) {
 				throw new IllegalStateException(String.format("Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
 			}
 			final GraphML graphML = transactionOperations.execute(status -> new AssetGraphGenerator(nodeProvider).generateGraphs(config));

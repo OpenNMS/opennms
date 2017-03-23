@@ -86,6 +86,9 @@ public class GeneratorConfigBuilder {
         }
         if (providerId != null) {
             config.setProviderId(providerId);
+            // this avoids using a duplicate default label by mistake
+            // if a label is not provided with new providerId
+            if(label ==null) config.setLabel(providerId);
         }
         if (preferredLayout != null) {
             config.setPreferredLayout(preferredLayout);
