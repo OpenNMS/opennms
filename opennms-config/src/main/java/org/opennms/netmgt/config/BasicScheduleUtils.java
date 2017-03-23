@@ -588,8 +588,8 @@ public abstract class BasicScheduleUtils {
 		basicSchedule.setName(schedule.getName());
 		basicSchedule.setType(schedule.getType());
 		final Collection<Time> times = new ArrayList<Time>();
-		for (final org.opennms.netmgt.config.rancid.adapter.Time time : schedule.getTimeCollection()) {
-			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+		for (final org.opennms.netmgt.config.rancid.adapter.Time time : schedule.getTimes()) {
+			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
 		}
 		basicSchedule.setTimeCollection(times);
 		
