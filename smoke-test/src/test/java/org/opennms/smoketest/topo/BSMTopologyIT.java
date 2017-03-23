@@ -156,6 +156,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
         // Apply default focus before continuing
         topologyUiPage.clearFocus();
         topologyUiPage.defaultFocus();
+        topologyUiPage.setSzl(4);
 
         // Verify pre conditions
         Assert.assertTrue("We need at least 3 visible vertices", 3 <= topologyUiPage.getVisibleVertices().size());
