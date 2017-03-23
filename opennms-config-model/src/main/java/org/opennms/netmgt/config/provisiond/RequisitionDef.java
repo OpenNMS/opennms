@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,12 +29,18 @@
 package org.opennms.netmgt.config.provisiond;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Defines an import job with a cron expression
@@ -48,35 +54,70 @@ import javax.xml.bind.annotation.XmlRootElement;
  *  Month 1-12 or JAN-DEC , - /
  *  Day-of-Week 1-7 or SUN-SAT , - ? / L C #
  *  Year (Opt) empty, 1970-2099 , - /
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "requisition-def")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RequisitionDef implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("provisiond-configuration.xsd")
+public class RequisitionDef implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_RESCAN_EXISTING = "true";
 
     @XmlAttribute(name = "import-url-resource", required = true)
-    private String importUrlResource;
+    private String m_importUrlResource;
 
     @XmlAttribute(name = "import-name", required = true)
-    private String importName;
+    private String m_importName;
 
     @XmlAttribute(name = "rescan-existing")
-    private String rescanExisting;
+    private String m_rescanExisting;
 
     @XmlElement(name = "cron-schedule", required = true)
-    private String cronSchedule;
+    private String m_cronSchedule;
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Optional<String> getImportUrlResource() {
+        return Optional.ofNullable(m_importUrlResource);
+    }
+
+    public void setImportUrlResource(final String importUrlResource) {
+        m_importUrlResource = ConfigUtils.assertNotEmpty(importUrlResource, "import-url-resource");
+    }
+
+    public Optional<String> getImportName() {
+        return Optional.ofNullable(m_importName);
+    }
+
+    public void setImportName(final String importName) {
+        m_importName = ConfigUtils.assertNotEmpty(importName, "import-name");
+    }
+
+    public String getRescanExisting() {
+        return m_rescanExisting != null ? m_rescanExisting : DEFAULT_RESCAN_EXISTING;
+    }
+
+    public void setRescanExisting(final String rescanExisting) {
+        if (!isRescanExistingValid(rescanExisting)) {
+            throw new IllegalArgumentException("'rescan-existing' must be null or one of 'true', 'false', or 'dbonly'");
+        }
+        m_rescanExisting = ConfigUtils.normalizeString(rescanExisting);
+    }
+
+    public Optional<String> getCronSchedule() {
+        return Optional.ofNullable(m_cronSchedule);
+    }
+
+    public void setCronSchedule(final String cronSchedule) {
+        m_cronSchedule = ConfigUtils.assertNotEmpty(cronSchedule, "cron-schedule");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_importUrlResource, 
+            m_importName, 
+            m_rescanExisting, 
+            m_cronSchedule);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -84,101 +125,18 @@ public class RequisitionDef implements java.io.Serializable {
         }
         
         if (obj instanceof RequisitionDef) {
-            RequisitionDef temp = (RequisitionDef)obj;
-            boolean equals = Objects.equals(temp.importUrlResource, importUrlResource)
-                && Objects.equals(temp.importName, importName)
-                && Objects.equals(temp.rescanExisting, rescanExisting)
-                && Objects.equals(temp.cronSchedule, cronSchedule);
-            return equals;
+            final RequisitionDef that = (RequisitionDef)obj;
+            return Objects.equals(this.m_importUrlResource, that.m_importUrlResource)
+                && Objects.equals(this.m_importName, that.m_importName)
+                && Objects.equals(this.m_rescanExisting, that.m_rescanExisting)
+                && Objects.equals(this.m_cronSchedule, that.m_cronSchedule);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'cronSchedule'.
-     * 
-     * @return the value of field 'CronSchedule'.
-     */
-    public String getCronSchedule() {
-        return this.cronSchedule;
-    }
-
-    /**
-     * Returns the value of field 'importName'.
-     * 
-     * @return the value of field 'ImportName'.
-     */
-    public String getImportName() {
-        return this.importName;
-    }
-
-    /**
-     * Returns the value of field 'importUrlResource'.
-     * 
-     * @return the value of field 'ImportUrlResource'.
-     */
-    public String getImportUrlResource() {
-        return this.importUrlResource;
-    }
-
-    /**
-     * Returns the value of field 'rescanExisting'.
-     * 
-     * @return the value of field 'RescanExisting'.
-     */
-    public String getRescanExisting() {
-        return this.rescanExisting != null ? this.rescanExisting : DEFAULT_RESCAN_EXISTING;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            importUrlResource, 
-            importName, 
-            rescanExisting, 
-            cronSchedule);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'cronSchedule'.
-     * 
-     * @param cronSchedule the value of field 'cronSchedule'.
-     */
-    public void setCronSchedule(final String cronSchedule) {
-        this.cronSchedule = cronSchedule;
-    }
-
-    /**
-     * Sets the value of field 'importName'.
-     * 
-     * @param importName the value of field 'importName'.
-     */
-    public void setImportName(final String importName) {
-        this.importName = importName;
-    }
-
-    /**
-     * Sets the value of field 'importUrlResource'.
-     * 
-     * @param importUrlResource the value of field 'importUrlResource'.
-     */
-    public void setImportUrlResource(final String importUrlResource) {
-        this.importUrlResource = importUrlResource;
-    }
-
-    /**
-     * Sets the value of field 'rescanExisting'.
-     * 
-     * @param rescanExisting the value of field 'rescanExisting'.
-     */
-    public void setRescanExisting(final String rescanExisting) {
-        this.rescanExisting = rescanExisting;
+    private boolean isRescanExistingValid(final String rescanExisting) {
+        if (rescanExisting == null) return true;
+        return ("true".equalsIgnoreCase(rescanExisting) || "false".equalsIgnoreCase(rescanExisting) || "dbonly".equalsIgnoreCase(rescanExisting));
     }
 
 }
