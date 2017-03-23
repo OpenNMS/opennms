@@ -33,6 +33,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
@@ -67,15 +69,20 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 	@Autowired
 	private DistPollerDao distPollerDao;
 
+	private CountDownLatch latch = new CountDownLatch(1);
+
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		final RestClient client;
 		try {
 			client = mock(RestClient.class);
-			when(client.getSnmpV3Users()).thenReturn("<?xml version='1.0'?>"
-				+ "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
-				+ "     <snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
-				+ "</trapd-configuration>");
+			when(client.getSnmpV3Users()).thenAnswer(invocation -> {
+				latch.countDown();
+                return "<?xml version='1.0'?>"
+                        + "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
+                        + "     <snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
+                        + "</trapd-configuration>";
+            });
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
 		}
@@ -98,10 +105,13 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 		TrapdConfig trapdConfig = getOsgiService(TrapdConfig.class);
 		Assert.assertEquals(true, trapdConfig.getSnmpV3Users().isEmpty());
 
-		// The setSnmpV3Users method must have been invoked
-		Thread.sleep(20000);
+		// Wait that the RestClient was actually used
+		latch.await(5, TimeUnit.MINUTES);
+
+		// Wait that the setSnmpV3Users method was actually invoked
+		Thread.sleep(120000);
 
 		// Verify
-		Assert.assertEquals(1, trapdConfig.getSnmpV3Users().size());
+		Assert.assertEquals(1, getOsgiService(TrapdConfig.class).getSnmpV3Users().size());
 	}
 }
