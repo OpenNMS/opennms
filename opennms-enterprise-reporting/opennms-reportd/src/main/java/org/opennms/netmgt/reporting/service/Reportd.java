@@ -123,8 +123,8 @@ public class Reportd implements SpringServiceDaemon {
             Logging.putPrefix(NAME);
             LOG.debug("reportd -- running job {}", report.getReportName());
             String fileName = m_reportService.runReport(report,reportDirectory);
-            if (report.getRecipientCount() > 0) {
-                LOG.debug("reportd -- delivering report {} to {} recipients", report.getReportName(), report.getRecipientCount());
+            if (report.getRecipients().size() > 0) {
+                LOG.debug("reportd -- delivering report {} to {} recipients", report.getReportName(), report.getRecipients().size());
                 m_reportDeliveryService.deliverReport(report, fileName);
             } else {
                 LOG.info("Skipped delivery of report {} because it has no recipients", report.getReportName());

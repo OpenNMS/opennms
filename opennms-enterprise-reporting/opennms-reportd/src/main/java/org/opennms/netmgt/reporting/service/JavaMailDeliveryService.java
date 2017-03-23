@@ -63,15 +63,17 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     @Override
     public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
-
-            String mailer = report.getMailer();
-            LOG.debug("deliverReport with mailer={}", mailer);
             SendmailConfig config = null;
-            if (mailer != null && mailer.length() > 0) {
+
+            if (report.getMailer().isPresent()) {
+                final String mailer = report.getMailer().get();
+                LOG.debug("deliverReport with mailer={}", mailer);
                 config = m_JavamailConfigDao.getSendMailConfig(mailer);
             } else {
+                LOG.debug("deliverReport with default sendmail config");
                 config = m_JavamailConfigDao.getDefaultSendmailConfig();
             }
+
             JavaSendMailer sm = new JavaSendMailer(config);
             MimeMessage msg = new MimeMessage(sm.getSession());
 
@@ -81,7 +83,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
 
                 MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
                 helper.setFrom(sendmailMessage.getFrom());
-                helper.setTo(report.getRecipient());
+                helper.setTo(report.getRecipients().toArray(new String[0]));
                 helper.setSubject("OpenNMS Report: " + report.getReportName());
                 if ("text/html".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {
                     helper.setText(sendmailMessage.getBody().replaceAll("\\<[^>]*>",""), sendmailMessage.getBody());
