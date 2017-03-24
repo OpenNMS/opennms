@@ -40,8 +40,10 @@ import java.util.Set;
  */
 public interface RadixTreeNode<T> {
 	T getContent();
+	void setContent(T newContent);
 	void addChildren(T[] chain);
 	Set<RadixTreeNode<T>> getChildren();
+	void setChildren(Set<RadixTreeNode<T>> newChildren);
 	int size();
 	String toStringWithPrefix(String prefix);
 }

@@ -46,7 +46,7 @@ public class RadixTreeNodeImpl<T> implements RadixTreeNode<T> {
 
 	private static final String TO_STRING_INDENT = "  ";
 
-	private final T content;
+	private T content;
 	private final Set<RadixTreeNode<T>> children = new LinkedHashSet<>();
 
 	/**
@@ -68,6 +68,11 @@ public class RadixTreeNodeImpl<T> implements RadixTreeNode<T> {
 	@Override
 	public T getContent() {
 		return content;
+	}
+
+	@Override
+	public void setContent(T newContent) {
+		content = newContent;
 	}
 
 	@Override
@@ -95,6 +100,12 @@ public class RadixTreeNodeImpl<T> implements RadixTreeNode<T> {
 	@Override
 	public Set<RadixTreeNode<T>> getChildren() {
 		return children;
+	}
+
+	@Override
+	public void setChildren(Set<RadixTreeNode<T>> newChildren) {
+		children.clear();
+		children.addAll(newChildren);
 	}
 
 	@Override
