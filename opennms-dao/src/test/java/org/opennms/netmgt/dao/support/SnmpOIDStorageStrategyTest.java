@@ -38,17 +38,17 @@ import org.snmp4j.smi.OID;
  * @author <a href="mailto:roskens@opennms.org">Ronald Roskens</a>
  */
 public class SnmpOIDStorageStrategyTest {
-    
+
     @Test
     public void testStrategy() {
         // Create Strategy
         SnmpOIDStorageStrategy strategy = new SnmpOIDStorageStrategy();
         strategy.setResourceTypeName("ltmVSStatName");
-        
+
         OID oid = new OID("47.67.111.109.109.111.110.47.118.115.45.119.119.119.46.101.120.97.109.112.108.101.46.99.111.109");
 
         ResourcePath parentResource = ResourcePath.get("1");
-        
+
         MockCollectionResource resource = new MockCollectionResource(parentResource, oid.toSubIndex(true).toString(), "ltmVSStatName");
         String resourceName = strategy.getResourceNameFromIndex(resource);
         Assert.assertEquals("Common-vs-www.example.com", resourceName);

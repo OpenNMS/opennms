@@ -48,7 +48,7 @@ public class SnmpOIDStorageStrategy extends IndexStorageStrategy {
     /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(final CollectionResource resource) {
-        try { 
+        try {
             OID oid = new OID(resource.getInstance());
             OctetString oString = new OctetString();
             oString.fromSubIndex(oid, true);
