@@ -29,13 +29,18 @@
 package org.opennms.core.utils;
 
 public abstract class RrdLabelUtils {
+    public static final boolean PREFER_IFDESCR = Boolean.getBoolean("org.opennms.core.utils.preferIfDescr");
+    public static final boolean DONT_SANITIZE_IFNAME = Boolean.getBoolean("org.opennms.core.utils.dontSanitizeIfName");
     
     public static String computeNameForRRD(String ifname, String ifdescr) {
+        String firstChoice = PREFER_IFDESCR ? ifdescr : ifname;
+        String secondChoice = PREFER_IFDESCR ? ifname : ifdescr;
         String label = null;
-        if (ifname != null && !"".equals(ifname)) {
-            label = AlphaNumeric.parseAndReplace(ifname, '_');
-        } else if (ifdescr != null && !"".equals(ifdescr)) {
-            label = AlphaNumeric.parseAndReplace(ifdescr, '_');
+	
+        if (firstChoice != null && !"".equals(firstChoice)) {
+            label = DONT_SANITIZE_IFNAME ? firstChoice : AlphaNumeric.parseAndReplace(firstChoice, '_');
+        } else if (secondChoice != null && !"".equals(secondChoice)) {
+            label = DONT_SANITIZE_IFNAME ? secondChoice : AlphaNumeric.parseAndReplace(secondChoice, '_');
         }
         return label;
         
