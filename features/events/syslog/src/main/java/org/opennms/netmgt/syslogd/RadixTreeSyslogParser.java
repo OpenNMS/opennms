@@ -31,6 +31,8 @@ package org.opennms.netmgt.syslogd;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.SyslogdConfig;
 
@@ -42,6 +44,8 @@ import org.opennms.netmgt.config.SyslogdConfig;
  * @author Seth
  */
 public class RadixTreeSyslogParser extends SyslogParser {
+
+	private static final Pattern STRUCTURED_DATA = Pattern.compile("^(?:\\[.*?\\])*(?: \uFEFF?(.*?))?$");
 
 	private static RadixTreeParser radixParser = new RadixTreeParser();
 
@@ -71,6 +75,20 @@ public class RadixTreeSyslogParser extends SyslogParser {
 
 	@Override
 	public SyslogMessage parse() {
-		return radixParser.parse(getText()).join();
+		SyslogMessage retval = radixParser.parse(getText()).join();
+
+		// Trim off the RFC 5424 structured data to emulate the behavior of the legacy parser (for now)
+		if (retval != null) {
+			String message = retval.getMessage();
+			if (message != null && message.startsWith("[")) {
+				Matcher matcher = STRUCTURED_DATA.matcher(message);
+				if (matcher.find()) {
+					String newMessage = matcher.group(1);
+					retval.setMessage(newMessage == null ? null : newMessage);
+				}
+			}
+		}
+
+		return retval;
 	}
 }
