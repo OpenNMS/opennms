@@ -420,7 +420,7 @@ public class BufferParserTest {
 		System.out.println("Parser tree: " + radixParser.tree.toString());
 		System.out.println("Parser tree size: " + radixParser.tree.size());
 	}
-	
+
 	@Test
 	public void testParseSingleMessage() {
 		RadixTreeParser radixParser = new RadixTreeParser();
@@ -436,7 +436,7 @@ public class BufferParserTest {
 		assertNull(message.getMinute());
 		assertNull(message.getSecond());
 		assertNull(message.getMillisecond());
-		assertNull(message.getTimeZone());
+		assertNull(message.getZoneId());
 		Event event = SyslogParser.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("main", event.getParm("messageid").getValue().getContent());
 		assertEquals("foo%d", event.getParm("process").getValue().getContent());

@@ -29,9 +29,9 @@
 package org.opennms.netmgt.syslogd;
 
 import java.util.List;
-import java.util.TimeZone;
 import java.util.function.BiConsumer;
 
+import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchInteger;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchUntil;
@@ -335,7 +335,8 @@ SNMP-only:
 				};
 			case message:
 				return (s,v) -> {
-					s.message.setMessage(v);
+					// Trim the message to match behavior of legacy parsers
+					s.message.setMessage(v == null ? null : v.trim());
 				};
 			case messageId:
 				// Unique to this parser
@@ -390,12 +391,7 @@ SNMP-only:
 				};
 			case timezone:
 				return (s,v) -> {
-					// TODO: Make sure this works for all variants
-					if (v.charAt(0) == 'Z' && v.length() == 1) {
-						s.message.setTimeZone(TimeZone.getTimeZone("UTC"));
-					} else {
-						s.message.setTimeZone(TimeZone.getTimeZone(v));
-					}
+					s.message.setZoneId(ZonedDateTimeBuilder.parseZoneId(v));
 				};
 			default:
 				throw new IllegalArgumentException(String.format("Semantic type %s does not have a string value", semanticString));

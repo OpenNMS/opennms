@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
@@ -206,7 +207,7 @@ public class SyslogParser {
             if (message.getMinute() != null) bldr.setMinute(message.getMinute());
             if (message.getSecond() != null) bldr.setSecond(message.getSecond());
             if (message.getMillisecond() != null) bldr.setMillisecond(message.getMillisecond());
-            if (message.getTimeZone() != null) bldr.setTimeZone(message.getTimeZone());
+            if (message.getZoneId() != null) bldr.setZoneId(message.getZoneId());
         } else {
             bldr.setTime(message.getDate());
         }
@@ -246,11 +247,13 @@ public class SyslogParser {
             } else {
                 final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
                 
-                // Ugh, what's a non-lame way of forcing it to parse to "this year"?
+                // 2012-03-14 Ben: Ugh, what's a non-lame way of forcing it to parse to "this year"?
                 Date date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
                 c.setTime(date);
-                c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+                // Add 1 to the month value because Calendar.MONTH is zero-based and
+                // java.time.Month values are 1-based
+                c.set(Calendar.YEAR, ZonedDateTimeBuilder.getBestYearForMonth(c.get(Calendar.MONTH) + 1));
                 return c.getTime();
             }
         } catch (final Exception e) {

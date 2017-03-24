@@ -263,22 +263,18 @@ public class ConvertToEventTest {
 
                 // Make sure that all parsers that match are emitting the same events
                 assertTrue("UEIs do not match", compare("uei", ueis.toArray(new String[0])));
-//              assertTrue("times do not match", compare("time", times.toArray(new Date[0])));
-                compare("time", times.toArray(new Date[0]));
+                assertTrue("times do not match", compare("time", times.toArray(new Date[0])));
                 assertTrue("nodeIds do not match", compare("nodeId", nodeIds.toArray(new Long[0])));
                 assertTrue("interfaces do not match", compare("interface", interfaces.toArray(new String[0])));
                 assertTrue("messageid parms do not match", compare("messageid", messageids.toArray(new String[0])));
                 assertTrue("severity parms do not match", compare("severity", severities.toArray(new String[0])));
-//              assertTrue("timestamp parms do not match", compare("timestamp", timestamps.toArray(new String[0])));
-                compare("timestamp", timestamps.toArray(new String[0]));
+                assertTrue("timestamp parms do not match", compare("timestamp", timestamps.toArray(new String[0])));
                 assertTrue("process parms do not match", compare("process", processes.toArray(new String[0])));
                 assertTrue("service parms do not match", compare("service", services.toArray(new String[0])));
                 assertTrue("processid parms do not match", compare("processid", processids.toArray(new String[0])));
                 assertTrue("parm counts do not match", compare("parm count", parmcounts.toArray(new Long[0])));
-//              assertTrue("logmsgs do not match", compare("logmsg", logmsgs.toArray(new String[0])));
-//              assertTrue("syslogmessage parms do not match", compare("syslogmessage", syslogmessages.toArray(new String[0])));
-                compare("logmsg", logmsgs.toArray(new String[0]));
-                compare("syslogmessage", syslogmessages.toArray(new String[0]));
+                assertTrue("logmsgs do not match", compare("logmsg", logmsgs.toArray(new String[0])));
+                assertTrue("syslogmessage parms do not match", compare("syslogmessage", syslogmessages.toArray(new String[0])));
             } catch (Throwable e) {
                 e.printStackTrace();
                 fail("Unexpected exception: " + e.getMessage());
@@ -310,23 +306,32 @@ public class ConvertToEventTest {
     }
 
     @SafeVarargs
-    private static <T> boolean compare(final String value, final T... values) {
+    private static <T> boolean compare(final String field, final T... values) {
         T first = null;
         boolean needsFirst = true;
-        for (T string : values) {
+        for (T value : values) {
             if (needsFirst) {
-                first = string;
+                first = value;
                 needsFirst = false;
             } else {
 //                System.err.println("Comparing: " + first + " ?= " + string);
                 if (first == null) {
-                    if (string != null) {
-                        LOG.warn("Different values for {}: {}", value, Arrays.stream(values).map(String::valueOf).collect(Collectors.joining(", ")));
+                    if (value != null) {
+                        LOG.warn("Different values for {}: {}", field, Arrays.stream(values).map(String::valueOf).collect(Collectors.joining(", ")));
                         return false;
                     }
-                } else if (!first.equals(string)) {
-                    LOG.warn("Different values for {}: {}", value, Arrays.stream(values).map(String::valueOf).collect(Collectors.joining(", ")));
-                    return false;
+                } else {
+                    if (value instanceof Date) {
+                        if (Math.abs(((Date)first).getTime() - ((Date)value).getTime()) > 1000) {
+                            LOG.warn("Time values for {} differ by more than 1 second: {}", field, Arrays.stream(values).map(String::valueOf).collect(Collectors.joining(", ")));
+                            return false;
+                        } else {
+                            continue;
+                        }
+                    } else if (!first.equals(value)) {
+                        LOG.warn("Different values for {}: {}", field, Arrays.stream(values).map(String::valueOf).collect(Collectors.joining(", ")));
+                        return false;
+                    }
                 }
             }
         }

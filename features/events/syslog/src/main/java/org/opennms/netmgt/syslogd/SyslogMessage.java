@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -76,7 +77,7 @@ public class SyslogMessage implements Cloneable {
     private Integer m_minute;
     private Integer m_second;
     private Integer m_millisecond;
-    private TimeZone m_timeZone;
+    private ZoneId m_zoneId;
 
     private String m_hostname;
     private String m_processName;
@@ -99,7 +100,7 @@ public class SyslogMessage implements Cloneable {
         final Integer minute,
         final Integer second,
         final Integer millisecond,
-        final TimeZone timezone,
+        final ZoneId zoneId,
         final String hostname,
         final String processName,
         final String processId,
@@ -117,7 +118,7 @@ public class SyslogMessage implements Cloneable {
         m_minute = minute;
         m_second = second;
         m_millisecond = millisecond;
-        m_timeZone = timezone;
+        m_zoneId = zoneId;
         m_hostname = hostname;
         m_processName = processName;
         m_processId = processId;
@@ -221,12 +222,12 @@ public class SyslogMessage implements Cloneable {
         m_millisecond = millisecond;
     }
 
-    public TimeZone getTimeZone() {
-        return m_timeZone;
+    public ZoneId getZoneId() {
+        return m_zoneId;
     }
 
-    public void setTimeZone(TimeZone timeZone) {
-        m_timeZone = timeZone;
+    public void setZoneId(ZoneId zoneId) {
+        m_zoneId = zoneId;
     }
 
     public String getHostName() {
@@ -338,7 +339,7 @@ public class SyslogMessage implements Cloneable {
             .append("minute", m_minute)
             .append("second", m_second)
             .append("millisecond", m_millisecond)
-            .append("timezone", m_timeZone == null ? null : m_timeZone.getDisplayName())
+            .append("zoneId", m_zoneId == null ? null : m_zoneId.getId())
             .append("hostname", m_hostname)
             .append("message ID", m_messageId)
             .append("process name", m_processName)
@@ -364,7 +365,7 @@ public class SyslogMessage implements Cloneable {
             m_minute,
             m_second,
             m_millisecond,
-            m_timeZone,
+            m_zoneId,
             m_hostname,
             m_processName,
             m_processId,
