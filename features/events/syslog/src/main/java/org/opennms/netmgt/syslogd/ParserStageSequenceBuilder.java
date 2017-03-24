@@ -42,6 +42,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.collections.RadixTree;
 import org.opennms.core.collections.RadixTreeImpl;
 import org.opennms.core.collections.RadixTreeNode;
@@ -103,7 +104,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this)
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("accumulatedValue", accumulatedValue == null ? "null" : accumulatedValue.toString())
 				.append("accumulatedSize", accumulatedSize == null ? 0 : accumulatedSize.get())
 				.toString();
@@ -432,7 +433,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this)
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("char", m_char)
 				.toString();
 		}
@@ -473,7 +474,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this)
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("character", character)
 				.append("value", value)
 				.toString();
@@ -607,7 +608,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this)
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("length", m_length)
 				.toString();
 		}
@@ -669,7 +670,7 @@ public class ParserStageSequenceBuilder {
 
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this)
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
 				.append("ends", m_end)
 				.append("endOnWhitespace", m_endOnwhitespace)
 				.toString();
