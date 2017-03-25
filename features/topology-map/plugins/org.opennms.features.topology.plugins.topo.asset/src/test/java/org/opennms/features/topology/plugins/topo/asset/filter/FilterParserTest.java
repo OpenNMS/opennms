@@ -231,10 +231,10 @@ public class FilterParserTest {
 	// test invalid regex
 	// filter=asset-displaycategory=testDisplayCategory,!~{.*_5
 	@Test
-	public void testFilterString111(){
+	public void testFilterString11(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!~{.*_5";
 
-		LOG.debug("Start testFilterString111() filter="+filter);
+		LOG.debug("Start testFilterString11() filter="+filter);
 		boolean expectedException=false;
 		try {
 			testFilterParser(filter);
@@ -244,7 +244,7 @@ public class FilterParserTest {
 		}
 		assertEquals(true,expectedException);
 
-		LOG.debug("End testFilterString111()");
+		LOG.debug("End testFilterString11()");
 	}
 	
 	// test too many '='
@@ -326,7 +326,64 @@ public class FilterParserTest {
 
 		LOG.debug("End testFilterString15()");
 	}
+	
+	// test multiple values for categories
+	// ***********************************
+	
+	// test simple node category selection
+	// filter=filter=node-categories=category3,category4
+	@Test
+	public void testFilterString16(){
+		String filter=NodeParamLabels.NODE_CATEGORIES+"=category3,category4";
 
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString16(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString16()");
+	}
+	
+	// test simple node category exclusion
+	// filter=filter=node-categories=category1,!category4
+	@Test
+	public void testFilterString17(){
+		String filter=NodeParamLabels.NODE_CATEGORIES+"=category1,!category4";
+
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
+
+		LOG.debug("Start testFilterString17(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString17()");
+	}
+	
+	// test regex on categories
+	// filter=filter=node-categories=~.*4,category3
+	@Test
+	public void testFilterString18(){
+		String filter=NodeParamLabels.NODE_CATEGORIES+"=~.*4,category3";
+
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] }";
+
+		LOG.debug("Start testFilterString18(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString18()");
+	}
+	
+	// test not regex on categories
+	// filter=node-categories=category1,!~.*4
+	@Test
+	public void testFilterString19(){
+		String filter=NodeParamLabels.NODE_CATEGORIES+"=category1,!~.*4";
+		String expected="nodeList:{ [0] [1] [2] [3] [4] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] }";
+
+		LOG.debug("Start testFilterString19(): filter="+filter+" expected="+expected);
+		String s2 = testFilterParser(filter);
+		assertEquals(expected,s2);
+		LOG.debug("End testFilterString19()");
+	}
 
 	// Utility methods for tests
 	// -------------------------
@@ -378,6 +435,11 @@ public class FilterParserTest {
 
 		for( int id = 0;id<5;id++){
 			OnmsNode n =createNode(id);
+			
+			OnmsCategory onmsCategory3 = new OnmsCategory();
+			onmsCategory3.setName("category3");
+			n.getCategories().add(onmsCategory3);
+			
 			nodeList.add(n);
 		}
 
@@ -385,6 +447,11 @@ public class FilterParserTest {
 			OnmsNode n =createNode(id);
 			n.setForeignSource("testForeignSource1");
 			n.getAssetRecord().setPollerCategory("testPollerCategory1");
+			
+			OnmsCategory onmsCategory4 = new OnmsCategory();
+			onmsCategory4.setName("category4");
+			n.getCategories().add(onmsCategory4);
+			
 			nodeList.add(n);
 		}
 
@@ -428,12 +495,14 @@ public class FilterParserTest {
 		Set<OnmsCategory> categories=new LinkedHashSet<OnmsCategory>();
 		node.setCategories(categories);
 
+		// categories used for multi value tests
 		OnmsCategory onmsCategory = new OnmsCategory();
 		onmsCategory.setName("category1");
 		categories.add(onmsCategory);
 		OnmsCategory onmsCategory2 = new OnmsCategory();
 		onmsCategory2.setName("category2");
 		categories.add(onmsCategory2);
+
 
 		// parent information
 		OnmsNode parent = new OnmsNode();

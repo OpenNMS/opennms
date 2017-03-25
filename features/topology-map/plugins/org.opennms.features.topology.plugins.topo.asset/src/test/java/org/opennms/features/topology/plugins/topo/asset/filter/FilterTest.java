@@ -45,10 +45,24 @@ public class FilterTest {
 
 	@Test
 	public void verifyRegExp() {
-		Filter filter = new RegExFilter(".*gar(t|d)");
+		Filter filter = new RegExFilter<>(".*gar(t|d)");
 		Assert.assertEquals(false, filter.apply("Fulda"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Isengard"));
+	}
+	
+	@Test
+	public void verifyRegExpCsv() {
+		Filter filter = new RegExCsvFilter<>(".*gar(t|d)");
+		Assert.assertEquals(false, filter.apply("Fulda"));
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(true, filter.apply("Isengard"));
+		
+		Assert.assertEquals(false, filter.apply(""));
+		Assert.assertEquals(false, filter.apply(","));
+		Assert.assertEquals(false, filter.apply("France,Germany,Fulda"));
+		Assert.assertEquals(true, filter.apply("France,Germany,Stuttgart,Fulda"));
+		Assert.assertEquals(true, filter.apply("France,Isengard,Germany,Fulda"));
 	}
 
 	@Test
@@ -56,6 +70,18 @@ public class FilterTest {
 		Filter filter = new EqFilter<>("Stuttgart");
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Fulda"));
+	}
+	
+	@Test
+	public void verifyCsvEq() {
+		Filter filter = new EqCsvFilter<>("Stuttgart");
+		Assert.assertEquals(true, filter.apply("Stuttgart"));
+		Assert.assertEquals(false, filter.apply("Fulda"));
+		
+		Assert.assertEquals(false, filter.apply(""));
+		Assert.assertEquals(false, filter.apply(","));
+		Assert.assertEquals(false, filter.apply("France,Germany,Fulda"));
+		Assert.assertEquals(true, filter.apply("France,Germany,Stuttgart,Fulda"));
 	}
 
 	@Test

@@ -98,26 +98,26 @@ public class FilterParser {
 					if(filterValueString.startsWith("!~")){
 						regexStr=filterValueString.substring(2);
 						try {
-							f = new RegExFilter(regexStr);
+							f = new RegExCsvFilter<String>(regexStr);
 				        } catch (PatternSyntaxException syntaxException){
 				        	throw new IllegalArgumentException("Cannot parse filter. Illegal Regex expression for '"+nodeParamLabel+ "' value in expression:"+filterValueString,syntaxException);
 				        }
 					} else {
 						valStr=filterValueString.substring(1);
-						f = new EqFilter(valStr);
+						f = new EqCsvFilter<String>(valStr);
 					}
 					excludeFilters.add(f);
 				} else {
 					if(filterValueString.startsWith("~")){
 						regexStr=filterValueString.substring(1);
 						try {
-							f = new RegExFilter(regexStr);
+							f = new RegExCsvFilter<String>(regexStr);
 				        } catch (PatternSyntaxException syntaxException){
 				        	throw new IllegalArgumentException("Cannot parse filter. Illegal Regex expression for '"+nodeParamLabel+ "' value in expression:"+filterValueString,syntaxException);
 				        }
 					} else {
 						valStr=filterValueString;
-						f= new EqFilter(valStr);
+						f= new EqCsvFilter<String>(valStr);
 					}
 					includeFilters.add(f);
 				}
