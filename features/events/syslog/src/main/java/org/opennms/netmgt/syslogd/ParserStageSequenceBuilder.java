@@ -397,6 +397,12 @@ public class ParserStageSequenceBuilder {
 			// TODO: Compare consumers?
 			return true;
 		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+				.toString();
+		}
 	}
 
 	/**
@@ -561,6 +567,12 @@ public class ParserStageSequenceBuilder {
 			if (!(o instanceof MatchMonth)) return false;
 			// TODO: Compare consumers?
 			return true;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+				.toString();
 		}
 	}
 
@@ -801,6 +813,12 @@ public class ParserStageSequenceBuilder {
 			MatchInteger other = (MatchInteger)o;
 			// TODO: Compare consumers?
 			return true;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+				.toString();
 		}
 	}
 }

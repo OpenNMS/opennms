@@ -69,6 +69,7 @@
 <14> Mar 29 2004 09:57:04: %PIX-5-304001: 192.168.0.2 Accessed URL 212.227.109.224:/scriptlib/ClientStdScripts.js
 
 # monitorware.com Netgear firewalls (?)
+# Comment these out for now because they confuse the legacy parsers
 #<14> Sun, 2004-03-28 13:52:46 - TCP packet - Source:81.248.19.27,60001 ,WAN - Destination:217.224.147.21,4467 ,LAN [Drop] - [TCP preconnect traffic dropped]
 #<14> Sun, 2004-03-28 14:01:08 - TCP packet - Source:80.144.81.26,0 ,WAN - Destination:217.224.147.21,0 ,LAN [Drop] - [Fragment Attack]
 #<14> Sun, 2004-03-28 15:30:45 - TCP packet - Source:172.21.0.1,4662 ,LAN - Destination:80.142.227.227,4662 ,WAN [Drop] - [TCP preconnect traffic dropped]

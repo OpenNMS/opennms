@@ -32,12 +32,24 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.opennms.core.time.ZonedDateTimeBuilder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchInteger;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchUntil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>This class can parse grok pattern strings to create a parser that can
+ * assign parsed values to a syslog message object. It supports the following
+ * pattern types:</p>
+ * <ul>
+ * <li>INT: Positive integer.</li>
+ * <li>MONTH: 3-character English month abbreviation.</li>
+ * <li>NOSPACE: String that contains no whitespace.</li>
+ * <li>STRING: String. Because this matches any character, it must be followed by a delimiter in the pattern string.</li>
+ * </ul>
+ * 
+ * @author Seth
+ */
 public abstract class GrokParserStageSequenceBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GrokParserStageSequenceBuilder.class);
@@ -61,7 +73,7 @@ public abstract class GrokParserStageSequenceBuilder {
 	/**
 	 * This enum contains all well-known syslog message fields.
 	 */
-	public static enum SemanticType {
+	public static enum SyslogSemanticType {
 		/**
 		 * Facility-priority integer.
 		 * 
@@ -183,67 +195,23 @@ public abstract class GrokParserStageSequenceBuilder {
 		 */
 		messageId,
 
-		/*
-		facility, // Cisco
-		priority, // Cisco
-		mnemonic, // Cisco
-		*/
-
-		/*
-		structuredData, // RFC5424 STRUCTURED-DATA
-		*/
-
 		/**
 		 * Remaining string message.
 		 */
 		message
 	}
 
-/*
-Relevant EventBuilder fields:
-//		public EventBuilder setAlarmData(AlarmData alarmData);
-		public EventBuilder setDescription(String descr);
-//		public EventBuilder setDistPoller(String distPoller);
-		public EventBuilder setHost(String hostname);
-//		public EventBuilder setIfIndex(int ifIndex);
-		public EventBuilder setInterface(InetAddress ipAddress);
-//		public EventBuilder setIpInterface(OnmsIpInterface iface);
-		public EventBuilder setLogDest(String dest);
-		public EventBuilder setLogMessage(String content);
-//		public EventBuilder setMasterStation(String masterStation);
-//		public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService);
-//		public EventBuilder setNode(OnmsNode node);
-//		public EventBuilder setNodeid(long nodeid);
-		public EventBuilder setParam(String parmName, String val);
-		public EventBuilder setParms(List<Parm> parms);
-//		public EventBuilder setService(String serviceName);
-		public EventBuilder setSeverity(String severity);
-//		public EventBuilder setSource(String source);
-		public EventBuilder setTime(Date date);
-		public EventBuilder setUei(String uei);
-//		public EventBuilder setUuid(String uuid);
-
-SNMP-only:
-//		public EventBuilder setCommunity(String community);
-//		public EventBuilder setEnterpriseId(String enterprise);
-//		public EventBuilder setGeneric(int generic);
-//		public EventBuilder setSnmpHost(String snmpHost);
-//		public EventBuilder setSnmpTimeStamp(long timeStamp);
-//		public EventBuilder setSnmpVersion(String version);
-//		public EventBuilder setSpecific(int specific);
-*/
-
 	/**
-	 * This function maps {@link SemanticType} values of type int to {@link EventBuilder}
-	 * calls.
+	 * This function maps {@link SyslogSemanticType} values of type int to fields in the parser
+	 * state.
 	 * 
 	 * @param semanticString
 	 * @return
 	 */
-	private static BiConsumer<ParserState,Integer> semanticIntegerToEventBuilder(String semanticString) {
-		SemanticType semanticType = null;
+	private static BiConsumer<ParserState,Integer> semanticIntegerToField(String semanticString) {
+		SyslogSemanticType semanticType = null;
 		try {
-			semanticType = SemanticType.valueOf(semanticString);
+			semanticType = SyslogSemanticType.valueOf(semanticString);
 		} catch (IllegalArgumentException e) {
 			// Leave semanticType == null
 		}
@@ -291,7 +259,11 @@ SNMP-only:
 			// in here as a stopgap until we create a DIGITS pattern type.
 			case secondFraction:
 				return (s,v) -> {
-					s.message.setMillisecond(v);
+					if (v >= 1000) {
+						s.message.setMillisecond(Math.round(v / 1000));
+					} else {
+						s.message.setMillisecond(v);
+					}
 				};
 			case version:
 				return (s,v) -> {
@@ -309,16 +281,16 @@ SNMP-only:
 	}
 
 	/**
-	 * This function maps {@link SemanticType} values of type String to {@link EventBuilder}
-	 * calls.
+	 * This function maps {@link SyslogSemanticType} values of type String to fields in the parser
+	 * state.
 	 * 
 	 * @param semanticString
 	 * @return
 	 */
-	private static BiConsumer<ParserState,String> semanticStringToEventBuilder(String semanticString) {
-		SemanticType semanticType = null;
+	private static BiConsumer<ParserState,String> semanticStringToField(String semanticString) {
+		SyslogSemanticType semanticType = null;
 		try {
-			semanticType = SemanticType.valueOf(semanticString);
+			semanticType = SyslogSemanticType.valueOf(semanticString);
 		} catch (IllegalArgumentException e) {
 			// Leave semanticType == null
 		}
@@ -478,10 +450,10 @@ SNMP-only:
 						// break;
 						throw new UnsupportedOperationException("Cannot support escape sequence directly after a STRING pattern yet");
 					case INT:
-						factory.integer(semanticIntegerToEventBuilder(semanticString));
+						factory.integer(semanticIntegerToField(semanticString));
 						break;
 					case MONTH:
-						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						factory.monthString(semanticIntegerToField(semanticString));
 						break;
 					}
 					pattern = new StringBuffer();
@@ -493,17 +465,17 @@ SNMP-only:
 					case NOSPACE:
 						// This is probably not an intended behavior
 						LOG.warn("NOSPACE pattern followed immediately by another pattern will greedily consume until whitespace is encountered");
-						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
+						factory.stringUntilWhitespace(semanticStringToField(semanticString));
 						factory.whitespace();
 						break;
 					case STRING:
 						// TODO: Can we handle this case?
 						throw new IllegalArgumentException(String.format("Invalid pattern: %s:%s does not have a trailing delimiter, cannot determine end of string", patternString, semanticString));
 					case INT:
-						factory.integer(semanticIntegerToEventBuilder(semanticString));
+						factory.integer(semanticIntegerToField(semanticString));
 						break;
 					case MONTH:
-						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						factory.monthString(semanticIntegerToField(semanticString));
 						break;
 					}
 					pattern = new StringBuffer();
@@ -514,15 +486,15 @@ SNMP-only:
 					switch(patternType) {
 					case NOSPACE:
 					case STRING:
-						factory.stringUntilWhitespace(semanticStringToEventBuilder(semanticString));
+						factory.stringUntilWhitespace(semanticStringToField(semanticString));
 						factory.whitespace();
 						break;
 					case INT:
-						factory.intUntilWhitespace(semanticIntegerToEventBuilder(semanticString));
+						factory.intUntilWhitespace(semanticIntegerToField(semanticString));
 						factory.whitespace();
 						break;
 					case MONTH:
-						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						factory.monthString(semanticIntegerToField(semanticString));
 						factory.whitespace();
 						break;
 					}
@@ -530,19 +502,19 @@ SNMP-only:
 				default:
 					switch(patternType) {
 					case NOSPACE:
-						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToEventBuilder(semanticString));
+						factory.stringUntil(MatchUntil.WHITESPACE + c, semanticStringToField(semanticString));
 						factory.character(c);
 						break;
 					case STRING:
-						factory.stringUntil(String.valueOf(c), semanticStringToEventBuilder(semanticString));
+						factory.stringUntil(String.valueOf(c), semanticStringToField(semanticString));
 						factory.character(c);
 						break;
 					case INT:
-						factory.integer(semanticIntegerToEventBuilder(semanticString));
+						factory.integer(semanticIntegerToField(semanticString));
 						factory.character(c);
 						break;
 					case MONTH:
-						factory.monthString(semanticIntegerToEventBuilder(semanticString));
+						factory.monthString(semanticIntegerToField(semanticString));
 						factory.character(c);
 						break;
 					}
@@ -564,13 +536,13 @@ SNMP-only:
 			switch(patternType) {
 			case NOSPACE:
 			case STRING:
-				factory.terminal().string(semanticStringToEventBuilder(semanticString));
+				factory.terminal().string(semanticStringToField(semanticString));
 				break;
 			case INT:
-				factory.terminal().integer(semanticIntegerToEventBuilder(semanticString));
+				factory.terminal().integer(semanticIntegerToField(semanticString));
 				break;
 			case MONTH:
-				factory.terminal().monthString(semanticIntegerToEventBuilder(semanticString));
+				factory.terminal().monthString(semanticIntegerToField(semanticString));
 				break;
 			}
 		}

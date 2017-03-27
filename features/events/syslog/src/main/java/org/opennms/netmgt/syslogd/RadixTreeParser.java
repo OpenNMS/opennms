@@ -200,9 +200,6 @@ public class RadixTreeParser implements ByteBufferParser<SyslogMessage> {
 
 	/**
 	 * TODO: Use a visitor pattern instead?
-	 * 
-	 * TODO: Coalesce multiple stages into a single thenApply() call when
-	 * node.getChildren().size() == 1. Then figure out how to do that recursively.
 	 */
 	private static void addStageFutures(List<CompletableFuture<ParserState>> finishedFutures, CompletableFuture<ParserState> parent, RadixTreeNode<ParserStage> node) {
 		final CompletableFuture<ParserState> current;

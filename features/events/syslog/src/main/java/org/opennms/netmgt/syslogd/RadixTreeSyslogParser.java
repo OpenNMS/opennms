@@ -57,6 +57,8 @@ public class RadixTreeSyslogParser extends SyslogParser {
 			}
 			radixParser.teach(GrokParserStageSequenceBuilder.parseGrok(pattern).toArray(new ParserStage[0]));
 		});
+		// After we have taught all of the patterns to the parser, perform
+		// edge compression to optimize the tree
 		radixParser.performEdgeCompression();
 	}
 

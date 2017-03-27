@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HostaddrMatch;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.config.syslogd.HostnameMatch;
 import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -108,6 +111,85 @@ public class ConvertToEvent {
         }
         buffer.rewind();
         return buffer;
+    }
+
+    public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location) {
+        if (message == null) {
+            return null;
+        }
+
+        // Build a basic event out of the syslog message
+        final String priorityTxt = message.getSeverity().toString();
+        final String facilityTxt = message.getFacility().toString();
+
+        EventBuilder bldr = new EventBuilder();
+        bldr.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+        bldr.setSource("syslogd");
+
+        // Set constant values in EventBuilder
+
+        // Set monitoring system
+        bldr.setDistPoller(systemId);
+        // Set event host
+        bldr.setHost(InetAddressUtils.getLocalHostName());
+        // Set default event destination to logndisplay
+        bldr.setLogDest("logndisplay");
+
+
+        // Set values from SyslogMessage in the EventBuilder
+
+        bldr.addParam("hostname", message.getHostName());
+
+        final InetAddress hostAddress = message.getHostAddress();
+        if (hostAddress != null) {
+            // Set nodeId
+            InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
+            if (cache != null) {
+                int nodeId = cache.getNodeId(location, hostAddress);
+                if (nodeId > 0) {
+                    bldr.setNodeid(nodeId);
+                }
+            }
+
+            bldr.setInterface(hostAddress);
+        }
+
+        if (message.getDate() == null) {
+            if (message.getYear() != null) bldr.setYear(message.getYear());
+            if (message.getMonth() != null) bldr.setMonth(message.getMonth());
+            if (message.getDayOfMonth() != null) bldr.setDayOfMonth(message.getDayOfMonth());
+            if (message.getHourOfDay() != null) bldr.setHourOfDay(message.getHourOfDay());
+            if (message.getMinute() != null) bldr.setMinute(message.getMinute());
+            if (message.getSecond() != null) bldr.setSecond(message.getSecond());
+            if (message.getMillisecond() != null) bldr.setMillisecond(message.getMillisecond());
+            if (message.getZoneId() != null) bldr.setZoneId(message.getZoneId());
+        } else {
+            bldr.setTime(message.getDate());
+        }
+
+        bldr.setLogMessage(message.getMessage());
+        // Using parms provides configurability.
+        bldr.addParam("syslogmessage", message.getMessage());
+
+        bldr.addParam("severity", priorityTxt);
+
+        bldr.addParam("timestamp", SyslogMessage.getRfc3164FormattedDate(bldr.currentEventTime()));
+
+        if (message.getMessageID() != null) {
+            bldr.addParam("messageid", message.getMessageID());
+        }
+
+        if (message.getProcessName() != null) {
+            bldr.addParam("process", message.getProcessName());
+        }
+
+        bldr.addParam("service", facilityTxt);
+
+        if (message.getProcessId() != null) {
+            bldr.addParam("processid", message.getProcessId().toString());
+        }
+
+        return bldr;
     }
 
     /**
@@ -186,7 +268,7 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        EventBuilder bldr = SyslogParser.toEventBuilder(message, systemId, location);
+        EventBuilder bldr = toEventBuilder(message, systemId, location);
 
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
         for (final UeiMatch uei : ueiMatch) {

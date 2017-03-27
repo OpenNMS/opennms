@@ -88,9 +88,30 @@ public class SyslogMessage implements Cloneable {
     public SyslogMessage() {
     }
 
-    public SyslogMessage(
-        final int facility,
-        final int severity,
+    /**
+     * Copy constructor used by {@link #clone()}.
+     * 
+     * @param facility
+     * @param severity
+     * @param version
+     * @param date
+     * @param year
+     * @param month
+     * @param dayOfMonth
+     * @param hourOfDay
+     * @param minute
+     * @param second
+     * @param millisecond
+     * @param zoneId
+     * @param hostname
+     * @param processName
+     * @param processId
+     * @param messageId
+     * @param message
+     */
+    protected SyslogMessage(
+        final SyslogFacility facility,
+        final SyslogSeverity severity,
         final Integer version,
         final Date date,
         final Integer year,
@@ -107,8 +128,8 @@ public class SyslogMessage implements Cloneable {
         final String messageId,
         final String message
     ) {
-        m_facility = SyslogFacility.getFacility(facility);
-        m_severity = SyslogSeverity.getSeverity(severity);
+        m_facility = facility;
+        m_severity = severity;
         m_version = version;
         m_date = date;
         m_year = year;
@@ -348,14 +369,19 @@ public class SyslogMessage implements Cloneable {
             .toString();
     }
 
-    public void setParam(String key, String value) {}
-    public void setParam(String key, Integer value) {}
+    public void setParam(String key, String value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %s, setting arbitrary params is not supported yet", key, value));
+    }
+
+    public void setParam(String key, Integer value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %d, setting arbitrary params is not supported yet", key, value));
+    }
 
     @Override
     public SyslogMessage clone() {
         return new SyslogMessage(
-            m_facility.getFacilityNumber(),
-            m_severity.getSeverityNumber(),
+            m_facility,
+            m_severity,
             m_version,
             m_date,
             m_year,

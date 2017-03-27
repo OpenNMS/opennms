@@ -57,27 +57,22 @@ public class BufferParserTest {
 
 	final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
 
-//	private final ExecutorService m_executor = Executors.newSingleThreadExecutor();
-
-//	private final ExecutorService m_executor = new ExecutorFactoryCassandraSEPImpl().newExecutor("StagedParser", "StageExecutor");
-
-//	private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-
 	@Test
-	public void testMe() throws Exception {
+	public void testDifferentImplementations() throws Exception {
 
 		MockLogAppender.setupLogging(true, "INFO");
 
-		String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311[4]: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
+		final String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311[4]: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
 		//String abc = "<190>Mar 11 08:35:17 127.0.0.1 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet";
-		ByteBuffer incoming = ByteBuffer.wrap(abc.getBytes());
+		final ByteBuffer incoming = ByteBuffer.wrap(abc.getBytes());
 
-		List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		//final List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
+		final List<ParserStage> grokStages = GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}");
 		//BufferParserFactory grokFactory = parseGrok("<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{MONTH:month} %{INT:day} %{STRING:timestamp} %{STRING:timezone} \\%%{STRING:facility}-%{INT:priority}-%{STRING:mnemonic}: %{STRING:message}");
-		ByteBufferParser<SyslogMessage> grokParser = new SingleSequenceParser(grokStages);
+		final ByteBufferParser<SyslogMessage> grokParser = new SingleSequenceParser(grokStages);
 
 		// SyslogNG format
-		List<ParserStage> parserStages = new ParserStageSequenceBuilder()
+		final List<ParserStage> parserStages = new ParserStageSequenceBuilder()
 			.intBetweenDelimiters('<', '>', (s,v) -> {
 				SyslogFacility facility = SyslogFacility.getFacilityForCode(v);
 				SyslogSeverity priority = SyslogSeverity.getSeverityForCode(v);
@@ -113,11 +108,14 @@ public class BufferParserTest {
 			.stringUntilWhitespace(null) // Original time zone
 			.whitespace()
 			.character('%')
-			.stringUntilChar('-', (s,v) -> { s.message.setParam("facility", v); })
+//			.stringUntilChar('-', (s,v) -> { s.message.setParam("facility", v); })
+			.stringUntilChar('-', null)
 			.character('-')
-			.stringUntilChar('-', (s,v) -> { s.message.setParam("severity", v); })
+//			.stringUntilChar('-', (s,v) -> { s.message.setParam("severity", v); })
+			.stringUntilChar('-', null)
 			.character('-')
-			.stringUntilChar(':', (s,v) -> { s.message.setParam("mnemonic", v); })
+//			.stringUntilChar(':', (s,v) -> { s.message.setParam("mnemonic", v); })
+			.stringUntilChar(':', null)
 			.character(':')
 			.whitespace()
 			.terminal().string((s,v) -> {
@@ -125,9 +123,9 @@ public class BufferParserTest {
 			 })
 			.getStages()
 			;
-		ByteBufferParser<SyslogMessage> parser = new SingleSequenceParser(parserStages);
+		final ByteBufferParser<SyslogMessage> parser = new SingleSequenceParser(parserStages);
 
-		RadixTreeParser radixParser = new RadixTreeParser();
+		final RadixTreeParser radixParser = new RadixTreeParser();
 		//radixParser.teach(grokStages.toArray(new ParserStage[0]));
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}] %{STRING:message}").toArray(new ParserStage[0]));
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{INT:version} %{STRING:isotimestamp} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} [%{STRING:structureddata}][%{STRING:structureddata}]").toArray(new ParserStage[0]));
@@ -152,7 +150,7 @@ public class BufferParserTest {
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}").toArray(new ParserStage[0]));
 
-		int iterations = 100000;
+		final int iterations = 100000;
 
 		{
 			CompletableFuture<SyslogMessage> event = null;
@@ -382,6 +380,14 @@ public class BufferParserTest {
 		assertNotNull("One pattern should match", root.join());
 		root = treeParser.parse(ByteBuffer.wrap("bbd".getBytes()));
 		assertNull("No pattern should match", root.join());
+
+		treeParser.performEdgeCompression();
+		System.out.println(treeParser.toString());
+
+		root = treeParser.parse(ByteBuffer.wrap("bad".getBytes()));
+		assertNotNull("One pattern should match", root.join());
+		root = treeParser.parse(ByteBuffer.wrap("bbd".getBytes()));
+		assertNull("No pattern should match", root.join());
 	}
 
 	@Test
@@ -419,12 +425,17 @@ public class BufferParserTest {
 
 		System.out.println("Parser tree: " + radixParser.tree.toString());
 		System.out.println("Parser tree size: " + radixParser.tree.size());
+
+		radixParser.performEdgeCompression();
+		System.out.println("Compressed parser tree: " + radixParser.tree.toString());
+		System.out.println("Compressed parser tree size: " + radixParser.tree.size());
 	}
 
 	@Test
 	public void testParseSingleMessage() {
 		RadixTreeParser radixParser = new RadixTreeParser();
 		radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}").toArray(new ParserStage[0]));
+
 		SyslogMessage message = radixParser.parse(ByteBuffer.wrap("<31>main: 2010-08-19 localhost foo%d: load test %d on tty1".getBytes(StandardCharsets.US_ASCII))).join();
 		assertNotNull(message);
 		assertEquals("main", message.getMessageID());
@@ -437,7 +448,8 @@ public class BufferParserTest {
 		assertNull(message.getSecond());
 		assertNull(message.getMillisecond());
 		assertNull(message.getZoneId());
-		Event event = SyslogParser.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
+
+		Event event = ConvertToEvent.toEventBuilder(message, DistPollerDao.DEFAULT_DIST_POLLER_ID, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID).getEvent();
 		assertEquals("main", event.getParm("messageid").getValue().getContent());
 		assertEquals("foo%d", event.getParm("process").getValue().getContent());
 	}

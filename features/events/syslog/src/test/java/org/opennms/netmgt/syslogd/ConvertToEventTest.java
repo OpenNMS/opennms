@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -59,7 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-  * Convert to event junit test file to test the performance of Syslogd ConvertToEvent processor
+ * Test the performance of Syslogd's {@link ConvertToEvent} processor.
+ *
  * @author ms043660
  */
 public class ConvertToEventTest {
@@ -85,7 +86,7 @@ public class ConvertToEventTest {
         // Sample message which is embedded in packet and passed as parameter
         // to
         // ConvertToEvent constructor
-        byte[] bytes = "<34> 2010-08-19 localhost foo10000: load test 10000 on tty1".getBytes();
+        byte[] bytes = "<34> 2010-08-19 localhost foo10000: load test 10000 on tty1".getBytes(StandardCharsets.US_ASCII);
 
         // Datagram packet which is passed as parameter for ConvertToEvent
         // constructor
@@ -292,7 +293,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                ByteBuffer.wrap(syslog.getBytes(StandardCharsets.US_ASCII)),
+                SyslogdTestUtils.toByteBuffer(syslog),
                 config
             );
             Event event = convert.getEvent();
