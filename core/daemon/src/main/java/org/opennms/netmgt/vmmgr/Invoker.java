@@ -43,8 +43,8 @@ import javax.management.ObjectName;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
+import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,10 +129,9 @@ public class Invoker {
                 invokerService.setMbean(getServer().registerMBean(bean, name));
 
                 // Set attributes
-                org.opennms.netmgt.config.service.Attribute[] attribs =
-                    service.getAttribute();
+                final List<org.opennms.netmgt.config.service.Attribute> attribs = service.getAttributes();
                 if (attribs != null) {
-                    for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
+                    for (final org.opennms.netmgt.config.service.Attribute attrib : attribs) {
                     	LOG.debug("setting attribute {}", attrib.getName());
                         getServer().setAttribute(name, getAttribute(attrib));
                     }
@@ -195,7 +194,7 @@ public class Invoker {
                     }
                 }
                 
-                for (Invoke invoke : invokerService.getService().getInvoke()) {
+                for (final Invoke invoke : invokerService.getService().getInvokes()) {
                     if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
                         continue;
                     }
@@ -234,13 +233,13 @@ public class Invoker {
         
         int end = 0;
         
-        for (InvokerService invokerService : invokerServices) {
-            Invoke[] invokes = invokerService.getService().getInvoke();
+        for (final InvokerService invokerService : invokerServices) {
+            final List<Invoke> invokes = invokerService.getService().getInvokes();
             if (invokes == null) {
                 continue;
             }
             
-            for (Invoke invoke : invokes) {
+            for (final Invoke invoke : invokes) {
                 if (invoke.getPass() > end) {
                     end = invoke.getPass();
                 }
@@ -251,15 +250,15 @@ public class Invoker {
     }
 
     private Object invoke(final Invoke invoke, final ObjectInstance mbean) throws Throwable {
-        Argument[] args = invoke.getArgument();
+        List<Argument> args = invoke.getArguments();
         Object[] parms = new Object[0];
         String[] sig = new String[0];
-        if (args != null && args.length > 0) {
-            parms = new Object[args.length];
-            sig = new String[args.length];
+        if (args != null && args.size() > 0) {
+            parms = new Object[args.size()];
+            sig = new String[args.size()];
             for (int k = 0; k < parms.length; k++) {
                 try {
-                    parms[k] = getArgument(args[k]);
+                    parms[k] = getArgument(args.get(k));
                 } catch (Throwable t) {
 			LOG.error("An error occurred building argument {} for operation {} on MBean {}", k, invoke.getMethod(), mbean.getObjectName(), t);
                   throw t;
@@ -310,7 +309,7 @@ public class Invoker {
 
         Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            return construct.newInstance(new Object[] { arg.getContent() });
+            return construct.newInstance(new Object[] { arg.getValue().orElse(null) });
         } finally {
             Logging.setContextMap(mdc);
         }
@@ -319,7 +318,7 @@ public class Invoker {
     /**
      * <p>getAtType</p>
      *
-     * @return a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     * @return a {@link org.opennms.netmgt.config.service.InvokeAtType} object.
      */
     public InvokeAtType getAtType() {
         return m_atType;
@@ -328,7 +327,7 @@ public class Invoker {
     /**
      * <p>setAtType</p>
      *
-     * @param atType a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     * @param atType a {@link org.opennms.netmgt.config.service.InvokeAtType} object.
      */
     public void setAtType(InvokeAtType atType) {
         m_atType = atType;

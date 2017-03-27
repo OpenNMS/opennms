@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,19 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.service.types;
+package org.opennms.netmgt.config.service;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class InvokeAtTypeAdapter extends XmlAdapter<String, InvokeAtType> {
-
-    @Override
-    public InvokeAtType unmarshal(String val) throws Exception {
-        return InvokeAtType.valueOf(val);
-    }
-
-    @Override
-    public String marshal(InvokeAtType invokeAtType) throws Exception {
-        return invokeAtType.toString();
-    }
+@XmlRootElement(name="at")
+@XmlEnum
+public enum InvokeAtType {
+    @XmlEnumValue("start")
+    START,
+    
+    @XmlEnumValue("stop")
+    STOP,
+    
+    @XmlEnumValue("status")
+    STATUS
 }
