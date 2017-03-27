@@ -33,8 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -48,6 +46,7 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
+import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.mock.MockDestinationPathManager;
 import org.opennms.netmgt.config.mock.MockGroupManager;
@@ -173,11 +172,11 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return network;
     }
 
-    private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException, IOException {
+    private MockUserManager createUserManager(MockGroupManager groupManager) throws IOException {
         return new MockUserManager(groupManager, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "users.xml"));
     }
 
-    private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
+    private MockGroupManager createGroupManager() throws IOException {
         return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "groups.xml"));
     }
     
@@ -206,7 +205,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
     
@@ -214,12 +213,12 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return anticipateNotificationsForRole(subject, textMsg, groupName, startTime.getTime(), interval);
     }
 
-    protected long anticipateNotificationsForRole(String subject, String textMsg, String roleName, long startTime, long interval) throws MarshalException, ValidationException, IOException {
+    protected long anticipateNotificationsForRole(String subject, String textMsg, String roleName, long startTime, long interval) throws IOException {
         String[] users = m_userManager.getUsersScheduledForRole(roleName, new Date(startTime));
         return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
 
-    protected long anticipateNotificationsForUsers(String[] users, String subject, String textMsg, long startTime, long interval) throws IOException, MarshalException, ValidationException {
+    protected long anticipateNotificationsForUsers(String[] users, String subject, String textMsg, long startTime, long interval) throws IOException {
         long expectedTime = startTime;
         for (int i = 0; i < users.length; i++) {
             User user = m_userManager.getUser(users[i]);
@@ -237,7 +236,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
 
     protected Collection<String> getUsersInGroup(String groupName) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
-        String[] users = group.getUser();
+        String[] users = group.getUsers().toArray(new String[0]);
         return Arrays.asList(users);
         
     }
@@ -267,9 +266,9 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         return notification;
     }
 
-    protected long computeInterval() throws IOException, MarshalException, ValidationException {
-        String interval = m_destinationPathManager.getPath("Intervals").getTarget(0).getInterval();
-        return TimeConverter.convertToMillis(interval);
+    protected long computeInterval() throws IOException {
+        String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
+        return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
     }
 
     @Override

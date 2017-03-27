@@ -561,6 +561,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected void createNode(int statusCode) throws Exception {
         String node = "<node type=\"A\" label=\"TestMachine" + nodeCounter + "\">" +
+                "<location>Default</location>" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
                 "<sysDescription>" +

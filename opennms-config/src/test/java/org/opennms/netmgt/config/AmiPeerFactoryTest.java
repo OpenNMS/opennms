@@ -30,15 +30,12 @@ package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
@@ -68,12 +65,10 @@ public class AmiPeerFactoryTest {
     }
 
     /**
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testOneSpecific() throws MarshalException, ValidationException, IOException {
+    public final void testOneSpecific() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -86,7 +81,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
 
@@ -99,12 +94,10 @@ public class AmiPeerFactoryTest {
      * This tests the merging of a new specific into a definition that already contains a specific
      * that is adjacent.  The two specifics should be converted to a single range in the definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testAddAdjacentSpecificToDef() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -118,7 +111,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(2), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -134,7 +127,7 @@ public class AmiPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -148,7 +141,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(2), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -164,7 +157,7 @@ public class AmiPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -178,7 +171,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(2), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -194,7 +187,7 @@ public class AmiPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -208,7 +201,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(2), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -228,12 +221,10 @@ public class AmiPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testRecombineSpecificIntoRange() throws MarshalException, ValidationException, IOException {
+    public void testRecombineSpecificIntoRange() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -248,7 +239,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(1), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -269,12 +260,10 @@ public class AmiPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
+    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -289,7 +278,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(1), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -310,12 +299,10 @@ public class AmiPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testNewSpecificSameAsBeginInOldDef() throws MarshalException, ValidationException, IOException {
+    public final void testNewSpecificSameAsBeginInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -329,7 +316,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(1), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -348,12 +335,10 @@ public class AmiPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testNewSpecificSameAsEndInOldDef() throws MarshalException, ValidationException, IOException {
+    public final void testNewSpecificSameAsEndInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -367,7 +352,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(1), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());
@@ -386,12 +371,10 @@ public class AmiPeerFactoryTest {
      * This tests the merging of a new definition that contains a range of IP addresses that overlaps
      * the end of one range and the beginning of another range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testOverlapsTwoRanges() throws MarshalException, ValidationException, IOException {
+    public void testOverlapsTwoRanges() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
                 "<ami-config retry=\"3\" timeout=\"800\"\n" + 
@@ -406,7 +389,7 @@ public class AmiPeerFactoryTest {
                 "";
 
         AmiPeerFactory factory = AmiPeerFactory.getInstance();
-        AmiPeerFactory.setAmiConfig(CastorUtils.unmarshal(AmiConfig.class, new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8"))));
+        AmiPeerFactory.setAmiConfig(JaxbUtils.unmarshal(AmiConfig.class, amiConfigXml));
 
         assertEquals(1, AmiPeerFactory.getAmiConfig().getDefinitionCount());
         assertEquals(Integer.valueOf(0), AmiPeerFactory.getAmiConfig().getDefinition(0).getSpecificCount());

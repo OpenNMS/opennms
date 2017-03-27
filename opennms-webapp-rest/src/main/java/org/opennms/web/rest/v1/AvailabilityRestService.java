@@ -52,8 +52,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -107,7 +105,7 @@ public class AvailabilityRestService extends OnmsRestService {
     public AvailabilityData getNodeAvailability() {
         try {
             return new AvailabilityData(m_categoryList.getCategoryData());
-        } catch (final MarshalException | ValidationException | IOException e) {
+        } catch (final IOException e) {
             LOG.warn("Failed to get availability data: {}", e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data: {}", e.getMessage());
         }
@@ -123,7 +121,7 @@ public class AvailabilityRestService extends OnmsRestService {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
             return cat;
-        } catch (final MarshalException | ValidationException | IOException e) {
+        } catch (final IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
@@ -139,7 +137,7 @@ public class AvailabilityRestService extends OnmsRestService {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
             }
             return cat.getNodes();
-        } catch (final MarshalException | ValidationException | IOException e) {
+        } catch (final IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }

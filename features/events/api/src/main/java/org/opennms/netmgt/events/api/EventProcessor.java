@@ -42,4 +42,6 @@ import org.opennms.netmgt.xml.event.Log;
 public interface EventProcessor {
 
     void process(final Log eventLog) throws EventProcessorException;
+
+    void process(final Log eventLog, boolean synchronous) throws EventProcessorException;
 }

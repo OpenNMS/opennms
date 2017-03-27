@@ -42,8 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserManager;
@@ -221,7 +219,7 @@ public class GroupController extends AbstractController implements InitializingB
     }
 
     private ModelAndView editGroup(HttpServletRequest request, WebGroup group)
-            throws IOException, MarshalException, ValidationException {
+            throws IOException {
         HttpSession userSession = request.getSession(true);
         userSession.setAttribute("group.modifyGroup.jsp", group);
         userSession.setAttribute("allCategories.modifyGroup.jsp", m_categoryDao.getAllCategoryNames().toArray(new String[0]));

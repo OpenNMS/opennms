@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,13 +36,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * The forwarding information for this event - state determines
@@ -79,26 +70,6 @@ public class Forward implements Serializable {
         return m_state == null? "off" : m_state; // Defaults to off in the XSD
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
     public void setContent(final String content) {
         m_content = content.intern();
     }
@@ -109,14 +80,6 @@ public class Forward implements Serializable {
 
     public void setState(final String state) {
         m_state = state.intern();
-    }
-
-    public static Forward unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Forward) Unmarshaller.unmarshal(Forward.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 	@Override

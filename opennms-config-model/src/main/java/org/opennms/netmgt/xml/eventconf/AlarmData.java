@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +39,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * This element is used for converting events into alarms.
@@ -132,26 +123,6 @@ public class AlarmData implements Serializable {
         return m_autoClean;
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
     public void setAlarmType(final Integer alarmType) {
         m_alarmType = alarmType;
     }
@@ -174,14 +145,6 @@ public class AlarmData implements Serializable {
 
     public void setX733ProbableCause(final Integer x733ProbableCause) {
         m_x733ProbableCause = x733ProbableCause;
-    }
-
-    public static AlarmData unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (AlarmData) Unmarshaller.unmarshal(AlarmData.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
     public void deleteAutoClean() {

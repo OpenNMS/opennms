@@ -58,10 +58,6 @@
       <appender-ref ref="ConditionalFileLogger"/>
       <appender-ref ref="ConsoleAppender"/>
     </logger>
-    <logger name="org.exolab.castor" additivity="false" level="INFO">
-      <appender-ref ref="ConditionalFileLogger"/>
-      <appender-ref ref="ConsoleAppender"/>
-    </logger>
     <logger name="org.quartz" additivity="false" level="INFO">
       <appender-ref ref="ConditionalFileLogger"/>
       <appender-ref ref="ConsoleAppender"/>

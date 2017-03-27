@@ -147,7 +147,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         m_mocks.replayAll();
 
-        m_manager.broadcastNow(bldr.getEvent());
+        m_manager.broadcastNow(bldr.getEvent(), false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -199,7 +199,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener);
-        m_manager.broadcastNow(event);
+        m_manager.broadcastNow(event, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -240,7 +240,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener, e.getUei());
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -256,7 +256,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -271,7 +271,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -286,7 +286,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener, "uei.opennms.org");
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -299,7 +299,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener, "uei.opennms.org/*");
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -313,7 +313,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         m_manager.addEventListener(m_listener, "uei.opennms.org/foo");
         m_manager.addEventListener(m_listener, "uei.opennms.org/");
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -420,7 +420,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         m_manager.addEventListener(m_listener);
         m_manager.addEventListener(m_listener, e.getUei());
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -436,7 +436,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
 
         m_manager.addEventListener(m_listener, e.getUei());
         m_manager.addEventListener(m_listener);
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -468,7 +468,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         Event e = bldr.getEvent();
         m_mocks.replayAll();
 
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(e, false);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -477,6 +477,15 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     private static class ThreadRecordingEventHandler implements EventHandler {
         private final AtomicReference<Long> lastThreadId = new AtomicReference<>();
         private CountDownLatch latch;
+
+        /**
+         * This {@link EventHandler} is always synchronous so this method just 
+         * delegates to {@link #createRunnable(Log)}.
+         */
+        @Override
+        public Runnable createRunnable(Log eventLog, boolean synchronous) {
+            return createRunnable(eventLog);
+        }
 
         @Override
         public Runnable createRunnable(Log eventLog) {
@@ -521,6 +530,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         AtomicInteger rejected = new AtomicInteger();
 
         EventHandler handler = new EventHandler() {
+            @Override
+            public Runnable createRunnable(Log eventLog, boolean synchronous) {
+                return createRunnable(eventLog);
+            }
+
             @Override
             public Runnable createRunnable(Log eventLog) {
                 return new Runnable() {
@@ -598,7 +612,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         for (int i = 0; i < 10; i++) {
             EventBuilder bldr = new EventBuilder("uei.opennms.org/foo/" + i, "testSlowEventListener");
             Event e = bldr.getEvent();
-            manager.broadcastNow(e);
+            manager.broadcastNow(e, false);
         }
 
         await().pollInterval(1, TimeUnit.SECONDS).untilAtomic(counter, is(equalTo(6)));
@@ -636,7 +650,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
                 if ("uei.opennms.org/foo".equals(event.getUei())) {
                     EventBuilder bldr = new EventBuilder("uei.opennms.org/bar", "testRecursiveEvents");
                     Event e = bldr.getEvent();
-                    manager.broadcastNow(e);
+                    manager.broadcastNow(e, false);
                     fooCounter.countDown();
                 } else {
                     try {
@@ -659,7 +673,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
                 if ("uei.opennms.org/foo".equals(event.getUei())) {
                     EventBuilder bldr = new EventBuilder("uei.opennms.org/ulf", "testRecursiveEvents");
                     Event e = bldr.getEvent();
-                    manager.broadcastNow(e);
+                    manager.broadcastNow(e, false);
                     kiwiCounter.countDown();
                 } else {
                     try {
@@ -680,7 +694,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         for (int i = 0; i < numberOfEvents; i++) {
             EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testRecursiveEvents");
             Event e = bldr.getEvent();
-            manager.broadcastNow(e);
+            manager.broadcastNow(e, false);
         }
 
         assertTrue("foo counter not satisfied: " + fooCounter.getCount(), fooCounter.await(100, TimeUnit.SECONDS));
@@ -705,5 +719,42 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         public List<Event> getEvents() {
             return m_events;
         }
+    }
+
+    public void testBroadcastNowSync() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        final EventListener slowListener = new EventListener() {
+            @Override
+            public String getName() {
+                return "testBroadcastNowSync";
+            }
+
+            @Override
+            public void onEvent(Event event) {
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                } catch (InterruptedException e) {
+                }
+                counter.incrementAndGet();
+            }
+        };
+
+        EventIpcManagerDefaultImpl manager = new EventIpcManagerDefaultImpl(m_registry);
+        manager.setHandlerPoolSize(5);
+        DefaultEventHandlerImpl handler = new DefaultEventHandlerImpl(m_registry);
+        manager.setEventHandler(handler);
+        manager.afterPropertiesSet();
+
+        manager.addEventListener(slowListener);
+
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testBroadcastNowSync");
+        Event e = bldr.getEvent();
+
+        // Verify the initial state
+        assertEquals(0, counter.get());
+        // Broadcast synchronously - this should block until our event listener returns
+        manager.broadcastNow(e, true);
+        // broadcastNow() returned, so the counter should have been increased
+        assertEquals(1, counter.get());
     }
 }

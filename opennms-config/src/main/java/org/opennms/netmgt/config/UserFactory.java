@@ -38,8 +38,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -79,10 +77,8 @@ public class UserFactory extends UserManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public UserFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public UserFactory() throws  FileNotFoundException, IOException {
         super(GroupFactory.getInstance());
         reload();
     }
@@ -92,10 +88,8 @@ public class UserFactory extends UserManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
         
         if (instance == null || !initialized) {
             GroupFactory.init();
@@ -130,8 +124,6 @@ public class UserFactory extends UserManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void reload() throws IOException, FileNotFoundException {
         // Form the complete filename for the config file
@@ -192,8 +184,6 @@ public class UserFactory extends UserManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
     public void doUpdate() throws IOException, FileNotFoundException {

@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
@@ -467,7 +465,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         network.visit(populator);
     }
 
-    protected void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
+    protected void saveXML(final String xmlString) throws IOException {
         // TODO Auto-generated method stub
 
     }

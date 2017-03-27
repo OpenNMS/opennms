@@ -142,7 +142,7 @@
         <constructor-arg value="classpath:/statsd-configuration.xml" />
     </bean>
 
-    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
+    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
         <property name="configResource" ref="statsdConfigResourceLocation" />
         <property name="reloadCheckInterval" value="-1" />
     </bean>
@@ -159,7 +159,7 @@
     <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
         <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
     </bean>
-    <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+    <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
         <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SurveillanceViewConfigDao" ref="surveillanceViewConfigDao" />

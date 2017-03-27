@@ -55,14 +55,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
@@ -112,7 +109,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
 
-    public DiscoveryConfigFactory() throws MarshalException, ValidationException, IOException {
+    public DiscoveryConfigFactory() throws IOException {
         reload();
     }
 
@@ -130,24 +127,18 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
     /**
      * Reload the config from the default config file.
-     * @throws MarshalException, ValidationException, IOException 
+     * @throws IOException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws MarshalException, ValidationException, IOException {
+    public synchronized void reload() throws IOException {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
             final FileSystemResource resource = new FileSystemResource(cfgFile);
-            m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, resource);
+            m_config = JaxbUtils.unmarshal(DiscoveryConfiguration.class, resource);
 
             try {
                 getInitialSleepTime();
@@ -155,9 +146,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 getIntraPacketDelay();
                 getConfiguredAddresses();
             } catch (final Throwable e) {
-                throw new ValidationException("An error occurred while validating the configuration: " + e.getMessage(), e);
+                throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
             }
-        } catch (MarshalException | ValidationException | IOException e) {
+        } catch (IOException e) {
             LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
             throw e;
         }
@@ -197,18 +188,16 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * <p>saveConfiguration</p>
      *
      * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
+    public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
         getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(configuration, stringWriter);
+            JaxbUtils.marshal(configuration, stringWriter);
             final String xml = stringWriter.toString();
             LOG.debug("saving configuration...");
             saveXml(xml);
@@ -325,28 +314,15 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
         getReadLock().lock();
         try {
-            Long defaultTimeout = null;
-            Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            Long defaultTimeout = getConfiguration().getTimeout().orElse(DEFAULT_TIMEOUT);
+            Integer defaultRetries = getConfiguration().getRetries().orElse(DEFAULT_RETRIES);
 
-            for (final IncludeUrl url : getConfiguration().getIncludeUrlCollection()) {
+            for (final IncludeUrl url : getConfiguration().getIncludeUrls()) {
 
-                long timeout = DEFAULT_TIMEOUT;
-                if (url.hasTimeout()) {
-                    timeout = url.getTimeout();
-                } else if (defaultTimeout != null) {
-                    timeout = getConfiguration().getTimeout();
-                }
+                long timeout = url.getTimeout().orElse(defaultTimeout);
+                int retries = url.getRetries().orElse(defaultRetries);
 
-                int retries = DEFAULT_RETRIES;
-                if (url.hasRetries()) {
-                    retries = url.getRetries();
-                } else if (defaultRetries != null) {
-                    retries = defaultRetries;
-                }
-
-                addToSpecificsFromURL(specifics, url.getContent(), url.getForeignSource(), url.getLocation(), timeout, retries);
+                addToSpecificsFromURL(specifics, url.getUrl().orElse(null), url.getForeignSource().orElse(null), url.getLocation().orElse(null), timeout, retries);
             }
 
             return specifics;
@@ -366,12 +342,10 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
         getReadLock().lock();
         try {
-            Long defaultTimeout = null;
-            Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            Long defaultTimeout = getConfiguration().getTimeout().orElse(DEFAULT_TIMEOUT);
+            Integer defaultRetries =getConfiguration().getRetries().orElse(DEFAULT_RETRIES);
 
-            for (final IncludeRange ir : getConfiguration().getIncludeRangeCollection()) {
+            for (final IncludeRange ir : getConfiguration().getIncludeRanges()) {
 
                 // Validate IP range; if invalid, then log and discard this range
                 try {
@@ -388,22 +362,11 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                     continue;
                 }
 
-                long timeout = DEFAULT_TIMEOUT;
-                if (ir.hasTimeout()) {
-                    timeout = ir.getTimeout();
-                } else if (defaultTimeout != null) {
-                    timeout = defaultTimeout;
-                }
-
-                int retries = DEFAULT_RETRIES;
-                if (ir.hasRetries()) {
-                    retries = ir.getRetries();
-                } else if (defaultRetries != null) {
-                    retries = defaultRetries;
-                }
+                long timeout = ir.getTimeout().orElse(defaultTimeout);
+                int retries = ir.getRetries().orElse(defaultRetries);
 
                 try {
-                    includes.add(new IPPollRange(ir.getForeignSource(), ir.getLocation(), ir.getBegin(), ir.getEnd(), timeout, retries));
+                    includes.add(new IPPollRange(ir.getForeignSource().orElse(null), ir.getLocation().orElse(null), ir.getBegin(), ir.getEnd(), timeout, retries));
                 } catch (final UnknownHostException uhE) {
                     LOG.warn("Failed to convert address range ({}, {})", ir.getBegin(), ir.getEnd(), uhE);
                 }
@@ -426,31 +389,18 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
         getReadLock().lock();
         try {
-            Long defaultTimeout = null;
-            Integer defaultRetries = null;
-            if (getConfiguration().hasTimeout()) defaultTimeout = getConfiguration().getTimeout();
-            if (getConfiguration().hasRetries()) defaultRetries = getConfiguration().getRetries();
+            Long defaultTimeout = getConfiguration().getTimeout().orElse(DEFAULT_TIMEOUT);
+            Integer defaultRetries = getConfiguration().getRetries().orElse(DEFAULT_RETRIES);
 
-            for (final Specific s : getConfiguration().getSpecificCollection()) {
+            for (final Specific s : getConfiguration().getSpecifics()) {
 
-                long timeout = DEFAULT_TIMEOUT;
-                if (s.hasTimeout()) {
-                    timeout = s.getTimeout();
-                } else if (defaultTimeout != null) {
-                    timeout = defaultTimeout;
-                }
+                long timeout = s.getTimeout().orElse(defaultTimeout);
+                int retries = s.getRetries().orElse(defaultRetries);
 
-                int retries = DEFAULT_RETRIES;
-                if (s.hasRetries()) {
-                    retries = s.getRetries();
-                } else if (defaultRetries != null) {
-                    retries = defaultRetries;
-                }
-
-                final String address = s.getContent();
+                final String address = s.getAddress();
 
                 try {
-                    specifics.add(new IPPollAddress(s.getForeignSource(), s.getLocation(), InetAddressUtils.addr(address), timeout, retries));
+                    specifics.add(new IPPollAddress(s.getForeignSource().orElse(null), s.getLocation().orElse(null), InetAddressUtils.addr(address), timeout, retries));
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Failed to convert address {}", address, e);
                 }
@@ -471,7 +421,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public boolean isExcluded(final InetAddress address) {
         getReadLock().lock();
         try {
-            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRangeCollection();
+            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRanges();
             if (excludeRange != null) {
                 final byte[] laddr = address.getAddress();
 
@@ -493,13 +443,13 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             LOG.debug("Looking for matching foreign source specific IP or IP range with address: {}...", address);
     
-            List<Specific> specificCollection = getConfiguration().getSpecificCollection();
+            List<Specific> specificCollection = getConfiguration().getSpecifics();
             for (Specific specific : specificCollection) {
-                String ipAddr = specific.getContent();
+                String ipAddr = specific.getAddress();
     
                 if (ipAddr.equals(InetAddressUtils.str(address))) {
     
-                    String foreignSource = specific.getForeignSource();
+                    String foreignSource = specific.getForeignSource().orElse(null);
                     LOG.debug("Matched foreign source {} matching address: {} against specific {}.", foreignSource, address, ipAddr);
                     return foreignSource;
                 }
@@ -507,29 +457,29 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     
             final byte[] laddr = address.getAddress();
     
-            List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRangeCollection();
+            List<IncludeRange> includeRangeCollection = getConfiguration().getIncludeRanges();
             for (IncludeRange range : includeRangeCollection) {
     
                 if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
     
-                    String foreignSource = range.getForeignSource();
+                    String foreignSource = range.getForeignSource().orElse(null);
                     LOG.debug("Found foreign source {} with address {} in the range begin: {} and end: {}.", foreignSource, address, range.getBegin(), range.getEnd());
                     return foreignSource;
                 }
             }
     
-            List<IncludeUrl> includeUrlCollection = getConfiguration().getIncludeUrlCollection();
+            List<IncludeUrl> includeUrlCollection = getConfiguration().getIncludeUrls();
             for (IncludeUrl includeUrl : includeUrlCollection) {
-                String ipAddr = includeUrl.getContent();
+                String ipAddr = includeUrl.getUrl().orElse("");
                 if (ipAddr.equals(InetAddressUtils.str(address))) {
     
-                    String foreignSource = includeUrl.getForeignSource();
+                    String foreignSource = includeUrl.getForeignSource().orElse(null);
                     LOG.debug("Matched foreign source {} matching address: {} in specified URL.", foreignSource, address);
                     return foreignSource;
                 }
             }
     
-            return getConfiguration().getForeignSource();
+            return getConfiguration().getForeignSource().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -545,7 +495,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public double getPacketsPerSecond() {
         getReadLock().lock();
         try {
-            return getConfiguration().getPacketsPerSecond();
+            return getConfiguration().getPacketsPerSecond().orElse(DEFAULT_PACKETS_PER_SECOND);
         } finally {
             getReadLock().unlock();
         }
@@ -560,7 +510,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public long getIntraPacketDelay() {
         getReadLock().lock();
         try {
-            return Math.round(1000.0 / getConfiguration().getPacketsPerSecond());
+            return Math.round(1000.0 / getConfiguration().getPacketsPerSecond().orElse(DEFAULT_PACKETS_PER_SECOND));
         } finally {
             getReadLock().unlock();
         }
@@ -621,9 +571,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public long getRestartSleepTime() {
         getReadLock().lock();
         try {
-            return getConfiguration().getRestartSleepTime();
-        } catch (final NullPointerException e) {
-            return 86400000L;
+            return getConfiguration().getRestartSleepTime().orElse(86400000L);
         } finally {
             getReadLock().unlock();
         }
@@ -638,9 +586,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public long getInitialSleepTime() {
         getReadLock().lock();
         try {
-            return getConfiguration().getInitialSleepTime();
-        } catch (final NullPointerException e) {
-            return 30000L;
+            return getConfiguration().getInitialSleepTime().orElse(30000L);
         } finally {
             getReadLock().unlock();
         }

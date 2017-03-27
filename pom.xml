@@ -226,54 +226,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <staleMillis>1000</staleMillis>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>castor-dependencies</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-            <type>pom</type>
-            <exclusions>
-              <exclusion>
-                <groupId>javax.jms</groupId>
-                <artifactId>jms</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jdmk</groupId>
-                <artifactId>jmxtools</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>com.sun.jmx</groupId>
-                <artifactId>jmxri</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-            <version>${oroVersion}</version>
-            <scope>runtime</scope>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwtPluginVersion}</version>
@@ -657,24 +609,15 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.opennms.maven.plugins</groupId>
-                  <artifactId>castor-maven-plugin</artifactId>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-checkstyle-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
                   <goals>
-                    <!--
-                    <goal>add-test-source</goal>
-                    <goal>add-resource</goal>
-                    <goal>add-test-resource</goal>
-                    -->
-                    <goal>add-source</goal>
-                    <goal>generate</goal>
+                    <goal>check</goal>
                   </goals>
                 </pluginExecutionFilter>
                 <action>
-                  <execute>
-                    <runOnConfiguration>true</runOnConfiguration>
-                    <runOnIncremental>true</runOnIncremental>
-                  </execute>
+                  <ignore/>
                 </action>
               </pluginExecution>
               <pluginExecution>
@@ -1378,7 +1321,6 @@
     <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
-    <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2</owaspEncoderVersion>
@@ -1699,11 +1641,6 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.camel</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.castor-properties</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2444,12 +2381,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-base-assembly</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>castor-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -3891,11 +3822,6 @@
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>oro</groupId>
-        <artifactId>oro</artifactId>
-        <version>${oroVersion}</version>
       </dependency>
       <dependency>
         <groupId>poi</groupId>

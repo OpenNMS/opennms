@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-/* wrapper object to deal with old castor resources */
+/* wrapper object to deal with old non-JAXB resources */
 public class BasicSchedule {
 
 	private String m_name;

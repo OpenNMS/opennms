@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -48,7 +46,7 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ProxySnmpAgentConfigFactory.class);
 
-    public ProxySnmpAgentConfigFactory(final InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public ProxySnmpAgentConfigFactory(final InputStream config) throws FileNotFoundException, IOException {
         super(new InputStreamResource(config));
     }
 

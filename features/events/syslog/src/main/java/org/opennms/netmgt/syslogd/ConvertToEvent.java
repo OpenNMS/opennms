@@ -154,7 +154,7 @@ public class ConvertToEvent {
 
         SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
         if (!parser.find()) {
-            throw new MessageDiscardedException("message does not match");
+            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", syslogString));
         }
         SyslogMessage message;
         try {
@@ -165,7 +165,7 @@ public class ConvertToEvent {
         }
 
         if (message == null) {
-            throw new MessageDiscardedException(String.format("Unable to parse '%s'", syslogString));
+            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", syslogString));
         }
 
         if (LOG.isDebugEnabled()) {

@@ -105,7 +105,7 @@ public class SyslogMessageTest {
         final SyslogParser parser = new CustomSyslogParser(config, "<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial");
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        final Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.MONTH, 11);
         calendar.set(Calendar.DATE, 7);
         calendar.set(Calendar.HOUR_OF_DAY, 12);
@@ -160,7 +160,6 @@ public class SyslogMessageTest {
             final SyslogMessage message = parser.parse();
             LOG.debug("message = {}", message);
             final Calendar cal = Calendar.getInstance();
-            cal.setTimeZone(TimeZone.getTimeZone("UTC"));
             cal.set(Calendar.MONTH, Calendar.MARCH);
             cal.set(Calendar.DAY_OF_MONTH, 14);
             cal.set(Calendar.HOUR_OF_DAY, 17);
@@ -173,7 +172,7 @@ public class SyslogMessageTest {
             assertEquals(cal.getTime(), message.getDate());
             assertEquals("petrus", message.getHostName());
             assertEquals("sudo", message.getProcessName());
-            assertEquals(0, message.getProcessId().intValue());
+            assertEquals(null, message.getProcessId());
             assertEquals("cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases", message.getMessage());
         } finally {
             Locale.setDefault(startLocale);
@@ -185,7 +184,15 @@ public class SyslogMessageTest {
         final SyslogParser parser = new SyslogNGParser(m_config, "<6>test: 2007-01-01 127.0.0.1 OpenNMS[1234]: A SyslogNG style message");
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Date date = new Date(1167609600000L);
+        final Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.YEAR, 2007);
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DATE, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.clear(Calendar.MINUTE);
+        calendar.clear(Calendar.SECOND);
+        calendar.clear(Calendar.MILLISECOND);
+        final Date date = calendar.getTime();
 
         assertEquals(SyslogFacility.KERNEL, message.getFacility());
         assertEquals(SyslogSeverity.INFO, message.getSeverity());
@@ -202,7 +209,15 @@ public class SyslogMessageTest {
         final SyslogParser parser = new SyslogNGParser(m_config, "<6>test: 2007-01-01 127.0.0.1 A SyslogNG style message");
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Date date = new Date(1167609600000L);
+        final Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.YEAR, 2007);
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DATE, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.clear(Calendar.MINUTE);
+        calendar.clear(Calendar.SECOND);
+        calendar.clear(Calendar.MILLISECOND);
+        final Date date = calendar.getTime();
 
         assertEquals(SyslogFacility.KERNEL, message.getFacility());
         assertEquals(SyslogSeverity.INFO, message.getSeverity());
@@ -219,20 +234,19 @@ public class SyslogMessageTest {
         final SyslogParser parser = new SyslogNGParser(m_config, "<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial");
         assertTrue(parser.find());
         final SyslogMessage message = parser.parse();
-        final Date timestampIn2011 = new Date(1323259326000L);
-        
-        final Calendar cal = Calendar.getInstance();
-        final int currentYear = cal.get(Calendar.YEAR);
-        
-        cal.setTime(timestampIn2011);
-        cal.set(Calendar.YEAR, currentYear);
-        
-        final Date timestampThisYear = cal.getTime();
+        final Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+        calendar.set(Calendar.DATE, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 2);
+        calendar.set(Calendar.SECOND, 6);
+        calendar.clear(Calendar.MILLISECOND);
+        final Date date = calendar.getTime();
 
         assertEquals(SyslogFacility.LOCAL5, message.getFacility());
         assertEquals(SyslogSeverity.NOTICE, message.getSeverity());
         assertEquals(null, message.getMessageID());
-        assertEquals(timestampThisYear, message.getDate());
+        assertEquals(date, message.getDate());
         assertEquals("10.13.110.116", message.getHostName());
         assertEquals("mgmtd", message.getProcessName());
         assertEquals(8326, message.getProcessId().intValue());

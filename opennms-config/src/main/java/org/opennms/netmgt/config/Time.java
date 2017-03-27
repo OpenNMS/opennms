@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.config;
 
-/* wrapper object to deal with old castor resources */
+/* wrapper object to deal with old XML resources */
 public class Time {
 
 	private String m_id;

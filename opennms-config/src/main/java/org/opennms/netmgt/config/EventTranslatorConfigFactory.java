@@ -36,8 +36,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,14 +53,12 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
@@ -115,13 +115,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * 
      */
-    private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException, MarshalException, ValidationException {
+    private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException{
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
@@ -138,19 +134,20 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @param rdr a {@link java.io.Reader} object.
      * @param dbConnFactory a {@link javax.sql.DataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
+    public EventTranslatorConfigFactory(InputStream rdr, DataSource dbConnFactory) throws IOException {
         unmarshall(rdr, dbConnFactory);
     }
 
-    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventTranslatorConfiguration.class, stream);
-        m_dbConnFactory = dbConnFactory;
+    private synchronized void unmarshall(InputStream stream, DataSource dbConnFactory) throws IOException {
+        try(final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(EventTranslatorConfiguration.class, reader);
+            m_dbConnFactory = dbConnFactory;
+        }
     }
 
-    private synchronized void unmarshall(InputStream stream) throws MarshalException, ValidationException {
+    private synchronized void unmarshall(InputStream stream) throws IOException {
         unmarshall(stream, null);
     }
 
@@ -185,18 +182,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.lang.ClassNotFoundException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.sql.SQLException if any.
      * @throws java.beans.PropertyVetoException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
+    public static synchronized void init() throws IOException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -215,18 +206,12 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.lang.ClassNotFoundException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.sql.SQLException if any.
      * @throws java.beans.PropertyVetoException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException {
+    public static synchronized void reload() throws IOException, ClassNotFoundException, SQLException, PropertyVetoException {
         m_singleton = null;
         m_loaded = false;
 
