@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
@@ -135,8 +136,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of configured engines
      */
-    public synchronized Engine[] getEngines() {
-        return m_config.getEngine();
+    public synchronized List<Engine> getEngines() {
+        return m_config.getEngines();
     }
 
     /**
@@ -144,8 +145,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of start scripts
      */
-    public synchronized StartScript[] getStartScripts() {
-        return m_config.getStartScript();
+    public synchronized List<StartScript> getStartScripts() {
+        return m_config.getStartScripts();
     }
 
     /**
@@ -153,8 +154,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of stop scripts
      */
-    public synchronized StopScript[] getStopScripts() {
-        return m_config.getStopScript();
+    public synchronized List<StopScript> getStopScripts() {
+        return m_config.getStopScripts();
     }
 
     /**
@@ -162,8 +163,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of reload scripts
      */
-    public synchronized ReloadScript[] getReloadScripts() {
-        return m_config.getReloadScript();
+    public synchronized List<ReloadScript> getReloadScripts() {
+        return m_config.getReloadScripts();
     }
 
     /**
@@ -171,7 +172,7 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of configured event scripts
      */
-    public synchronized EventScript[] getEventScripts() {
-        return m_config.getEventScript();
+    public synchronized List<EventScript> getEventScripts() {
+        return m_config.getEventScripts();
     }
 }

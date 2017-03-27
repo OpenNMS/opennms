@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,34 +29,29 @@
 package org.opennms.netmgt.config.scriptd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Uei.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "uei")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Uei implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("scriptd-configuration.xsd")
+public class Uei implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     public Uei() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
@@ -64,41 +59,23 @@ public class Uei implements java.io.Serializable {
         }
         
         if (obj instanceof Uei) {
-            Uei temp = (Uei)obj;
-            boolean equals = Objects.equals(temp.name, name);
-            return equals;
+            final Uei that = (Uei)obj;
+            return Objects.equals(this.m_name, that.m_name);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
-        return this.name;
+        return m_name;
     }
 
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            name);
-        return hash;
+        return Objects.hash(m_name);
     }
 
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
     public void setName(final String name) {
-        this.name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
 }
