@@ -885,53 +885,123 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private void assertBusinessServicesAreVisible(String ... visible) {
         for(String bs : visible) {
-            findDeleteButton(this, bs);
+            Assert.assertNotNull(findDeleteButton(this, bs));
         }
     }
 
     private void assertBusinessServicesAreHidden(String ... hidden) {
         for(String bs : hidden) {
-            verifyElementNotPresent(this, By.id("deleteButton-" + bs));
+            Assert.assertNull(getElementImmediately(By.id("deleteButton-" + bs)));
         }
     }
 
     @Test
     public void testCanFilterBusinessServices() throws InterruptedException {
-        final String bsA = "AAA";
-        final String bsB = "BBB";
-        final String bsC = "CCC";
-        final String bsAB = "AAA BBB";
+        /**
+         *
+         * AAA
+         *  '-BBB
+         *     |-CCC
+         *     |  '-DDD
+         *     '-EEE
+         * XXX
+         *  '-YYY
+         *     '-BBB
+         *        |-CCC
+         *        |  '-DDD
+         *        '-EEE
+         */
+        final String aaa = "AAA";
+        final String bbb = "BBB";
+        final String ccc = "CCC";
+        final String ddd = "DDD";
+        final String eee = "EEE";
+        final String xxx = "XXX";
+        final String yyy = "YYY";
 
-        bsmAdminPage.openNewDialog(bsA).save();
-        bsmAdminPage.openNewDialog(bsB).save();
-        bsmAdminPage.openNewDialog(bsC).save();
-        bsmAdminPage.openNewDialog(bsAB).save();
+        bsmAdminPage.openNewDialog(aaa).save();
+        bsmAdminPage.openNewDialog(bbb).save();
+        bsmAdminPage.openNewDialog(ccc).save();
+        bsmAdminPage.openNewDialog(ddd).save();
+        bsmAdminPage.openNewDialog(eee).save();
+        bsmAdminPage.openNewDialog(xxx).save();
+        bsmAdminPage.openNewDialog(yyy).save();
 
-        assertBusinessServicesAreVisible(bsA, bsB, bsC, bsAB);
+        BsmAdminPageEditWindow bsmAdminPageEditWindow;
 
-        bsmAdminPage.filter("AAA");
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(aaa);
+        bsmAdminPageEditWindow.addChildEdge(bbb, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
 
-        assertBusinessServicesAreVisible(bsA, bsAB);
-        assertBusinessServicesAreHidden(bsB, bsC);
+        bsmAdminPage.expandAll();
 
-        bsmAdminPage.filter("BBB");
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(bbb);
+        bsmAdminPageEditWindow.addChildEdge(ccc, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
 
-        assertBusinessServicesAreVisible(bsB, bsAB);
-        assertBusinessServicesAreHidden(bsA, bsC);
+        bsmAdminPage.expandAll();
 
-        bsmAdminPage.filter("CCC");
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(bbb);
+        bsmAdminPageEditWindow.addChildEdge(eee, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
 
-        assertBusinessServicesAreVisible(bsC);
-        assertBusinessServicesAreHidden(bsA, bsB, bsAB);
+        bsmAdminPage.expandAll();
+
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(ccc);
+        bsmAdminPageEditWindow.addChildEdge(ddd, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
+
+        bsmAdminPage.expandAll();
+
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(xxx);
+        bsmAdminPageEditWindow.addChildEdge(yyy, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
+
+        bsmAdminPage.expandAll();
+
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(yyy);
+        bsmAdminPageEditWindow.addChildEdge(bbb, "Identity", 1).confirm();
+        bsmAdminPageEditWindow.save();
+
+        bsmAdminPage.collapseAll();
+
+        assertBusinessServicesAreVisible(aaa, xxx);
+        assertBusinessServicesAreHidden(bbb, ccc, ddd, eee, yyy);
+
+        bsmAdminPage.filter("aa");
+
+        assertBusinessServicesAreVisible(aaa);
+        assertBusinessServicesAreHidden(bbb, ccc, ddd, eee, xxx, yyy);
+
+        bsmAdminPage.filter("bbB");
+
+        assertBusinessServicesAreVisible(aaa, bbb, xxx, yyy);
+        assertBusinessServicesAreHidden(ccc, ddd, eee);
+
+        bsmAdminPage.filter("CcC");
+
+        assertBusinessServicesAreVisible(aaa, bbb, ccc, xxx, yyy);
+        assertBusinessServicesAreHidden(ddd, eee);
+
+        bsmAdminPage.filter("xyz");
+
+        assertBusinessServicesAreHidden(aaa, bbb, ccc, ddd, eee, xxx, yyy);
 
         bsmAdminPage.filter("");
 
-        assertBusinessServicesAreVisible(bsA, bsB, bsC, bsAB);
+        assertBusinessServicesAreVisible(aaa, xxx);
 
-        bsmAdminPage.delete(bsA);
-        bsmAdminPage.delete(bsB);
-        bsmAdminPage.delete(bsC);
-        bsmAdminPage.delete(bsAB);
+        bsmAdminPage.expandAll();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteButton-" + ddd)));
+
+        bsmAdminPage.delete(aaa,true);
+        bsmAdminPage.delete(bbb,true);
+        bsmAdminPage.delete(ccc,true);
+        bsmAdminPage.delete(ddd,false);
+        bsmAdminPage.delete(eee,false);
+        bsmAdminPage.delete(xxx,true);
+        bsmAdminPage.delete(yyy,false);
     }
 
     /**

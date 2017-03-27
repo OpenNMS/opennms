@@ -34,7 +34,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
-import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -89,18 +89,23 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         final TextField filterTextField = new TextField();
         filterTextField.setInputPrompt("Filter");
         filterTextField.setId("filterTextField");
+        filterTextField.setImmediate(true);
 
-        filterTextField.addValueChangeListener(new Property.ValueChangeListener() {
+        filterTextField.addTextChangeListener(new FieldEvents.TextChangeListener() {
             @Override
-            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                m_table.setBusinessServiceNameFilter(valueChangeEvent.getProperty().getValue().toString());
+            public void textChange(FieldEvents.TextChangeEvent textChangeEvent) {
+                m_table.setBusinessServiceNameFilter(textChangeEvent.getText());
+                m_table.expandForBusinessServiceNameFilter();
             }
         });
 
         // Clear Filter
-        final Button clearFilterButton = UIHelper.createButton("Clear Filter", null, FontAwesome.FILTER, (Button.ClickListener) event -> {
+        final Button clearFilterButton = UIHelper.createButton("Clear Filter", null, FontAwesome.TIMES_CIRCLE, (Button.ClickListener) event -> {
             filterTextField.setValue("");
+            m_table.setBusinessServiceNameFilter(null);
+            m_table.getContainerDataSource().getItemIds().forEach(id -> m_table.setCollapsed(id, true));
         });
+
         clearFilterButton.setId("clearButton");
 
         // Refresh
