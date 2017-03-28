@@ -32,6 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -46,10 +47,10 @@ public class SnmpUtilsTest {
 	 * @throws UnsupportedEncodingException
 	 */
 	@Test
-	public void testGetProtoCounter63Value() throws UnsupportedEncodingException {
+	public void testGetProtoCounter63Value() {
 		for (byte[] bytes : new byte[][] {
 			// Not all decimal digits
-			"abcdef01".getBytes("UTF-8"),
+			"abcdef01".getBytes(StandardCharsets.UTF_8),
 			// Highest 63-bit value
 			{ (byte)0x79, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff },
 			// Zero
@@ -62,15 +63,15 @@ public class SnmpUtilsTest {
 
 		for (byte[] bytes : new byte[][] {
 			// Not 8 bytes
-			"abcdef".getBytes("UTF-8"),
+			"abcdef".getBytes(StandardCharsets.UTF_8),
 			// All decimal digits
-			"01234567".getBytes("UTF-8"),
+			"01234567".getBytes(StandardCharsets.UTF_8),
 			// All decimal digits
-			"00000000".getBytes("UTF-8"),
+			"00000000".getBytes(StandardCharsets.UTF_8),
 			// All decimal digits
-			"11111111".getBytes("UTF-8"),
+			"11111111".getBytes(StandardCharsets.UTF_8),
 			// All decimal digits
-			"99999999".getBytes("UTF-8"),
+			"99999999".getBytes(StandardCharsets.UTF_8),
 			// Special case for "not supported"
 			{ (byte)0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 },
 			// 64-bit value

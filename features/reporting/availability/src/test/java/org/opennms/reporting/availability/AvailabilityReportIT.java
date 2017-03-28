@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -234,7 +235,7 @@ public class AvailabilityReportIT extends TestCase {
         
         assertNotNull("report", report);
 
-        Writer fileWriter = new OutputStreamWriter(System.out, "UTF-8");
+        Writer fileWriter = new OutputStreamWriter(System.out, StandardCharsets.UTF_8);
         JaxbUtils.marshal(report, fileWriter);
 
         Categories categories = report.getCategories();

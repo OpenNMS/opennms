@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -340,8 +341,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
             assertNotNull("Location header is null", header);
-            final String location = URLDecoder.decode(header.toString(), "UTF-8");
-            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
+            final String location = URLDecoder.decode(header.toString(), StandardCharsets.UTF_8.name());
+            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, StandardCharsets.UTF_8.name());
             assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
         }
         return response;
@@ -427,7 +428,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         for (String item : data.split("&")) {
             int idx = item.indexOf("=");
             if (idx > 0) {
-                retVal.put(URLDecoder.decode(item.substring(0, idx), "UTF-8"), URLDecoder.decode(item.substring(idx + 1), "UTF-8"));
+                retVal.put(URLDecoder.decode(item.substring(0, idx), StandardCharsets.UTF_8.name()), URLDecoder.decode(item.substring(idx + 1), StandardCharsets.UTF_8.name()));
             }
         }
         return retVal;
@@ -464,7 +465,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                     }
 
                     for (final String valueEntry : valueEntries) {
-                        sb.append(URLEncoder.encode((String)key, "UTF-8")).append("=").append(URLEncoder.encode((String)valueEntry, "UTF-8")).append("&");
+                        sb.append(URLEncoder.encode((String)key, StandardCharsets.UTF_8.name())).append("=").append(URLEncoder.encode((String)valueEntry, StandardCharsets.UTF_8.name())).append("&");
                     }
                 } else {
                     LOG.warn("key was not a string! ({})", key);

@@ -30,9 +30,9 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -101,9 +101,6 @@ public class ConvertToEvent {
      * into a string using the <tt>US-ASCII</tt> character encoding.
      *
      * @param packet The datagram received from the remote agent.
-     * @throws java.io.UnsupportedEncodingException
-     *          Thrown if the data buffer cannot be decoded using the
-     *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
@@ -111,8 +108,8 @@ public class ConvertToEvent {
         final String location,
         final DatagramPacket packet,
         final SyslogdConfig config
-    ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(systemId, location, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
+    ) throws MessageDiscardedException {
+        this(systemId, location, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), StandardCharsets.US_ASCII), config);
     }
 
     /**
@@ -124,9 +121,6 @@ public class ConvertToEvent {
      * @param port The remote agent's port
      * @param data The XML data in US-ASCII encoding.
      * @param len  The length of the XML data in the buffer.
-     * @throws java.io.UnsupportedEncodingException
-     *          Thrown if the data buffer cannot be decoded using the
-     *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
     public ConvertToEvent(
@@ -136,7 +130,7 @@ public class ConvertToEvent {
         final int port,
         final String data,
         final SyslogdConfig config
-    ) throws UnsupportedEncodingException, MessageDiscardedException {
+    ) throws MessageDiscardedException {
 
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");

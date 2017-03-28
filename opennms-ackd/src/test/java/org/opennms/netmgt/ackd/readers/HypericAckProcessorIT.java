@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -240,7 +241,7 @@ public class HypericAckProcessorIT implements InitializingBean {
 
     @Test
     public void testParseHypericAlerts() throws Exception {
-        LineNumberReader reader = new LineNumberReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("hqu/opennms/alertStatus/list.hqu"), "UTF-8"));
+        LineNumberReader reader = new LineNumberReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("hqu/opennms/alertStatus/list.hqu"), StandardCharsets.UTF_8));
         reader.mark(4000);
         try {
             while(true) {

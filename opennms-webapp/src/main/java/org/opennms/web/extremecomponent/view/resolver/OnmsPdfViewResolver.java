@@ -31,6 +31,7 @@ package org.opennms.web.extremecomponent.view.resolver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -52,7 +53,7 @@ public class OnmsPdfViewResolver implements ViewResolver {
 
     @Override
     public void resolveView(ServletRequest request, ServletResponse response, Preferences preferences, Object viewData) throws Exception {
-        InputStream is = new ByteArrayInputStream(((String) viewData).getBytes("UTF-8"));
+        InputStream is = new ByteArrayInputStream(((String) viewData).getBytes(StandardCharsets.UTF_8));
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         

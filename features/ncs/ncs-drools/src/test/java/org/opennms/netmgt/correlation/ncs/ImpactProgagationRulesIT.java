@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -199,7 +200,7 @@ public class ImpactProgagationRulesIT extends CorrelationRulesITCase {
 //        // verify its matches the expected results
 //        byte[] utf8 = out.toByteArray();
 //
-//        String result = new String(utf8, "UTF-8");
+//        String result = new String(utf8, StandardCharsets.UTF_8);
 //        
 //        System.err.println(result);
 

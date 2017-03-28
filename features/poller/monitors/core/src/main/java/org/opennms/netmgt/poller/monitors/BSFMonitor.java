@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -184,7 +185,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
             }
             
             if(file.exists() && file.canRead()){   
-                    String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+                    String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
                     HashMap<String,String> results = new HashMap<String,String>();
                     LinkedHashMap<String,Number> times = new LinkedHashMap<String,Number>();
                     

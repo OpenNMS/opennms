@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class PageSequenceMonitorOpenNMSTest {
         LineNumberReader in = new LineNumberReader(
             new InputStreamReader(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("opennmsPageSequence.xml"),
-                "UTF-8"
+                StandardCharsets.UTF_8
             )
         );
         String line;
