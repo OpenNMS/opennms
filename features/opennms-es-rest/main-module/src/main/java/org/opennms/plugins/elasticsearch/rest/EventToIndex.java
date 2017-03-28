@@ -739,7 +739,7 @@ public class EventToIndex implements AutoCloseable {
 						+ "\n  oldValuesStr="+oldValuesStr);
 				return null;
 			} else {
-				try{
+				try {
 					Object obj = parser.parse(oldValuesStr);
 					oldAlarmValues = (JSONObject) obj;
 				} catch (ParseException e1) {
@@ -771,9 +771,9 @@ public class EventToIndex implements AutoCloseable {
 				}
 			} else if((SEVERITY.equals(key) && value!=null)){ 
 				try{
-					body.put(SEVERITY,value);
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
+					body.put(SEVERITY,value);
 					body.put(SEVERITY_TEXT,label);
 				}
 				catch (Exception e){
@@ -840,12 +840,11 @@ public class EventToIndex implements AutoCloseable {
 
 		// add "initialseverity"
 		if(parmsMap.get(INITIAL_SEVERITY)!=null){
-			String severityId = parmsMap.get(INITIAL_SEVERITY);
-			body.put(INITIAL_SEVERITY,severityId);
-
 			try{
+				String severityId = parmsMap.get(INITIAL_SEVERITY);
 				int id= Integer.parseInt(severityId);
 				String label = OnmsSeverity.get(id).getLabel();
+				body.put(INITIAL_SEVERITY,severityId);
 				body.put(INITIAL_SEVERITY_TEXT,label);
 			}
 			catch (Exception e){

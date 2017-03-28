@@ -58,15 +58,6 @@
                "hour":{
                   "type":"long"
                },
-               "p_severity":{
-                  "type":"long"
-               },
-               "p_oldseverity":{
-                  "type":"long"
-               },              
-               "p_initialseverity":{
-                  "type":"long"
-               },              
                "alarmackduration":{
                   "type":"long"
                },           
