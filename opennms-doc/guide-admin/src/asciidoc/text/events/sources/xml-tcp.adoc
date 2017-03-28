@@ -1,0 +1,8 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-xml-tcp]]
+==== XML-TCP
+
+Any application or script can create custom events in {opennms-product-name} by sending properly-formatted XML data over a TCP socket.
