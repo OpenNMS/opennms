@@ -29,8 +29,10 @@
 package org.opennms.netmgt.config.siteStatusViews;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -76,18 +78,15 @@ public class SiteStatusViewConfigurationTest extends XmlTestNoCastor<SiteStatusV
         SiteStatusViewConfiguration config = new SiteStatusViewConfiguration();
         config.setDefaultView("default");
         
-        Views views = new Views();
-        config.setViews(views);
-        
-        View view = new View();
+        final List<View> views = new ArrayList<>();
+        final View view = new View();
         view.setName("default");
-        views.addView(view);
-        
-        Rows rows = new Rows();
-        rows.addRow("Routers", "Routers");
-        rows.addRow("Switches", "Switches");
-        rows.addRow("Servers", "Servers");
-        view.setRows(rows);
+        views.add(view);
+        config.setViews(views);
+
+        view.addRow("Routers", "Routers");
+        view.addRow("Switches", "Switches");
+        view.addRow("Servers", "Servers");
 
         return config;
     }
