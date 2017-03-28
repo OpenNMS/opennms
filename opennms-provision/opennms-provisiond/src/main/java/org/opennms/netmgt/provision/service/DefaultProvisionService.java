@@ -212,11 +212,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return System.getProperty("org.opennms.provisiond.enableDiscovery", "true").equalsIgnoreCase("true");
     }
 
-    @Override
-    public boolean isRequisitionedEntityDeletionEnabled() {
-        return System.getProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false").equalsIgnoreCase("true");
-    }
-
     private void updateLocation(final OnmsNode node) {
         if (node.getLocation() == null) {
             node.setLocation(m_monitoringLocationDao.getDefaultLocation());
@@ -306,29 +301,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void deleteNode(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
-
-        if (node != null && shouldDelete(node)) {
+        if (node != null) {
             m_nodeDao.delete(node);
             m_nodeDao.flush();
-            node.visit(new DeleteEventVisitor(m_eventForwarder));
+            m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
         }
-
-
-    }
-
-    private boolean shouldDelete(final OnmsNode node) {
-        String foreignSource = node.getForeignSource();
-
-        // only delete services that are on discovered nodes if discovery is enabled 
-        // meaning provisiond is managing discovered nodes rather than capsd
-        if (foreignSource == null) return isDiscoveryEnabled();
-
-        // if we enable deletion of requisitioned entities then we can delete this 
-        if (isRequisitionedEntityDeletionEnabled()) return true;
-
-        // otherwise only delete if it is not requistioned
-        return !isRequisitioned(node);
-
     }
 
     /** {@inheritDoc} */
@@ -336,186 +313,54 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void deleteInterface(final Integer nodeId, final String ipAddr) {
         final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
-        if (iface != null && shouldDelete(iface)) {
+        if (iface != null) {
+
+            final OnmsNode node = iface.getNode();
+
+            final boolean lastInterface = (node.getIpInterfaces().size() == 1);
+
             m_ipInterfaceDao.delete(iface);
             m_ipInterfaceDao.flush();
-            iface.visit(new DeleteEventVisitor(m_eventForwarder));
+            m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("Provisiond", iface.getNode().getId(), iface.getIpAddress()));
+
+            if (lastInterface) {
+                m_nodeDao.delete(node);
+                m_nodeDao.flush();
+                m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
+            }
         }
-
-    }
-
-    private boolean shouldDelete(final OnmsIpInterface iface) {
-
-        String foreignSource = iface.getNode().getForeignSource();
-
-        // only delete services that are on discovered nodes if discovery is enabled 
-        // meaning provisiond is managing discovered nodes rather than capsd
-        if (foreignSource == null) return isDiscoveryEnabled();
-
-        // if we enable deletion of requisitioned entities then we can delete this 
-        if (isRequisitionedEntityDeletionEnabled()) return true;
-
-        // otherwise only delete if it is not requistioned
-        return !isRequisitioned(iface);
-
     }
 
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void deleteService(final Integer nodeId, final InetAddress addr, final String service) {
-        LOG.debug("deleteService: nodeId={}, addr={}, service={}", nodeId, addr, service);
-        final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, addr, service);
-        if (monSvc == null) return;
+    public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName) {
+        final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, addr, svcName);
+        if (service != null) {
 
-        final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
-        final String addrAsString = str(addr);
+            final OnmsIpInterface iface = service.getIpInterface();
+            final OnmsNode node = iface.getNode();
 
-        if (isDiscoveryEnabled()) {
-            LOG.debug("deleteService: discovery is enabled");
-            final String foreignSource = monSvc.getForeignSource();
-            final String foreignId = monSvc.getForeignId();
-            OnmsNode requisitionedNode = null;
-            if (foreignSource != null && foreignId != null) {
-                requisitionedNode = getRequisitionedNode(foreignSource, foreignId);
-            }
+            final boolean lastService = (iface.getMonitoredServices().size() == 1);
+            final boolean lastInterface = (node.getIpInterfaces().size() == 1);
 
-            if (isRequisitionedEntityDeletionEnabled() || requisitionedNode == null) {
-                LOG.debug("deleteService: requisitioned entity deletion is enabled, or the node does not exist in the requisition");
-                // we're allowing deletion, or there is no requisition for the node, so go for it
-                final OnmsIpInterface iface = monSvc.getIpInterface();
-                final OnmsNode node = iface.getNode();
+            m_monitoredServiceDao.delete(service);
+            m_monitoredServiceDao.flush();
+            m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent("Provisiond", service.getNodeId(), service.getIpAddress(), service.getServiceType().getName()));
 
-                final boolean lastService = (iface.getMonitoredServices().size() == 1);
-                final boolean lastInterface = (node.getIpInterfaces().size() == 1);
-
-                if (requisitionedNode != null && requisitionedNode.containsService(addr, service)) {
-                    LOG.warn("Deleting requisitioned service {} from node {}/{}/{} on address {} (it will come back on next import)", service, nodeId, foreignSource, foreignId, addrAsString);
-                } else {
-                    LOG.debug("Deleting discovered service {} from node {}/{}/{} on address {}", service, nodeId, foreignSource, foreignId, addrAsString);
-                }
-
-                // remove the service from the interface
-                iface.removeMonitoredService(monSvc);
-                m_nodeDao.saveOrUpdate(iface.getNode());
+            if (lastService) {
+                node.removeIpInterface(iface);
+                m_nodeDao.saveOrUpdate(node);
                 m_nodeDao.flush();
-                monSvc.visit(visitor);
+                m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("Provisiond", iface.getNode().getId(), iface.getIpAddress()));
 
-                if (lastService) {
-                    // the interface should be deleted too
-                    if (requisitionedNode != null && requisitionedNode.containsInterface(addr)) {
-                        LOG.warn("Deleting requisitioned interface {} from node {}/{}/{} (it will come back on next import)", addrAsString, nodeId, foreignSource, foreignId);
-                    } else {
-                        LOG.debug("Deleting discovered interface {} from node {}/{}/{}", addrAsString, nodeId, foreignSource, foreignId);
-                    }
-                    node.removeIpInterface(iface);
-                    m_nodeDao.saveOrUpdate(node);
+                if (lastInterface) {
+                    m_nodeDao.delete(node);
                     m_nodeDao.flush();
-                    iface.visit(visitor);
-
-                    if (lastInterface) {
-                        // the node should be deleted too
-                        if (requisitionedNode != null) {
-                            LOG.warn("Deleting requisitioned node {}/{}/{} (it will come back on next import)", nodeId, foreignSource, foreignId);
-                        } else {
-                            LOG.debug("Deleting discovered node {}/{}/{}", nodeId, foreignSource, foreignId);
-                        }
-                        m_nodeDao.delete(node);
-                        m_nodeDao.flush();
-                        node.visit(visitor);
-                    }
+                    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
                 }
-            } else {
-                LOG.debug("NOT deleting requisitioned service {} from node {}/{}/{} on address {} (enableDeletionOfRequisitionedEntities=false)", service, nodeId, foreignSource, foreignId, addrAsString);
-            }
-        } else {
-            if (shouldDelete(monSvc)) {
-                final OnmsIpInterface iface = monSvc.getIpInterface();
-                iface.removeMonitoredService(monSvc);
-                m_nodeDao.saveOrUpdate(iface.getNode());
-                m_nodeDao.flush();
-                monSvc.visit(visitor);
             }
         }
-    }
-
-    private boolean shouldDelete(final OnmsMonitoredService monSvc) {
-        String foreignSource = monSvc.getIpInterface().getNode().getForeignSource();
-
-        // only delete services that are on discovered nodes if discovery is enabled 
-        // meaning provisiond is managing discovered nodes rather than capsd
-        if (foreignSource == null) return isDiscoveryEnabled();
-
-        // if we enable deletion of requisitioned entities then we can delete this 
-        if (isRequisitionedEntityDeletionEnabled()) {
-            return true;
-        }
-
-        // otherwise only delete if it is not requisitioned
-        return !isRequisitioned(monSvc);
-    }
-
-    public boolean isRequisitioned(OnmsNode node) {
-        String foreignSource = node.getForeignSource();
-        String foreignId = node.getForeignId();
-
-        // is this a discovered node
-        if (foreignSource == null) return false;
-
-        OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
-        if (reqNode == null) { 
-            // this is no requisition node?
-            LOG.error("No requistion exists for node with foreignSource {} and foreignId {}.  Treating node as unrequistioned", foreignSource, foreignId);
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-
-    public boolean isRequisitioned(final OnmsIpInterface ip) {
-        final String foreignSource = ip.getNode().getForeignSource();
-        final String foreignId = ip.getNode().getForeignId();
-
-        // is this a discovered node
-        if (foreignSource == null) return false;
-
-        final OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
-        if (reqNode == null) { 
-            // this is no requisition node?
-            LOG.error("No requistion exists for node with foreignSource {} and foreignId {}.  Treating node as unrequistioned", foreignSource, foreignId);
-            return false;
-        }
-
-        final OnmsIpInterface reqIp = reqNode.getIpInterfaceByIpAddress(ip.getIpAddress());
-        // if we found the IP then its a requisitioned interface
-        return reqIp != null;
-    }
-
-    public boolean isRequisitioned(final OnmsMonitoredService monSvc) {
-        final String foreignSource = monSvc.getIpInterface().getNode().getForeignSource();
-        final String foreignId = monSvc.getIpInterface().getNode().getForeignId();
-
-        // is this a discovered node
-        if (foreignSource == null) return false;
-
-        final OnmsNode reqNode = getRequisitionedNode(foreignSource, foreignId);
-        if (reqNode == null) { 
-            // this is no requisition node?
-            LOG.error("No requistion exists for node with foreignSource {} and foreignId {}.  Treating node as unrequistioned", foreignSource, foreignId);
-            return false;
-        }
-
-        final OnmsIpInterface reqIp = reqNode.getIpInterfaceByIpAddress(monSvc.getIpAddress());
-        if (reqIp == null) {
-            // there is no matching requisition IP so the interface was discovered
-            return false;
-        }
-
-        final OnmsMonitoredService reqSvc =  reqIp.getMonitoredServiceByServiceType(monSvc.getServiceName());
-
-        // if we found the service then its a requisition service
-        return reqSvc != null;
     }
 
     private void assertNotNull(final Object o, final String format, final Object... args) {

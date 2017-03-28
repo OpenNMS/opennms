@@ -58,6 +58,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,13 +164,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             LOG.debug("addIpInterface: adding interface {}", ipInterface);
             node.addIpInterface(ipInterface);
             m_ipInterfaceDao.save(ipInterface);
-            
+
             final EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "ReST");
-    
+
             bldr.setNodeid(node.getId());
             bldr.setInterface(ipInterface.getIpAddress());
             sendEvent(bldr);
-    
+
             return Response.created(getRedirectUri(uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
@@ -248,14 +250,9 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
                 throw getException(Status.CONFLICT, "Can't find interface with IP address {} for node {}.", ipAddress, nodeCriteria);
             }
             LOG.debug("deleteIpInterface: deleting interface {} from node {}", ipAddress, nodeCriteria);
-            node.getIpInterfaces().remove(intf);
-            m_nodeDao.save(node);
-            
-            final EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "ReST");
-    
-            bldr.setNodeid(node.getId());
-            bldr.setInterface(addr(ipAddress));
-            sendEvent(bldr);
+
+            Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.REST", node.getId(), ipAddress, intf.getIfIndex(), -1L);
+            sendEvent(e);
 
             return Response.noContent().build();
         } finally {
@@ -273,11 +270,15 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return context.getResource(OnmsMonitoredServiceResource.class);
     }
 
-    private void sendEvent(EventBuilder builder) {
+    private void sendEvent(EventBuilder eventBuilder) {
+        sendEvent(eventBuilder.getEvent());
+    }
+
+    private void sendEvent(Event event) {
         try {
-            m_eventProxy.send(builder.getEvent());
+            m_eventProxy.send(event);
         } catch (final EventProxyException e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", builder.getEvent().getUei(), e.getMessage());
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
         }
     }
 
