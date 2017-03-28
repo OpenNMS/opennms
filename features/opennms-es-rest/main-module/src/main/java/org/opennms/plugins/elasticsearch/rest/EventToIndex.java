@@ -290,8 +290,7 @@ public class EventToIndex implements AutoCloseable {
 		return jestClient;
 	}
 
-	@Override
-	public void close(){
+	private void closeJestClient() {
 		if (jestClient != null) {
 			synchronized(this){
 				try{
@@ -302,6 +301,11 @@ public class EventToIndex implements AutoCloseable {
 				jestClient = null;
 			}
 		}
+	}
+
+	@Override
+	public void close(){
+		closeJestClient();
 
 		// Shutdown the thread pool
 		executor.shutdown();
@@ -356,8 +360,12 @@ public class EventToIndex implements AutoCloseable {
 						BulkResult result = getJestClient().execute(bulk);
 
 						// If the bulk command fails completely...
-						if (!result.isSucceeded()) {
-							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+						if (result == null || !result.isSucceeded()) {
+							if (result == null) {
+								logEsError("Bulk API action", entry.getKey(), type, null, -1, null);
+							} else {
+								logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+							}
 
 							// Try and issue the bulk actions individually as a fallback
 							for (BulkableAction<DocumentResult> action : entry.getValue()) {
@@ -390,8 +398,12 @@ public class EventToIndex implements AutoCloseable {
 						}
 
 						// If the bulk command fails completely...
-						if (!result.isSucceeded()) {
-							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+						if (result == null || !result.isSucceeded()) {
+							if (result == null) {
+								logEsError("Bulk API action", entry.getKey(), type, null, -1, null);
+							} else {
+								logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+							}
 
 							// Try and issue the bulk actions individually as a fallback
 							for (BulkableAction<DocumentResult> action : entry.getValue()) {
@@ -416,7 +428,7 @@ public class EventToIndex implements AutoCloseable {
 				} catch (Throwable ex){
 					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
 					// Shutdown the ES client, it will be recreated as needed
-					close();
+					closeJestClient();
 				}
 			}
 		}
@@ -451,11 +463,15 @@ public class EventToIndex implements AutoCloseable {
 
 		DocumentResult result = client.execute(action);
 
-		if(result.getResponseCode() == 404){
+		if(result == null || result.getResponseCode() == 404){
 			// index doesn't exist for upsert command so create new index and try again
 
 			if(LOG.isDebugEnabled()) {
-				logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				if (result == null) {
+					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
+				} else {
+					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				}
 				LOG.debug("index name "+action.getIndex() + " doesn't exist, creating new index");
 			}
 
@@ -464,7 +480,9 @@ public class EventToIndex implements AutoCloseable {
 			result = client.execute(action);
 		}
 
-		if(!result.isSucceeded()){
+		if (result == null) {
+			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
+		} else if (!result.isSucceeded()){
 			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		} else if(LOG.isDebugEnabled()) {
 			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
