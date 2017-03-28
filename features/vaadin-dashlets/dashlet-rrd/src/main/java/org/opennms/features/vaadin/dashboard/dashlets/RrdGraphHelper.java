@@ -42,6 +42,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -222,8 +223,8 @@ public class RrdGraphHelper {
             String key;
             String value;
             try {
-                key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.name());
+                value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 continue;
             }

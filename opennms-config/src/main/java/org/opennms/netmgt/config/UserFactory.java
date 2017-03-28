@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -146,7 +147,7 @@ public class UserFactory extends UserManager {
         if (writerString != null) {
             Writer fileWriter = null;
             try {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), "UTF-8");
+                fileWriter = new OutputStreamWriter(new FileOutputStream(m_usersConfFile), StandardCharsets.UTF_8);
                 fileWriter.write(writerString);
                 fileWriter.flush();
             } finally {

@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -115,12 +116,12 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 404);
 
         // By resource
-        url = "/graphs/for/" + URLEncoder.encode("node[1].nodeSnmp[]", "UTF-8");
+        url = "/graphs/for/" + URLEncoder.encode("node[1].nodeSnmp[]", StandardCharsets.UTF_8.name());
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("netsnmp.swapinout"));
 
         // 404 on invalid resource
-        url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", "UTF-8");
+        url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", StandardCharsets.UTF_8.name());
         sendRequest(GET, url, 404);
 
         url = "/graphs/fornode/1";

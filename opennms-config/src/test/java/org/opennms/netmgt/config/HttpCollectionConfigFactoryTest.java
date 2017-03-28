@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -70,7 +71,7 @@ public class HttpCollectionConfigFactoryTest {
                 "      </uri>\n" + 
                 "    </uris>\n" + 
                 "  </http-collection>\n" + 
-                "</http-datacollection-config>").getBytes("UTF-8"));
+                "</http-datacollection-config>").getBytes(StandardCharsets.UTF_8));
         new HttpCollectionConfigFactory(rdr);
         assertNotNull(HttpCollectionConfigFactory.getConfig());
     }

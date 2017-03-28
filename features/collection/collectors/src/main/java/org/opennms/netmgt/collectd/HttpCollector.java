@@ -30,11 +30,10 @@ package org.opennms.netmgt.collectd;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -217,7 +216,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
      *   - HostConfiguration class is not created here because the library
      *     builds it when a URI is defined.
      *     
-     * @param collectionSet
+     * @param collectorAgent
      * @throws HttpCollectorException
      */
     private static void doCollection(final HttpCollectorAgent collectorAgent, final CollectionSetBuilder collectionSetBuilder) throws HttpCollectorException {
@@ -459,12 +458,8 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
     private static HttpPost buildPostMethod(final URI uri, final HttpCollectorAgent collectorAgent) {
         HttpPost method = new HttpPost(uri);
         List<NameValuePair> postParams = buildRequestParameters(collectorAgent);
-        try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, "UTF-8");
-            method.setEntity(entity);
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
-        }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8);
+        method.setEntity(entity);
         return method;
     }
 
@@ -473,7 +468,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         List<NameValuePair> queryParams = buildRequestParameters(collectorAgent);
         try {
             StringBuffer query = new StringBuffer();
-            query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
+            query.append(URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8));
             if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {
                     query.append("&");
@@ -482,7 +477,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
             }
             final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
-                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
+                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), StandardCharsets.UTF_8);
                 if (!params.isEmpty()) {
                     ub.setParameters(params);
                 }
@@ -519,7 +514,7 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
         ub.setPath(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getPath(), "getURL"));
 
         final String query = substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getQuery(), "getQuery");
-        final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+        final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
         ub.setParameters(params);
 
         ub.setFragment(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getFragment(), "getFragment"));

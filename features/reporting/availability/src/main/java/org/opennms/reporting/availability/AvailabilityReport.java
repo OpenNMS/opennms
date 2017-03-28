@@ -38,6 +38,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -212,7 +213,7 @@ public class AvailabilityReport extends Object {
         File file = new File(ConfigFileConstants.getHome()
                              + "/share/reports/AvailReport.xml");
         try {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             JaxbUtils.marshal(m_report, fileWriter);
             LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             fileWriter.close();
@@ -240,11 +241,11 @@ public class AvailabilityReport extends Object {
                                      + "/share/reports/AvailReport.xml");
                 try {
                     LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
-                    Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+                    Reader fileReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
                     if (!format.equals("HTML")) {
-                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     } else {
-                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     }
                 } catch (Throwable e) {
                     LOG.error("Exception", e);

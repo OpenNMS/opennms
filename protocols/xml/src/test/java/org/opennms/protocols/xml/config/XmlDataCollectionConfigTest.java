@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -194,7 +195,7 @@ public class XmlDataCollectionConfigTest {
         StringBuffer exampleXML = new StringBuffer();
         File xmlCollectionConfig = getSourceFile();
         assertTrue(XmlDataCollectionConfig.XML_DATACOLLECTION_CONFIG_FILE + " is readable", xmlCollectionConfig.canRead());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(xmlCollectionConfig), "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(xmlCollectionConfig), StandardCharsets.UTF_8));
         String line;
         while (true) {
             line = reader.readLine();

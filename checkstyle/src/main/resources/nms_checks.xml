@@ -14,5 +14,10 @@
             <property name="forbiddenImportsExcludesRegexp" value="" />
             <message key="forbid.certain.imports" value="Use ''java.nio.charset.StandardCharsets'' instead of ''{0}''" />
         </module>
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL"/>
+            <property name="format" value="^UTF-8$"/>
+            <message key="forbid.UTF8.string.literal" value="Use ''java.nio.charset.StandardCharsets.UTF_8.name()'' instead of ''{0}''" />
+        </module>
     </module>
 </module>

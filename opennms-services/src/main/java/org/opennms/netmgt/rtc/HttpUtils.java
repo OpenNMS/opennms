@@ -39,6 +39,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Provides convenience methods for use the HTTP POST method.
@@ -227,7 +228,7 @@ public abstract class HttpUtils {
         conn.setRequestProperty("Content-type", "text/xml; charset=\"utf-8\"");
 
         // get the out-going HTTP connection
-        OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
+        OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), StandardCharsets.US_ASCII);
 
         // log data
         LOG.debug("HTTP Post: Current time: {}", new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));

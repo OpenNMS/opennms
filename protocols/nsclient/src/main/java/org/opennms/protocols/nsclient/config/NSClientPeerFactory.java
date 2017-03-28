@@ -29,6 +29,7 @@
 package org.opennms.protocols.nsclient.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -173,10 +175,11 @@ public class NSClientPeerFactory {
 
     /**
      * Saves the current settings to disk
-     *
+     * @throws IOException 
+     * @throws FileNotFoundException 
      * @throws java.lang.Exception if any.
      */
-    public void saveCurrent() throws Exception {
+    public void saveCurrent() throws FileNotFoundException, IOException {
         getWriteLock().lock();
 
         try {
@@ -188,7 +191,7 @@ public class NSClientPeerFactory {
             final StringWriter stringWriter = new StringWriter();
             JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME)), "UTF-8");
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
                 fileWriter.close();
