@@ -98,7 +98,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
 
         url = "/foreignSources/deployed/count";
         xml = sendRequest(GET, url, 200);
-        assertEquals(xml, "1", xml);
+        assertEquals(xml, "0", xml);
     }
     
     @Test
