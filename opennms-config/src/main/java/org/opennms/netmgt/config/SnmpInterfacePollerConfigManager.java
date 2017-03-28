@@ -41,14 +41,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.IncludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.Interface;
@@ -262,12 +264,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     @Override
     public synchronized String[] getCriticalServiceIds() {
-        CriticalService[] cs = m_config.getNodeOutage().getCriticalService();
-        String[] criticalServiceNames = new String[cs.length];
-        for (int i =0 ; i< cs.length; i++) {
-            criticalServiceNames[i] = cs[i].getName();
-        }
-        return criticalServiceNames;
+        return m_config.getNodeOutage().getCriticalServices().stream().map(crit -> {
+            return crit.getName();
+        }).collect(Collectors.toList()).toArray(new String[0]);
    }
 
      /**
@@ -282,7 +281,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         for(Package pkg : packages()) {
     
             Map<String, Interface> interfaceMap = new HashMap<String, Interface>();
-            for (Interface interf: pkg.getInterfaceCollection()) {
+            for (Interface interf: pkg.getInterfaces()) {
                 interfaceMap.put(interf.getName(),interf);
             }
             m_pkgIntMap.put(pkg.getName(), interfaceMap);
@@ -311,9 +310,15 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return a {@link java.util.List} object.
      */
     public List<InetAddress> getIpList(Package pkg) {
-        StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+        final StringBuffer filterRules = new StringBuffer();
+        if (pkg.getFilter().getContent().isPresent()) {
+            filterRules.append(pkg.getFilter().getContent().get());
+        }
         if (m_verifyServer) {
-            filterRules.append(" & (serverName == ");
+            if (filterRules.length() > 0) {
+                filterRules.append(" & ");
+            }
+            filterRules.append("(serverName == ");
             filterRules.append('\"');
             filterRules.append(m_localServer);
             filterRules.append('\"');
@@ -379,9 +384,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
  
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
-        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
         
-        for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
+        for (IncludeRange rng : pkg.getIncludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
@@ -390,7 +395,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
 
         byte[] addr = toIpAddrBytes(iface);
 
-        for (String spec : pkg.getSpecificCollection()) {
+        for (String spec : pkg.getSpecifics()) {
             byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
@@ -398,12 +403,12 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             }
         }
 
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, eurl.nextElement());
+        Iterator<String> eurl = pkg.getIncludeUrls().iterator();
+        while (!has_specific && eurl.hasNext()) {
+            has_specific = interfaceInUrl(iface, eurl.next());
         }
     
-        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+        for (ExcludeRange rng : pkg.getExcludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
@@ -495,47 +500,47 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     }
     /** {@inheritDoc} */
     @Override
-    public synchronized String getCriteria(String pkgName,String pkgInterfaceName) {
+    public synchronized Optional<String> getCriteria(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getCriteria();
     }
     /** {@inheritDoc} */
     @Override
     public synchronized boolean hasPort(String pkgName,String pkgInterfaceName) {
-        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasPort();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getPort().isPresent();
     }
     /** {@inheritDoc} */
     @Override
-    public synchronized int getPort(String pkgName,String pkgInterfaceName) {
+    public synchronized Optional<Integer> getPort(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getPort();
     }
     /** {@inheritDoc} */
     @Override
     public synchronized boolean hasTimeout(String pkgName,String pkgInterfaceName) {
-        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasTimeout();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getTimeout().isPresent();
     }
     /** {@inheritDoc} */
     @Override
-    public synchronized int getTimeout(String pkgName,String pkgInterfaceName) {
+    public synchronized Optional<Integer> getTimeout(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getTimeout();
     }
     /** {@inheritDoc} */
     @Override
     public synchronized boolean hasRetries(String pkgName,String pkgInterfaceName) {
-        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasRetry();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getRetry().isPresent();
     }
     /** {@inheritDoc} */
     @Override
-    public synchronized int getRetries(String pkgName,String pkgInterfaceName) {
+    public synchronized Optional<Integer> getRetries(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getRetry();
     }
     /** {@inheritDoc} */
     @Override
     public synchronized boolean hasMaxVarsPerPdu(String pkgName,String pkgInterfaceName) {
-        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).hasMaxVarsPerPdu();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getMaxInterfacePerPdu() != null;
     }
     /** {@inheritDoc} */
     @Override
-    public synchronized int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName) {
+    public synchronized Integer getMaxVarsPerPdu(String pkgName,String pkgInterfaceName) {
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getMaxVarsPerPdu();        
     }
 
@@ -545,7 +550,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<Package> enumeratePackage() {
-        return getConfiguration().enumeratePackage();
+        return Collections.enumeration(getConfiguration().getPackages());
     }
     
      
@@ -555,7 +560,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
       * @return a {@link java.lang.Iterable} object.
       */
      public Iterable<Package> packages() {
-        return getConfiguration().getPackageCollection();
+        return getConfiguration().getPackages();
     }
 
     /**
@@ -565,7 +570,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<String> includeURLs(Package pkg) {
-        return pkg.getIncludeUrlCollection();
+        return pkg.getIncludeUrls();
     }
      
     /**
@@ -605,7 +610,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      */
     @Override
     public boolean useCriteriaFilters() {
-        return Boolean.parseBoolean(getConfiguration().getUseCriteriaFilters());
+        return getConfiguration().getUseCriteriaFilters();
     }
 
 }
