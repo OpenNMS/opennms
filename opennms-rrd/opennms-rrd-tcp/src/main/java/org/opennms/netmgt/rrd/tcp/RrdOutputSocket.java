@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -80,8 +80,28 @@ public class RrdOutputSocket {
         m_messages.addMessage(PerformanceDataReading.newBuilder()
                 .setPath(filename)
                 .setOwner(owner)
-                .setTimestamp(timestamp).
-                addAllValue(values)
+                .setTimestamp(timestamp)
+                .addAllDblValue(values)
+                .addAllStrValue(new ArrayList<String>())
+        );
+        m_messageCount++;
+    }
+
+    /**
+     * <p>addData</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param dblValues a {@link java.util.List} object.
+     * @param strValues a {@link java.util.List} object.
+     */
+    public void addData(String filename, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) {
+        m_messages.addMessage(PerformanceDataReading.newBuilder()
+                .setPath(filename)
+                .setOwner(owner)
+                .setTimestamp(timestamp)
+                .addAllDblValue(dblValues)
+                .addAllStrValue(strValues)
         );
         m_messageCount++;
     }
