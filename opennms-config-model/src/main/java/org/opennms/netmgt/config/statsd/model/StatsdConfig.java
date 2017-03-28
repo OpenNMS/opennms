@@ -73,7 +73,9 @@ public class StatsdConfig {
         for (org.opennms.netmgt.config.statsd.Package pkg : getXmlPackages()) {
             StatsdPackage p = new StatsdPackage();
             p.setName(pkg.getName());
-            p.setFilter(pkg.getFilter() != null ? pkg.getFilter().getContent() : null);
+            if (pkg.getFilter().isPresent() && pkg.getFilter().get().getContent().isPresent()) {
+                p.setFilter(pkg.getFilter().get().getContent().get());
+            }
             for (org.opennms.netmgt.config.statsd.PackageReport packageReport : getPackageReportForPackage(pkg)) {
                 PackageReport r = new PackageReport();
                 r.setPackage(p);
@@ -124,23 +126,23 @@ public class StatsdConfig {
     }
 
     private List<Parameter> getParametersForReport(org.opennms.netmgt.config.statsd.Report report) {
-        return report.getParameterCollection();
+        return report.getParameters();
     }
 
     private List<org.opennms.netmgt.config.statsd.Report> getXmlReports() {
-        return m_config.getReportCollection();
+        return m_config.getReports();
     }
 
     private List<org.opennms.netmgt.config.statsd.Package> getXmlPackages() {
-        return m_config.getPackageCollection();
+        return m_config.getPackages();
     }
 
     private List<org.opennms.netmgt.config.statsd.PackageReport> getPackageReportForPackage(org.opennms.netmgt.config.statsd.Package pkg) {
-        return pkg.getPackageReportCollection();
+        return pkg.getPackageReports();
     }
 
     private List<Parameter> getParametersForPackageReport(org.opennms.netmgt.config.statsd.PackageReport packageReport) {
-        return packageReport.getParameterCollection();
+        return packageReport.getParameters();
     }
 
 }
