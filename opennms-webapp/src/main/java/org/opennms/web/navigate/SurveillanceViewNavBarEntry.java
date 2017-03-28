@@ -46,7 +46,7 @@ public class SurveillanceViewNavBarEntry extends LocationBasedNavBarEntry {
     /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
-        if (m_surveillanceViewConfigDao.getViews().getViewCount() > 0 && m_surveillanceViewConfigDao.getDefaultView() != null) {
+        if (m_surveillanceViewConfigDao.getViews().size() > 0 && m_surveillanceViewConfigDao.getDefaultView() != null) {
             setUrl("surveillanceView.htm?viewName=" + Util.htmlify(m_surveillanceViewConfigDao.getDefaultView().getName()));
 
             return super.evaluate(request);

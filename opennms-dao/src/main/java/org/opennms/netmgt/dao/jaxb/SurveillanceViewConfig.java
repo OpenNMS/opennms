@@ -65,7 +65,7 @@ public class SurveillanceViewConfig {
     }
 
     private List<View> getViewList() {
-        return m_config.getViews().getViewCollection();
+        return m_config.getViews();
     }
 
     /**
