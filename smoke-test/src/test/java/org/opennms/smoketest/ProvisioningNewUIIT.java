@@ -96,8 +96,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         clickElement(By.cssSelector(moreActionsButton));
 
         // Edit the foreign source
-        final String editForeignSourceButton = "a[uib-tooltip='Edit detectors and policies of the "+REQUISITION_NAME+" Requisition']";
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(editForeignSourceButton))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("editForeignSource-"+REQUISITION_NAME))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("ul.nav-tabs > li > a.nav-link")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
