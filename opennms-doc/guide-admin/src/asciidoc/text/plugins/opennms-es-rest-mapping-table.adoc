@@ -6,94 +6,85 @@
 
 The following table describes the mapping of simple
 _{opennms-product-name}_ events to the Raw Events Index and the mapping of Alarm
-Change Events to the Alarm Change Events index and  to the Alarms index
+Change Events to the Alarm Change Events index and  to the Alarms index. Note that
+fields that begin with an underscore (_) are internal to Elasticsearch.
 
-[cols="16l,16l,16l,16l,16l,20l",]
-|=======================================================================
-2+|ALARM INDEX FIELDS 2+|EVENT INDEX FIELDS (ALARM CHANGE and RAW EVENTS) 2+|DESCRIPTION
+[options="header, autowidth"]
+|===
+2+|Alarm Index Fields 2+|Event Index Fields (Alarm change and raw events) 2+|Description
 
-|EXAMPLE ALARM JSON |ALARM FIELD |EVENT FIELD |EXAMPLE EVENT JSON |type|
+s|Example Alarm JSON s|Alarm Field s|Event Field s|Example Event JSON s| Type s| Description
 
-| \{ |\{ |\{ | \{ | |
-
-| | | | | |All attributes beginning _ are internal to Elastic Search
+|{|{|{|{||
 
 | "_index": "opennms-alarms-2017.03", |"_index": |"_index": | "_index":
-"opennms-events-alarmchange-2017.03", | |_index is the index in which
-this alarm or event exists
+"opennms-events-alarmchange-2017.03", | string |`_index` is the index in which
+this alarm or event is stored.
 
-| "_type": "alarmdata", |"_type": |"_type": | "_type": "eventdata", |
-|_type either alarmdata or eventdata
+| "_type": "alarmdata", |"_type": |"_type": | "_type": "eventdata", | string |`_type` either `alarmdata` or `eventdata`
 
-| "_id": "31", |"_id": |"_id": | "_id": "1110", | |_id field matches the
-event or alarm id
+| "_id": "31", |"_id": |"_id": | "_id": "1110", | string |`_id` field matches the event or alarm ID, if present.
 
-| "_score": 1, |"_score": |"_score": | "_score": 1, | |_score is an
-internal ES ranking of the search result
+| "_score": 1, |"_score": |"_score": | "_score": 1, | long |Internal Elasticsearch ranking of the search result.
 
-| "_source": \{ |"_source": |"_source": | "_source": \{ | |_source
-contains the data of the index entry
+| "_source": { |"_source": |"_source": | "_source": { | string |`_source` contains the data of the index entry.
 
-| | | | | |
+| "@timestamp": "2017-03-03T12:44:21.210Z", |"@timestamp": |"@timestamp": | "@timestamp": "2017-03-02T15:20:56.861Z", | date |
+For Alarms, `@timestamp` is alarm creation time based on the first event time.
+For Events, `@timestamp` is event time from `event.getTime()`.
 
-| "@timestamp": "2017-03-03T12:44:21.210Z", |"@timestamp":
-|"@timestamp": | "@timestamp": "2017-03-02T15:20:56.861Z", |date a| 
-For Alarms @timestamp is Alarm creation time (from first event time)
-For Events @timestamp is event time from event.getTime()
-| "dom": "3", |"dom": |"dom": | "dom": "2", |long |Day of month from
-@timestamp
+| "dom": "3", |"dom": |"dom": | "dom": "2", |long |Day of month from `@timestamp`.
 
-| "dow": "6", |"dow": |"dow": | "dow": "5", |long |Day of week from
-@timestamp
+| "dow": "6", |"dow": |"dow": | "dow": "5", |long |Day of week from `@timestamp`.
 
-| "hour": "12", |"hour": |"hour": | "hour": "15", |long |Hour from
-@timestamp
+| "hour": "12", |"hour": |"hour": | "hour": "15", |long |Hour of day from `@timestamp`.
 
 | | |"eventdescr": | "eventdescr": "<p>Alarm <a
 href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>...", |string
-|Description from raw event or alarm change event
+|Event description.
 
-| | |"eventseverity": | "eventseverity": "3", |long a|
-Severity from raw event or alarm change event
+| | |"eventseverity": | "eventseverity": "3", |long |
+Event severity.
 
-(Note all alarm change events have severity normal)
+_Alarm Change Events:_
+
+All events have severity normal.
 
 | | |"eventseverity_text": | "eventseverity_text": "Normal", |string
-|Text representation of severity value
+|Text representation of severity value.
 
-| | |"eventsource": | "eventsource": "AlarmChangeNotifier", |string a|
-OpenNMS event source
+| | |"eventsource": | "eventsource": "AlarmChangeNotifier", |string |
+OpenNMS event source. 
 
-Alarm Change Events come from AlarmChangeNotifier
+_Alarm Change Events:_
+
+All events have the event source `AlarmChangeNotifier`.
 
 | | |"eventuei": | "eventuei":
 "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared",
-|string |OpenNMS uei of event
+|string |OpenNMS universal event identifier (UEI) of the event.
 
-| | |"id": | "id": "1110", |string |id of the Raw event or Alarm Change
-Event
+| | |"id": | "id": "1110", |string | Event ID.
 
-| | |"interface": | "interface": "127.0.0.1", |string a|
-Interface of the Raw event or
+| | |"interface": | "interface": "127.0.0.1", |string |
+IP address of the event.
 
-Alarm Change Event takes interface from the Alarm interface field
-
-| | |"ipaddr": | "ipaddr": "/127.0.0.1", |string a|
-IP address of the Raw event or
-
-Alarm Change Event takes IP address from the Alarm interface field
+| | |"ipaddr": | "ipaddr": "/127.0.0.1", |string |
+IP address of the event.
 
 | | |"logmsg": | "logmsg": "<p>Alarm <a
-href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>", |string a|
-Log message of the Raw Event or
+href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>", |string |
+Log message of the event.
 
-Alarm Change Event log message contains link to alarm
+_Alarm Change Events:_
+
+Log messages contain a link to the alarm.
 
 | | |"logmsgdest": | "logmsgdest": "logndisplay", |string |Log
-Destination of Event
+Destination of the Event.
 
-| | |"p_newalarmvalues": a|
- "p_newalarmvalues": "\{ + 
+| | |"p_newalarmvalues": |
+ "p_newalarmvalues": "{ + 
  \"suppressedtime\":\"2017-03-02T14:24:59.282Z\",+ 
  \"systemid\":\"00000000-0000-0000-0000-000000000000\",+ 
  \"suppresseduntil\":\"2017-03-02T14:24:59.282Z\",+ 
@@ -133,65 +124,71 @@ failed.<\\/p>\", +
  \"lastautomationtime\":null, + 
  \"eventparms\":\"reason=Unexpected exception when collecting SNMP data for interface 127.0.0.1 at location Default.(string,text)\"}", + 
  
- |string a|
-Alarm and event parameters are name value pairs which can be associated
+ |string |
+Alarm and event parameters are key-value pairs which can be associated
 with alarms or events. All parameters in Alarms or Events are stored in
-elastic search in separate index fields with names beginning with p_
+Elasticsearch in separate index fields with names beginning with `p_`.
 
-Alarm Change Event parameters p_oldalarmvalues and p_newalarmvalue
-contain a json string representing the alarm fields before and after the
+_Alarm Change Events:_
+
+Parameters `p_oldalarmvalues` and `p_newalarmvalue`
+contain a JSON string representing the alarm fields before and after the
 Alarm change respectively.
 
-The p_newalarmvalue values are copied into the alarm index of the
-corresponding alarm (given by alarmid in p_newalarmvalue and by
-p_alarmid)
+The `p_newalarmvalue` values are copied into the alarm index of the
+corresponding alarm (given by `alarmid` in `p_newalarmvalue` and by
+`p_alarmid`).
 
-| | |"p_oldalarmvalues": | "p_oldalarmvalues": "\{ .... }", |string |see
-p_newalarmvalues
+| | |"p_oldalarmvalues": | "p_oldalarmvalues": "{ .... }", |string |See `p_newalarmvalues`.
 
-| | |"p_oldseverity": | "p_oldseverity": "5", | |Alarm Change Event
-Parameter old severity of the alarm before this alarm change event
+| | |"p_oldseverity": | "p_oldseverity": "5", | long | 
+_Alarm Change Events:_ 
+
+Contains the old severity of the alarm before this alarm change event.
 
 | "alarmackduration": "2132249", |"alarmackduration": | | |long |Time in
-ms from first event which created the alarm to the latest alarm
-acknowledgement
+milliseconds from first event which created the alarm to the latest alarm
+acknowledgement.
 
 | "alarmacktime": "2017-03-03T13:19:53.351Z", |"alarmacktime":
-|"p_alarmacktime": | "p_alarmacktime": "2017-03-03T13:19:53.351Z", | a|
-AlarmChangeNotificationEvent/AlarmAcknowledged Event
+|"p_alarmacktime": | "p_alarmacktime": "2017-03-03T13:19:53.351Z", | date |
+_AlarmChangeNotificationEvent/AlarmAcknowledged Events:_
 
-p_alarmacktime time of acknowledgement
+Time that the alarm was acknowledged.
 
 | "alarmackuser": "admin", |"alarmackuser": |"p_alarmackuser" |
-"p_alarmackuser": "admin", | a|
-AlarmChangeNotificationEvent/AlarmAcknowledged Event
+"p_alarmackuser": "admin", | |
+_AlarmChangeNotificationEvent/AlarmAcknowledged Events:_
 
-p_alarmackuser name of user who acknowledged the alarm
+Name of the user who acknowledged the alarm.
 
 | "alarmclearduration": "2175014" |"alarmclearduration": | | |long |Time
-in ms from first event which created the alarm to the latest alarm clear
+in milliseconds from first event which created the alarm to the latest alarm clear.
 
 | "alarmcleartime": "2017-03-03T13:20:36.224Z", |"alarmcleartime":
-|"p_alarmcleartime": | "p_alarmcleartime": "2017-03-03T13:20:36.224Z", |
-a|
-AlarmChangeNotificationEvent/AlarmClear Event
+|"p_alarmcleartime": | "p_alarmcleartime": "2017-03-03T13:20:36.224Z", | date |
+_AlarmChangeNotificationEvent/AlarmClear Events:_
 
-p_alarmcleartime time of clear
+Time that the alarm was cleared.
 
 | "alarmid": "31", |"alarmid": |"p_alarmid": | "p_alarmid": "30",
-|string |Alarm Change Event Parameter p_alarmid corresponds to the
-alarmid of the alarm being changed
+|string |
+_Alarm Change Events:_
+
+The alarm ID of the alarm that has changed.
 
 | "alarmtype": "1", |"alarmtype": |"p_alarmtype": | "p_alarmtype": "1",
-|string |Alarm Change Event Parameter p_alarmtype corresponds to the
-p_alarmtype of the alarm being changed
+|string |
+_Alarm Change Events:_
+
+Corresponds to the alarm's type.
 
 | "applicationdn": null, |"applicationdn": | | |string |
 
 | "asset-category": "Power", |"asset-category": |"asset-category": |
-"asset-category": "Power", |string |all asset_ entries correspond to
+"asset-category": "Power", |string |All `asset_` entries correspond to
 fields in the Asset Table of the node referenced in the event. These
-fields are only present if populated in the asset table
+fields are only present if populated in the asset table.
 
 | "asset-building": "55", |"asset-building": |"asset-building": |
 "asset-building": "55", |string |
@@ -206,9 +203,9 @@ fields are only present if populated in the asset table
 "2101", |string |
 
 | "categories": "", |"categories": |"categories": | "categories": "",
-|string |categories corresponds to node categories table. This is a
-comma separated list of categories associated with this nodeid. This
-field is indexed so separate values can be searched
+|string | `categories` corresponds to node categories table. This is a
+comma-separated list of categories associated with this node ID. This
+field is indexed so separate values can be searched.
 
 | "clearkey": null, |"clearkey": | | |string |
 
@@ -219,9 +216,10 @@ failed.</p>", |"description": | | |string |
 
 | "eventuei": "uei.opennms.org/nodes/dataCollectionFailed", |"eventuei":
 |"p_eventuei": | "p_eventuei":
-"uei.opennms.org/nodes/dataCollectionFailed", |string |Alarm Change
-Event Parameter p_eventuei corresponds to the p_eventuei of the alarm
-being changed
+"uei.opennms.org/nodes/dataCollectionFailed", |string |
+_Alarm Change Events:_ 
+
+Corresponds to the alarm's event UEI.
 
 | "firstautomationtime": null, |"firstautomationtime": | | |date |
 
@@ -229,12 +227,12 @@ being changed
 |date |
 
 | "foreignid": "1488375237814", |"foreignid": |"foreignid": |
-"foreignid": "1488375237814", |string |foreignid of node associated with
-alarm or event
+"foreignid": "1488375237814", |string | Foreign ID of the node associated with
+the alarm or event.
 
 | "foreignsource": "LocalTest", |"foreignsource": |"foreignsource": |
-"foreignsource": "LocalTest", |string |foreignsource of node associated
-with alarm or event
+"foreignsource": "LocalTest", |string | Foreign source of the node associated
+with alarm or event.
 
 | "ifindex": null, |"ifindex": | | |string |
 
@@ -260,19 +258,19 @@ Default.'.", |string |
 | "mouseovertext": null, |"mouseovertext": | | |string |
 
 | "nodeid": "88", |"nodeid": |"nodeid": | "nodeid": "88", |string
-|nodeid of node associated with alarm or event
+| Node ID of the node associated with the alarm or event.
 
 | "nodelabel": "localhost", |"nodelabel": |"nodelabel": | "nodelabel":
-"localhost", |string |nodelabel of node associated with alarm or event
+"localhost", |string | Node label of the node associated with the alarm or event.
 
 | "nodesyslocation": "Unknown (edit /etc/snmp/snmpd.conf)",
 |"nodesyslocation": |"nodesyslocation": | "nodesyslocation": "Unknown
-(edit /etc/snmp/snmpd.conf)", |string |nodesyslocation of node
-associated with alarm or event
+(edit /etc/snmp/snmpd.conf)", |string | SNMP `syslocation` of the node
+associated with the alarm or event.
 
 | "nodesysname": "localhost.localdomain", |"nodesysname":
 |"nodesysname": | "nodesysname": "localhost.localdomain", |string
-|nodesysname of node associated with alarm or event
+| SNMP `sysname` of the node associated with the alarm or event.
 
 | "operatingsystem": null, |"operatingsystem": | | |string |
 
@@ -280,99 +278,110 @@ associated with alarm or event
 
 | "ossprimarykey": null, |"ossprimarykey": | | |string |
 
-| "p_alarmid": "31", |"p_alarmid": | | |string |The Elastic Search
-alarms index has a field p_alarmid which corresponds to the alarmid of
-thed alarm and also the p_alarmid field in Alarm Change Evens. This
+| "p_alarmid": "31", |"p_alarmid": | | |string |The Elasticsearch
+alarms index has a field `p_alarmid` which corresponds to the `alarmid` of
+the alarm and also the `p_alarmid` field in Alarm Change Events. This
 allows Alarm and Alarm Change Event indexes to be easily searched
-together for all Alarm Change Events corresponding to an alarm
+together for all Alarm Change Events corresponding to an alarm.
 
 | "p_reason": "Unexpected exception when collecting SNMP data for
-interface 127.0.0.1 at location Default.", |"p_reason": | | |string a|
-All parameters in Alarms or Events are stored in elastic search in
-separate index fields with names beginning with p_
-
-p_reason is an example parameter injected by the
-uei.opennms.org/nodes/dataCollectionFailed event in OpenNMS
+interface 127.0.0.1 at location Default.", |"p_reason": | | |string |
+All parameters in Alarms or Events are stored in Elasticsearch in
+separate index fields with names beginning with `p_`. `p_reason` is an
+example parameter injected by the `uei.opennms.org/nodes/dataCollectionFailed`
+event in OpenNMS.
 
 | "qosalarmstate": null, |"qosalarmstate": | | |string |
 
 | "reductionkey": "uei.opennms.org/nodes/dataCollectionFailed::88",
 |"reductionkey": |"p_reductionkey": | "p_reductionkey":
-"uei.opennms.org/nodes/dataCollectionFailed::88", |string |Alarm Change
-Event p_reductionkey corresponds to alarm reductionkey
+"uei.opennms.org/nodes/dataCollectionFailed::88", |string |
+_Alarm Change Events:_ 
+
+Corresponds to alarm reductionkey.
 
 | "serviceid": "5", |"serviceid": |"p_serviceid": | "p_serviceid": "5"
-|string |Alarm Change Event p_serviceid corresponds to alarm serviceid
+|string |
+_Alarm Change Events:_
+
+Corresponds to the alarm's service ID.
 
 | "severity": "2", |"severity": |"p_severity": | "p_severity": "2",
-|string |Alarm Change Event p_severity corresponds to alarm severity
+|string |
+_Alarm Change Events:_
+
+Corresponds to the alarm's severity.
 
 | "severity_text": "Cleared", |"severity_text": | | |string |
 
 | "stickymemo": null, |"stickymemo": |"p_stickymemo" | "p_stickymemo":
 null, |string a|
-AlarmChangeNotificationEvent/StickyMemoAdded
+_AlarmChangeNotificationEvent/StickyMemoAdded Events:_
 
-p_stickymemo content of current sticky memo corresponds to alarm
-stickymemo
+Content of current sticky memo for the alarm.
 
-AlarmChangeNotificationEvent/StickyMemoUpdate
+_AlarmChangeNotificationEvent/StickyMemoUpdate Events:_
 
-also has parameters
+These events have parameters:
 
-p_author author of stickymemo
+* `p_author`: author of stickymemo
+* `p_body`: content of sticky memo
 
-p_ body content of sticky memo
+_AlarmChangeNotificationEvent/JournalMemoUpdate Events:_
 
-AlarmChangeNotificationEvent/JournalMemoUpdate
+These events have parameters:
 
-also has parameters
-
-p_author user who authored the memo
-
-p_body content of the memo
-
-p_reductionkey reduction key associated with memo (corresponds to alarm
-reduction key
+* `p_author`: user who authored the memo
+* `p_body`: content of the memo
+* `p_reductionkey`: reduction key associated with memo (corresponds to alarm
+reduction key)
 
 Note that journal memos do not have an entry in the alarm index but are
-only referenced by reduction key
+only referenced by reduction key.
 
 | "suppressedtime": "2017-03-03T12:44:21.210Z", |"suppressedtime":
 |"p_suppressedtime": | "p_suppressedtime": "2017-03-02T14:24:59.282Z",
-|date |AlarmChangeNotificationEvent/AlarmSuppressed Event
-p_suppressedtime corresponds to alarm suppressedtime
+|date |
+_AlarmChangeNotificationEvent/AlarmSuppressed Events:_
+
+Corresponds to the alarm's suppressed time.
 
 | "suppresseduntil": "2017-03-03T12:44:21.210Z", |"suppresseduntil":
 |"p_suppresseduntil": | "p_suppresseduntil": "2017-03-02T14:24:59.282Z",
-|date |AlarmChangeNotificationEvent/AlarmSuppressed Event
-p_suppresseduntil corresponds to alarm suppresseduntil
+|date |
+_AlarmChangeNotificationEvent/AlarmSuppressed Events:_
+
+Corresponds to the alarm's suppressed until time.
 
 | "suppresseduser": null, |"suppresseduser": |"p_suppresseduser": |
 "p_suppresseduser": null, |string
-|AlarmChangeNotificationEvent/AlarmSuppressed Event p_suppresseduser
-corresponds to alarm suppressedunti
+|
+_AlarmChangeNotificationEvent/AlarmSuppressed Events:_
+
+Corresponds to the alarm's suppressed user.
 
 | "systemid": "00000000-0000-0000-0000-000000000000", |"systemid":
 |"p_systemid": | "p_systemid": "00000000-0000-0000-0000-000000000000",
-|string |Alarm Change Event p_systemid corresponds to alarm systemid
+|string |
+_Alarm Change Events:_
 
-| "tticketid": null, |"p_tticketid": | | "p_tticketid": null, |string a|
-AlarmChangeNotificationEvent/TroubleTicketStateChange
+Corresponds to the alarm's system ID.
 
-p_tticketid corresponds to alarm tticketid
+| "tticketid": null, |"p_tticketid": | "p_tticketid": | "p_tticketid": null, |string |
+_AlarmChangeNotificationEvent/TroubleTicketStateChange Events:_
 
-| "tticketstate": null, |"p_tticketstate": | | "p_tticketstate": null,
-|string a|
-AlarmChangeNotificationEvent/TroubleTicketStateChange
+Corresponds to the alarm's trouble ticket ID.
 
-p_tticketstate corresponds to alarm p_tticketstate
+| "tticketstate": null, |"p_tticketstate": | "p_tticketstate": | "p_tticketstate": null,
+|string |
+_AlarmChangeNotificationEvent/TroubleTicketStateChange Events:_
+
+Corresponds to the alarm's trouble ticket state.
 
 | "x733alarmtype": null, |"x733alarmtype": | | |string |
 
 | "x733probablecause": "0", |"x733probablecause": | | |string |
 
-| } | } | } | } | |
+|}|}|}|}||
+|===
 
-| } |} | } |} | |
-|=======================================================================
