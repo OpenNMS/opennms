@@ -50,7 +50,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class StringUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
+
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
     private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
 
@@ -311,6 +317,10 @@ public abstract class StringUtils {
         return false;
     }
 
+    public static Integer parseDecimalInt(String value) {
+        return parseDecimalInt(value, true);
+    }
+
     /**
      * This is a quick and dirty parser for String representations
      * of decimal integers. It should be up to 2X faster than
@@ -319,11 +329,15 @@ public abstract class StringUtils {
      * @param value Positive or negative decimal string value
      * @return Integer representing the string value
      */
-    public static int parseDecimalInt(String value) {
+    public static Integer parseDecimalInt(String value, boolean throwExceptions) {
         final int length = value.length();
 
         if (value == null || length < 1) {
-            throw new NumberFormatException("Null or empty value");
+            if (throwExceptions) {
+                throw new NumberFormatException("Null or empty value");
+            } else {
+                return null;
+            }
         }
 
         try {
@@ -332,7 +346,11 @@ public abstract class StringUtils {
 
             if (value.charAt(0) == '-') {
                 if (length == 1) {
-                    throw new NumberFormatException("No digits in value: " + value);
+                    if (throwExceptions) {
+                        throw new NumberFormatException("No digits in value: " + value);
+                    } else {
+                        return null;
+                    }
                 }
                 sign = 1;
                 i = 1;
@@ -344,21 +362,34 @@ public abstract class StringUtils {
 
             for (; i < length; i++) {
                 oldValue = retval;
-                digit = (value.charAt(i) - '0');
+                final char current = value.charAt(i);
+                digit = (current - '0');
                 if (digit < 0 || digit > 9) {
-                    throw new NumberFormatException("Invalid digit: " + value.charAt(i));
+                    if (throwExceptions) {
+                        throw new NumberFormatException("Invalid digit: " + current);
+                    } else {
+                        return null;
+                    }
                 }
                 retval = (retval * 10) - digit;
                 // If the negative value overflows to positive, then throw an exception
                 if (retval > oldValue) {
-                    throw new NumberFormatException(sign == -1 ? "Overflow" : "Underflow");
+                    if (throwExceptions) {
+                        throw new NumberFormatException(sign == -1 ? "Overflow" : "Underflow");
+                    } else {
+                        return null;
+                    }
                 }
             }
             return sign * retval;
         } catch (Exception e) {
-            NumberFormatException nfe = new NumberFormatException("Could not parse integer value: " + value);
-            nfe.initCause(e);
-            throw nfe;
+            if (throwExceptions) {
+                NumberFormatException nfe = new NumberFormatException("Could not parse integer value: " + value);
+                nfe.initCause(e);
+                throw nfe;
+            } else {
+                return null;
+            }
         }
     }
 }

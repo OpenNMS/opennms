@@ -191,7 +191,7 @@ public class StringUtilsTest {
             String.valueOf(Integer.MAX_VALUE),
             String.valueOf(Integer.MIN_VALUE)
         }) {
-            assertEquals(Integer.parseInt(value), StringUtils.parseDecimalInt(value));
+            assertEquals(Integer.parseInt(value), StringUtils.parseDecimalInt(value).intValue());
         }
     }
 
@@ -231,13 +231,65 @@ public class StringUtilsTest {
 
                 start = System.nanoTime();
                 for (int i = 0; i < iterations; i++) {
-                    StringUtils.parseDecimalInt(value);
+                    StringUtils.parseDecimalInt(value, false);
                 }
                 long parseDecimalIntTime = System.nanoTime() - start;
 
+                start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    StringUtils.parseDecimalInt(value, true);
+                }
+                long parseDecimalIntExceptionTime = System.nanoTime() - start;
+
                 if (iterations == TEST_SPEED) {
-                    System.out.println("Results: " + parseDecimalIntTime + " ?<= " + parseIntTime);
+                    System.out.println("Results (no exceptions): " + parseDecimalIntTime + " ?<= " + parseIntTime);
                     assertTrue("StringUtils.parseDecimalInt() is slower: " + parseDecimalIntTime + " > " + parseIntTime, parseDecimalIntTime <= parseIntTime);
+                    System.out.println("Results (exceptions)   : " + parseDecimalIntExceptionTime + " ?<= " + parseIntTime);
+                    assertTrue("StringUtils.parseDecimalInt() is slower: " + parseDecimalIntExceptionTime + " > " + parseIntTime, parseDecimalIntExceptionTime <= parseIntTime);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testFailToParseDecimalIntegerSpeed() {
+        final int WARM_UP = 10000;
+        final int TEST_SPEED = 50000;
+        for (int iterations : new int[] {WARM_UP, TEST_SPEED}) {
+            for (String value : new String[] {
+                "12F4",
+                String.valueOf(Integer.MAX_VALUE) + "0",
+                String.valueOf(Integer.MIN_VALUE) + "0",
+                "-"
+            }) {
+                long start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    try {
+                        Integer.parseInt(value);
+                    } catch (NumberFormatException e) {}
+                }
+                long parseIntTime = System.nanoTime() - start;
+
+                start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    StringUtils.parseDecimalInt(value, false);
+                }
+                long parseDecimalIntTime = System.nanoTime() - start;
+
+                start = System.nanoTime();
+                for (int i = 0; i < iterations; i++) {
+                    try {
+                        StringUtils.parseDecimalInt(value, true);
+                    } catch (NumberFormatException e) {}
+                }
+                long parseDecimalIntExceptionTime = System.nanoTime() - start;
+
+                if (iterations == TEST_SPEED) {
+                    System.out.println("Results (no exceptions): " + parseDecimalIntTime + " ?<= " + parseIntTime);
+                    assertTrue("StringUtils.parseDecimalInt() is slower: " + parseDecimalIntTime + " > " + parseIntTime, parseDecimalIntTime <= parseIntTime);
+                    System.out.println("Results (exceptions)   : " + parseDecimalIntExceptionTime + " ?<= " + parseIntTime);
+                    // Don't assert here because our version is much slower
+                    // assertTrue("StringUtils.parseDecimalInt() is slower: " + parseDecimalIntExceptionTime + " > " + parseIntTime, parseDecimalIntExceptionTime <= parseIntTime);
                 }
             }
         }

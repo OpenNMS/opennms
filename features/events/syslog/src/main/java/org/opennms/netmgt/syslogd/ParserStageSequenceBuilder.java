@@ -737,14 +737,16 @@ public class ParserStageSequenceBuilder {
 		public Integer getValue(ParserStageState state) {
 			// Trim the leading zeros from this value
 			String value = getAccumulatedValue(state);
+			boolean trimmed = false;
 			while (value.startsWith("0")) {
 				value = value.substring(1);
+				trimmed = true;
 			}
 
 			if ("".equals(value)) {
-				return 0;
+				return trimmed ? 0 : null;
 			} else {
-				return StringUtils.parseDecimalInt(value);
+				return StringUtils.parseDecimalInt(value, false);
 			}
 		}
 
@@ -794,14 +796,16 @@ public class ParserStageSequenceBuilder {
 		 * @return
 		 */
 		public static int trimAndConvert(String value) {
+			boolean trimmed = false;
 			while (value.startsWith("0")) {
 				value = value.substring(1);
+				trimmed = true;
 			}
 
 			if ("".equals(value)) {
-				return 0;
+				return trimmed ? 0 : null;
 			} else {
-				return StringUtils.parseDecimalInt(value);
+				return StringUtils.parseDecimalInt(value, false);
 			}
 		}
 
