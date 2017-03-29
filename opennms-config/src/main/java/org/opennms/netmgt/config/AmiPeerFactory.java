@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -198,7 +199,7 @@ public class AmiPeerFactory {
             final StringWriter stringWriter = new StringWriter();
             JaxbUtils.marshal(m_config, stringWriter);
             if (stringWriter.toString() != null) {
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), "UTF-8");
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
                 fileWriter.write(stringWriter.toString());
                 fileWriter.flush();
                 fileWriter.close();

@@ -30,7 +30,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -174,16 +173,12 @@ class UdpReceiver implements Runnable {
                 break;
             }
 
-            try {
-                LOG.debug("Sending received packet to processor");
+            LOG.debug("Sending received packet to processor");
 
-                UdpReceivedEvent re = UdpReceivedEvent.make(pkt);
-                synchronized (m_eventsIn) {
-                    m_eventsIn.add(re);
-                    m_eventsIn.notify();
-                }
-            } catch (UnsupportedEncodingException e) {
-                LOG.warn("Failed to convert received XML event, discarding", e);
+            UdpReceivedEvent re = UdpReceivedEvent.make(pkt);
+            synchronized (m_eventsIn) {
+                m_eventsIn.add(re);
+                m_eventsIn.notify();
             }
 
             pkt = new DatagramPacket(buffer, length);

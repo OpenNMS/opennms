@@ -33,7 +33,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -261,7 +260,7 @@ public class ConvertToEventTest {
                 assertTrue("service parms do not match", compare("service", services.toArray(new String[0])));
                 assertTrue("processid parms do not match", compare("processid", processids.toArray(new String[0])));
                 assertTrue("parm counts do not match", compare("parm count", parmcounts.toArray(new Long[0])));
-            } catch (UnsupportedEncodingException e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 fail("Unexpected exception: " + e.getMessage());
             }
@@ -271,7 +270,7 @@ public class ConvertToEventTest {
         results.stream().forEach(System.out::println);
     }
 
-    private static Event parseSyslog(final String name, final SyslogdConfig config, final String syslog) throws UnsupportedEncodingException {
+    private static Event parseSyslog(final String name, final SyslogdConfig config, final String syslog) {
         try {
             ConvertToEvent convert = new ConvertToEvent(
                 DistPollerDao.DEFAULT_DIST_POLLER_ID,

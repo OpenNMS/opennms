@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
 
@@ -67,7 +69,7 @@ public class FtpDetector extends AsyncMultilineDetectorMinaImpl {
     @Override
     protected void onInit() {
         //setup the correct codec for this Detector
-        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, getMultilineIndicator())));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(StandardCharsets.UTF_8, getMultilineIndicator())));
         
         expectBanner(expectCodeRange(100, 600));
         send(request("quit"), expectCodeRange(100,600));

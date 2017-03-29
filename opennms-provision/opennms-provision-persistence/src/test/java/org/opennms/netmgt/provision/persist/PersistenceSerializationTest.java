@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,7 +155,7 @@ public class PersistenceSerializationTest {
         StringBuffer exampleXML = new StringBuffer();
         File foreignSources = new File(ClassLoader.getSystemResource("foreign-sources.xml").getFile());
         assertTrue("foreign-sources.xml is readable", foreignSources.canRead());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), StandardCharsets.UTF_8));
         String line;
         while (true) {
             line = reader.readLine();

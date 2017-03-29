@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -316,7 +317,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                 @Override
                 public Void call() throws Exception {
                     try {
-                        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+                        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8);
                         JaxbUtils.marshal(m_report, fileWriter);
                         LOG.debug("The xml marshalled from the JAXB classes is saved in {}", outputFile.getAbsoluteFile());
                         fileWriter.close();
@@ -339,7 +340,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
                 @Override
                 public Void call() throws Exception {
                     try {
-                        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+                        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                         JaxbUtils.marshal(m_report, writer);
                         LOG.debug("The xml marshalled from the JAXB classes has been written to the output stream");
                         writer.flush();

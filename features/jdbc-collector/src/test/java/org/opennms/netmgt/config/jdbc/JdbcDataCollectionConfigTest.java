@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -147,7 +148,7 @@ public class JdbcDataCollectionConfigTest {
         StringBuffer exampleXML = new StringBuffer();
         File jdbcCollectionConfig = new File(ClassLoader.getSystemResource("jdbc-datacollection-config.xml").getFile());
         assertTrue("jdbc-datacollection-config.xml is readable", jdbcCollectionConfig.canRead());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(jdbcCollectionConfig), "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(jdbcCollectionConfig), StandardCharsets.UTF_8));
         String line;
         while (true) {
             line = reader.readLine();

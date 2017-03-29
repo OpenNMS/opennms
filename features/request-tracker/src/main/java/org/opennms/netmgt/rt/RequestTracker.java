@@ -32,7 +32,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,13 +100,8 @@ public class RequestTracker {
         params.add(new BasicNameValuePair("pass", m_password));
         params.add(new BasicNameValuePair("content", content));
 
-        try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
-            post.setEntity(entity);
-        } catch (final UnsupportedEncodingException e) {
-            // Should never happen
-            LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
-        }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, StandardCharsets.UTF_8);
+        post.setEntity(entity);
 
         CloseableHttpResponse response = null;
         try {
@@ -240,7 +235,7 @@ public class RequestTracker {
         params.add(new BasicNameValuePair("query", "Queue='" + queueName + "' AND Status='open'"));
         params.add(new BasicNameValuePair("format", "i"));
         params.add(new BasicNameValuePair("orderby", "-id"));
-        final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/search/ticket?" + URLEncodedUtils.format(params, "UTF-8"));
+        final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/search/ticket?" + URLEncodedUtils.format(params, StandardCharsets.UTF_8));
 
         final List<RTTicket> tickets = new ArrayList<RTTicket>();
         final List<Long> ticketIds = new ArrayList<Long>();
@@ -477,7 +472,7 @@ public class RequestTracker {
             CloseableHttpResponse response = null;
 
             try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, StandardCharsets.UTF_8);
                 post.setEntity(entity);
 
                 response = m_clientWrapper.execute(post);
@@ -490,8 +485,6 @@ public class RequestTracker {
                     }
                     LOG.warn("got user session for username: {}", m_user);
                 }
-            } catch (final UnsupportedEncodingException e) {
-                LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
             } catch (final Exception e) {
                 LOG.warn("Unable to get session (by requesting user details)", e);
             } finally {

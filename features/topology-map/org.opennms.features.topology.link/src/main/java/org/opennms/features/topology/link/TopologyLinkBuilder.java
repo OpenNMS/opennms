@@ -30,6 +30,7 @@ package org.opennms.features.topology.link;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -130,6 +131,6 @@ public class TopologyLinkBuilder {
     }
 
     private static String parameter(String parameterName, String value) throws UnsupportedEncodingException {
-        return URLEncoder.encode(parameterName, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8");
+        return URLEncoder.encode(parameterName, StandardCharsets.UTF_8.name()) + "=" + URLEncoder.encode(value, StandardCharsets.UTF_8.name());
     }
 }

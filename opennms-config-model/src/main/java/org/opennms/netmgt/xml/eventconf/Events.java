@@ -36,6 +36,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -572,7 +573,7 @@ public class Events implements Serializable {
 			Writer fileWriter = null;
 			try {
 				try {
-					fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+					fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 				} catch (final IOException e) {
 					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
 				}

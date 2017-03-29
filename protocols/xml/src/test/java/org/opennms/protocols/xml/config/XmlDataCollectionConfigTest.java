@@ -121,5 +121,4 @@ public class XmlDataCollectionConfigTest extends XmlTestNoCastor<XmlDataCollecti
 
         return xmlDataCollectionConfig;
     }
-
 }

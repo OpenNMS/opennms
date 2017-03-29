@@ -32,9 +32,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
-import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -61,7 +61,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
 
@@ -90,7 +90,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -119,7 +119,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -148,7 +148,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -177,7 +177,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -214,7 +214,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -252,7 +252,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -289,7 +289,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -324,7 +324,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -360,7 +360,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());

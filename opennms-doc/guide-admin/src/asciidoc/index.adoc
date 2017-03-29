@@ -157,8 +157,15 @@ include::text/performance-data-collection/shell/stress-testing.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events/events.adoc[]
-include::text/events/forward-elasticsearch.adoc[]
+include::text/events/anatomy-events.adoc[]
+include::text/events/event-sources.adoc[]
+include::text/events/sources/snmp-traps.adoc[]
+include::text/events/sources/syslog.adoc[]
+include::text/events/sources/rest.adoc[]
+include::text/events/sources/xml-tcp.adoc[]
+include::text/events/sources/eif-adapter.adoc[]
+include::text/events/sources/tl1.adoc[]
+include::text/events/eventbus.adoc[]
 
 [[ga-notifications]]
 == Notifications

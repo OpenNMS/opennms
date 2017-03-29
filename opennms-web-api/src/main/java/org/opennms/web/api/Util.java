@@ -35,6 +35,7 @@ import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -185,7 +186,7 @@ public abstract class Util extends Object {
      */
     public static String encode(final String string) {
         try {
-            return URLEncoder.encode(string, "UTF-8");
+            return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
         } catch (final UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
@@ -201,7 +202,7 @@ public abstract class Util extends Object {
      */
     public static String decode(final String string) {
         try {
-            return URLDecoder.decode(string, "UTF-8");
+            return URLDecoder.decode(string, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
