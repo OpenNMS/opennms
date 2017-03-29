@@ -71,9 +71,7 @@
 		try {
 			pollFactory.removeOutage(deleteName);
 			//Remove from all the package configurations as well
-			org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
-			for (int i = 0; i < thresholdingPackages.length; i++) {
-				org.opennms.netmgt.config.threshd.Package thisPackage = thresholdingPackages[i];
+			for (final org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
 				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
 			}
 	
@@ -168,9 +166,8 @@
 			
 					ThreshdConfigFactory.init();
 					List<String> thresholdingOutages = new ArrayList<String>();
-					org.opennms.netmgt.config.threshd.Package[] thresholdingPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage();
-					for (int i = 0; i < thresholdingPackages.length; i++) {
-						thresholdingOutages.addAll(thresholdingPackages[i].getOutageCalendarCollection());
+					for (final org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+						thresholdingOutages.addAll(thisPackage.getOutageCalendars());
 					}
 			
 					List<String> collectionOutages = new ArrayList<String>();

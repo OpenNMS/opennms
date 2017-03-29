@@ -70,7 +70,7 @@ public class EventTranslatorConfigurationTest extends XmlTestNoCastor<EventTrans
             },
             {
                 new EventTranslatorConfiguration(),
-                "<event-translator-configuration/>"
+                "<event-translator-configuration><translation/></event-translator-configuration>"
             }
         });
     }
@@ -78,18 +78,12 @@ public class EventTranslatorConfigurationTest extends XmlTestNoCastor<EventTrans
     private static EventTranslatorConfiguration getConfig() {
         EventTranslatorConfiguration config = new EventTranslatorConfiguration();
         
-        Translation translation = new Translation();
-        config.setTranslation(translation);
-        
         EventTranslationSpec spec = new EventTranslationSpec();
         spec.setUei("uei.opennms.org/mib2opennms/tspEventPCRRepetitionError");
-        translation.addEventTranslationSpec(spec);
-
-        Mappings mappings = new Mappings();
-        spec.setMappings(mappings);
+        config.addEventTranslationSpec(spec);
 
         Mapping mapping = new Mapping();
-        mappings.addMapping(mapping);
+        spec.addMapping(mapping);
 
         Assignment assignment = new Assignment();
         assignment.setType("field");
