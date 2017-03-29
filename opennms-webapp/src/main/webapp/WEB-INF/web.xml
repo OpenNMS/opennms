@@ -642,11 +642,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>nodeLabelChange</servlet-name>
-    <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
-  </servlet>
-
-  <servlet>
     <!-- servlet for setting critical path -->
     <servlet-name>setCriticalPath</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SetCriticalPathServlet</servlet-class>
@@ -880,11 +875,6 @@
   </servlet-mapping>
 
   <!-- end of user groups configuration servlets -->
-
-  <servlet-mapping>
-    <servlet-name>nodeLabelChange</servlet-name>
-    <url-pattern>/admin/nodeLabelChange</url-pattern>
-  </servlet-mapping>
 
     <!--servlet mapping for restart discovery servlet-->
   <servlet-mapping>

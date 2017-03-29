@@ -119,18 +119,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--  Manual Provisioning -->
-  <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="${importer.requisition.dir}"/>
-  </bean>
-  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-    <property name="pollerConfig" ref="pollerConfig"/>
-  </bean>
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
       <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
       <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>

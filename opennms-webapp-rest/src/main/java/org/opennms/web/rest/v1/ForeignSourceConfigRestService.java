@@ -35,6 +35,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,15 +53,22 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.support.PluginWrapper;
-import org.opennms.web.svclayer.ManualProvisioningService;
+import org.opennms.web.svclayer.support.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Class ForeignSourceConfigRestService.
@@ -74,10 +84,6 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Autowired
     protected ForeignSourceService m_foreignSourceService;
 
-    /** The provisioning service. */
-    @Autowired
-    protected ManualProvisioningService m_provisioningService;
-
     /** The poller configuration. */
     @Autowired
     protected PollerConfig m_pollerConfig;
@@ -85,13 +91,19 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Autowired
     protected CollectdConfigFactory m_collectdConfigFactory;
 
+    @Autowired
+    private CategoryDao m_categoryDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_foreignSourceService, "ForeignSourceService is required.");
-        Assert.notNull(m_provisioningService, "ManualProvisioningService is required.");
+
         // The following is required, otherwise getWrappers() throws a NPE
         m_foreignSourceService.getPolicyTypes();
         m_foreignSourceService.getDetectorTypes();
@@ -280,17 +292,28 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     public ElementList getServices(@PathParam("groupName") String groupName) {
         ElementList elements = new ElementList(m_pollerConfig.getServiceMonitors().keySet());
         m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
-            if (!elements.contains(c.getService()))
+            if (!elements.contains(c.getService())) {
                 elements.add(c.getService());
+            }
         });
         if (groupName != null) {
-            Collection<String> services = m_provisioningService.getServiceTypeNames(groupName);
-            if (services != null) {
-                services.forEach(s -> {
-                    if (!elements.contains(s))
-                        elements.add(s);
-                });
+            final SortedSet<String> serviceNames = new TreeSet<>();
+            final ForeignSource pendingForeignSource = m_foreignSourceService.getForeignSource(groupName);
+            serviceNames.addAll(pendingForeignSource.getDetectorNames());
+
+            for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
+                serviceNames.add(type.getName());
             }
+
+            // Include all of the service names defined in the poller configuration
+            if (m_pollerConfig != null && m_pollerConfig.getServiceMonitors() != null && ! m_pollerConfig.getServiceMonitors().isEmpty()) {
+                serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            }
+            serviceNames.forEach(s -> {
+                if (!elements.contains(s)) {
+                    elements.add(s);
+                }
+            });
         }
         return elements;
     }
@@ -304,7 +327,12 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("assets")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getAssets() {
-        return new ElementList(m_provisioningService.getAssetFieldNames());
+        final List<String> blackList = Lists.newArrayList("id", "class", "geolocation", "node");
+        final Collection<String> assets = PropertyUtils.getProperties(new OnmsAssetRecord())
+                .stream()
+                .filter(a -> !blackList.contains(a))
+                .collect(Collectors.toList());
+        return new ElementList(assets);
     }
 
     /**
@@ -316,7 +344,10 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getCategories() {
-        return new ElementList(m_provisioningService.getNodeCategoryNames());
+        final Set<String> categories = m_categoryDao.findAll().stream()
+                .map(c -> c.getName())
+                .collect(Collectors.toSet());
+        return new ElementList(categories);
     }
 
     /**

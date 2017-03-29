@@ -85,7 +85,6 @@ public class RequisitionUrlConnectionTest {
         Map<String, String> params = RequisitionUrlConnection.getParameters(url);
         assertThat(params,
                 Matchers.<Map<String, String>>equalTo(new ImmutableMap.Builder<String, String>()
-                        .put("port", "42")
                         .put("path", "/some/deep/path")
                         .put("location", "abc")
                         .put("parm1", "1")
@@ -110,7 +109,6 @@ public class RequisitionUrlConnectionTest {
         assertThat(params,
                 Matchers.<Map<String, String>>equalTo(new ImmutableMap.Builder<String, String>()
                         .put("type", "type")
-                        .put("port", "-1")
                         .put("path", "/path")
                         .put("k1", "v1")
                         .put("k2", "v2")

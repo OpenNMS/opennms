@@ -70,6 +70,7 @@
       <feature>opennms-core-web</feature>
       <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
     </feature>
 
     <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
