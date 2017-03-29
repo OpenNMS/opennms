@@ -184,15 +184,15 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
         n.setBuilding(request.getForeignSource());
 
         switch (request.getForeignIdHashSource()) {
-        case 1:
+        case NODE_LABEL:
             n.setForeignId(computeHashCode(nodeLabel));
             LOG.debug("Generating foreignId from hash of nodelabel {}", nodeLabel);
             break;
-        case 2:
+        case IP_ADDRESS:
             n.setForeignId(computeHashCode(addr));
             LOG.debug("Generating foreignId from hash of ipAddress {}", addr);
             break;
-        case 3:
+        case NODE_LABEL_AND_IP_ADDRESS:
             n.setForeignId(computeHashCode(nodeLabel + addr));
             LOG.debug("Generating foreignId from hash of nodelabel+ipAddress {}{}", nodeLabel, addr);
             break;

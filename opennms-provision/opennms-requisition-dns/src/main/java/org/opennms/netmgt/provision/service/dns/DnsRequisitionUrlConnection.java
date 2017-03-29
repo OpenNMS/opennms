@@ -135,24 +135,32 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * 
      * @return a String of "ipAddress" or "nodeLabel"
      */
-    private int getForeignIdHashSource() {
-        int result = 0;
+    private ForeignIdHashSource getForeignIdHashSource() {
+        boolean hasIpKeywords = false;
+        boolean hasLabelKeywords = false;
         if (getArgs() != null && getArgs().get(FID_HASH_SRC_ARG) != null) {
             String hashSourceArg = getArgs().get(FID_HASH_SRC_ARG).toLowerCase();
             for (String keyword : HASH_IP_KEYWORDS) {
                 if (hashSourceArg.contains(keyword)) {
-                    result = 2;
+                    hasIpKeywords = true;
                     break;
                 }
             }
             for (String keyword : HASH_LABEL_KEYWORDS) {
                 if (hashSourceArg.contains(keyword)) {
-                    result++;
+                    hasLabelKeywords = true;
                     break;
                 }
             }
         }
-        return result;
+
+        if (hasIpKeywords && !hasLabelKeywords) {
+            return ForeignIdHashSource.IP_ADDRESS;
+        } else if (hasIpKeywords && hasLabelKeywords) {
+            return ForeignIdHashSource.NODE_LABEL_AND_IP_ADDRESS;
+        } else {
+            return ForeignIdHashSource.NODE_LABEL;
+        }
     }
 
     

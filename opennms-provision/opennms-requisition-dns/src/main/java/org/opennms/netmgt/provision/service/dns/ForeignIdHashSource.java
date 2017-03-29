@@ -28,34 +28,11 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
-public class DnsRequisitionRequestTest extends XmlTestNoCastor<DnsRequisitionRequest> {
-
-    public DnsRequisitionRequestTest(DnsRequisitionRequest sampleObject, String sampleXml) {
-        super(sampleObject, sampleXml, null);
-    }
-
-    @Parameters
-    public static Collection<Object[]> data() throws Exception {
-        DnsRequisitionRequest request = new DnsRequisitionRequest();
-        request.setHost("my-dns-server");
-        request.setPort(5353);
-        request.setZone("some-zone");
-        request.setFallback(false);
-        request.setForeignSource("f*s*");
-        request.setForeignIdHashSource(ForeignIdHashSource.IP_ADDRESS);
-
-        return Arrays.asList(new Object[][] {
-            {
-                request,
-                "<dns-requisition-request host=\"my-dns-server\" port=\"5353\" zone=\"some-zone\" foreign-source=\"f*s*\" fallback=\"false\" foreign-id-hash-source=\"IP_ADDRESS\"/>"
-            }
-        });
-    }
-
+/**
+ * Defines the fields used to hash and generate the foreign ID.
+ */
+public enum ForeignIdHashSource {
+    NODE_LABEL,
+    IP_ADDRESS,
+    NODE_LABEL_AND_IP_ADDRESS;
 }

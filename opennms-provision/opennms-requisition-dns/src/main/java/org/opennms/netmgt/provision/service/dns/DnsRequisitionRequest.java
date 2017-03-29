@@ -48,7 +48,7 @@ public class DnsRequisitionRequest implements RequisitionRequest {
     private static final int DEFAULT_PORT = 53;
     private static final long DEFAULT_SERIAL = 0;
     private static final boolean DEFAULT_FALLBACK = false;
-    private static final int DEFAULT_FOREIGN_ID_HASH_SOURCE = 0;
+    public static final ForeignIdHashSource DEFAULT_FOREIGN_ID_HASH_SOURCE = ForeignIdHashSource.NODE_LABEL;
     private static final List<String> DEFAULT_SERVICES = Arrays.asList("ICMP", "SNMP");
 
     @XmlAttribute(name = "host")
@@ -73,7 +73,7 @@ public class DnsRequisitionRequest implements RequisitionRequest {
     private String expression;
 
     @XmlAttribute(name = "foreign-id-hash-source")
-    private Integer foreignIdHashSource;
+    private ForeignIdHashSource foreignIdHashSource;
 
     @XmlElement(name = "service")
     private List<String> services;
@@ -108,7 +108,7 @@ public class DnsRequisitionRequest implements RequisitionRequest {
         expression = parameters.get("expression");
         final String foreignIdHashSourceStr = parameters.get("foreignIdHashSource");
         if (foreignIdHashSourceStr != null) {
-            foreignIdHashSource = Integer.valueOf(foreignIdHashSourceStr);
+            foreignIdHashSource = ForeignIdHashSource.valueOf(foreignIdHashSourceStr);
         }
         final String servicesStr = parameters.get("services");
         if (servicesStr != null) {
@@ -172,11 +172,11 @@ public class DnsRequisitionRequest implements RequisitionRequest {
         this.expression = expression;
     }
 
-    public Integer getForeignIdHashSource() {
+    public ForeignIdHashSource getForeignIdHashSource() {
         return foreignIdHashSource != null ? foreignIdHashSource : DEFAULT_FOREIGN_ID_HASH_SOURCE;
     }
 
-    public void setForeignIdHashSource(Integer foreignIdHashSource) {
+    public void setForeignIdHashSource(ForeignIdHashSource foreignIdHashSource) {
         this.foreignIdHashSource = foreignIdHashSource;
     }
 
