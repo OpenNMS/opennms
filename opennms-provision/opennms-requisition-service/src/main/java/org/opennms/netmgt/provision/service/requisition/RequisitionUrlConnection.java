@@ -113,7 +113,9 @@ public class RequisitionUrlConnection extends URLConnection {
     public static Map<String, String> getParameters(URL url) {
         final Map<String, String> params = new HashMap<>();
         params.put("type", url.getHost());
-        params.put("port", Integer.toString(url.getPort()));
+        // Don't include the port, since it can be misleading. Instead, let
+        // the implementation provide their own default port
+        //params.put("port", Integer.toString(url.getPort()));
         params.put("path", url.getPath());
 
         // Extract the username and password

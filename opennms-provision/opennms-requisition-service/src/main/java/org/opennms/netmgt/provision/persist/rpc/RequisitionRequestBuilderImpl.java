@@ -134,7 +134,7 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
         final RequisitionRequest providerRequest = provider.getRequest(parameters);
 
         // Optionally marshal the request if were targeting a remote location
-        if (MonitoringLocationUtils.isDefaultLocationName(location)) {
+        if (MonitoringLocationUtils.isDefaultLocationName(request.getLocation())) {
             request.setProviderRequest(providerRequest);
         } else {
             request.setProviderRequest(provider.marshalRequest(providerRequest));

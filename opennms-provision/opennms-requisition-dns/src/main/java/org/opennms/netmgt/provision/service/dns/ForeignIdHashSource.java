@@ -26,39 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.service.dns;
 
-import java.util.Objects;
-
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-
-public abstract class AbstractRequisitionProvider<T extends RequisitionRequest> implements RequisitionProvider {
-
-    private final Class<T> clazz;
-
-    public AbstractRequisitionProvider(Class<T> clazz) {
-        this.clazz = Objects.requireNonNull(clazz);
-    }
-
-    public abstract Requisition getRequisitionFor(T request);
-
-    @Override
-    public Requisition getRequisition(RequisitionRequest request) {
-        if (request == null || !(clazz.isAssignableFrom(request.getClass()))) {
-            throw new IllegalArgumentException("Invalid request: " + request);
-        }
-        return getRequisitionFor(clazz.cast(request));
-    }
-
-    @Override
-    public String marshalRequest(RequisitionRequest request) {
-        return JaxbUtils.marshal(request);
-    }
-
-    @Override
-    public RequisitionRequest unmarshalRequest(String marshaledRequest) {
-        return JaxbUtils.unmarshal(clazz, marshaledRequest);
-    }
-
+/**
+ * Defines the fields used to hash and generate the foreign ID.
+ */
+public enum ForeignIdHashSource {
+    NODE_LABEL,
+    IP_ADDRESS,
+    NODE_LABEL_AND_IP_ADDRESS;
 }

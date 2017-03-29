@@ -73,6 +73,11 @@
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-requisition-dns</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
