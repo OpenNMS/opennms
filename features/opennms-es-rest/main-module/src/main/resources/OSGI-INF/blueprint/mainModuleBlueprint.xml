@@ -29,6 +29,7 @@
       <cm:property name="archiveAlarmChangeEvents" value="true" />
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
+      <cm:property name="archiveAssetData" value="true" />
       <cm:property name="timeout" value="3000" /> <!-- 3 second timeout for Elasticsearch operations -->
       <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
       <cm:property name="socketTimeout" value="3000" /> <!-- 3 second timeout for Elasticsearch socket reads -->
@@ -67,6 +68,7 @@
     <property name="transactionOperations" ref="transactionOperations" />
     <property name="MAX_TTL" value="${cache_max_ttl}" />
     <property name="MAX_SIZE" value="${cache_max_size}" />
+    <property name="archiveAssetData" value="${archiveAssetData}" />
   </bean>
 
   <bean id="restClientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
