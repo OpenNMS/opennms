@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +46,10 @@ import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ContainerHierarchicalWrapper;
 import com.vaadin.server.ExternalResource;
@@ -64,6 +68,7 @@ import com.vaadin.ui.TreeTable;
 public class BusinessServiceTreeTable extends TreeTable {
 
     private final BusinessServiceManager businessServiceManager;
+    private String businessServiceNameFilter = null;
 
     public BusinessServiceTreeTable(BusinessServiceManager businessServiceManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
@@ -163,11 +168,71 @@ public class BusinessServiceTreeTable extends TreeTable {
         setColumnExpandRatio("name", 5);
         setColumnExpandRatio("links", 1);
         setColumnExpandRatio("edit / delete", 1);
+
+        setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(Table source, Object itemId, Object propertyId) {
+                if (!Strings.isNullOrEmpty(BusinessServiceTreeTable.this.businessServiceNameFilter) &&
+                        source != null &&
+                        itemId != null &&
+                        BusinessServiceFilter.NAME_PROPERTY.equals(propertyId)) {
+                    Item item = source.getItem(itemId);
+                    if (item != null) {
+                        Property<?> property = item.getItemProperty(BusinessServiceFilter.NAME_PROPERTY);
+                        if (property != null) {
+                            if (property.getValue() != null) {
+                                String value = property.getValue().toString();
+                                if (!value.toLowerCase().contains(BusinessServiceTreeTable.this.businessServiceNameFilter)) {
+                                    return "grey";
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+        });
     }
 
     @Override
     public BeanItem<BusinessServiceRow> getItem(Object itemId) {
         return (BeanItem<BusinessServiceRow>) super.getItem(itemId);
+    }
+
+    public void setBusinessServiceNameFilter(String businessServiceNameFilter) {
+        this.businessServiceNameFilter = businessServiceNameFilter == null ? "" : businessServiceNameFilter.toLowerCase();
+        refresh();
+    }
+
+    public void expandForBusinessServiceNameFilter() {
+        if (Strings.isNullOrEmpty(businessServiceNameFilter)) {
+            return;
+        }
+
+        for (Object itemId : getItemIds()) {
+            expandSuccessorsForBusinessServiceNameFilter(itemId);
+        }
+    }
+
+    private void expandSuccessorsForBusinessServiceNameFilter(Object itemId) {
+        if (itemId == null) {
+            return;
+        }
+
+        if (getItem(itemId).getBean().getName().toLowerCase().contains(businessServiceNameFilter)) {
+            setCollapsed(itemId, true);
+            return;
+        }
+
+        setCollapsed(itemId, false);
+        Collection<?> children = getChildren(itemId);
+
+        if (children != null) {
+            for (Object childItemId : children) {
+                expandSuccessorsForBusinessServiceNameFilter(childItemId);
+            }
+        }
     }
 
     /**
@@ -176,6 +241,10 @@ public class BusinessServiceTreeTable extends TreeTable {
     public void refresh() {
         final com.google.common.collect.Table<Long, Optional<Long>, Boolean> expandState = getCurrentExpandState();
         final BusinessServiceContainer newContainer = new BusinessServiceContainer();
+
+        if (!Strings.isNullOrEmpty(businessServiceNameFilter)) {
+            newContainer.addContainerFilter(new BusinessServiceFilter(newContainer, businessServiceNameFilter));
+        }
 
         // Build a graph using all of the business services stored in the database
         // We don't use the existing graph, since it only contains the services know by the state machine
