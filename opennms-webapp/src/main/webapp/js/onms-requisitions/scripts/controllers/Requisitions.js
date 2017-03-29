@@ -365,14 +365,14 @@
         buttons: {
           reloadAll: {
             label: 'Reload Everything',
-            className: 'btn-danger',
+            className: 'btn-primary',
             callback: function() {
               $scope.refreshRequisitions();
             }
           },
           reloadDeployed: {
             label: 'Reload Deployed Data',
-            className: 'btn-success',
+            className: 'btn-default',
             callback: function() {
               $scope.refreshDeployedStats();
             }
