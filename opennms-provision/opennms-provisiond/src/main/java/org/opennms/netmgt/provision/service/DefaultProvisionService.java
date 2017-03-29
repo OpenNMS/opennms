@@ -302,9 +302,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void deleteNode(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node != null) {
+            final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
+
             m_nodeDao.delete(node);
             m_nodeDao.flush();
-            m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
+            node.visit(visitor);
         }
     }
 
@@ -319,14 +321,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             final boolean lastInterface = (node.getIpInterfaces().size() == 1);
 
+            final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
+
             m_ipInterfaceDao.delete(iface);
             m_ipInterfaceDao.flush();
-            m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("Provisiond", iface.getNode().getId(), iface.getIpAddress()));
+            iface.visit(visitor);
 
             if (lastInterface) {
                 m_nodeDao.delete(node);
                 m_nodeDao.flush();
-                m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
+                node.visit(visitor);
             }
         }
     }
@@ -344,20 +348,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             final boolean lastService = (iface.getMonitoredServices().size() == 1);
             final boolean lastInterface = (node.getIpInterfaces().size() == 1);
 
-            m_monitoredServiceDao.delete(service);
-            m_monitoredServiceDao.flush();
-            m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent("Provisiond", service.getNodeId(), service.getIpAddress(), service.getServiceType().getName()));
+            final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
+
+            iface.removeMonitoredService(service);
+            m_nodeDao.saveOrUpdate(node);
+            m_nodeDao.flush();
+            service.visit(visitor);
 
             if (lastService) {
                 node.removeIpInterface(iface);
                 m_nodeDao.saveOrUpdate(node);
                 m_nodeDao.flush();
-                m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent("Provisiond", iface.getNode().getId(), iface.getIpAddress()));
+                iface.visit(visitor);
 
                 if (lastInterface) {
                     m_nodeDao.delete(node);
                     m_nodeDao.flush();
-                    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent("Provisiond", node.getId(), node.getLabel(), node.getLabel()));
+                    node.visit(visitor);
                 }
             }
         }
