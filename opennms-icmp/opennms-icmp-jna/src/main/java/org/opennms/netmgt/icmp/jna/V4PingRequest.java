@@ -39,7 +39,7 @@ class V4PingRequest extends ICMPEchoPacket {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string
-    // Charset.forName("US-ASCII").encode("OpenNMS!").getLong(0);
+    // StandardCharsets.US_ASCII.encode("OpenNMS!").getLong(0);
     public static final int PACKET_LENGTH = 64;
     public static final long COOKIE = 0x4F70656E4E4D5321L;
     public static final int OFFSET_COOKIE = 0;

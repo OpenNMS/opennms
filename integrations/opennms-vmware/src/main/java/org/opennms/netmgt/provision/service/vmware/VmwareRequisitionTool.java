@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -109,7 +110,7 @@ public abstract class VmwareRequisitionTool {
             System.err.println("Couldn't generate requisition from " +  urlString);
             System.exit(1);
         } else {
-            System.out.println(IOUtils.toString(is, "UTF-8"));
+            System.out.println(IOUtils.toString(is, StandardCharsets.UTF_8));
         }
     }
 

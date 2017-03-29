@@ -30,6 +30,8 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
@@ -59,7 +61,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
         request.setHeader("Authorization", createBasicAuthHeader());
         request.setHeader("Content-Type", "application/xml");
         request.setHeader("Accept", "*/*");
-        request.setEntity(new ByteArrayEntity(xml.getBytes("UTF-8")));
+        request.setEntity(new ByteArrayEntity(xml.getBytes(StandardCharsets.UTF_8)));
         final HttpResponse response = client.execute(request);
         final int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != 200 && statusCode != 204) {

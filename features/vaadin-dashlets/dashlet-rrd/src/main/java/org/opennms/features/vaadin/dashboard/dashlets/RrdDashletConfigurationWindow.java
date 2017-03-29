@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -446,7 +447,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                     String onmsResourceId = null;
 
                     try {
-                        onmsResourceId = URLDecoder.decode(onmsResource.getId(), "UTF-8");
+                        onmsResourceId = URLDecoder.decode(onmsResource.getId(), StandardCharsets.UTF_8.name());
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

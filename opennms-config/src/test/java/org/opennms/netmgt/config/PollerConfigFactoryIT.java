@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import junit.framework.TestCase;
 
@@ -135,7 +136,7 @@ public class PollerConfigFactoryIT extends TestCase {
         private String m_xml;
 
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws IOException {
-            super(new ByteArrayInputStream(xml.getBytes("UTF-8")), localServer, verifyServer);
+            super(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)), localServer, verifyServer);
             save();
         }
 

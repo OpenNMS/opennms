@@ -31,7 +31,7 @@ package org.opennms.netmgt.config.mock;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.opennms.netmgt.config.GroupManager;
 
@@ -46,13 +46,9 @@ public class MockGroupManager extends GroupManager {
     }
 
     private void parseXML() throws IOException {
-        try {
-            InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes("UTF-8"));
-            parseXml(reader);
-            updateNeeded = false;
-        } catch (UnsupportedEncodingException e) {
-            // Can't happen with UTF-8
-        }
+        InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes(StandardCharsets.UTF_8));
+        parseXml(reader);
+        updateNeeded = false;
     }
 
     @Override

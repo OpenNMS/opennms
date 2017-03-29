@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1800,7 +1801,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
     private void assertNoTablesHaveChanged() throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         String line;
         List<String> unanticipatedOutput = new ArrayList<String>();

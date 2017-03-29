@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -164,12 +165,14 @@ public class GraphSelectionWindow extends Window {
 
                         for (OnmsResource onmsResource : resourceTypeMapEntry.getValue()) {
 
-                            String newResourceItemId = null;
+                            String newResourceItemId;
 
                             try {
-                                newResourceItemId = URLDecoder.decode(onmsResource.getId(), "UTF-8");
+                                newResourceItemId = URLDecoder.decode(onmsResource.getId(), StandardCharsets.UTF_8.name());
                             } catch (UnsupportedEncodingException e) {
+                                // Should not happen
                                 e.printStackTrace();
+                                continue;
                             }
 
                             Item newResourceItem = hierarchicalContainer.addItem(newResourceItemId);

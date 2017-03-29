@@ -44,6 +44,7 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -175,7 +176,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             Writer fileWriter = null;
             getWriteLock().lock();
             try {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), "UTF-8");
+                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
                 fileWriter.write(xml);
                 fileWriter.flush();
             } finally {
@@ -266,7 +267,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         boolean bRet = true;
 
         try {
-            final BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            final BufferedReader buffer = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
             String ipLine = null;
             String specIP = null;

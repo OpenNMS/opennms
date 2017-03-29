@@ -29,8 +29,6 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -93,13 +91,6 @@ public class XmlCollector extends AbstractLegacyServiceCollector {
     @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
         LOG.debug("initialize: initializing XML collector");
-
-        try {
-            // This is not strictly required but added just in case (see NMS-7963)
-            Charset.forName("UTF-8");
-        } catch (UnsupportedCharsetException e) {
-            throw new CollectionInitializationException("Can't initialize charset UTF-8: " + e.getMessage());
-        }
 
         // Retrieve the DAO for our configuration file.
         if (m_xmlCollectionDao == null)

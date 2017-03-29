@@ -36,6 +36,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +234,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         String query = null;
         try {
-            query = URLDecoder.decode(url.getQuery(), "UTF-8");
+            query = URLDecoder.decode(url.getQuery(), StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             LOG.error("decodeQueryString", e);
         }

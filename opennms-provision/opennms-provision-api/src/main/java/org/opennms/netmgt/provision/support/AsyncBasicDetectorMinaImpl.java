@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.support;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -65,7 +66,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging = null;
-    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
+    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8));
     
     private final ConnectionFactory m_connectionFactory;
 

@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.core.MediaType;
 
@@ -62,8 +63,8 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
             assertNotNull("Location header is null", header);
-            final String location = URLDecoder.decode(header.toString(), "UTF-8");
-            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
+            final String location = URLDecoder.decode(header.toString(), StandardCharsets.UTF_8.name());
+            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, StandardCharsets.UTF_8.name());
             assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
         }
         return response;

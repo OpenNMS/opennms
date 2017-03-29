@@ -128,8 +128,6 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         syslogdConfig
                     );
                 events.addEvent(re.getEvent());
-            } catch (final UnsupportedEncodingException e) {
-                LOG.info("Failure to convert package", e);
             } catch (final MessageDiscardedException e) {
                 LOG.info("Message discarded, returning without enqueueing event.", e);
             } catch (final Throwable e) {

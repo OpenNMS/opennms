@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
@@ -300,6 +301,6 @@ public class MeasurementApiConnectorIT {
         return WireMock.postRequestedFor(WireMock.urlMatching(url))
                 .withRequestBody(WireMock.matching("<dummy request>"))
                 .withHeader("Content-Type", WireMock.equalTo("application/xml"))
-                .withHeader("Accept-Charset", WireMock.equalTo("UTF-8"));
+                .withHeader("Accept-Charset", WireMock.equalTo(StandardCharsets.UTF_8.name()));
     }
 }

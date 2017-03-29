@@ -31,6 +31,7 @@ package org.opennms.web.controller;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class NavBarController extends AbstractController implements Initializing
 
         // Initialize the Freemarker engine and fetch our template
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
-        cfg.setDefaultEncoding("UTF-8");
+        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
         cfg.setClassForTemplateLoading(NavBarController.class, "");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         Template template = cfg.getTemplate("navbar.ftl");

@@ -36,6 +36,7 @@ import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -543,7 +544,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         createIpInterface();
         byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
-        String entity = new String(encoded, "UTF-8");
+        String entity = new String(encoded, StandardCharsets.UTF_8);
         sendPost("/nodes/1/hardwareInventory", entity, 204, null);
         String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
         assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));

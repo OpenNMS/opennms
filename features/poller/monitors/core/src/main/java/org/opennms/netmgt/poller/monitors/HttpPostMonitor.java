@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000;
 
     public static final String DEFAULT_MIMETYPE = "text/xml";
-    public static final String DEFAULT_CHARSET = "utf-8";
+    public static final String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
     public static final String DEFAULT_URI = "/";
     public static final String DEFAULT_SCHEME = "http";
     public static final boolean DEFAULT_SSLFILTER = false;
