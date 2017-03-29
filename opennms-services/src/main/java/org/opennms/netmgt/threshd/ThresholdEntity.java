@@ -123,7 +123,7 @@ public final class ThresholdEntity implements Cloneable {
      */
     public String getDatasourceLabel() {
         if (hasThresholds()) {
-            return getThresholdConfig().getDsLabel();
+            return getThresholdConfig().getDsLabel().orElse(null);
         } else {
             return null;
         }

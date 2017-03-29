@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.threshd;
+package org.opennms.netmgt.config.threshd;
 
-import org.opennms.netmgt.config.threshd.ThresholdType;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class used to provide information to ThresholdEntity about the
- * threshold evaluators that are available and a way to create
- * threshold evaluator state classes.
- *
- * @author ranger
- * @version $Id: $
- */
-public interface ThresholdEvaluator {
-
-    /**
-     * <p>supportsType</p>
-     *
-     * @param type a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean supportsType(ThresholdType type);
-
-    /**
-     * <p>getThresholdEvaluatorState</p>
-     *
-     * @param threshold a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
-     * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
-     */
-    public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold);
-
+@XmlRootElement(name="status")
+@XmlEnum
+public enum ServiceStatus {
+    @XmlEnumValue("on")
+    ON,
+    @XmlEnumValue("off")
+    OFF
 }

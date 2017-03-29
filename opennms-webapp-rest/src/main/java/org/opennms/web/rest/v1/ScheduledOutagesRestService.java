@@ -396,7 +396,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
-            if (!pkg.getOutageCalendarCollection().contains(outageName))
+            if (!pkg.getOutageCalendars().contains(outageName))
                 pkg.addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {
@@ -404,7 +404,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

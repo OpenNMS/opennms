@@ -6,7 +6,7 @@
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
 		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-		  elementFormDefault="qualified">
+		  elementFormDefault="qualified" version="1.1">
   <annotation>
     <documentation>XML Schema for the thresholding related configuration</documentation>
   </annotation>
@@ -82,57 +82,53 @@
       <sequence>
         <element maxOccurs="1" minOccurs="1" ref="this:filter">
           <annotation>
-            <documentation>A rule which adresses belonging to this package
+            <documentation>A rule which addresses belonging to this package
             must pass. This package is applied only to addresses that pass
             this filter</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" name="specific"
-                 type="string">
-          <annotation>
-            <documentation>Adresses in this package</documentation>
-          </annotation>
-        </element>
+        <choice minOccurs="0" maxOccurs="unbounded">
+          <element maxOccurs="unbounded" minOccurs="0" name="specific" type="string">
+            <annotation>
+              <documentation>Addresses in this package</documentation>
+            </annotation>
+          </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
-          <annotation>
-            <documentation>Range of adresses in this package</documentation>
-          </annotation>
-        </element>
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
+            <annotation>
+              <documentation>Range of addresses in this package</documentation>
+            </annotation>
+          </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-range">
-          <annotation>
-            <documentation>Range of adresses to be excluded from this
-            package</documentation>
-          </annotation>
-        </element>
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-range">
+            <annotation>
+              <documentation>Range of addresses to be excluded from this package</documentation>
+            </annotation>
+          </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" name="include-url"
-                 type="string">
-          <annotation>
-            <documentation>A file URL holding specific addresses to be polled.
-            Each line in the URL file can be one of:
-            &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;, or &lt;IP&gt;, or
-            #&lt;comments&gt;. Lines starting with a '#' are ignored and so
-            are characters after a '&lt;space&gt;#' in a line.</documentation>
-          </annotation>
-        </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="include-url" type="string">
+            <annotation>
+              <documentation>A file URL holding specific addresses to be polled.
+              Each line in the URL file can be one of:
+              &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;, or &lt;IP&gt;, or
+              #&lt;comments&gt;. Lines starting with a '#' are ignored and so
+              are characters after a '&lt;space&gt;#' in a line.</documentation>
+            </annotation>
+          </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:service">
-          <annotation>
-            <documentation>Services for which thresholding is to occur in this
-            package</documentation>
-          </annotation>
-        </element>
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:service">
+            <annotation>
+              <documentation>Services for which thresholding is to occur in this package</documentation>
+            </annotation>
+          </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" name="outage-calendar"
-                 type="string">
-          <annotation>
-            <documentation>Scheduled outages. Thresholding is not performed
-            during scheduled outages.</documentation>
-          </annotation>
-        </element>
+          <element maxOccurs="unbounded" minOccurs="0" name="outage-calendar" type="string">
+            <annotation>
+              <documentation>Scheduled outages. Thresholding is not performed during scheduled outages.</documentation>
+            </annotation>
+          </element>
+        </choice>
       </sequence>
 
       <attribute name="name" type="string" use="required">
@@ -145,7 +141,7 @@
 
   <element name="filter">
     <annotation>
-      <documentation>A rule which adresses belonging to this package must
+      <documentation>A rule which addresses belonging to this package must
       pass. This package is applied only to addresses that pass this
       filter.</documentation>
     </annotation>
@@ -159,7 +155,7 @@
 
   <element name="include-range">
     <annotation>
-      <documentation>Range of adresses to be included in this
+      <documentation>Range of addresses to be included in this
       package</documentation>
     </annotation>
 
@@ -180,7 +176,7 @@
 
   <element name="exclude-range">
     <annotation>
-      <documentation>Range of adresses to be excluded from this
+      <documentation>Range of addresses to be excluded from this
       package</documentation>
     </annotation>
 
@@ -230,17 +226,11 @@
         </annotation>
       </attribute>
 
-      <attribute name="user-defined" use="optional">
+      <attribute type="boolean" name="user-defined" use="optional">
         <annotation>
           <documentation>Specifies if this is a user-defined service. Used
           specifically for UI purposes.</documentation>
         </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(true|false)"/>
-          </restriction>
-        </simpleType>
       </attribute>
 
       <attribute name="status" use="optional">
@@ -357,7 +347,7 @@
       </annotation>
     </attribute>
 
-    <attribute name="type" type="string" use="required">
+    <attribute name="type" use="required">
       <annotation>
         <documentation>
           Threshold type. "high" to trigger if the value exceeds the threshold,
@@ -366,6 +356,15 @@
           "absoluteChange" to trigger if the value changes by more than the threshold value
         </documentation>
       </annotation>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="high"/>
+          <enumeration value="low"/>
+          <enumeration value="relativeChange"/>
+          <enumeration value="absoluteChange"/>
+          <enumeration value="rearmingAbsoluteChange"/>
+        </restriction>
+      </simpleType>
     </attribute>
 
     <attribute name="ds-type" type="string" use="required">

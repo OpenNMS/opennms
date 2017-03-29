@@ -36,6 +36,7 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
@@ -63,7 +64,7 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ta.anticipate(new IllegalArgumentException("threshold must have a 'type' value set"));
         Threshold threshold = new Threshold();
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(1.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(3);
@@ -82,8 +83,8 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold must have a 'ds-name' value set"));
         Threshold threshold = new Threshold();
-        threshold.setType("high");
-        threshold.setDsType("ds-type");
+        threshold.setType(ThresholdType.HIGH);
+        threshold.setDsType("node");
         threshold.setValue(1.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(3);
@@ -101,7 +102,7 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold must have a 'ds-type' value set"));
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
         threshold.setValue(1.0);
         threshold.setRearm(0.5);
@@ -121,9 +122,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold must have a 'value' value set"));
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setRearm(0.5);
         threshold.setTrigger(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
@@ -141,9 +142,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold must have a 'rearm' value set"));
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(1.0);
         threshold.setTrigger(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
@@ -161,9 +162,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold must have a 'trigger' value set"));
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(1.0);
         threshold.setRearm(0.5);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
@@ -179,9 +180,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighNoTrigger() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(101.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -196,9 +197,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighTriggerOnce() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -213,9 +214,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighNoTriggerTwice() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(2);
@@ -230,9 +231,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighTriggerTwice() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(2);
@@ -250,9 +251,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighTriggerTwiceNoRetrigger() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(2);
@@ -277,9 +278,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighTriggerRearm() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -297,9 +298,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateHighTriggerRearmTriggerAgain() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -320,9 +321,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testEvaluateLowTriggerOnce() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -337,9 +338,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededHighTriggeredAbove() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -352,9 +353,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededHighTriggeredEqual() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -367,9 +368,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededHighNotTriggeredBelow() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -382,9 +383,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededLowTriggeredBelow() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -397,9 +398,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededLowTriggeredEqual() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -412,9 +413,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededLowNotTriggeredAbove() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -427,9 +428,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsThresholdExceededBogusType() {
         Threshold threshold = new Threshold();
-        threshold.setType("relativeChange");
+        threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -449,9 +450,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededHighTriggeredBelow() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -464,9 +465,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededHighTriggeredEqual() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -479,9 +480,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededHighNoTriggeredAbove() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -494,9 +495,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededLowTriggeredAbove() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -509,9 +510,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededLowTriggeredEqual() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -524,9 +525,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededLowNoTriggeredBelow() {
         Threshold threshold = new Threshold();
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -539,9 +540,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsRearmExceededBogusType() {
         Threshold threshold = new Threshold();
-        threshold.setType("relativeChange");
+        threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -562,9 +563,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsTriggerCountExceededAtTriggerValueOne() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -582,9 +583,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsTriggerCountExceededNotAtTriggerValueTwo() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(2);
@@ -602,9 +603,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testIsTriggerCountExceededNotAfterReArm() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(0.5);
         threshold.setTrigger(1);
@@ -627,9 +628,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testGetEventForStateDefaultUEIS() {
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(95.0);
         threshold.setTrigger(1);
@@ -658,7 +659,7 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         parmPresentWithValue(event, "instance", "testInstance");
         
         // Set it up again for low tests
-        threshold.setType("low");
+        threshold.setType(ThresholdType.LOW);
         threshold.setValue(95.0);
         threshold.setRearm(99.0);
         
@@ -688,9 +689,9 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         String triggeredUEI="uei.opennms.org/custom/thresholdTriggered";
         String rearmedUEI="uei.opennms.org/custom/thresholdRearmed";
         Threshold threshold = new Threshold();
-        threshold.setType("high");
+        threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
-        threshold.setDsType("ds-type");
+        threshold.setDsType("node");
         threshold.setValue(99.0);
         threshold.setRearm(95.0);
         threshold.setTrigger(1);

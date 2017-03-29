@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
@@ -280,7 +281,7 @@ public class ThresholdingSet {
                                 Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
                                 final Map<String, Double> values = new HashMap<String,Double>();
                                 boolean valueMissing = false;
-                                boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
+                                boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().getRelaxed();
                                 for(final String ds : requiredDatasources) {
                                     final Double dsValue = resourceWrapper.getAttributeValue(ds);
                                     if(dsValue == null) {
@@ -319,12 +320,12 @@ public class ThresholdingSet {
      */
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         // Find the filters for threshold definition for selected group/dataSource
-        ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
-        if (filters.length == 0) return true;
+        final List<ResourceFilter> filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilters();
+        if (filters.size() == 0) return true;
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
-        LOG.debug("passedThresholdFilters: applying {} filters to resource {}", filters.length, resource);
+        LOG.debug("passedThresholdFilters: applying {} filters to resource {}", filters.size(), resource);
         int count = 1;
-        String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
+        final FilterOperator operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator();
         boolean andResult = true;
         for (ResourceFilter f : filters) {
             LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent());
@@ -333,14 +334,14 @@ public class ThresholdingSet {
             String attr = resource.getFieldValue(f.getField());
             if (attr != null) {
                 try {
-                    final Pattern p = Pattern.compile(f.getContent());
+                    final Pattern p = Pattern.compile(f.getContent().orElse(""));
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
                     LOG.debug("passedThresholdFilters: the value of {} is {}. Pass filter? {}", f.getField(), attr, pass);
-                    if (operator.equals("or") && pass) {
+                    if (operator.equals(FilterOperator.OR) && pass) {
                         return true;
                     }
-                    if (operator.equals("and")) {
+                    if (operator.equals(FilterOperator.AND)) {
                         andResult = andResult && pass;
                         if (andResult == false)
                             return false;
@@ -351,12 +352,12 @@ public class ThresholdingSet {
                 }
             } else {
                 LOG.warn("passedThresholdFilters: can't find value of {} for resource {}", f.getField(), resource);
-                if (operator.equals("and")) {
+                if (operator.equals(FilterOperator.AND)) {
                     return false;
                 }
             }
         }
-        if (operator.equals("and") && andResult) {
+        if (operator.equals(FilterOperator.AND) && andResult) {
             return true;
         }
         return false;
@@ -399,7 +400,7 @@ public class ThresholdingSet {
         ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
 
         List<String> groupNameList = new LinkedList<String>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
+        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
 
             // Make certain the the current service is in the package and enabled!
             if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
@@ -415,9 +416,9 @@ public class ThresholdingSet {
             }
 
             // Getting thresholding-group for selected service and adding to groupNameList
-            for (org.opennms.netmgt.config.threshd.Service svc : pkg.getService()) {
+            for (org.opennms.netmgt.config.threshd.Service svc : pkg.getServices()) {
                 if (svc.getName().equals(serviceName)) {
-                    for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
+                    for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameters()) {
                         if (parameter.getKey().equals("thresholding-group")) {
                             String groupName = parameter.getValue();
                             groupNameList.add(groupName);
@@ -435,8 +436,8 @@ public class ThresholdingSet {
         synchronized (m_scheduledOutages) {
             m_scheduledOutages.clear();
             ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
-            for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackage()) {
-                for (String outageCal : pkg.getOutageCalendarCollection()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
+                for (String outageCal : pkg.getOutageCalendars()) {
                     LOG.info("updateScheduledOutages[node={}]: checking scheduled outage '{}'", m_nodeId, outageCal);
                     try {
                         Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);

@@ -28,14 +28,28 @@
 
 package org.opennms.web.controller.admin.thresholds;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.config.threshd.*;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.config.threshd.Expression;
+import org.opennms.netmgt.config.threshd.FilterOperator;
+import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ResourceFilter;
+import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.GenericIndexResourceType;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -49,11 +63,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.*;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * <p>ThresholdController class.</p>
@@ -180,16 +191,15 @@ public class ThresholdController extends AbstractController implements Initializ
         modelAndView.addObject("dsTypes", dsTypes);
 
         Collection<String> thresholdTypes = new ArrayList<String>();
-        thresholdTypes.add("high");
-        thresholdTypes.add("low");
-        thresholdTypes.add("relativeChange");
-        thresholdTypes.add("absoluteChange");
-        thresholdTypes.add("rearmingAbsoluteChange");
+        for (final ThresholdType tt : ThresholdType.values()) {
+            thresholdTypes.add(tt.getEnumName());
+        }
         modelAndView.addObject("thresholdTypes", thresholdTypes);
 
         Collection<String> filterOperators = new ArrayList<String>();
-        filterOperators.add("and");
-        filterOperators.add("or");
+        for (final FilterOperator fo : FilterOperator.values()) {
+            filterOperators.add(fo.getEnumName());
+        }
         modelAndView.addObject("filterOperators", filterOperators);
 
         modelAndView.addObject("saveButtonTitle", SAVE_BUTTON_TITLE);
@@ -205,16 +215,17 @@ public class ThresholdController extends AbstractController implements Initializ
     private ModelAndView gotoNewThreshold(String groupName) {
         ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
 
-        Group group = configFactory.getGroup(groupName);
+        final Group group = configFactory.getGroup(groupName);
+        final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
-        int thresholdIndex = group.getThresholdCount();
+        int thresholdIndex = thresholds.size();
 
         //Check if last threshold has dsName. If not, we assume that is a new definition (not saved yet on thresholds.xml)
         Threshold threshold = null;
         if (thresholdIndex > 0) {
-            threshold = group.getThreshold(thresholdIndex - 1);
+            threshold = thresholds.get(thresholdIndex - 1);
             if (threshold.getDsName() == null || threshold.getDsName().equals("")) {
                 thresholdIndex--;
             }
@@ -228,16 +239,16 @@ public class ThresholdController extends AbstractController implements Initializ
             threshold = new Threshold();
             //Set the two default values which need to be set for the UI to work properly
             threshold.setDsType("node");
-            threshold.setType("high");
+            threshold.setType(ThresholdType.HIGH);
             threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addThreshold(threshold);
         }
 
         //Double check the guess index, just in case:
-        if (threshold != group.getThreshold(thresholdIndex)) {
+        if (threshold != thresholds.get(thresholdIndex)) {
             //Ok, our guesses on indexing were completely wrong.  Failover and check each threshold in the group
-            for (int i = 0; i < group.getThresholdCount(); i++) {
-                if (threshold == group.getThreshold(i)) {
+            for (int i = 0; i < thresholds.size(); i++) {
+                if (threshold == thresholds.get(i)) {
                     thresholdIndex = i;
                     break; //out of the for loop
                 }
@@ -259,16 +270,17 @@ public class ThresholdController extends AbstractController implements Initializ
     private ModelAndView gotoNewExpression(String groupName) {
         ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
 
-        Group group = configFactory.getGroup(groupName);
+        final Group group = configFactory.getGroup(groupName);
+        final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
-        int expressionIndex = group.getExpressionCount();
+        int expressionIndex = expressions.size();
 
         //Check if last expression has expression def. If not, we assume that is a new definition (not saved yet on thresholds.xml)
         Expression expression = null;
         if (expressionIndex > 0) {
-            expression = group.getExpression(expressionIndex - 1);
+            expression = expressions.get(expressionIndex - 1);
             if (expression.getExpression() == null || expression.getExpression().equals("")) {
                 expressionIndex--;
             }
@@ -282,16 +294,16 @@ public class ThresholdController extends AbstractController implements Initializ
             expression = new Expression();
             //Set the two default values which need to be set for the UI to work properly
             expression.setDsType("node");
-            expression.setType("high");
+            expression.setType(ThresholdType.HIGH);
             expression.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addExpression(expression);
         }
 
         //Double check the guess index, just in case:
-        if (expression != group.getExpression(expressionIndex)) {
+        if (expression != expressions.get(expressionIndex)) {
             //Ok, our guesses on indexing were completely wrong.  Failover and check each threshold in the group
-            for (int i = 0; i < group.getExpressionCount(); i++) {
-                if (expression == group.getExpression(i)) {
+            for (int i = 0; i < expressions.size(); i++) {
+                if (expression == expressions.get(i)) {
                     expressionIndex = i;
                     break; //out of the for loop
                 }
@@ -318,7 +330,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = configFactory.getGroup(groupName).getThreshold(thresholdIndex);
+        Threshold threshold = configFactory.getGroup(groupName).getThresholds().get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -331,11 +343,11 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private void moveThresholdFilter(Basethresholddef threshold, int oldPos, int newPos) {
-        if (newPos >= 0 && newPos < threshold.getResourceFilterCount()) {
-            ResourceFilter oldFilter = (ResourceFilter) threshold.getResourceFilterCollection().get(oldPos);
-            ResourceFilter newFilter = (ResourceFilter) threshold.getResourceFilterCollection().get(newPos);
-            threshold.getResourceFilterCollection().set(newPos, oldFilter);
-            threshold.getResourceFilterCollection().set(oldPos, newFilter);
+        if (newPos >= 0 && newPos < threshold.getResourceFilters().size()) {
+            ResourceFilter oldFilter = (ResourceFilter) threshold.getResourceFilters().get(oldPos);
+            ResourceFilter newFilter = (ResourceFilter) threshold.getResourceFilters().get(newPos);
+            threshold.getResourceFilters().set(newPos, oldFilter);
+            threshold.getResourceFilters().set(oldPos, newFilter);
         }
     }
 
@@ -376,7 +388,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         List<ResourceFilter> saved = getFilterList(request, true);
         if (saved == null || saved.size() == 0) {
-            saved = new ArrayList<ResourceFilter>(threshold.getResourceFilterCollection());
+            saved = new ArrayList<ResourceFilter>(threshold.getResourceFilters());
             setFilterList(request, saved);
         }
 
@@ -398,13 +410,13 @@ public class ThresholdController extends AbstractController implements Initializ
             }
         }
         else if (DELETE_BUTTON_TITLE.equals(submitAction)) {
-            threshold.getResourceFilterCollection().remove(filterIndex);
+            threshold.getResourceFilters().remove(filterIndex);
         }
         else if (EDIT_BUTTON_TITLE.equals(submitAction)) {
             modelAndView.addObject("filterSelected", request.getParameter("filterSelected"));
         }
         else if (UPDATE_BUTTON_TITLE.equals(submitAction)) {
-            ResourceFilter filter = (ResourceFilter) threshold.getResourceFilterCollection().get(filterIndex);
+            ResourceFilter filter = (ResourceFilter) threshold.getResourceFilters().get(filterIndex);
             filter.setField(request.getParameter("updateFilterField"));
             filter.setContent(request.getParameter("updateFilterRegexp"));
         }
@@ -450,7 +462,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = configFactory.getGroup(groupName).getExpression(expressionIndex);
+        Expression expression = configFactory.getGroup(groupName).getExpressions().get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -509,7 +521,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
         Group group = configFactory.getGroup(groupName);
-        group.removeThreshold(group.getThreshold(thresholdIndex));
+        group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
         modelAndView.addObject("group", configFactory.getGroup(groupName));
@@ -537,7 +549,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
         Group group = configFactory.getGroup(groupName);
-        group.removeExpression(group.getExpression(expressionIndex));
+        group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
@@ -563,8 +575,11 @@ public class ThresholdController extends AbstractController implements Initializ
             baseDef.setDescription(description);
         }
 
-        baseDef.setDsType(request.getParameter("dsType"));
-        baseDef.setType(request.getParameter("type"));
+        final String dsType = request.getParameter("dsType");
+        final String thresholdType = request.getParameter("type");
+
+        baseDef.setDsType(dsType == null? null : dsType.toLowerCase());
+        baseDef.setType(thresholdType == null? null : ThresholdType.valueOf(thresholdType.toUpperCase()));
         baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
         baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
         baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
@@ -585,7 +600,7 @@ public class ThresholdController extends AbstractController implements Initializ
         }
 
         String rearmedUEI = request.getParameter("rearmedUEI");
-        if (rearmedUEI == null || "".equals(rearmedUEI) || baseDef.getType().equals("relativeChange") || baseDef.getType().equals("absoluteChange")) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
+        if (rearmedUEI == null || "".equals(rearmedUEI) || baseDef.getType().equals(ThresholdType.RELATIVE_CHANGE) || baseDef.getType().equals(ThresholdType.ABSOLUTE_CHANGE)) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
             baseDef.setRearmedUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
         }
         else {
@@ -595,22 +610,22 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
-    private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(String thresholdType, boolean isTrigger) {
+    private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(ThresholdType thresholdType, boolean isTrigger) {
         String sourceUei = null;
         switch(thresholdType) {
-        case "high":
+        case HIGH:
             sourceUei = isTrigger ? EventConstants.HIGH_THRESHOLD_EVENT_UEI : EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
             break;
-        case "low":
+        case LOW:
             sourceUei = isTrigger ? EventConstants.LOW_THRESHOLD_EVENT_UEI : EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
             break;
-        case "relativeChange":
+        case RELATIVE_CHANGE:
                 sourceUei = isTrigger ? EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI : null;
             break;
-        case "absoluteChange":
+        case ABSOLUTE_CHANGE:
             sourceUei = isTrigger ? EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI : null;
             break;
-        case "rearmingAbsoluteChange":
+        case REARMING_ABSOLUTE_CHANGE:
             sourceUei = isTrigger ? EventConstants.REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI : EventConstants.REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI;
             break;
         }
@@ -624,7 +639,7 @@ public class ThresholdController extends AbstractController implements Initializ
         return null;
     }
 
-    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, String thresholdType, String clearKey, boolean isTrigger) {
+    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, ThresholdType thresholdType, String clearKey, boolean isTrigger) {
         List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(targetUei);
         if (eventsForUEI == null || eventsForUEI.size() == 0) {
             String typeDesc = isTrigger ? "exceeded" : "rearmed";
@@ -672,16 +687,17 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Threshold threshold = group.getThreshold(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
+        Threshold threshold = group.getThresholds().get(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, threshold);
-            String dsName = request.getParameter("dsName");
+            final String dsName = request.getParameter("dsName");
+            final String filterOperator = request.getParameter("filterOperator");
             if (dsName == null || dsName.equals("")) {
                 throw new ServletException("ds-name cannot be null or empty string");
             }
             threshold.setDsName(dsName);
-            threshold.setFilterOperator(request.getParameter("filterOperator"));
+            threshold.setFilterOperator(filterOperator == null? null : FilterOperator.valueOf(filterOperator.toUpperCase()));
             saveChanges();
         }
         else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
@@ -693,7 +709,7 @@ public class ThresholdController extends AbstractController implements Initializ
             else {
                 List<ResourceFilter> filters = getFilterList(request, false);
                 if (filters != null) {
-                    threshold.setResourceFilter(filters);
+                    threshold.setResourceFilters(filters);
                 }
             }
         }
@@ -720,16 +736,18 @@ public class ThresholdController extends AbstractController implements Initializ
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Expression expression = group.getExpression(expressionIndex);
+        Expression expression = group.getExpressions().get(expressionIndex);
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, expression);
-            String expDef = request.getParameter("expression");
+
+            final String expDef = request.getParameter("expression");
+            final String filterOperator = request.getParameter("filterOperator");
             if (expDef == null || expDef.equals("")) {
                 throw new ServletException("expression content cannot be null or empty string");
             }
             expression.setExpression(expDef);
-            expression.setFilterOperator(request.getParameter("filterOperator"));
+            expression.setFilterOperator(filterOperator == null? null : FilterOperator.valueOf(filterOperator.toUpperCase()));
             saveChanges();
         }
         else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
@@ -741,7 +759,7 @@ public class ThresholdController extends AbstractController implements Initializ
             else {
                 List<ResourceFilter> filters = getFilterList(request, false);
                 if (filters != null) {
-                    expression.setResourceFilter(filters);
+                    expression.setResourceFilters(filters);
                 }
             }
         }
