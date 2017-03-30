@@ -211,7 +211,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             get();
        } catch (ExecutionException e) {
            LOG.info("run: Agent error while scanning the vtpVersion table", e);
-           return null; 
+           return vlanmap;
        } catch (final InterruptedException e) {
            LOG.info("run: Bridge Linkd node collection interrupted, exiting",
                      e);
