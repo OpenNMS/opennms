@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
@@ -115,7 +117,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
                                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
                                    "EnhancedLinkd");
                            builder.setNodeid(getNodeId());
-                           builder.setInterface(getTarget());
+                           builder.setInterface(getPrimaryIpAddress());
                            builder.addParam("runnable", getName());
        m_linkd.getEventForwarder().sendNow(builder.getEvent());
     }
@@ -125,7 +127,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
                                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
                                    "EnhancedLinkd");
                            builder.setNodeid(getNodeId());
-                           builder.setInterface(getTarget());
+                           builder.setInterface(getPrimaryIpAddress());
                            builder.addParam("runnable", getName());
                            m_linkd.getEventForwarder().sendNow(builder.getEvent());
         
@@ -136,7 +138,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
                                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
                                    "EnhancedLinkd");
                            builder.setNodeid(getNodeId());
-                           builder.setInterface(getTarget());
+                           builder.setInterface(getPrimaryIpAddress());
                            builder.addParam("runnable", getName());
                            m_linkd.getEventForwarder().sendNow(builder.getEvent());
     }
@@ -250,21 +252,13 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.net.InetAddress} object.
      */
-    public InetAddress getTarget() {
+    public InetAddress getPrimaryIpAddress() {
         return m_node.getSnmpPrimaryIpAddr();
     }
 
-    /**
-     * <p>
-     * getReadCommunity
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    public String getReadCommunity() {
-        return getPeer().getReadCommunity();
+    public String getPrimaryIpAddressString() {
+    	return str(m_node.getSnmpPrimaryIpAddr());
     }
-
     /**
      * <p>
      * getPeer
@@ -273,18 +267,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getTarget());
-    }
-
-    /**
-     * <p>
-     * getPort
-     * </p>
-     * 
-     * @return a int.
-     */
-    public int getPort() {
-        return getPeer().getPort();
+        return m_linkd.getSnmpAgentConfig(getPrimaryIpAddress());
     }
 
     /**
@@ -294,7 +277,12 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getInfo();
+	public String getInfo() {
+        return  getName()  
+        		+ " node=" + getNodeId()
+        		+ " ip=" + str(getPrimaryIpAddress())
+        		+ " package=" + getPackageName();
+	}
 
     /**
      * <p>

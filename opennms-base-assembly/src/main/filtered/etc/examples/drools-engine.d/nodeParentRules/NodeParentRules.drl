@@ -13,6 +13,7 @@ import org.drools.core.spi.KnowledgeHelper;
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 global org.opennms.netmgt.correlation.drools.NodeService nodeService;
 global java.lang.Long POLL_INTERVAL;
+global org.slf4j.Logger LOG;
 
 
 rule "newIssue"

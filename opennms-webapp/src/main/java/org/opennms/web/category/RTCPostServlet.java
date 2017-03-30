@@ -29,6 +29,7 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -39,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.servlet.InitializerServletContextListener.RTCPostSubscriberTimerTask;
 import org.slf4j.Logger;
@@ -116,26 +117,14 @@ public class RTCPostServlet extends HttpServlet {
 
         org.opennms.netmgt.xml.rtc.Category category = null;
 
-        try {
-            ServletInputStream inStream = request.getInputStream();
-
-            // note the unmarshaller closes the input stream, so don't try to
-            // close
-            // it again or the servlet container will complain
-            org.opennms.netmgt.xml.rtc.EuiLevel level = CastorUtils.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, inStream);
+        try (ServletInputStream inStream = request.getInputStream();
+                InputStreamReader isr = new InputStreamReader(inStream)) {
+            org.opennms.netmgt.xml.rtc.EuiLevel level = JaxbUtils.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, isr);
 
             // for now we only deal with the first category, they're only sent
             // one
             // at a time anyway
-            category = level.getCategory(0);
-        } catch (MarshalException ex) {
-            LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: MarshalException: " + ex.getMessage());
-            return;
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: ValidationException" + ex.getMessage());
-            return;
+            category = level.getCategory().get(0);
         }
 
         // make sure we got data for the category we are interested in

@@ -54,6 +54,7 @@ public class OspfIpAddrTableGetter extends TableTracker {
 	}
 
 	public OspfElement get(OspfElement element) {
+		//loopback mask by default
 	    element.setOspfRouterIdNetmask(InetAddressUtils.addr("255.255.255.255"));
 		SnmpValue[] val = get(element.getOspfRouterId());
 		if (val != null && val.length == 2 ) {
@@ -71,7 +72,8 @@ public class OspfIpAddrTableGetter extends TableTracker {
 	}
 	
 	public OspfLink get(OspfLink link) {
-		
+		//use point to point by default
+	    link.setOspfIpMask(InetAddressUtils.addr("255.255.255.252"));
 		SnmpValue[] val = get(link.getOspfIpAddr());
 		if (val != null && val.length == 2 ) {
 			if (!val[0].isNull() && val[0].isNumeric() )

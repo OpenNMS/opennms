@@ -46,14 +46,19 @@ import org.drools.core.RuleBase;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.core.RuleBaseFactory;
+import org.drools.core.StatefulSession;
 import org.drools.core.WorkingMemory;
 import org.kie.api.conf.EventProcessingOption;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * <p>DroolsCorrelationEngine class.</p>
@@ -64,21 +69,34 @@ import org.springframework.core.io.Resource;
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsCorrelationEngine.class);
 
-    private WorkingMemory m_workingMemory;
+    private StatefulSession m_workingMemory;
     private List<String> m_interestingEvents;
     private List<Resource> m_rules;
     private Map<String, Object> m_globals = new HashMap<>();
     private String m_name;
     private String m_assertBehaviour;
     private String m_eventProcessingMode;
+
+    private final Meter m_eventsMeter;
+    private boolean m_isStreaming = false;
     
+    public DroolsCorrelationEngine(final String name, final MetricRegistry metricRegistry) {
+        this.m_name = name;
+        final Gauge<Long> factCount = () -> { return getWorkingMemory().getFactCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
+        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
+        m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
+    }
+
     /** {@inheritDoc} */
     @Override
     public synchronized void correlate(final Event e) {
-	LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
+        LOG.debug("Begin correlation for Event {} uei: {}", e.getDbid(), e.getUei());
         m_workingMemory.insert(e);
-        m_workingMemory.fireAllRules();
-	LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
+        if (!m_isStreaming) m_workingMemory.fireAllRules();
+        m_eventsMeter.mark();
+        LOG.debug("End correlation for Event {} uei: {}", e.getDbid(), e.getUei());
     }
 
     /** {@inheritDoc} */
@@ -87,8 +105,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 	LOG.info("Begin correlation for Timer {}", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.insert(expiration);
-        m_workingMemory.fireAllRules();
-	LOG.debug("Begin correlation for Timer {}", timerId);
+        if (!m_isStreaming) m_workingMemory.fireAllRules();
+        LOG.debug("Begin correlation for Timer {}", timerId);
     }
 
     /** {@inheritDoc} */
@@ -146,6 +164,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
         if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
             eventProcessingOption = EventProcessingOption.STREAM;
+            m_isStreaming = true;
         }
         ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
         
@@ -163,6 +182,13 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
+        }
+
+        if (m_isStreaming) {
+            new Thread(() -> {
+                Logging.putPrefix(getClass().getSimpleName() + '-' + getName());
+                m_workingMemory.fireUntilHalt();
+            }, "FireTask").start();
         }
     }
 
@@ -210,15 +236,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     	return m_workingMemory;
     }
 
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-    
     /**
      * <p>getName</p>
      *

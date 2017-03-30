@@ -105,8 +105,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     volatile Map<Integer, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Integer, List<BridgeMacLink>>();
 
-    volatile Map<Integer, List<BridgeMacLink>> m_broadcastDomainToRootBFTMap= new HashMap<Integer, List<BridgeMacLink>>();
-
     @Override
     public List<Node> getSnmpNodeList() {
         final List<Node> nodes = new ArrayList<Node>();
@@ -638,7 +636,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId) {
+    public BroadcastDomain getBroadcastDomain(int nodeId) {
         return m_bridgeTopologyDao.get(nodeId);
     }
 
@@ -657,10 +655,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         return m_nodetoBroadcastDomainMap.get(nodeid);
     }
 
-    @Override
-    public void save(int rootid, List<BridgeMacLink> rootBFT) {
-        m_broadcastDomainToRootBFTMap.put(rootid, rootBFT);
-    }
     @Override
     public void store(BroadcastDomain domain, Date now) {
         for (SharedSegment segment : domain.getTopology()) {
@@ -926,12 +920,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     public void setBridgeTopologyDao(BridgeTopologyDao bridgeTopologyDao) {
         m_bridgeTopologyDao = bridgeTopologyDao;
-    }
-
-
-    @Override
-    public List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid) {
-        return m_broadcastDomainToRootBFTMap.get(nodeid);
     }
 
     @Override

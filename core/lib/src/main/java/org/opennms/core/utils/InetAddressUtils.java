@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.management.remote.JMXServiceURL;
+
 import org.opennms.core.network.IPAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,6 +187,18 @@ public abstract class InetAddressUtils {
      */
     public static String toIpAddrString(final byte[] addr) {
         return new IPAddress(addr).toDbString();
+    }
+
+    /**
+     * Method that wraps IPv6 addresses in square brackets so that they are parsed
+     * correctly by the {@link JMXServiceURL} class.
+     */
+    public static String toUrlIpAddress(InetAddress addr) {
+        if (addr instanceof Inet6Address) {
+            return String.format("[%s]", str(addr));
+        } else {
+            return str(addr);
+        }
     }
 
     /**

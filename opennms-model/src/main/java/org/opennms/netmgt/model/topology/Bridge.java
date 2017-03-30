@@ -1,9 +1,15 @@
 package org.opennms.netmgt.model.topology;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.model.BridgeElement;
+
 public class Bridge {
     final Integer m_id;
     Integer m_rootPort;
     boolean m_isRootBridge=false;
+    List<BridgeElement> m_elements = new ArrayList<BridgeElement>();
 
     public Bridge(Integer id) {
         super();
@@ -54,5 +60,33 @@ public class Bridge {
             return false;
         return true;
     }
+    
+    public String printTopology() {
+    	StringBuffer strbfr = new StringBuffer();
+        strbfr.append("bridge:[");
+        strbfr.append(m_id);
+        strbfr.append("], isrootbridge:");
+        strbfr.append(m_isRootBridge);
+        strbfr.append(" designated port:");
+        strbfr.append(m_rootPort);
+        strbfr.append("]\n");
+        return strbfr.toString();
+
+    }
+
+    public void clearBridgeElement() {
+    	m_elements.clear();
+    }
+	public List<BridgeElement> getBridgeElements() {
+		return m_elements;
+	}
+	
+	public boolean addBridgeElement(BridgeElement element) {
+		if (element.getNode().getId().intValue() == m_id.intValue()) {
+			m_elements.add(element);
+			return true;
+		}
+		return false;
+	}
 
 }

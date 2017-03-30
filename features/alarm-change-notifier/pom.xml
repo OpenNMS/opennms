@@ -177,6 +177,13 @@
       </releases>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
+    </repository>
   </repositories>
 
 </project>

@@ -1,20 +1,19 @@
 package org.opennms.netmgt.model.topology;
 
-import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.BridgeMacLink;
 
 public class SimpleConnection {
-    final List<BridgeMacLink> m_links;
+    final Set<String> m_links;
     final BridgeBridgeLink m_dlink;
     
-    public SimpleConnection(List<BridgeMacLink> links, BridgeBridgeLink dlink){
+    public SimpleConnection(Set<String> links, BridgeBridgeLink dlink){
         m_links = links;
         m_dlink = dlink;
     }
 
-    public List<BridgeMacLink> getLinks() {
+    public Set<String> getMacs() {
         return m_links;
     }
 

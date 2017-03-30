@@ -29,7 +29,7 @@
 package org.opennms.netmgt.rtc;
 
 import java.io.InputStream;
-import java.io.Reader;
+import java.io.StringReader;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,13 +49,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.rtc.utils.PipedMarshaller;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -241,19 +241,20 @@ public class DataSender implements Fiber {
                 @Override
                 public void run() {
                     // send data
-                    Reader inr = null;
                     InputStream inp = null;
                     try {
                         LOG.debug("DataSender: posting data to: {}", url);
 
                         final EuiLevel euidata = m_dataMgr.getEuiLevel(cat);
-                        inr = new PipedMarshaller(euidata).getReader();
 
                         // Connect with a fairly long timeout to allow the web UI time to register the
                         // {@link RTCPostServlet}. Actually, this doesn't seem to work because the POST
                         // will immediately throw a {@link ConnectException} if the web UI isn't ready
                         // yet. Oh well.
-                        inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
+                        final String marshaledUeiData = JaxbUtils.marshal(euidata);
+                        try(final StringReader inr = new StringReader(marshaledUeiData)) {
+                            inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
+                        }
 
                         final byte[] tmp = new byte[1024];
                         int bytesRead;
@@ -275,7 +276,6 @@ public class DataSender implements Fiber {
                         LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
                     } finally {
                         IOUtils.closeQuietly(inp);
-                        IOUtils.closeQuietly(inr);
                     }
                 }
             });
@@ -355,12 +355,13 @@ public class DataSender implements Fiber {
                 while (urlIter.hasNext()) {
                     final HttpPostInfo postInfo = urlIter.next();
 
-                    Reader inr = null;
                     InputStream inp = null;
                     try {
-                        inr = new PipedMarshaller(euidata).getReader();
                         LOG.debug("DataSender: posting data to: {}", postInfo.getURLString());
-                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, HttpUtils.DEFAULT_CONNECT_TIMEOUT);
+                        final String marshaledUeiData = JaxbUtils.marshal(euidata);
+                        try(final StringReader inr = new StringReader(marshaledUeiData)) {
+                            inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, HttpUtils.DEFAULT_CONNECT_TIMEOUT);
+                        }
                         LOG.debug("DataSender: posted data for category: {}", catlabel);
 
 
@@ -381,7 +382,6 @@ public class DataSender implements Fiber {
                         postInfo.incrementErrors();
                     } finally {
                         IOUtils.closeQuietly(inp);
-                        IOUtils.closeQuietly(inr);
                     }
 
                     // check to see if URL had too many errors

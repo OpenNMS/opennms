@@ -265,7 +265,7 @@ public class IpInterfaceScan implements RunInBatch {
             Boolean out = (Boolean) e.evaluate(new MapContext(context));
             return out;
         } catch (Exception e) {
-            LOG.error("Can't process rule '{}' while checking IP {} because {}", expr, ip, e);
+            LOG.error("Can't process rule '{}' while checking IP {}.", expr, ip, e);
             return false;
         }
     }

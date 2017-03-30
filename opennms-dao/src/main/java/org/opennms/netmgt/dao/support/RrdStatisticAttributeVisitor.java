@@ -42,8 +42,7 @@ import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
+import java.util.function.Supplier;
 
 /**
  * <p>RrdStatisticAttributeVisitor class.</p>
@@ -66,8 +65,8 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
         void aggregate(final double v);
     }
 
-    private enum Aggregators implements Aggregator {
-        AVERAGE() {
+    private enum Aggregators implements Supplier<Aggregator> {
+        AVERAGE(() -> new Aggregator() {
             private int count = 0;
             private double sum = 0;
 
@@ -83,9 +82,9 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
                 this.count++;
                 this.sum += v;
             }
-        },
+        }),
 
-        MIN() {
+        MIN(() -> new Aggregator(){
             private double min = Double.POSITIVE_INFINITY;
 
             @Override
@@ -95,11 +94,11 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
 
             @Override
             public void aggregate(final double v) {
-                this.min = Math.min(this.min, v);
-            }
-        },
+                        this.min = Math.min(this.min, v);
+                    }
+        }),
 
-        MAX() {
+        MAX(() -> new Aggregator(){
             private double max = Double.NEGATIVE_INFINITY;
 
             @Override
@@ -110,10 +109,10 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
             @Override
             public void aggregate(final double v) {
                 this.max = Math.max(this.max, v);
-            }
-        },
+                    } 
+        }),
 
-        LAST() {
+        LAST(() -> new Aggregator () {
             private double v = Double.NaN;
 
             @Override
@@ -123,8 +122,19 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
 
             @Override
             public void aggregate(final double v) {
-                this.v = v;
-            }
+                        this.v = v;
+                    }
+        });
+
+        private final Supplier<Aggregator> delegate;
+
+        Aggregators(final Supplier<Aggregator> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Aggregator get() {
+            return this.delegate.get();
         }
     }
     
@@ -168,7 +178,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
             return;
         }
 
-        final Aggregator aggregator = Aggregators.valueOf(m_consolidationFunction.toUpperCase());
+        final Aggregator aggregator = Aggregators.valueOf(m_consolidationFunction.toUpperCase()).get();
 
         Arrays.stream(statistics)
                 .filter(v -> (! Double.isNaN(v)))

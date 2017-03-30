@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +68,10 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
     	String trackerName = "isisSysObjectCollection";
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisSysObject);
 
         walker.start();
@@ -92,7 +93,9 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         }
         
         if (isisSysObject.getIsisSysId() == null ) {
-            LOG.info( "Is-Is mib not supported on: {}", str(getPeer().getAddress()));
+            LOG.info( "run: node[{}]: address {}. Is-Is mib not supported ", 
+            		getNodeId(),
+            		getPrimaryIpAddressString());
             return;
         }
         
@@ -106,7 +109,10 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         		links.add(row.getIsisLink());
         	}
         };
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisISAdjTableTracker);
 
         walker.start();
@@ -141,7 +147,10 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
         	}
         };
 		
-        LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
+		LOG.info( "run: node[{}]: collecting {} on: {}",
+				getNodeId(),
+				trackerName, 
+				getPrimaryIpAddressString());
         walker =  SnmpUtils.createWalker(getPeer(), trackerName, isisCircTableTracker);
 
         walker.start();
@@ -167,12 +176,6 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
         m_linkd.getQueryManager().reconcileIsis(getNodeId(), now);
     }
-
-	@Override
-	public String getInfo() {
-        return "ReadyRunnable:IsisLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
 
 	@Override
 	public String getName() {
