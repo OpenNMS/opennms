@@ -23,10 +23,10 @@
       <button type="button" id="reset-default" class="btn btn-default" ng-click="reset()">
         <span class="glyphicon glyphicon-retweet"></span> Reset to Default
       </button>
-      <button type="button" id="save-foreign-source" class="btn btn-danger" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid" ng-disabled="timingStatus.isRunning">
+      <button type="button" id="save-foreign-source" class="btn btn-primary" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button type="button" id="go-back" class="btn btn-success" ng-click="goBack()">
+      <button type="button" id="go-back" class="btn btn-default" ng-click="goBack()">
         <i class="fa fa-reply" aria-hidden="true"></i> Return
       </button>
     </div>
@@ -78,7 +78,7 @@
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button type="button" id="add-detector" class="btn btn-default" ng-click="addDetector()">
+                <button type="button" id="add-detector" class="btn btn-default btn-sm" ng-click="addDetector()">
                   <span class="glyphicon glyphicon-plus-sign"></span> Add Detector
                 </button>
               </div>
@@ -108,15 +108,15 @@
                   <td>
                     <span class="pull-right">
                       <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
-                        <span class="glyphicon glyphicon-pencil"/>
+                        <span class="glyphicon glyphicon-pencil"></span>
                       </button>
                       <button type="button" class="btn btn-default btn-xs" uib-tooltip="Move the detector" ng-click="moveDetector(detector)">
-                        <span class="glyphicon glyphicon-move"/>
+                        <span class="glyphicon glyphicon-move"></span>
                       </button>
                       <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
-                        <span class="glyphicon glyphicon-trash"/>
+                        <span class="glyphicon glyphicon-trash"></span>
                       </button>
-                    </span>
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -138,7 +138,7 @@
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button type="button" id="add-policy" class="btn btn-default" ng-click="addPolicy()">
+                <button type="button" id="add-policy" class="btn btn-default btn-sm" ng-click="addPolicy()">
                   <span class="glyphicon glyphicon-plus-sign"></span> Add Policy
                 </button>
               </div>

@@ -26,6 +26,15 @@ $icon-font-path: "bootstrap/dist/fonts/" !default;
 }
 
 /*  --------------------------------------------------
+    :: Bsm Admin UI
+    -------------------------------------------------- */
+
+/* cell style for greyed entries */
+.v-table-cell-content-grey {
+  opacity: 0.25;
+}
+
+/*  --------------------------------------------------
     :: Alarm/Node Table Rows (Vaadin Widgets)
     -------------------------------------------------- */
 

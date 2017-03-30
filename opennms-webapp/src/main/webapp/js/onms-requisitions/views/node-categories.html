@@ -1,6 +1,12 @@
-<a class="btn" id="add-category" ng-click="addCategory()">
-  <span class="glyphicon glyphicon-plus-sign"/> Add Category
-</a>
+<div class="row">
+  <div class="col-md-9 col-md-offset-3">
+    <div class="input-group pull-right">
+      <button type="button" class="btn btn-default btn-sm" id="add-category" ng-click="addCategory()">
+        <span class="glyphicon glyphicon-plus-sign"/> Add Category
+      </button>
+    </div>
+  </div>
+</div>
 <p/>
 <ng-form name="categoryForm" ng-repeat="category in node.categories">
   <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
