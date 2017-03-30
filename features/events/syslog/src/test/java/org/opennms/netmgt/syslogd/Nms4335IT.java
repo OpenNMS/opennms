@@ -41,7 +41,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
@@ -165,6 +164,7 @@ public class Nms4335IT implements InitializingBean {
     @After
     public void tearDown() throws Exception {
         MockLogAppender.assertNoErrorOrGreater();
+        m_eventIpcManager.getEventAnticipator().reset();
     }
 
     @Test
@@ -174,15 +174,13 @@ public class Nms4335IT implements InitializingBean {
                       "uei.opennms.org/syslog/pam/su/suFailure",
                       "pam_unix(su:auth): authentication failure; logname=jeffg uid=1004 euid=0 tty=pts/1 ruser=jeffg rhost= user=root");
     }
-    
+
     @Test
-    @Ignore("SL 2015-01-30 - Why is this set to ignore?")
     public void testAuthFailureShouldNotLog() throws Exception {
-        doMessageTest("Jan 7 12:42:48 cartman su[25856]: pam_authenticate: Authentication failure",
+        doMessageTest("Jan 7 12:42:48 192.168.0.1 su[25856]: pam_authenticate: Authentication failure",
                       "192.168.0.1",
-                      "uei.opennms.org/blah",
-                      "");
-        
+                      "uei.opennms.org/syslogd/system/Debug",
+                      "pam_authenticate: Authentication failure");
     }
     
     /**

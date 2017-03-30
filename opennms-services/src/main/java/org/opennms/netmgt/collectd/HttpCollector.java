@@ -36,6 +36,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -573,12 +574,8 @@ public class HttpCollector implements ServiceCollector {
     private static HttpPost buildPostMethod(final URI uri, final HttpCollectionSet collectionSet) {
         HttpPost method = new HttpPost(uri);
         List<NameValuePair> postParams = buildRequestParameters(collectionSet);
-        try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, "UTF-8");
-            method.setEntity(entity);
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
-        }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8);
+        method.setEntity(entity);
         return method;
     }
 
@@ -587,7 +584,7 @@ public class HttpCollector implements ServiceCollector {
         List<NameValuePair> queryParams = buildRequestParameters(collectionSet);
         try {
             StringBuffer query = new StringBuffer();
-            query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
+            query.append(URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8));
             if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {
                     query.append("&");
@@ -596,7 +593,7 @@ public class HttpCollector implements ServiceCollector {
             }
             final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
-                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
+                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), StandardCharsets.UTF_8);
                 if (!params.isEmpty()) {
                     ub.setParameters(params);
                 }
@@ -633,7 +630,7 @@ public class HttpCollector implements ServiceCollector {
         ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
 
         final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery");
-        final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+        final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
         ub.setParameters(params);
 
         ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));

@@ -31,6 +31,7 @@ package org.opennms.jicmp.jna;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -87,7 +88,7 @@ class Server implements Runnable {
             while (!m_stopped.get()) {
                 DatagramPacket p = new DatagramPacket(new byte[128], 128);
                 m_socket.receive(p);
-                String cmd = new String(p.getData(), p.getOffset(), p.getLength(), "UTF-8");
+                String cmd = new String(p.getData(), p.getOffset(), p.getLength(), StandardCharsets.UTF_8);
                 System.err.print(String.format("SERVER: %s\n", cmd));
                 m_socket.send(p);
                 if (cmd.startsWith("quit")) {

@@ -60,21 +60,21 @@
           buttons: {
             fullSync: {
               label: 'Yes',
-              className: 'btn-success',
+              className: 'btn-primary',
               callback: function() {
                 doSynchronize(requisition, 'true');
               }
             },
             dbOnlySync: {
               label: 'DB Only',
-              className: 'btn-warning',
+              className: 'btn-default',
               callback: function() {
                 doSynchronize(requisition, 'dbonly');
               }
             },
             ignoreExistingSync: {
               label: 'No',
-              className: 'btn-danger',
+              className: 'btn-default',
               callback: function() {
                 doSynchronize(requisition, 'false');
               }

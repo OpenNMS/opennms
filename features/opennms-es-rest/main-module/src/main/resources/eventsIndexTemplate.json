@@ -57,7 +57,28 @@
                },
                "hour":{
                   "type":"long"
+               },
+               "alarmackduration":{
+                  "type":"long"
+               },           
+               "alarmclearduration":{
+                  "type":"long"
+               },
+               "initialseverity":{
+                  "type":"long"
+               },              
+               "severity":{
+                  "type":"long"
+               },
+               "logmsg":{
+                  "index":"analyzed",
+                  "type":"string"
+               },
+               "description":{
+                  "index":"analyzed",
+                  "type":"string"
                }
+               
             },
             "_all":{
                "enabled":true

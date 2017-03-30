@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import org.jfree.chart.JFreeChart;
@@ -195,7 +196,7 @@ public class ChartUtilsIT {
 
     private static void initalizeChartFactory() throws IOException {
         ChartConfigFactory.setInstance(new ChartConfigFactory());
-        ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes("UTF-8"));
+        ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes(StandardCharsets.UTF_8));
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
         //        m_config = ChartConfigFactory.getInstance().getConfiguration();

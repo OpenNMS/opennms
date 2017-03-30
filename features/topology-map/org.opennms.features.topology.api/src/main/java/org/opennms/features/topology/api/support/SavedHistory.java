@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.support;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,51 +141,31 @@ public class SavedHistory {
         // Add a CRC of all of the key-value pairs in m_settings to make the fragment unique
         CRC32 settingsCrc = new CRC32();
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
-            try {
-                settingsCrc.update(entry.getKey().getBytes("UTF-8"));
-                settingsCrc.update(entry.getValue().getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                // Impossible on modern JVMs
-                LOG.error(e.getMessage(), e);
-            }
+            settingsCrc.update(entry.getKey().getBytes(StandardCharsets.UTF_8));
+            settingsCrc.update(entry.getValue().getBytes(StandardCharsets.UTF_8));
         }
         retval.append(String.format(",(%X)", settingsCrc.getValue()));
 
         CRC32 locationsCrc = new CRC32();
         for(Map.Entry<VertexRef, Point> entry : m_locations.entrySet()) {
-            try {
-                locationsCrc.update(entry.getKey().getId().getBytes("UTF-8"));
-                //TODO cast to int for now
-                locationsCrc.update((int)entry.getValue().getX());
-                locationsCrc.update((int)entry.getValue().getY());
-            } catch(UnsupportedEncodingException e) {
-                // Impossible on modern JVMs
-                LOG.error(e.getMessage(), e);
-            }
+            locationsCrc.update(entry.getKey().getId().getBytes(StandardCharsets.UTF_8));
+            //TODO cast to int for now
+            locationsCrc.update((int)entry.getValue().getX());
+            locationsCrc.update((int)entry.getValue().getY());
         }
         retval.append(String.format(",(%X)", locationsCrc.getValue()));
 
         CRC32 selectionsCrc = new CRC32();
         for(VertexRef entry : m_selectedVertices) {
-            try {
-                selectionsCrc.update(entry.getNamespace().getBytes("UTF-8"));
-                selectionsCrc.update(entry.getId().getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {
-                // Impossible on modern JVMs
-                LOG.error(e.getMessage(), e);
-            }
+            selectionsCrc.update(entry.getNamespace().getBytes(StandardCharsets.UTF_8));
+            selectionsCrc.update(entry.getId().getBytes(StandardCharsets.UTF_8));
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
 
         CRC32 focusCrc = new CRC32();
         for(VertexRef entry : m_focusVertices) {
-            try {
-                focusCrc.update(entry.getNamespace().getBytes("UTF-8"));
-                focusCrc.update(entry.getId().getBytes("UTF-8"));
-            } catch(UnsupportedEncodingException e) {
-                // Impossible on modern JVMs
-                LOG.error(e.getMessage(), e);
-            }
+            focusCrc.update(entry.getNamespace().getBytes(StandardCharsets.UTF_8));
+            focusCrc.update(entry.getId().getBytes(StandardCharsets.UTF_8));
         }
         retval.append(String.format(",(%X)", focusCrc.getValue()));
         return retval.toString();

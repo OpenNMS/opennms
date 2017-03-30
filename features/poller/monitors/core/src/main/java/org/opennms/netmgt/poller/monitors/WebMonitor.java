@@ -30,7 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +89,7 @@ public class WebMonitor extends AbstractServiceMonitor {
 
             String queryString = ParameterMap.getKeyedString(map,"queryString",null);
             if (queryString != null && !queryString.trim().isEmpty()) {
-                final List<NameValuePair> params = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
+                final List<NameValuePair> params = URLEncodedUtils.parse(queryString, StandardCharsets.UTF_8);
                 if (!params.isEmpty()) {
                     ub.setParameters(params);
                 }

@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.vmware.internal;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider {
 
             if (splitBySlash.length > 1) {
                 try {
-                    entityName = new String(URLDecoder.decode(splitBySlash[1], "UTF-8"));
+                    entityName = new String(URLDecoder.decode(splitBySlash[1], StandardCharsets.UTF_8.name()));
                 } catch (UnsupportedEncodingException e) {
                     LOG.error(e.getMessage(), e);
                 }

@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -203,7 +204,7 @@ final class UdpUuidSender implements Runnable {
 
                 String xml = writer.getBuffer().toString();
                 try {
-                    byte[] xml_bytes = xml.getBytes("US-ASCII");
+                    byte[] xml_bytes = xml.getBytes(StandardCharsets.US_ASCII);
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
                     LOG.debug("Transmitting receipt to destination {}:{}", InetAddressUtils.str(re.getSender()), re.getPort());
@@ -225,8 +226,6 @@ final class UdpUuidSender implements Runnable {
                         LOG.debug(xml);
                         LOG.debug("}");
                     }
-                } catch (UnsupportedEncodingException e) {
-                    LOG.warn("Failed to convert XML to byte array", e);
                 } catch (IOException e) {
                     LOG.warn("Failed to send packet to host {}:{}", InetAddressUtils.str(re.getSender()), re.getPort(), e);
                 }

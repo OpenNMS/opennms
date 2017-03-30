@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
@@ -67,7 +69,7 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
         setDetectorHandler(new TcpDetectorHandler());
-        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(StandardCharsets.UTF_8)));
     }
 
     /**
