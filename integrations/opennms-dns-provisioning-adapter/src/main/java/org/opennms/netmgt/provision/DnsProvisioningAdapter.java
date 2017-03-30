@@ -100,7 +100,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         String levelString = System.getProperty("importer.adapter.dns.level");
         if (levelString != null) {
         	Integer level = Integer.getInteger(levelString);
-        	if (level != null)
+        	if (level != null && level.intValue() > 0)
         		m_level = level;
         }
         String dnsServer = System.getProperty("importer.adapter.dns.server");
