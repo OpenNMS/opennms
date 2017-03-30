@@ -76,7 +76,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
-    private Integer m_level = 3;
+    private Integer m_level = 0;
     
     private static volatile ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 

@@ -65,7 +65,7 @@ class DnsRecord {
         LOG.debug("Constructor: set hostname: {}", m_hostname);
 
         String[] singlestat = m_hostname.split("\\.");
-        if ( level > singlestat.length){
+        if ( level == 0 || level >= singlestat.length){
             m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
         } else {
         	String domain="";
@@ -105,5 +105,5 @@ class DnsRecord {
     public String getHostname() {
         return m_hostname;
     }
-    
+        
 }
