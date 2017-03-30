@@ -61,6 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Sets;
 
@@ -93,6 +94,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Autowired
     @Qualifier("eventSubscriptionService")
     private EventSubscriptionService eventSubscriptionService;
+
+    @Autowired
+    private TransactionOperations transactionOperations;
 
     @Override
     @Transactional
@@ -169,59 +173,62 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         final Set<String> alteredForeignSources = Sets.newHashSet();
 
-        // Remove the node from the previous requisition, if location has changed
-        if (!Objects.equals(prevForeignSource, nextForeignSource)) {
-            final RequisitionEntity prevRequisition = this.requisitionService.getRequisition(prevForeignSource);
-            if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
-                prevRequisition.removeNode(minion.getId());
-                prevRequisition.updateLastUpdated();
+        transactionOperations.execute(transactionStatus ->  {
+            // Remove the node from the previous requisition, if location has changed
+            if (!Objects.equals(prevForeignSource, nextForeignSource)) {
+                final RequisitionEntity prevRequisition = this.requisitionService.getRequisition(prevForeignSource);
+                if (prevRequisition != null && prevRequisition.getNode(minion.getId()) != null) {
+                    prevRequisition.removeNode(minion.getId());
+                    prevRequisition.updateLastUpdated();
 
-                requisitionService.saveOrUpdateRequisition(prevRequisition);
+                    requisitionService.saveOrUpdateRequisition(prevRequisition);
 
-                alteredForeignSources.add(prevForeignSource);
+                    alteredForeignSources.add(prevForeignSource);
+                }
             }
-        }
 
-        RequisitionEntity nextRequisition = requisitionService.getRequisition(nextForeignSource);
-        if (nextRequisition == null) {
-            nextRequisition = new RequisitionEntity(nextForeignSource);
-            nextRequisition.updateLastUpdated();
+            RequisitionEntity nextRequisition = requisitionService.getRequisition(nextForeignSource);
+            if (nextRequisition == null) {
+                nextRequisition = new RequisitionEntity(nextForeignSource);
+                nextRequisition.updateLastUpdated();
 
-            // We have to save the requisition before we can alter the according foreign source definition
-            requisitionService.saveOrUpdateRequisition(nextRequisition);
+                // We have to save the requisition before we can alter the according foreign source definition
+                requisitionService.saveOrUpdateRequisition(nextRequisition);
 
-            // Remove all policies and detectors from the foreign source
-            final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(nextForeignSource);
-            foreignSource.setDetectors(Collections.emptyList());
-            foreignSource.setPolicies(Collections.emptyList());
-            foreignSourceService.saveForeignSource(foreignSource);
+                // Remove all policies and detectors from the foreign source
+                final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(nextForeignSource);
+                foreignSource.setDetectors(Collections.emptyList());
+                foreignSource.setPolicies(Collections.emptyList());
+                foreignSourceService.saveForeignSource(foreignSource);
 
-            alteredForeignSources.add(nextForeignSource);
-        }
+                alteredForeignSources.add(nextForeignSource);
+            }
 
-        RequisitionNodeEntity requisitionNode = nextRequisition.getNode(minion.getId());
-        if (requisitionNode == null) {
-            final RequisitionMonitoredServiceEntity requisitionMonitoredService = new RequisitionMonitoredServiceEntity();
-            requisitionMonitoredService.setServiceName("Minion-Heartbeat");
+            RequisitionNodeEntity requisitionNode = nextRequisition.getNode(minion.getId());
+            if (requisitionNode == null) {
+                final RequisitionMonitoredServiceEntity requisitionMonitoredService = new RequisitionMonitoredServiceEntity();
+                requisitionMonitoredService.setServiceName("Minion-Heartbeat");
 
-            final RequisitionInterfaceEntity requisitionInterface = new RequisitionInterfaceEntity();
-            requisitionInterface.setIpAddress("127.0.0.1");
-            requisitionInterface.addMonitoredService(requisitionMonitoredService);
+                final RequisitionInterfaceEntity requisitionInterface = new RequisitionInterfaceEntity();
+                requisitionInterface.setIpAddress("127.0.0.1");
+                requisitionInterface.addMonitoredService(requisitionMonitoredService);
 
-            requisitionNode = new RequisitionNodeEntity();
-            requisitionNode.setNodeLabel(minion.getId());
-            requisitionNode.setForeignId(minion.getLabel() != null
-                                         ? minion.getLabel()
-                                         : minion.getId());
-            requisitionNode.setLocation(minion.getLocation());
-            requisitionNode.addInterface(requisitionInterface);
+                requisitionNode = new RequisitionNodeEntity();
+                requisitionNode.setNodeLabel(minion.getId());
+                requisitionNode.setForeignId(minion.getLabel() != null
+                        ? minion.getLabel()
+                        : minion.getId());
+                requisitionNode.setLocation(minion.getLocation());
+                requisitionNode.addInterface(requisitionInterface);
 
-            nextRequisition.addNode(requisitionNode);
-            nextRequisition.setLastUpdate(new Date());
-            requisitionService.saveOrUpdateRequisition(nextRequisition);
+                nextRequisition.addNode(requisitionNode);
+                nextRequisition.setLastUpdate(new Date());
+                requisitionService.saveOrUpdateRequisition(nextRequisition);
 
-            alteredForeignSources.add(nextForeignSource);
-        }
+                alteredForeignSources.add(nextForeignSource);
+            }
+            return null;
+        });
 
         for (final String alteredForeignSource : alteredForeignSources) {
             requisitionService.triggerImport(
