@@ -20,10 +20,15 @@
         * org.opennms.netmgt.syslogd.CustomSyslogParser: A backwards-compatible parser that has the same behavior
           as OpenNMS 1.8 (and previous).  It has relaxed standards and can usually pull data out of most BSD-
           or Syslog-NG-style traps.
-        * org.opennms.netmgt.syslogd.SyslogNGParser: A stricter variant of the CustomSyslogParser which parses
+        * org.opennms.netmgt.syslogd.RadixTreeSyslogParser: This parser uses a set of patterns to match all 
+          RFC 3164, RFC 5424, and syslog-ng message formats. Because it is the most flexible parser, it is the
+          preferred implementation in most cases. Like the legacy Rfc5424SyslogParser, it currently discards 
+          RFC 5424 structured data. It ignores the forwarding-regexp, matching-group-host, and matching-group-message 
+          parameters in favor of using an internal set of patterns.
+        * DEPRECATED: org.opennms.netmgt.syslogd.SyslogNGParser: A stricter variant of the CustomSyslogParser which parses
           Syslog-NG's default format.  It ignores forwarding-regexp, matching-group-host, and matching-group-message
           and instead relies on a well-known properly-formatted syslog message.
-        * org.opennms.netmgt.syslogd.Rfc5424SyslogParser: A parser that handles the new Syslog standard (as
+        * DEPRECATED: org.opennms.netmgt.syslogd.Rfc5424SyslogParser: A parser that handles the new Syslog standard (as
           defined in RFC5424).  It has strict parsing that should match the grammar specified in the RFC, although
           it currently discards structured data.  Like the SyslogNGParser, it ignores forwarding-regexp,
           matching-group-host, and matching-group-message in favor of stricter parsing of the known grammer.

@@ -84,7 +84,7 @@ public class Logmsg implements Serializable {
      * Field _dest.
      */
     @XmlAttribute(name="dest")
-    private java.lang.String _dest = "logndisplay".intern();
+    private java.lang.String _dest = "logndisplay";
 
 
       //----------------/
@@ -94,7 +94,7 @@ public class Logmsg implements Serializable {
     public Logmsg() {
         super();
         setContent("");
-        setDest("logndisplay".intern());
+        setDest("logndisplay");
     }
 
 
@@ -177,7 +177,7 @@ public class Logmsg implements Serializable {
      */
     public void setDest(
             final java.lang.String dest) {
-        this._dest = dest.intern();
+        this._dest = dest;
     }
 
     /**

@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -39,7 +40,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyslogMessage {
+public class SyslogMessage implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogMessage.class);
     private static final ThreadLocal<DateFormat> m_rfc3164Format = new ThreadLocal<DateFormat>() {
         @Override
@@ -68,23 +69,81 @@ public class SyslogMessage {
     private SyslogSeverity m_severity = SyslogSeverity.UNKNOWN;
     private Integer m_version;
     private Date m_date;
+
+    private Integer m_year;
+    private Integer m_month;
+    private Integer m_dayOfMonth;
+    private Integer m_hourOfDay;
+    private Integer m_minute;
+    private Integer m_second;
+    private Integer m_millisecond;
+    private ZoneId m_zoneId;
+
     private String m_hostname;
     private String m_processName;
-    private Integer m_processId;
+    private String m_processId;
     private String m_messageId;
     private String m_message;
 
     public SyslogMessage() {
     }
 
-    public SyslogMessage(final int facility, final int severity, final Date date, String hostname, final String processName, final Integer processId, final String message) {
-        this();
-
-        m_facility = SyslogFacility.getFacility(facility);
-        m_severity = SyslogSeverity.getSeverity(severity);
+    /**
+     * Copy constructor used by {@link #clone()}.
+     * 
+     * @param facility
+     * @param severity
+     * @param version
+     * @param date
+     * @param year
+     * @param month
+     * @param dayOfMonth
+     * @param hourOfDay
+     * @param minute
+     * @param second
+     * @param millisecond
+     * @param zoneId
+     * @param hostname
+     * @param processName
+     * @param processId
+     * @param messageId
+     * @param message
+     */
+    protected SyslogMessage(
+        final SyslogFacility facility,
+        final SyslogSeverity severity,
+        final Integer version,
+        final Date date,
+        final Integer year,
+        final Integer month,
+        final Integer dayOfMonth,
+        final Integer hourOfDay,
+        final Integer minute,
+        final Integer second,
+        final Integer millisecond,
+        final ZoneId zoneId,
+        final String hostname,
+        final String processName,
+        final String processId,
+        final String messageId,
+        final String message
+    ) {
+        m_facility = facility;
+        m_severity = severity;
+        m_version = version;
         m_date = date;
+        m_year = year;
+        m_month = month;
+        m_dayOfMonth = dayOfMonth;
+        m_hourOfDay = hourOfDay;
+        m_minute = minute;
+        m_second = second;
+        m_millisecond = millisecond;
+        m_zoneId = zoneId;
+        m_hostname = hostname;
         m_processName = processName;
         m_processId = processId;
+        m_messageId = messageId;
         m_message = message;
     }
 
@@ -123,9 +182,73 @@ public class SyslogMessage {
     public Date getDate() {
         return m_date;
     }
-    
+
     public void setDate(final Date date) {
         m_date = date;
+    }
+
+    public Integer getYear() {
+        return m_year;
+    }
+
+    public void setYear(Integer year) {
+        m_year = year;
+    }
+
+    public Integer getMonth() {
+        return m_month;
+    }
+
+    public void setMonth(Integer month) {
+        m_month = month;
+    }
+
+    public Integer getDayOfMonth() {
+        return m_dayOfMonth;
+    }
+
+    public void setDayOfMonth(Integer dayOfMonth) {
+        m_dayOfMonth = dayOfMonth;
+    }
+
+    public Integer getHourOfDay() {
+        return m_hourOfDay;
+    }
+
+    public void setHourOfDay(Integer hourOfDay) {
+        m_hourOfDay = hourOfDay;
+    }
+
+    public Integer getMinute() {
+        return m_minute;
+    }
+
+    public void setMinute(Integer minute) {
+        m_minute = minute;
+    }
+
+    public Integer getSecond() {
+        return m_second;
+    }
+
+    public void setSecond(Integer second) {
+        m_second = second;
+    }
+
+    public Integer getMillisecond() {
+        return m_millisecond;
+    }
+
+    public void setMillisecond(Integer millisecond) {
+        m_millisecond = millisecond;
+    }
+
+    public ZoneId getZoneId() {
+        return m_zoneId;
+    }
+
+    public void setZoneId(ZoneId zoneId) {
+        m_zoneId = zoneId;
     }
 
     public String getHostName() {
@@ -164,11 +287,11 @@ public class SyslogMessage {
         m_processName = processName;
     }
 
-    public Integer getProcessId() {
+    public String getProcessId() {
         return m_processId;
     }
     
-    public void setProcessId(final Integer processId) {
+    public void setProcessId(final String processId) {
         m_processId = processId;
     }
 
@@ -200,6 +323,11 @@ public class SyslogMessage {
         return m_rfc3164Format.get().format(m_date);
     }
 
+    public static String getRfc3164FormattedDate(Date date) {
+        if (date == null) return null;
+        return m_rfc3164Format.get().format(date);
+    }
+
     public String getRfc3339FormattedDate() {
         if (m_date == null) return null;
         return m_rfc3339Format.get().format(m_date);
@@ -208,7 +336,7 @@ public class SyslogMessage {
     public String asRfc3164Message() {
         if (m_processName != null) {
             if (m_processId != null) {
-                return String.format("<%d>%s %s %s[%d]: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
+                return String.format("<%d>%s %s %s[%s]: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
             } else  {
                 return String.format("<%d>%s %s %s: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getMessage());
             }
@@ -225,6 +353,14 @@ public class SyslogMessage {
             .append("severity", m_severity)
             .append("version", m_version)
             .append("date", m_date)
+            .append("year", m_year)
+            .append("month", m_month)
+            .append("dayOfMonth", m_dayOfMonth)
+            .append("hourOfDay", m_hourOfDay)
+            .append("minute", m_minute)
+            .append("second", m_second)
+            .append("millisecond", m_millisecond)
+            .append("zoneId", m_zoneId == null ? null : m_zoneId.getId())
             .append("hostname", m_hostname)
             .append("message ID", m_messageId)
             .append("process name", m_processName)
@@ -233,4 +369,34 @@ public class SyslogMessage {
             .toString();
     }
 
+    public void setParam(String key, String value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %s, setting arbitrary params is not supported yet", key, value));
+    }
+
+    public void setParam(String key, Integer value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %d, setting arbitrary params is not supported yet", key, value));
+    }
+
+    @Override
+    public SyslogMessage clone() {
+        return new SyslogMessage(
+            m_facility,
+            m_severity,
+            m_version,
+            m_date,
+            m_year,
+            m_month,
+            m_dayOfMonth,
+            m_hourOfDay,
+            m_minute,
+            m_second,
+            m_millisecond,
+            m_zoneId,
+            m_hostname,
+            m_processName,
+            m_processId,
+            m_messageId,
+            m_message
+        );
+    }
 }
