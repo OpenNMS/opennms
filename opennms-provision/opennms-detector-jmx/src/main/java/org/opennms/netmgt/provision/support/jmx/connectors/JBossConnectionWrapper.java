@@ -37,6 +37,7 @@ import javax.management.MBeanServerConnection;
  * connection to the naming server, so the close() method doesn't need to do anything.
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class JBossConnectionWrapper implements ConnectionWrapper {
     private MBeanServer mbeanServer;

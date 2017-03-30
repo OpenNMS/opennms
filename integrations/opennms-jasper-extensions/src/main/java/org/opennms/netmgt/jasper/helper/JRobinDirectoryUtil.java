@@ -209,6 +209,13 @@ public class JRobinDirectoryUtil {
         }
     }
 
+    /**
+     * Escape colons with backslashes so that they can be used in RRD commands.
+     */
+    public static String escapeColons(final String input) {
+        return input.replace(":", "\\:");
+    }
+
     public String getInterfaceDirectory(String snmpifname, String snmpifdescr, String snmpphysaddr) {
         return RrdLabelUtils.computeLabelForRRD(snmpifname, snmpifdescr, snmpphysaddr);
     }

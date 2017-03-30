@@ -19,9 +19,12 @@
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String"/>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
+	<parameter name="escapedInterface" class="java.lang.String">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil.escapeColons($P{ipv4_interface})]]></defaultValueExpression>
+	</parameter>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/response/$P{ipv4_interface}/icmp.jrb:icmp:AVERAGE
+		DEF:xx=$P{rrdDir}/response/$P{escapedInterface}/icmp.jrb:icmp:AVERAGE
 		XPORT:xx:IcmpLatency]]>
 	</queryString>
 	<field name="Timestamp" class="java.util.Date">

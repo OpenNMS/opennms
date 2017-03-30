@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,17 @@
 
 package org.opennms.mock.snmp.responder;
 
-import org.snmp4j.smi.Variable;
+public class SnmpErrorStatusException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-public interface DynamicVariable {
+    private final int errorStatus;
 
-	public Variable getVariableForOID(String oidStr) throws SnmpErrorStatusException;
+    public SnmpErrorStatusException(int errorStatus) {
+        this.errorStatus = errorStatus;
+    }
+
+    public int getErrorStatus() {
+        return errorStatus;
+    }
 
 }
