@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.utils;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +87,20 @@ public abstract class ConfigUtils {
             final Collection<K> col = (Collection<K>)value;
             for (final K entry : col) {
                 if (!in.contains(entry)) {
-                    throw new IllegalStateException("'name': found '" + entry.toString() + "' but expected one of: " + in.toString());
+                    throw new IllegalStateException("'" + name + "': found '" + entry.toString() + "' but expected one of: " + in.toString());
                 }
             }
         } else {
             LOG.warn("Unsure how to deal with value type {}", value.getClass());
+        }
+        return value;
+    }
+
+    public static String assertMatches(final String value, final Pattern pattern, final String name) {
+        if (value == null) return value;
+        final Matcher m = pattern.matcher(value);
+        if (!m.matches()) {
+            throw new IllegalStateException("'" + name + "': value '" + value + "' did no match pattern '" + pattern + "'");
         }
         return value;
     }

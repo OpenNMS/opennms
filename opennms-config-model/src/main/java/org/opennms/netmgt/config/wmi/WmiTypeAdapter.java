@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,5 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/wmi-datacollection", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.opennms.netmgt.config.wmi;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+public class WmiTypeAdapter extends XmlAdapter<String,WmiType> {
+
+    @Override
+    public WmiType unmarshal(final String v) throws Exception {
+        for (final WmiType type : WmiType.values()) {
+            if (type.toString().equalsIgnoreCase(v)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String marshal(final WmiType v) throws Exception {
+        return v.toString();
+    }
+
+}
