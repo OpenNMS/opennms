@@ -39,8 +39,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 import org.junit.Assert;
@@ -138,13 +138,7 @@ public abstract class ConfigurationTestUtils extends Assert {
      * @return a {@link java.io.Reader} object.
      */
     public static Reader getReaderForResource(Object obj, String resource) {
-        Reader retval = null;
-        try {
-            retval = new InputStreamReader(getInputStreamForResource(obj, resource), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            fail("Your JVM doesn't support UTF-8 encoding, which is pretty much impossible.");
-        }
-        return retval;
+        return new InputStreamReader(getInputStreamForResource(obj, resource), StandardCharsets.UTF_8);
     }
 
     /**
@@ -255,13 +249,7 @@ public abstract class ConfigurationTestUtils extends Assert {
      * @throws java.io.FileNotFoundException if any.
      */
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
-        Reader retval = null;
-        try {
-            retval = new InputStreamReader(getInputStreamForConfigFile(configFile), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            fail("Your JVM doesn't support UTF-8 encoding, which is pretty much impossible.");
-        }
-        return retval;
+        return new InputStreamReader(getInputStreamForConfigFile(configFile), StandardCharsets.UTF_8);
     }
 
     /**

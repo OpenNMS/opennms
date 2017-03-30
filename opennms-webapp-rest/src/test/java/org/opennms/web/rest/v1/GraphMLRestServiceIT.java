@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +68,7 @@ public class GraphMLRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void verifyCanCreateAndDelete() throws Exception {
-        final String inputGraph = IOUtils.toString(getClass().getResourceAsStream("/v1/test-graph.xml"), "UTF-8");
+        final String inputGraph = IOUtils.toString(getClass().getResourceAsStream("/v1/test-graph.xml"), StandardCharsets.UTF_8);
 
         // Create
         sendPost("/graphml/new-graph", inputGraph, 201);

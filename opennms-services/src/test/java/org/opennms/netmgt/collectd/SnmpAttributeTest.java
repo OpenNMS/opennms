@@ -35,6 +35,7 @@ import static org.easymock.EasyMock.matches;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -209,7 +210,7 @@ public class SnmpAttributeTest {
         String longValue = "49197860";
         testPersisting(
             new Double(longValue).toString(),
-            new Snmp4JValueFactory().getOctetString(longValue.getBytes("UTF-8"))
+            new Snmp4JValueFactory().getOctetString(longValue.getBytes(StandardCharsets.UTF_8))
         );
     }
 

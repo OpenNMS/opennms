@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +49,7 @@ public class SyslogNGParser extends SyslogParser {
     //                                                                <PRI>        IDENT               TIMESTAMP                                                                                 HOST   PROCESS/ID                            MESSAGE
     private static final Pattern m_syslogNGPattern = Pattern.compile("^<(\\d{1,3})>(?:(\\S*?)(?::? )?)((?:\\d\\d\\d\\d-\\d\\d-\\d\\d)|(?:\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)) (\\S+) (?:(\\S+?)(?:\\[(\\d+)\\])?:\\s+){0,1}(\\S.*?)$", Pattern.MULTILINE);
 
-    public SyslogNGParser(final SyslogdConfig config, final String text) {
+    public SyslogNGParser(final SyslogdConfig config, final ByteBuffer text) {
         super(config, text);
     }
 
@@ -58,7 +59,7 @@ public class SyslogNGParser extends SyslogParser {
     }
 
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
                 LOG.trace("'{}' did not match '{}'", m_syslogNGPattern, getText());
@@ -87,12 +88,7 @@ public class SyslogNGParser extends SyslogParser {
         message.setHostName(matcher.group(4));
         message.setProcessName(matcher.group(5));
         if (matcher.group(6) != null) {
-            try {
-                final Integer pid = Integer.parseInt(matcher.group(6));
-                message.setProcessId(pid);
-            } catch (final NumberFormatException nfe) {
-                LOG.debug("Unable to parse '{}' as a process ID.", matcher.group(6), nfe);
-            }
+            message.setProcessId(matcher.group(6));
         }
         message.setMessage(matcher.group(7).trim());
 

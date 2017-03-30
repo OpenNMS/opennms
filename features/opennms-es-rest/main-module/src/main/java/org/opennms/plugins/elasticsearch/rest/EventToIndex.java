@@ -117,10 +117,13 @@ public class EventToIndex implements AutoCloseable {
 	public static final String INITIAL_SEVERITY_TEXT="initialseverity_text";
 	public static final String SEVERITY_TEXT="severity_text";
 	public static final String SEVERITY="severity";
+	public static final String FIRST_EVENT_TIME="firsteventtime";
 	public static final String EVENT_PARAMS="eventparms";
 	public static final String ALARM_ACK_TIME="alarmacktime";
 	public static final String ALARM_ACK_USER="alarmackuser";
+	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
 	public static final String ALARM_CLEAR_TIME="alarmcleartime";
+	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
 	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
 
 	// uei definitions of memo change events
@@ -290,8 +293,7 @@ public class EventToIndex implements AutoCloseable {
 		return jestClient;
 	}
 
-	@Override
-	public void close(){
+	private void closeJestClient() {
 		if (jestClient != null) {
 			synchronized(this){
 				try{
@@ -302,6 +304,11 @@ public class EventToIndex implements AutoCloseable {
 				jestClient = null;
 			}
 		}
+	}
+
+	@Override
+	public void close(){
+		closeJestClient();
 
 		// Shutdown the thread pool
 		executor.shutdown();
@@ -356,8 +363,12 @@ public class EventToIndex implements AutoCloseable {
 						BulkResult result = getJestClient().execute(bulk);
 
 						// If the bulk command fails completely...
-						if (!result.isSucceeded()) {
-							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+						if (result == null || !result.isSucceeded()) {
+							if (result == null) {
+								logEsError("Bulk API action", entry.getKey(), type, null, -1, null);
+							} else {
+								logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+							}
 
 							// Try and issue the bulk actions individually as a fallback
 							for (BulkableAction<DocumentResult> action : entry.getValue()) {
@@ -390,8 +401,12 @@ public class EventToIndex implements AutoCloseable {
 						}
 
 						// If the bulk command fails completely...
-						if (!result.isSucceeded()) {
-							logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+						if (result == null || !result.isSucceeded()) {
+							if (result == null) {
+								logEsError("Bulk API action", entry.getKey(), type, null, -1, null);
+							} else {
+								logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+							}
 
 							// Try and issue the bulk actions individually as a fallback
 							for (BulkableAction<DocumentResult> action : entry.getValue()) {
@@ -416,7 +431,7 @@ public class EventToIndex implements AutoCloseable {
 				} catch (Throwable ex){
 					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
 					// Shutdown the ES client, it will be recreated as needed
-					close();
+					closeJestClient();
 				}
 			}
 		}
@@ -451,11 +466,15 @@ public class EventToIndex implements AutoCloseable {
 
 		DocumentResult result = client.execute(action);
 
-		if(result.getResponseCode() == 404){
+		if(result == null || result.getResponseCode() == 404){
 			// index doesn't exist for upsert command so create new index and try again
 
 			if(LOG.isDebugEnabled()) {
-				logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				if (result == null) {
+					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
+				} else {
+					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
+				}
 				LOG.debug("index name "+action.getIndex() + " doesn't exist, creating new index");
 			}
 
@@ -464,7 +483,9 @@ public class EventToIndex implements AutoCloseable {
 			result = client.execute(action);
 		}
 
-		if(!result.isSucceeded()){
+		if (result == null) {
+			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
+		} else if (!result.isSucceeded()){
 			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		} else if(LOG.isDebugEnabled()) {
 			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
@@ -718,7 +739,7 @@ public class EventToIndex implements AutoCloseable {
 						+ "\n  oldValuesStr="+oldValuesStr);
 				return null;
 			} else {
-				try{
+				try {
 					Object obj = parser.parse(oldValuesStr);
 					oldAlarmValues = (JSONObject) obj;
 				} catch (ParseException e1) {
@@ -752,6 +773,7 @@ public class EventToIndex implements AutoCloseable {
 				try{
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
+					body.put(SEVERITY,value);
 					body.put(SEVERITY_TEXT,label);
 				}
 				catch (Exception e){
@@ -774,15 +796,41 @@ public class EventToIndex implements AutoCloseable {
 			Calendar alarmClearCal=Calendar.getInstance();
 			alarmClearCal.setTime(event.getTime());
 			body.put(ALARM_CLEAR_TIME, DatatypeConverter.printDateTime(alarmClearCal));
+			// duration time from alarm raise to clear
+			try{
+				Date alarmclearDate = event.getTime();
+				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
+				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
+				Date alarmCreationDate=alarmCreationCal.getTime();
+				//duration in milliseconds
+				Long duration = alarmclearDate.getTime() - alarmCreationDate.getTime();
+				body.put(ALARM_CLEAR_DURATION, duration.toString());
+			} catch (Exception e){
+				LOG.error("problem calculating alarm clear duration for event "+event.getDbid(), e);
+			}
 		}
 
-		// set alarm deleted time if an alarm clear event
+		// set alarm deleted time if an alarm delete event
 		if(ALARM_DELETED_EVENT.equals(event.getUei())){
 			Calendar alarmDeletionCal=Calendar.getInstance();
 			alarmDeletionCal.setTime(event.getTime());
-			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));
+			body.put(ALARM_DELETED_TIME, DatatypeConverter.printDateTime(alarmDeletionCal));			
 		}
-
+		
+		//  calculate duration from alarm raise to acknowledge
+		if(ALARM_ACKNOWLEDGED_EVENT.equals(event.getUei())){
+			try{
+				Date alarmAckDate = event.getTime();
+				String alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
+				Calendar alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
+				Date alarmCreationDate=alarmCreationCal.getTime();
+				//duration in milliseconds
+				Long duration = alarmAckDate.getTime() - alarmCreationDate.getTime();
+				body.put(ALARM_ACK_DURATION, duration.toString());
+			} catch (Exception e){
+				LOG.error("problem calculating alarm acknowledge duration for event "+event.getDbid(), e);
+			}
+		}
 
 		// remove ack if not in parameters i,e alarm not acknowleged
 		if(parmsMap.get(ALARM_ACK_TIME)==null || "".equals(parmsMap.get(ALARM_ACK_TIME)) ){
@@ -792,12 +840,11 @@ public class EventToIndex implements AutoCloseable {
 
 		// add "initialseverity"
 		if(parmsMap.get(INITIAL_SEVERITY)!=null){
-			String severityId = parmsMap.get(INITIAL_SEVERITY);
-			body.put(INITIAL_SEVERITY,severityId);
-
 			try{
+				String severityId = parmsMap.get(INITIAL_SEVERITY);
 				int id= Integer.parseInt(severityId);
 				String label = OnmsSeverity.get(id).getLabel();
+				body.put(INITIAL_SEVERITY,severityId);
 				body.put(INITIAL_SEVERITY_TEXT,label);
 			}
 			catch (Exception e){
@@ -835,7 +882,7 @@ public class EventToIndex implements AutoCloseable {
 
 			// try to parse firsteventtime but if not able then use current date
 			try{
-				alarmCreationTime = alarmValues.get("firsteventtime").toString();
+				alarmCreationTime = alarmValues.get(FIRST_EVENT_TIME).toString();
 				alarmCreationCal = DatatypeConverter.parseDateTime(alarmCreationTime);
 			} catch (Exception e){
 				LOG.error("using current Date() for @timestamp because problem creating date from alarmchange event "+event.getDbid()

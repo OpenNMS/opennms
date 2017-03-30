@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -397,7 +398,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
             try {
                 if (parentEntity != null && parentEntity.getMOR() != null) {
-                    vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), "UTF-8"));
+                    vmwareTopologyInfo.append(parentEntity.getMOR().getVal() + "/" + URLEncoder.encode(parentEntity.getName(), StandardCharsets.UTF_8.name()));
                 } else {
                     logger.warn("Can't add topologyInformation because either the parentEntity or the MOR is null for " + managedEntity.getName());
                 }
@@ -431,7 +432,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                             vmwareTopologyInfo.append(", ");
                         }
                         try {
-                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                            vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), StandardCharsets.UTF_8.name()));
                         } catch (UnsupportedEncodingException e) {
                             logger.warn("Unsupported encoding '{}'", e.getMessage());
                         }
@@ -449,7 +450,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                         }
                         try {
                             if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
-                                vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                                vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), StandardCharsets.UTF_8.name()));
                             }
                         } catch (UnsupportedEncodingException e) {
                             logger.warn("Unsupported encoding '{}'", e.getMessage());
@@ -484,7 +485,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                                 vmwareTopologyInfo.append(", ");
                             }
                             try {
-                                vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), "UTF-8"));
+                                vmwareTopologyInfo.append(datastore.getMOR().getVal() + "/" + URLEncoder.encode(datastore.getSummary().getName(), StandardCharsets.UTF_8.name()));
                             } catch (UnsupportedEncodingException e) {
                                 logger.warn("Unsupported encoding '{}'", e.getMessage());
                             }
@@ -501,7 +502,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                             }
                             try {
                                 if (network instanceof DistributedVirtualPortgroup ? m_topologyPortGroups : true) {
-                                    vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), "UTF-8"));
+                                    vmwareTopologyInfo.append(network.getMOR().getVal() + "/" + URLEncoder.encode(network.getSummary().getName(), StandardCharsets.UTF_8.name()));
                                 }
                             } catch (UnsupportedEncodingException e) {
                                 logger.warn("Unsupported encoding '{}'", e.getMessage());
@@ -517,7 +518,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 }
 
                 try {
-                    vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), "UTF-8"));
+                    vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), StandardCharsets.UTF_8.name()));
                 } catch (UnsupportedEncodingException e) {
                     logger.warn("Unsupported encoding '{}'", e.getMessage());
                 }

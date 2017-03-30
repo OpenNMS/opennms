@@ -30,9 +30,10 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -66,6 +67,7 @@ import com.google.common.cache.LoadingCache;
  * TODO: This class is sloooow. It needs to be sped up significantly
  * to handle increased syslog volume.
  *
+ * @author Seth
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -96,88 +98,33 @@ public class ConvertToEvent {
     );
 
     /**
-     * Constructs a new event encapsulation instance based upon the
-     * information passed to the method. The passed datagram data is decoded
-     * into a string using the <tt>US-ASCII</tt> character encoding.
-     *
-     * @param packet The datagram received from the remote agent.
-     * @throws java.io.UnsupportedEncodingException
-     *          Thrown if the data buffer cannot be decoded using the
-     *          US-ASCII encoding.
-     * @throws MessageDiscardedException 
+     * Reduce the limit of the buffer to trim trailing nulls from the value.
+     * 
+     * @param buffer
+     * @return A new {@link ByteBuffer} representing the trimmed value.
      */
-    public ConvertToEvent(
-        final String systemId,
-        final String location,
-        final DatagramPacket packet,
-        final SyslogdConfig config
-    ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(systemId, location, packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
+    public static ByteBuffer trimTrailingNulls(ByteBuffer original) {
+        ByteBuffer buffer = original.duplicate();
+        // Trim trailing nulls from the string
+        while (buffer.limit() > 0 && buffer.get(buffer.limit() - 1) == 0) {
+            buffer.limit(buffer.limit() - 1);
+        }
+        buffer.rewind();
+        return buffer;
     }
 
-    /**
-     * Constructs a new event encapsulation instance based upon the
-     * information passed to the method. The passed byte array is decoded into
-     * a string using the <tt>US-ASCII</tt> character encoding.
-     *
-     * @param addr The remote agent's address.
-     * @param port The remote agent's port
-     * @param data The XML data in US-ASCII encoding.
-     * @param len  The length of the XML data in the buffer.
-     * @throws java.io.UnsupportedEncodingException
-     *          Thrown if the data buffer cannot be decoded using the
-     *          US-ASCII encoding.
-     * @throws MessageDiscardedException 
-     */
-    public ConvertToEvent(
-        final String systemId,
-        final String location,
-        final InetAddress addr,
-        final int port,
-        final String data,
-        final SyslogdConfig config
-    ) throws UnsupportedEncodingException, MessageDiscardedException {
-
-        if (config == null) {
-            throw new IllegalArgumentException("Config cannot be null");
-        }
-
-        String syslogString = data;
-        // Trim trailing nulls from the string
-        while (syslogString.endsWith("\0")) {
-            syslogString = syslogString.substring(0, syslogString.length() - 1);
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Converting to event: {}", this);
-        }
-
-        SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
-        if (!parser.find()) {
-            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", syslogString));
-        }
-        SyslogMessage message;
-        try {
-            message = parser.parse();
-        } catch (final SyslogParserException ex) {
-            LOG.debug("Unable to parse '{}'", syslogString, ex);
-            throw new MessageDiscardedException(ex);
-        }
-
+    public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location) {
         if (message == null) {
-            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", syslogString));
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("got syslog message {}", message);
+            return null;
         }
 
         // Build a basic event out of the syslog message
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
 
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
-
+        EventBuilder bldr = new EventBuilder();
+        bldr.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
+        bldr.setSource("syslogd");
 
         // Set constant values in EventBuilder
 
@@ -190,6 +137,8 @@ public class ConvertToEvent {
 
 
         // Set values from SyslogMessage in the EventBuilder
+
+        bldr.addParam("hostname", message.getHostName());
 
         final InetAddress hostAddress = message.getHostAddress();
         if (hostAddress != null) {
@@ -205,25 +154,98 @@ public class ConvertToEvent {
             bldr.setInterface(hostAddress);
         }
 
-        bldr.setTime(message.getDate());
+        if (message.getDate() == null) {
+            if (message.getYear() != null) bldr.setYear(message.getYear());
+            if (message.getMonth() != null) bldr.setMonth(message.getMonth());
+            if (message.getDayOfMonth() != null) bldr.setDayOfMonth(message.getDayOfMonth());
+            if (message.getHourOfDay() != null) bldr.setHourOfDay(message.getHourOfDay());
+            if (message.getMinute() != null) bldr.setMinute(message.getMinute());
+            if (message.getSecond() != null) bldr.setSecond(message.getSecond());
+            if (message.getMillisecond() != null) bldr.setMillisecond(message.getMillisecond());
+            if (message.getZoneId() != null) bldr.setZoneId(message.getZoneId());
+        } else {
+            bldr.setTime(message.getDate());
+        }
 
         bldr.setLogMessage(message.getMessage());
         // Using parms provides configurability.
         bldr.addParam("syslogmessage", message.getMessage());
 
-        bldr.addParam("severity", "" + priorityTxt);
+        bldr.addParam("severity", priorityTxt);
 
-        bldr.addParam("timestamp", message.getRfc3164FormattedDate());
+        bldr.addParam("timestamp", SyslogMessage.getRfc3164FormattedDate(bldr.currentEventTime()));
+
+        if (message.getMessageID() != null) {
+            bldr.addParam("messageid", message.getMessageID());
+        }
 
         if (message.getProcessName() != null) {
             bldr.addParam("process", message.getProcessName());
         }
 
-        bldr.addParam("service", "" + facilityTxt);
+        bldr.addParam("service", facilityTxt);
 
         if (message.getProcessId() != null) {
             bldr.addParam("processid", message.getProcessId().toString());
         }
+
+        return bldr;
+    }
+
+    /**
+     * Constructs a new event encapsulation instance based upon the
+     * information passed to the method. The passed byte array is decoded into
+     * a string using the {@link StandardCharsets#US_ASCII} character encoding.
+     *
+     * @param systemId
+     * @param location
+     * @param addr The remote agent's address.
+     * @param port The remote agent's port
+     * @param incoming The syslog datagram in {@link StandardCharsets#US_ASCII} encoding.
+     * @param config The Syslogd configuration
+     * @throws MessageDiscardedException 
+     */
+    public ConvertToEvent(
+        final String systemId,
+        final String location,
+        final InetAddress addr,
+        final int port,
+        final ByteBuffer incoming,
+        final SyslogdConfig config
+    ) throws MessageDiscardedException {
+
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
+        ByteBuffer buffer = trimTrailingNulls(incoming);
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Converting to event: {}", this);
+        }
+
+        SyslogParser parser = SyslogParser.getParserInstance(config, buffer);
+        if (!parser.find()) {
+            throw new MessageDiscardedException(String.format("Message does not match regex: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
+        }
+        SyslogMessage message;
+        try {
+            message = parser.parse();
+        } catch (final SyslogParserException ex) {
+            LOG.debug("Unable to parse '{}'", SyslogParser.fromByteBuffer(buffer), ex);
+            throw new MessageDiscardedException(ex);
+        }
+
+        if (message == null) {
+            throw new MessageDiscardedException(String.format("Unable to parse message: '%s'", SyslogParser.fromByteBuffer(buffer).toString()));
+        }
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
+        }
+
+        final String priorityTxt = message.getSeverity().toString();
+        final String facilityTxt = message.getFacility().toString();
 
         // Post-process the message based on the SyslogdConfig
 
@@ -246,13 +268,15 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
+        EventBuilder bldr = toEventBuilder(message, systemId, location);
+
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
         for (final UeiMatch uei : ueiMatch) {
             final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
                                               containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
                                               matchProcess(uei.getProcessMatch(), message.getProcessName()) &&
                                               matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
-                                              matchHostAddr(uei.getHostaddrMatch(), str(hostAddress));
+                                              matchHostAddr(uei.getHostaddrMatch(), str(message.getHostAddress()));
 
             if (messageMatchesUeiListEntry) {
                 if (uei.getMatch().getType().equals("substr")) {
@@ -267,29 +291,32 @@ public class ConvertToEvent {
             }
         }
 
-        final String fullText = message.asRfc3164Message();
-
         // Time to verify if we need to hide the message
         final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages().getHideMatchCollection());
         boolean doHide = false;
-        for (final HideMatch hide : hideMatch) {
-            if (hide.getMatch().getType().equals("substr")) {
-                if (fullText.contains(hide.getMatch().getExpression())) {
-                    // We should hide the message based on this match
-                    doHide = true;
-                    break;
-                }
-            } else if (hide.getMatch().getType().equals("regex")) {
-                try {
-                    Pattern msgPat = getPattern(hide.getMatch().getExpression());
-                    Matcher msgMat = msgPat.matcher(fullText);
-                    if (msgMat.find()) {
+        if (hideMatch.size() > 0) {
+            // Match this regex against the full string of the message
+            final String fullText = message.asRfc3164Message();
+
+            for (final HideMatch hide : hideMatch) {
+                if (hide.getMatch().getType().equals("substr")) {
+                    if (fullText.contains(hide.getMatch().getExpression())) {
                         // We should hide the message based on this match
                         doHide = true;
                         break;
                     }
-                } catch (PatternSyntaxException pse) {
-                    LOG.warn("Failed to compile hide-match regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                } else if (hide.getMatch().getType().equals("regex")) {
+                    try {
+                        Pattern msgPat = getPattern(hide.getMatch().getExpression());
+                        Matcher msgMat = msgPat.matcher(fullText);
+                        if (msgMat.find()) {
+                            // We should hide the message based on this match
+                            doHide = true;
+                            break;
+                        }
+                    } catch (PatternSyntaxException pse) {
+                        LOG.warn("Failed to compile hide-match regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                    }
                 }
             }
         }

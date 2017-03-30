@@ -28,24 +28,26 @@
 
 package org.opennms.jicmp.jna;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.net.InetAddress;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
 
 
 /**
@@ -101,7 +103,7 @@ public class BSDByteBufferTest {
         int socket = -1;
         try {
             InetAddress svrAddr = server.getInetAddress();
-            byte[] data = msg.getBytes("US-ASCII");
+            byte[] data = msg.getBytes(StandardCharsets.US_ASCII);
             String sent = msg.substring(4,7);
             ByteBuffer buf = ByteBuffer.wrap(data, 4, 3).slice();
 
@@ -133,7 +135,7 @@ public class BSDByteBufferTest {
             byte[] b = new byte[rBuf.remaining()];
             rBuf.get(b);
 
-            String results = new String(b, "US-ASCII");
+            String results = new String(b, StandardCharsets.US_ASCII);
 
             printf("Received: %s\n", results);
 

@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -171,12 +172,12 @@ public class LdapAuthTest implements InitializingBean {
         return request;
     }
     
-    private MockHttpServletRequest createRequest(String requestType, String urlPath, String user, String passwd) throws UnsupportedEncodingException {
+    private MockHttpServletRequest createRequest(String requestType, String urlPath, String user, String passwd) {
         MockHttpServletRequest request = createRequest(requestType, urlPath);
         
         String token = user + ":"  + passwd;
-        byte[] encodedToken = Base64.encodeBase64(token.getBytes("UTF-8"));
-        request.addHeader("Authorization", "Basic " + new String(encodedToken, "UTF-8"));
+        byte[] encodedToken = Base64.encodeBase64(token.getBytes(StandardCharsets.UTF_8));
+        request.addHeader("Authorization", "Basic " + new String(encodedToken, StandardCharsets.UTF_8));
 
         return request;
     }

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.opennms.core.utils.ConfigFileConstants;
 
@@ -119,7 +120,7 @@ public class DestinationPathFactory extends DestinationPathManager {
     @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), StandardCharsets.UTF_8);
             fileWriter.write(writerString);
             fileWriter.flush();
             fileWriter.close();

@@ -35,7 +35,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,7 +57,6 @@ import org.junit.rules.TestName;
 @Ignore
 public class NativeSocketTest {
 
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final ExecutorService m_executor = Executors.newCachedThreadPool();
 
     Server m_server;
@@ -99,7 +98,7 @@ public class NativeSocketTest {
                     @Override public DatagramPacket call() throws Exception {
                         printf("Sending cmd: %s\n", cmd);
 
-                        final byte[] data = cmd.getBytes("UTF-8");
+                        final byte[] data = cmd.getBytes(StandardCharsets.UTF_8);
                         final DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), sock.getLocalPort());
                         sock.send(p);
 
@@ -116,7 +115,7 @@ public class NativeSocketTest {
                 final DatagramPacket r = task.get(10, TimeUnit.SECONDS);
                 assertNotNull(r);
 
-                final String response = new String(r.getData(), r.getOffset(), r.getLength(), "UTF-8");
+                final String response = new String(r.getData(), r.getOffset(), r.getLength(), StandardCharsets.UTF_8);
                 printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
                 assertEquals(cmd, response);
             }
@@ -148,7 +147,7 @@ public class NativeSocketTest {
                 final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
                     @Override public NativeDatagramPacket call() throws Exception {
                         printf("Sending cmd: %s\n", cmd);
-                        final ByteBuffer buf = UTF_8.encode(cmd);
+                        final ByteBuffer buf = StandardCharsets.UTF_8.encode(cmd);
                         final NativeDatagramPacket p = new NativeDatagramPacket(buf, address, m_port);
                         sock.send(p);
 
@@ -166,7 +165,7 @@ public class NativeSocketTest {
                 final NativeDatagramPacket r = task.get(10, TimeUnit.SECONDS);
                 assertNotNull(r);
 
-                final String response = UTF_8.decode(r.getContent()).toString();
+                final String response = StandardCharsets.UTF_8.decode(r.getContent()).toString();
                 printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
 
                 assertEquals(cmd, response);
@@ -183,7 +182,7 @@ public class NativeSocketTest {
         try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
             final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
                 @Override public NativeDatagramPacket call() throws Exception {
-                    final ByteBuffer buf = UTF_8.encode("msg1");
+                    final ByteBuffer buf = StandardCharsets.UTF_8.encode("msg1");
                     final NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), m_port);
                     socket.send(p);
 
@@ -199,7 +198,7 @@ public class NativeSocketTest {
             final NativeDatagramPacket r = task.get(10, TimeUnit.SECONDS);
             assertNotNull(r);
 
-            final String response = UTF_8.decode(r.getContent()).toString();
+            final String response = StandardCharsets.UTF_8.decode(r.getContent()).toString();
             printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
         }
     }

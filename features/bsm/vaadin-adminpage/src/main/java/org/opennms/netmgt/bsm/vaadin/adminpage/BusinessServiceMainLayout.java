@@ -34,11 +34,13 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -84,6 +86,28 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         });
         expandButton.setId("expandButton");
 
+        final TextField filterTextField = new TextField();
+        filterTextField.setInputPrompt("Filter");
+        filterTextField.setId("filterTextField");
+        filterTextField.setImmediate(true);
+
+        filterTextField.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent textChangeEvent) {
+                m_table.setBusinessServiceNameFilter(textChangeEvent.getText());
+                m_table.expandForBusinessServiceNameFilter();
+            }
+        });
+
+        // Clear Filter
+        final Button clearFilterButton = UIHelper.createButton("Clear Filter", null, FontAwesome.TIMES_CIRCLE, (Button.ClickListener) event -> {
+            filterTextField.setValue("");
+            m_table.setBusinessServiceNameFilter(null);
+            m_table.getContainerDataSource().getItemIds().forEach(id -> m_table.setCollapsed(id, true));
+        });
+
+        clearFilterButton.setId("clearButton");
+
         // Refresh
         final Button refreshButton = UIHelper.createButton("Refresh Table", null, FontAwesome.REFRESH, (Button.ClickListener) event -> {
             m_table.refresh();
@@ -107,6 +131,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         // Group the refresh and reload buttons to the right
         HorizontalLayout rightButtonGroup = new HorizontalLayout();
         rightButtonGroup.setSpacing(true);
+        rightButtonGroup.addComponent(filterTextField);
+        rightButtonGroup.addComponent(clearFilterButton);
         rightButtonGroup.addComponent(refreshButton);
         rightButtonGroup.addComponent(reloadButton);
         rightButtonGroup.setDefaultComponentAlignment(Alignment.TOP_RIGHT);

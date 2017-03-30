@@ -31,6 +31,7 @@ package org.opennms.netmgt.notifd;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +117,7 @@ public class CommandExecutor implements ExecutorStrategy {
             // see if we have streamed arguments
             if (streamed) {
                 // make sure the output we are writing is buffered
-                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
+                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), StandardCharsets.UTF_8));
 
                 // put the streamed arguments into the stream
                 LOG.debug("Streamed arguments: {}", streamBuffer);

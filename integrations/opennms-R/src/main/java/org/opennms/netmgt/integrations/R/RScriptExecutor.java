@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
@@ -93,7 +93,7 @@ public class RScriptExecutor {
     private void setupFreemarker() {
         m_freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_21);
         m_freemarkerConfiguration.setTemplateLoader(new HybridTemplateLoader());
-        m_freemarkerConfiguration.setDefaultEncoding("UTF-8");
+        m_freemarkerConfiguration.setDefaultEncoding(StandardCharsets.UTF_8.name());
         m_freemarkerConfiguration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
@@ -155,7 +155,7 @@ public class RScriptExecutor {
 
         // Use the CharSequenceInputStream in order to avoid explicitly converting
         // the StringBuilder a string and then an array of bytes.
-        InputStream stdin = new CharSequenceInputStream(inputTableAsCsv, Charset.forName("UTF-8"));
+        InputStream stdin = new CharSequenceInputStream(inputTableAsCsv, StandardCharsets.UTF_8);
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         executor.setStreamHandler(new PumpStreamHandler(stdout, stderr, stdin));
