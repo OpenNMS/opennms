@@ -37,9 +37,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class TimeoutTracker {
 
@@ -47,8 +44,13 @@ public class TimeoutTracker {
     private final long m_timeoutInNanos;
     private final long m_timeoutInMillis;
     private final long m_timeoutInSeconds;
+
+    /**
+     * Strict timeouts will enforce that the timeout time elapses between subsequent
+     * attempts even if the operation returns more quickly than the timeout.
+     */
     private final boolean m_strictTimeouts;
-    
+
     private int m_attempt = 0;
     private long m_nextRetryTimeNanos = -1L;
     private long m_attemptStartTimeNanos = -1L;

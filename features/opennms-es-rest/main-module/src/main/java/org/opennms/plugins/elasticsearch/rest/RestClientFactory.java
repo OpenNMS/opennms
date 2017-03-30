@@ -28,37 +28,167 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.opennms.core.utils.TimeoutTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.JestResult;
+import io.searchbox.client.JestResultHandler;
 import io.searchbox.client.config.HttpClientConfig;
 
+/**
+ * This factory wraps the {@link JestClientFactory} to provide instances of
+ * {@link JestClient}.
+ */
 public class RestClientFactory {
-	
-	private JestClientFactory factory=null;
-	
-	
-	
+
+	private final JestClientFactory factory;
+	private HttpClientConfig config;
+
+	private AtomicInteger m_socketTimeout = new AtomicInteger(0);
+	private AtomicInteger m_timeout = new AtomicInteger(0);
+	private AtomicInteger m_retries = new AtomicInteger(0);
+
+	private static class OnmsJestClient implements JestClient {
+
+		private static final Logger LOG = LoggerFactory.getLogger(OnmsJestClient.class);
+
+		private final JestClient m_delegate;
+
+		private final int m_retries;
+
+		private final int m_timeout;
+
+		public OnmsJestClient(JestClient delegate, int timeout, int retries) {
+			m_delegate = delegate;
+			m_timeout = timeout;
+			m_retries = retries;
+		}
+
+		/**
+		 * Perform the REST operation and retry in case of exceptions.
+		 */
+		@Override
+		public <T extends JestResult> T execute(Action<T> clientRequest) throws IOException {
+			// 'strict-timeout' will enforce that the timeout time elapses between subsequent
+			// attempts even if the operation returns more quickly than the timeout
+			Map<String,Object> params = new HashMap<>();
+			params.put("strict-timeout", Boolean.TRUE);
+
+			TimeoutTracker timeoutTracker = new TimeoutTracker(params, m_retries, m_timeout);
+
+			for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
+				timeoutTracker.startAttempt();
+				try {
+					return m_delegate.execute(clientRequest);
+				} catch (Exception e) {
+					LOG.warn("Exception while trying to execute REST operation (attempt {})", timeoutTracker.getAttempt() + 1, e);
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<? super T> jestResultHandler) {
+			m_delegate.executeAsync(clientRequest, jestResultHandler);
+		}
+
+		@Override
+		public void shutdownClient() {
+			m_delegate.shutdownClient();
+		}
+
+		@Override
+		public void setServers(Set<String> servers) {
+			m_delegate.setServers(servers);
+		}
+	}
+
 	/**
-	 * create a Jest Client Factory using url in form http://localhost:9200
-	 * @param elasticSearchURL
+	 * Create a RestClientFactory.
+	 * 
+	 * @param elasticSearchURL Elasticsearch URL, either a single URL or
+	 *   multiple URLs that are comma-separated without spaces
+	 * @param esusername Optional HTTP username
+	 * @param espassword Optional HTTP password
 	 */
 	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ){
-		
-	
-		HttpClientConfig clientConfig = new HttpClientConfig.Builder(
-				elasticSearchURL).multiThreaded(true)
+
+		// If multiple URLs are specified in a comma-separated string, split them up
+		config = new HttpClientConfig.Builder(Arrays.asList(elasticSearchURL.split(",")))
+				.multiThreaded(true)
 				.defaultCredentials(esusername, espassword)
 				.build();
-		
+
 		factory = new JestClientFactory();
-		
-		factory.setHttpClientConfig(clientConfig);
-		
+
+		factory.setHttpClientConfig(config);
+
 	}
-	
+
+	public int getRetries() {
+		return m_retries.get();
+	}
+
+	/**
+	 * Set the number of times the REST operation will be retried if
+	 * an exception is thrown during the operation.
+	 * 
+	 * @param retries Number of retries.
+	 */
+	public void setRetries(int retries) {
+		m_retries.set(retries);
+	}
+
+	public int getSocketTimeout() {
+		return m_socketTimeout.get();
+	}
+
+	/**
+	 * Set the socket timeout (SO_TIMEOUT) for the REST connections. This is the
+	 * maximum period of inactivity while waiting for incoming data.
+	 * 
+	 * A default value of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T,K>}.
+	 * 
+	 * @param timeout Timeout in milliseconds.
+	 */
+	public void setSocketTimeout(int timeout) {
+		m_socketTimeout.set(timeout);
+		config = new HttpClientConfig.Builder(config).readTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
+	}
+
+	public int getTimeout() {
+		return m_timeout.get();
+	}
+
+	/**
+	 * Set the connection timeout for the REST connections. A default value 
+	 * of 3000 is specified in {@link io.searchbox.client.config.ClientConfig.AbstractBuilder<T,K>}.
+	 * 
+	 * This is also used as the minimum interval between successive retries
+	 * if the connection is refused in a shorter amount of time.
+	 * 
+	 * @param timeout Timeout in milliseconds.
+	 */
+	public void setTimeout(int timeout) {
+		m_timeout.set(timeout);
+		config = new HttpClientConfig.Builder(config).connTimeout(timeout).build();
+		factory.setHttpClientConfig(config);
+	}
+
 	public JestClient getJestClient(){
-		JestClient jestClient=factory.getObject();
-		return jestClient;
+		return new OnmsJestClient(factory.getObject(), getTimeout(), getRetries());
 	}
 
 }

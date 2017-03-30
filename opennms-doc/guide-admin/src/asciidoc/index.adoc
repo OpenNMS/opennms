@@ -283,6 +283,8 @@ include::text/plugin-manager/internal-plugins-repository.adoc[]
 include::text/plugins/introduction.adoc[]
 include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
+include::text/plugins/opennms-es-rest-mapping.adoc[]
+include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds

@@ -154,7 +154,7 @@
 
             &lt;p&gt;Alarm Suppressed until %parm[suppresseduntil]%&lt;p&gt;
 
-            &lt;p&gt;Alarm Suppressed by user %parm[alarmackuser]%&lt;p&gt;
+            &lt;p&gt;Alarm Suppressed by user %parm[suppresseduser]%&lt;p&gt;
 
             &lt;p&gt;New Alarm Values&lt;p&gt;
             &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
@@ -163,6 +163,24 @@
         <logmsg dest="logndisplay">
             &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt;
             Suppressed by user %parm[suppresseduser]% until %parm[suppresseduntil]%&lt;p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+        <operinstruct></operinstruct>
+    </event>
+
+    <event>
+        <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnSuppressed</uei>
+        <event-label>Alarm Change Notification Event : Alarm UnSuppressed</event-label>
+        <descr>
+
+        &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed&lt;p&gt;
+
+        &lt;p&gt;New Alarm Values&lt;p&gt;
+        &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+        </descr>
+        <logmsg dest="logndisplay">
+        &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed &lt;p&gt;
         </logmsg>
         <severity>Normal</severity>
         <operinstruct></operinstruct>
@@ -253,10 +271,10 @@
     </event>
 
     <!-- generic test events to generate test alarms for AlarmChangeNotifier -->
-    <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmRaise localhost  -i 127.0.0.1 -p 'testParam 1' -->
-    <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmClear localhost  -i 127.0.0.1 -p 'testParam 1' -->
+    <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise localhost  -i 127.0.0.1 -p 'testParam 1' -->
+    <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmClear localhost  -i 127.0.0.1 -p 'testParam 1' -->
     <event>
-        <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmRaise</uei>
+        <uei>uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise</uei>
         <event-label>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</event-label>
         <descr>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</descr>
         <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</logmsg>
@@ -266,14 +284,14 @@
     </event>
 
     <event>
-        <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmClear</uei>
+        <uei>uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmClear</uei>
         <event-label>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</event-label>
         <descr>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</descr>
         <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</logmsg>
         <severity>Cleared</severity>
         <operinstruct></operinstruct>
         <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%"
-                    clear-key="uei.opennms.org/plugin/AlarmChangeNotificationEvent/TestAlarm/genericAlarmRaise:%parm[testParam]%"
+                    clear-key="uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise:%parm[testParam]%"
                     alarm-type="2"
                     auto-clean="false"/>
     </event>
