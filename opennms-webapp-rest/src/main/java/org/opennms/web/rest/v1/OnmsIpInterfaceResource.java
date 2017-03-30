@@ -245,13 +245,9 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             if (node == null) {
                 throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             }
-            final OnmsIpInterface intf = node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
-            if (intf == null) {
-                throw getException(Status.CONFLICT, "Can't find interface with IP address {} for node {}.", ipAddress, nodeCriteria);
-            }
             LOG.debug("deleteIpInterface: deleting interface {} from node {}", ipAddress, nodeCriteria);
 
-            Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.REST", node.getId(), ipAddress, intf.getIfIndex(), -1L);
+            Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.REST", node.getId(), ipAddress, -1, -1L);
             sendEvent(e);
 
             return Response.noContent().build();
