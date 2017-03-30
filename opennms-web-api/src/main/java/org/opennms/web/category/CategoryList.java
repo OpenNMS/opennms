@@ -30,7 +30,6 @@ package org.opennms.web.category;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -65,7 +64,7 @@ public class CategoryList {
      * Display rules from viewsdisplay.xml. If null, then just show all known
      * categories under the header "Category". (See the getSections method.)
      */
-    protected final Section[] m_sections;
+    protected final List<Section> m_sections;
 
     protected final int m_disconnectTimeout;
 
@@ -82,7 +81,7 @@ public class CategoryList {
             throw new ServletException("failed to instantiate the category model: " + e, e);
         }
 
-        Section[] sections = new Section[0];
+        List<Section> sections = Collections.emptyList();
         int disconnectTimeout = 130000;
         try {
             ViewsDisplayFactory.init();
@@ -91,7 +90,7 @@ public class CategoryList {
             View view = viewsDisplayFactory.getDefaultView();
 
             if (view != null) {
-                sections = view.getSection();
+                sections = view.getSections();
                 disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
                 LOG.debug("found display rules from viewsdisplay.xml");
             } else {
@@ -123,7 +122,7 @@ public class CategoryList {
     private List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
         if (m_sections != null) {
             // Just return the display rules as a list.
-            return Arrays.asList(m_sections);
+            return m_sections;
         }
 
         List<Section> sectionList = null;
@@ -165,11 +164,8 @@ public class CategoryList {
         for (Section section : sectionList) {
             List<Category> categories = new LinkedList<Category>();
 
-            String[] categoryNames = section.getCategory();
-
-            for (int j = 0; j < categoryNames.length; j++) {
-                String categoryName = categoryNames[j];
-                Category category = (Category) categoryMap.get(categoryName);
+            for (final String categoryName : section.getCategories()) {
+                final Category category = (Category) categoryMap.get(categoryName);
 
                 if (category == null) {
                     categories.add(new Category(categoryName));
