@@ -35,5 +35,5 @@ public interface ReverseDnsProvisioningAdapterService {
     List<ReverseDnsRecord> get(Integer nodeid);
     
     void update(Integer nodeid, ReverseDnsRecord rdr);
-
+    
 }
