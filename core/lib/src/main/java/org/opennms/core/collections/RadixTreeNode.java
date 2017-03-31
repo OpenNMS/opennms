@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.collections;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 /**
- * This class provides utility methods for the Syslogd tests.
+ * This interface describes a node of a radix tree. The node has content
+ * and children that represent subsequently occurring content in the tree.
+ * 
+ * @author Seth
+ * 
+ * @param <T> The content type of each node
  */
-public abstract class SyslogdTestUtils {
-
-    public static void startSyslogdGracefully(Syslogd syslogd) {
-        syslogd.start();
-
-        /*
-         * We MUST sleep for a small period after starting Syslogd
-         * so that the SyslogListener thread has time to start and
-         * bind to the port. Otherwise, we will get test errors for
-         * missing anticipated events, etc.
-         */
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
-    }
-
-    public static ByteBuffer toByteBuffer(String string) {
-        return toByteBuffer(string, StandardCharsets.US_ASCII);
-    }
-
-    public static ByteBuffer toByteBuffer(String string, Charset charset) {
-        return ByteBuffer.wrap(string.getBytes(charset));
-    }
+public interface RadixTreeNode<T> {
+	T getContent();
+	void setContent(T newContent);
+	void addChildren(T[] chain);
+	Set<RadixTreeNode<T>> getChildren();
+	void setChildren(Set<RadixTreeNode<T>> newChildren);
+	int size();
+	String toStringWithPrefix(String prefix);
 }

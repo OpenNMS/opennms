@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.model.events;
 
-import static java.util.Calendar.YEAR;
-
 import java.net.InetAddress;
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
+import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -66,9 +65,7 @@ public class EventBuilder {
 
     private Event m_event;
 
-    private Calendar.Builder calendarBuilder = null;
-
-    private boolean hasCalendarBuilderYear = false;
+    private ZonedDateTimeBuilder zonedDateTimeBuilder = null;
 
     /**
      * <p>Constructor for EventBuilder.</p>
@@ -115,31 +112,24 @@ public class EventBuilder {
         setTime(now);
     }
 
+    public Date currentEventTime() {
+        if (m_event.getTime() == null && zonedDateTimeBuilder != null) {
+            ZonedDateTime time = zonedDateTimeBuilder.build();
+            return Date.from(time.toInstant());
+        } else {
+            return m_event.getTime();
+        }
+    }
+
     /**
      * <p>getEvent</p>
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event getEvent() {
-        if (m_event.getTime() == null && calendarBuilder != null) {
-            Calendar calendar = calendarBuilder.build();
-
-            // TODO: If some Calendar.Builder fields have not been set,
-            // intelligently set them so that we generate a observed 
-            // timestamp that is less than or slightly greater than 
-            // System.currentTimeMillis() (due to clock skew). For instance,
-            // around midnight on Dec 31, 2017, we do not want to generate
-            // timestamps of Dec 31, 2018 at the instant that:
-            // 
-            // Calendar.getInstance().get(YEAR)
-            // 
-            // starts returning 2018.
-            //
-            if (!hasCalendarBuilderYear) {
-                calendar.set(YEAR, Calendar.getInstance().get(YEAR));
-            }
-
-            m_event.setTime(calendar.getTime());
+        if (m_event.getTime() == null && zonedDateTimeBuilder != null) {
+            ZonedDateTime time = zonedDateTimeBuilder.build();
+            m_event.setTime(Date.from(time.toInstant()));
         }
 
         if (m_event.getCreationTime() == null) {
@@ -183,52 +173,53 @@ public class EventBuilder {
        return this;
     }
 
-    protected Calendar.Builder getCalendarBuilder() {
-        if (calendarBuilder == null) {
-            calendarBuilder = new Calendar.Builder();
+    protected ZonedDateTimeBuilder getZonedDateTimeBuilder() {
+        if (zonedDateTimeBuilder == null) {
+            zonedDateTimeBuilder = new ZonedDateTimeBuilder();
         }
-        return calendarBuilder;
+        return zonedDateTimeBuilder;
     }
 
     public EventBuilder setYear(final int value) {
-        getCalendarBuilder().set(Calendar.YEAR, value);
-        hasCalendarBuilderYear = true;
+        getZonedDateTimeBuilder().setYear(value);
         return this;
     }
 
     public EventBuilder setMonth(final int value) {
-        // Subtract 1 since Calendar months are zero-based
-        getCalendarBuilder().set(Calendar.MONTH, value - 1);
+        // Note that java.time.Month values are 1-based
+        // unlike java.util.Calendar.MONTH values which
+        // are zero-based
+        getZonedDateTimeBuilder().setMonth(value);
         return this;
     }
 
     public EventBuilder setDayOfMonth(final int value) {
-        getCalendarBuilder().set(Calendar.DAY_OF_MONTH, value);
+        getZonedDateTimeBuilder().setDayOfMonth(value);
         return this;
     }
 
     public EventBuilder setHourOfDay(final int value) {
-        getCalendarBuilder().set(Calendar.HOUR_OF_DAY, value);
+        getZonedDateTimeBuilder().setHourOfDay(value);
         return this;
     }
 
     public EventBuilder setMinute(final int value) {
-        getCalendarBuilder().set(Calendar.MINUTE, value);
+        getZonedDateTimeBuilder().setMinute(value);
         return this;
     }
 
     public EventBuilder setSecond(final int value) {
-        getCalendarBuilder().set(Calendar.SECOND, value);
+        getZonedDateTimeBuilder().setSecond(value);
         return this;
     }
 
     public EventBuilder setMillisecond(final int value) {
-        getCalendarBuilder().set(Calendar.MILLISECOND, value);
+        getZonedDateTimeBuilder().setNanosecond(value * 1000);
         return this;
     }
 
-    public EventBuilder setTimeZone(final TimeZone value) {
-        getCalendarBuilder().setTimeZone(value);
+    public EventBuilder setZoneId(final ZoneId value) {
+        getZonedDateTimeBuilder().setZoneId(value);
         return this;
     }
 

@@ -311,7 +311,7 @@ public class SyslogdLoadIT implements InitializingBean {
         InetAddress address = InetAddress.getLocalHost();
 
         // handle an invalid packet
-        byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
+        byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - \uFEFFfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
         SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
         m_syslogSinkConsumer.handleMessage(messageLog);
