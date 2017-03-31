@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,10 +33,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -83,6 +85,9 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(CollectionStatus.UNKNOWN);
 
+        // Create a map of parameters from the service to use in URLs, etc.
+        Map<String, String> params = filterParameters(parameters);
+
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         DateTime startTime = new DateTime();
         Sftp3gppUrlConnection connection = null;
@@ -93,8 +98,8 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                 if (!source.getUrl().startsWith(Sftp3gppUrlHandler.PROTOCOL)) {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
-                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
+                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep(), params);
+                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep(), params);
                 URL url = UrlFactory.getUrl(urlStr, request);
                 String lastFile = Sftp3gppUtils.getLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath());
                 connection = (Sftp3gppUrlConnection) url.openConnection();
