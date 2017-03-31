@@ -1,4 +1,3 @@
-package org.opennms.netmgt.provision;
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -27,6 +26,7 @@ package org.opennms.netmgt.provision;
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.provision;
 
 import org.junit.Before;
 import org.junit.Test;
