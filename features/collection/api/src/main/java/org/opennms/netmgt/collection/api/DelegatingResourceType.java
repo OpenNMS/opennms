@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.xml.collector;
+package org.opennms.netmgt.collection.api;
 
-import org.opennms.netmgt.collection.support.MultiResourceCollectionSet;
+import java.util.Objects;
 
-/**
- * The Class XmlCollectionSet.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- */
-public class XmlCollectionSet extends MultiResourceCollectionSet<XmlCollectionResource> {
+public class DelegatingResourceType implements ResourceType {
+
+    private final ResourceType delegate;
+
+    public DelegatingResourceType(ResourceType delegate) {
+        this.delegate = Objects.requireNonNull(delegate);
+    }
+
+    @Override
+    public String getName() {
+        return delegate.getName();
+    }
+
+    @Override
+    public String getLabel() {
+        return delegate.getLabel();
+    }
+
+    @Override
+    public String getResourceLabel() {
+        return delegate.getResourceLabel();
+    }
+
+    @Override
+    public StrategyDefinition getStorageStrategy() {
+        return delegate.getStorageStrategy();
+    }
+
+    @Override
+    public StrategyDefinition getPersistenceSelectorStrategy() {
+        return delegate.getPersistenceSelectorStrategy();
+    }
+
 }

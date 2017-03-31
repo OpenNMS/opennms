@@ -31,23 +31,21 @@ package org.opennms.protocols.xml.vtdxml;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
-import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.xml.collector.Sftp3gppUtils;
 import org.opennms.protocols.xml.collector.UrlFactory;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
@@ -73,15 +71,12 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppVTDXmlCollectionHandler.class);
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
-     */
     @Override
-    public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
+    public CollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
+        String status = "finished";
+
         // Create a new collection set.
-        XmlCollectionSet collectionSet = new XmlCollectionSet();
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(CollectionStatus.UNKNOWN);
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
 
         // TODO We could be careful when handling exceptions because parsing exceptions will be treated different from connection or retrieval exceptions
         DateTime startTime = new DateTime();
@@ -93,16 +88,16 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                 if (!source.getUrl().startsWith(Sftp3gppUrlHandler.PROTOCOL)) {
                     throw new CollectionException("The 3GPP SFTP Collection Handler can only use the protocol " + Sftp3gppUrlHandler.PROTOCOL);
                 }
-                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
-                URL url = UrlFactory.getUrl(urlStr, request);
+                final String urlStr = source.getUrl();
+                final Request request = source.getRequest();
+                URL url = UrlFactory.getUrl(source.getUrl(), source.getRequest());
                 String lastFile = Sftp3gppUtils.getLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath());
                 connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
                     VTDNav doc = getVTDXmlDocument(urlStr, request);
-                    fillCollectionSet(agent, collectionSet, source, doc);
+                    fillCollectionSet(agent, builder, source, doc);
                     Sftp3gppUtils.setLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath(), lastFile);
                     Sftp3gppUtils.deleteFile(connection, lastFile);
                 } else {
@@ -116,7 +111,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                             InputStream is = connection.getFile(fileName);
                             try {
                                 VTDNav doc = getVTDXmlDocument(is, request);
-                                fillCollectionSet(agent, collectionSet, source, doc);
+                                fillCollectionSet(agent, builder, source, doc);
                             } finally {
                                 IOUtils.closeQuietly(is);
                             }
@@ -130,33 +125,25 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                     }
                 }
             }
-            collectionSet.setStatus(CollectionStatus.SUCCEEDED);
-            return collectionSet;
+            return builder.build();
         } catch (Exception e) {
-            collectionSet.setStatus(CollectionStatus.FAILED);
+            status = "failed";
             throw new CollectionException(e.getMessage(), e);
         } finally {
-            String status = CollectionStatus.SUCCEEDED.equals(collectionSet.getStatus()) ? "finished" : "failed";
             DateTime endTime = new DateTime();
             LOG.debug("collect: {} collection {}: duration: {} ms", status, collection.getName(), endTime.getMillis()-startTime.getMillis());
             UrlFactory.disconnect(connection);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
-     */
     @Override
-    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, CollectionSetBuilder builder, XmlSource source) throws Exception {
         // This handler has a custom implementation of the collect method, so there is no need to do something special here.
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
     @Override
-    protected void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
-        Sftp3gppUtils.processXmlResource(resource, attribGroupType);
+    protected void processXmlResource(CollectionSetBuilder builder, Resource resource, String resourceTypeName, String group) {
+        Sftp3gppUtils.processXmlResource(builder, resource, resourceTypeName, group);
     }
 
 }

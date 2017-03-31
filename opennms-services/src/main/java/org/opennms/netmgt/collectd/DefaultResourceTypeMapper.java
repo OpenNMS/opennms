@@ -30,7 +30,7 @@ package org.opennms.netmgt.collectd;
 
 import javax.annotation.PostConstruct;
 
-import org.opennms.netmgt.collection.adapters.ResourceTypeMapper;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.springframework.beans.factory.annotation.Autowired;
 

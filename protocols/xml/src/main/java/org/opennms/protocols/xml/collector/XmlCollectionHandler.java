@@ -32,7 +32,10 @@ import java.util.Map;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 
 /**
@@ -51,7 +54,7 @@ public interface XmlCollectionHandler  {
      * @return the XML collection set
      * @throws CollectionException the collection exception
      */
-    public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException;
+    public CollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException;
 
     /**
      * Sets the RRD repository.
@@ -66,5 +69,9 @@ public interface XmlCollectionHandler  {
      * @param serviceName the new service name
      */
     public void setServiceName(String serviceName);
+
+    public String parseUrl(final NodeDao nodeDao, final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException;
+    
+    public Request parseRequest(final NodeDao nodeDao, final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException;
 
 }

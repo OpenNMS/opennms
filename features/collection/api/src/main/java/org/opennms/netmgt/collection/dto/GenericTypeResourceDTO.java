@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.collection.adapters.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ResourceType;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 
@@ -52,6 +52,9 @@ public class GenericTypeResourceDTO {
     @XmlAttribute(name = "name")
     private String name;
 
+    @XmlAttribute(name = "fallback")
+    private String fallback;
+
     @XmlAttribute(name = "instance")
     private String instance;
 
@@ -63,19 +66,20 @@ public class GenericTypeResourceDTO {
     public GenericTypeResourceDTO(DeferredGenericTypeResource resource) {
         parent = new NodeLevelResourceDTO(resource.getParent());
         name = resource.getTypeName();
+        fallback = resource.getFallbackTypeName();
         instance = resource.getInstance();
         timestamp = resource.getTimestamp();
     }
 
     @Override
     public String toString() {
-        return String.format("GenericTypeResourceDTO[parent=%s, name=%s, instance=%s]",
-                parent, name, instance);
+        return String.format("GenericTypeResourceDTO[parent=%s, name=%s, fallback=%s, instance=%s]",
+                parent, name, fallback, instance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parent, name, instance, timestamp);
+        return Objects.hash(parent, name, fallback, instance, timestamp);
     }
 
     @Override
@@ -90,12 +94,16 @@ public class GenericTypeResourceDTO {
         GenericTypeResourceDTO other = (GenericTypeResourceDTO) obj;
         return Objects.equals(this.parent, other.parent)
                 && Objects.equals(this.name, other.name)
+                && Objects.equals(this.fallback, other.fallback)
                 && Objects.equals(this.instance, other.instance)
                 && Objects.equals(this.timestamp, other.timestamp);
     }
 
     public GenericTypeResource toResource() {
-        final ResourceType resourceType = ResourceTypeMapper.getInstance().getResourceType(name);
+        final ResourceType resourceType = ResourceTypeMapper.getInstance().getResourceTypeWithFallback(name, fallback);
+        if (resourceType == null) {
+            throw new IllegalArgumentException(String.format("No resource type found with name '%s'!", name));
+        }
         final GenericTypeResource resource = new GenericTypeResource(parent.toResource(), resourceType, instance);
         resource.setTimestamp(timestamp);
         return resource;

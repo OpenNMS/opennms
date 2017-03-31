@@ -28,12 +28,11 @@
 
 package org.opennms.core.collection.test;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.model.ResourcePath;
@@ -76,6 +75,12 @@ public class MockCollectionAgent implements CollectionAgent {
         this.nodeLabel = nodeLabel;
         this.foreignSource = foreignSource;
         this.foreignId = foreignId;
+        this.ipAddress = ipAddress;
+    }
+
+    public MockCollectionAgent(int nodeId, String nodeLabel, InetAddress ipAddress) {
+        this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
         this.ipAddress = ipAddress;
     }
 
@@ -182,16 +187,20 @@ public class MockCollectionAgent implements CollectionAgent {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.collection.api.CollectionAgent#getStorageDir()
+     * @see org.opennms.netmgt.collection.api.CollectionAgent#getStorageResourcePath()
      */
     @Override
     public ResourcePath getStorageResourcePath() {
-        return ResourcePath.get("fs" + File.separator + foreignSource + File.separator + foreignId);
+        if (foreignSource != null && foreignId != null) {
+            return ResourcePath.get("fs", foreignSource, foreignId);
+        } else {
+            return new ResourcePath(Integer.toString(nodeId));
+        }
     }
 
     /* (non-Javadoc)
-         * @see org.opennms.netmgt.collection.api.CollectionAgent#getSysObjectId()
-         */
+     * @see org.opennms.netmgt.collection.api.CollectionAgent#getSysObjectId()
+     */
     @Override
     public String getSysObjectId() {
         return null;

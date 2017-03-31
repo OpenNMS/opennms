@@ -33,9 +33,9 @@ import java.util.Objects;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.collection.adapters.DeferredGenericTypeResourceAdapter;
-import org.opennms.netmgt.collection.adapters.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ResourceType;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.model.ResourcePath;
 
 /**
@@ -53,11 +53,17 @@ public class DeferredGenericTypeResource extends AbstractResource {
 
     private final NodeLevelResource m_node;
     private final String m_resourceTypeName;
+    private final String m_fallbackResourceTypeName;
     private final String m_instance;
 
     public DeferredGenericTypeResource(NodeLevelResource node, String resourceTypeName, String instance) {
+        this(node, resourceTypeName, null, instance);
+    }
+
+    public DeferredGenericTypeResource(NodeLevelResource node, String resourceTypeName, String fallbackResourceTypeName, String instance) {
         m_node = Objects.requireNonNull(node, "node argument");
         m_resourceTypeName = Objects.requireNonNull(resourceTypeName, "resourceTypeName argument");
+        m_fallbackResourceTypeName = fallbackResourceTypeName;
         m_instance = GenericTypeResource.sanitizeInstance(Objects.requireNonNull(instance, "instance argument"));
     }
 
@@ -69,6 +75,10 @@ public class DeferredGenericTypeResource extends AbstractResource {
     @Override
     public String getTypeName() {
         return m_resourceTypeName;
+    }
+
+    public String getFallbackTypeName() {
+        return m_fallbackResourceTypeName;
     }
 
     @Override
@@ -83,7 +93,7 @@ public class DeferredGenericTypeResource extends AbstractResource {
 
     @Override
     public Resource resolve() {
-        final ResourceType resourceType = ResourceTypeMapper.getInstance().getResourceType(m_resourceTypeName);
+        final ResourceType resourceType = ResourceTypeMapper.getInstance().getResourceTypeWithFallback(m_resourceTypeName, m_fallbackResourceTypeName);
         if (resourceType == null) {
             throw new IllegalArgumentException(String.format("No resource type found with name '%s'!", m_resourceTypeName));
         }
@@ -94,13 +104,13 @@ public class DeferredGenericTypeResource extends AbstractResource {
 
     @Override
     public String toString() {
-        return String.format("DeferredGenericTypeResource[node=%s, instance=%s, resourceTypeName=%s]",
-                m_node, m_instance, m_resourceTypeName);
+        return String.format("DeferredGenericTypeResource[node=%s, instance=%s, resourceTypeName=%s, fallbackResourceTypeName=%s]",
+                m_node, m_instance, m_resourceTypeName, m_fallbackResourceTypeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_node, m_resourceTypeName, m_instance, getTimestamp());
+        return Objects.hash(m_node, m_resourceTypeName, m_fallbackResourceTypeName, m_instance, getTimestamp());
     }
 
     @Override
@@ -115,6 +125,7 @@ public class DeferredGenericTypeResource extends AbstractResource {
         DeferredGenericTypeResource other = (DeferredGenericTypeResource) obj;
         return Objects.equals(this.m_node, other.m_node)
                 && Objects.equals(this.m_resourceTypeName, other.m_resourceTypeName)
+                && Objects.equals(this.m_fallbackResourceTypeName, other.m_fallbackResourceTypeName)
                 && Objects.equals(this.m_instance, other.m_instance)
                 && Objects.equals(this.getTimestamp(), other.getTimestamp());
     }
