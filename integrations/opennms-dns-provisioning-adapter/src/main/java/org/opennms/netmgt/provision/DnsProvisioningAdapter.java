@@ -76,6 +76,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
+    private Integer m_level = 0;
     
     private static volatile ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
@@ -96,6 +97,12 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             }
         });
 
+        String levelString = System.getProperty("importer.adapter.dns.level");
+        if (levelString != null) {
+        	Integer level = Integer.getInteger(levelString);
+        	if (level != null && level.intValue() > 0)
+        		m_level = level;
+        }
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
             LOG.info("DNS property found: {}", dnsServer);
@@ -124,7 +131,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
         
         for (OnmsNode onmsNode : nodes) {
-            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
+            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode,m_level));
         }
         
     }
@@ -213,7 +220,11 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         LOG.debug("doUpdate: operation: {}", op.getType().name());
         try {
             node = m_nodeDao.get(op.getNodeId());
-            DnsRecord record = new DnsRecord(node);
+            if (node == null) {
+            	doDelete(op);
+            	return;
+            }
+            DnsRecord record = new DnsRecord(node,m_level);
             LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getIp().getHostAddress(), record.getHostname(), record.getZone());
             DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
 
