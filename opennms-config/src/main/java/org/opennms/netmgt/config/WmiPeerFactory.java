@@ -465,7 +465,7 @@ public class WmiPeerFactory {
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(Definition def) {
-        return (def.getPassword() == null ? (m_config.getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
+        return (def.getUsername() == null ? (m_config.getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
     }
 
     /**
