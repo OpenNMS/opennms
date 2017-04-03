@@ -110,20 +110,27 @@ public class GeolocationProvisioningAdapter extends SimplerQueuedProvisioningAda
 
         // Update geolocation information if required
         final OnmsNode node = getNode(nodeId);
-        final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
+        updateGeolocation(getGeolocationResolver(), node);
+    }
+
+    protected void updateGeolocation(GeolocationResolver geolocationResolver, OnmsNode node) {
+        Objects.requireNonNull(geolocationResolver);
+        Objects.requireNonNull(node);
 
         // Only resolve long/lat if not already set and an address is set
-        if (geolocation.getLatitude() == null
+        final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
+        if (geolocation != null
+                && geolocation.getLatitude() == null
                 && geolocation.getLatitude() == null
                 && !Strings.isNullOrEmpty(geolocation.asAddressString())) {
 
-            final Coordinates coordinates = getGeolocationResolver().resolve(geolocation.asAddressString());
+            final Coordinates coordinates = geolocationResolver.resolve(geolocation.asAddressString());
             if (coordinates != null) {
                 geolocation.setLongitude(coordinates.getLongitude());
                 geolocation.setLatitude(coordinates.getLatitude());
                 nodeDao.saveOrUpdate(node);
             } else {
-                LOG.warn("Could not resolve address string '{}' for node with id {}", geolocation.asAddressString(), nodeId);
+                LOG.warn("Could not resolve address string '{}' for node with id {}", geolocation.asAddressString(), node.getId());
             }
         }
     }
