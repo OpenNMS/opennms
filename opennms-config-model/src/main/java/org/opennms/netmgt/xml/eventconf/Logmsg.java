@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,14 +29,18 @@
 package org.opennms.netmgt.xml.eventconf;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.NullStringAdapter;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The event logmsg with the destination attribute defining
@@ -50,89 +54,62 @@ import org.opennms.core.xml.ValidateUsing;
  * will be sent).
  */
 @XmlRootElement(name="logmsg")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 public class Logmsg implements Serializable {
-	private static final long serialVersionUID = 385279987964113028L;
+    private static final long serialVersionUID = 2L;
 
-	@XmlValue
-    private String m_content = "";
+    @XmlValue
+    @XmlJavaTypeAdapter(NullStringAdapter.class)
+    private String m_content;
 
-	@XmlAttribute(name="notify", required=false)
+    @XmlAttribute(name="notify", required=false)
     private Boolean m_notify;
 
-	// @Pattern(regexp="(logndisplay|displayonly|logonly|suppress|donotpersist|discardtraps)")
-	@XmlAttribute(name="dest", required=false)
-    private String m_dest;
-
-    public void deleteNotify() {
-        m_notify = null;
-    }
+    @XmlAttribute(name="dest", required=false)
+    private LogDestType m_dest;
 
     public String getContent() {
         return m_content;
     }
 
-    public String getDest() {
-        return m_dest == null ? "logndisplay" : m_dest; // Default is "logndisplay" according to XSD
+    public void setContent(final String content) {
+        m_content = ConfigUtils.normalizeAndInternString(content);
     }
 
     public Boolean getNotify() {
         return m_notify == null ? Boolean.TRUE : m_notify; // Default is true according to XSD
     }
 
-    public boolean hasNotify() {
-        return m_notify != null;
-    }
-
-    public boolean isNotify() {
-        return getNotify();
-    }
-
-    public void setContent(final String content) {
-        m_content = content.intern();
-    }
-
-    public void setDest(final String dest) {
-        m_dest = dest.intern();
-    }
-
     public void setNotify(final boolean notify) {
         m_notify = notify;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_content == null) ? 0 : m_content.hashCode());
-		result = prime * result + ((m_dest == null) ? 0 : m_dest.hashCode());
-		result = prime * result + ((m_notify == null) ? 0 : m_notify.hashCode());
-		return result;
-	}
+    public LogDestType getDest() {
+        return m_dest == null ? LogDestType.LOGNDISPLAY : m_dest;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Logmsg)) return false;
-		final Logmsg other = (Logmsg) obj;
-		if (m_content == null) {
-			if (other.m_content != null) return false;
-		} else if (!m_content.equals(other.m_content)) {
-			return false;
-		}
-		if (m_dest == null) {
-			if (other.m_dest != null) return false;
-		} else if (!m_dest.equals(other.m_dest)) {
-			return false;
-		}
-		if (m_notify == null) {
-			if (other.m_notify != null) return false;
-		} else if (!m_notify.equals(other.m_notify)) {
-			return false;
-		}
-		return true;
-	}
+    public void setDest(final LogDestType dest) {
+        m_dest = dest;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_content, m_notify, m_dest);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Logmsg) {
+            final Logmsg that = (Logmsg) obj;
+            return Objects.equals(this.m_content, that.m_content) &&
+                    Objects.equals(this.m_notify, that.m_notify) &&
+                    Objects.equals(this.m_dest, that.m_dest);
+        }
+        return false;
+    }
 
 }

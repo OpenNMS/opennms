@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,33 +28,20 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collection;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+public class PathTypeAdapter extends XmlAdapter<String,PathType> {
 
-public class ForwardTest extends XmlTestNoCastor<Forward> {
+    @Override
+    public PathType unmarshal(final String v) throws Exception {
+        if (v == null) return null;
+        return PathType.fromString(v);
+    }
 
-	public ForwardTest(final Forward sampleObject, final String sampleXml, final String schemaFile) {
-		super(sampleObject, sampleXml, schemaFile);
-	}
-
-	@Parameters
-	public static Collection<Object[]> data() throws ParseException {
-		Forward forward0 = new Forward();
-		Forward forward1 = new Forward();
-		forward1.setMechanism(MechanismType.SNMPUDP);
-		forward1.setState(StateType.ON);
-		return Arrays.asList(new Object[][] {
-				{forward0,
-				"<forward/>",
-				"target/classes/xsds/eventconf.xsd" },
-				{forward1,
-				"<forward state=\"on\" mechanism=\"snmpudp\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
-		});
-	}
+    @Override
+    public String marshal(final PathType v) throws Exception {
+        if (v == null) return null;
+        return v.toString();
+    }
 
 }

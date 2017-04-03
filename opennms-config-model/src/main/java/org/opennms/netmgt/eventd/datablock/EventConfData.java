@@ -184,7 +184,7 @@ public class EventConfData extends Object {
         updateUeiToKeyListMap(eventKey, event);
 
         // if event has snmp information, add to the snmp map
-        org.opennms.netmgt.xml.eventconf.Snmp eventSnmp = event.getSnmp();
+        final org.opennms.netmgt.xml.eventconf.Snmp eventSnmp = event.getSnmp();
         if (eventSnmp != null) {
             String eventEID = eventSnmp.getId();
             if (eventEID != null) {

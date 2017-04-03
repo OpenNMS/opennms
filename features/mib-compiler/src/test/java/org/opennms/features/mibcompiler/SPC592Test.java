@@ -138,18 +138,18 @@ public class SPC592Test {
             Assert.assertTrue(parser.getMissingDependencies().isEmpty());
         }
         Events isisEvents = parser.getEvents("uei.opennms.org/issues/SPC592/");
-        assertEquals(isisEvents.getEventCollection().size(), 18);
-        assertEquals("uei.opennms.org/issues/SPC592/isisAdjacencyChange", isisEvents.getEvent(16).getUei());
+        assertEquals(isisEvents.getEvents().size(), 18);
+        assertEquals("uei.opennms.org/issues/SPC592/isisAdjacencyChange", isisEvents.getEvents().get(16).getUei());
         
         boolean foundId = false;
-        for (Maskelement me : isisEvents.getEvent(16).getMask().getMaskelementCollection()) {
+        for (final Maskelement me : isisEvents.getEvents().get(16).getMask().getMaskelements()) {
             if ("id".equals(me.getMename())) {
                 foundId = true;
             }
             if (foundId) {
-                assertEquals("Only one me-value should be present for trap OID", 1, me.getMevalueCount());
-                assertFalse("The 'id' mask-element value for the isisAdjacencyChange event must not end in .0", me.getMevalue()[0].endsWith(".0"));
-                assertEquals("The 'id' mask-element value for the isisAdjacencyChange event is incorrect", me.getMevalue()[0], ".1.3.6.1.2.1.138");
+                assertEquals("Only one me-value should be present for trap OID", 1, me.getMevalues().size());
+                assertFalse("The 'id' mask-element value for the isisAdjacencyChange event must not end in .0", me.getMevalues().get(0).endsWith(".0"));
+                assertEquals("The 'id' mask-element value for the isisAdjacencyChange event is incorrect", me.getMevalues().get(0), ".1.3.6.1.2.1.138");
                 break;
             }
         }
@@ -158,13 +158,13 @@ public class SPC592Test {
         }
         
         boolean foundSpecific = false;
-        for (Maskelement me : isisEvents.getEvent(16).getMask().getMaskelementCollection()) {
+        for (final Maskelement me : isisEvents.getEvents().get(16).getMask().getMaskelements()) {
             if ("specific".equals(me.getMename())) {
                 foundSpecific = true;
             }
             if (foundSpecific) {
-                assertEquals("Only one me-value should be present for the specific-type", 1, me.getMevalueCount());
-                assertEquals("The 'specific' mask-element value for the isisAdjacencyChange event must be 17", me.getMevalue()[0], "17");
+                assertEquals("Only one me-value should be present for the specific-type", 1, me.getMevalues().size());
+                assertEquals("The 'specific' mask-element value for the isisAdjacencyChange event must be 17", me.getMevalues().get(0), "17");
             }
         }
         if (! foundSpecific) {

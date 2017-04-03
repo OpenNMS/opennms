@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.xml.eventconf;
+package org.opennms.core.xml;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collection;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+public class NullStringAdapter extends XmlAdapter<String,String> {
 
-public class ForwardTest extends XmlTestNoCastor<Forward> {
+    @Override
+    public String unmarshal(final String v) throws Exception {
+        return nullify(v);
+    }
 
-	public ForwardTest(final Forward sampleObject, final String sampleXml, final String schemaFile) {
-		super(sampleObject, sampleXml, schemaFile);
-	}
+    @Override
+    public String marshal(final String v) throws Exception {
+        return nullify(v);
+    }
 
-	@Parameters
-	public static Collection<Object[]> data() throws ParseException {
-		Forward forward0 = new Forward();
-		Forward forward1 = new Forward();
-		forward1.setMechanism(MechanismType.SNMPUDP);
-		forward1.setState(StateType.ON);
-		return Arrays.asList(new Object[][] {
-				{forward0,
-				"<forward/>",
-				"target/classes/xsds/eventconf.xsd" },
-				{forward1,
-				"<forward state=\"on\" mechanism=\"snmpudp\"/>",
-				"target/classes/xsds/eventconf.xsd" } 
-		});
-	}
+    private String nullify(final String v) {
+        if (v != null && v.length() == 0) {
+            return null;
+        }
+        return v;
+    }
 
 }

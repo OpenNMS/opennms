@@ -45,7 +45,7 @@ public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
 	public static Collection<Object[]> data() throws ParseException {
 		Logmsg logmsg0 = new Logmsg();
 		Logmsg logmsg1 = new Logmsg();
-		logmsg1.setDest("logndisplay");
+		logmsg1.setDest(LogDestType.LOGNDISPLAY);
 		logmsg1.setNotify(false);
 		logmsg1.setContent("This is a test");
 		return Arrays.asList(new Object[][] {

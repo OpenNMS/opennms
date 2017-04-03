@@ -736,16 +736,16 @@ public final class BroadcastEventProcessor implements EventListener {
         if (event == null) {
             return null;
         }
-        if (event.getVarbindsdecodeCollection().isEmpty()) {
+        if (event.getVarbindsdecodes().isEmpty()) {
             return null;
         }
         Map<String, Map<String, String>> decodeMap = new HashMap<String, Map<String, String>>();
-        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodes()) {
             String paramId = vb.getParmid();
             if (decodeMap.get(paramId) == null) {
                 decodeMap.put(paramId, new HashMap<String,String>());
             }
-            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodeCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodes()) {
                 decodeMap.get(paramId).put(d.getVarbindvalue(), d.getVarbinddecodedstring());
             }
         }

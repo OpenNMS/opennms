@@ -199,11 +199,11 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             LOG.warn("Could not find a unique event definition for uei '{}'.", uei);
             return;
         }
-        AlarmData alarmData = eventsForUei.get(0).getAlarmData();
-        if (alarmData == null) {
+        if (eventsForUei.get(0).getAlarmData() == null) {
             LOG.warn("Could not find alarm data for event with uei '{}'.", uei);
             return;
         }
+        AlarmData alarmData = eventsForUei.get(0).getAlarmData();
         if (!expectedReductionKey.equals(alarmData.getReductionKey())) {
             LOG.warn("Expected reduction key '{}' for uei '{}' but found '{}'.", expectedReductionKey, uei, alarmData.getReductionKey());
         }

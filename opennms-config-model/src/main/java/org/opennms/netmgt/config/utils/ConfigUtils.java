@@ -62,6 +62,12 @@ public abstract class ConfigUtils {
         return normalizeString(value).trim();
     }
 
+    public static String normalizeAndInternString(final String value) {
+        final String ret = normalizeString(value);
+        if (ret == null) return null;
+        return ret.intern();
+    }
+
     public static <T extends Number> T assertMinimumInclusive(final T value, final long minimum, final String name) {
         if (value != null && value.longValue() < minimum) {
             throw new IllegalArgumentException("'" + name + "' must be at least " + minimum);

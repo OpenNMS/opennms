@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.api.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -650,7 +651,7 @@ public class ThresholdController extends AbstractController implements Initializ
             event.setLogmsg(logmsg);
             if (source == null) {
                 event.setDescr("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
-                logmsg.setDest("logndisplay");
+                logmsg.setDest(LogDestType.LOGNDISPLAY);
                 logmsg.setContent("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
                 event.setLogmsg(logmsg);
                 event.setSeverity("Warning");
@@ -661,10 +662,11 @@ public class ThresholdController extends AbstractController implements Initializ
                 logmsg.setDest(source.getLogmsg().getDest());
                 logmsg.setContent(source.getLogmsg().getContent());
                 if (source.getAlarmData() != null) {
-                    AlarmData alarmData = new AlarmData();
-                    alarmData.setAlarmType(source.getAlarmData().getAlarmType());
-                    alarmData.setAutoClean(source.getAlarmData().getAutoClean());
-                    alarmData.setReductionKey(source.getAlarmData().getReductionKey());
+                    final AlarmData alarmData = new AlarmData();
+                    final AlarmData sourceAlarmData = source.getAlarmData();
+                    alarmData.setAlarmType(sourceAlarmData.getAlarmType());
+                    alarmData.setAutoClean(sourceAlarmData.getAutoClean());
+                    alarmData.setReductionKey(sourceAlarmData.getReductionKey());
                     if (!isTrigger && clearKey != null) {
                         alarmData.setClearKey(clearKey);
                     }

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,19 +149,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     private org.opennms.netmgt.xml.event.Mask transform(org.opennms.netmgt.xml.eventconf.Mask src) {
         org.opennms.netmgt.xml.event.Mask dest = new org.opennms.netmgt.xml.event.Mask();
 
-        Enumeration<Maskelement> en = src.enumerateMaskelement();
-        while (en.hasMoreElements()) {
-            org.opennms.netmgt.xml.eventconf.Maskelement confme = en.nextElement();
-
+        for (final Maskelement confme : src.getMaskelements()) {
             // create new mask element
             org.opennms.netmgt.xml.event.Maskelement me = new org.opennms.netmgt.xml.event.Maskelement();
             // set name
             me.setMename(confme.getMename());
-            // set values
-            String[] confmevalues = confme.getMevalue();
-            for (String confmevalue : confmevalues) {
-                me.addMevalue(confmevalue);
-            }
+            me.setMevalueCollection(confme.getMevalues());
 
             dest.addMaskelement(me);
         }
@@ -189,13 +181,8 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         dest.setIdtext(src.getIdtext());
         dest.setVersion(src.getVersion());
         dest.setCommunity(src.getCommunity());
-
-        if (src.hasGeneric()) {
-            dest.setGeneric(src.getGeneric());
-        }
-        if (src.hasSpecific()) {
-            dest.setSpecific(src.getSpecific());
-        }
+        dest.setGeneric(src.getGeneric());
+        dest.setSpecific(src.getSpecific());
 
         return dest;
     }
@@ -216,7 +203,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Logmsg dest = new org.opennms.netmgt.xml.event.Logmsg();
 
         dest.setContent(src.getContent());
-        dest.setDest(src.getDest());
+        dest.setDest(src.getDest().toString());
         dest.setNotify(src.getNotify());
 
         return dest;
@@ -237,12 +224,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     private org.opennms.netmgt.xml.event.Correlation transform(org.opennms.netmgt.xml.eventconf.Correlation src) {
         org.opennms.netmgt.xml.event.Correlation dest = new org.opennms.netmgt.xml.event.Correlation();
 
-        dest.setCuei(src.getCuei());
+        dest.setCuei(src.getCueis());
         dest.setCmin(src.getCmin());
         dest.setCmax(src.getCmax());
         dest.setCtime(src.getCtime());
-        dest.setState(src.getState());
-        dest.setPath(src.getPath());
+        dest.setState(src.getState().toString());
+        dest.setPath(src.getPath().toString());
 
         return dest;
     }
@@ -263,7 +250,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Autoaction dest = new org.opennms.netmgt.xml.event.Autoaction();
 
         dest.setContent(src.getContent());
-        dest.setState(src.getState());
+        dest.setState(src.getState().toString());
 
         return dest;
     }
@@ -284,7 +271,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Operaction dest = new org.opennms.netmgt.xml.event.Operaction();
 
         dest.setContent(src.getContent());
-        dest.setState(src.getState());
+        dest.setState(src.getState().toString());
         dest.setMenutext(src.getMenutext());
 
         return dest;
@@ -306,7 +293,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Autoacknowledge dest = new org.opennms.netmgt.xml.event.Autoacknowledge();
 
         dest.setContent(src.getContent());
-        dest.setState(src.getState());
+        dest.setState(src.getState().toString());
 
         return dest;
     }
@@ -327,7 +314,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Tticket dest = new org.opennms.netmgt.xml.event.Tticket();
 
         dest.setContent(src.getContent());
-        dest.setState(src.getState());
+        dest.setState(src.getState().toString());
 
         return dest;
     }
@@ -348,8 +335,8 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         org.opennms.netmgt.xml.event.Forward dest = new org.opennms.netmgt.xml.event.Forward();
 
         dest.setContent(src.getContent());
-        dest.setState(src.getState());
-        dest.setMechanism(src.getMechanism());
+        dest.setState(src.getState().toString());
+        dest.setMechanism(src.getMechanism().toString());
 
         return dest;
     }
@@ -646,12 +633,10 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             if (m_eventConfDao.isSecureTag("autoaction")) {
                 e.removeAllAutoaction();
             }
-            if (e.getAutoactionCount() == 0 && econf.getAutoactionCount() > 0) {
-                Enumeration<org.opennms.netmgt.xml.eventconf.Autoaction> eter = econf.enumerateAutoaction();
-                while (eter.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Autoaction src = eter.nextElement();
-                    e.addAutoaction(transform(src));
-                }
+            if (e.getAutoactionCount() == 0 && econf.getAutoactions().size() > 0) {
+                econf.getAutoactions().forEach(aa -> {
+                    e.addAutoaction(transform(aa));
+                });
             }
 
             // Convert the operator actions
@@ -659,12 +644,10 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             if (m_eventConfDao.isSecureTag("operaction")) {
                 e.removeAllOperaction();
             }
-            if (e.getOperactionCount() == 0 && econf.getOperactionCount() > 0) {
-                Enumeration<org.opennms.netmgt.xml.eventconf.Operaction> eter = econf.enumerateOperaction();
-                while (eter.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Operaction src = eter.nextElement();
-                    e.addOperaction(transform(src));
-                }
+            if (e.getOperactionCount() == 0 && econf.getOperactions().size() > 0) {
+                econf.getOperactions().forEach(oa -> {
+                    e.addOperaction(transform(oa));
+                });
             }
 
             // Convert the auto acknowledgment
@@ -681,8 +664,8 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             if (m_eventConfDao.isSecureTag("loggroup")) {
                 e.removeAllLoggroup();
             }
-            if (e.getLoggroupCount() == 0 && econf.getLoggroupCount() > 0) {
-                e.setLoggroup(econf.getLoggroup());
+            if (e.getLoggroupCount() == 0 && econf.getLoggroups().size() > 0) {
+                e.setLoggroup(econf.getLoggroups());
             }
 
             // Convert the trouble tickets.
@@ -699,12 +682,10 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             if (m_eventConfDao.isSecureTag("forward")) {
                 e.removeAllForward();
             }
-            if (e.getForwardCount() == 0 && econf.getForwardCount() > 0) {
-                Enumeration<org.opennms.netmgt.xml.eventconf.Forward> eter = econf.enumerateForward();
-                while (eter.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Forward src = eter.nextElement();
-                    e.addForward(transform(src));
-                }
+            if (e.getForwardCount() == 0 && econf.getForwards().size() > 0) {
+                econf.getForwards().forEach(fc -> {
+                    e.addForward(transform(fc));
+                });
             }
 
             // Convert the script entry
@@ -712,12 +693,10 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             if (m_eventConfDao.isSecureTag("script")) {
                 e.removeAllScript();
             }
-            if (e.getScriptCount() == 0 && econf.getScriptCount() > 0) {
-                Enumeration<org.opennms.netmgt.xml.eventconf.Script> eter = econf.enumerateScript();
-                while (eter.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Script src = eter.nextElement();
-                    e.addScript(transform(src));
-                }
+            if (e.getScriptCount() == 0 && econf.getScripts().size() > 0) {
+                econf.getScripts().forEach(sc -> {
+                    e.addScript(transform(sc));
+                });
             }
 
             // Copy the mouse over text
@@ -731,20 +710,21 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
             if (e.getAlarmData() == null && econf.getAlarmData() != null) {
                 AlarmData alarmData = new AlarmData();
-                alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
-                alarmData.setReductionKey(econf.getAlarmData().getReductionKey());
-                alarmData.setAutoClean(econf.getAlarmData().getAutoClean());
-                alarmData.setX733AlarmType(econf.getAlarmData().getX733AlarmType());
-                alarmData.setX733ProbableCause(econf.getAlarmData().getX733ProbableCause());
-                alarmData.setClearKey(econf.getAlarmData().getClearKey());
+                final org.opennms.netmgt.xml.eventconf.AlarmData econfAlarmData = econf.getAlarmData();
+                alarmData.setAlarmType(econfAlarmData.getAlarmType());
+                alarmData.setReductionKey(econfAlarmData.getReductionKey());
+                alarmData.setAutoClean(econfAlarmData.getAutoClean());
+                alarmData.setX733AlarmType(econfAlarmData.getX733AlarmType());
+                alarmData.setX733ProbableCause(econfAlarmData.getX733ProbableCause());
+                alarmData.setClearKey(econfAlarmData.getClearKey());
                 
-                List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econf.getAlarmData().getUpdateFieldList();
+                List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econfAlarmData.getUpdateFields();
                 if (updateFieldList.size() > 0) {
                     List<UpdateField> updateFields = new ArrayList<>(updateFieldList.size());
                     for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
                         UpdateField eventField = new UpdateField();
                         eventField.setFieldName(econfUpdateField.getFieldName());
-                        eventField.setUpdateOnReduction(econfUpdateField.isUpdateOnReduction());
+                        eventField.setUpdateOnReduction(econfUpdateField.getUpdateOnReduction());
                         updateFields.add(eventField);
                     }
                     alarmData.setUpdateField(updateFields);
@@ -753,11 +733,11 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 e.setAlarmData(alarmData);
             }
 
-            if (econf.getParameterCollection() != null && econf.getParameterCount() > 0) {
+            if (econf.getParameters() != null && econf.getParameters().size() > 0) {
                 if (e.getParmCollection() == null) {
-                    e.setParmCollection(new ArrayList<>(econf.getParameterCount()));
+                    e.setParmCollection(new ArrayList<>(econf.getParameters().size()));
                 }
-                for (Parameter p : econf.getParameterCollection()) {
+                for (Parameter p : econf.getParameters()) {
                     if (EventUtils.getParm(e, p.getName()) == null) {
                         Parm parm = new Parm();
                         parm.setParmName(p.getName());
@@ -765,7 +745,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                         v.setContent(p.getValue());
                         v.setType("string");
                         v.setEncoding("text");
-                        v.setExpand(p.isExpand());
+                        v.setExpand(p.getExpand());
                         parm.setValue(v);
                         e.addParm(parm);
                     } else {
@@ -776,12 +756,11 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         }
         
         Map<String, Map<String, String>> decode = new HashMap<String, Map<String,String>>();
-        if (econf != null && econf.getVarbindsdecode() != null) {
-           Varbindsdecode[] vardecodeArray = econf.getVarbindsdecode();
-           for (Varbindsdecode element : vardecodeArray) {
-               Decode[] decodeArray = element.getDecode();
+        if (econf != null && econf.getVarbindsdecodes().size() > 0) {
+           for (final Varbindsdecode element : econf.getVarbindsdecodes()) {
+               List<Decode> decodeArray = element.getDecodes();
                Map<String, String> valueMap = new HashMap<String, String>();
-               for (Decode element2 : decodeArray) {
+               for (final Decode element2 : decodeArray) {
                    valueMap.put(element2.getVarbindvalue(), element2.getVarbinddecodedstring());
                }
                decode.put(element.getParmid(), valueMap);
