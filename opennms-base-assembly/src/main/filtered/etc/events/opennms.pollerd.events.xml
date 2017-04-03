@@ -6,10 +6,10 @@
         <event-label>OpenNMS-defined node event: outageCreated</event-label>
         <descr>
             &lt;p&gt;A %service% outage was created on interface
-            %interface%.&lt;/p&gt;
+            %interface%. Reason code: %parm[eventReason]%.&lt;/p&gt;
         </descr>
         <logmsg dest='donotpersist'>
-            %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+            %service% outage identified on interface %interface%.
         </logmsg>
         <severity>Normal</severity>
     </event>
@@ -374,14 +374,15 @@
         <event-label>OpenNMS-defined node event: nodeDown</event-label>
         <descr>
             &lt;p&gt;All interfaces on node %parm[nodelabel]% are
-            down.&lt;/p&gt; &lt;p&gt;This event is generated when node
-            outage processing determines that all interfaces on the node
-            are down.&lt;/p&gt; &lt;p&gt;New outage records have been
-            created and service level availability calculations will be
-            impacted until this outage is resolved.&lt;/p&gt;
+            down. Reason code: %parm[eventReason]%. &lt;/p&gt; &lt;p&gt;
+            This event is generated when node outage processing determines
+            that all interfaces on the node are down.&lt;/p&gt; &lt;p&gt;
+            New outage records have been created and service level
+            availability calculations will be impacted until this outage
+            is resolved.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            Node %parm[nodelabel]% is down. %parm[eventReason]%
+            Node %parm[nodelabel]% is down.
         </logmsg>
         <severity>Major</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
@@ -482,12 +483,13 @@
         <event-label>OpenNMS-defined node event: nodeLostService</event-label>
         <descr>
             &lt;p&gt;A %service% outage was identified on interface
-            %interface%.&lt;/p&gt; &lt;p&gt;A new Outage record has been
-            created and service level availability calculations will be
-            impacted until this outage is resolved.&lt;/p&gt;
+            %interface%. Reason code: %parm[eventReason]%.&lt;/p&gt; &lt;p&gt;
+            A new Outage record has been created and service level
+            availability calculations will be impacted until this outage is
+            resolved.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+            %service% outage identified on interface %interface%.
         </logmsg>
         <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
