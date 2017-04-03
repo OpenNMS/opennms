@@ -273,7 +273,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
     }
 
-    private static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
+    public static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
         final String currentUser = securityContext.getUserPrincipal().getName();
 
         if (securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
