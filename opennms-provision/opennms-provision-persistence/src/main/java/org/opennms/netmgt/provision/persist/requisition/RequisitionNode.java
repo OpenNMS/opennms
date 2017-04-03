@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.network.IPAddress;
+
 
 /**
  * <p>RequisitionNode class.</p>
@@ -139,7 +141,7 @@ public class RequisitionNode {
      */
     public RequisitionInterface getInterface(String ipAddress) {
         for (RequisitionInterface iface : m_interfaces) {
-            if (iface.getIpAddr().equals(ipAddress)) {
+            if (new IPAddress(iface.getIpAddr()).equals(new IPAddress(ipAddress))) {
                 return iface;
             }
         }
