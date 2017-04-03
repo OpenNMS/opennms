@@ -82,7 +82,7 @@
     <property name="targetMethod" value="checkForDisconnectedMonitors" />
   </bean>
 
-  <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+  <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
     <property name="repeatInterval" value="${opennms.pollerBackend.monitorCheckInterval}" />
     <property name="jobDetail" ref="methodInvokingJobDetail" />
   </bean>
