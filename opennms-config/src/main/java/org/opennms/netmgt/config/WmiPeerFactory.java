@@ -419,7 +419,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(Definition def) {
-        return (def.getPassword() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
+        return (def.getUsername() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
     }
 
     /**
