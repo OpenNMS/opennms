@@ -59,6 +59,9 @@ public class DefaultRequisitionService implements RequisitionService {
     @Autowired
     private EventProxy eventProxy;
 
+    @Autowired
+    private ForeignSourceService foreignSourceService;
+
     @Override
     @Transactional(readOnly = true)
     public RequisitionEntity getRequisition(String foreignSource) {
@@ -70,6 +73,10 @@ public class DefaultRequisitionService implements RequisitionService {
     public void deleteRequisition(String foreignSource) {
         if (foreignSource != null && requisitionDao.get(foreignSource) != null) {
             requisitionDao.delete(foreignSource);
+
+            // A custom foreign source may have been created, for now it must be manually deleted.
+            // Maybe in the future DELETE ON CASCADE is making this step obsolete.
+            foreignSourceService.deleteForeignSource(foreignSource);
         }
     }
 
