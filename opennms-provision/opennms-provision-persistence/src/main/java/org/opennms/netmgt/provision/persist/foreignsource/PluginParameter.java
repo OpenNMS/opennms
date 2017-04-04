@@ -30,8 +30,6 @@ package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.io.Serializable;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,7 +38,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.netmgt.provision.support.PluginWrapper;
 
 /**
  * <p>PluginParameter class.</p>
@@ -153,33 +150,6 @@ public class PluginParameter implements Serializable, Comparable<PluginParameter
      */
     public void setValue(String value) {
         m_value = value;
-    }
-
-    /**
-     * <p>getAvailableParameterKeys</p>
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    public Set<String> getAvailableParameterKeys() {
-        Set<String> keys = new TreeSet<String>();
-        if (m_parent != null) {
-            try {
-                PluginWrapper pw = new PluginWrapper(m_parent.getPluginClass());
-                keys = pw.getOptionalKeys();
-                for (PluginParameter p : m_parent.getParameters()) {
-                    if (getKey() == null) {
-                        if (p.getKey() != null) {
-                            keys.remove(p.getKey());
-                        }
-                    } else if (!getKey().equals(p.getKey())) {
-                        keys.remove(p.getKey());
-                    }
-                }
-            } catch (ClassNotFoundException e) {
-                // we just let it return the empty set
-            }
-        }
-        return keys;
     }
 
     @Override
