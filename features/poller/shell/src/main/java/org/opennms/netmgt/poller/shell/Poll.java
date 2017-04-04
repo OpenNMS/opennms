@@ -112,7 +112,7 @@ public class Poll extends OsgiCommandSupport {
         this.locationAwarePollerClient = locationAwarePollerClient;
     }
 
-    private Map<String, Object> parse(List<String> attributeList) {
+    protected static Map<String, Object> parse(List<String> attributeList) {
         final Map<String, Object> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {
