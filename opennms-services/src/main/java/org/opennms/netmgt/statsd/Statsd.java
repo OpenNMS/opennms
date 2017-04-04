@@ -43,12 +43,14 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.CronTriggerBean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -162,7 +164,7 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("start: scheduling Report: {}", reportDef);
                 scheduleReport(reportDef);
             }
-            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length);
+            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(Scheduler.DEFAULT_GROUP)).size());
         }
         LOG.debug("start: lock released (unless reentrant).");
     }
@@ -185,7 +187,7 @@ public class Statsd implements SpringServiceDaemon {
         
         synchronized (m_scheduler) {
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+                m_scheduler.deleteJob(new JobKey(reportDef.getDescription(), Scheduler.DEFAULT_GROUP));
             }
         }
     }
@@ -204,13 +206,13 @@ public class Statsd implements SpringServiceDaemon {
             jobFactory.afterPropertiesSet();
             JobDetail jobDetail = (JobDetail) jobFactory.getObject();
             
-            CronTriggerBean cronReportTrigger = new CronTriggerBean();
+            CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
             cronReportTrigger.setBeanName(reportDef.getDescription());
             cronReportTrigger.setJobDetail(jobDetail);
             cronReportTrigger.setCronExpression(reportDef.getCronExpression());
             cronReportTrigger.afterPropertiesSet();
             
-            m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
+            m_scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
             LOG.debug("Schedule report {}", cronReportTrigger);
             
         }

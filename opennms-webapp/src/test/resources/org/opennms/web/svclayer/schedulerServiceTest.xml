@@ -17,7 +17,7 @@
        	</property>
   </bean>
   
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 	  <property name="jobClass">
 		<value>org.opennms.reporting.core.BatchReportJob</value>
 	  </property>
