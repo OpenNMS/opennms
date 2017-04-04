@@ -149,7 +149,7 @@ public abstract class SnmpWalker implements AutoCloseable {
     
     protected void handleTimeout(String msg) {
         m_tracker.setTimedOut(true);
-        processError("Timeout retrieving", msg, null);
+        processError("Timeout retrieving", msg, new SnmpAgentTimeoutException(getName(), m_address));
     }
 
     private void processError(String reason, String cause, Throwable t) {
