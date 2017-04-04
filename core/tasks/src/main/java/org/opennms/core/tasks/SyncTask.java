@@ -99,7 +99,7 @@ public class SyncTask extends AbstractTask {
               try {
                   SyncTask.this.run();
               } catch (Throwable t) {
-                  LOG.debug("Exception occurred executing task " + SyncTask.this, t);
+                  LOG.error("Exception occurred executing task " + SyncTask.this, t);
               }
           }
           @Override
