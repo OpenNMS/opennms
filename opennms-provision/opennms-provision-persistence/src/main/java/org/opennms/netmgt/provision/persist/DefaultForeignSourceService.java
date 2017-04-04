@@ -96,7 +96,11 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         ForeignSourceEntity foreignSourceEntity = foreignSourceDao.get(name);
         if (foreignSourceEntity == null) {
             foreignSourceEntity = getDefaultForeignSource();
-            foreignSourceEntity.setName(name);
+
+            // we have to clone the foreign source, otherwise hibernate may complain about changing the name
+            ForeignSourceEntity defaultForeignSourceWithCustomName = new ForeignSourceEntity(foreignSourceEntity);
+            defaultForeignSourceWithCustomName.setName(name);
+            return defaultForeignSourceWithCustomName;
         }
         return foreignSourceEntity;
     }
