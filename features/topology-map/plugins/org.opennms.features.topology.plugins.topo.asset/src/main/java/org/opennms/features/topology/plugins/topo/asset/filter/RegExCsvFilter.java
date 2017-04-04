@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * This filter first splits value into comma separated values and
  * then applies the regex match against each csv. This is used to handle
  * the NODE_CATEGORIES case when a node has a csv list of categories. 
- * The returned result is an OR funcition. i.e. if any of the values matches
+ * The returned result is an OR function. i.e. if any of the values matches
  * it returns true
  * @author cgallen
  *
@@ -52,7 +52,9 @@ public class RegExCsvFilter<T> implements Filter<T> {
     public boolean apply(T value) {
     	String[] values = value.toString().split(",");
     	for(String val:values){
-    		if(regExp.matcher(val.toString()).matches()) return true;
+    		if(regExp.matcher(val.toString()).matches()) {
+    		    return true;
+            }
     	}
         return false;
     }

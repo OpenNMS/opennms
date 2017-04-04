@@ -28,18 +28,17 @@
 
 package org.opennms.features.topology.plugins.topo.asset.filter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class AndFilter<T> implements Filter<T> {
 
-    private Filter left;
-    private Filter right;
-	private List<Filter> andFilters=null;
+	private final List<Filter> andFilters;
 
-    public AndFilter(Filter left, Filter right) {
-        this.left = Objects.requireNonNull(left);
-        this.right = Objects.requireNonNull(right);
+    public AndFilter(Filter... filters) {
+    	this(filters == null ? new ArrayList<>() : Arrays.asList(filters));
     }
     
 	public AndFilter(List<Filter> andFilters){
@@ -48,12 +47,9 @@ public class AndFilter<T> implements Filter<T> {
 
     @Override
     public boolean apply(T value) {
-        
-		if(andFilters==null){
-			return left.apply(value) && right.apply(value);
-		} else {
-			for(Filter f:andFilters){
-				if(! f.apply(value)) return false;
+		for(Filter f : andFilters) {
+			if(! f.apply(value)) {
+				return false;
 			}
 		}
 		return true;

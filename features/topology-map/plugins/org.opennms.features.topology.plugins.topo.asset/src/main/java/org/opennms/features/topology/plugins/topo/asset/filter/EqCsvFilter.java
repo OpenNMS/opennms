@@ -28,13 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.asset.filter;
 
-import java.util.Objects;
-
 /**
 * This filter first splits value into comma separated values and
 * then applies the match against each csv. This is used to handle
 * the NODE_CATEGORIES case when a node has a csv list of categories. 
-* The returned result is an OR funcition. i.e. if any of the values matches
+* The returned result is an OR function. i.e. if any of the values matches
 * it returns true
 */
 public class EqCsvFilter<T> implements Filter<T> {

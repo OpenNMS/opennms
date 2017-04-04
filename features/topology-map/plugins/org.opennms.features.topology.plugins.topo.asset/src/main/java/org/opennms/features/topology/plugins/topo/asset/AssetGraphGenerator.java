@@ -159,13 +159,7 @@ public class AssetGraphGenerator {
 		return graphML;
 	}
 	
-	/**
-	 * Applies filters defined in filterMap to the supplied list of OpenNMS nodes
-	 * @param nodes OpenNMS node list which will be modified by filter
-	 * @param filterMap
-	 * @param layerDefinitionRepository
-	 */
-	public static void applyFilters(List<OnmsNode> nodes, Map<String, Filter> filterMap,LayerDefinitionRepository layerDefinitionRepository){
+	public static void applyFilters(List<OnmsNode> nodes, Map<String, Filter> filterMap,LayerDefinitionRepository layerDefinitionRepository) {
 		final List<LayerDefinition> layersToFilter = layerDefinitionRepository.getDefinitions(filterMap.keySet());
 		layersToFilter.stream()
 				.filter(layerToFilter -> filterMap.get(layerToFilter.getKey()) != null)
