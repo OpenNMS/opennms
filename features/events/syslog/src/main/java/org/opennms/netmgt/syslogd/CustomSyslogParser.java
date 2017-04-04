@@ -180,12 +180,12 @@ public class CustomSyslogParser extends SyslogParser {
         // If statement has been reversed in order to make the decision faster
         // rather than always calculating lbIdx < (rbIdx - 1) which might fail
 
-        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
-            processName = message.substring(0, colonIdx);
-            message = message.substring(colonIdx + 2);
-        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processId = message.substring(lbIdx + 1, rbIdx);
+            message = message.substring(colonIdx + 2);
+        } else if (colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
         }
 
