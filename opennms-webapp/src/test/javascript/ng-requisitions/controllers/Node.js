@@ -81,7 +81,7 @@ describe('Controller: NodeController', function () {
     expect(scope.getAvailableCategories()).toEqual(categories);
     scope.node.categories.push({name: 'Production'});
     expect(scope.getAvailableCategories()).toEqual(['Testing', 'Server', 'Storage']);
-    expect(scope.locations).toEqual(locations);
+    expect(scope.availableLocations).toEqual(locations);
   });
 
 });
