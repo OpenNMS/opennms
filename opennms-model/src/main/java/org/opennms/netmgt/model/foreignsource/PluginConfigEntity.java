@@ -37,6 +37,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -44,6 +45,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.BatchSize;
 
 /**
  * A PluginConfig represents a portion of a configuration that defines a reference
@@ -72,13 +75,14 @@ public abstract class PluginConfigEntity implements Serializable {
     @Column(name="class", nullable=false)
     private String pluginClass;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "foreignsource_plugin_parameters",
             joinColumns=@JoinColumn(name = "plugin_id", referencedColumnName = "id")
     )
     @MapKeyColumn(name="key", unique=true)
     @Column(name="value", nullable = false)
+    @BatchSize(size=100)
     private Map<String, String> parameters= new HashMap<>();
 
     @ManyToOne(optional=false)

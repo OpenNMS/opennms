@@ -1177,6 +1177,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
+    @Transactional(readOnly = true)
     public List<DetectorPluginConfigEntity> getDetectorsForForeignSource(final String foreignSourceName) {
         final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
@@ -1185,18 +1186,21 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     /** {@inheritDoc} */
     @Override
+    @Transactional(readOnly = true)
     public List<NodePolicy> getNodePoliciesForForeignSource(final String foreignSourceName) {
         return getPluginsForForeignSource(NodePolicy.class, foreignSourceName);
     }
 
     /** {@inheritDoc} */
     @Override
+    @Transactional(readOnly = true)
     public List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(final String foreignSourceName) {
         return getPluginsForForeignSource(IpInterfacePolicy.class, foreignSourceName);
     }
 
     /** {@inheritDoc} */
     @Override
+    @Transactional(readOnly = true)
     public List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(final String foreignSourceName) {
         return getPluginsForForeignSource(SnmpInterfacePolicy.class, foreignSourceName);
     }
@@ -1210,7 +1214,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @param <T> a T object.
      * @return a {@link java.util.List} object.
      */
-    public <T> List<T> getPluginsForForeignSource(final Class<T> pluginClass, final String foreignSourceName) {
+    private <T> List<T> getPluginsForForeignSource(final Class<T> pluginClass, final String foreignSourceName) {
         final ForeignSourceEntity foreignSource = foreignSourceService.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
 
