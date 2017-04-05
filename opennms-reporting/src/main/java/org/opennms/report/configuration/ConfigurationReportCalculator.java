@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.rancid.ConnectionProperties;
@@ -238,7 +239,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
 
         rlist = new RwsRancidlistreport();
         rlist.setUser(user);
-        rlist.setReportRequestDate(reportRequestDate.toString());
+        rlist.setReportRequestDate(StringUtils.toStringEfficiently(reportRequestDate));
 
         //parse date
         SimpleDateFormat format = new SimpleDateFormat("yyyy/M/d");
