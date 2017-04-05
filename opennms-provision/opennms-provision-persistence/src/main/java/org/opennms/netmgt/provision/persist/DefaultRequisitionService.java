@@ -41,6 +41,7 @@ import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,7 @@ public class DefaultRequisitionService implements RequisitionService {
     private EventProxy eventProxy;
 
     @Autowired
+    @Qualifier("default")
     private ForeignSourceService foreignSourceService;
 
     @Override
