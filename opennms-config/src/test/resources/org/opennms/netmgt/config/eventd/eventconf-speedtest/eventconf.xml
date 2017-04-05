@@ -26,8 +26,8 @@
                 <severity>Indeterminate</severity>
         </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/discPause</uei>
-    <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
+    <uei>uei.opennms.org/internal/discovery/pause</uei>
+    <event-label>OpenNMS-defined internal event: Discovery pause</event-label>
     <descr>
       &lt;p&gt;The services scanning engine has asked discovery to
       pause due to a backlog of interfaces yet to be scanned.
@@ -39,8 +39,8 @@
     <severity>Warning</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/discResume</uei>
-    <event-label>OpenNMS-defined internal event: capsd discResume</event-label>
+    <uei>uei.opennms.org/internal/discovery/resume</uei>
+    <event-label>OpenNMS-defined internal event: Discovery resume</event-label>
     <descr>
       &lt;p&gt;Capsd is approving discovery to resume adding nodes
       to the Capsd queue.&lt;/p&gt;
@@ -66,8 +66,8 @@
     <severity>Warning</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/deleteNode</uei>
-    <event-label>OpenNMS-defined internal event: capsd deleteNode</event-label>
+    <uei>uei.opennms.org/internal/provisiond/deleteNode</uei>
+    <event-label>OpenNMS-defined internal event: Provisiond deleteNode</event-label>
     <descr>
       &lt;p&gt;This event is an external command to delete a node
       from the database. The required paramater is the IP
@@ -80,15 +80,15 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/addInterface</uei>
-    <event-label>OpenNMS-defined internal event: capsd addInterface</event-label>
+    <uei>uei.opennms.org/internal/provisiond/addInterface</uei>
+    <event-label>OpenNMS-defined internal event: Provisiond addInterface</event-label>
     <descr>
       &lt;p&gt;This event is an external command to add an interface
       to the database. The required paramater is the IP
       address for the main interface: %interface%.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      &lt;p&gt;A request has been made to add an interface 
+      &lt;p&gt;A request has been made to add an interface
       %interface%.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
@@ -105,21 +105,6 @@
     <logmsg dest='logndisplay'>
       &lt;p&gt;A request has been made to delete an interface:
       %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p&gt;
-    </logmsg>
-    <severity>Normal</severity>
-  </event>
-  <event>
-    <uei>uei.opennms.org/internal/capsd/changeService</uei>
-    <event-label>OpenNMS-defined internal event: capsd changeService</event-label>
-    <descr>
-      &lt;p&gt;This event will add or remove a service from an interface.
-      The paramters include the interface, %interface%, the service,
-      %service%, and any required qualifiers, %parm[#2]%. The action
-      taken will be: %parm[#1]%.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;A request has been made to %parm[#1]% the %service% service
-      on interface: %interface%.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
   </event>
@@ -585,17 +570,6 @@
     </logmsg>
     <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
-  </event>
-  <event>
-    <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
-    <event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
-    <descr>
-      &lt;p&gt;The hostname for this node changed.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      The hostname for this node changed.
-    </logmsg>
-    <severity>Warning</severity>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/interfaceReparented</uei>

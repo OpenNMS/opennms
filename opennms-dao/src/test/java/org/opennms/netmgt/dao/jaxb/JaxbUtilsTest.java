@@ -159,8 +159,8 @@ public class JaxbUtilsTest {
 		final String text = "<log>\n" + 
 				" <events>\n" + 
 				"  <event >\n" + 
-				"   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
-				"   <source>perl_send_event</source>\n" + 
+				"   <uei>uei.opennms.org/internal/provisiond/addNode</uei>\n" +
+				"   <source>perl_send_event</source>\n" +
 				"   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
 				"   <host></host>\n" + 
 				"   <interface>10.0.0.1</interface>\n" + 
@@ -192,8 +192,8 @@ public class JaxbUtilsTest {
         final String text = "<log>\n" + 
             " <events>\n" + 
             "  <event >\n" + 
-            "   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
-            "   <source>perl_send_event</source>\n" + 
+            "   <uei>uei.opennms.org/internal/provisiond/addNode</uei>\n" +
+            "   <source>perl_send_event</source>\n" +
             "   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
             "   <host></host>\n" + 
             "   <interface>10.0.0.1</interface>\n" + 
@@ -227,7 +227,7 @@ public class JaxbUtilsTest {
             assertNotNull(log.getEvents());
             final String results = JaxbUtils.marshal(log);
             assertNotNull(results);
-            assertTrue(results.contains("uei.opennms.org/internal/capsd/addNode"));
+            assertTrue(results.contains("uei.opennms.org/internal/provisiond/addNode"));
         }
         LOG.info("finished");
         Thread.sleep(30000);

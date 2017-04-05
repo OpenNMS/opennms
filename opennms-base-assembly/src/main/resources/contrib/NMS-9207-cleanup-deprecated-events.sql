@@ -47,6 +47,20 @@ WHERE
 UPDATE
     events
 SET
+    eventuei = 'uei.opennms.org/internal/provisiond/deleteNode'
+WHERE
+    eventuei = 'uei.opennms.org/internal/capsd/deleteNode';
+
+UPDATE
+    events
+SET
+    eventuei = 'uei.opennms.org/internal/provisiond/addInterface'
+WHERE
+    eventuei = 'uei.opennms.org/internal/capsd/addInterface';
+
+UPDATE
+    events
+SET
     eventuei = 'uei.opennms.org/internal/provisiond/deleteInterface'
 WHERE
     eventuei = 'uei.opennms.org/internal/capsd/deleteInterface';
