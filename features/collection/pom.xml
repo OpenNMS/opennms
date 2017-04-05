@@ -13,6 +13,7 @@
   <modules>
     <module>api</module>
     <module>persistence-rrd</module>
+    <module>persistence-tcp</module>
     <module>shell-commands</module>
   </modules>
 </project>

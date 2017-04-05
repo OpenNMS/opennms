@@ -12,7 +12,9 @@ public interface PersistOperationBuilder {
      */
     public String getName();
 
-    public void setAttributeValue(CollectionAttributeType attributeType, Number value);
+    public void setNumericAttributeValue(CollectionAttributeType attributeType, Number value);
+
+    public void setStringAttributeValue(CollectionAttributeType attributeType, String value);
 
     public void setAttributeMetadata(String metricIdentifier, String name);
 
