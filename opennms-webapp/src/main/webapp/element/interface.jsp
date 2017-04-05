@@ -36,6 +36,7 @@
             org.opennms.netmgt.config.PollerConfig,
             org.opennms.netmgt.config.poller.Package,
             java.util.*,
+            java.util.stream.Collectors,
             org.opennms.netmgt.model.OnmsNode,
             org.opennms.netmgt.model.OnmsResource,
             org.opennms.web.api.Authentication,
@@ -254,7 +255,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
                 continue;
               }
             }
-            String pkgInfo = pkgName + (svcs.isEmpty() ? "" : (": " + svcs)); %>
+            String pkgInfo = pkgName + (svcs.isEmpty() ? "" : (": " + svcs.stream().collect(Collectors.joining(", ")))); %>
             <tr>
               <th>Polling Package</th>
               <td><%= pkgInfo%></td>
