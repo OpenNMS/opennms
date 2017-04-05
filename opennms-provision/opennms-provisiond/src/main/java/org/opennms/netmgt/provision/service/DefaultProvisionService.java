@@ -300,6 +300,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void deleteNode(final Integer nodeId) {
+        LOG.debug("deleteNode: nodeId={}", nodeId);
+
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node != null) {
             final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
@@ -314,6 +316,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void deleteInterface(final Integer nodeId, final String ipAddr) {
+        LOG.debug("deleteInterface: nodeId={}, addr={}", nodeId, ipAddr);
+
         final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
         if (iface != null) {
 
@@ -328,6 +332,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             iface.visit(visitor);
 
             if (lastInterface) {
+                LOG.debug("Deleting node {}", nodeId);
+
                 m_nodeDao.delete(node);
                 m_nodeDao.flush();
                 node.visit(visitor);
@@ -339,6 +345,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName) {
+        LOG.debug("deleteService: nodeId={}, addr={}, service={}", nodeId, addr, svcName);
+
         final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, addr, svcName);
         if (service != null) {
 
@@ -356,12 +364,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             service.visit(visitor);
 
             if (lastService) {
+                LOG.debug("Deleting interface {} from node {}", InetAddressUtils.str(iface.getIpAddress()), nodeId);
+
                 node.removeIpInterface(iface);
                 m_nodeDao.saveOrUpdate(node);
                 m_nodeDao.flush();
                 iface.visit(visitor);
 
                 if (lastInterface) {
+                    LOG.debug("Deleting node {}", nodeId);
+
                     m_nodeDao.delete(node);
                     m_nodeDao.flush();
                     node.visit(visitor);
