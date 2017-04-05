@@ -206,17 +206,6 @@
                     auto-clean="false"/>
     </event>
     <event>
-        <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
-        <event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
-        <descr>
-            &lt;p&gt;The hostname for this node changed.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logndisplay">
-            The hostname for this node changed.
-        </logmsg>
-        <severity>Warning</severity>
-    </event>
-    <event>
         <uei>uei.opennms.org/nodes/interfaceReparented</uei>
         <event-label>OpenNMS-defined node event: interfaceReparented</event-label>
         <descr>
