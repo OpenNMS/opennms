@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,12 +51,12 @@ import org.slf4j.LoggerFactory;
 public class Rfc5424SyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(Rfc5424SyslogParser.class);
 
-    //                                                                <PRI>VERSION            TIMESTAMP    HOST   APP    PROC     MSGID  STRUCTURED   MSG
-    private static final Pattern m_rfc5424Pattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}?) (\\S+T\\S+) (\\S*) (\\S*) (\\d+|-) (\\S*) ((?:\\[.*?\\])*|-)(?: (?:BOM)?(.*?))?$", Pattern.MULTILINE);
+    //                                                                <PRI>VERSION             TIMESTAMP   HOST   APP    PROC     MSGID  STRUCTURED           BOM     MSG
+    private static final Pattern m_rfc5424Pattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}?) (\\S+T\\S+) (\\S*) (\\S*) (\\d+|-) (\\S*) ((?:\\[.*?\\])*|-)(?: \uFEFF?(.*?))?$", Pattern.MULTILINE);
 
     private static final Pattern m_dateWithOffset = Pattern.compile("^(.*[\\-\\+]\\d\\d):?(\\d\\d)$");
 
-    public Rfc5424SyslogParser(final SyslogdConfig config, final String text) {
+    public Rfc5424SyslogParser(final SyslogdConfig config, final ByteBuffer text) {
         super(config, text);
     }
 
@@ -65,7 +66,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
     }
 
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {
                 LOG.trace("'{}' did not match '{}'", m_rfc5424Pattern, getText());
@@ -101,11 +102,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
             message.setProcessName(matcher.group(5));
         }
         if (!matcher.group(6).equals("-")) {
-            try {
-                message.setProcessId(Integer.parseInt(matcher.group(6)));
-            } catch (final NumberFormatException e) {
-                LOG.debug("Unable to parse process ID '{}' as a number.", matcher.group(6), e);
-            }
+            message.setProcessId(matcher.group(6));
         }
         if (!matcher.group(7).equals("-")) {
             message.setMessageID(matcher.group(7));

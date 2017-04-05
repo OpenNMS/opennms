@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -147,7 +148,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
     @Override
         protected void saveXML(String xmlString) throws IOException {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
             fileWriter.write(xmlString);
             fileWriter.flush();
             fileWriter.close();

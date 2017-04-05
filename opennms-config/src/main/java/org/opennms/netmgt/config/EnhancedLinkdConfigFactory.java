@@ -38,6 +38,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -82,7 +83,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
             long timestamp = System.currentTimeMillis();
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
             LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-            final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+            final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();

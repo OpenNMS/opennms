@@ -35,6 +35,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,11 +61,6 @@ public abstract class GenericURLConnection extends URLConnection {
      * User and password delimiter for URL user:pass@host
      */
     private static final String USERINFO_DELIMITER = ":";
-
-    /**
-     * Default encoding for URL
-     */
-    private static final String UTF8_ENCODING = "UTF-8";
 
     /**
      * Delimiter for URL arguments
@@ -149,10 +145,10 @@ public abstract class GenericURLConnection extends URLConnection {
 
             String decodedQueryString = queryString;
             try {
-                decodedQueryString = URLDecoder.decode(queryString, UTF8_ENCODING);
+                decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 // Your system does not support UTF-8 encoding
-                logger.error("Unsupported " + UTF8_ENCODING + " encoding for URL query string: '{}'. Error message: '{}'", queryString, e.getMessage());
+                logger.error("Unsupported {} encoding for URL query string: '{}'. Error message: '{}'", StandardCharsets.UTF_8.name(), queryString, e.getMessage());
             }
 
             // queryString is everthing behind "?"

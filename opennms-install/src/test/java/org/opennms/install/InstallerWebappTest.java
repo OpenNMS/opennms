@@ -60,8 +60,6 @@ public class InstallerWebappTest extends TestCase {
         File web_inf = m_anticipator.tempDir(opennms_webapp, "WEB-INF");
         File lib = m_anticipator.tempDir(web_inf, "lib");
         m_anticipator.tempFile(lib, "log4j.jar");
-        m_anticipator.tempFile(lib, "castor-0.9.3.9.jar");
-        m_anticipator.tempFile(lib, "castor-0.9.3.9-xml.jar");
         m_anticipator.tempFile(lib, "opennms_core.jar");
         m_anticipator.tempFile(lib, "opennms_services.jar");
         m_anticipator.tempFile(lib, "opennms_web.jar");
@@ -74,8 +72,6 @@ public class InstallerWebappTest extends TestCase {
 
         m_anticipator.expecting(m_tomcat_webapps, "opennms.xml");
         m_anticipator.expecting(tomcat_lib, "log4j.jar");
-        m_anticipator.expecting(tomcat_lib, "castor-0.9.3.9.jar");
-        m_anticipator.expecting(tomcat_lib, "castor-0.9.3.9-xml.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_core.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_services.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_web.jar");

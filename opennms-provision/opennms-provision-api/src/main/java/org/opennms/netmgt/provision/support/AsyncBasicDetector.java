@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.support;
 
-import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import org.apache.mina.core.session.IdleStatus;
@@ -40,8 +39,6 @@ import org.apache.mina.core.session.IdleStatus;
  * @version $Id: $
  */
 public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
-    
-    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     /**
      * Default value of 3000ms = 3s

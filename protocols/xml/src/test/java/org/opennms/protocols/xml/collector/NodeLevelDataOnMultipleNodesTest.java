@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -52,10 +53,10 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
@@ -203,17 +204,9 @@ public class NodeLevelDataOnMultipleNodesTest {
     public void executeCollectorTest(int nodeId, String ipAddress, String xmlSampleFileName, Map<String, Object> parameters, int expectedFiles) throws Exception {
         MockDocumentBuilder.setXmlFileName(xmlSampleFileName);
 
-        CollectionAgent collectionAgent = EasyMock.createMock(CollectionAgent.class);
-        EasyMock.expect(collectionAgent.getNodeId()).andReturn(nodeId).anyTimes();
-        EasyMock.expect(collectionAgent.getHostAddress()).andReturn(ipAddress).anyTimes();
-        EasyMock.expect(collectionAgent.getStorageResourcePath()).andReturn(ResourcePath.get(Integer.toString(nodeId))).anyTimes();
-        EasyMock.replay(collectionAgent);
+        CollectionAgent collectionAgent = new MockCollectionAgent(nodeId, "mynode", InetAddrUtils.addr(ipAddress));
 
-        m_collector.initialize(collectionAgent, parameters);
-        CollectionSet collectionSet = m_collector.collect(collectionAgent, m_eventProxy, parameters);
-        m_collector.release(collectionAgent);
-        collectionSet = m_collector.collect(collectionAgent, m_eventProxy, parameters);
-        m_collector.release(collectionAgent);
+        CollectionSet collectionSet = XmlCollectorTestUtils.doCollect(m_collector, collectionAgent, parameters);
         Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
@@ -222,7 +215,6 @@ public class NodeLevelDataOnMultipleNodesTest {
         collectionSet.visit(persister);
 
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(getSnmpRoot(), Integer.toString(nodeId)), new String[] { getRrdExtension() }, true).size());
-        EasyMock.verify(collectionAgent);
     }
 
     /**

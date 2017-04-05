@@ -49,7 +49,9 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.Trigger;
 
 public class PollerTest {
 
@@ -94,10 +96,10 @@ public class PollerTest {
 		expect(pollerFrontEnd.getPolledServices()).andReturn(polledServices);
         expect(pollerFrontEnd.isStarted()).andReturn(true);
         
-        expect(scheduler.deleteJob(polledService.toString(), PollJobDetail.GROUP)).andReturn(reschedule);
+        expect(scheduler.deleteJob(new JobKey(polledService.toString(), PollJobDetail.GROUP))).andReturn(reschedule);
         
 		pollerFrontEnd.setInitialPollTime(eq(svc.getId()), isA(Date.class));
-		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
+		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(Trigger.class))).andReturn(new Date());
 		
 		replay(scheduler, pollService, pollerFrontEnd);
 		

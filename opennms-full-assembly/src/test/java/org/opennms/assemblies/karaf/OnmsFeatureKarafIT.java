@@ -76,11 +76,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeatureCastor() {
-		installFeature("castor");
-		System.out.println(executeCommand("features:list -i"));
-	}
-	@Test
 	public void testInstallFeatureCommonsBeanutils() {
 		installFeature("commons-beanutils");
 		System.out.println(executeCommand("features:list -i"));

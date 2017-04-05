@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import org.apache.commons.io.IOUtils;
@@ -130,7 +131,7 @@ public class NotificationFactory extends NotificationManager {
     @Override
     protected void saveXML(String xmlString) throws IOException {
         if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), StandardCharsets.UTF_8);
             fileWriter.write(xmlString);
             fileWriter.flush();
             fileWriter.close();

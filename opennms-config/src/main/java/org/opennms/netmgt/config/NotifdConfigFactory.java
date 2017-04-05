@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -149,7 +150,7 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), StandardCharsets.UTF_8);
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();

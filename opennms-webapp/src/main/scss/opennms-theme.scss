@@ -138,6 +138,10 @@ a:focus {
   background-color: #444;
   border-color: #333;
 }
+.btn-primary[disabled] {
+  background-color: lighten(#444, 10%);
+  border-color: lighten(#333, 10%);
+}
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active,
@@ -146,8 +150,12 @@ a:focus {
   background-color: #333;
 }
 .btn-success {
-  border-color: #328F4C;
   background-color: $color_green_leaf_approx;
+  border-color: #328F4C;
+}
+.btn-success[disabled] {
+  background-color: lighten($color_green_leaf_approx, 10%);
+  border-color: lighten(#328F4C, 10%);
 }
 .btn-success:hover,
 .btn-success:focus,
@@ -157,8 +165,12 @@ a:focus {
   background-color: #328F4C;
 }
 .btn-info {
-  border-color: $color_opennms;
   background-color: $color_opennms_light;
+  border-color: $color_opennms;
+}
+.btn-info[disabled] {
+  background-color: lighten($color_opennms_light, 10%);
+  border-color: lighten($color_opennms, 10%);
 }
 .btn-info:hover,
 .btn-info:focus,
@@ -168,8 +180,12 @@ a:focus {
   background-color: $color_opennms;
 }
 .btn-warning {
-  border-color: #FEA601;
   background-color: #FFBF00;
+  border-color: #FEA601;
+}
+.btn-warning[disabled] {
+  background-color: lighten(#FFBF00, 10%);
+  border-color: lighten(#FEA601, 10%);
 }
 .btn-warning:hover,
 .btn-warning:focus,
@@ -181,6 +197,10 @@ a:focus {
 .btn-danger {
   background-color: #F45C31;
   border-color: #EE400D;
+}
+.btn-danger[disabled] {
+  background-color: lighten(#F45C31, 10%);
+  border-color: lighten(#EE400D, 10%);
 }
 .btn-danger:hover,
 .btn-danger:focus,

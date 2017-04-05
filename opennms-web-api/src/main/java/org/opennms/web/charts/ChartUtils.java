@@ -413,10 +413,10 @@ public abstract class ChartUtils {
     }
     
     /**
-     * Helper method used to retrieve the XML defined BarChart (castor class)
+     * Helper method used to retrieve the XML defined BarChart
      *
      * @param chartName a {@link java.lang.String} object.
-     * @return a derived Castor class: BarChart
+     * @return a BarChart
      * @throws java.io.IOException if any.
      */
     public static BarChart getBarChartConfigByName(String chartName) throws IOException {

@@ -147,6 +147,7 @@ include::text/performance-data-collection/collectors/vmware-cim.adoc[]
 include::text/performance-data-collection/collectors/vmware.adoc[]
 include::text/performance-data-collection/collectors/wmi.adoc[]
 include::text/performance-data-collection/collectors/wsman.adoc[]
+include::text/performance-data-collection/collectors/xml.adoc[]
 
 [[ga-performance-mgmt-shell]]
 === Shell Commands
@@ -156,8 +157,15 @@ include::text/performance-data-collection/shell/stress-testing.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events/events.adoc[]
-include::text/events/forward-elasticsearch.adoc[]
+include::text/events/anatomy-events.adoc[]
+include::text/events/event-sources.adoc[]
+include::text/events/sources/snmp-traps.adoc[]
+include::text/events/sources/syslog.adoc[]
+include::text/events/sources/rest.adoc[]
+include::text/events/sources/xml-tcp.adoc[]
+include::text/events/sources/eif-adapter.adoc[]
+include::text/events/sources/tl1.adoc[]
+include::text/events/eventbus.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -276,6 +284,8 @@ include::text/plugin-manager/internal-plugins-repository.adoc[]
 include::text/plugins/introduction.adoc[]
 include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
+include::text/plugins/opennms-es-rest-mapping.adoc[]
+include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds

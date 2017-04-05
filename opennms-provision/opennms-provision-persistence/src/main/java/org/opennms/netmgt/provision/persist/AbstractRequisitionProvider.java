@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.persist;
 
-import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.core.xml.JaxbUtils;

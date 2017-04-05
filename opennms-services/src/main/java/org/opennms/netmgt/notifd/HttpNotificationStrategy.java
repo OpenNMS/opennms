@@ -30,6 +30,7 @@ package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -99,12 +100,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
                 LOG.debug("send: post argument: {} = {}", post.getName(), post.getValue());
             }
             method = new HttpPost(url);
-            try {
-                final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(posts, "UTF-8");
-                ((HttpPost)method).setEntity(entity);
-            } catch (UnsupportedEncodingException e) {
-                // Should never happen
-            }
+            final UrlEncodedFormEntity entity = new UrlEncodedFormEntity(posts, StandardCharsets.UTF_8);
+            ((HttpPost)method).setEntity(entity);
         }
 
         String contents = null;

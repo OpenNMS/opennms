@@ -38,6 +38,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -70,7 +71,7 @@ public class AvailabilityReport extends Object {
     private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     /**
-     * Castor object that holds all the information required for the
+     * Object that holds all the information required for the
      * generating xml to be translated to the pdf.
      */
     private Report m_report = null;
@@ -133,7 +134,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked generates the data into report castor classes.
+     * This when invoked generates the data into report classes.
      *
      * @param logourl
      *            location of the logo to be displayed on the report
@@ -168,7 +169,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked populates the castor classes.
+     * This when invoked populates the classes.
      *
      * @param logourl
      *            location of the logo to be displayed on the report
@@ -202,7 +203,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked marshals the report XML from the castor classes.
+     * This when invoked marshals the report XML from the classes.
      *
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
@@ -212,9 +213,9 @@ public class AvailabilityReport extends Object {
         File file = new File(ConfigFileConstants.getHome()
                              + "/share/reports/AvailReport.xml");
         try {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             JaxbUtils.marshal(m_report, fileWriter);
-            LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
+            LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             fileWriter.close();
         } catch (Throwable e) {
             LOG.error("Exception", e);
@@ -222,7 +223,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * Generate PDF from castor classes.
+     * Generate PDF from classes.
      *
      * @param xsltFileName a {@link java.lang.String} object.
      * @param out a {@link java.io.OutputStream} object.
@@ -239,12 +240,12 @@ public class AvailabilityReport extends Object {
                 File file = new File(ConfigFileConstants.getHome()
                                      + "/share/reports/AvailReport.xml");
                 try {
-                    LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
-                    Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+                    LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
+                    Reader fileReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
                     if (!format.equals("HTML")) {
-                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     } else {
-                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     }
                 } catch (Throwable e) {
                     LOG.error("Exception", e);

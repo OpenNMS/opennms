@@ -41,7 +41,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-success" id="add-service" ng-click="addService()">Add Service</button>
+  <button type="button" class="btn btn-default" id="add-service" ng-click="addService()" ng-disabled="intfForm.$invalid">Add Service</button>
   <button type="button" class="btn btn-primary" id="save-interface" ng-click="save()" ng-disabled="intfForm.$invalid">Save</button>
   <button type="button" class="btn btn-default" id="cancel-interface" ng-click="cancel()">Cancel</button>
 </div>

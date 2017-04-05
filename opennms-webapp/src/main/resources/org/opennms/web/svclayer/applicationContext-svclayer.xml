@@ -119,16 +119,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--  Manual Provisioning -->
-  <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="${importer.requisition.dir}"/>
-  </bean>
-  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-    <property name="pollerConfig" ref="pollerConfig"/>
-  </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
     <property name="resourceDao" ref="resourceDao"/>
@@ -206,7 +196,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
       </props>
     </property>
   </bean>
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
     <property name="jobClass">
       <value>org.opennms.reporting.core.BatchReportJob</value>
     </property>

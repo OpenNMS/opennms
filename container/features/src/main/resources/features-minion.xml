@@ -70,6 +70,7 @@
       <feature>opennms-core-web</feature>
       <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
     </feature>
 
     <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
@@ -112,6 +113,7 @@
       <feature>opennms-vmware</feature>
       <feature>wmi-integration</feature>
       <feature>wsman-integration</feature>
+      <feature>opennms-xml-collector</feature>
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">

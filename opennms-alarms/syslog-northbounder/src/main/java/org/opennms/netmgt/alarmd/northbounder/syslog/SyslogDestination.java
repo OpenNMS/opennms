@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -309,7 +310,7 @@ public class SyslogDestination implements Destination {
      * @return the char set
      */
     public String getCharSet() {
-        return m_charSet == null ? "UTF-8" : m_charSet;
+        return m_charSet == null ? StandardCharsets.UTF_8.name() : m_charSet;
     }
 
     /**

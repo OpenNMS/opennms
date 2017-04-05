@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -122,7 +123,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
-                OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+                OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
                 osw.write("stats\n");
                 osw.flush();
 

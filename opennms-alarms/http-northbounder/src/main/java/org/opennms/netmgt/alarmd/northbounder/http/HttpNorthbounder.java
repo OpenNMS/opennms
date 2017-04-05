@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd.northbounder.http;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,12 +148,8 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             NameValuePair p = new BasicNameValuePair("foo", "bar");
             postParms.add(p);
 
-            try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParms, "UTF-8");
-                postMethod.setEntity(entity);
-            } catch (UnsupportedEncodingException e) {
-                throw new NorthbounderException(e);
-            }
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(postParms, StandardCharsets.UTF_8);
+            postMethod.setEntity(formEntity);
 
             HttpEntity entity = null;
             try {

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -145,10 +146,6 @@ public final class RWSConfigFactory extends RWSConfigManager {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
@@ -159,7 +156,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
                 final long timestamp = System.currentTimeMillis();
                 final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
                 LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
                 fileWriter.write(xml);
                 fileWriter.flush();
                 fileWriter.close();

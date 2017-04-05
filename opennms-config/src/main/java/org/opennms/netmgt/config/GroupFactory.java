@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -114,7 +115,7 @@ public class GroupFactory extends GroupManager {
     }
 
     /**
-     * Parses the groups.xml via the Castor classes
+     * Parses the groups.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
@@ -147,7 +148,7 @@ public class GroupFactory extends GroupManager {
     @Override
     protected void saveXml(String data) throws IOException {
         if (data != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8);
             fileWriter.write(data);
             fileWriter.flush();
             fileWriter.close();

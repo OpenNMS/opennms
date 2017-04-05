@@ -29,6 +29,7 @@
 package org.opennms.features.datachoices.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -130,7 +131,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                     .useSystemProxySettings();
             try (CloseableHttpClient client = clientWrapper.getClient()) {
                 HttpPost httpRequest = new HttpPost(m_url + USAGE_REPORT);
-                httpRequest.setEntity(new StringEntity(usageStatsReportJson, ContentType.create("application/json", "UTF-8")));
+                httpRequest.setEntity(new StringEntity(usageStatsReportJson, ContentType.create("application/json", StandardCharsets.UTF_8)));
                 LOG.info("Sending usage statistics report to {}: {}", httpRequest.getURI(), usageStatsReportJson);
                 client.execute(httpRequest);
                 LOG.info("Succesfully sent usage statistics report.");

@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -115,7 +116,7 @@ public class AvailabilityRestService extends OnmsRestService {
     @Path("/categories/{category}")
     public Category getCategory(@PathParam("category") final String categoryName) {
         try {
-            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
             if (cat == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
@@ -131,7 +132,7 @@ public class AvailabilityRestService extends OnmsRestService {
     @Path("/categories/{category}/nodes")
     public NodeList getCategoryNodes(@PathParam("category") final String categoryName) {
         try {
-            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
             if (cat == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);
@@ -147,7 +148,7 @@ public class AvailabilityRestService extends OnmsRestService {
     @Path("/categories/{category}/nodes/{nodeId}")
     public AvailabilityNode getCategoryNode(@PathParam("category") final String categoryName, @PathParam("nodeId") final Long nodeId) {
         try {
-            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
             final Category cat = CategoryModel.getInstance().getCategory(category);
             if (cat == null) {
                 throw getException(Status.NOT_FOUND, "Category {} was not found.", categoryName);

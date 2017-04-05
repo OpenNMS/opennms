@@ -119,8 +119,6 @@ public class XmpConfigFactory {
      * <p>Constructor for XmpConfigFactory.</p>
      *
      * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public XmpConfigFactory(Reader rdr) 

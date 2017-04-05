@@ -398,7 +398,7 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     // have to copy a path field by field until we get a cloning method in the
-    // Castor generated classes
+    // JAXB generated classes
     private static Path copyPath(Path oldPath) {
         Path newPath = new Path();
 

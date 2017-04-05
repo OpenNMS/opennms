@@ -318,7 +318,7 @@ public final class BroadcastEventProcessor implements EventListener {
             if (autoAck == null) {
                 return;
             }
-            if (!autoAck.getUeiCollection().isEmpty() && !autoAck.getUeiCollection().contains(event.getUei())) {
+            if (autoAck.getUeiCollection().isEmpty() || !autoAck.getUeiCollection().contains(event.getUei())) {
                 return;
             }
             Collection<Integer> notifIDs = getNotificationManager().acknowledgeNoticeBasedOnAlarms(event);
@@ -899,6 +899,11 @@ public final class BroadcastEventProcessor implements EventListener {
 
         User user = getUserManager().getUser(targetName);
 
+        if (user == null) {
+            LOG.error("user {} is not a valid user, not adding this user to escalation thread", targetName);
+            return null;
+        }
+
         Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
@@ -907,13 +912,6 @@ public final class BroadcastEventProcessor implements EventListener {
                     LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
                 }
             }
-        }
-
-        // if either piece of information is missing don't add the task to
-        // the notifier
-        if (user == null) {
-            LOG.error("user {} is not a valid user, not adding this user to escalation thread", targetName);
-            return null;
         }
 
         task.setUser(user);
@@ -1003,8 +1001,6 @@ public final class BroadcastEventProcessor implements EventListener {
      *         or the outage name, if an applicable outage is found (indicating
      *         notification should not be sent).
      * @throws IOException if any.
-     * @throws ValidationException if any.
-     * @throws MarshalException if any.
      * @param nodeId a long.
      * @param theInterface a {@link java.lang.String} object.
      */

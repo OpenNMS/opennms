@@ -31,6 +31,7 @@ package org.opennms.features.geocoder.nominatim;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
@@ -113,7 +114,7 @@ public class NominatimGeocoderService implements GeocoderService {
 
     private String getUrl(final String geolocation) throws GeocoderException {
         try {
-            return GEOCODE_URL + "&email=" + URLEncoder.encode(geolocation, "UTF-8") + "&q=" + URLEncoder.encode(geolocation, "UTF-8");
+            return GEOCODE_URL + "&email=" + URLEncoder.encode(geolocation, StandardCharsets.UTF_8.name()) + "&q=" + URLEncoder.encode(geolocation, StandardCharsets.UTF_8.name());
         } catch (final UnsupportedEncodingException e) {
             throw new GeocoderException("unable to URL-encode query string", e);
         }
