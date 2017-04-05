@@ -93,12 +93,13 @@ public class CoreImportActivities {
                 final ImportRequest request = context.getImportRequest();
                 final RequisitionProvider provider = determineRequisitionProvider(request);
                 LOG.info("importRequisition: importType: {}", provider.getClass());
-                final RequisitionEntity requisitionToImport = provider.getRequisition();
 
+                final RequisitionEntity requisitionToImport = provider.getRequisition();
                 info("Importing requisition {}", requisitionToImport.getName());
+
                 requisitionToImport.updateLastImported();
                 requisitionService.saveOrUpdateRequisition(requisitionToImport);
-                context.setForeignSource(requisitionToImport.getName());
+                context.setRequisition(requisitionToImport);
                 debug("Finished requisition import.");
             } catch (final Throwable t) {
                 context.abort(t);
@@ -122,23 +123,21 @@ public class CoreImportActivities {
             return null;
         }
 
-        return m_transactionOperations.execute(status -> {
-            final RequisitionEntity requisition = requisitionService.getRequisition(ri.getForeignSource());
+        final RequisitionEntity requisition = ri.getRequisition();
 
-            info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", requisition, EventConstants.PARM_IMPORT_RESCAN_EXISTING, ri.isRescanExisting());
+        info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", requisition, EventConstants.PARM_IMPORT_RESCAN_EXISTING, ri.isRescanExisting());
 
-            final String foreignSource = requisition.getForeignSource();
-            final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
+        final String foreignSource = requisition.getForeignSource();
+        final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
 
-            final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, ri.isRescanExisting());
+        final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, ri.isRescanExisting());
 
-            opsMgr.setForeignSource(foreignSource);
-            opsMgr.auditNodes(requisition);
+        opsMgr.setForeignSource(foreignSource);
+        opsMgr.auditNodes(requisition);
 
-            debug("Finished auditing nodes.");
+        debug("Finished auditing nodes.");
 
-            return opsMgr;
-        });
+        return opsMgr;
     }
     
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
@@ -203,10 +202,10 @@ public class CoreImportActivities {
         }
 
         LOG.info("Running relate phase");
-        List<RequisitionNodeEntity> nodes = m_transactionOperations.execute(status -> requisitionService.getRequisition(ri.getForeignSource()).getNodes());
+        List<RequisitionNodeEntity> nodes = ri.getRequisition().getNodes();
         nodes.forEach(nodeReq -> {
             LOG.debug("Scheduling relate of node {}", nodeReq);
-            currentPhase.add(parentSetter(m_provisionService, nodeReq, ri.getForeignSource()));
+            currentPhase.add(parentSetter(m_provisionService, nodeReq, ri.getRequisition().getForeignSource()));
         });
         LOG.info("Finished Running relate phase");
     }

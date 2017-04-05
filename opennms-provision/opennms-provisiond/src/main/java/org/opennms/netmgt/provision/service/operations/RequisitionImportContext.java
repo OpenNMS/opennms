@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import java.util.Objects;
+
+import org.opennms.netmgt.model.requisition.RequisitionEntity;
 import org.opennms.netmgt.provision.persist.requisition.ImportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +39,7 @@ public class RequisitionImportContext {
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionImportContext.class);
     private Throwable m_throwable;
     private ImportRequest importRequest;
-    private String foreignSource;
+    private RequisitionEntity requisition;
 
     public void setImportRequest(ImportRequest importRequest) {
         this.importRequest = importRequest;
@@ -44,14 +47,6 @@ public class RequisitionImportContext {
 
     public ImportRequest getImportRequest() {
         return importRequest;
-    }
-
-    public String getForeignSource() {
-        return foreignSource;
-    }
-
-    public void setForeignSource(String foreignSource) {
-        this.foreignSource = foreignSource;
     }
 
     public Throwable getError() {
@@ -62,7 +57,7 @@ public class RequisitionImportContext {
         if (m_throwable == null) {
             m_throwable = t;
         } else {
-            LOG.warn("Requisition {} has already been aborted, but we received another abort message. Ignoring.", foreignSource, t);
+            LOG.warn("Requisition {} has already been aborted, but we received another abort message.  Ignoring.", requisition.getForeignSource(), t);
         }
     }
 
@@ -73,5 +68,24 @@ public class RequisitionImportContext {
 
     public boolean isRescanExisting() {
         return importRequest.getRescanExisting() == null || Boolean.valueOf(importRequest.getRescanExisting()) || "dbonly".equals(importRequest.getRescanExisting());
+    }
+
+    public void setRequisition(RequisitionEntity requisition) {
+        this.requisition = Objects.requireNonNull(requisition);
+
+        // enforce hibernate to load entity graph
+        requisition.getNodes().forEach(n -> {
+            n.getInterfaces().forEach(i -> {
+                i.getCategories();
+                i.getMonitoredServices().forEach(m -> m.getCategories());
+            });
+            n.getAssets();
+            n.getCategories();
+        });
+
+    }
+
+    public RequisitionEntity getRequisition() {
+        return requisition;
     }
 }
