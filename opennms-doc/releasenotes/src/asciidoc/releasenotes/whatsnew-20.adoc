@@ -1,0 +1,33 @@
+[[releasenotes-19]]
+== What's New in OpenNMS Horizon 20
+
+=== System Requirements
+
+* *Java 8*: OpenNMS Horizon 20 requires Java 8 as the runtime environment.
+  To run Horizon 20, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9.2 or higher*: Horizon 20 requires PostgreSQL 9.2 or higher.
+  All older versions of PostgreSQL are past their end-of-life support date.
+
+=== Breaking Changes
+
+* link:https://issues.opennms.org/browse/NMS-9207[NMS-9207]: Deprecated Capsd and Linkd event definitions are removed.
+  _Capsd_ event definitions which are now handled by _Provisiond_ are renamed.
+  _Provisiond_ code was cleaned up and unused methods where removed.
+  For people maintaining databases prior OpenNMS 1.8, we provide a maintenance script for Linux and Windows in the _opennms-contrib_ package which clean up your database.
+  The script is named `NMS-9207-cleanup-deprecated-events.sh}` and executes a SQL script.
+  In case you run PostgreSQL on Windows, you can use `psql.exe -d opennms -U opennms -W -a -f NMS-9207-cleanup-deprecated-events.sql` to run the maintenance script.
+
+=== Important Upgrade Notes
+
+=== New Features
+
+=== New Data Collection Definitions
+
+=== Retired Features
+
+=== Deprecated Features
+
+=== Dependency Updates
+
+=== Internal Improvements
+
