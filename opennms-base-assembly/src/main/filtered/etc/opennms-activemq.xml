@@ -97,6 +97,16 @@
                   </pendingQueuePolicy>
                   -->
                 </policyEntry>
+                <!--
+                  Change the dead-letter strategy to discard messages instead 
+                  of storing them in the DLQ. You can comment out this policyEntry
+                  to reenable the DLQ for troubleshooting.
+                -->
+                <policyEntry queue=">">
+                  <deadLetterStrategy>
+                    <sharedDeadLetterStrategy processExpired="false" />
+                  </deadLetterStrategy>
+                </policyEntry>
               </policyEntries>
             </policyMap>
         </destinationPolicy>
