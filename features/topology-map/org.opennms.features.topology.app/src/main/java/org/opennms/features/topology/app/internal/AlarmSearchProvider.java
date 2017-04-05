@@ -116,14 +116,14 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
         }
         
         public AlarmSearchResult (Integer alarmId, String nodeLabel, String query, boolean collapsed) {
-            super(getSearchProviderNamespace(), String.valueOf(alarmId), nodeLabel, query, true, collapsed);
+            super(getSearchProviderNamespace(), String.valueOf(alarmId), nodeLabel, query, SearchResult.COLLAPSIBLE, collapsed);
             
             this.setAlarmId(alarmId);
             this.setNodeLabel(nodeLabel);
         }
         
         public AlarmSearchResult(String id) {
-            super(getSearchProviderNamespace(), id, id, id, true, false);
+            super(getSearchProviderNamespace(), id, id, id, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
         }
 
         public AlarmSearchResult(SearchResult searchResult) {
@@ -191,8 +191,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
             String nodeLabel = alarm.getNodeLabel();
             LOG.debug("SearchProvider.query: adding '{}' to set of results.", nodeLabel);
 
-            //TODO RS Find out when this method is used and check whether it is only called for collapsed nodes
-            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeLabel(), queryString, false);
+            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeLabel(), queryString, !SearchResult.COLLAPSED);
             queryResults.add(result);
         }
         return queryResults;

@@ -79,7 +79,7 @@ public class CategorySearchProvider extends AbstractSearchProvider implements Hi
         for (OnmsCategory category : categories) {
             if (!checkHiddenPrefix(category.getName()) && searchQuery.matches(category.getName())) {
                 SearchResult result = new SearchResult(CategoryHopCriteria.NAMESPACE, category.getId().toString(), category.getName(),
-                        searchQuery.getQueryString(), true, false);
+                        searchQuery.getQueryString(), SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
                 CollapsibleCriteria criteria = getMatchingCriteria(graphContainer, category.getName());
                 if (criteria != null) {
                     result.setCollapsed(criteria.isCollapsed());

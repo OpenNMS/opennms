@@ -129,7 +129,8 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
             } else {
                 if (isIpLikeQuery(queryString)) {
                     LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
-                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString, queryString, true, false);
+                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString,
+							queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
                     results.add(searchResult);
                 }
             }
@@ -167,7 +168,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
     }
 
 	private SearchResult createSearchResult(String ip, String queryString) {
-		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString, true, false);
+		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
 		return result;
 	}
 

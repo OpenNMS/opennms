@@ -111,7 +111,7 @@ public class SavedHistoryTest {
 		);
 
 		List<SearchResult> searchResults = new ArrayList<>();
-		searchResults.add(new SearchResult("alarm", "alarmID", "someLabel", searchQuery, true, false));
+		searchResults.add(new SearchResult("alarm", "alarmID", "someLabel", searchQuery, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED));
 
 		// Creating SavedHistory object with a single search result with ID = "alarmID"
 		SavedHistory history2 = new SavedHistory(

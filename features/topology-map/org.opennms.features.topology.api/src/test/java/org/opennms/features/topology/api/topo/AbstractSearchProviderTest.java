@@ -129,7 +129,7 @@ public class AbstractSearchProviderTest {
                 for (VertexRef vertexRef : m_vertexRefs) {
                     if (searchQuery.matches(vertexRef.getLabel())) {
                         verts.add(new SearchResult(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(),
-                                searchQuery.getQueryString(), false, false));
+                                searchQuery.getQueryString(), !SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED));
                     }
                 }
                 return verts;

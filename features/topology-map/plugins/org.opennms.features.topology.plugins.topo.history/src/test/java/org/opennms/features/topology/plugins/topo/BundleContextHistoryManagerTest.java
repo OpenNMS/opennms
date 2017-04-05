@@ -335,9 +335,9 @@ public class BundleContextHistoryManagerTest  {
         };
 
         // Creating SearchResults to be used in testing
-        SearchResult sResultCategory = new SearchResult(CategoryHopCriteria.NAMESPACE, idCategory, labelCategory, searchQuery, true, false);
-        SearchResult sResultAlarm = new SearchResult(AlarmHopCriteria.NAMESPACE, idAlarm, labelAlarm, searchQuery, true, false);
-        SearchResult sResultIpLike = new SearchResult(IpLikeHopCriteria.NAMESPACE, idIpLike, labelIpLike, searchQuery, true, false);
+        SearchResult sResultCategory = new SearchResult(CategoryHopCriteria.NAMESPACE, idCategory, labelCategory, searchQuery, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+        SearchResult sResultAlarm = new SearchResult(AlarmHopCriteria.NAMESPACE, idAlarm, labelAlarm, searchQuery, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+        SearchResult sResultIpLike = new SearchResult(IpLikeHopCriteria.NAMESPACE, idIpLike, labelIpLike, searchQuery, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
         this.startingSearchResults.put(CriteriaTypes.alarm, sResultAlarm);
         this.startingSearchResults.put(CriteriaTypes.ipLike, sResultIpLike);
         this.startingSearchResults.put(CriteriaTypes.category, sResultCategory);

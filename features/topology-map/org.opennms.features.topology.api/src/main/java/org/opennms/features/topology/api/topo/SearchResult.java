@@ -39,6 +39,9 @@ import com.google.common.base.MoreObjects;
 @XmlAccessorType(value = XmlAccessType.FIELD)
 public class SearchResult {
 
+	public static final boolean COLLAPSIBLE = true;
+	public static final boolean COLLAPSED = true;
+
 	@XmlElement(name = "id")
     private String m_id;
 	@XmlElement(name = "namespace")
@@ -70,7 +73,7 @@ public class SearchResult {
     }
 
 	public SearchResult(SearchCriteria criteria) {
-		this(criteria.getNamespace(), criteria.getId(), criteria.getLabel(), criteria.getSearchString(), true, criteria.isCollapsed());
+		this(criteria.getNamespace(), criteria.getId(), criteria.getLabel(), criteria.getSearchString(), SearchResult.COLLAPSIBLE, criteria.isCollapsed());
 	}
 
 	public final String getId() {

@@ -150,7 +150,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements History
         for (NCSComponent component : components) {
             if(searchQuery.matches(component.getName())) {
                 searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName(),
-                        searchQuery.getQueryString(), false, false));
+                        searchQuery.getQueryString(), !SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED));
             }
 
         }
