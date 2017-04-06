@@ -39,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -135,13 +136,22 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response acknowledge(MultivaluedMap<String, String> formParams) {
+    public Response acknowledge(@Context final SecurityContext securityContext, MultivaluedMap<String, String> formParams) {
         String alarmId = formParams.getFirst("alarmId");
         String notifId = formParams.getFirst("notifId");
         String action = formParams.getFirst("action");
+        String ackUser = formParams.getFirst("ackUser");
+
         if (action == null) {
             action = "ack";
         }
+
+        if (ackUser == null) {
+            ackUser = securityContext.getUserPrincipal().getName();
+        }
+
+        AlarmRestService.assertUserEditCredentials(securityContext, ackUser);
+
         OnmsAcknowledgment ack = null;
         if (alarmId == null && notifId == null) {
             return getBadRequestResponse("You must supply either an alarmId or notifId");
@@ -156,7 +166,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             if (alarm == null) {
                 return Response.notModified().build();
             }
-            ack = new OnmsAcknowledgment(alarm);
+            ack = new OnmsAcknowledgment(alarm, ackUser);
         } else if (notifId != null) {
             final Integer numericNotifId = getNumericValue(notifId);
             if (numericNotifId == null) {
@@ -166,7 +176,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             if (notification == null) {
                 return Response.notModified().build();
             }
-            ack = new OnmsAcknowledgment(notification);
+            ack = new OnmsAcknowledgment(notification, ackUser);
         }
         
         if ("ack".equals(action)) {

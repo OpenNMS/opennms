@@ -180,4 +180,11 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	    m = p.matcher(xml);
 	    assertTrue(m.matches());
 	}
+
+	@Test
+	@JUnitTemporaryDatabase
+	public void testAcknowlegeAlarmWithoutPermission() throws Exception {
+		setUser("", new String[]{});
+		sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack", 403);
+	}
 }

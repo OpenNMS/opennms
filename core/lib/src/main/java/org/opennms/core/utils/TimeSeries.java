@@ -13,10 +13,13 @@ public abstract class TimeSeries {
 
     private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
 
+    private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
+
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME),
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME);
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME),
+        TCP(TCP_TIME_SERIES_STRATEGY_NAME);
 
         private final String m_name;
 
