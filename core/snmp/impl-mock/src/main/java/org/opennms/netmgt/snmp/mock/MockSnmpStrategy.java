@@ -87,7 +87,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         LOG.debug("createWalker({}/{}, {}, {})", InetAddrUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
         final PropertyOidContainer oidContainer = getOidContainer(aa);
-        return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu());
+        return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu(), agentConfig.getRetries());
     }
 
     @Override
