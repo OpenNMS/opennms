@@ -98,26 +98,27 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 			StringBuffer msg = new StringBuffer("Creating Asset Topology from configuration:");
 			msg.append("\n --providerId:"+providerId);
 			msg.append("\n     --label:"+config.getLabel());
-			
+
 			msg.append("\n     --assetLayers:");
 			List<String> l = config.getLayerHierarchies();
-			for(int i=0; i<l.size(); i++){
+			if (l!=null) for(int i=0; i<l.size(); i++){
 				msg.append(l.get(i));
 				if(i<l.size()) msg.append(",");
 			}
+
 			msg.append("\n     --filter:");
 			List<String> f = config.getFilters();
-			for(int i=0; i<f.size(); i++){
+			if (f!=null)for(int i=0; i<f.size(); i++){
 				msg.append(f.get(i));
 				if(i<f.size()) msg.append(";");
 			}
-			
+
 			msg.append("\n     --preferredLayout:"+config.getPreferredLayout());
 			msg.append("\n     --breadcrumbStrategy:"+config.getBreadcrumbStrategy());
 			msg.append("\n       equivilent --uriParams:"+GeneratorConfigBuilder.toGraphDefinitionUriString(config)+"\n");
 
 			System.out.println(msg.toString());
-			
+
 			assetGraphMLProvider.createAssetTopology(config);
 			System.out.println("Asset Topology created");
 		} catch (Exception e) {
