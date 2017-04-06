@@ -77,15 +77,15 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
-			GeneratorConfig config=null;
+			GeneratorConfig generatorConfig=null;
 
 			if( uriParams!=null && ! uriParams.trim().isEmpty() ){
-				config = new GeneratorConfigBuilder()
+				generatorConfig = new GeneratorConfigBuilder()
 				.withGraphDefinitionUri(uriParams)
 				.build();
 			}
 			else{
-				config = new GeneratorConfigBuilder()
+				generatorConfig = new GeneratorConfigBuilder()
 				.withProviderId(providerId)
 				.withHierarchy(hierarchy)
 				.withLabel(label)
@@ -97,29 +97,29 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 
 			StringBuffer msg = new StringBuffer("Creating Asset Topology from configuration:");
 			msg.append("\n --providerId:"+providerId);
-			msg.append("\n     --label:"+config.getLabel());
+			msg.append("\n     --label:"+generatorConfig.getLabel());
 
 			msg.append("\n     --assetLayers:");
-			List<String> l = config.getLayerHierarchies();
+			List<String> l = generatorConfig.getLayerHierarchies();
 			if (l!=null) for(int i=0; i<l.size(); i++){
 				msg.append(l.get(i));
-				if(i<l.size()) msg.append(",");
+				if(i+1<l.size()) msg.append(",");
 			}
 
 			msg.append("\n     --filter:");
-			List<String> f = config.getFilters();
+			List<String> f = generatorConfig.getFilters();
 			if (f!=null)for(int i=0; i<f.size(); i++){
 				msg.append(f.get(i));
-				if(i<f.size()) msg.append(";");
+				if(i+1<f.size()) msg.append(";");
 			}
 
-			msg.append("\n     --preferredLayout:"+config.getPreferredLayout());
-			msg.append("\n     --breadcrumbStrategy:"+config.getBreadcrumbStrategy());
-			msg.append("\n       equivilent --uriParams:"+GeneratorConfigBuilder.toGraphDefinitionUriString(config)+"\n");
+			msg.append("\n     --preferredLayout:"+generatorConfig.getPreferredLayout());
+			msg.append("\n     --breadcrumbStrategy:"+generatorConfig.getBreadcrumbStrategy());
+			msg.append("\n       equivilent --uriParams:"+GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig)+"\n");
 
 			System.out.println(msg.toString());
 
-			assetGraphMLProvider.createAssetTopology(config);
+			assetGraphMLProvider.createAssetTopology(generatorConfig);
 			System.out.println("Asset Topology created");
 		} catch (Exception e) {
 			System.out.println("Error Creating Asset Topology. Exception="+e);

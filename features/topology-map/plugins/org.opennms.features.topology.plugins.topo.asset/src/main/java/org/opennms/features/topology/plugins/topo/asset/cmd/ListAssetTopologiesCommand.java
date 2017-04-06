@@ -69,15 +69,16 @@ public class ListAssetTopologiesCommand extends OsgiCommandSupport {
 				
 				msg.append("\n     --assetLayers:");
 				List<String> l = generatorConfig.getLayerHierarchies();
-				for(int i=0; i<l.size(); i++){
+				if (l!=null) for(int i=0; i<l.size(); i++){
 					msg.append(l.get(i));
-					if(i<l.size()) msg.append(",");
+					if(i+1<l.size()) msg.append(",");
 				}
+
 				msg.append("\n     --filter:");
 				List<String> f = generatorConfig.getFilters();
-				for(int i=0; i<f.size(); i++){
+				if (f!=null)for(int i=0; i<f.size(); i++){
 					msg.append(f.get(i));
-					if(i<f.size()) msg.append(";");
+					if(i+1<f.size()) msg.append(";");
 				}
 				
 				msg.append("\n     --preferredLayout:"+generatorConfig.getPreferredLayout());
