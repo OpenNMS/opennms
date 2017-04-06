@@ -55,5 +55,9 @@
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-url/${pom.version}</bundle>
   </feature>
+  <feature name="dashlet-grafana" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Grafana">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-grafana/${pom.version}</bundle>
+  </feature>
 
 </features>
