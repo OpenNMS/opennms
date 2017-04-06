@@ -4,6 +4,8 @@
 
     <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient" availability="mandatory"/>
     <reference id="servicePollerRegistry" interface="org.opennms.netmgt.poller.ServiceMonitorRegistry" availability="mandatory"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
     <bean id="monitorNameCompleter" class="org.opennms.netmgt.poller.shell.MonitorClassNameCompleter">
         <property name="registry" ref="servicePollerRegistry" />
@@ -25,6 +27,16 @@
         <command name="poller/list-monitors">
             <action class="org.opennms.netmgt.poller.shell.ListMonitors">
               <property name="registry" ref="servicePollerRegistry"/>
+            </action>
+        </command>
+    </command-bundle>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="poller/test">
+            <action class="org.opennms.netmgt.poller.shell.Test">
+              <property name="registry" ref="servicePollerRegistry"/>
+              <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+              <property name="transactionTemplate" ref="transactionTemplate"/>
             </action>
         </command>
     </command-bundle>
