@@ -66,19 +66,23 @@ image::asset-topology/AssetScreen3.png[Screenshot of Nodes Layer,400,600]
 
 === Asset layers
 The entries for `assetLayers` can be any node or asset entry from the following list (defined in class NodeParamLabels). 
-----
-node-nodelabel, node-nodeid, node-foreignsource, node-foreignid, node-nodesysname, 
-node-nodesyslocation, node-operatingsystem, node-categories, 
-parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid, 
-asset-country, asset-address1, asset-address2, asset-city, asset-zip, asset-state, 
-asset-latitude, asset-longitude, asset-region, asset-division, 
-asset-department, asset-building, asset-floor, asset-room, 
-asset-rack, asset-slot, asset-port, asset-circuitid, 
-asset-category, asset-displaycategory, asset-notifycategory, 
-asset-pollercategory, asset-thresholdcategory, asset-managedobjecttype, 
-asset-managedobjectinstance, asset-manufacturer, asset-vendor, 
-asset-modelnumber, asset-description, asset-operatingsystem
-----
+Keys beginning with `node-` come from the node table.
+Keys beginning with `parent-` come from the node table entry of the designated parent node (If defined).
+Keys beginning with `asset-`  come from the corresponding asset table entry for the given node (If defined).
+
+[options="autowidth"]
+|===
+| node-nodelabel | node-nodeid | node-foreignsource | node-foreignid | node-nodesysname 
+| node-nodesyslocation | node-operatingsystem | node-categories| | 
+| parent-nodelabel | parent-nodeid | parent-foreignsource | parent-foreignid | 
+| asset-address1 | asset-address2| asset-city | asset-zip| asset-state
+| asset-latitude | asset-longitude| asset-region | asset-division| asset-department
+| asset-building | asset-floor| asset-room | asset-rack | asset-slot
+| asset-port | asset-circuitid | asset-category | asset-displaycategory | asset-notifycategory
+| asset-pollercategory | asset-thresholdcategory | asset-managedobjecttype | asset-managedobjectinstance | asset-manufacturer
+| asset-vendor | asset-modelnumber | asset-description | asset-operatingsystem | asset-country
+|===
+
 This allows arbitrary topologies to be generated including physical fields (room, rack etc.) and 
 logical fields such as asset node categories. Please note you should not put any spaces in the comma separated `assetLayers` list. 
 If the `assetLayers` property is defined as empty then a single graph layer will be generated containing all opennms nodes.
@@ -94,24 +98,21 @@ Filters are defined using the same asset table keys which are available for the 
 [options="header, autowidth"]
 |===
 | Operation  | Definition  | Example
-| OR | key1=value1,value2 alternatively key1=value1&key1=value2 | asset-region=north,south
-| AND | key1=val1&key2=val2 | asset-region=north&asset-site=23
+| OR | key1=value1,value2 alternatively key1=value1;key1=value2 | asset-region=north,south
+| AND | key1=val1;key2=val2 | asset-region=north;asset-site=23
 | NOT | key1=!val1 | asset-site=!23
 |===
 
 Thus the following configuration means include only nodes with region `north` or `south` but exclude all nodes with site `23`.
 ----
-filter=asset-region=north,south&asset-site=!23
+filter=asset-region=north,south;asset-site=!23
 ----
-
 The filters are designed to treat all selected text key entries as comma separated values (csv). This allows OpenNMS node-categories which are
 many to many entries to be dealt with as a comma separated list of values; routers,servers,web etc. 
 Thus we can select based on multiple separate node categories. The following configuration means show routers and servers on all sites except site 23.
-
 ----
-filter=node-categories=routers,servers&asset-site=!23
+filter=node-categories=routers,servers;asset-site=!23
 ----
-
 The filters treat all asset table entries as comma seperated variables (csv). This also means that, 
 for instance asset-displaycategory could also contain several values separated by commas. e.g. customer1,customer2,customer3 etc.
 
@@ -122,28 +123,43 @@ You can also negate a regular expression by preceding it with !~.
 
 The following example will match against regions 'Stuttgart' and 'Isengard' and any site name which ends in 4
 ----
-filter=asset-region=~.*gar(t|d)&asset-site=~.*4
+filter=asset-region=~.*gar(t|d);asset-site=~.*4
 ----
 
 === Configuration
-The default configuration for the Asset Topology Provider is held in the following file:
+The _Asset Topology Provider_ persists both the asset topology graph definitions and the generated GraphML graphs.
+The persisted definitions mean that is is possible to regenerate graphs if the asset table is changed without reentering the configuration.
+
+The _Asset Topology Provider_ persists GraphML graphs along side any other GraphML graphs in the directory;
 ----
-<opennms home>/etc/org.opennms.plugins.graphml.asset.cfg
+<opennms home>/etc/graphml
 ----
-Which contains the following properties (defaults shown will be used if the file is not present)
+Please note that if you are using ReST or any other means to generate other GraphML graphs, you should ensure that 
+the providerIds and labels are distinct from those used by the _Asset Topology Provider_
+
+The asset graph definitions for the Asset Topology Provider are persisted to the following karaf configuration file:
+----
+<opennms home>/etc/org.opennms.features.topology.plugins.topo.asset.cfg
+----
+Normally you should not edit this file directly but use the karaf consol or events to define new graphs.
+
+The config file will contain each of the graph definitions as properties in the form
+----
+asset.graph.definition.<providerId>=providerId=asset&label=Asset Topology Provider&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2&preferredLayout=Grid Layout&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT'
+----
+Each of the entries are uniquely named using the <providerId> suffix to the property key. 
+The individual definition parameters are separated by the & character as described in the following table
 
 [options="header, autowidth"]
 |===
-| Parameter                 | Default               | Description
-|`providerId` | asset | The unique name of the provider - used as handle to install and remove the topology
-|`label` | Asset Provider | The name which shows up on the topology menu (must be unique)
-|`assetLayers`| asset-region,asset-building,asset-rack  | asset layers (in order). See separate description.
-|`filter` | '' | Empty filter (i.e. allow all nodes). See separate description.
-|`preferredLayout` | 'Grid Layout' | Preferred layout of the nodes in generated graphs. 
-|`breadcrumbStrategy` | SHORTEST_PATH_TO_ROOT | Breadcrumb strategy used to display breadcrumbs above each graph
+| Parameter                 | Description
+|`providerId` | The unique name of the provider - used as handle to install and remove the topology
+|`label` | The name which shows up on the topology menu (must be unique)
+|`assetLayers`| Comma separated asset layers (in order). See separate description.
+|`filter` | Determines which nodes are included in graph.  See separate description.
+|`preferredLayout` |  Preferred layout of the nodes in generated graphs. 
+|`breadcrumbStrategy` | Breadcrumb strategy used to display breadcrumbs above each graph
 |===
-
-Any of these default properties can be changed when a command is given to generate an asset topology.
 
 === Creating Asset Based Topologies From Karaf Consol
 
@@ -157,26 +173,53 @@ The following commands are available
 |===
 | Command                      | Description               | Options
 | asset-topology:create        | Creates Asset Topology.   | 
+(The default settings are used if a particular setting is not included in the command)
 
--l, --label : Asset Topology label (shows in topology menu)
+-l, --label : Asset Topology label (shows in topology menu) (Default: asset)
 
--i, --providerId : Unique providerId of asset topology
+-i, --providerId : Unique providerId of asset topology (Default: 'Asset Topology Provider')
 
--f, --filter : Optional node filter
+-f, --filter : Optional node filter (Default: empty filter i.e. allow all nodes)
 
--a, --assetLayers : Comma separated list of asset layers
+-a, --assetLayers : Comma separated list of asset layers (Default: asset-region,asset-building,asset-rack)
 
--p, --preferredLayout : Preferred Layout
+-p, --preferredLayout : Preferred Layout (Default: 'Grid Layout')
 
--b, --breadcrumbStrategy : Bread Crumb Strategy
+-b, --breadcrumbStrategy : Bread Crumb Strategy (Default: SHORTEST_PATH_TO_ROOT)
+
+-u, --uriParams :Configuration as URI parameter string. (Using this option will override all other options).
+
+If you simply type asset-topology:create a default topology with providerId asset will be created.
 
 | asset-topology:remove        | Removes Asset Topology.   | 
--i, --providerId : Unique providerId of asset topology
-
+-i, --providerId : Unique providerId of asset topology (Default: asset)
+| asset-topology:list        | Lists all Asset Topologies installed.   | 
+all : display detailed view including --uriParams string
+| asset-topology:regenerate        | Regenerates the graphs for the given Asset Topology definition.   | 
+-i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
+| asset-topology:regenerateall        | Best Effort regeneration of all asset topologies. 
+(If one graph fails, the command will try to complete the rest of the definitions definition)   | 
 |===
 
-Any debug data is created in <opennms home>/data/tmp/AssetListFile.xml containing all the nodes and associated asset fields.
- (This file can be used for debugging. A similar file is used in the unit tests for this module).
+The -u or --uriParams option allows the entire graph config to be entered as a single string containing 
+the same parameters separated by an '&' character. 
+----
+--uriParams 'providerId=asset1&label=Asset Topology Provider&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2&preferredLayout=Grid Layout&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT'
+----
+This is similar to the way definitions are saved in the definition config file.
+If the --uriParams option is used, all other options are ignored. 
+Any parameters not included in the --uriParams string will be set with default settings.
+
+The properties file can also be edited using the Karaf Config Admin feature but this will not trigger a regeneration of graphs.
+If you do use this method to edit the config, the config shell reacts to ! characters so you should escape any ! characters with \! as shown below.
+----
+opennms> config:edit org.opennms.features.topology.plugins.topo.asset
+opennms> config:proplist
+opennms> config:propset asset.graph.definition.test providerId=test&label=asset2&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=\!testDisplayCategory
+opennms> config:update
+opennms> config:proplist
+   asset.graph.definition.test = providerId=test&label=asset2&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory
+----
 
 === Creating Asset Based Topologies Using _{opennms-product-name}_ events
 
@@ -185,34 +228,60 @@ The _Asset Topology Provider_ events are defined in the file
 ----
 <opennms home>/etc/events/GraphMLAssetPluginEvents.xml
 ----
-
-These events will use the default parameters 
+These events will use the default parameters if parameters are not supplied
 
 To create a new topology from the current OpenNMS inventory use 
 ----
-sudo ./send-event.pl  uei.opennms.plugins/assettopology/create 
+(for default topology)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost
+
+(or with parameters)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'-->
+
+other example possible parameters are
+-p 'filters asset-displaycategory=!testDisplayCategory'
+-p 'preferredLayout Grid Layout'
+-p 'breadcrumbStrategy SHORTEST_PATH_TO_ROOT'
 ----
 
 To uninstall an asset topology use
 ----
-sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove
+(for default topology providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost
+
+(or with specific providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost -p 'providerId test'
 ----
 
+To regenerate an existing asset topology use
+----
+(for default topology providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost
+
+(or with specific providerId)
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost-p 'providerId test'
+----
+
+To regenerate all existing asset topologies use
+----
+sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerateall localhost
+----
 
 === Viewing the topology
 If all goes well, having installed the topology, upon refreshing your screen, 
 you should see a new topology display option in the _{opennms-product-name}_  topology page. 
 The displayed name of this topology is given by the label field
 
-It is not related to the name of the topology (topologyName) which is used by the ReST api for the installation or removal of a topology. However this name must be unique across all installed topologies. 
+The label field need not be the same as the providerId which is used by the ReST api for the installation 
+or removal of a topology. However the label field must be unique across all installed topologies. 
 
 It is possible to have several topologies installed which have been generated using different configurations.
-You simply need to ensure that the providerId used for each installation command is different.
+You simply need to ensure that the providerId and label field used for each installation command is different.
 
 === additional notes
 
 Please note you MUST first uninstall an _{opennms-product-name}_ graphml topology before installing a new one. 
 You will also have to log out and log back into the UI in order to see the new topology file. 
 If you uninstall a topology while viewing it, the UI will throw an error and 
-you will also have to log out and back in to see topologies. 
+you will also have to log out and back in to see the remaining topologies. 
 
