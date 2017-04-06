@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.time.ZonedDateTimeBuilder;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -54,7 +55,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>EventBuilder class.</p>
@@ -148,7 +148,7 @@ public class EventBuilder {
         events.setEvent(new Event[]{event});
 
         Header header = new Header();
-        header.setCreated(event.getCreationTime().toString());
+        header.setCreated(StringUtils.toStringEfficiently(event.getCreationTime()));
 
         Log log = new Log();
         log.setHeader(header);
@@ -450,7 +450,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder addParam(final String parmName, final Collection<String> vals) {
-    	final String val = StringUtils.collectionToCommaDelimitedString(vals);
+        final String val = org.springframework.util.StringUtils.collectionToCommaDelimitedString(vals);
         return addParam(parmName, val);
         
     }

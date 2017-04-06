@@ -31,6 +31,7 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
@@ -230,7 +231,7 @@ public class InventoryReportRunner implements Runnable {
     @Override
     public void run() {
 
-        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, reportRequestDate.toString());
+        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, StringUtils.toStringEfficiently(reportRequestDate));
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);
         calculator.setTheDate(theDate);

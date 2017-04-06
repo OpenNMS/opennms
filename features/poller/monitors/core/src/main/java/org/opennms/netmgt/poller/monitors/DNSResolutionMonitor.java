@@ -133,6 +133,9 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
                                    final Resolver resolver,
                                    final int type) {
         final Lookup lookup = new Lookup(name, type);
+        // NMS-9238: Do not use a cache when looking up the record,
+        // that kind of defeats the purpose of this monitor :)
+        lookup.setCache(null);
         lookup.setResolver(resolver);
 
         final Record[] records = lookup.run();

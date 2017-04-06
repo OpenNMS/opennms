@@ -54,7 +54,7 @@
       <downtime begin="0" end="300000" interval="30000"/>
       <downtime begin="300000" end="43200000" interval="300000"/>
       <downtime begin="43200000" end="432000000" interval="600000"/>
-      <downtime begin="432000000" delete="true"/>
+      <downtime interval="3600000" begin="432000000" />
    </package>
    <package name="example1">
       <filter>IPADDR != '0.0.0.0'</filter>
@@ -280,7 +280,7 @@
       <downtime begin="0" end="300000" interval="30000"/>
       <downtime begin="300000" end="43200000" interval="300000"/>
       <downtime begin="43200000" end="432000000" interval="600000"/>
-      <downtime begin="432000000" delete="true"/>
+      <downtime interval="3600000" begin="432000000" /><!-- 1h, 5d -->
    </package>
    <package name="strafer">
       <filter>IPADDR != '0.0.0.0'</filter>
@@ -302,7 +302,7 @@
          <parameter key="rrd-base-name" value="strafeping"/>
       </service>
       <downtime begin="0" end="432000000" interval="300000"/>
-      <downtime begin="432000000" delete="true"/>
+      <downtime interval="3600000" begin="432000000" /><!-- 1h, 5d -->
    </package>
    <monitor service="JMX-Cassandra" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
    <monitor service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>

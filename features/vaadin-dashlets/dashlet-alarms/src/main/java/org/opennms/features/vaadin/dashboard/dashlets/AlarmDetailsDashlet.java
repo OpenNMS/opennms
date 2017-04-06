@@ -42,6 +42,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
@@ -63,7 +64,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.LinkedHashMap;
@@ -354,7 +354,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
@@ -391,13 +391,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
-        lastEvent.setValue(onmsAlarm.getLastEventTime().toString());
+        lastEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()));
 
         Label firstEvent = new Label();
         firstEvent.setSizeUndefined();
         firstEvent.addStyleName("alert-details-font");
         firstEvent.setCaption("First event");
-        firstEvent.setValue(onmsAlarm.getFirstEventTime().toString());
+        firstEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getFirstEventTime()));
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);
