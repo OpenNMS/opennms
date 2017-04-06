@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.collection.persistence.tcp;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Constructs the appropriate RRD strategy based on the
+ * Constructs the appropriate TCP output strategy based on the
  * configured system properties.
  *
- * Optionally wraps the strategy with a queue and/or
- * outputs the metrics to a TCP stream.
+ * Optionally wraps the strategy with a queue.
  *
  */
-public class RrdStrategyFactory implements ApplicationContextAware {
+public class TcpOutputStrategyFactory implements ApplicationContextAware {
 
     private ApplicationContext m_context;
 
     private static enum StrategyName {
-        basicRrdStrategy,
-        queuingRrdStrategy,
-        tcpAndBasicRrdStrategy,
-        tcpAndQueuingRrdStrategy
+        simpleTcpOutputStrategy,
+        queuingTcpOutputStrategy
     }
 
     @Override
@@ -55,35 +52,20 @@ public class RrdStrategyFactory implements ApplicationContextAware {
         m_context = context;
     }
 
-    /**
-     * <p>getStrategy</p>
-     *
-     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
-     */
-    @SuppressWarnings("unchecked")
-    public <D, F> RrdStrategy<D, F> getStrategy() {
-        RrdStrategy<D, F> rrdStrategy = null;
+    public TcpOutputStrategy getStrategy() {
+        TcpOutputStrategy tcpStrategy = null;
         Boolean useQueue = (Boolean) m_context.getBean("useQueue");
-        Boolean useTcp = (Boolean) m_context.getBean("useTcp");
 
         if (useQueue) {
-            if (useTcp) {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
-            } else {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingRrdStrategy.toString());
-            }
+            tcpStrategy = (TcpOutputStrategy) m_context.getBean(StrategyName.queuingTcpOutputStrategy.toString());
         } else {
-            if (useTcp) {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
-            } else {
-                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
-            }
+            tcpStrategy = (TcpOutputStrategy) m_context.getBean(StrategyName.simpleTcpOutputStrategy.toString());
         }
 
-        if (rrdStrategy == null) {
-            throw new IllegalStateException(String.format("Invalid RRD configuration useQueue: %s, useTcp: %s", useQueue, useTcp));
+        if (tcpStrategy == null) {
+            throw new IllegalStateException(String.format("Invalid TCP output configuration useQueue: %s", useQueue));
         }
 
-        return rrdStrategy;
+        return tcpStrategy;
     }
 }
