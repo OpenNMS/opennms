@@ -186,10 +186,21 @@
 					// We have to provide the locationName here because it has a dash in its
 					// name and we can't use dot notation to refer to it as a default param
 					saveMe.$delete({id: item['location-name']}, function() {
-						$scope.refresh();
+						// Watch the item list
+						var cancelWatch = $scope.$watch('items', function() {
+							for (var i = 0; i < $scope.items.length; i++) {
+								// If it still contains the deleted item, then call refresh()
+								if ($scope.items[i]['location-name'] === item['location-name']) {
+									$scope.refresh();
+									return;
+								}
+							}
+							// If the deleted item is not in the item list, then cancel the $watch
+							cancelWatch();
+						});
 					}, function (response) {
-                        $window.alert('Deletion of location \"' +  item['location-name'] + '\" failed. Please make sure that no nodes are associated with the given location.');
-                    });
+						$window.alert('Deletion of location \"' +  item['location-name'] + '\" failed. Please make sure that no nodes are associated with the given location.');
+					});
 				}
 			}, function(response) {
 				if (response.status === 404) {
