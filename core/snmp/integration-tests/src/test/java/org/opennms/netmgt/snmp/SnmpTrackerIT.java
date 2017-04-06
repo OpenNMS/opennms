@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -93,26 +93,68 @@ public class SnmpTrackerIT implements InitializingBean {
     }
 
     static private class CountingColumnTracker extends ColumnTracker {
-        private long m_count = 0;
+        private long m_columnCount = 0;
+        private final List<ResponseError> m_errors = new ArrayList<>();
 
         public CountingColumnTracker(final SnmpObjId base) {
             super(base);
         }
         
-        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions) {
-            super(base, maxRepetitions);
+        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions, final int maxRetries) {
+            super(base, maxRepetitions, maxRetries);
         }
         
-        public long getCount() {
-            return m_count;
+        public long getColumnCount() {
+            return m_columnCount;
         }
         
+        public List<ResponseError> getResponseErrors() {
+            return m_errors;
+        }
+
         @Override
         protected void storeResult(final SnmpResult res) {
         	LOG.debug("storing result: {}", res);
-            m_count++;
+            m_columnCount++;
         }
 
+        @Override
+        public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+            final ResponseProcessor rp = super.buildNextPdu(pduBuilder);
+            final ResponseProcessor errorRp = new ResponseProcessor() {
+
+                @Override
+                public void processResponse(final SnmpObjId snmpObjId, SnmpValue val) {
+                    rp.processResponse(snmpObjId, val);
+                }
+
+                @Override
+                public boolean processErrors(final int errorStatus, final int errorIndex) {
+                    final boolean retry = rp.processErrors(errorStatus, errorIndex);
+                    m_errors.add(new ResponseError(ErrorStatus.fromStatus(errorStatus), retry));
+                    return retry;
+                }
+            };
+            return errorRp;
+        }
+    }
+
+    static private class ResponseError {
+        private ErrorStatus m_status;
+        private boolean m_retry;
+
+        public ResponseError(final ErrorStatus status, final boolean retry) {
+            m_status = status;
+            m_retry = retry;
+        }
+
+        public ErrorStatus getStatus() {
+            return m_status;
+        }
+
+        public boolean getRetry() {
+            return m_retry;
+        }
     }
 
     static private final class ResultTable {
@@ -172,11 +214,12 @@ public class SnmpTrackerIT implements InitializingBean {
         }
     }
 
-    private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
+    private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions, final int maxRetries) throws Exception {
     	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("192.0.2.205"));
         config.setVersion(SnmpAgentConfig.VERSION2C);
         config.setMaxVarsPerPdu(maxVarsPerPdu);
         config.setMaxRepetitions(maxRepetitions);
+        config.setRetries(maxRetries);
         final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
         walker.start();
@@ -197,16 +240,29 @@ public class SnmpTrackerIT implements InitializingBean {
     @Test
     public void testColumnTracker() throws Exception {
     	final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1"));
-        walk(ct, 10, 3);
-        assertEquals("number of columns returned must match test data", Long.valueOf(6).longValue(), ct.getCount());
+        walk(ct, 10, 3, 0);
+        assertEquals("number of columns returned must match test data", 6l, ct.getColumnCount());
     }
  
+    @Test
+    @JUnitSnmpAgent(host="192.0.2.205", resource="classpath:snmpTestDataError.properties")
+    public void testColumnTrackerWithError() throws Exception {
+        final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.6.1.3.17"));
+        walk(ct, 10, 3, 3);
+        final List<ResponseError> errors = ct.getResponseErrors();
+        assertEquals("Number of errors before giving up should be 3", 3, errors.size());
+        for (final ResponseError error : errors) {
+            assertEquals("buildNextPdu should indicate a retry should be attempted", true, error.getRetry());
+            assertEquals(".1.3.6.1.3.17 should return an AUTHORIZATION_ERROR(16)", ErrorStatus.AUTHORIZATION_ERROR, error.getStatus());
+        }
+    }
+
     @Test
     public void testTableTrackerWithFullTable() throws Exception {
     	final TestRowCallback rc = new TestRowCallback();
     	final TableTracker tt = new TableTracker(rc, SnmpTableConstants.ifIndex, SnmpTableConstants.ifDescr, SnmpTableConstants.ifSpeed);
 
-        walk(tt, 3, 10);
+        walk(tt, 3, 10, 0);
 
         final ResultTable results = rc.getResults();
         assertTrue("tracker must be finished", tt.isFinished());
@@ -230,7 +286,7 @@ public class SnmpTrackerIT implements InitializingBean {
             SnmpTableConstants.ifOutUcastPkts, SnmpTableConstants.ifOutNUcastPkts, SnmpTableConstants.ifOutErrors
         );
 
-        walk(tt, 4, 3);
+        walk(tt, 4, 3, 0);
 
         printResponses(rc);
         final ResultTable results = rc.getResults();
@@ -252,7 +308,7 @@ public class SnmpTrackerIT implements InitializingBean {
         tt[1] = new TableTracker(rc, SnmpTableConstants.ifMtu, SnmpTableConstants.ifLastChange);
         final AggregateTracker at = new AggregateTracker(tt);
 
-        walk(at, 4, 10);
+        walk(at, 4, 10, 0);
 
         printResponses(rc);
     }
