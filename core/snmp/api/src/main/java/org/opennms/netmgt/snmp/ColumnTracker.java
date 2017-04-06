@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,24 +37,27 @@ public class ColumnTracker extends CollectionTracker {
     private SnmpObjId m_base;
     private SnmpObjId m_last;
     private int m_maxRepetitions;
+    private int m_maxRetries;
+    private Integer m_retries;
 
     public ColumnTracker(SnmpObjId base) {
         this(null, base);
     }
 
-    public ColumnTracker(SnmpObjId base, int maxRepititions) {
-        this(null, base, maxRepititions);
+    public ColumnTracker(SnmpObjId base, int maxRepititions, int maxRetries) {
+        this(null, base, maxRepititions, maxRetries);
     }
     
     public ColumnTracker(CollectionTracker parent, SnmpObjId base) {
-        this(parent, base, 2);
+        this(parent, base, 2, 0);
     }
 
-    public ColumnTracker(CollectionTracker parent, SnmpObjId base, int maxRepititions) {
+    public ColumnTracker(CollectionTracker parent, SnmpObjId base, int maxRepititions, int maxRetries) {
         super(parent);
         m_base = base;
         m_last = base;
         m_maxRepetitions = maxRepititions;
+        m_maxRetries = maxRetries;
     }
 
     public SnmpObjId getBase() {
@@ -82,7 +85,6 @@ public class ColumnTracker extends CollectionTracker {
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
         ResponseProcessor rp = new ResponseProcessor() {
-
             @Override
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
                 if (val.isEndOfMib()) {
@@ -108,7 +110,8 @@ public class ColumnTracker extends CollectionTracker {
 
             @Override
             public boolean processErrors(int errorStatus, int errorIndex) {
-                //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);;
+                if (m_retries == null) m_retries = getMaxRetries();
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}, retries={}", errorStatus, errorIndex, m_retries);
 
                 final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
                 if (status == ErrorStatus.TOO_BIG) {
@@ -127,9 +130,20 @@ public class ColumnTracker extends CollectionTracker {
                     throw ex;
                 } else if (status != ErrorStatus.NO_ERROR) {
                     reportNonFatalErr(status);
-                    return status.retry();
                 }
-                return false;
+
+                if (status.retry()) {
+                    if (m_retries-- <= 0) {
+                        final ErrorStatusException ex = new ErrorStatusException(status, "Non-fatal error met maximum number of retries. Aborting!");
+                        reportFatalErr(ex);
+                        throw ex;
+                    }
+                } else {
+                    // On success, reset the retries
+                    m_retries = getMaxRetries();
+                }
+
+                return status.retry();
             }
         };
         
@@ -143,6 +157,16 @@ public class ColumnTracker extends CollectionTracker {
     @Override
     public void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
+    }
+
+    public int getMaxRetries() {
+        return m_maxRetries;
+    }
+    
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        LOG.debug("setMaxRetries({})", maxRetries);
+        m_maxRetries = maxRetries;
     }
 
     protected void receivedEndOfMib() {
