@@ -166,8 +166,10 @@ public class Provisioner implements SpringServiceDaemon {
     public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
-    
 
+    public DefaultTaskCoordinator getTaskCoordinator() {
+        return m_taskCoordinator;
+    }
 
     /**
      * <p>setAgentConfigFactory</p>
@@ -446,14 +448,6 @@ public class Provisioner implements SpringServiceDaemon {
         return m_eventForwarder;
     }
 
-    /**
-     * <p>doImport</p>
-     */
-    public void doImport() {
-        Event e = null;
-        doImport(e);
-    }
-    
     /**
      * Begins importing from resource specified in model-importer.properties file or
      * in event parameter: url.  Import Resources are managed with a "key" called

@@ -172,13 +172,13 @@ maintained
   </service>
   <service>
     <name>OpenNMS:Name=Provisiond</name>
-    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
+    <class-name>org.opennms.netmgt.provision.service.jmx.Provisiond</class-name>
     <attribute>
-      <name>LoggingPrefix</name>
+      <name>loggingPrefix</name>
       <value type="java.lang.String">provisiond</value>
     </attribute>
     <attribute>
-      <name>SpringContext</name>
+      <name>springContext</name>
       <value type="java.lang.String">provisiondContext</value>
     </attribute>
     <invoke at="start" pass="0" method="init"/>
