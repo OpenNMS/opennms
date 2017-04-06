@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,7 +62,7 @@ public abstract class SnmpWalker implements Closeable {
     private String m_errorMessage = "";
     private Throwable m_errorThrowable = null;
     
-    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepetitions, CollectionTracker tracker) {
+    protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepetitions, int maxRetries, CollectionTracker tracker) {
         m_address = address;
         m_signal = new CountDownLatch(1);
         
@@ -70,6 +70,7 @@ public abstract class SnmpWalker implements Closeable {
 
         m_tracker = tracker;
         m_tracker.setMaxRepetitions(maxRepetitions);
+        m_tracker.setMaxRetries(maxRetries);
         
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
