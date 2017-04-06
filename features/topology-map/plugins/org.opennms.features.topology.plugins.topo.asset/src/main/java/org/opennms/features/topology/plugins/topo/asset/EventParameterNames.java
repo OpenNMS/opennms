@@ -31,8 +31,8 @@ package org.opennms.features.topology.plugins.topo.asset;
 public interface EventParameterNames {
     String LABEL = "label";
     String BREADCRUMB_STRATEGY = "breadcrumbStrategy";
-    String PROVIDER_ID = "id";
+    String PROVIDER_ID = "providerId";
     String FILTERS = "filters";
     String PREFERRED_LAYOUT = "preferredLayout";
-    String HIERARCHY = "hierarchy";
+    String HIERARCHY = "assetLayers";
 }

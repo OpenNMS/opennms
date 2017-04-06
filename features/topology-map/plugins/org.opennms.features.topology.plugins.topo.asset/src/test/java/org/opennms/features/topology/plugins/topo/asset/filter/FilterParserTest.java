@@ -102,11 +102,11 @@ public class FilterParserTest {
 	}
 
 	// test specific 'or' values separate entries
-	// filter=asset-displaycategory=asset-displaycategory_0&asset-displaycategory=asset-displaycategory_5
+	// filter=asset-displaycategory=asset-displaycategory_0;asset-displaycategory=asset-displaycategory_5
 	@Test
 	public void testFilterString2(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_0"
-				+ "&"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_5";
+				+ ";"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=asset-displaycategory_5";
 		String expected="nodeList:{ [0] [5] }";
 
 		LOG.debug("Start testFilterString2(): filter="+filter+" expected="+expected);
@@ -142,11 +142,11 @@ public class FilterParserTest {
 	}
 
 	// test and separate parameters
-	// filter=asset-pollercategory=testPollerCategory1&node-foreignsource=testForeignSource1,testForeignSource2
+	// filter=asset-pollercategory=testPollerCategory1;node-foreignsource=testForeignSource1,testForeignSource2
 	@Test
 	public void testFilterString5(){
 		String filter=NodeParamLabels.ASSET_POLLERCATEGORY+"=testPollerCategory1"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] }";
 
@@ -157,11 +157,11 @@ public class FilterParserTest {
 	}
 
 	// test not value and or values
-	// filter=asset-displaycategory=!testDisplayCategory&node-foreignsource=testForeignSource1,testForeignSource2
+	// filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2
 	@Test
 	public void testFilterString6(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
 
@@ -172,11 +172,11 @@ public class FilterParserTest {
 	}
 
 	// test reversing order of not and or values
-	// filter=node-foreignsource=testForeignSource1,testForeignSource2&asset-displaycategory=!testDisplayCategory
+	// filter=node-foreignsource=testForeignSource1,testForeignSource2;asset-displaycategory=!testDisplayCategory
 	@Test
 	public void testFilterString7(){
 		String filter=NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2"
-				+ "&"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory";
+				+ ";"+NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory";
 
 		String expected="nodeList:{ [5] [6] [7] [8] [9] }";
 
@@ -248,11 +248,11 @@ public class FilterParserTest {
 	}
 	
 	// test too many '='
-	// filter=asset-displaycategory=!testDisplayCategory&node-foreignsource=testForeignSource1,testForeign=Source2
+	// filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeign=Source2
 	@Test
 	public void testFilterString12(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeign=Source2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeign=Source2";
 
 		LOG.debug("Start testFilterString12() filter="+filter);
 		boolean expectedException=false;
@@ -268,11 +268,11 @@ public class FilterParserTest {
 	}
 	
 	// test too many ','
-	// filter=asset-displaycategory=!testDisplayCategory&node-foreignsource=testForeignSource1,,testForeignSource2
+	// filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,,testForeignSource2
 	@Test
 	public void testFilterString13(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!testDisplayCategory"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,,testForeignSource2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,,testForeignSource2";
 
 		LOG.debug("Start testFilterString13() filter="+filter);
 		boolean expectedException=false;
@@ -288,11 +288,11 @@ public class FilterParserTest {
 	}
 	
 	// test empty not value "=!"
-	// filter=asset-displaycategory=!&node-foreignsource=testForeignSource1,,testForeignSource2
+	// filter=asset-displaycategory=!;node-foreignsource=testForeignSource1,,testForeignSource2
 	@Test
 	public void testFilterString14(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=!"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
 		LOG.debug("Start testFilterString14() filter="+filter);
 		boolean expectedException=false;
@@ -308,11 +308,11 @@ public class FilterParserTest {
 	}
 
 	// test empty regex value "=~"
-	// filter=asset-displaycategory=~&node-foreignsource=testForeignSource1,,testForeignSource2
+	// filter=asset-displaycategory=~;node-foreignsource=testForeignSource1,,testForeignSource2
 	@Test
 	public void testFilterString15(){
 		String filter=NodeParamLabels.ASSET_DISPLAYCATEGORY+"=~"
-				+ "&"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
+				+ ";"+NodeParamLabels.NODE_FOREIGNSOURCE+"=testForeignSource1,testForeignSource2";
 
 		LOG.debug("Start testFilterString15() filter="+filter);
 		boolean expectedException=false;

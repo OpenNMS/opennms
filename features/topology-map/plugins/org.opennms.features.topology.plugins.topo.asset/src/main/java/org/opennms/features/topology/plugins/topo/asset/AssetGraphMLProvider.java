@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.graphdrawing.graphml.GraphmlType;
@@ -51,8 +52,11 @@ public class AssetGraphMLProvider implements EventListener {
 
 	public static final String CREATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/create";
 	public static final String REMOVE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/remove";
+	public static final String REGENERATE_ASSET_TOPOLOGY = "uei.opennms.plugins/assettopology/regenerate";
+	public static final String REGENERATE_ALL_ASSET_TOPOLOGIES = "uei.opennms.plugins/assettopology/regenerateall";
 
-	private static final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, REMOVE_ASSET_TOPOLOGY);
+	private static final List<String> ueiList = Lists.newArrayList(CREATE_ASSET_TOPOLOGY, 
+			REMOVE_ASSET_TOPOLOGY,REGENERATE_ASSET_TOPOLOGY,REGENERATE_ALL_ASSET_TOPOLOGIES);
 
 	private final EventIpcManager eventIpcManager;
 
@@ -62,28 +66,38 @@ public class AssetGraphMLProvider implements EventListener {
 
 	private final NodeProvider nodeProvider;
 
+	private final AssetGraphDefinitionRepository assetGraphDefinitionRepository;
+
 	public AssetGraphMLProvider(GraphmlRepository repository,
-									EventIpcManager eventIpcManager, NodeProvider nodeProvider,
-									TransactionOperations transactionOperations) {
+			EventIpcManager eventIpcManager, NodeProvider nodeProvider,
+			TransactionOperations transactionOperations,
+			AssetGraphDefinitionRepositoryImpl assetGraphDefinitionRepository) {
 		this.graphmlRepository = Objects.requireNonNull(repository);
 		this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
 		this.nodeProvider = Objects.requireNonNull(nodeProvider);
 		this.transactionOperations=transactionOperations;
+		this.assetGraphDefinitionRepository = Objects.requireNonNull(assetGraphDefinitionRepository);
 	}
 
 	/**
 	 * Generates and installs a new AssetTopology defined by the config
-	 * @param config if null the default config is used
+	 * @param config 
 	 */
 	public synchronized void createAssetTopology(GeneratorConfig config){
 		Objects.requireNonNull(config);
 		try {
 			LOG.debug("Creating Asset Topology providerId: {}, label: {}, config: {}", config.getProviderId(), config.getLabel(), config);
 			if (graphmlRepository.exists(config.getProviderId())) {
-				throw new IllegalStateException(String.format("Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
+				throw new IllegalStateException(String.format("GraphML Provider with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
 			}
+			if (assetGraphDefinitionRepository.exists(config.getProviderId())) {
+				throw new IllegalStateException(String.format("Asset Graph Definition with id '%s' (label: %s) already exists", config.getProviderId(), config.getLabel()));
+			}
+
 			final GraphML graphML = transactionOperations.execute(status -> new AssetGraphGenerator(nodeProvider).generateGraphs(config));
 			final GraphmlType graphmlType = GraphMLWriter.convert(graphML);
+
+			assetGraphDefinitionRepository.addConfigDefinition(config);
 			graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
 		} catch (Exception ex){
 			LOG.error("Could not create Asset Topology", ex);
@@ -99,15 +113,68 @@ public class AssetGraphMLProvider implements EventListener {
 		Objects.requireNonNull(providerId);
 		try {
 			LOG.debug("Removing Asset Topology providerId: {}", providerId);
-			if (!graphmlRepository.exists(providerId)) {
-				throw new IllegalStateException(String.format("Provider with id '%s' cannot be removed, because it does not exist", providerId));
+			if (!assetGraphDefinitionRepository.exists(providerId)) {
+				throw new IllegalStateException(String.format("Asset Graph Definition with id '%s' cannot be removed, because it does not exist", providerId));
 			} else 	{
+				assetGraphDefinitionRepository.removeConfigDefinition(providerId);
+			}
+			if (graphmlRepository.exists(providerId)) {
 				graphmlRepository.delete(providerId);
 			}
 		} catch (Exception ex){
 			LOG.error("problem removing asset topology ", ex);
 			throw new RuntimeException(ex);
 		}
+	}
+
+	/**
+	 * Regenerates the AssetTopology defined by the providerId
+	 * @param providerId The providerId to regenerate.
+	 */
+	public synchronized void regenerateAssetTopology(String providerId){
+		Objects.requireNonNull(providerId);
+		try {
+			LOG.debug("Regenerating Asset Topology providerId: {}", providerId);
+			if (!assetGraphDefinitionRepository.exists(providerId)) 
+				throw new IllegalStateException(String.format("Asset Graph Definition with id '%s' cannot be regenerated, because it does not exist", providerId));
+
+			GeneratorConfig config = assetGraphDefinitionRepository.getConfigDefinition(providerId);
+			final GraphML graphML = transactionOperations.execute(status -> new AssetGraphGenerator(nodeProvider).generateGraphs(config));
+			final GraphmlType graphmlType = GraphMLWriter.convert(graphML);
+
+			if (graphmlRepository.exists(providerId)) graphmlRepository.delete(providerId);
+			graphmlRepository.save(config.getProviderId(), config.getLabel(), graphmlType);
+
+		} catch (Exception ex){
+			LOG.error("problem regenerating asset topology ", ex);
+			throw new RuntimeException(ex);
+		}
+	}
+
+	/**
+	 * Makes a best effort to regenerated all of the asset topologies defined in the assetGraphDefinitionRepository
+	 * Throws a runtime exception if all the topologies are not regenerated
+	 */
+	public synchronized void regenerateAllAssetTopologies(){
+		Map<String, GeneratorConfig> configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
+		StringBuffer logmsg = new StringBuffer("Regenerating All Asset Topologies succeeded for providerIds: ");
+		StringBuffer errmsg = new StringBuffer("Regenerate All Asset Topologies failed for providerIds: ");
+		boolean failed=false;
+		for(String providerId:configDefinitions.keySet()){
+			try {
+				regenerateAssetTopology(providerId);
+				logmsg.append("["+providerId+"]");
+			} catch (Exception ex){
+				errmsg.append("["+providerId+"]");
+				failed=true;
+			}
+		}
+		LOG.debug(logmsg.toString());
+		if(failed) {
+			LOG.error(errmsg.toString());
+			throw new RuntimeException(errmsg.toString());
+		}
+
 	}
 
 	public void init() {
@@ -134,6 +201,11 @@ public class AssetGraphMLProvider implements EventListener {
 			} else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
 				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
 				this.removeAssetTopology(providerId);
+			} else if (REGENERATE_ASSET_TOPOLOGY.equals(e.getUei())){
+				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
+				this.regenerateAssetTopology(providerId);
+			} else if (REGENERATE_ALL_ASSET_TOPOLOGIES.equals(e.getUei())){
+				this.regenerateAllAssetTopologies();
 			}
 		} catch (Exception ex) {
 			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);

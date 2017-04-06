@@ -45,7 +45,7 @@ public class GeneratorConfigBuilderTest {
                 .addParam(EventParameterNames.LABEL, "Custom Asset Topology")
                 .addParam(EventParameterNames.PREFERRED_LAYOUT, "D3 Layout")
                 .addParam(EventParameterNames.BREADCRUMB_STRATEGY, "NONE")
-                .addParam(EventParameterNames.FILTERS, "a=x&b=y")
+                .addParam(EventParameterNames.FILTERS, "a=x;b=y")
                 .addParam(EventParameterNames.HIERARCHY, "a,b,c")
                 .getEvent();
 
