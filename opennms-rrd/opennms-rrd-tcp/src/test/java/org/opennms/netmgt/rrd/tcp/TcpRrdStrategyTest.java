@@ -111,9 +111,9 @@ public class TcpRrdStrategyTest {
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 StringBuffer values = new StringBuffer();
                                 values.append("{ ");
-                                for (int i = 0; i < message.getValueCount(); i++) {
+                                for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }
-                                    values.append(message.getValue(i));
+                                    values.append(message.getDblValue(i));
                                 }
                                 values.append(" }");
                                 LOG.debug("Message received: { " + 

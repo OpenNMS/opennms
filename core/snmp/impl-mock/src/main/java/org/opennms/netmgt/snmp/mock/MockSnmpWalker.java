@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -105,8 +105,8 @@ public class MockSnmpWalker extends SnmpWalker {
     private final PropertyOidContainer m_container;
     private final ExecutorService m_executor;
 
-    public MockSnmpWalker(final SnmpAgentAddress agentAddress, int snmpVersion, final PropertyOidContainer container, final String name, final CollectionTracker tracker, int maxVarsPerPdu) {
-        super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, tracker);
+    public MockSnmpWalker(final SnmpAgentAddress agentAddress, final int snmpVersion, final PropertyOidContainer container, final String name, final CollectionTracker tracker, final int maxVarsPerPdu, final int maxRetries) {
+        super(agentAddress.getAddress(), name, maxVarsPerPdu, 1, maxRetries, tracker);
         m_agentAddress = agentAddress;
         m_snmpVersion = snmpVersion;
         m_container = container;

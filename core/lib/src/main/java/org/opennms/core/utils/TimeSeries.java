@@ -40,10 +40,13 @@ public abstract class TimeSeries {
 
     private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
 
+    private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
+
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)");
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
+        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)");
 
         private final String m_name;
         private final String m_descr;
