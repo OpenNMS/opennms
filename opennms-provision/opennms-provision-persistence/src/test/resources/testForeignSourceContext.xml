@@ -8,7 +8,9 @@
 
 	<context:annotation-config />
 
-	<bean id="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService"/>
+	<bean id="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
+		<qualifier value="default"/>
+	</bean>
 	<bean id="defaultRequisitionService" class="org.opennms.netmgt.provision.persist.DefaultRequisitionService"/>
 
 </beans>
