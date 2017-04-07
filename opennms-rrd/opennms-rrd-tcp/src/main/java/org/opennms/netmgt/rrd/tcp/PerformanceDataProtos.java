@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,19 +32,8 @@ package org.opennms.netmgt.rrd.tcp;
 
 import com.google.protobuf.UnknownFieldSet;
 
-/**
- * <p>PerformanceDataProtos class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public final class PerformanceDataProtos {
   private PerformanceDataProtos() {}
-  /**
-   * <p>registerAllExtensions</p>
-   *
-   * @param registry a {@link com.google.protobuf.ExtensionRegistry} object.
-   */
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -58,7 +47,6 @@ public final class PerformanceDataProtos {
       return defaultInstance;
     }
     
-    @Override
     public PerformanceDataReading getDefaultInstanceForType() {
       return defaultInstance;
     }
@@ -68,7 +56,6 @@ public final class PerformanceDataProtos {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_descriptor;
     }
     
-    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_fieldAccessorTable;
@@ -95,19 +82,30 @@ public final class PerformanceDataProtos {
     public boolean hasTimestamp() { return hasTimestamp; }
     public long getTimestamp() { return timestamp_; }
     
-    // repeated double value = 4;
-    public static final int VALUE_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Double> value_ =
+    // repeated double dblValue = 4;
+    public static final int DBLVALUE_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Double> dblValue_ =
       java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getValueList() {
-      return value_;
+    public java.util.List<java.lang.Double> getDblValueList() {
+      return dblValue_;
     }
-    public int getValueCount() { return value_.size(); }
-    public double getValue(int index) {
-      return value_.get(index);
+    public int getDblValueCount() { return dblValue_.size(); }
+    public double getDblValue(int index) {
+      return dblValue_.get(index);
     }
     
-    @Override
+    // repeated string strValue = 5;
+    public static final int STRVALUE_FIELD_NUMBER = 5;
+    private java.util.List<java.lang.String> strValue_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.String> getStrValueList() {
+      return strValue_;
+    }
+    public int getStrValueCount() { return strValue_.size(); }
+    public java.lang.String getStrValue(int index) {
+      return strValue_.get(index);
+    }
+    
     public final boolean isInitialized() {
       if (!hasPath) return false;
       if (!hasOwner) return false;
@@ -115,7 +113,6 @@ public final class PerformanceDataProtos {
       return true;
     }
     
-    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasPath()) {
@@ -127,14 +124,16 @@ public final class PerformanceDataProtos {
       if (hasTimestamp()) {
         output.writeUInt64(3, getTimestamp());
       }
-      for (double element : getValueList()) {
+      for (double element : getDblValueList()) {
         output.writeDouble(4, element);
+      }
+      for (java.lang.String element : getStrValueList()) {
+        output.writeString(5, element);
       }
       getUnknownFields().writeTo(output);
     }
     
     private int memoizedSerializedSize = -1;
-    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -154,9 +153,18 @@ public final class PerformanceDataProtos {
       }
       {
         int dataSize = 0;
-        dataSize = 8 * getValueList().size();
+        dataSize = 8 * getDblValueList().size();
         size += dataSize;
-        size += 1 * getValueList().size();
+        size += 1 * getDblValueList().size();
+      }
+      {
+        int dataSize = 0;
+        for (java.lang.String element : getStrValueList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeStringSizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getStrValueList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -216,12 +224,10 @@ public final class PerformanceDataProtos {
     }
     
     public static Builder newBuilder() { return Builder.create(); }
-    @Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    @Override
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
@@ -236,7 +242,11 @@ public final class PerformanceDataProtos {
         builder.result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading();
         return builder;
       }
-
+      
+      protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading internalGetResult() {
+        return result;
+      }
+      
       @Override
       public Builder clear() {
         if (result == null) {
@@ -247,27 +257,22 @@ public final class PerformanceDataProtos {
         return this;
       }
       
-      @Override
       public Builder clone() {
         return create().mergeFrom(result);
       }
       
-      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.getDescriptor();
       }
       
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading getDefaultInstanceForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.getDefaultInstance();
       }
       
-      @Override
       public boolean isInitialized() {
         return result.isInitialized();
       }
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
@@ -284,22 +289,24 @@ public final class PerformanceDataProtos {
         return buildPartial();
       }
       
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
             "build() has already been called on this Builder.");
         }
-        if (result.value_ != java.util.Collections.EMPTY_LIST) {
-          result.value_ =
-            java.util.Collections.unmodifiableList(result.value_);
+        if (result.dblValue_ != java.util.Collections.EMPTY_LIST) {
+          result.dblValue_ =
+            java.util.Collections.unmodifiableList(result.dblValue_);
+        }
+        if (result.strValue_ != java.util.Collections.EMPTY_LIST) {
+          result.strValue_ =
+            java.util.Collections.unmodifiableList(result.strValue_);
         }
         org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading returnMe = result;
         result = null;
         return returnMe;
       }
       
-      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading) {
           return mergeFrom((org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading)other);
@@ -320,17 +327,22 @@ public final class PerformanceDataProtos {
         if (other.hasTimestamp()) {
           setTimestamp(other.getTimestamp());
         }
-        if (!other.value_.isEmpty()) {
-          if (result.value_.isEmpty()) {
-            result.value_ = new java.util.ArrayList<java.lang.Double>();
+        if (!other.dblValue_.isEmpty()) {
+          if (result.dblValue_.isEmpty()) {
+            result.dblValue_ = new java.util.ArrayList<java.lang.Double>();
           }
-          result.value_.addAll(other.value_);
+          result.dblValue_.addAll(other.dblValue_);
+        }
+        if (!other.strValue_.isEmpty()) {
+          if (result.strValue_.isEmpty()) {
+            result.strValue_ = new java.util.ArrayList<java.lang.String>();
+          }
+          result.strValue_.addAll(other.strValue_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
-      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -365,7 +377,11 @@ public final class PerformanceDataProtos {
               break;
             }
             case 33: {
-              addValue(input.readDouble());
+              addDblValue(input.readDouble());
+              break;
+            }
+            case 42: {
+              addStrValue(input.readString());
               break;
             }
           }
@@ -433,37 +449,77 @@ public final class PerformanceDataProtos {
         return this;
       }
       
-      // repeated double value = 4;
-      public java.util.List<java.lang.Double> getValueList() {
-        return java.util.Collections.unmodifiableList(result.value_);
+      // repeated double dblValue = 4;
+      public java.util.List<java.lang.Double> getDblValueList() {
+        return java.util.Collections.unmodifiableList(result.dblValue_);
       }
-      public int getValueCount() {
-        return result.getValueCount();
+      public int getDblValueCount() {
+        return result.getDblValueCount();
       }
-      public double getValue(int index) {
-        return result.getValue(index);
+      public double getDblValue(int index) {
+        return result.getDblValue(index);
       }
-      public Builder setValue(int index, double value) {
-        result.value_.set(index, value);
+      public Builder setDblValue(int index, double value) {
+        result.dblValue_.set(index, value);
         return this;
       }
-      public Builder addValue(double value) {
-        if (result.value_.isEmpty()) {
-          result.value_ = new java.util.ArrayList<java.lang.Double>();
+      public Builder addDblValue(double value) {
+        if (result.dblValue_.isEmpty()) {
+          result.dblValue_ = new java.util.ArrayList<java.lang.Double>();
         }
-        result.value_.add(value);
+        result.dblValue_.add(value);
         return this;
       }
-      public Builder addAllValue(
+      public Builder addAllDblValue(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.value_.isEmpty()) {
-          result.value_ = new java.util.ArrayList<java.lang.Double>();
+        if (result.dblValue_.isEmpty()) {
+          result.dblValue_ = new java.util.ArrayList<java.lang.Double>();
         }
-        super.addAll(values, result.value_);
+        super.addAll(values, result.dblValue_);
         return this;
       }
-      public Builder clearValue() {
-        result.value_ = java.util.Collections.emptyList();
+      public Builder clearDblValue() {
+        result.dblValue_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // repeated string strValue = 5;
+      public java.util.List<java.lang.String> getStrValueList() {
+        return java.util.Collections.unmodifiableList(result.strValue_);
+      }
+      public int getStrValueCount() {
+        return result.getStrValueCount();
+      }
+      public java.lang.String getStrValue(int index) {
+        return result.getStrValue(index);
+      }
+      public Builder setStrValue(int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.strValue_.set(index, value);
+        return this;
+      }
+      public Builder addStrValue(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  if (result.strValue_.isEmpty()) {
+          result.strValue_ = new java.util.ArrayList<java.lang.String>();
+        }
+        result.strValue_.add(value);
+        return this;
+      }
+      public Builder addAllStrValue(
+          java.lang.Iterable<? extends java.lang.String> values) {
+        if (result.strValue_.isEmpty()) {
+          result.strValue_ = new java.util.ArrayList<java.lang.String>();
+        }
+        super.addAll(values, result.strValue_);
+        return this;
+      }
+      public Builder clearStrValue() {
+        result.strValue_ = java.util.Collections.emptyList();
         return this;
       }
 
@@ -497,7 +553,6 @@ public final class PerformanceDataProtos {
       return defaultInstance;
     }
     
-    @Override
     public PerformanceDataReadings getDefaultInstanceForType() {
       return defaultInstance;
     }
@@ -507,7 +562,6 @@ public final class PerformanceDataProtos {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReadings_descriptor;
     }
     
-    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReadings_fieldAccessorTable;
@@ -525,7 +579,6 @@ public final class PerformanceDataProtos {
       return message_.get(index);
     }
     
-    @Override
     public final boolean isInitialized() {
       for (org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading element : getMessageList()) {
         if (!element.isInitialized()) return false;
@@ -533,7 +586,6 @@ public final class PerformanceDataProtos {
       return true;
     }
     
-    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading element : getMessageList()) {
@@ -543,7 +595,6 @@ public final class PerformanceDataProtos {
     }
     
     private int memoizedSerializedSize = -1;
-    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -611,12 +662,10 @@ public final class PerformanceDataProtos {
     }
     
     public static Builder newBuilder() { return Builder.create(); }
-    @Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    @Override
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
@@ -631,7 +680,11 @@ public final class PerformanceDataProtos {
         builder.result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings();
         return builder;
       }
-
+      
+      protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings internalGetResult() {
+        return result;
+      }
+      
       @Override
       public Builder clear() {
         if (result == null) {
@@ -642,27 +695,22 @@ public final class PerformanceDataProtos {
         return this;
       }
       
-      @Override
       public Builder clone() {
         return create().mergeFrom(result);
       }
       
-      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings.getDescriptor();
       }
       
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings getDefaultInstanceForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings.getDefaultInstance();
       }
       
-      @Override
       public boolean isInitialized() {
         return result.isInitialized();
       }
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
@@ -679,7 +727,6 @@ public final class PerformanceDataProtos {
         return buildPartial();
       }
       
-      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
@@ -694,7 +741,6 @@ public final class PerformanceDataProtos {
         return returnMe;
       }
       
-      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings) {
           return mergeFrom((org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings)other);
@@ -716,7 +762,6 @@ public final class PerformanceDataProtos {
         return this;
       }
       
-      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -830,11 +875,6 @@ public final class PerformanceDataProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_PerformanceDataReadings_fieldAccessorTable;
   
-  /**
-   * <p>Getter for the field <code>descriptor</code>.</p>
-   *
-   * @return a {@link com.google.protobuf.Descriptors.FileDescriptor} object.
-   */
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -843,16 +883,16 @@ public final class PerformanceDataProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\025PerformanceData.proto\"W\n\026PerformanceDa" +
+      "\n\025PerformanceData.proto\"l\n\026PerformanceDa" +
       "taReading\022\014\n\004path\030\001 \002(\t\022\r\n\005owner\030\002 \002(\t\022\021" +
-      "\n\ttimestamp\030\003 \002(\004\022\r\n\005value\030\004 \003(\001\"C\n\027Perf" +
-      "ormanceDataReadings\022(\n\007message\030\001 \003(\0132\027.P" +
-      "erformanceDataReadingB3\n\032org.opennms.net" +
-      "mgt.rrd.tcpB\025PerformanceDataProtos"
+      "\n\ttimestamp\030\003 \002(\004\022\020\n\010dblValue\030\004 \003(\001\022\020\n\010s" +
+      "trValue\030\005 \003(\t\"C\n\027PerformanceDataReadings" +
+      "\022(\n\007message\030\001 \003(\0132\027.PerformanceDataReadi" +
+      "ngB3\n\032org.opennms.netmgt.rrd.tcpB\025Perfor" +
+      "manceDataProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-        @Override
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
@@ -861,7 +901,7 @@ public final class PerformanceDataProtos {
           internal_static_PerformanceDataReading_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PerformanceDataReading_descriptor,
-              new java.lang.String[] { "Path", "Owner", "Timestamp", "Value", },
+              new java.lang.String[] { "Path", "Owner", "Timestamp", "DblValue", "StrValue", },
               org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.class,
               org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.Builder.class);
           internal_static_PerformanceDataReadings_descriptor =
@@ -881,8 +921,5 @@ public final class PerformanceDataProtos {
         }, assigner);
   }
   
-  /**
-   * <p>internalForceInit</p>
-   */
   public static void internalForceInit() {}
 }

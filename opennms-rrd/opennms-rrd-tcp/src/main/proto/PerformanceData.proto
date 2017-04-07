@@ -5,7 +5,8 @@ message PerformanceDataReading {
   required string path = 1;
   required string owner = 2;
   required uint64 timestamp = 3;
-  repeated double value = 4;
+  repeated double dblValue = 4;
+  repeated string strValue = 5;
 }
 
 message PerformanceDataReadings {

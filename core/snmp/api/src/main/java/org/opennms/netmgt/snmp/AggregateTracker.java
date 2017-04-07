@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -80,8 +80,6 @@ public class AggregateTracker extends CollectionTracker {
         public int getMaxRepititions() {
             return hasRepeaters() ? m_maxRepititions : Integer.MAX_VALUE;
         }
-        
-        
         
         public int size() {
             return m_oids.size();
@@ -272,6 +270,13 @@ public class AggregateTracker extends CollectionTracker {
     public void setMaxRepetitions(int maxRepititions) {
         for (CollectionTracker child : m_children) {
             child.setMaxRepetitions(maxRepititions);
+        }
+    }
+
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        for (final CollectionTracker child : m_children) {
+            child.setMaxRetries(maxRetries);
         }
     }
 
