@@ -70,8 +70,8 @@ public interface XmlCollectionHandler  {
      */
     public void setServiceName(String serviceName);
 
-    public String parseUrl(final NodeDao nodeDao, final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException;
-    
-    public Request parseRequest(final NodeDao nodeDao, final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException;
+    public String parseUrl(final NodeDao nodeDao, final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException;
+
+    public Request parseRequest(final NodeDao nodeDao, final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException;
 
 }

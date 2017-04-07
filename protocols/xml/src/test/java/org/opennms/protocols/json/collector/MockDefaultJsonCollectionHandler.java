@@ -28,6 +28,8 @@
 
 package org.opennms.protocols.json.collector;
 
+import java.util.Map;
+
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.protocols.xml.config.Request;
@@ -55,7 +57,7 @@ public class MockDefaultJsonCollectionHandler extends DefaultJsonCollectionHandl
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#parseUrl(java.lang.String, org.opennms.netmgt.collectd.CollectionAgent, java.lang.Integer)
      */
     @Override
-    public String parseUrl(NodeDao nodeDao, String unformattedUrl, CollectionAgent agent, Integer collectionStep) {
+    public String parseUrl(NodeDao nodeDao, String unformattedUrl, CollectionAgent agent, Integer collectionStep, final Map<String,String> parameters) {
         return unformattedUrl.replace("{ipaddr}", "127.0.0.1");
     }
 }

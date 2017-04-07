@@ -28,6 +28,9 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -53,10 +56,12 @@ public class AbstractXmlCollectionHandlerTest {
         OnmsAssetRecord asset = new OnmsAssetRecord();
         asset.setSerialNumber("1001");
         node.setAssetRecord(asset);
-        String url = AbstractXmlCollectionHandler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300);
-        Assert.assertEquals("http://mynode.local/127.0.0.1/serial/1001/300", url);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("port", "80");
+        String url = AbstractXmlCollectionHandler.parseString("URL", "http://{nodeLabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
+        Assert.assertEquals("http://mynode.local:80/127.0.0.1/serial/1001/300", url);
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
-        String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300);
+        String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,100 +25,66 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.dao.support;
 
-import java.util.HashMap;
-import java.util.HashSet;
+package org.opennms.netmgt.dao.api;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 
-/**
- * The Class EvaluateResourceStorageDao.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- */
-public class EvaluateResourceStorageDao implements ResourceStorageDao {
+public class EmptyResourceStorageDao implements ResourceStorageDao {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#exists(org.opennms.netmgt.model.ResourcePath, int)
-     */
     @Override
     public boolean exists(ResourcePath path, int depth) {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#existsWithin(org.opennms.netmgt.model.ResourcePath, int)
-     */
     @Override
     public boolean existsWithin(ResourcePath path, int depth) {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#children(org.opennms.netmgt.model.ResourcePath, int)
-     */
     @Override
     public Set<ResourcePath> children(ResourcePath path, int depth) {
-        return new HashSet<ResourcePath>();
+        return Collections.emptySet();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#delete(org.opennms.netmgt.model.ResourcePath)
-     */
     @Override
     public boolean delete(ResourcePath path) {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#getAttributes(org.opennms.netmgt.model.ResourcePath)
-     */
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        return new HashSet<OnmsAttribute>();
+        return Collections.emptySet();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#setStringAttribute(org.opennms.netmgt.model.ResourcePath, java.lang.String, java.lang.String)
-     */
     @Override
     public void setStringAttribute(ResourcePath path, String key, String value) {
+        // pass
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#getStringAttribute(org.opennms.netmgt.model.ResourcePath, java.lang.String)
-     */
     @Override
     public String getStringAttribute(ResourcePath path, String key) {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#getStringAttributes(org.opennms.netmgt.model.ResourcePath)
-     */
     @Override
     public Map<String, String> getStringAttributes(ResourcePath path) {
-        return new HashMap<String,String>();
+        return Collections.emptyMap();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#updateMetricToResourceMappings(org.opennms.netmgt.model.ResourcePath, java.util.Map)
-     */
     @Override
     public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
+        // pass
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.ResourceStorageDao#getMetaData(org.opennms.netmgt.model.ResourcePath)
-     */
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return new HashMap<String,String>();
+        return Collections.emptyMap();
     }
 
 }

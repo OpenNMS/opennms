@@ -11,8 +11,8 @@
   <name>OpenNMS Web Application</name>
   <properties>
     <frontendPluginVersion>1.0</frontendPluginVersion>
-    <nodeVersion>v5.8.0</nodeVersion>
-    <npmVersion>3.7.1</npmVersion>
+    <nodeVersion>v6.10.2</nodeVersion>
+    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>

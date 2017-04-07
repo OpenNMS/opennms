@@ -59,7 +59,7 @@ public class XmlCollectorTestUtils {
         ResourceTypeMapper.getInstance().setResourceTypeMapper(type -> getResourceType(type));
         XmlCollector collector = new XmlCollector();
         collector.setNodeDao(nodeDao);
-        XmlDataCollection parsedCollection = collector.parseCollection(collection, handler, agent);
+        XmlDataCollection parsedCollection = collector.parseCollection(collection, handler, agent, parameters);
         return handler.collect(agent, parsedCollection, parameters);
     }
 
