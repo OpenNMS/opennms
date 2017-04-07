@@ -84,6 +84,98 @@ import com.vmware.vim25.mo.HostSystem;
 public class VmwareCimCollector extends AbstractRemoteServiceCollector {
 
     /**
+     * Interface for defining methods for value modifications
+     */
+    private interface ValueModifier {
+        String modifyValue(String name, String value, CIMObject cimObject, VmwareViJavaAccess vmwareViJavaAccess);
+    }
+
+    /**
+     * Value modifiers
+     */
+    private static Map<String, ValueModifier> valueModifiers = new HashMap<String, ValueModifier>();
+
+    static {
+        /**
+         * SensorType
+         */
+        valueModifiers.put("SensorType", new ValueModifier() {
+            public String modifyValue(String name, String value, CIMObject cimObject, VmwareViJavaAccess vmwareViJavaAccess) {
+                if (value != null) {
+                    String modifiedValue = sensorTypeMapping.get(Integer.valueOf(value));
+
+                    if (modifiedValue != null) {
+                        return modifiedValue;
+                    }
+                }
+
+                return "null";
+            }
+        });
+
+        /**
+         * BaseUnits
+         */
+        valueModifiers.put("BaseUnits", new ValueModifier() {
+            public String modifyValue(String name, String value, CIMObject cimObject, VmwareViJavaAccess vmwareViJavaAccess) {
+                if (value != null) {
+                    String modifiedValue = baseUnitMapping.get(Integer.valueOf(value));
+
+                    if (modifiedValue != null) {
+                        return modifiedValue;
+                    }
+                }
+
+                return "null";
+            }
+        });
+
+        /**
+         * RateUnits
+         */
+        valueModifiers.put("RateUnits", new ValueModifier() {
+            public String modifyValue(String name, String value, CIMObject cimObject, VmwareViJavaAccess vmwareViJavaAccess) {
+                if (value != null) {
+                    String modifiedValue = rateUnitMapping.get(Integer.valueOf(value));
+
+                    if (modifiedValue != null) {
+                        return modifiedValue;
+                    }
+                }
+
+                return "null";
+            }
+        });
+
+        /**
+         * CurrentReading, this is used also for thresholds and min/max readable
+         */
+        ValueModifier currentReadingModifier = new ValueModifier() {
+            public String modifyValue(String name, String value, CIMObject cimObject, VmwareViJavaAccess vmwareViJavaAccess) {
+                if (value == null) {
+                    return null;
+                } else {
+                    return applyUnitModifier(value, vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "UnitModifier"));
+                }
+            }
+
+            private String applyUnitModifier(String attributeValue, String unitModifier) {
+                return String.valueOf(Double.valueOf(attributeValue) * Math.pow(10.0d, Double.valueOf(unitModifier)));
+            }
+        };
+
+        valueModifiers.put("CurrentReading", currentReadingModifier);
+        valueModifiers.put("UpperThresholdCritical", currentReadingModifier);
+        valueModifiers.put("LowerThresholdCritical", currentReadingModifier);
+        valueModifiers.put("UpperThresholdNonCritical", currentReadingModifier);
+        valueModifiers.put("LowerThresholdNonCritical", currentReadingModifier);
+        valueModifiers.put("UpperThresholdFatal", currentReadingModifier);
+        valueModifiers.put("LowerThresholdFatal", currentReadingModifier);
+        valueModifiers.put("MaxReadable", currentReadingModifier);
+        valueModifiers.put("MinReadable", currentReadingModifier);
+    }
+
+    /**
      * logging for VMware CIM data collection
      */
     private static final Logger logger = LoggerFactory.getLogger(VmwareCimCollector.class);
@@ -118,9 +210,128 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
     }
 
     /**
+     * SensorType mapping
+     */
+    private static Map<Integer, String> sensorTypeMapping = new HashMap<Integer, String>();
+
+    static {
+        sensorTypeMapping.put(0, "Unknown");
+        sensorTypeMapping.put(1, "Other");
+        sensorTypeMapping.put(2, "Temperature");
+        sensorTypeMapping.put(3, "Voltage");
+        sensorTypeMapping.put(4, "Current");
+        sensorTypeMapping.put(5, "Tachometer");
+        sensorTypeMapping.put(6, "Counter");
+        sensorTypeMapping.put(7, "Switch");
+        sensorTypeMapping.put(8, "Lock");
+        sensorTypeMapping.put(9, "Humidity");
+        sensorTypeMapping.put(10, "Smoke Detection");
+        sensorTypeMapping.put(11, "Presence");
+        sensorTypeMapping.put(12, "Air Flow");
+        sensorTypeMapping.put(13, "Power Consumption");
+        sensorTypeMapping.put(14, "Power Production");
+        sensorTypeMapping.put(15, "Pressure");
+        sensorTypeMapping.put(16, "Intrusion");
+        sensorTypeMapping.put(17, "DMTF Reserved");
+        sensorTypeMapping.put(18, "Vendor Reserved");
+    }
+
+    /**
+     * RateUnit mapping
+     */
+    private static Map<Integer, String> rateUnitMapping = new HashMap<Integer, String>();
+
+    static {
+        rateUnitMapping.put(0, "None");
+        rateUnitMapping.put(1, "Per MicroSecond");
+        rateUnitMapping.put(2, "Per MilliSecond");
+        rateUnitMapping.put(3, "Per Second");
+        rateUnitMapping.put(4, "Per Minute");
+        rateUnitMapping.put(5, "Per Hour");
+        rateUnitMapping.put(6, "Per Day");
+        rateUnitMapping.put(7, "Per Week");
+        rateUnitMapping.put(8, "Per Month");
+        rateUnitMapping.put(9, "Per Year");
+    }
+
+    /**
+     * BaseUnit mapping
+     */
+    private static Map<Integer, String> baseUnitMapping = new HashMap<Integer, String>();
+
+    static {
+        baseUnitMapping.put(0, "Unknown");
+        baseUnitMapping.put(1, "Other");
+        baseUnitMapping.put(2, "Degrees C");
+        baseUnitMapping.put(3, "Degrees F");
+        baseUnitMapping.put(4, "Degrees K");
+        baseUnitMapping.put(5, "Volts");
+        baseUnitMapping.put(6, "Amps");
+        baseUnitMapping.put(7, "Watts");
+        baseUnitMapping.put(8, "Joules");
+        baseUnitMapping.put(9, "Coulombs");
+        baseUnitMapping.put(10, "VA");
+        baseUnitMapping.put(11, "Nits");
+        baseUnitMapping.put(12, "Lumens");
+        baseUnitMapping.put(13, "Lux");
+        baseUnitMapping.put(14, "Candelas");
+        baseUnitMapping.put(15, "kPa");
+        baseUnitMapping.put(16, "PSI");
+        baseUnitMapping.put(17, "Newtons");
+        baseUnitMapping.put(18, "CFM");
+        baseUnitMapping.put(19, "RPM");
+        baseUnitMapping.put(20, "Hertz");
+        baseUnitMapping.put(21, "Seconds");
+        baseUnitMapping.put(22, "Minutes");
+        baseUnitMapping.put(23, "Hours");
+        baseUnitMapping.put(24, "Days");
+        baseUnitMapping.put(25, "Weeks");
+        baseUnitMapping.put(26, "Mils");
+        baseUnitMapping.put(27, "Inches");
+        baseUnitMapping.put(28, "Feet");
+        baseUnitMapping.put(29, "Cubic Inches");
+        baseUnitMapping.put(30, "Cubic Feet");
+        baseUnitMapping.put(31, "Meters");
+        baseUnitMapping.put(32, "Cubic Centimeters");
+        baseUnitMapping.put(33, "Cubic Meters");
+        baseUnitMapping.put(34, "Liters");
+        baseUnitMapping.put(35, "Fluid Ounces");
+        baseUnitMapping.put(36, "Radians");
+        baseUnitMapping.put(37, "Steradians");
+        baseUnitMapping.put(38, "Revolutions");
+        baseUnitMapping.put(39, "Cycles");
+        baseUnitMapping.put(40, "Gravities");
+        baseUnitMapping.put(41, "Ounces");
+        baseUnitMapping.put(42, "Pounds");
+        baseUnitMapping.put(43, "Foot-Pounds");
+        baseUnitMapping.put(44, "Ounce-Inches");
+        baseUnitMapping.put(45, "Gauss");
+        baseUnitMapping.put(46, "Gilberts");
+        baseUnitMapping.put(47, "Henries");
+        baseUnitMapping.put(48, "Farads");
+        baseUnitMapping.put(49, "Ohms");
+        baseUnitMapping.put(50, "Siemens");
+        baseUnitMapping.put(51, "Moles");
+        baseUnitMapping.put(52, "Becquerels");
+        baseUnitMapping.put(53, "PPM (parts/million)");
+        baseUnitMapping.put(54, "Decibels");
+        baseUnitMapping.put(55, "DbA");
+        baseUnitMapping.put(56, "DbC");
+        baseUnitMapping.put(57, "Grays");
+        baseUnitMapping.put(58, "Sieverts");
+        baseUnitMapping.put(59, "Color Temperature Degrees K");
+        baseUnitMapping.put(60, "Bits");
+        baseUnitMapping.put(61, "Bytes");
+        baseUnitMapping.put(62, "Words (data)");
+        baseUnitMapping.put(63, "DoubleWords");
+        baseUnitMapping.put(64, "QuadWords");
+        baseUnitMapping.put(65, "Percentage");
+        baseUnitMapping.put(66, "Pascals");
+    }
+
+    /**
      * Initializes this instance with a given parameter map.
      *
-     * @param parameters the parameter map to use
      * @throws CollectionInitializationException
      *
      */
@@ -307,8 +518,16 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
                         final Resource resource = new DeferredGenericTypeResource(nodeResource,vmwareCimGroup.getResourceType(), instance);
                         for (Attrib attrib : vmwareCimGroup.getAttrib()) {
                             final AttributeType type = attrib.getType();
-                            final String value = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName());
+                            String value = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, attrib.getName());
+
+                            if (valueModifiers.containsKey(attrib.getName())) {
+                                String modifiedValue = valueModifiers.get(attrib.getName()).modifyValue(attrib.getName(), value, cimObject, vmwareViJavaAccess);
+                                logger.debug("Applying value modifier for instance value " + attrib.getName() + "[" + instance + "]='" + value + "' => '" + modifiedValue + "' for node " + agent.getNodeId());
+                                value = modifiedValue;
+                            }
+
                             builder.withAttribute(resource, vmwareCimGroup.getName(), attrib.getAlias(), value, type);
+                            logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + value + "' for node " + agent.getNodeId());
                         }
                     }
                 }
@@ -319,7 +538,6 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         vmwareViJavaAccess.disconnect();
 
         return builder.build();
-
     }
 
     /**
