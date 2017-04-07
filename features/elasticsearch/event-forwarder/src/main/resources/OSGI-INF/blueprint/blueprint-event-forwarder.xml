@@ -15,7 +15,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 
 		http://camel.apache.org/schema/blueprint
-		http://camel.apache.org/schema/blueprint/camel-blueprint-2.14.1.xsd
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.14.4.xsd
 ">
 
   <!-- Configuration properties -->
