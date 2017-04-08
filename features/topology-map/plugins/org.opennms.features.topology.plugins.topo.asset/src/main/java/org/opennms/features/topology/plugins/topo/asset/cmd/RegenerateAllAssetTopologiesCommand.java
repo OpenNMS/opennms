@@ -49,7 +49,7 @@ public class RegenerateAllAssetTopologiesCommand extends OsgiCommandSupport {
 	protected Object doExecute() throws Exception {
 		try{
 			System.out.println("Trying to regenerate all asset topologies");
-			assetGraphMLProvider.regenerateAllAssetTopologies();;
+			assetGraphMLProvider.regenerateAllAssetTopologies();
 			System.out.println("Regenerated all asset topologies");
 		} catch (Exception e) {
 			System.out.println("Error regenerate all asset topologies. Exception="+e);

@@ -48,11 +48,14 @@ public class RemoveAssetTopologyCommand extends OsgiCommandSupport {
 	}
 
 	@Argument(index = 0, name = "providerId", description = "Unique providerId of asset topology (optional)", required = false, multiValued = false)
-	String providerId = new GeneratorConfig().getProviderId();
+	String providerId;
 
 	@Override
 	protected Object doExecute() throws Exception {
 		try{
+			if( providerId==null || providerId.trim().isEmpty()){
+				providerId= new GeneratorConfig().getProviderId();
+			}
 			System.out.println("Removing Asset Topology for providerId=" + providerId);
 			assetGraphMLProvider.removeAssetTopology(providerId);
 			System.out.println("Removed Asset Topology for providerId=" + providerId);

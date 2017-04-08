@@ -29,11 +29,18 @@
 package org.opennms.features.topology.plugins.topo.asset;
 
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -46,6 +53,8 @@ import org.osgi.service.cm.ConfigurationAdmin;
 public class AssetGraphDefinitionRepositoryImpl implements AssetGraphDefinitionRepository {
 
 	public static final String DEFINITION_PREFIX="asset.graph.definition.";
+
+	private static final String FILEINSTALL_FILE_NAME = "felix.fileinstall.filename";
 
 	//<reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/> 
 	private ConfigurationAdmin configurationAdmin=null;
@@ -170,11 +179,30 @@ public class AssetGraphDefinitionRepositoryImpl implements AssetGraphDefinitionR
 			// if null, there is no configuration
 			if (props == null) return;
 
-			String graphDefinitionUri = (String) props.get(propId);
-			if(graphDefinitionUri == null) return;
-
 			props.remove(propId);
 			config.update(props);
+			
+			// TODO WORK AROUND for KARAF 2.4 ISSUE writing directly to file instead of through ConfigAdmin service 
+			// Work around here because ConfigAdmin service can only add properties and not remove them from a cfg file
+			// This might be solvable by setting config type append=false in features.xml. 
+			// But this cannot be parsed by opennms's maven-features-plugin
+			// see line 296 org.apache.karaf.features.internal.service.FeatureConfigInstaller
+			// the FILEINSTALL_FILE_NAME is set by the <cm:property-placeholder in blueprint.xml
+
+			String cfgFile = (String) props.get(FILEINSTALL_FILE_NAME);
+			if(cfgFile!=null){
+				File cfg = new File(new URL(cfgFile).toURI());
+				
+				Properties javaProps = new Properties();
+				Enumeration<String> keys = props.keys();
+				while(keys.hasMoreElements()){
+					String propKey = keys.nextElement();
+					javaProps.put(propKey, (String) props.get(propKey));
+				}
+				
+				Writer out = new FileWriter(cfg);
+				javaProps.store(out, "# Asset Topology Configurations updated this file");
+			}
 
 		} catch (Exception e) {
 			throw new RuntimeException("problem removing graph definition "+propId+ " from "+persistentId+".cfg",e);
