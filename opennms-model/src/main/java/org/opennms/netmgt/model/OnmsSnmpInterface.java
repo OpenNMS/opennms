@@ -652,11 +652,13 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
          * underscores to ensure that the resuling string will make a decent
          * file name and that RRD won't have any problems using it
          */
+	String firstChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfDescr() : getIfName();
+	String secondChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfName() : getIfDescr();
         String label = null;
-        if (getIfName() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfName(), '_');
-        } else if (getIfDescr() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
+        if (firstChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? firstChoice : AlphaNumeric.parseAndReplace(firstChoice, '_');
+        } else if (secondChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? secondChoice : AlphaNumeric.parseAndReplace(secondChoice, '_');
         } else {
             // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
             LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
