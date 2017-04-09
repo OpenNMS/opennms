@@ -34,7 +34,7 @@
 
   <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.EvaluateResourceStorageDao" />
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.api.EmptyResourceStorageDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 

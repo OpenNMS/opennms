@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,53 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.collection.persistence.tcp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
-import org.opennms.netmgt.snmp.proxy.WalkRequest;
-import org.opennms.netmgt.snmp.proxy.WalkResponse;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
 
-/**
- * Simple tracker used to gather all of the results passed to {@link #storeResult(SnmpResult)}
- *
- * @author jwhite
- */
-public class GatheringTracker extends CollectionTracker {
+public class TcpSinglePersister extends TcpBasePersister {
 
-    private List<SnmpResult> m_results = new ArrayList<>(0);
-
-    @Override
-    public List<WalkRequest> getWalkRequests() {
-        return new ArrayList<>(0);
+    public TcpSinglePersister(ServiceParameters params, RrdRepository repository, TcpOutputStrategy tcpStrategy) {
+        super(params, repository, tcpStrategy);
     }
 
     @Override
-    public void handleWalkResponses(List<WalkResponse> responses) {
-        // pass
+    public void visitAttribute(CollectionAttribute attribute) {
+        pushShouldPersist(attribute);
+        if (shouldPersist()) {
+            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
+            storeAttribute(attribute);
+        }
     }
 
     @Override
-    public void setMaxRepetitions(int maxRepetitions) {
-        // pass
+    public void completeAttribute(CollectionAttribute attribute) {
+        if (shouldPersist()) {
+            commitBuilder();
+        }
+        popShouldPersist();
     }
 
-    @Override
-    public void setMaxRetries(int maxRetries) {
-        // pass
-    }
-
-    @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
-        return null;
-    }
-
-    protected void storeResult(SnmpResult res) {
-        m_results.add(res);
-    }
-
-    public List<SnmpResult> getResults() {
-        return m_results;
-    }
 }
