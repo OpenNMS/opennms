@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
 
 import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
@@ -74,5 +75,19 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
             target.getResourceTypes().addAll(source.getResourceTypes());
         }
         return target;
+    }
+
+    @Override
+    public Date getLastUpdate() {
+        final Date lastUpdateOfDcConfig = DataCollectionConfigFactory.getInstance().getLastUpdate();
+        final Date lastUpdateOfResourceTypes = super.getLastUpdate();
+
+        if (lastUpdateOfDcConfig.after(lastUpdateOfResourceTypes)) {
+            // The data-collection configuration has been updated more recently
+            // than the resource types configuration, so use that date instead
+            return lastUpdateOfDcConfig;
+        } else {
+            return lastUpdateOfResourceTypes;
+        }
     }
 }
