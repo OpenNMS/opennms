@@ -16,6 +16,7 @@ describe('Controller: NodeController', function () {
   var foreignSource = 'test-requisition';
   var foreignId = '1001';
   var categories = ['Production', 'Testing', 'Server', 'Storage'];
+  var locations = ['Default'];
   var node = new RequisitionNode(foreignSource, { 'foreign-id': foreignId });
   var requisition = { foreignSource: foreignSource, nodes: [{foreignId: '01'},{foreignId: '02'}] };
 
@@ -44,12 +45,16 @@ describe('Controller: NodeController', function () {
     mockRequisitionsService.getNode = jasmine.createSpy('getNode');
     mockRequisitionsService.getRequisition = jasmine.createSpy('getRequisition');
     mockRequisitionsService.getAvailableCategories = jasmine.createSpy('getAvailableCategories');
+    mockRequisitionsService.getAvailableLocations = jasmine.createSpy('getAvailableLocations');
     var nodeDefer = $q.defer();
     nodeDefer.resolve(node);
     mockRequisitionsService.getNode.and.returnValue(nodeDefer.promise);
     var categoriesDefer = $q.defer();
     categoriesDefer.resolve(categories);
     mockRequisitionsService.getAvailableCategories.and.returnValue(categoriesDefer.promise);
+    var locationsDefer = $q.defer();
+    locationsDefer.resolve(locations);
+    mockRequisitionsService.getAvailableLocations.and.returnValue(locationsDefer.promise);
     var reqDefer = $q.defer();
     reqDefer.resolve(requisition);
     mockRequisitionsService.getRequisition.and.returnValue(reqDefer.promise);
@@ -76,6 +81,7 @@ describe('Controller: NodeController', function () {
     expect(scope.getAvailableCategories()).toEqual(categories);
     scope.node.categories.push({name: 'Production'});
     expect(scope.getAvailableCategories()).toEqual(['Testing', 'Server', 'Storage']);
+    expect(scope.availableLocations).toEqual(locations);
   });
 
 });
