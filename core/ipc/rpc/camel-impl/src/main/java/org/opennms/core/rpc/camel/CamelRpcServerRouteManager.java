@@ -62,7 +62,6 @@ public class CamelRpcServerRouteManager {
     public CamelRpcServerRouteManager(CamelContext context, MinionIdentity identity) throws Exception {
         this.context = Objects.requireNonNull(context);
         this.identity = Objects.requireNonNull(identity);
-        context.start();
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
@@ -80,6 +79,10 @@ public class CamelRpcServerRouteManager {
             return "RPC.Server." + module.getId();
         }
 
+        public String getQueueName() {
+            return queueNameFactory.getName();
+        }
+
         @Override
         public void configure() throws Exception {
             from(String.format("queuingservice:%s?asyncConsumer=true", queueNameFactory.getName()))
@@ -94,23 +97,27 @@ public class CamelRpcServerRouteManager {
         if (module != null) {
             final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
             if (routeIdsByModule.containsKey(rpcModule)) {
-                LOG.warn("RPC module {} was already registered.", rpcModule.getId());
+                LOG.warn("RpcModule {} was already registered.", rpcModule.getId());
                 return;
             }
             final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
             context.addRoutes(routeBuilder);
             routeIdsByModule.put(rpcModule, routeBuilder.getRouteId());
+
+            LOG.info("Registered RpcModule {} on queue {}", rpcModule.getId(), routeBuilder.getQueueName());
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void unbind(RpcModule module) throws Exception {
         if (module != null) {
-            final String routeId = routeIdsByModule.remove((RpcModule<RpcRequest,RpcResponse>)module);
+            final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
+            final String routeId = routeIdsByModule.remove(rpcModule);
             if (routeId != null) {
                 context.stopRoute(routeId);
                 context.removeRoute(routeId);
             }
+            LOG.info("Deregistered RpcModule {}", rpcModule.getId());
         }
     }
 }

@@ -11,7 +11,7 @@
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.14.4.xsd
 ">
 
   <context:annotation-config />
@@ -36,8 +36,6 @@
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
       <property name="timeout" value="15"/>
   </bean>
-
-  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent" />
 
   <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
     <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
