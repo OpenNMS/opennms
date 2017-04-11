@@ -90,29 +90,29 @@
 			// Fetch all of the items
 			MonitoringLocations.query(
 				{
-					_s: $scope.query.searchParam, // FIQL search
-					limit: $scope.query.limit,
-					offset: $scope.query.offset,
-					orderBy: $scope.query.orderBy,
-					order: $scope.query.order
+					_s: $scope.$parent.query.searchParam, // FIQL search
+					limit: $scope.$parent.query.limit,
+					offset: $scope.$parent.query.offset,
+					orderBy: $scope.$parent.query.orderBy,
+					order: $scope.$parent.query.order
 				}, 
 				function(value, headers) {
-					$scope.items = value;
+					$scope.$parent.items = value;
 
 					var contentRange = parseContentRange(headers('Content-Range'));
-					$scope.query.lastOffset = contentRange.end;
+					$scope.$parent.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
-					$scope.query.maxOffset = contentRange.total - 1;
-					$scope.setOffset(contentRange.start);
+					$scope.$parent.query.maxOffset = contentRange.total - 1;
+					$scope.$parent.query.offset = normalizeOffset(contentRange.start, $scope.$parent.query.maxOffset, $scope.$parent.query.limit);
 				},
 				function(response) {
 					switch(response.status) {
 					case 404:
 						// If we didn't find any elements, then clear the list
-						$scope.items = [];
-						$scope.query.lastOffset = 0;
-						$scope.query.maxOffset = -1;
-						$scope.setOffset(0);
+						$scope.$parent.items = [];
+						$scope.$parent.query.lastOffset = 0;
+						$scope.$parent.query.maxOffset = -1;
+						$scope.$parent.setOffset(0);
 						break;
 					case 401:
 					case 403:
