@@ -116,7 +116,7 @@ public class EventToIndex implements AutoCloseable {
 	public static final String INITIAL_SEVERITY="initialseverity";
 	public static final String INITIAL_SEVERITY_TEXT="initialseverity_text";
 	public static final String SEVERITY_TEXT="severity_text";
-	public static final String SEVERITY="severity";
+	public static final String ALARM_SEVERITY="alarmseverity";
 	public static final String FIRST_EVENT_TIME="firsteventtime";
 	public static final String EVENT_PARAMS="eventparms";
 	public static final String ALARM_ACK_TIME="alarmacktime";
@@ -769,11 +769,11 @@ public class EventToIndex implements AutoCloseable {
 				for(Parm parm : params) {
 					body.put("p_" + parm.getParmName(), parm.getValue().getContent());
 				}
-			} else if((SEVERITY.equals(key) && value!=null)){ 
+			} else if((ALARM_SEVERITY.equals(key) && value!=null)){ 
 				try{
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
-					body.put(SEVERITY,value);
+					body.put(ALARM_SEVERITY,value);
 					body.put(SEVERITY_TEXT,label);
 				}
 				catch (Exception e){
