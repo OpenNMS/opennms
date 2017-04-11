@@ -52,6 +52,7 @@
     requisitionsService.internal.requisitionNamesUrl = 'rest/requisitionNames';
     requisitionsService.internal.foreignSourcesUrl = 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = 'rest/foreignSourcesConfig';
+    requisitionsService.internal.monitoringLocationsUrl = 'rest/monitoringLocations';
     requisitionsService.internal.snmpConfigUrl = 'rest/snmpConfig';
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
 
@@ -1180,6 +1181,36 @@
         deferred.reject('Cannot retrieve available categories.' + requisitionsService.internal.errorHelp);
       });
 
+      return deferred.promise;
+    };
+
+    /**
+    * @description Gets the available locations.
+    *
+    * The 'Default' location is not considered as a valid option.
+    * The location field should be either null or a valid location with Minions.
+    *
+    * @name RequisitionsService:getAvailableLocations
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @returns {object} a promise. On success, it provides a list of available locations.
+    */
+    requisitionsService.getAvailableLocations = function() {
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.monitoringLocationsUrl;
+      $log.debug('getAvailableLocations: getting available locations');
+      $http.get(url)
+      .success(function(data) {
+        $log.debug('getAvailableLocations: got available locations');
+        var locations = [];
+        angular.forEach(data.location, function(loc) { if (loc['location-name'] != 'Default') locations.push(loc['location-name']); });
+        $log.debug('Locations =' + JSON.stringify(locations));
+        deferred.resolve(locations);
+      })
+      .error(function(error, status) {
+        $log.error('getAvailableLocations: GET ' + url + ' failed:', error, status);
+        deferred.reject('Cannot retrieve available locations.' + requisitionsService.internal.errorHelp);
+      });
       return deferred.promise;
     };
 

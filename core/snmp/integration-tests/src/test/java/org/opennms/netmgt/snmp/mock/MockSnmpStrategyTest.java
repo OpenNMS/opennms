@@ -257,7 +257,7 @@ public class MockSnmpStrategyTest {
     public void testCallbackOnTrackerTimeout() throws Exception {
         // Expect an exception on get
         expectedEx.expect(Exception.class);
-        expectedEx.expectMessage("Timeout retrieving test for /127.0.0.1");
+        expectedEx.expectMessage("Timeout retrieving 'test' for 127.0.0.1");
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpAgentConfig sac = getAgentConfig();
         sac.setPort(12345);

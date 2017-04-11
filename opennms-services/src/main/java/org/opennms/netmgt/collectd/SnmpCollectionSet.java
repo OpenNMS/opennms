@@ -52,6 +52,7 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -398,6 +399,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
                 throw new CollectionUnknown(String.format("The request to remotely collect SNMP data"
                         + " for interface %s at location %s was rejected.",
                         getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
+            } else if (cause != null && cause instanceof SnmpAgentTimeoutException) {
+                throw new CollectionTimedOut(cause.getMessage());
             }
             throw new CollectionWarning(String.format("Unexpected exception when collecting SNMP data for interface %s at location %s.",
                     getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
