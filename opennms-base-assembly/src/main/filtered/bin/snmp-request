@@ -3,10 +3,6 @@
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
-	. "$OPENNMS_HOME/etc/opennms.conf"
-fi
-
 SNMP4J_JAR=`ls -1 $OPENNMS_HOME/lib/snmp4j-*.jar | grep -v snmp4j-agent | tail -n 1`
 if [ -f $SNMP4J_JAR ]; then
 	echo "Using SNMP4J from: $SNMP4J_JAR"

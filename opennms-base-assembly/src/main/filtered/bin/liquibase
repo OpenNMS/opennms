@@ -3,10 +3,6 @@
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
-	. "$OPENNMS_HOME/etc/opennms.conf"
-fi
-
 for file in $OPENNMS_HOME/lib/*.jar; do
 	export CLASSPATH="$file:$CLASSPATH"
 done
