@@ -109,23 +109,6 @@ public class EventToIndex implements AutoCloseable {
 	public static final String ALARM_TROUBLETICKET_STATE_CHANGE_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange";
 	public static final String ALARM_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmChanged";
 
-	public static final String OLD_ALARM_VALUES_PARAM="oldalarmvalues";
-	public static final String NEW_ALARM_VALUES_PARAM="newalarmvalues";
-
-	public static final String NODE_LABEL_PARAM="nodelabel";
-	public static final String INITIAL_SEVERITY_PARAM="initialseverity";
-	public static final String INITIAL_SEVERITY_PARAM_TEXT="initialseverity_text";
-	public static final String ALARM_SEVERITY_PARAM_TEXT="alarmseverity_text";
-	public static final String ALARM_SEVERITY_PARAM="alarmseverity";
-	public static final String FIRST_EVENT_TIME="firsteventtime";
-	public static final String EVENT_PARAMS="eventparms";
-	public static final String ALARM_ACK_TIME_PARAM="alarmacktime";
-	public static final String ALARM_ACK_USER_PARAM="alarmackuser";
-	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
-	public static final String ALARM_CLEAR_TIME="alarmcleartime";
-	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
-	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
-
 	// uei definitions of memo change events
 	// TODO: Move these into EventConstants
 	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
@@ -138,6 +121,25 @@ public class EventToIndex implements AutoCloseable {
 	public static final String MEMO_BODY_PARAM="body";
 	public static final String MEMO_AUTHOR_PARAM="author";
 	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
+
+	public static final String OLD_ALARM_VALUES_PARAM="oldalarmvalues";
+	public static final String NEW_ALARM_VALUES_PARAM="newalarmvalues";
+
+	public static final String NODE_LABEL_PARAM="nodelabel";
+	public static final String INITIAL_SEVERITY_PARAM="initialseverity";
+	public static final String INITIAL_SEVERITY_PARAM_TEXT="initialseverity_text";
+	public static final String SEVERITY_TEXT="severity_text";
+	public static final String SEVERITY="severity";
+	public static final String ALARM_SEVERITY_PARAM="alarmseverity";
+	public static final String FIRST_EVENT_TIME="firsteventtime";
+	public static final String EVENT_PARAMS="eventparms";
+	public static final String ALARM_ACK_TIME_PARAM="alarmacktime";
+	public static final String ALARM_ACK_USER_PARAM="alarmackuser";
+	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
+	public static final String ALARM_CLEAR_TIME="alarmcleartime";
+	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
+	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
+
 
 	public static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -773,8 +775,9 @@ public class EventToIndex implements AutoCloseable {
 				try{
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
-					body.put(ALARM_SEVERITY_PARAM,value);
-					body.put(ALARM_SEVERITY_PARAM_TEXT,label);
+					// note alarm index uses severity even though alarm severity param is p_alarmseverity
+					body.put(SEVERITY,value);
+					body.put(SEVERITY_TEXT,label);
 				}
 				catch (Exception e){
 					LOG.error("cannot parse severity for alarm change event id"+event.getDbid());
