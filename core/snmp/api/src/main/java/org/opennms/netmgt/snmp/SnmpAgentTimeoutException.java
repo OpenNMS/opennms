@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,31 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.snmp;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Arrays;
+import java.net.InetAddress;
 
-public class SslSocketWrapper implements SocketWrapper {
-    private final String[] m_cipherSuites;
-    private final String m_protocol;
+public class SnmpAgentTimeoutException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public SslSocketWrapper() {
-        this(null, null);
-    }
-
-    public SslSocketWrapper(String[] cipherSuites) {
-        this(null, cipherSuites);
-    }
-
-    public SslSocketWrapper(String protocol, String[] cipherSuites) {
-        m_protocol = protocol == null ? "SSL" : protocol;
-        m_cipherSuites = cipherSuites == null ? null : Arrays.copyOf(cipherSuites, cipherSuites.length);
-    }
-
-    @Override
-    public Socket wrapSocket(Socket socket) throws IOException {
-        return SocketUtils.wrapSocketInSslContext(socket, m_protocol, m_cipherSuites);
+    public SnmpAgentTimeoutException(String name, InetAddress agentAddress) {
+        super(String.format("Timeout retrieving '%s' for %s.", name, InetAddrUtils.str(agentAddress)));
     }
 }

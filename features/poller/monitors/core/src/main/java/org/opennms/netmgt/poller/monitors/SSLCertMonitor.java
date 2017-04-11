@@ -165,7 +165,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
                 LOG.debug("Connected to host: {} on port: {}", ipAddr, port);
-                SSLSocket sslSocket = SocketUtils.wrapSocketInSslContext(socket, null);
+                SSLSocket sslSocket = SocketUtils.wrapSocketInSslContext(socket, null, null);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
