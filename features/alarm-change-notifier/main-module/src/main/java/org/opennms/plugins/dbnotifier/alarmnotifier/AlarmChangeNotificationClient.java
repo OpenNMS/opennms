@@ -377,8 +377,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 		eb.addParam(AlarmChangeEventConstants.LOGMSG_PARAM, logmsg );
 		eb.addParam(AlarmChangeEventConstants.CLEARKEY_PARAM, clearkey );
 		eb.addParam(AlarmChangeEventConstants.ALARMTYPE_PARAM, alarmtype );
-		eb.addParam(AlarmChangeEventConstants.ALARMACKTIME_PARAM, alarmacktime );
-		eb.addParam(AlarmChangeEventConstants.ALARMACKUSER_PARAM, alarmackuser );
+		eb.addParam(AlarmChangeEventConstants.ALARM_ACK_TIME_PARAM, alarmacktime );
+		eb.addParam(AlarmChangeEventConstants.ALARM_ACK_USER_PARAM, alarmackuser );
 		eb.addParam(AlarmChangeEventConstants.SUPPRESSEDTIME_PARAM, suppressedtime );
 		eb.addParam(AlarmChangeEventConstants.SUPPRESSEDUNTIL_PARAM, suppresseduntil );
 		eb.addParam(AlarmChangeEventConstants.SUPPRESSEDUSER_PARAM, suppresseduser );
