@@ -532,20 +532,25 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         assertEquals("1100334455667788", value);
     }
 
-    @Test(expected=CollectionTimedOut.class)
     @Transactional
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml",
                     datacollectionType = "snmp"
             )
     public void collectionTimedOutExceptionOnAgentTimeout() throws CollectionInitializationException, CollectionException {
-        // Initialize the agent and perform the collection
-        m_collectionSpecification.initialize(m_collectionAgent);
-        m_collectionSpecification.collect(m_collectionAgent);
-
         // There is no @JUnitSnmpAgent annotation on this method, so
         // we don't actually start the SNMP agent, which should
         // generate a CollectionTimedOut exception
+
+        CollectionException caught = null;
+        try {
+            m_collectionSpecification.collect(m_collectionAgent);
+        } catch (final CollectionException e) {
+            caught = e;
+        }
+
+        assertNotNull(caught);
+        assertEquals(CollectionTimedOut.class, caught.getCause().getClass());
     }
 
     private String rrd(String file) {
