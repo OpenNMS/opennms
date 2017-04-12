@@ -29,6 +29,8 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang.CharEncoding;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
@@ -157,7 +160,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                                + "\" is not valid");
         }
 
-        OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        OnmsResource r = m_resourceDao.getResourceById(decode(resourceId));
         Assert.notNull(r, "resource could not be located");
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
@@ -171,6 +174,15 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                              height);
 
         return getInputStreamForCommand(command);
+    }
+
+    public static String decode(String string) {
+        try {
+            return URLDecoder.decode(string, CharEncoding.UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should *never* throw this
+            throw new RuntimeException(e);
+        }
     }
 
     /**

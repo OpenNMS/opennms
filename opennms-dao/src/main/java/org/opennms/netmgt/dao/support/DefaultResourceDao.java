@@ -309,8 +309,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         StringBuffer sb = new StringBuffer();
 
         while (m.find()) {
-            String resourceTypeName = DefaultResourceDao.decode(m.group(1));
-            String resourceName = DefaultResourceDao.decode(m.group(2));
+            String resourceTypeName = m.group(1);
+            String resourceName = m.group(2);
 
             try {
                 resource = getChildResource(resource, resourceTypeName, resourceName);

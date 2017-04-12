@@ -29,11 +29,14 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.CharEncoding;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -67,7 +70,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         ChooseResourceModel model = new ChooseResourceModel();
         model.setEndUrl(endUrl);
         
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.getResourceById(decode(resourceId));
         if (resource == null) {
             throw new IllegalArgumentException("resource \"" + resourceId + "\" could not be found");
         }
@@ -85,6 +88,15 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         model.setResourceTypes(resourceTypeMap);
 
         return model;
+    }
+
+    public static String decode(String string) {
+        try {
+            return URLDecoder.decode(string, CharEncoding.UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should *never* throw this
+            throw new RuntimeException(e);
+        }
     }
 
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
