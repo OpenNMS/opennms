@@ -3,10 +3,6 @@
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
-	. "$OPENNMS_HOME/etc/opennms.conf"
-fi
-
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	$ADDITIONAL_MANAGER_OPTIONS \
 	-Dopennms.home="$OPENNMS_HOME" \
