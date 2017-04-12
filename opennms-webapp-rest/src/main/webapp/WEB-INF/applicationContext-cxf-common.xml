@@ -11,8 +11,7 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
                 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
                 http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
-                http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-                http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+                http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <tx:annotation-driven />
     <context:annotation-config/>
