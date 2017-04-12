@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -333,7 +334,7 @@ public class GrafanaDashletConfigurationWindow extends DashletConfigurationWindo
                         /**
                          * Fill the result set...
                          */
-                        final String responseString = IOUtils.toString(httpEntity.getContent(), "UTF-8");
+                        final String responseString = IOUtils.toString(httpEntity.getContent(), StandardCharsets.UTF_8.name());
                         if (!Strings.isNullOrEmpty(responseString)) {
                             try {
                                 final JSONArray arr = new JSONObject("{dashboards:" + responseString + "}").getJSONArray("dashboards");
