@@ -182,7 +182,7 @@
 					$scope.$parent.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
 					$scope.$parent.query.maxOffset = contentRange.total - 1;
-					$scope.$parent.setOffset(contentRange.start);
+					$scope.$parent.query.offset = normalizeOffset(contentRange.start, $scope.$parent.query.maxOffset, $scope.$parent.query.limit);
 				},
 				function(response) {
 					switch(response.status) {
