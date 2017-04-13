@@ -32,6 +32,7 @@ import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
+import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
@@ -44,6 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
@@ -82,9 +86,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import junit.framework.TestCase;
-
-public class CollectdTest extends TestCase {
+public class CollectdTest {
 
     private final EasyMockUtils m_easyMockUtils = new EasyMockUtils();
 
@@ -95,8 +97,8 @@ public class CollectdTest extends TestCase {
     private CollectdConfiguration m_collectdConfig;
     private CollectdConfigFactory m_collectdConfigFactory;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         EventIpcManager m_eventIpcManager;
         NodeDao m_nodeDao;
 
@@ -182,19 +184,12 @@ public class CollectdTest extends TestCase {
         return pkg;
     }
 
-    @Override
-    protected void runTest() throws Throwable {
-        super.runTest();
-
+    @After
+    public void tearDown() throws Exception {
         // FIXME: we get a Threshd warning still if we enable this  :(
         // MockLogAppender.assertNoWarningsOrGreater();
 
         EasyMock.verify(m_filterDao);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     private static OnmsIpInterface getInterface() {
@@ -205,6 +200,7 @@ public class CollectdTest extends TestCase {
         return iface;
     }
 
+    @Test
     public void testCreate() throws Exception {
 
         setupCollector("SNMP", false);
@@ -237,6 +233,7 @@ public class CollectdTest extends TestCase {
     /**
      * Test override of read community string and max repetitions in Collectd configuration parameters
      */
+    @Test
     public void testOverrides() {
     	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("max-repetitions", "11");
@@ -263,6 +260,7 @@ public class CollectdTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testNoMatchingSpecs() throws Exception {
 
         setupCollector("SNMP", false);
@@ -284,6 +282,7 @@ public class CollectdTest extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
+    @Test
     public void testOneMatchingSpec() throws Exception {
         OnmsIpInterface iface = getInterface();
 

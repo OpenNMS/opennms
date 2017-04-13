@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
@@ -83,11 +83,12 @@ public abstract class CollectorTestUtils {
         service.addParameter(collectionParm);
         pkg.addService(service);
 
-        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation(), createLocationAwareCollectorClient());
+        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation(),
+                createLocationAwareCollectorClient());
         return spec;
     }
 
-    public static void persistCollectionSet(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+    public static void persistCollectionSet(RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao,
             CollectionSpecification spec, CollectionSet collectionSet) {
         RrdRepository repository=spec.getRrdRepository("default");
         System.err.println("repository = " + repository);
@@ -103,7 +104,7 @@ public abstract class CollectorTestUtils {
         collectionSet.visit(persister);
     }
 
-    public static void collectNTimes(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+    public static void collectNTimes(RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao,
             CollectionSpecification spec, CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
 
         for(int i = 0; i < numUpdates; i++) {
@@ -120,7 +121,7 @@ public abstract class CollectorTestUtils {
         }
     }
 
-    public static void failToCollectNTimes(RrdStrategy<?, ?> rrdStrategy, FilesystemResourceStorageDao resourceStorageDao,
+    public static void failToCollectNTimes(RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao,
             CollectionSpecification spec, CollectionAgent agent, int numUpdates) throws InterruptedException, CollectionException {
 
         for(int i = 0; i < numUpdates; i++) {

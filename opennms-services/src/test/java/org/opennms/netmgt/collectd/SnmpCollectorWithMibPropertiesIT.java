@@ -140,6 +140,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
      */
     @Before
     public void setUp() throws Exception {
+        MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
         m_rrdStrategy = new JRobinRrdStrategy();
@@ -173,7 +174,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         SnmpCollector collector = new SnmpCollector();
-        collector.initialize(null);
+        collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
