@@ -109,13 +109,32 @@
     }
 %>
 
+<style type="text/css">
+    .tooltipbox {
+        border: 1px solid #aaa;
+        position: absolute;
+        background-color: rgba(255,255,255,0.85);
+        pointer-events: none;
+        display: none;
+    }
+    .tooltipbox p {
+        margin: 0px 2px 0px 2px;
+        padding: 0px 2px 0px 2px;
+        font-size: 0.8em;
+        color: #444;
+        white-space: nowrap;
+    }
+</style>
+
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&amp;heatmap=<%=heatmap%>&amp;foreignSource=<%=foreignSource%>&amp;category=<%=category%>&amp;monitoredService=<%=monitoredService%>"><%=title%>
         </a></h3>
     </div>
 
-    <div id="treemap"></div>
+    <div id="treemap" style="position: relative;">
+        <div id="tooltipbox" class="tooltipbox"></div>
+    </div>
 
     <script type="text/javascript">
 
@@ -135,6 +154,48 @@
 
         addOnLoadEvent(function() {
             require(['jquery', 'jquery-ui-treemap'], function( $ ) {
+
+                var tooltipDelay = 500;
+                var tooltipFadeIn = 500;
+                var tooltipTimeout;
+
+                function clearAndHideTooltip() {
+                    clearTimeout(tooltipTimeout);
+                    $(".tooltipbox").hide();
+                }
+
+                var mousemoveHandler = function(e, data) {
+                    clearAndHideTooltip();
+
+                    $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
+
+                    var tooltipWidth = $("#tooltipbox").width();
+                    var tooltipHeight = $("#tooltipbox").height();
+                    var treemapWidth = $("#treemap").width();
+                    var treemapHeight = $("#treemap").height();
+
+                    if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
+                      $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
+                    } else {
+                      $("#tooltipbox").css({ "left" : e.offsetX + 16 });
+                    }
+
+                    if (e.offsetY + tooltipHeight > treemapHeight) {
+                      $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
+                    } else {
+                      $("#tooltipbox").css({ "top" : e.offsetY });
+                    }
+
+                    tooltipTimeout = setTimeout(function(event){
+                        $("#tooltipbox").fadeIn(tooltipFadeIn);
+                    }, tooltipDelay);
+                };
+
+                var mouseleaveHandler = function (e, data) {
+                    clearAndHideTooltip();
+                }
+
+
                 var mouseclickHandler = function (e, data) {
                     var nodes = data.nodes;
                     var ids = data.ids;
@@ -169,6 +230,8 @@
                 var children;
 
                 function refresh() {
+                    clearAndHideTooltip();
+
                     var height = $(window).height() - 105 - $("#treemap").offset().top;
 
                     if (height < 0) {
@@ -194,7 +257,9 @@
                             "id": "<%=heatmap%>",
                             "children": children
                         }
-                    }).bind('treemapclick', mouseclickHandler);
+                    }).bind('treemapmousemove', mousemoveHandler)
+                      .bind('treemapclick', mouseclickHandler)
+                      .mouseleave(function(){mouseleaveHandler()});
                 }
 
                 $(window).resize(function() {
