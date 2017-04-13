@@ -196,6 +196,11 @@ public abstract class ConfigFileConstants {
      */
     public static final int SYSLOGD_CONFIG_FILE_NAME;
 
+    /**
+     * The grok pattern file for Syslogd's {@link RadixTreeSyslogParser}
+     */
+    public static final int SYSLOGD_GROK_PATTERNS_FILE_NAME;
+
     //
     // End services config files
     //
@@ -530,7 +535,9 @@ public abstract class ConfigFileConstants {
         TRANSLATOR_CONFIG_FILE_NAME = 57;
 
         SYSLOGD_CONFIG_FILE_NAME = 58;
-        
+
+        SYSLOGD_GROK_PATTERNS_FILE_NAME = 59;
+
         SURVEILLANCE_VIEWS_FILE_NAME = 61;
         
         SITE_STATUS_VIEWS_FILE_NAME = 62;
@@ -643,6 +650,7 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
+        FILE_ID_TO_NAME[SYSLOGD_GROK_PATTERNS_FILE_NAME] = "syslogd-grok-patterns.txt";
         FILE_ID_TO_NAME[ENLINKD_CONFIG_FILE_NAME] = "enlinkd-configuration.xml";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
