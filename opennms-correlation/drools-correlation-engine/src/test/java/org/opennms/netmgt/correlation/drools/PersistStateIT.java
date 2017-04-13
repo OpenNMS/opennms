@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,43 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.correlation;
+package org.opennms.netmgt.correlation.drools;
 
-import java.util.List;
-
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
-/**
- * <p>CorrelationEngine interface.</p>
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- */
-public interface CorrelationEngine {
-    
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+public class PersistStateIT extends CorrelationRulesTestCase {
 
-	/**
-	 * <p>getInterestingEvents</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	List<String> getInterestingEvents();
+    @Test
+    public void testDroolsFusion() throws Exception {
+        DroolsCorrelationEngine engine = findEngineByName("persistStateTest");
+        Assert.assertNotNull(engine);
+        engine.correlate(createNodeLostServiceEvent(1, "SSH"));
+        Assert.assertEquals(3, engine.getKieSessionObjects().size());
+        engine.tearDown();
+        engine.initialize();
+        Assert.assertEquals(3, engine.getKieSessionObjects().size());
+    }
 
-	/**
-	 * <p>correlate</p>
-	 *
-	 * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	void correlate(Event e);
-
-	/**
-	 * <p>tearDown</p>
-	 */
-	void tearDown();
+    private Event createNodeLostServiceEvent(int nodeid, String serviceName) {
+        return new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, serviceName)
+                .setNodeid(nodeid)
+                .getEvent();
+    }
 }

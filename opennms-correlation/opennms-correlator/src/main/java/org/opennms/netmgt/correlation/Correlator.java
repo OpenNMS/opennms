@@ -113,6 +113,14 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		
 	}
 
+	/** {@inheritDoc} */
+    @Override
+	protected void onStop() {
+        for(final CorrelationEngine engine : m_engines.values()) {
+            LOG.info("Tearing down correlation engine: {}", engine);
+        }
+    }
+
 	/**
 	 * <p>setCorrelationEngines</p>
 	 *

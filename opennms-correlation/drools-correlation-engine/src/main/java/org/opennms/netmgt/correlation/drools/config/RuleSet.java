@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -79,7 +80,10 @@ public class RuleSet implements Serializable {
 
     @XmlAttribute(name = "event-processing-mode")
     private String _eventProcessingMode;
-    
+
+    @XmlAttribute(name = "persist-state")
+    private Boolean _persistState;
+
     @XmlElement(name = "rule-file")
     private List<String> _ruleFileList;
 
@@ -114,7 +118,15 @@ public class RuleSet implements Serializable {
     public void setEventProcessingMode(String eventProcessingMode) {
         this._eventProcessingMode = eventProcessingMode;
     }
-    
+
+    public Boolean getPersistState() {
+        return _persistState == null ? false : _persistState;
+    }
+
+    public void setPersistState(Boolean persistState) {
+        _persistState = persistState;
+    }
+
     /**
      *
      *
@@ -696,18 +708,8 @@ public class RuleSet implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((_appContext == null) ? 0 : _appContext.hashCode());
-        result = prime * result
-                + ((_eventList == null) ? 0 : _eventList.hashCode());
-        result = prime * result
-                + ((_globalList == null) ? 0 : _globalList.hashCode());
-        result = prime * result + ((_name == null) ? 0 : _name.hashCode());
-        result = prime * result
-                + ((_ruleFileList == null) ? 0 : _ruleFileList.hashCode());
-        return result;
+        return Objects.hash(_name, _assertBehaviour, _eventProcessingMode, _persistState,
+                _ruleFileList, _eventList, _appContext, _globalList);
     }
 
     @Override
@@ -722,42 +724,14 @@ public class RuleSet implements Serializable {
             return false;
         }
         RuleSet other = (RuleSet) obj;
-        if (_appContext == null) {
-            if (other._appContext != null) {
-                return false;
-            }
-        } else if (!_appContext.equals(other._appContext)) {
-            return false;
-        }
-        if (_eventList == null) {
-            if (other._eventList != null) {
-                return false;
-            }
-        } else if (!_eventList.equals(other._eventList)) {
-            return false;
-        }
-        if (_globalList == null) {
-            if (other._globalList != null) {
-                return false;
-            }
-        } else if (!_globalList.equals(other._globalList)) {
-            return false;
-        }
-        if (_name == null) {
-            if (other._name != null) {
-                return false;
-            }
-        } else if (!_name.equals(other._name)) {
-            return false;
-        }
-        if (_ruleFileList == null) {
-            if (other._ruleFileList != null) {
-                return false;
-            }
-        } else if (!_ruleFileList.equals(other._ruleFileList)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this._name, other._name)
+                && Objects.equals(this._assertBehaviour, other._assertBehaviour)
+                && Objects.equals(this._eventProcessingMode, other._eventProcessingMode)
+                && Objects.equals(this._persistState, other._persistState)
+                && Objects.equals(this._ruleFileList, other._ruleFileList)
+                && Objects.equals(this._eventList, other._eventList)
+                && Objects.equals(this._appContext, other._appContext)
+                && Objects.equals(this._globalList, other._globalList);
     }
 
     public CorrelationEngine constructEngine(Resource basePath, ApplicationContext appContext, EventIpcManager eventIpcManager, MetricRegistry metricRegistry) {
@@ -766,6 +740,7 @@ public class RuleSet implements Serializable {
         final DroolsCorrelationEngine engine = new DroolsCorrelationEngine(getName(), metricRegistry);
         engine.setAssertBehaviour(getAssertBehaviour());
         engine.setEventProcessingMode(getEventProcessingMode());
+        engine.setPersistState(getPersistState());
         engine.setEventIpcManager(eventIpcManager);
         engine.setScheduler(new ScheduledThreadPoolExecutor(1));
         engine.setInterestingEvents(getInterestingEvents());
