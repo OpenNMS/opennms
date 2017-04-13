@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -36,7 +38,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class EventParameter {
+@SuppressWarnings("serial")
+public class EventParameter implements Serializable {
     private String m_name;
     private Object m_value;
     private Event m_event;

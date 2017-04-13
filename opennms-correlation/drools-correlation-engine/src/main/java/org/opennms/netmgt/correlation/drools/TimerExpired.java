@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
+
 /**
  * <p>TimerExpired class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class TimerExpired {
+@SuppressWarnings("serial")
+public class TimerExpired implements Serializable {
     
     private Integer m_id;
     

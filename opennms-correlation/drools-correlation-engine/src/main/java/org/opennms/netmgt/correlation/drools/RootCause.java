@@ -36,6 +36,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author ranger
  * @version $Id: $
  */
+@SuppressWarnings("serial")
 public class RootCause extends Cause {
 
     /**

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class Cause {
+@SuppressWarnings("serial")
+public class Cause implements Serializable {
     
     public enum Type {
         POSSIBLE,

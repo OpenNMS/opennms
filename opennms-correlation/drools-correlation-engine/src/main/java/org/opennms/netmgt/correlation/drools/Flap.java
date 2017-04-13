@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -36,7 +37,8 @@ import java.util.Date;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class Flap {
+@SuppressWarnings("serial")
+public class Flap implements Serializable {
     Long m_nodeid;
     String m_ipAddr;
     String m_svcName;

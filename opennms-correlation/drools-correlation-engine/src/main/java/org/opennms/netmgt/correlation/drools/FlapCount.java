@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -38,7 +40,8 @@ import org.springframework.core.style.ToStringCreator;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class FlapCount {
+@SuppressWarnings("serial")
+public class FlapCount implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(FlapCount.class);
     Long m_nodeid;
     String m_ipAddr;
