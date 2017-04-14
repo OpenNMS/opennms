@@ -38,6 +38,7 @@ import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,9 +75,10 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     	final Date now = new Date(); 
 
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-        
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                           lldpLocalGroup)
                           .withDescription("lldpLocalGroup")
                           .withLocation(getLocation())
@@ -132,7 +134,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         	}
         };
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                                       lldpRemTable)
                                   .withDescription("lldpRemTable")
                                   .withLocation(getLocation())
@@ -148,7 +150,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         
         
         final LldpLocPortGetter lldpLocPort = 
-                new LldpLocPortGetter(getPeer(),
+                new LldpLocPortGetter(peer,
                                 m_linkd.getLocationAwareSnmpClient(),
                                 getLocation());
         for (LldpLink link: links)
