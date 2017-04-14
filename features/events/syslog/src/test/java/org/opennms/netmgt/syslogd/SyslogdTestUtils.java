@@ -46,7 +46,7 @@ public abstract class SyslogdTestUtils {
          * bind to the port. Otherwise, we will get test errors for
          * missing anticipated events, etc.
          */
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
+        try { Thread.sleep(3000); } catch (InterruptedException e) {}
     }
 
     public static ByteBuffer toByteBuffer(String string) {
