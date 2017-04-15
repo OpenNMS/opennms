@@ -97,14 +97,14 @@ public class CamelRpcServerRouteManager {
         if (module != null) {
             final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
             if (routeIdsByModule.containsKey(rpcModule)) {
-                LOG.warn("RpcModule {} was already registered.", rpcModule.getId());
-                return;
-            }
-            final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
-            context.addRoutes(routeBuilder);
-            routeIdsByModule.put(rpcModule, routeBuilder.getRouteId());
+                LOG.warn("RpcModule {} ({}) was already registered", rpcModule.getId(), rpcModule.hashCode());
+            } else {
+                final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
+                context.addRoutes(routeBuilder);
+                routeIdsByModule.put(rpcModule, routeBuilder.getRouteId());
 
-            LOG.info("Registered RpcModule {} on queue {}", rpcModule.getId(), routeBuilder.getQueueName());
+                LOG.info("Registered RpcModule {} ({}) on queue {}", rpcModule.getId(), rpcModule.hashCode(), routeBuilder.getQueueName());
+            }
         }
     }
 
@@ -116,8 +116,10 @@ public class CamelRpcServerRouteManager {
             if (routeId != null) {
                 context.stopRoute(routeId);
                 context.removeRoute(routeId);
+                LOG.info("Deregistered RpcModule {} ({})", rpcModule.getId(), rpcModule.hashCode());
+            } else {
+                LOG.warn("Could not determine route ID for RpcModule {} ({})", rpcModule.getId(), rpcModule.hashCode());
             }
-            LOG.info("Deregistered RpcModule {}", rpcModule.getId());
         }
     }
 }
