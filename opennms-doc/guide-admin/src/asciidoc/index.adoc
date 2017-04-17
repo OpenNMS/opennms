@@ -148,6 +148,7 @@ include::text/performance-data-collection/collectors/vmware.adoc[]
 include::text/performance-data-collection/collectors/wmi.adoc[]
 include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
+include::text/performance-data-collection/collectors/xmp.adoc[]
 
 [[ga-performance-mgmt-shell]]
 === Shell Commands
