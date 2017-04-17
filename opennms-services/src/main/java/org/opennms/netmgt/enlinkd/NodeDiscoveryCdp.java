@@ -45,6 +45,7 @@ import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -73,9 +74,9 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
 
-
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpGlobalGroup).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpGlobalGroup).
             withDescription("cdpGlobalGroup").
             withLocation(getLocation()).
             execute().
@@ -113,7 +114,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
        };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), cdpCacheTable).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpCacheTable).
             withDescription("cdpCacheTable").
             withLocation(getLocation()).
             execute().
@@ -129,7 +130,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
                       e);
             return;
         }
-        final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer(), 
+        final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
                                                                                                      m_linkd.getLocationAwareSnmpClient(),
                                                                                                      getLocation());
         for (CdpLink link: links)

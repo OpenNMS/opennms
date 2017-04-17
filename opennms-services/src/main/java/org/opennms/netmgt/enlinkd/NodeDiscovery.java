@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,17 +264,6 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
     public String getPrimaryIpAddressString() {
     	return str(m_node.getSnmpPrimaryIpAddr());
-    }
-
-    /**
-     * <p>
-     * getPeer
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     */
-    public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), m_node.getLocation());
     }
 
     /**

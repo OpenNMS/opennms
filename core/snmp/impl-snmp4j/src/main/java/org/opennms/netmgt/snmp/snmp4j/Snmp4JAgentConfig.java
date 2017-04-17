@@ -34,14 +34,17 @@ import java.net.InetAddress;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
+import org.snmp4j.MessageDispatcher;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
@@ -331,12 +334,18 @@ public class Snmp4JAgentConfig {
     }
 
     public Snmp createSnmpSession() throws IOException {
-        TransportMapping<?> transport = new DefaultUdpTransportMapping();
-        Snmp session = new Snmp(transport);
-        
-        if (isSnmpV3()) {
+        final TransportMapping<?> transport = new DefaultUdpTransportMapping();
+        final MessageDispatcher disp = new MessageDispatcherImpl();
+        final Snmp session;
+        // Here we create the SNMP session, while only adding the message processing
+        // models we need for the specific agent
+        if (!isSnmpV3()) {
+            disp.addMessageProcessingModel(new MPv1());
+            disp.addMessageProcessingModel(new MPv2c());
+            session = new Snmp(disp, transport);
+        } else {
             // Make a new USM
-            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            final USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             // Add the specified user to the USM
             usm.addUser(
                 getSecurityName(),
@@ -348,16 +357,9 @@ public class Snmp4JAgentConfig {
                     getPrivPassPhrase()
                 )
             );
-            // Remove the old SNMPv3 MessageProcessingModel. If you don't do this, you'll end up with
-            // two SNMPv3 MessageProcessingModel instances in the dispatcher and connections will fail.
-            MessageProcessingModel oldModel = session.getMessageDispatcher().getMessageProcessingModel(MessageProcessingModel.MPv3);
-            if (oldModel != null) {
-                session.getMessageDispatcher().removeMessageProcessingModel(oldModel);
-            }
-            // Add a new SNMPv3 MessageProcessingModel with the newly-created USM
-            session.getMessageDispatcher().addMessageProcessingModel(new MPv3(usm));
+            disp.addMessageProcessingModel(new MPv3(usm));
+            session = new Snmp(disp, transport);
         }
-        
         return session;
     }
 
