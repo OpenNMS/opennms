@@ -508,12 +508,12 @@ public class Poller extends AbstractServiceDaemon {
         if (pkg == null) {
             if(active && !verifyServer){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
-                m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "N");
+                updateServiceStatus(service, "N");
             }
             return false;
         } else if (!active && !verifyServer) {
             LOG.info("Active service {} on {} is now configured for a package. Marking as active.", serviceName, ipAddr);
-            m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "A");
+            updateServiceStatus(service, "A");
         }
 
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
@@ -559,6 +559,11 @@ public class Poller extends AbstractServiceDaemon {
 
         return true;
 
+    }
+
+    private void updateServiceStatus(OnmsMonitoredService service, String status) {
+        service.setStatus(status);
+        m_monitoredServiceDao.saveOrUpdate(service);
     }
 
     /**
