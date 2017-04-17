@@ -476,6 +476,7 @@ public class NodeRestService extends OnmsRestService {
         builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("categories", "category", JoinType.LEFT_JOIN);
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("location", "location", JoinType.LEFT_JOIN);
         builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
         applyQueryFilters(params, builder);
