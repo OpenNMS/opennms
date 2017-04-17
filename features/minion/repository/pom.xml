@@ -58,7 +58,7 @@
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>hawtio-offline</feature>
                             </features>
-                            <repository>target/maven-repo</repository>
+                            <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
                     </execution>
                 </executions>
@@ -74,7 +74,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/maven-repo</outputDirectory>
+                            <outputDirectory>${project.build.directory}/maven-repo</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>
@@ -99,6 +99,26 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>cleanup-after-integration-tests</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}/maven-repo</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

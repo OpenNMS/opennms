@@ -44,6 +44,7 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,12 +74,14 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
     	final Date now = new Date(); 
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer(),
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
                                                                                   m_linkd.getLocationAwareSnmpClient(),
                                                                                   getLocation());
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfGeneralGroup).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
             withDescription("ospfGeneralGroup").
             withLocation(getLocation()).
             execute().
@@ -124,7 +127,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfNbrTableTracker).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfNbrTableTracker).
             withDescription("ospfNbrTable").
             withLocation(getLocation()).
             execute().
@@ -145,7 +148,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfIfTableTracker).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfIfTableTracker).
             withDescription("ospfIfTable").
             withLocation(getLocation()).
             execute().

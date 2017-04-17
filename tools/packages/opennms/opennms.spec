@@ -57,7 +57,6 @@ BuildArch:		noarch
 
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
-BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
@@ -475,7 +474,7 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
-VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
+VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 
 %{extrainfo}
 %{extrainfo2}
@@ -524,23 +523,23 @@ if [ "%{skip_compile}" = 1 ]; then
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		cd $dir
-			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
+			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install
 		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
 		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
 	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install
 
 cd opennms-tools
-	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
+	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Dopennms.home="%{instprefix}" install
 cd -
 
@@ -550,7 +549,8 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p %{buildroot}%{instprefix}
 
-tar zxvf %{_builddir}/%{name}-%{version}-%{release}/target%{buildroot}.tar.gz -C %{buildroot}%{instprefix}
+# Untar the tar.gz created by opennms-full-assembly
+tar zxvf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 

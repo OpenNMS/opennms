@@ -29,12 +29,14 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,8 +103,9 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
             }
         };
 		
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       ipNetToMediaTableTracker).withDescription("ipNetToMedia").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
             LOG.info("run: node [{}]: Agent error while scanning the ipNetToMedia table", 
