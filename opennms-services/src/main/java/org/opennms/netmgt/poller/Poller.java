@@ -449,22 +449,7 @@ public class Poller extends AbstractServiceDaemon {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                             final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-                            final OnmsIpInterface iface = service.getIpInterface();
-                            final Set<OnmsOutage> outages = service.getCurrentOutages();
-                            final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
-                            final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
-                            closeOutageIfSvcLostEventIsMissing(outage);
-
-                            if (scheduleService(
-                                                service.getNodeId(), 
-                                                iface.getNode().getLabel(), 
-                                                InetAddressUtils.str(iface.getIpAddress()), 
-                                                service.getServiceName(), 
-                                                "A".equals(service.getStatus()), 
-                                                event == null ? null : event.getId(), 
-                                                    outage == null ? null : outage.getIfLostService(), 
-                                                        event == null ? null : event.getEventUei()
-                                    )) {
+                            if (scheduleService(service)) {
                                 svcNode.recalculateStatus();
                                 svcNode.processStatusChange(new Date());
                             } else {
@@ -490,29 +475,27 @@ public class Poller extends AbstractServiceDaemon {
             public Integer doInTransaction(TransactionStatus arg0) {
                 final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
                 for (OnmsMonitoredService service : services) {
-                    final OnmsIpInterface iface = service.getIpInterface();
-                    final Set<OnmsOutage> outages = service.getCurrentOutages();
-                    final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
-                    final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
-                    closeOutageIfSvcLostEventIsMissing(outage);
-
-                    scheduleService(
-                            service.getNodeId(),
-                            iface.getNode().getLabel(),
-                            InetAddressUtils.str(iface.getIpAddress()),
-                            service.getServiceName(),
-                            "A".equals(service.getStatus()),
-                            event == null ? null : event.getId(),
-                            outage == null ? null : outage.getIfLostService(),
-                            event == null ? null : event.getEventUei()
-                            );
+                    scheduleService(service);
                 }
                 return services.size();
             }
         });
     }
 
-    private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date ifLostService, String svcLostUei) {
+    private boolean scheduleService(OnmsMonitoredService service) {
+        final OnmsIpInterface iface = service.getIpInterface();
+        final Set<OnmsOutage> outages = service.getCurrentOutages();
+        final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
+        final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
+        final String ipAddr = InetAddressUtils.str(iface.getIpAddress());
+        final String serviceName = service.getServiceName();
+        boolean active = "A".equals(service.getStatus());
+        final Number svcLostEventId = event == null ? null : event.getId();
+        final Date ifLostService = outage == null ? null : outage.getIfLostService();
+        final String svcLostUei = event == null ? null : event.getEventUei();
+
+        closeOutageIfSvcLostEventIsMissing(outage);
+
         // We don't want to adjust the management state of the service if we're
         // on a machine that uses multiple servers with access to the same database
         // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
@@ -522,12 +505,12 @@ public class Poller extends AbstractServiceDaemon {
         if (pkg == null) {
             if(active && !verifyServer){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
-                m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "N");
+                updateServiceStatus(service, "N");
             }
             return false;
         } else if (!active && !verifyServer) {
             LOG.info("Active service {} on {} is now configured for a package. Marking as active.", serviceName, ipAddr);
-            m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "A");
+            updateServiceStatus(service, "A");
         }
 
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
@@ -543,7 +526,7 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
 
-        PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
+        PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
                 getScheduler(), m_persisterFactory, m_resourceStorageDao);
         svc.setPollConfig(pollConfig);
@@ -573,6 +556,11 @@ public class Poller extends AbstractServiceDaemon {
 
         return true;
 
+    }
+
+    private void updateServiceStatus(OnmsMonitoredService service, String status) {
+        service.setStatus(status);
+        m_monitoredServiceDao.saveOrUpdate(service);
     }
 
     /**
