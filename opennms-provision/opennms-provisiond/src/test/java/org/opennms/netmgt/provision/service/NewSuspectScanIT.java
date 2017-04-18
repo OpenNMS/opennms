@@ -191,8 +191,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testScanNewSuspect() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
@@ -251,8 +251,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testScanNewSuspectWithForeignSource() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
@@ -558,7 +558,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
-    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:/no-ipaddrtable.properties")
     public void testScanNewSuspectNoIpAddrTable() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 

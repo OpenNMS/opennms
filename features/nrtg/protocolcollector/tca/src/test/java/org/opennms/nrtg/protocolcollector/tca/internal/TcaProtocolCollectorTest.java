@@ -58,9 +58,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:TcaProtocolCollectorTestContext.xml"
+        "classpath:/TcaProtocolCollectorTestContext.xml"
 })
-@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:juniperTcaSample.properties")
+@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:/juniperTcaSample.properties")
 public class TcaProtocolCollectorTest implements InitializingBean {
 
     @Autowired
