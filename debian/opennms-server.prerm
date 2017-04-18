@@ -6,10 +6,10 @@
 set -e
 
 case "$1" in
-    remove|upgrade|deconfigure)
+    remove|deconfigure)
 	invoke-rc.d opennms stop || :
 	;;
-    failed-upgrade)
+    upgrade|failed-upgrade)
 	;;
     *)
 	echo "prerm called with unknown argument \`$1'" >&2
