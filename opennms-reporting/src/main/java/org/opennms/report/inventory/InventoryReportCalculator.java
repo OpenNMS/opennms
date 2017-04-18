@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.rancid.ConnectionProperties;
@@ -263,7 +264,7 @@ public class InventoryReportCalculator implements InitializingBean {
         
         rnbi = new RwsNbinventoryreport();
         rnbi.setUser(user);
-        rnbi.setReportRequestDate(reportRequestDate.toString());
+        rnbi.setReportRequestDate(StringUtils.toStringEfficiently(reportRequestDate));
 
         boolean withKey = false;
         if (theField.compareTo("")!=0){

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support.trustmanager;
+package org.opennms.netmgt.collection.persistence.tcp;
 
-import java.security.cert.CertificateException;
+import java.util.Collections;
 
-import javax.net.ssl.X509TrustManager;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
 
-/**
- * This class is used to change the behaviour of the X509TrustManager that is
- * used to validate certificates from an HTTPS server. With this class all
- * certificates will be approved
- *
- * @author <a href="mailto:jason@opennms.org">Jason</a>
- */
-public class RelaxedX509TrustManager implements X509TrustManager {
-    /** {@inheritDoc} */
-    @Override
-    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+public class TcpSinglePersister extends TcpBasePersister {
+
+    public TcpSinglePersister(ServiceParameters params, RrdRepository repository, TcpOutputStrategy tcpStrategy) {
+        super(params, repository, tcpStrategy);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+    public void visitAttribute(CollectionAttribute attribute) {
+        pushShouldPersist(attribute);
+        if (shouldPersist()) {
+            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
+            storeAttribute(attribute);
+        }
     }
 
-    /**
-     * <p>getAcceptedIssuers</p>
-     *
-     * @return an array of {@link java.security.cert.X509Certificate} objects.
-     */
     @Override
-    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-        return null;
+    public void completeAttribute(CollectionAttribute attribute) {
+        if (shouldPersist()) {
+            commitBuilder();
+        }
+        popShouldPersist();
     }
+
 }

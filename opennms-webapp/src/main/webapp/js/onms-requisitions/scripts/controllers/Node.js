@@ -93,6 +93,16 @@
     $scope.availableCategories = [];
 
     /**
+    * @description The available configured locations
+    *
+    * @ngdoc property
+    * @name NodeController#availableLocations
+    * @propertyOf NodeController
+    * @returns {array} The locations
+    */
+    $scope.availableLocations = [];
+
+    /**
     * @description The list of black-listed foreign IDs.
     * The foreignId must be unique within the requisition.
     * For an existing node, the foreignId should not be changed.
@@ -124,7 +134,7 @@
           buttons: {
             success: {
               label: 'Yes',
-              className: 'btn-danger',
+              className: 'btn-primary',
               callback: doGoTo
             },
             main: {
@@ -448,6 +458,14 @@
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
         $scope.availableCategories = categories;
+      },
+      $scope.errorHandler
+    );
+
+    // Initialize locations
+    RequisitionsService.getAvailableLocations().then(
+      function(locations) { // success
+        $scope.availableLocations = locations;
       },
       $scope.errorHandler
     );
