@@ -35,57 +35,52 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link OnmsOutage} entity.
+ * Basic Web Service using REST for {@link OnmsAlarm} entity.
  *
- * @author Seth
+ * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("outages")
+@Path("events")
 @Transactional
-public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer> {
+public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer> {
 
     @Autowired
-    private OutageDao m_dao;
+    private AlarmDao m_dao;
 
     @Override
-    protected OutageDao getDao() {
+    protected AlarmDao getDao() {
         return m_dao;
     }
 
     @Override
-    protected Class<OnmsOutage> getDaoClass() {
-        return OnmsOutage.class;
+    protected Class<OnmsAlarm> getDaoClass() {
+        return OnmsAlarm.class;
     }
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-        builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
-        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
-
-        // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
-
-        // Order by ID by default
-        builder.orderBy("id").desc();
-
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
+        builder.fetch("firstEvent", FetchType.EAGER);
+        builder.fetch("lastEvent", FetchType.EAGER);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         return builder;
     }
 
     @Override
-    protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
-        return new OnmsOutageCollection(list);
+    protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
+        return new OnmsAlarmCollection(list);
     }
+
 }

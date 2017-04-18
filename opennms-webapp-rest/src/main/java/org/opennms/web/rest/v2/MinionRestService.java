@@ -34,6 +34,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -79,7 +80,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         return OnmsMinion.class;
     }
 
-    protected CriteriaBuilder getCriteriaBuilder() {
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
 
         // Order by label by default
@@ -102,8 +103,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         final String location = minion.getLocation();
         Response response = super.delete(id);
 
-        final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI,
-                "OpenNMS.WebUI");
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI, "ReST");
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, id);
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, location);

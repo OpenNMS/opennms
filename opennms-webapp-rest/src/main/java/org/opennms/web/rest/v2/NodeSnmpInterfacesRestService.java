@@ -37,7 +37,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -45,16 +44,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNodeList;
-import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
@@ -63,100 +57,82 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link OnmsNode} entity
+ * Basic Web Service using REST for {@link OnmsSnmpInterface} entity.
  *
- * @author <a href="seth@opennms.org">Seth Leger</a>
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("nodes")
 @Transactional
-public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
+public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestService<OnmsSnmpInterface,Integer> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-
-    @Autowired
-    private MonitoringLocationDao m_locationDao;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeSnmpInterfacesRestService.class);
 
     @Autowired
-    private NodeDao m_dao;
+    private SnmpInterfaceDao m_ipInterfaceDao;
 
-    @Autowired
-    @Qualifier("eventProxy")
-    private EventProxy m_eventProxy;
-
-    protected NodeDao getDao() {
-        return m_dao;
+    @Override
+    protected SnmpInterfaceDao getDao() {
+        return m_ipInterfaceDao;
     }
 
-    protected Class<OnmsNode> getDaoClass() {
-        return OnmsNode.class;
+    @Override
+    protected Class<OnmsSnmpInterface> getDaoClass() {
+        return OnmsSnmpInterface.class;
     }
 
-    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-
-        builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("categories", "category", JoinType.LEFT_JOIN);
-        builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-        builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
-
-        // Order by label by default
-        builder.orderBy("label").desc();
-
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
+        updateCriteria(uriInfo, builder);
         return builder;
     }
 
     @Override
-    protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
-        return new OnmsNodeList(list);
+    protected JaxbListWrapper<OnmsSnmpInterface> createListWrapper(Collection<OnmsSnmpInterface> list) {
+        return new OnmsSnmpInterfaceList(list);
     }
 
-    @Override
-    public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
-        if (object.getLocation() == null) {
-            OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
-            LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
-            object.setLocation(location);
+    protected Response doCreate(UriInfo uriInfo, OnmsSnmpInterface snmpInterface) {
+        OnmsNode node = getNode(uriInfo);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "Node was not found.");
+        } else if (snmpInterface == null) {
+            throw getException(Status.BAD_REQUEST, "SNMP Interface object cannot be null");
+        } else if (snmpInterface.getIfIndex() == null) {
+            throw getException(Status.BAD_REQUEST, "SNMP Interface's ifIndex cannot be null");
         }
-        Integer id = getDao().save(object);
-        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource());
-        sendEvent(e);
-
-        return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+        node.addSnmpInterface(snmpInterface);
+        getDao().save(snmpInterface);
+        return Response.created(RedirectHelper.getRedirectUri(uriInfo, snmpInterface.getIfIndex())).build();
     }
 
     // Overrides default implementation
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getByCriteria(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria) {
-        LOG.debug("getByCriteria: getting node using '{}' as criteria", lookupCriteria);
-        OnmsNode retval = getNode(lookupCriteria);
-        if (retval == null) {
+    public Response getByIfIndex(@Context final UriInfo uriInfo, @PathParam("id") final Integer ifIndex) {
+        final OnmsSnmpInterface iface = getInterface(uriInfo, ifIndex);
+        if (iface == null) {
             return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(retval).build();
         }
+        return Response.ok(iface).build();
     }
 
     // Overrides default implementation
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final OnmsNode object) {
+    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final Integer ifIndex, final OnmsSnmpInterface object) {
         writeLock();
         try {
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            OnmsNode retval = getNode(lookupCriteria);
+            OnmsSnmpInterface retval = getInterface(uriInfo, ifIndex);
             if (retval == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -175,10 +151,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final MultivaluedMapImpl params) {
+    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final Integer ifIndex, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            OnmsNode object = getNode(lookupCriteria);
+            OnmsSnmpInterface object = getInterface(uriInfo, ifIndex);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -195,33 +171,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
     // Overrides default implementation
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") final String lookupCriteria) {
+    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final Integer ifIndex) {
         writeLock();
         try {
-            final OnmsNode object = getNode(lookupCriteria);
+            OnmsSnmpInterface object = getInterface(uriInfo, ifIndex);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            LOG.debug("delete: deleting object {}", lookupCriteria);
+            LOG.debug("delete: deleting object {}", ifIndex);
             getDao().delete(object);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
     }
 
-    @Path("{lookupCriteria}/ipinterfaces")
-    public NodeIpInterfacesRestService getIpInterfaceResource(@Context final ResourceContext context) {
-        return context.getResource(NodeIpInterfacesRestService.class);
-    }
-
-    @Path("{lookupCriteria}/snmpinterfaces")
-    public NodeSnmpInterfacesRestService getSnmpInterfaceResource(@Context final ResourceContext context) {
-        return context.getResource(NodeSnmpInterfacesRestService.class);
-    }
-
-    private OnmsNode getNode(final String lookupCriteria) {
-        return getDao().get(lookupCriteria);
+    private OnmsSnmpInterface getInterface(final UriInfo uriInfo, @PathParam("id") final Integer ifIndex) {
+        final OnmsNode node = getNode(uriInfo);
+        return node == null ? null : node.getSnmpInterfaceWithIfIndex(ifIndex);
     }
 
 }

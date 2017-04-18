@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v2;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -39,7 +37,6 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,13 +63,10 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
-    
+
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
-
-    @Autowired
-    private ServletContext m_context;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -81,9 +75,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
-    @Transactional
     public void testFiqlSearch() throws Exception {
-
         // Add 5 nodes
         for (int i = 0; i < 5; i++) {
             createNode(201);
@@ -92,15 +84,10 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes";
 
         LOG.warn(sendRequest(GET, url, parseParamData("limit=2&offset=2&_s=label==*Test*"), 200));
-
         LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*1"), 200));
-
         LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*2"), 200));
-
         LOG.warn(sendRequest(GET, url, parseParamData("_s=assetRecord.id==2"), 200));
-
         LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*2;assetRecord.id==2"), 200));
-
         LOG.warn(sendRequest(GET, url, parseParamData("_s=(label==*2;assetRecord.id==2),(label==*1)"), 200));
 
         // Use "Hello, Handsome" as a value to test CXF 'search.decode.values' property which will
@@ -110,9 +97,70 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Put all of the FIQL reserved characters into a string which should equal:
         // !$'()+,;=
         LOG.warn(sendRequest(GET, url, parseParamData("_s=label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 204));
+    }
 
-        //LOG.warn(sendRequest(GET, url, parseParamData("limit=2&$filter=id eq '1'"), 200));
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAllEndPoints() throws Exception {
+        String node = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>Default</location>" +
+                "<labelSource>H</labelSource>" +
+                "<sysContact>The Owner</sysContact>" +
+                "<sysDescription>" +
+                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+                "</sysDescription>" +
+                "<sysLocation>DevJam</sysLocation>" +
+                "<sysName>TestMachine1</sysName>" +
+                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+        LOG.warn(sendRequest(GET, "/nodes", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1", 200)); // By ID
+        LOG.warn(sendRequest(GET, "/nodes/JUnit:TestMachine1", 200)); // By foreignSource/foreignId combination
 
+        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+                "<ipAddress>10.10.10.10</ipAddress>" +
+                "<hostName>TestMachine</hostName>" +
+                "<ipStatus>1</ipStatus>" +
+                "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 200)); // By IP Address
+
+        String service = "<service source=\"P\" status=\"N\">" +
+                "<notify>Y</notify>" +
+                "<serviceType>" +
+                "<name>ICMP</name>" +
+                "</serviceType>" +
+                "</service>";
+        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", 200)); // By Name
+
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAdminStatus>1</ifAdminStatus>" +
+                "<ifDescr>en1</ifDescr>" +
+                "<ifName>en1</ifName>" +
+                "<ifOperStatus>1</ifOperStatus>" +
+                "<ifSpeed>10000000</ifSpeed>" +
+                "<ifType>6</ifType>" +
+                "<netMask>255.255.255.0</netMask>" +
+                "<physAddr>001e5271136d</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 200)); // By ifIndex
+
+        // DELETE
+
+        LOG.warn(sendRequest(DELETE, "/nodes/1/snmpinterfaces/6", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 404));
+        LOG.warn(sendRequest(DELETE, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", 404));
+        LOG.warn(sendRequest(DELETE, "/nodes/1/ipinterfaces/10.10.10.10", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 404));
+        LOG.warn(sendRequest(DELETE, "/nodes/1", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1", 404));
     }
 
 }

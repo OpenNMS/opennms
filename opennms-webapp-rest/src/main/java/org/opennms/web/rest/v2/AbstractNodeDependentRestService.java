@@ -28,52 +28,45 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Collection;
+import java.io.Serializable;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link OnmsMonitoringLocation} entity
+ * Abstract Web Service using REST for entities that depend on OnmsNode.
  *
- * @author Seth
+ * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
-@Component
-@Path("monitoringLocations")
-@Transactional
-public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,String> {
+public abstract class AbstractNodeDependentRestService<T,K extends Serializable> extends AbstractDaoRestService<T,K> {
 
     @Autowired
-    private MonitoringLocationDao m_dao;
+    private NodeDao m_nodeDao;
 
-    protected MonitoringLocationDao getDao() {
-        return m_dao;
+    protected void updateCriteria(final UriInfo uriInfo, final CriteriaBuilder builder) {
+        builder.alias("node", "node");
+        final String nodeCriteria = getNodeCriteria(uriInfo);
+        if (nodeCriteria.contains(":")) {
+            String[] parts = nodeCriteria.split(":");
+            builder.eq("node.foreignSource", parts[0]);
+            builder.eq("node.foreignId", parts[1]);
+        } else {
+            builder.eq("node.id", Integer.parseInt(nodeCriteria));
+        }
     }
 
-    protected Class<OnmsMonitoringLocation> getDaoClass() {
-        return OnmsMonitoringLocation.class;
+    protected OnmsNode getNode(final UriInfo uriInfo) {
+        final String lookupCriteria = getNodeCriteria(uriInfo);
+        return m_nodeDao.get(lookupCriteria);
     }
 
-    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
-
-        // Order by location name by default
-        builder.orderBy("locationName").asc();
-
-        return builder;
+    private String getNodeCriteria(final UriInfo uriInfo) {
+        return uriInfo.getPathSegments(true).get(1).getPath();
     }
 
-    @Override
-    protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
-        return new OnmsMonitoringLocationDefinitionList(list);
-    }
 }

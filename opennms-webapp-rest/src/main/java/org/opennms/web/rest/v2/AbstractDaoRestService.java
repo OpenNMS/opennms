@@ -43,6 +43,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -59,12 +60,18 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -72,7 +79,12 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 @Transactional
 public abstract class AbstractDaoRestService<T,K extends Serializable> {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
+
+    @Autowired
+    @Qualifier("eventProxy")
+    protected EventProxy m_eventProxy;
 
     private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -81,7 +93,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 
     protected abstract OnmsDao<T,K> getDao();
     protected abstract Class<T> getDaoClass();
-    protected abstract CriteriaBuilder getCriteriaBuilder();
+    protected abstract CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo);
     protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
 
     protected final void writeLock() {
@@ -93,10 +105,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     }
 
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
-        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-
-        final CriteriaBuilder builder = getCriteriaBuilder();
-
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
         if (searchContext != null) {
             try {
                 SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
@@ -110,33 +119,29 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
         }
 
         // Apply limit, offset, orderBy, order params
+        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
         applyLimitOffsetOrderBy(params, builder);
-
         Criteria crit = builder.toCriteria();
 
         /*
-        TODO: Figure out how to do stuff like this
-
-        // Don't include deleted nodes by default
-        final String type = params.getFirst("type");
-        if (type == null) {
-            final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-            restrictions.add(Restrictions.ne("type", "D"));
-            crit.setRestrictions(restrictions);
-        }
+         * TODO: Figure out how to do stuff like this
+         * 
+         * // Don't include deleted nodes by default
+         * final String type = params.getFirst("type");
+         * if (type == null) {
+         *     final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+         *     restrictions.add(Restrictions.ne("type", "D"));
+         *     crit.setRestrictions(restrictions);
+         * }
          */
-        
         return crit;
     }
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-
         Criteria crit = getCriteria(uriInfo, searchContext);
-
         final List<T> coll = getDao().findMatching(crit);
-
         if (coll == null || coll.size() < 1) {
             return Response.status(Status.NO_CONTENT).build();
         } else {
@@ -187,7 +192,12 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response create(@Context final UriInfo uriInfo, T object) {
-        return doCreate(uriInfo, object);
+        writeLock();
+        try {
+            return doCreate(uriInfo, object);
+        } finally {
+            writeUnlock();
+        }
     }
 
     protected Response doCreate(UriInfo uriInfo, T object) {
@@ -207,16 +217,12 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @Path("{id}")
     public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
         writeLock();
-
         try {
             // TODO: Assert that the ID of the path equals the ID of the object
-
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-
             LOG.debug("update: updating object {}", object);
-
             getDao().saveOrUpdate(object);
             return Response.noContent().build();
         } finally {
@@ -229,18 +235,13 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @Path("{id}")
     public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
         writeLock();
-
         try {
             final T object = getDao().get(id);
-
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-
             LOG.debug("update: updating object {}", object);
-
             RestUtils.setBeanProperties(object, params);
-
             LOG.debug("update: object {} updated", object);
             getDao().saveOrUpdate(object);
             return Response.noContent().build();
@@ -252,16 +253,12 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @DELETE
     public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         writeLock();
-
         try {
             Criteria crit = getCriteria(uriInfo, searchContext);
-
             final List<T> objects = getDao().findMatching(crit);
-
             if (objects == null || objects.size() == 0) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-
             for (T object : objects) {
                 LOG.debug("delete: deleting object {}", object);
                 getDao().delete(object);
@@ -276,17 +273,14 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @Path("{id}")
     public Response delete(@PathParam("id") final K criteria) {
         writeLock();
-
         try {
             final T object = getDao().get(criteria);
-
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-
             LOG.debug("delete: deleting object {}", criteria);
             getDao().delete(object);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -297,7 +291,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     }
 
     private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
-
         final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         params.putAll(p);
 
@@ -333,4 +326,19 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
         return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
     }
+
+    protected void sendEvent(final Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
+
+    protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+        LOG.error(msg);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+    }
+
 }

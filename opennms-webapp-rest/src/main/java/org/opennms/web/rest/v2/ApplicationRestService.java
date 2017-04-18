@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -62,7 +63,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
         return OnmsApplication.class;
     }
 
-    protected CriteriaBuilder getCriteriaBuilder() {
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsApplication.class);
 
         // Order by application name by default

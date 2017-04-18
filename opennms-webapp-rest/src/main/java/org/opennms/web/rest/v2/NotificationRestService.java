@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -67,7 +68,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     }
 
     @Override
-    protected CriteriaBuilder getCriteriaBuilder() {
+    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned

@@ -47,13 +47,11 @@ import javax.ws.rs.core.Response.Status;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -63,100 +61,89 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link OnmsNode} entity
+ * Basic Web Service using REST for {@link OnmsIpInterface} entity.
  *
- * @author <a href="seth@opennms.org">Seth Leger</a>
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("nodes")
 @Transactional
-public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
+public class NodeIpInterfacesRestService extends AbstractNodeDependentRestService<OnmsIpInterface,Integer> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-
-    @Autowired
-    private MonitoringLocationDao m_locationDao;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeIpInterfacesRestService.class);
 
     @Autowired
-    private NodeDao m_dao;
+    private IpInterfaceDao m_dao;
 
-    @Autowired
-    @Qualifier("eventProxy")
-    private EventProxy m_eventProxy;
-
-    protected NodeDao getDao() {
+    @Override
+    protected IpInterfaceDao getDao() {
         return m_dao;
     }
 
-    protected Class<OnmsNode> getDaoClass() {
-        return OnmsNode.class;
+    @Override
+    protected Class<OnmsIpInterface> getDaoClass() {
+        return OnmsIpInterface.class;
     }
 
-    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-
-        builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("categories", "category", JoinType.LEFT_JOIN);
-        builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-        builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
-
-        // Order by label by default
-        builder.orderBy("label").desc();
-
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
+        builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        updateCriteria(uriInfo, builder);
         return builder;
     }
 
     @Override
-    protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
-        return new OnmsNodeList(list);
+    protected JaxbListWrapper<OnmsIpInterface> createListWrapper(Collection<OnmsIpInterface> list) {
+        return new OnmsIpInterfaceList(list);
     }
 
-    @Override
-    public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
-        if (object.getLocation() == null) {
-            OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
-            LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
-            object.setLocation(location);
+    protected Response doCreate(UriInfo uriInfo, OnmsIpInterface ipInterface) {
+        OnmsNode node = getNode(uriInfo);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "Node was not found.");
+        } else if (ipInterface == null) {
+            throw getException(Status.BAD_REQUEST, "IP Interface object cannot be null");
+        } else if (ipInterface.getIpAddress() == null) {
+            throw getException(Status.BAD_REQUEST, "IP Interface's ipAddress cannot be null");
+        } else if (ipInterface.getIpAddress().getAddress() == null) {
+            throw getException(Status.BAD_REQUEST, "IP Interface's ipAddress bytes cannot be null");
         }
-        Integer id = getDao().save(object);
-        final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource());
-        sendEvent(e);
+        node.addIpInterface(ipInterface);
+        getDao().save(ipInterface);
 
-        return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+        final Event event = EventUtils.createNodeGainedInterfaceEvent("ReST", node.getId(), ipInterface.getIpAddress());
+        sendEvent(event);
+
+        return Response.created(RedirectHelper.getRedirectUri(uriInfo, ipInterface.getIpAddress().getHostAddress())).build();
     }
 
     // Overrides default implementation
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getByCriteria(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria) {
-        LOG.debug("getByCriteria: getting node using '{}' as criteria", lookupCriteria);
-        OnmsNode retval = getNode(lookupCriteria);
-        if (retval == null) {
+    public Response getByIpAddress(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
+        final OnmsIpInterface iface = getInterface(uriInfo, ipAddress);
+        if (iface == null) {
             return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(retval).build();
         }
+        return Response.ok(iface).build();
     }
 
     // Overrides default implementation
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final OnmsNode object) {
+    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress, final OnmsIpInterface object) {
         writeLock();
         try {
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            OnmsNode retval = getNode(lookupCriteria);
+            OnmsIpInterface retval = getInterface(uriInfo, ipAddress);
             if (retval == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -175,10 +162,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final MultivaluedMapImpl params) {
+    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            OnmsNode object = getNode(lookupCriteria);
+            OnmsIpInterface object = getInterface(uriInfo, ipAddress);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -195,14 +182,14 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
     // Overrides default implementation
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") final String lookupCriteria) {
+    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
         writeLock();
         try {
-            final OnmsNode object = getNode(lookupCriteria);
+            OnmsIpInterface object = getInterface(uriInfo, ipAddress);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            LOG.debug("delete: deleting object {}", lookupCriteria);
+            LOG.debug("delete: deleting object {}", object);
             getDao().delete(object);
             return Response.ok().build();
         } finally {
@@ -210,18 +197,14 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
         }
     }
 
-    @Path("{lookupCriteria}/ipinterfaces")
-    public NodeIpInterfacesRestService getIpInterfaceResource(@Context final ResourceContext context) {
-        return context.getResource(NodeIpInterfacesRestService.class);
+    @Path("{id}/services")
+    public NodeMonitoredServiceRestService getMonitoredServicesResource(@Context final ResourceContext context) {
+        return context.getResource(NodeMonitoredServiceRestService.class);
     }
 
-    @Path("{lookupCriteria}/snmpinterfaces")
-    public NodeSnmpInterfacesRestService getSnmpInterfaceResource(@Context final ResourceContext context) {
-        return context.getResource(NodeSnmpInterfacesRestService.class);
-    }
-
-    private OnmsNode getNode(final String lookupCriteria) {
-        return getDao().get(lookupCriteria);
+    private OnmsIpInterface getInterface(final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
+        final OnmsNode node = getNode(uriInfo);
+        return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
     }
 
 }
