@@ -27,47 +27,9 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.smoketest.utils.DaoUtils;
-import org.opennms.smoketest.utils.HibernateDaoFactory;
-import org.opennms.test.system.api.AbstractTestEnvironment;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerInfo;
 
 /**
  * This test starts up Minion with the Apache Kafka sink and makes sure
@@ -76,32 +38,12 @@ import com.spotify.docker.client.messages.ContainerInfo;
  * 
  * @author Seth
  */
-public class MinionHeartbeatOutageKafkaTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MinionHeartbeatOutageKafkaTest.class);
-
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
-
-    @Rule
-    public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
-
-    protected HibernateDaoFactory daoFactory;
-
-    public final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            return getEnvironmentBuilder().build();
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
+public class MinionHeartbeatOutageKafkaTest extends MinionHeartbeatOutageTest {
 
     /**
      * Override this method to customize the test environment.
      */
+    @Override
     protected TestEnvironmentBuilder getEnvironmentBuilder() {
         final TestEnvironmentBuilder builder = TestEnvironment.builder().all()
                 // Enable Kafka
@@ -114,180 +56,5 @@ public class MinionHeartbeatOutageKafkaTest {
                 .addFile(MinionHeartbeatOutageKafkaTest.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
         OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
         return builder;
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
-    @Before
-    public void setup() {
-        // Connect to the postgresql container
-        final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        this.daoFactory = new HibernateDaoFactory(pgsql);
-    }
-
-    /**
-     * Install the Kafka features on Minion.
-     * 
-     * @param minionSshAddr
-     * @param kafkaAddress
-     * @throws Exception
-     */
-    protected static void installFeaturesOnMinion(InetSocketAddress minionSshAddr, InetSocketAddress kafkaAddress) throws Exception {
-        try (final SshClient sshClient = new SshClient(minionSshAddr, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-            pipe.println("feature:list -i");
-            pipe.println("list");
-            // Set the log level to INFO
-            pipe.println("log:set INFO");
-            pipe.println("logout");
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
-    }
-
-    protected static void installFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr, InetSocketAddress kafkaAddress, InetSocketAddress zookeeperAddress, boolean useEsRest) throws Exception {
-        try (final SshClient sshClient = new SshClient(opennmsSshAddr, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-
-            pipe.println("features:list -i");
-            // Set the log level to INFO
-            pipe.println("log:set INFO");//
-            pipe.println("logout");
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
-    }
-
-    @Test
-    public void testHeartbeatOutages() throws Exception {
-        Date startOfTest = new Date();
-
-        InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
-        InetSocketAddress kafkaAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 9092);
-        InetSocketAddress zookeeperAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 2181);
-
-        installFeaturesOnMinion(minionSshAddr, kafkaAddress);
-
-        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, true);
-
-        // Wait for the Minion to show up
-        await().atMost(90, SECONDS).pollInterval(5, SECONDS)
-            .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
-                 new CriteriaBuilder(OnmsMinion.class)
-                     .gt("lastUpdated", startOfTest)
-                     .eq("location", "MINION")
-                     .toCriteria()
-                 ),
-                 is(1)
-             );
-
-        // Make sure that the node is available
-        await().atMost(180, SECONDS).pollInterval(5, SECONDS)
-            .until(DaoUtils.countMatchingCallable(
-                this.daoFactory.getDao(NodeDaoHibernate.class),
-                new CriteriaBuilder(OnmsNode.class)
-                .eq("foreignSource", "Minions")
-                .eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
-                .toCriteria()
-                ),
-            equalTo(1)
-        );
-
-        // Make sure that the expected events are present
-        assertEquals(1, DaoUtils.countMatchingCallable(
-            this.daoFactory.getDao(EventDaoHibernate.class),
-            new CriteriaBuilder(OnmsEvent.class)
-            .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI)
-            .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION))
-            .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_ID, "00000000-0000-0000-0000-000000ddba11"))
-            .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, "MINION"))
-            .toCriteria()
-            ).call().intValue()
-        );
-
-        assertEquals(0, DaoUtils.countMatchingCallable(
-            this.daoFactory.getDao(EventDaoHibernate.class),
-            new CriteriaBuilder(OnmsEvent.class)
-            .eq("eventUei", EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI)
-            .toCriteria()
-            ).call().intValue()
-        );
-
-        for (int i = 0; i < 3; i++) {
-            restartContainer(ContainerAlias.MINION);
-
-            // Reset the startOfTest timestamp
-            startOfTest = new Date();
-
-            await().atMost(90, SECONDS).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
-                     new CriteriaBuilder(OnmsMinion.class)
-                         .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
-                         .toCriteria()
-                     ),
-                     is(1)
-                 );
-        }
-
-        for (int i = 0; i < 3; i++) {
-            restartContainer(ContainerAlias.OPENNMS);
-
-            // Reset the startOfTest timestamp
-            startOfTest = new Date();
-
-            await().atMost(90, SECONDS).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
-                     new CriteriaBuilder(OnmsMinion.class)
-                         .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
-                         .toCriteria()
-                     ),
-                     is(1)
-                 );
-        }
-
-        for (int i = 0; i < 1; i++) {
-            restartContainer(ContainerAlias.MINION);
-
-            // Reset the startOfTest timestamp
-            startOfTest = new Date();
-
-            await().atMost(90, SECONDS).pollInterval(5, SECONDS)
-                .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
-                     new CriteriaBuilder(OnmsMinion.class)
-                         .gt("lastUpdated", startOfTest)
-                         .eq("location", "MINION")
-                         .toCriteria()
-                     ),
-                     is(1)
-                 );
-        }
-    }
-
-    private void restartContainer(ContainerAlias alias) {
-        final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
-        final String id = testEnvironment.getContainerInfo(alias).id();
-        try {
-            LOG.info("Restarting container: {} -> {}", alias, id);
-            docker.restartContainer(id);
-            LOG.info("Container restarted: {} -> {}", alias, id);
-        } catch (DockerException | InterruptedException e) {
-            LOG.warn("Unexpected exception while restarting container {}", id, e);
-        }
     }
 }
