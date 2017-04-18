@@ -13,6 +13,7 @@
       <directory>target/classes</directory>
       <outputDirectory>minion-${project.version}</outputDirectory>
       <includes>
+        <include>debian/opennms-minion.minion.init</include>
         <include>debian/rules</include>
         <include>etc/minion.init</include>
       </includes>
@@ -22,6 +23,7 @@
       <directory>target/classes</directory>
       <outputDirectory>minion-${project.version}</outputDirectory>
       <excludes>
+        <exclude>debian/opennms-minion.minion.init</exclude>
         <exclude>debian/rules</exclude>
         <exclude>etc/minion.init</exclude>
       </excludes>
@@ -43,4 +45,15 @@
       <outputDirectory>minion-${project.version}/bin</outputDirectory>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>minion-${project.version}</outputDirectory>
+    </file>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>minion-${project.version}/debian</outputDirectory>
+      <destName>copyright</destName>
+    </file>
+  </files>
 </assembly>
