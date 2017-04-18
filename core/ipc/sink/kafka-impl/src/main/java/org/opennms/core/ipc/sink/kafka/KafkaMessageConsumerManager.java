@@ -95,7 +95,11 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                 while (!closed.get()) {
                     ConsumerRecords<String, String> records = consumer.poll(100);
                     for (ConsumerRecord<String, String> record : records) {
-                        dispatch(module, module.unmarshal(record.value()));
+                        try {
+                            dispatch(module, module.unmarshal(record.value()));
+                        } catch (RuntimeException e) {
+                            LOG.warn("Unexpected exception while dispatching message", e);
+                        }
                     }
                 }
             } catch (WakeupException e) {
