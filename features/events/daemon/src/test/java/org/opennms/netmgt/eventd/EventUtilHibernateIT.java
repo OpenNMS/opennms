@@ -39,7 +39,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
@@ -83,6 +82,7 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testExpandParms() {
         String testString = "%uei%:%nodeid%:%nodelabel%:%nodelocation%";
 

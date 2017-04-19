@@ -112,8 +112,8 @@ public class RadixTreeNodeImpl<T> implements RadixTreeNode<T> {
 	public int size() {
 		// Sum up the size of the children
 		int retval = getChildren().stream().collect(Collectors.summingInt(RadixTreeNode::size));
-		// And add 1
-		return ++retval;
+		// And add 1 if our node has content
+		return content == null ? retval : ++retval;
 	}
 
 	@Override
