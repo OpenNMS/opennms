@@ -28,5 +28,6 @@
         <module>dashlet-surveillance</module>
         <module>dashlet-features</module>
         <module>dashlet-url</module>
+        <module>dashlet-grafana</module>
     </modules>
 </project>

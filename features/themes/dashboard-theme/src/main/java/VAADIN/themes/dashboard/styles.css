@@ -371,3 +371,7 @@ td.onms { font-size: 100%; }
 .severity.Cleared { background-color: #EEEEEE; border-top: 2px solid #999999 !important; background-image: url(/opennms/images/bgCleared.png); }
 .severity.bright { text-overflow: ellipsis; white-space: nowrap; padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
 .severity.nobright { text-overflow: ellipsis; white-space: nowrap; background-image: none;}
+
+.v-button-caption-bold {
+    font-weight: bold;
+}
