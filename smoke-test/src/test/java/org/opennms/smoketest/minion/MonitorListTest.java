@@ -118,7 +118,9 @@ public class MonitorListTest {
             "org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor",
             "org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor",
             "org.opennms.netmgt.poller.monitors.WebMonitor", 
-            "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor")
+            "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor",
+            "org.opennms.netmgt.poller.monitors.VmwareMonitor",
+            "org.opennms.netmgt.poller.monitors.VmwareCimMonitor")
             .build();
 
     @ClassRule

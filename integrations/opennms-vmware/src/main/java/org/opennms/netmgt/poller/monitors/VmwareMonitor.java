@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,30 +28,25 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.util.Map;
+
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
-
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.util.Map;
 
 /**
  * The Class VmwareMonitor
@@ -61,17 +56,12 @@ import java.util.Map;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 @Distributable(DistributionContext.DAEMON)
-public class VmwareMonitor extends AbstractServiceMonitor {
+public class VmwareMonitor extends AbstractVmwareMonitor {
 
     /**
      * logging for VMware monitor
      */
     private final Logger logger = LoggerFactory.getLogger(VmwareMonitor.class);
-
-    /**
-     * the node dao object for retrieving assets
-     */
-    private NodeDao m_nodeDao = null;
 
     /*
     * default retries
@@ -92,40 +82,20 @@ public class VmwareMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
+        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
+        final String vmwareManagedEntityType = getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
-        if (m_nodeDao == null) {
-            m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-
-            if (m_nodeDao == null) {
-                logger.error("Node dao should be a non-null value.");
-                return PollStatus.unknown();
-            }
-        }
-
-        boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-
-        OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
-
-        // retrieve the assets and
-        String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        String vmwareManagedEntityType = onmsNode.getAssetRecord().getVmwareManagedEntityType();
-        String vmwareManagedObjectId = onmsNode.getForeignId();
-
-        TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
         PollStatus serviceStatus = PollStatus.unknown();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            VmwareViJavaAccess vmwareViJavaAccess = null;
-
-            try {
-                vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
-            } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            }
-
+            final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
             try {
                 vmwareViJavaAccess.connect();
             } catch (MalformedURLException e) {
