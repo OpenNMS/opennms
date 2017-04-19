@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.remote.support;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.IOException;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -104,8 +105,12 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 	}
 
 	public String getOutput() {
-		getManager().flush();
-		return new String(getManager().getByteArrayOutputStream().toByteArray());
+		try {
+			getManager().flush();
+			return new String(getManager().getByteArrayOutputStream().toByteArray());
+		} catch (IOException e) {
+			return new String();
+		}
 	}
 
 	public static class ByteArrayOutputStreamManager extends OutputStreamManager {
@@ -113,7 +118,7 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 			super(new ByteArrayOutputStream(), ByteArrayOutputStreamManager.class.getName(), layout, true);
 		}
 
-		public ByteArrayOutputStream getByteArrayOutputStream() {
+		public ByteArrayOutputStream getByteArrayOutputStream() throws IOException {
 			return (ByteArrayOutputStream)getOutputStream();
 		}
 	}
