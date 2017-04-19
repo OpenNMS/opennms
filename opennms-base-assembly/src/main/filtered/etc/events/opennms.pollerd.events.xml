@@ -6,7 +6,7 @@
         <event-label>OpenNMS-defined node event: outageCreated</event-label>
         <descr>
             &lt;p&gt;A %service% outage was created on interface
-            %interface%. Reason code: %parm[eventReason]%.&lt;/p&gt;
+            %interface% because of the following condition: %parm[eventReason]%.&lt;/p&gt;
         </descr>
         <logmsg dest='donotpersist'>
             %service% outage identified on interface %interface%.
@@ -374,7 +374,7 @@
         <event-label>OpenNMS-defined node event: nodeDown</event-label>
         <descr>
             &lt;p&gt;All interfaces on node %parm[nodelabel]% are
-            down. Reason code: %parm[eventReason]%. &lt;/p&gt; &lt;p&gt;
+            down because of the following condition: %parm[eventReason]%.&lt;/p&gt; &lt;p&gt;
             This event is generated when node outage processing determines
             that all interfaces on the node are down.&lt;/p&gt; &lt;p&gt;
             New outage records have been created and service level
@@ -483,7 +483,7 @@
         <event-label>OpenNMS-defined node event: nodeLostService</event-label>
         <descr>
             &lt;p&gt;A %service% outage was identified on interface
-            %interface%. Reason code: %parm[eventReason]%.&lt;/p&gt; &lt;p&gt;
+            %interface% because of the following condition: %parm[eventReason]%.&lt;/p&gt; &lt;p&gt;
             A new Outage record has been created and service level
             availability calculations will be impacted until this outage is
             resolved.&lt;/p&gt;
