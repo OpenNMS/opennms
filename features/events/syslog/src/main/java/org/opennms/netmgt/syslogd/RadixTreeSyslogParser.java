@@ -29,12 +29,20 @@
 package org.opennms.netmgt.syslogd;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This parser reads a set of grok patterns that are stored in the 
@@ -45,11 +53,47 @@ import org.opennms.netmgt.config.SyslogdConfig;
  */
 public class RadixTreeSyslogParser extends SyslogParser {
 
+	private static final Logger LOG = LoggerFactory.getLogger(RadixTreeSyslogParser.class);
+
 	private static final Pattern STRUCTURED_DATA = Pattern.compile("^(?:\\[.*?\\])*(?: \uFEFF?(.*?))?$");
 
 	private static RadixTreeParser radixParser = new RadixTreeParser();
 
 	static {
+		try {
+			File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_GROK_PATTERNS_FILE_NAME);
+			if (configFile.exists() && configFile.isFile()) {
+				try (Reader reader = new FileReader(configFile)) {
+					new BufferedReader(reader).lines().forEach(pattern -> {
+						// Ignore comments and blank lines
+						if (pattern == null || pattern.trim().length() == 0 || pattern.trim().startsWith("#")) {
+							return;
+						}
+						radixParser.teach(GrokParserStageSequenceBuilder.parseGrok(pattern).toArray(new ParserStage[0]));
+					});
+				}
+
+				if (radixParser.size() == 0) {
+					LOG.warn("{} has no grok patterns, check the content of {}, using default grok pattern set", RadixTreeSyslogParser.class.getSimpleName(), ConfigFileConstants.getFileName(ConfigFileConstants.SYSLOGD_GROK_PATTERNS_FILE_NAME));
+					teachDefaultPatterns();
+				}
+			} else {
+				teachDefaultPatterns();
+			}
+		} catch (FileNotFoundException e) {
+			teachDefaultPatterns();
+		} catch (IOException e) {
+			LOG.warn("Unexpeceted exception while reading {}, using default grok pattern set", ConfigFileConstants.getFileName(ConfigFileConstants.SYSLOGD_GROK_PATTERNS_FILE_NAME), e);
+			teachDefaultPatterns();
+		}
+
+
+		// After we have taught all of the patterns to the parser, perform
+		// edge compression to optimize the tree
+		radixParser.performEdgeCompression();
+	}
+
+	private static final void teachDefaultPatterns() {
 		new BufferedReader(new InputStreamReader(RadixTreeSyslogParser.class.getClassLoader().getResourceAsStream("org/opennms/netmgt/syslogd/grok-patterns.txt"))).lines().forEach(pattern -> {
 			// Ignore comments and blank lines
 			if (pattern == null || pattern.trim().length() == 0 || pattern.trim().startsWith("#")) {
@@ -57,9 +101,6 @@ public class RadixTreeSyslogParser extends SyslogParser {
 			}
 			radixParser.teach(GrokParserStageSequenceBuilder.parseGrok(pattern).toArray(new ParserStage[0]));
 		});
-		// After we have taught all of the patterns to the parser, perform
-		// edge compression to optimize the tree
-		radixParser.performEdgeCompression();
 	}
 
 	public RadixTreeSyslogParser(SyslogdConfig config, ByteBuffer syslogString) {
