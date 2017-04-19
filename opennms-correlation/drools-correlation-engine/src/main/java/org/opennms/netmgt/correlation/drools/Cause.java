@@ -41,9 +41,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-@SuppressWarnings("serial")
 public class Cause implements Serializable {
-    
+    private static final long serialVersionUID = 3872681023624865186L;
+
     public enum Type {
         POSSIBLE,
         IMPACT,

@@ -37,8 +37,9 @@ import java.util.Date;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-@SuppressWarnings("serial")
 public class Flap implements Serializable {
+    private static final long serialVersionUID = 2990480904303840611L;
+
     Long m_nodeid;
     String m_ipAddr;
     String m_svcName;

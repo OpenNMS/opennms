@@ -36,9 +36,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-@SuppressWarnings("serial")
 public class PossibleCause extends Cause {
-    
+    private static final long serialVersionUID = 6081288061834584980L;
+
     /**
      * <p>Constructor for PossibleCause.</p>
      *

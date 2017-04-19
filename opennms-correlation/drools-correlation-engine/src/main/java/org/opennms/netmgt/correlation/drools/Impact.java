@@ -36,8 +36,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-@SuppressWarnings("serial")
 public class Impact extends Cause {
+    private static final long serialVersionUID = 6520142892570549526L;
 
     /**
      * <p>Constructor for Impact.</p>

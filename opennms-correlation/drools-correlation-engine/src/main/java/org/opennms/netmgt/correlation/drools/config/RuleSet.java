@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools.config;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,7 +55,6 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.xml.sax.ContentHandler;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -67,10 +63,10 @@ import com.codahale.metrics.MetricRegistry;
  *
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("all")
 @XmlRootElement(name = "rule-set")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RuleSet implements Serializable {
+    private static final long serialVersionUID = -3322760518752114255L;
 
     @XmlAttribute(name = "name")
     private String _name;

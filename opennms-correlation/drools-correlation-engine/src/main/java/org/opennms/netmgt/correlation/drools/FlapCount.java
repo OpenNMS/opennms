@@ -40,8 +40,9 @@ import org.springframework.core.style.ToStringCreator;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-@SuppressWarnings("serial")
 public class FlapCount implements Serializable {
+    private static final long serialVersionUID = 8550223065319878158L;
+
     private static final Logger LOG = LoggerFactory.getLogger(FlapCount.class);
     Long m_nodeid;
     String m_ipAddr;
