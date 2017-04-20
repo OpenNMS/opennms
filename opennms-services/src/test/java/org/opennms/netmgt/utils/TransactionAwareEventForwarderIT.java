@@ -170,7 +170,7 @@ public class TransactionAwareEventForwarderIT implements InitializingBean {
     }
 
     private Event sendEvent() {
-        Event event = new EventBuilder(EventConstants.ADD_INTERFACE_EVENT_UEI, "Test")
+        Event event = new EventBuilder(EventConstants.ADD_NODE_EVENT_UEI, "Test")
         .setNodeid(m_eventNumber++)
         .getEvent();
 

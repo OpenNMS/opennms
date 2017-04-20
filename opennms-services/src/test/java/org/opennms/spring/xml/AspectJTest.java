@@ -81,7 +81,7 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        m_handler.handleAnEvent(createEvent(EventConstants.ADD_INTERFACE_EVENT_UEI));
+        m_handler.handleAnEvent(createEvent(EventConstants.ADD_NODE_EVENT_UEI));
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -96,7 +96,7 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.ADD_NODE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -114,7 +114,7 @@ public class AspectJTest implements InitializingBean {
         
         m_handler.setThrownException(new RuntimeException("test exception"));
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.ADD_NODE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -133,7 +133,7 @@ public class AspectJTest implements InitializingBean {
         
         m_handler.setThrownException(new Exception("test exception"));
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.ADD_NODE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());

@@ -86,11 +86,6 @@ public abstract class EventConstants {
     public static final String DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/provisiond/deleteNode";
 
     /**
-     * The add interface event UEI.
-     */
-    public static final String ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/provisiond/addInterface";
-
-    /**
      * The delete interface event UEI.
      */
     public static final String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/provisiond/deleteInterface";
