@@ -81,6 +81,7 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"dashlet-map",
 			"dashlet-image",
 			"dashlet-charts",
+			"dashlet-grafana",
 			"dashlet-rtc",
 			"dashlet-rrd",
 			"dashlet-ksc",

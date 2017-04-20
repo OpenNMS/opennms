@@ -872,10 +872,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test
     public void testDeleteService() throws Exception {
 
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
@@ -912,55 +908,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test
-    public void testDontDeleteRequisitionedService() throws Exception {
-
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        // This test assumes that discovery is disabled
-        assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-
-        //Verify ipinterface count
-        assertEquals(4, getInterfaceDao().countAll());
-
-        //Verify ifservices count
-        assertEquals(6, getMonitoredServiceDao().countAll());
-
-        //Verify service count
-        assertEquals(2, getServiceTypeDao().countAll());
-
-        // Locate the service to be deleted
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        assertNotNull(node);
-        final int nodeid = node.getId();
-
-
-        m_eventAnticipator.reset();
-
-        m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
-
-        // there is no event to wait for so make sure we don't get anything..
-        m_eventAnticipator.waitForAnticipated(5000);
-        m_eventAnticipator.verifyAnticipated();
-
-        // Make sure the service is still there
-        assertEquals(6, getMonitoredServiceDao().countAll());
-
-    }
-
-    @Test
     public void testDeleteInterface() throws Exception {
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
 
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
@@ -1002,9 +950,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test
     public void testDeleteNode() throws Exception {
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
@@ -1056,54 +1001,17 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test
-    public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionDisabled() throws Exception {
-        System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
-        assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        m_eventAnticipator.reset();
-
-        // no events should be fired
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
-        m_eventAnticipator.verifyAnticipated();
-    }
-
-    @Test
     public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionEnabled() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
         assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
         final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
         m_eventAnticipator.reset();
 
         // only the service deletion should be fired
-        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "10.201.136.161", "ICMP"));
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
-        m_eventAnticipator.verifyAnticipated();
-    }
-
-    @Test
-    public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledRequisitionedNode() throws Exception {
-        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
-        assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        m_eventAnticipator.reset();
-
-        // no events should be fired
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "10.201.136.163", "ICMP"));
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.163", "ICMP"));
         m_eventAnticipator.verifyAnticipated();
     }
 
@@ -1115,9 +1023,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNode() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
@@ -1148,9 +1053,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNodeSingleInterface() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
