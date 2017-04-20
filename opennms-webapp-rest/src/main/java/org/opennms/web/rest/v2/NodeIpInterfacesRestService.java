@@ -190,8 +190,9 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
                 return Response.status(Status.NOT_FOUND).build();
             }
             LOG.debug("delete: deleting object {}", object);
+            object.getNode().getIpInterfaces().remove(object);
             getDao().delete(object);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

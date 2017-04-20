@@ -179,6 +179,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
                 return Response.status(Status.NOT_FOUND).build();
             }
             LOG.debug("delete: deleting object {}", ifIndex);
+            object.getNode().getSnmpInterfaces().remove(object);
             getDao().delete(object);
             return Response.noContent().build();
         } finally {

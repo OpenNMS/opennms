@@ -134,7 +134,6 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         List<PathSegment> segments = uriInfo.getPathSegments(true);
         final String ipAddress =  segments.get(3).getPath(); // /nodes/{criteria}/ipinterfaces/{ipAddress}
         builder.eq("ipInterface.ipAddress", ipAddress);
-        System.err.println(builder.toCriteria());
     }
 
     // Overrides default implementation
@@ -206,8 +205,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
                 return Response.status(Status.NOT_FOUND).build();
             }
             LOG.debug("delete: deleting object {}", lookupCriteria);
+            object.getIpInterface().getMonitoredServices().remove(object);
             getDao().delete(object);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -232,14 +232,12 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
 
     private OnmsMonitoredService getService(final UriInfo uriInfo, final String serviceName) {
         final OnmsIpInterface iface = getInterface(uriInfo);
-        System.err.println("XXXXXXXXX> Getting service " + serviceName + " from interface " + iface);
         return iface == null ? null : iface.getMonitoredServiceByServiceType(serviceName);
     }
 
     private OnmsIpInterface getInterface(final UriInfo uriInfo) {
         final OnmsNode node = getNode(uriInfo);
         final String ipAddress =  uriInfo.getPathSegments(true).get(3).getPath();
-        System.err.println("XXXXXXXXX> Getting interface " + ipAddress + " from node " + node);
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
     }
 

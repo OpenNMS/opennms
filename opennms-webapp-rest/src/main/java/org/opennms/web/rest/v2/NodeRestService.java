@@ -204,7 +204,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
             }
             LOG.debug("delete: deleting object {}", lookupCriteria);
             getDao().delete(object);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
