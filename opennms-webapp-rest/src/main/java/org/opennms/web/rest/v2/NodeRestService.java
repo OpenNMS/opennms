@@ -30,19 +30,11 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -55,8 +47,6 @@ import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.api.RestUtils;
-import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
 import org.slf4j.Logger;
@@ -76,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("nodes")
 @Transactional
-public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
+public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
@@ -132,82 +122,15 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
-    // Overrides default implementation
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getByCriteria(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria) {
-        LOG.debug("getByCriteria: getting node using '{}' as criteria", lookupCriteria);
-        OnmsNode retval = getNode(lookupCriteria);
+    protected void doUpdate(UriInfo uriInfo, OnmsNode object, String id) throws IllegalArgumentException {
+        OnmsNode retval = getNode(id);
         if (retval == null) {
-            return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(retval).build();
+            throw new IllegalArgumentException("Criteria not found");
         }
-    }
-
-    // Overrides default implementation
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final OnmsNode object) {
-        writeLock();
-        try {
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            OnmsNode retval = getNode(lookupCriteria);
-            if (retval == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            if (!retval.getId().equals(object.getId())) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
+        if (!retval.getId().equals(object.getId())) {
+            throw new IllegalArgumentException("Invalid ID");
         }
-    }
-
-    // Overrides default implementation
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final MultivaluedMapImpl params) {
-        writeLock();
-        try {
-            OnmsNode object = getNode(lookupCriteria);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            RestUtils.setBeanProperties(object, params);
-            LOG.debug("update: object {} updated", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    // Overrides default implementation
-    @DELETE
-    @Path("{id}")
-    public Response delete(@PathParam("id") final String lookupCriteria) {
-        writeLock();
-        try {
-            final OnmsNode object = getNode(lookupCriteria);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("delete: deleting object {}", lookupCriteria);
-            getDao().delete(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
+        super.doUpdate(uriInfo, object, id);
     }
 
     @Path("{lookupCriteria}/ipinterfaces")
@@ -222,6 +145,11 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
 
     private OnmsNode getNode(final String lookupCriteria) {
         return getDao().get(lookupCriteria);
+    }
+
+    @Override
+    protected OnmsNode doGet(UriInfo uriInfo, String id) {
+        return getDao().get(id);
     }
 
 }

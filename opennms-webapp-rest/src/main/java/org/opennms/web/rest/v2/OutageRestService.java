@@ -46,12 +46,12 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsOutage} entity.
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("outages")
 @Transactional
-public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer> {
+public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer,Integer> {
 
     @Autowired
     private OutageDao m_dao;
@@ -88,4 +88,10 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
     protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
         return new OnmsOutageCollection(list);
     }
+
+    @Override
+    protected OnmsOutage doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
+    }
+
 }

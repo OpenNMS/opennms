@@ -45,12 +45,12 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsApplication} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("applications")
 @Transactional
-public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,Integer> {
+public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,Integer,Integer> {
 
     @Autowired
     private ApplicationDao m_dao;
@@ -75,5 +75,10 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Override
     protected JaxbListWrapper<OnmsApplication> createListWrapper(Collection<OnmsApplication> list) {
         return new OnmsApplicationList(list);
+    }
+
+    @Override
+    protected OnmsApplication doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
     }
 }

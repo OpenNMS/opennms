@@ -31,19 +31,10 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -58,11 +49,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.api.RestUtils;
-import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -75,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestService<OnmsMonitoredService,Integer> {
+public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestService<OnmsMonitoredService,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeMonitoredServiceRestService.class);
 
@@ -113,6 +104,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return new OnmsMonitoredServiceList(list);
     }
 
+    @Override
     protected Response doCreate(UriInfo uriInfo, OnmsMonitoredService service) {
         final OnmsIpInterface iface = getInterface(uriInfo);
         if (iface == null) {
@@ -129,6 +121,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getServiceName())).build();
     }
 
+    @Override
     protected void updateCriteria(final UriInfo uriInfo, final CriteriaBuilder builder) {
         super.updateCriteria(uriInfo, builder);
         List<PathSegment> segments = uriInfo.getPathSegments(true);
@@ -136,81 +129,22 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         builder.eq("ipInterface.ipAddress", ipAddress);
     }
 
-    // Overrides default implementation
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getByName(@Context final UriInfo uriInfo, @PathParam("id") final String serviceName) {
-        final OnmsMonitoredService service = getService(uriInfo, serviceName);
-        if (service == null) {
-            return Response.status(Status.NOT_FOUND).build();
+    @Override
+    protected void doUpdate(UriInfo uriInfo, OnmsMonitoredService object, String id) throws IllegalArgumentException {
+        OnmsMonitoredService retval = doGet(uriInfo, id);
+        if (retval == null) {
+            throw new IllegalArgumentException("Criteria not found");
         }
-        return Response.ok(service).build();
+        if (!retval.getId().equals(object.getId())) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+        super.doUpdate(uriInfo, object, id);
     }
 
-    // Overrides default implementation
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final OnmsMonitoredService object) {
-        writeLock();
-        try {
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            OnmsMonitoredService retval = getService(uriInfo, lookupCriteria);
-            if (retval == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            if (!retval.getId().equals(object.getId())) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    // Overrides default implementation
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria, final MultivaluedMapImpl params) {
-        writeLock();
-        try {
-            OnmsMonitoredService object = getService(uriInfo, lookupCriteria);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            RestUtils.setBeanProperties(object, params);
-            LOG.debug("update: object {} updated", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    // Overrides default implementation
-    @DELETE
-    @Path("{id}")
-    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final String lookupCriteria) {
-        writeLock();
-        try {
-            OnmsMonitoredService object = getService(uriInfo, lookupCriteria);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("delete: deleting object {}", lookupCriteria);
-            object.getIpInterface().getMonitoredServices().remove(object);
-            getDao().delete(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
+    @Override
+    protected void doDelete(UriInfo uriInfo, OnmsMonitoredService object, String id) {
+        object.getIpInterface().getMonitoredServices().remove(object);
+        super.doDelete(uriInfo, object, id);
     }
 
     private OnmsServiceType getServiceType(final String serviceName) {
@@ -230,15 +164,16 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return serviceType;
     }
 
-    private OnmsMonitoredService getService(final UriInfo uriInfo, final String serviceName) {
-        final OnmsIpInterface iface = getInterface(uriInfo);
-        return iface == null ? null : iface.getMonitoredServiceByServiceType(serviceName);
-    }
-
     private OnmsIpInterface getInterface(final UriInfo uriInfo) {
         final OnmsNode node = getNode(uriInfo);
         final String ipAddress =  uriInfo.getPathSegments(true).get(3).getPath();
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
+    }
+
+    @Override
+    protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
+        final OnmsIpInterface iface = getInterface(uriInfo);
+        return iface == null ? null : iface.getMonitoredServiceByServiceType(serviceName);
     }
 
 }

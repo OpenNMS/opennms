@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
-public abstract class AbstractNodeDependentRestService<T,K extends Serializable> extends AbstractDaoRestService<T,K> {
+public abstract class AbstractNodeDependentRestService<T,K extends Serializable,I> extends AbstractDaoRestService<T,K,I> {
 
     @Autowired
     private NodeDao m_nodeDao;

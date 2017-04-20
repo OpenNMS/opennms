@@ -55,6 +55,7 @@ import org.apache.cxf.jaxrs.ext.search.PropertyNotFoundException;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
+
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -67,9 +68,11 @@ import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,8 +80,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
+/**
+ * Abstract class for easily implement V2 end-points
+ * 
+ *  T ~ Object (ex. OnmsNode)
+ *  K ~ Type of the PK of the entity on the database (ex. Integer)
+ *  I ~ Object Index (typically equal to the PK, but can be different in some cases)
+ *
+ * @author <a href="seth@opennms.org">Seth Leger</a>
+ * @author <a href="agalue@opennms.org">Alejandro Galue</a>
+ */
 @Transactional
-public abstract class AbstractDaoRestService<T,K extends Serializable> {
+public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
@@ -95,6 +108,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     protected abstract Class<T> getDaoClass();
     protected abstract CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo);
     protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
+    protected abstract T doGet(UriInfo uriInfo, I id); // Abstracted to be able to retrieve the object on different ways 
 
     protected final void writeLock() {
         m_writeLock.lock();
@@ -173,8 +187,8 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response get(@PathParam("id") final K id) {
-        T retval = getDao().get(id);
+    public Response get(@Context final UriInfo uriInfo, @PathParam("id") final I id) {
+        T retval = doGet(uriInfo, id);
         if (retval == null) {
             return Response.status(Status.NOT_FOUND).build();
         } else {
@@ -215,28 +229,36 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
     @PUT
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
+    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final I id, final T object) {
         writeLock();
         try {
-            // TODO: Assert that the ID of the path equals the ID of the object
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
+            try {
+                doUpdate(uriInfo, object, id);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
             LOG.debug("update: updating object {}", object);
-            getDao().saveOrUpdate(object);
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
     }
 
+    protected void doUpdate(UriInfo uriInfo, T object, I id) throws IllegalArgumentException {
+        // TODO: Assert that the ID of the path equals the ID of the object
+        getDao().saveOrUpdate(object);
+    }
+
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
+    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final I id, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            final T object = getDao().get(id);
+            final T object = doGet(uriInfo, id);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
@@ -271,19 +293,23 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") final K criteria) {
+    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final I id) {
         writeLock();
         try {
-            final T object = getDao().get(criteria);
+            final T object = doGet(uriInfo, id);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            LOG.debug("delete: deleting object {}", criteria);
-            getDao().delete(object);
+            LOG.debug("delete: deleting object {}", id);
+            doDelete(uriInfo, object, id);
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
+    }
+
+    protected void doDelete(UriInfo uriInfo, T object, I id) {
+        getDao().delete(object);
     }
 
     private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {

@@ -30,10 +30,7 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -46,8 +43,10 @@ import org.opennms.netmgt.model.OnmsMinionCollection;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -56,12 +55,12 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsMinion} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("minions")
 @Transactional
-public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String> {
+public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);
 
@@ -94,14 +93,9 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         return new OnmsMinionCollection(list);
     }
 
-    @DELETE
-    @Path("{id}")
-    @Override
-    public Response delete(@PathParam("id") final String id) {
-
-        final OnmsMinion minion = getDao().get(id);
+    public void doDelete(OnmsMinion minion, String id) {
         final String location = minion.getLocation();
-        Response response = super.delete(id);
+        getDao().delete(minion);
 
         final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI, "ReST");
         eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
@@ -110,9 +104,12 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         try {
             m_eventProxy.send(eventBuilder.getEvent());
         } catch (final EventProxyException e) {
-            LOG.warn(" Failed to send Event on Minion deletion " + e.getMessage(), e);
+            LOG.warn("Failed to send Event on Minion deletion " + e.getMessage(), e);
         }
+    }
 
-        return response;
+    @Override
+    protected OnmsMinion doGet(UriInfo uriInfo, String id) {
+        return getDao().get(id);
     }
 }

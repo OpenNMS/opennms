@@ -52,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer> {
+public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,Integer> {
 
     @Autowired
     private AlarmDao m_dao;
@@ -81,6 +81,11 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer> 
     @Override
     protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
         return new OnmsAlarmCollection(list);
+    }
+
+    @Override
+    protected OnmsAlarm doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
     }
 
 }

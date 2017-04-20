@@ -47,12 +47,12 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for {@link OnmsNotification} entity
  *
- * @author Seth
+ * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
 @Path("notifications")
 @Transactional
-public class NotificationRestService extends AbstractDaoRestService<OnmsNotification,Integer> {
+public class NotificationRestService extends AbstractDaoRestService<OnmsNotification,Integer,Integer> {
 
     @Autowired
     private NotificationDao m_dao;
@@ -85,5 +85,10 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     protected JaxbListWrapper<OnmsNotification> createListWrapper(Collection<OnmsNotification> list) {
         return new OnmsNotificationCollection(list);
+    }
+
+    @Override
+    protected OnmsNotification doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
     }
 }

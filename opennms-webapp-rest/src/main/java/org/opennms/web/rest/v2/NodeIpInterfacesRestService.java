@@ -30,19 +30,12 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -53,12 +46,7 @@ import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.api.RestUtils;
-import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -71,9 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeIpInterfacesRestService extends AbstractNodeDependentRestService<OnmsIpInterface,Integer> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NodeIpInterfacesRestService.class);
+public class NodeIpInterfacesRestService extends AbstractNodeDependentRestService<OnmsIpInterface,Integer,String> {
 
     @Autowired
     private IpInterfaceDao m_dao;
@@ -121,81 +107,20 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, ipInterface.getIpAddress().getHostAddress())).build();
     }
 
-    // Overrides default implementation
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getByIpAddress(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
-        final OnmsIpInterface iface = getInterface(uriInfo, ipAddress);
-        if (iface == null) {
-            return Response.status(Status.NOT_FOUND).build();
+    protected void doUpdate(UriInfo uriInfo, OnmsIpInterface object, String id) throws IllegalArgumentException {
+        OnmsIpInterface retval = doGet(uriInfo, id);
+        if (retval == null) {
+            throw new IllegalArgumentException("Criteria not found");
         }
-        return Response.ok(iface).build();
+        if (!retval.getId().equals(object.getId())) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+        super.doUpdate(uriInfo, object, id);
     }
 
-    // Overrides default implementation
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress, final OnmsIpInterface object) {
-        writeLock();
-        try {
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            OnmsIpInterface retval = getInterface(uriInfo, ipAddress);
-            if (retval == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            if (!retval.getId().equals(object.getId())) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    // Overrides default implementation
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress, final MultivaluedMapImpl params) {
-        writeLock();
-        try {
-            OnmsIpInterface object = getInterface(uriInfo, ipAddress);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            RestUtils.setBeanProperties(object, params);
-            LOG.debug("update: object {} updated", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    // Overrides default implementation
-    @DELETE
-    @Path("{id}")
-    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
-        writeLock();
-        try {
-            OnmsIpInterface object = getInterface(uriInfo, ipAddress);
-            if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("delete: deleting object {}", object);
-            object.getNode().getIpInterfaces().remove(object);
-            getDao().delete(object);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
+    protected void doDelete(UriInfo uriInfo, OnmsIpInterface object, String id) {
+        object.getNode().getIpInterfaces().remove(object);
+        super.doDelete(uriInfo, object, id);
     }
 
     @Path("{id}/services")
@@ -203,7 +128,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return context.getResource(NodeMonitoredServiceRestService.class);
     }
 
-    private OnmsIpInterface getInterface(final UriInfo uriInfo, @PathParam("id") final String ipAddress) {
+    @Override
+    protected OnmsIpInterface doGet(UriInfo uriInfo, String ipAddress) {
         final OnmsNode node = getNode(uriInfo);
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
     }

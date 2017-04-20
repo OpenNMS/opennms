@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer> {
+public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,Integer> {
 
     @Autowired
     private EventDao m_dao;
@@ -80,6 +80,11 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer> 
     @Override
     protected JaxbListWrapper<OnmsEvent> createListWrapper(Collection<OnmsEvent> list) {
         return new OnmsEventCollection(list);
+    }
+
+    @Override
+    protected OnmsEvent doGet(UriInfo uriInfo, Integer id) {
+        return getDao().get(id);
     }
 
 }
