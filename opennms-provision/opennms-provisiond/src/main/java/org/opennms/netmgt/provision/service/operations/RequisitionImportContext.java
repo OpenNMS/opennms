@@ -79,8 +79,8 @@ public class RequisitionImportContext {
                 i.getCategories();
                 i.getMonitoredServices().forEach(m -> m.getCategories());
             });
-            n.getAssets();
-            n.getCategories();
+            n.getAssets().entrySet();
+            n.getCategories().iterator();
         });
 
     }
