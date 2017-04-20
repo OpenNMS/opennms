@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,22 +38,17 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
@@ -71,7 +66,7 @@ import com.vmware.vim25.mo.HostSystem;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 @Distributable(DistributionContext.DAEMON)
-public class VmwareCimMonitor extends AbstractServiceMonitor {
+public class VmwareCimMonitor extends AbstractVmwareMonitor {
 
     /**
      * logging for VMware data collection
@@ -79,14 +74,8 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
     private final Logger logger = LoggerFactory.getLogger(VmwareCimMonitor.class);
 
     /**
-     * the node dao object for retrieving assets
-     */
-    private NodeDao m_nodeDao = null;
-
-    /**
      * healthStates map
      */
-
     private static Map<Integer, String> m_healthStates;
 
     /*
@@ -123,23 +112,11 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-
-        if (m_nodeDao == null) {
-            m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-
-            if (m_nodeDao == null) {
-                logger.error("Node dao should be a non-null value.");
-                return PollStatus.unknown();
-            }
-        }
-
-        boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-
-        OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
-
-        // retrieve the assets and
-        String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        String vmwareManagedObjectId = onmsNode.getForeignId();
+        final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
+        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -147,15 +124,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            VmwareViJavaAccess vmwareViJavaAccess = null;
-
-            try {
-                vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
-            } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            }
-
+            final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
             try {
                 vmwareViJavaAccess.connect();
             } catch (MalformedURLException e) {

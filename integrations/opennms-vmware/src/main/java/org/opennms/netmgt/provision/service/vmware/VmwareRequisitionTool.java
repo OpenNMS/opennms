@@ -95,9 +95,9 @@ public abstract class VmwareRequisitionTool {
 
         VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
             @Override
-            protected Requisition getExistingRequisition() {
+            protected Requisition getExistingRequisition(String foreignSource) {
                 // This is not elegant but it is necessary to avoid booting Spring
-                File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + m_foreignSource + ".xml");
+                File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + foreignSource + ".xml");
                 if (req.exists()) {
                     return JaxbUtils.unmarshal(Requisition.class, req);
                 }

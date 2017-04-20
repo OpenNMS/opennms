@@ -94,16 +94,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>runtime</scope>
-        </dependency>
         <!-- Attention this is EPL license -->
         <dependency>
             <groupId>org.sblim.slp</groupId>
@@ -156,6 +146,16 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.test-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-requisition-service</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.xml</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
