@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -410,7 +411,7 @@ public class KscDashlet extends AbstractDashlet {
 
                 data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(data.get("nodeId"))));
 
-                List<OnmsResource> resourceList = m_resourceDao.getResourceById("node[" + data.get("nodeId") + "]").getChildResources();
+                List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", data.get("nodeId"))).getChildResources();
 
                 for (OnmsResource onmsResource : resourceList) {
                     if (resourceId.equals(onmsResource.getId())) {

@@ -43,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -279,7 +280,7 @@ public class CollectionResourceWrapper {
      * 
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceId() {
+    public ResourceId getResourceId() {
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
         if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
@@ -300,7 +301,7 @@ public class CollectionResourceWrapper {
                 parentResourceName = parts[1] + ":" + parts[2];
             }
         }
-        return OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceType, resourceLabel);
+        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
     }
 
     /**

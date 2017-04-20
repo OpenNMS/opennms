@@ -845,7 +845,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             if (graph.getName().equals(graphName)) {
                 String url = "graph/graph.png"
                     + "?report=" + Util.encode(graph.getName())
-                    + "&resourceId=" + Util.encode(resource.getId())
+                    + "&resourceId=" + Util.encode(resource.getId().toString())
                     + "&start=" + times[0] + "&end=" + times[1];
                 return new ServiceGraph(service, url);
             }

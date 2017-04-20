@@ -33,6 +33,7 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,7 +94,7 @@ public interface ResourceService {
      * @param id a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
-    public OnmsResource getResourceById(String id);
+    public OnmsResource getResourceById(ResourceId id);
     /**
      * <p>findPrefabGraphsForResource</p>
      *
@@ -127,5 +128,5 @@ public interface ResourceService {
      *
      * @param resourceId a {@link java.lang.String} object.
      */
-    public void promoteGraphAttributesForResource(String resourceId);
+    public void promoteGraphAttributesForResource(ResourceId resourceId);
 }

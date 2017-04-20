@@ -48,6 +48,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
@@ -124,18 +125,18 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
         // Group the sources by resource id to avoid calling the ResourceDao
         // multiple times for the same resource
-        Map<String, List<Source>> sourcesByResourceId = sources.stream()
-                .collect(Collectors.groupingBy(Source::getResourceId));
+        Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
+                .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
 
         // Lookup the OnmsResources in parallel
-        Map<String, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (String resourceId : sourcesByResourceId.keySet()) {
+        Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (ResourceId resourceId : sourcesByResourceId.keySet()) {
             resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
         }
 
         // Gather the results, fail if any of the resources were not found
         Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (Entry<String, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
+        for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
             try {
                 OnmsResource resource = entry.getValue().get();
                 if (resource == null) {
@@ -242,7 +243,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         return fetchResults;
     }
 
-    private Callable<OnmsResource> getResourceByIdCallable(final String resourceId) {
+    private Callable<OnmsResource> getResourceByIdCallable(final ResourceId resourceId) {
         return new Callable<OnmsResource>() {
             @Override
             public OnmsResource call() throws IllegalArgumentException {

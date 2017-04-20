@@ -150,7 +150,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
                     if (intf.shouldUpdate(graph.getResourceId())) {
                         changed = true;
                         log("  replacing resource ID %s with %s for %s\n", graph.getResourceId(), intf.getNewResourceId(), graph.getTitle());
-                        graph.setResourceId(intf.getNewResourceId());
+                        graph.setResourceId(intf.getNewResourceId().toString());
                     }
                 }
             }

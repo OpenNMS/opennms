@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.svclayer.RtcService;
 import org.opennms.web.svclayer.model.ProgressMonitor;
 import org.opennms.web.svclayer.model.RtcNode;
@@ -270,7 +271,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         List<String[]> labels = new ArrayList<String[]>(resources.size());
         for (OnmsResource resource : resources) {
-            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
+            labels.add(new String[] { resource.getId().toString(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
         }
         
         return labels.toArray(new String[labels.size()][]);
@@ -362,7 +363,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /** {@inheritDoc} */
     @Override
     public String[][] getChildResources(String id) {
-        OnmsResource parentResource = m_resourceDao.getResourceById(id);
+        OnmsResource parentResource = m_resourceDao.getResourceById(ResourceId.fromString(id));
         if (parentResource == null) {
             return null;
         }
@@ -371,7 +372,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         List<String[]> labels = new ArrayList<String[]>(resources.size());
         for (OnmsResource resource : resources) {
-            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
+            labels.add(new String[] { resource.getId().toString(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
         }
         
         return labels.toArray(new String[labels.size()][]);
@@ -380,7 +381,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     /** {@inheritDoc} */
     @Override
     public String[][] getPrefabGraphs(String id) {
-        OnmsResource resource = m_resourceDao.getResourceById(id);
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(id));
         if (resource == null) {
             return null;
         }

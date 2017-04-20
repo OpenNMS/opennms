@@ -35,6 +35,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ChooseResourceService;
@@ -63,7 +64,7 @@ public class ChooseResourceController extends AbstractController implements Init
 
         String endUrl = WebSecurityUtils.sanitizeString(request.getParameter("endUrl"));
 
-        String resourceId = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceId"));
+        ResourceId resourceId = ResourceId.fromString(request.getParameter("parentResourceId"));
         if (resourceId == null) {
             String resourceType = WebSecurityUtils.sanitizeString(request.getParameter("parentResourceType"));
             String resource = WebSecurityUtils.sanitizeString(request.getParameter("parentResource"));
@@ -88,7 +89,7 @@ public class ChooseResourceController extends AbstractController implements Init
                     resource = node.getId().toString();
                 }
             }
-            resourceId = OnmsResource.createResourceId(resourceType, resource);
+            resourceId = ResourceId.get(resourceType, resource);
         }
         
         if (endUrl == null || "".equals(endUrl)) {

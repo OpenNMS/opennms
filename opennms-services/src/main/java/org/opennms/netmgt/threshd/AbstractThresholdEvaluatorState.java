@@ -123,7 +123,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? defaultInstance : resource.getInstanceLabel());
 
         // Add the resource ID required to call the Graph API.
-        bldr.addParam("resourceId",resource.getResourceId());
+        bldr.addParam("resourceId",resource.getResourceId().toString());
 
         // Add additional parameters
         if (additionalParams != null) {

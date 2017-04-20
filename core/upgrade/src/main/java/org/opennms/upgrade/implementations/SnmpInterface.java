@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.RrdLabelUtils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 
 /**
  * The Class SnmpInterface.
@@ -204,7 +205,7 @@ public class SnmpInterface {
      *
      * @return the old resource id
      */
-    public String getOldResourceId() {
+    public ResourceId getOldResourceId() {
         return getResourceId(oldRrdLabel);
     }
 
@@ -213,7 +214,7 @@ public class SnmpInterface {
      *
      * @return the new resource id
      */
-    public String getNewResourceId() {
+    public ResourceId getNewResourceId() {
         return getResourceId(newRrdLabel);
     }
 
@@ -223,10 +224,10 @@ public class SnmpInterface {
      * @param label the label
      * @return the resource id
      */
-    private String getResourceId(String label) {
+    private ResourceId getResourceId(String label) {
         String parentType = storeByForeignSource ? "nodeSource" : "node";
         String parentId   = storeByForeignSource ? foreignSource + ':' + foreignId : Integer.toString(nodeId);
-        return OnmsResource.createResourceId(parentType, parentId, "interfaceSnmp", label);
+        return ResourceId.get(parentType, parentId).resolve("interfaceSnmp", label);
     }
 
     /**

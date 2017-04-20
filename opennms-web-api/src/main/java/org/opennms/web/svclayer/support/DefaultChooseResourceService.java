@@ -37,6 +37,7 @@ import java.util.Map;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.model.ChooseResourceModel;
@@ -55,7 +56,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
 
     /** {@inheritDoc} */
     @Override
-    public ChooseResourceModel findChildResources(String resourceId, String endUrl) {
+    public ChooseResourceModel findChildResources(ResourceId resourceId, String endUrl) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId parameter may not be null");
         }

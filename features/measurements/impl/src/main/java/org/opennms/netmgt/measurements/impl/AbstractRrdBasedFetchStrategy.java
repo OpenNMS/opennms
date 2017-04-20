@@ -39,6 +39,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +73,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         
         for (final Source source : sources) {
             // Grab the resource
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
+            final OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(source.getResourceId()));
             if (resource == null) {
                 if (relaxed) continue;
                 LOG.error("No resource with id: {}", source.getResourceId());

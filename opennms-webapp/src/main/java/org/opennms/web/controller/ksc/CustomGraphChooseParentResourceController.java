@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -61,11 +62,11 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/customGraphChooseResource");
 
-        String selectedResourceId = request.getParameter(Parameters.selectedResourceId.toString());
+        ResourceId selectedResourceId = ResourceId.fromString(request.getParameter(Parameters.selectedResourceId.toString()));
         if (selectedResourceId != null) {
             OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
 
-            Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
+            Map<ResourceId, OnmsResource> selectedResourceAndParents = new HashMap<>();
             OnmsResource r = selectedResource;
             while (r != null) {
                 selectedResourceAndParents.put(r.getId(), r);
