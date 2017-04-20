@@ -40,6 +40,7 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,4 +92,5 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     protected OnmsNotification doGet(UriInfo uriInfo, Integer id) {
         return getDao().get(id);
     }
+
 }

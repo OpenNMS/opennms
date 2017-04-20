@@ -39,6 +39,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

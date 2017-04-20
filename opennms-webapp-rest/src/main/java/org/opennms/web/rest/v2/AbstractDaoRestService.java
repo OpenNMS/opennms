@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v2;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,7 +66,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
-import org.opennms.web.rest.support.RedirectHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +95,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
 
     @Autowired
     @Qualifier("eventProxy")
-    protected EventProxy m_eventProxy;
+    private EventProxy m_eventProxy;
 
     private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -118,6 +116,21 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
         m_writeLock.unlock();
     }
 
+    // Do not allow create by default
+    protected Response doCreate(UriInfo uriInfo, T object) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
+
+    // Do not allow update by default
+    protected Response doUpdate(UriInfo uriInfo, T object, I id) {
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
+
+    // Do not allow delete by default
+    protected void doDelete(UriInfo uriInfo, T object) {
+        throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
+    }
+
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
         if (searchContext != null) {
@@ -132,7 +145,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             }
         }
 
-        // Apply limit, offset, orderBy, order params
+        // Apply limit, offset, orderBy, order parameters
         final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
         applyLimitOffsetOrderBy(params, builder);
         Criteria crit = builder.toCriteria();
@@ -214,15 +227,9 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
         }
     }
 
-    protected Response doCreate(UriInfo uriInfo, T object) {
-        K id = getDao().save(object);
-        return Response.created(getRedirectUri(uriInfo, id)).build();
-    }
-
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
-        // TODO: Implement me
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
@@ -233,23 +240,12 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
         writeLock();
         try {
             if (object == null) {
-                return Response.status(Status.NOT_FOUND).build();
+                return Response.status(Status.BAD_REQUEST).build();
             }
-            try {
-                doUpdate(uriInfo, object, id);
-            } catch (IllegalArgumentException e) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            LOG.debug("update: updating object {}", object);
-            return Response.noContent().build();
+            return doUpdate(uriInfo, object, id);
         } finally {
             writeUnlock();
         }
-    }
-
-    protected void doUpdate(UriInfo uriInfo, T object, I id) throws IllegalArgumentException {
-        // TODO: Assert that the ID of the path equals the ID of the object
-        getDao().saveOrUpdate(object);
     }
 
     @PUT
@@ -283,7 +279,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             }
             for (T object : objects) {
                 LOG.debug("delete: deleting object {}", object);
-                getDao().delete(object);
+                doDelete(uriInfo, object);
             }
             return Response.noContent().build();
         } finally {
@@ -301,15 +297,11 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
                 return Response.status(Status.NOT_FOUND).build();
             }
             LOG.debug("delete: deleting object {}", id);
-            doDelete(uriInfo, object, id);
+            doDelete(uriInfo, object);
             return Response.noContent().build();
         } finally {
             writeUnlock();
         }
-    }
-
-    protected void doDelete(UriInfo uriInfo, T object, I id) {
-        getDao().delete(object);
     }
 
     private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
@@ -347,10 +339,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
                 params.remove("order");
             }
         }
-    }
-
-    private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
-        return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
     }
 
     protected void sendEvent(final Event event) {

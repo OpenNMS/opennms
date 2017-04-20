@@ -42,11 +42,13 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.RedirectHelper;
@@ -92,9 +94,12 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
-        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.orderBy("id");
         updateCriteria(uriInfo, builder);
         return builder;
     }
@@ -130,21 +135,43 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
-    protected void doUpdate(UriInfo uriInfo, OnmsMonitoredService object, String id) throws IllegalArgumentException {
+    protected Response doUpdate(UriInfo uriInfo, OnmsMonitoredService svc, String id) {
         OnmsMonitoredService retval = doGet(uriInfo, id);
         if (retval == null) {
-            throw new IllegalArgumentException("Criteria not found");
+            throw getException(Status.BAD_REQUEST, "Service was not found.");
         }
-        if (!retval.getId().equals(object.getId())) {
-            throw new IllegalArgumentException("Invalid ID");
+        if (!retval.getId().equals(svc.getId())) {
+            throw getException(Status.BAD_REQUEST, "Invalid Service (ID doesn't match).");
         }
-        super.doUpdate(uriInfo, object, id);
+        boolean modified = false;
+        final String currentStatus = retval.getStatus();
+        final String status = svc.getStatus();
+        if (svc.getStatus() != null && !currentStatus.equals(status)) {
+            modified = true;
+            getDao().update(svc);
+            if ("S".equals(status) || ("A".equals(currentStatus) && "F".equals(status))) {
+                LOG.debug("doUpdate: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
+                sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
+                sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
+            }
+            if ("R".equals(status) || ("F".equals(currentStatus) && "A".equals(status))) {
+                LOG.debug("doUpdate: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
+                sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
+            }
+        }
+        return modified ? Response.noContent().build() : Response.notModified().build();
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsMonitoredService object, String id) {
-        object.getIpInterface().getMonitoredServices().remove(object);
-        super.doDelete(uriInfo, object, id);
+    protected void doDelete(UriInfo uriInfo, OnmsMonitoredService svc) {
+        svc.getIpInterface().getMonitoredServices().remove(svc);
+        getDao().delete(svc);
+    }
+
+    @Override
+    protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
+        final OnmsIpInterface iface = getInterface(uriInfo);
+        return iface == null ? null : iface.getMonitoredServiceByServiceType(serviceName);
     }
 
     private OnmsServiceType getServiceType(final String serviceName) {
@@ -170,10 +197,12 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
     }
 
-    @Override
-    protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
-        final OnmsIpInterface iface = getInterface(uriInfo);
-        return iface == null ? null : iface.getMonitoredServiceByServiceType(serviceName);
+    private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
+        final EventBuilder bldr = new EventBuilder(eventUEI, "ReST");
+        bldr.setNodeid(dbObj.getNodeId());
+        bldr.setInterface(dbObj.getIpAddress());
+        bldr.setService(dbObj.getServiceName());
+        sendEvent(bldr.getEvent());
     }
 
 }

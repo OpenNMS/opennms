@@ -87,6 +87,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return new OnmsIpInterfaceList(list);
     }
 
+    @Override
     protected Response doCreate(UriInfo uriInfo, OnmsIpInterface ipInterface) {
         OnmsNode node = getNode(uriInfo);
         if (node == null) {
@@ -107,31 +108,33 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, ipInterface.getIpAddress().getHostAddress())).build();
     }
 
-    protected void doUpdate(UriInfo uriInfo, OnmsIpInterface object, String id) throws IllegalArgumentException {
+    @Override
+    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface object, String id) {
         OnmsIpInterface retval = doGet(uriInfo, id);
         if (retval == null) {
-            throw new IllegalArgumentException("Criteria not found");
+            throw getException(Status.BAD_REQUEST, "IP interface was not found.");
         }
         if (!retval.getId().equals(object.getId())) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
         }
-        super.doUpdate(uriInfo, object, id);
+        return super.doUpdate(uriInfo, object, id);
     }
 
-    protected void doDelete(UriInfo uriInfo, OnmsIpInterface object, String id) {
-        object.getNode().getIpInterfaces().remove(object);
-        super.doDelete(uriInfo, object, id);
-    }
-
-    @Path("{id}/services")
-    public NodeMonitoredServiceRestService getMonitoredServicesResource(@Context final ResourceContext context) {
-        return context.getResource(NodeMonitoredServiceRestService.class);
+    @Override
+    protected void doDelete(UriInfo uriInfo, OnmsIpInterface intf) {
+        intf.getNode().getIpInterfaces().remove(intf);
+        getDao().delete(intf);
     }
 
     @Override
     protected OnmsIpInterface doGet(UriInfo uriInfo, String ipAddress) {
         final OnmsNode node = getNode(uriInfo);
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
+    }
+
+    @Path("{id}/services")
+    public NodeMonitoredServiceRestService getMonitoredServicesResource(@Context final ResourceContext context) {
+        return context.getResource(NodeMonitoredServiceRestService.class);
     }
 
 }

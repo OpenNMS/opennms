@@ -80,6 +80,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
         return new OnmsSnmpInterfaceList(list);
     }
 
+    @Override
     protected Response doCreate(UriInfo uriInfo, OnmsSnmpInterface snmpInterface) {
         OnmsNode node = getNode(uriInfo);
         if (node == null) {
@@ -94,20 +95,22 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, snmpInterface.getIfIndex())).build();
     }
 
-    protected void doUpdate(UriInfo uriInfo, OnmsSnmpInterface object, Integer id) throws IllegalArgumentException {
+    @Override
+    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface object, Integer id) {
         OnmsSnmpInterface retval = doGet(uriInfo, id);
         if (retval == null) {
-            throw new IllegalArgumentException("Criteria not found");
+            throw getException(Status.BAD_REQUEST, "SNMP interface was not found.");
         }
         if (!retval.getId().equals(object.getId())) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
         }
-        super.doUpdate(uriInfo, object, id);
+        return super.doUpdate(uriInfo, object, id);
     }
 
-    protected void doDelete(UriInfo uriInfo, OnmsSnmpInterface object, Integer id) {
-        object.getNode().getSnmpInterfaces().remove(object);
-        super.doDelete(uriInfo, object, id);
+    @Override
+    protected void doDelete(UriInfo uriInfo, OnmsSnmpInterface intf) {
+        intf.getNode().getSnmpInterfaces().remove(intf);
+        getDao().delete(intf);
     }
 
     @Override

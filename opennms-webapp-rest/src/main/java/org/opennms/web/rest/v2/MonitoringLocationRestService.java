@@ -38,6 +38,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,14 +56,17 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     @Autowired
     private MonitoringLocationDao m_dao;
 
+    @Override
     protected MonitoringLocationDao getDao() {
         return m_dao;
     }
 
+    @Override
     protected Class<OnmsMonitoringLocation> getDaoClass() {
         return OnmsMonitoringLocation.class;
     }
 
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 

@@ -38,6 +38,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,14 +56,17 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Autowired
     private ApplicationDao m_dao;
 
+    @Override
     protected ApplicationDao getDao() {
         return m_dao;
     }
 
+    @Override
     protected Class<OnmsApplication> getDaoClass() {
         return OnmsApplication.class;
     }
 
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsApplication.class);
 

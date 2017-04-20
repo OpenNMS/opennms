@@ -71,14 +71,17 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
+    @Override
     protected MinionDao getDao() {
         return m_dao;
     }
 
+    @Override
     protected Class<OnmsMinion> getDaoClass() {
         return OnmsMinion.class;
     }
 
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
 
@@ -93,8 +96,10 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,
         return new OnmsMinionCollection(list);
     }
 
-    public void doDelete(OnmsMinion minion, String id) {
+    @Override
+    protected void doDelete(UriInfo uriInfo, OnmsMinion minion) {
         final String location = minion.getLocation();
+        final String id = minion.getId();
         getDao().delete(minion);
 
         final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_DELETED_UEI, "ReST");

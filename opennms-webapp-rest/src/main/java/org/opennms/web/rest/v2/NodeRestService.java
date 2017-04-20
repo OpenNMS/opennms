@@ -35,6 +35,7 @@ import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -80,14 +81,17 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
+    @Override
     protected NodeDao getDao() {
         return m_dao;
     }
 
+    @Override
     protected Class<OnmsNode> getDaoClass() {
         return OnmsNode.class;
     }
 
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
 
@@ -122,15 +126,30 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
-    protected void doUpdate(UriInfo uriInfo, OnmsNode object, String id) throws IllegalArgumentException {
+    @Override
+    protected Response doUpdate(UriInfo uriInfo, OnmsNode object, String id) {
         OnmsNode retval = getNode(id);
         if (retval == null) {
-            throw new IllegalArgumentException("Criteria not found");
+            throw getException(Status.BAD_REQUEST, "Node was not found.");
         }
         if (!retval.getId().equals(object.getId())) {
-            throw new IllegalArgumentException("Invalid ID");
+            throw getException(Status.BAD_REQUEST, "Invalid Node (ID doesn't match).");
         }
-        super.doUpdate(uriInfo, object, id);
+        return super.doUpdate(uriInfo, object, id);
+    }
+
+    @Override
+    protected void doDelete(UriInfo uriInfo, OnmsNode node) {
+        getDao().delete(node);
+    }
+
+    @Override
+    protected OnmsNode doGet(UriInfo uriInfo, String id) {
+        return getDao().get(id);
+    }
+
+    private OnmsNode getNode(final String lookupCriteria) {
+        return getDao().get(lookupCriteria);
     }
 
     @Path("{lookupCriteria}/ipinterfaces")
@@ -141,15 +160,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Path("{lookupCriteria}/snmpinterfaces")
     public NodeSnmpInterfacesRestService getSnmpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(NodeSnmpInterfacesRestService.class);
-    }
-
-    private OnmsNode getNode(final String lookupCriteria) {
-        return getDao().get(lookupCriteria);
-    }
-
-    @Override
-    protected OnmsNode doGet(UriInfo uriInfo, String id) {
-        return getDao().get(id);
     }
 
 }
