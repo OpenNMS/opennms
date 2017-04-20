@@ -255,6 +255,7 @@
             <feature>dashlet-surveillance</feature>
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
+            <feature>dashlet-grafana</feature>
             <feature>nrtg</feature>
             <feature>opennms-amqp-event-forwarder</feature>
             <feature>opennms-amqp-event-receiver</feature>
