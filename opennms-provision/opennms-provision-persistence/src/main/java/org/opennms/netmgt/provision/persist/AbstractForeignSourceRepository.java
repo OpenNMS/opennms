@@ -76,9 +76,9 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      */
     @Override
     public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
-        Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml");
+        Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml", getClass());
         if (!defaultForeignSource.exists()) {
-            defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml");
+            defaultForeignSource = new ClassPathResource("/org/opennms/netmgt/provision/persist/default-foreign-source.xml", getClass());
         }
         final ForeignSource fs = JaxbUtils.unmarshal(ForeignSource.class, defaultForeignSource);
         fs.setDefault(true);
