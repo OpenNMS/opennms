@@ -58,6 +58,11 @@ public class BufferParserTest {
 	final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
 
 	@Test
+	public void testSizeOfEmptyParser() {
+		assertEquals(0, new RadixTreeParser().size());
+	}
+
+	@Test
 	public void testDifferentImplementations() throws Exception {
 
 		MockLogAppender.setupLogging(true, "INFO");

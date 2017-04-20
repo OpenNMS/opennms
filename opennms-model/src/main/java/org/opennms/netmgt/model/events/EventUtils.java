@@ -686,6 +686,10 @@ public abstract class EventUtils {
         return bldr;
     }
 
+    public static Event createDeleteNodeEvent(String source, long nodeId, long txNo) {
+        return createNodeEventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, source, nodeId, txNo).getEvent();
+    }
+
     private static EventBuilder createNodeEventBuilder(String uei, String source, long nodeId, long txNo) {
         EventBuilder bldr = new EventBuilder(uei, source);
         

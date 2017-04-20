@@ -133,9 +133,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         
-        // ensure this property is unset for tests and set it only in tests that need it
-        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
-
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
         //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
@@ -164,12 +161,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         m_scheduledExecutor.pause();
     }
     
-    @After
-    public void tearDown() {
-    	// remove property set during tests
-        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
-    }
-
     private void setupLogging(final String logLevel) {
         final Properties config = new Properties();
         config.setProperty("log4j.logger.org.hibernate", "ERROR");
