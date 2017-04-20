@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.provision.service.jmx;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
@@ -42,9 +39,9 @@ public interface ProvisiondMBean extends BaseOnmsMBean {
 
     TabularData getRequisitionImportScheduleDetails();
 
-    long getScheduleLength();
+    TabularData getNodeScanSchedule();
 
-    BlockingQueue<Future<Runnable>> getProvisiondSchedulerQueue();
+    long getNodeScanScheduleLength();
 
     String getDefaultThreadPoolExecutor();
 

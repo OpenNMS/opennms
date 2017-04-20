@@ -32,11 +32,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.management.openmbean.CompositeData;
@@ -89,9 +86,14 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         return tableData;
     }
 
-    // TODO MVR NodeScan's sheduled (can be defined by the scan interval in foreign source, should probably also be exported)
     @Override
-    public long getScheduleLength() {
+    public TabularData getNodeScanSchedule() {
+        TabularData tableData = JmxUtils.toTabularData(getDaemon().getNodeScanScheduleData());
+        return tableData;
+    }
+
+    @Override
+    public long getNodeScanScheduleLength() {
         return getDaemon().getScheduleLength();
     }
 
@@ -101,33 +103,38 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         return taskCoordinator.getDefaultExecutor();
     }
 
-    // TODO MVR should return useful data (ProvisiondScheduler Queue)
-    @Override
-    public BlockingQueue<Future<Runnable>> getProvisiondSchedulerQueue() {
-        DefaultTaskCoordinator taskCoordinator = getDaemon().getTaskCoordinator();
-        return taskCoordinator.getQueue();
-    }
-
     @Override
     public TabularData getThreadPoolExecutorStatistics() {
         final List<ThreadPoolExecutorStatistics> statistics = new ArrayList<>();
         final ConcurrentHashMap<String, CompletionService<Runnable>> taskCompletionServices = getDaemon().getTaskCoordinator().getTaskCompletionServices();
         for (Map.Entry<String, CompletionService<Runnable>> entry : taskCompletionServices.entrySet()) {
-            // now it gets ugly
-            try {
-                Field executorField = entry.getValue().getClass().getDeclaredField("executor");
-                executorField.setAccessible(true); // force access
-                Executor executor = (Executor) executorField.get(entry.getValue());
-                if (executor instanceof ThreadPoolExecutor) {
-                    statistics.add(new ThreadPoolExecutorStatistics(entry.getKey(), (ThreadPoolExecutor) executor));
-                }
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                // TODO MVR logging
-                e.printStackTrace();
+            final ThreadPoolExecutor executor = extractExecutor(entry.getValue());
+            if (executor != null) {
+                statistics.add(new ThreadPoolExecutorStatistics(entry.getKey(), executor));
             }
         }
+
+        // manually add nodeScan executor
+        statistics.add(new ThreadPoolExecutorStatistics("nodeScan", (ThreadPoolExecutor) getDaemon().getNodeScanExecutorService()));
+
+        // convert to tabular data
         final TabularData tableData = JmxUtils.toTabularData(statistics);
         return tableData;
+    }
+
+    private ThreadPoolExecutor extractExecutor(Object object) {
+        // Retrieve the "executor"'s field value if available
+        try {
+            final Field executorField = object.getClass().getDeclaredField("executor");
+            executorField.setAccessible(true); // force access
+            if (executorField.getType().isAssignableFrom(ThreadPoolExecutor.class)) {
+                final Object executor = executorField.get(object);
+                return (ThreadPoolExecutor) executor;
+            }
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            return null;
+        }
+        return null;
     }
 
     @Override

@@ -43,6 +43,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
@@ -397,6 +399,32 @@ public class Provisioner implements SpringServiceDaemon {
     public int getScheduleLength() {
         return m_scheduledNodes.size();
     }
+
+    public List<NodeScanScheduleData> getNodeScanScheduleData() {
+        final List<NodeScanScheduleData> nodeScanScheduleDataList = new ArrayList<>();
+        for (Map.Entry<Integer, ScheduledFuture<?>> entry : m_scheduledNodes.entrySet()) {
+            OnmsNode node = m_provisionService.getNode(entry.getKey());
+            NodeScanScheduleData nodeScanScheduleData = new NodeScanScheduleData();
+            nodeScanScheduleData.setNodeId(node.getId());
+            nodeScanScheduleData.setForeignSource(node.getForeignSource());
+            nodeScanScheduleData.setForeignId(node.getForeignId());
+            nodeScanScheduleData.setNodeLabel(node.getLabel());
+            nodeScanScheduleData.setDelayInMilliseconds(entry.getValue().getDelay(TimeUnit.MILLISECONDS));
+            
+            NodeScanSchedule scheduleForNode = m_provisionService.getScheduleForNode(node.getId(), false);
+            if (scheduleForNode != null) {
+                nodeScanScheduleData.setScanIntervalInSeconds(scheduleForNode.getScanInterval().getStandardSeconds());
+            }
+
+            nodeScanScheduleDataList.add(nodeScanScheduleData);
+        }
+        return nodeScanScheduleDataList;
+    }
+
+    public ScheduledExecutorService getNodeScanExecutorService() {
+        return m_scheduledExecutor;
+    }
+
     //^ Helper functions for the schedule
     
     /**

@@ -455,23 +455,11 @@ public class DefaultTaskCoordinator implements InitializingBean {
         }
     }
 
-    public BlockingQueue<Future<Runnable>> getQueue() {
-        return m_queue;
-    }
-
     public ConcurrentHashMap<String, CompletionService<Runnable>> getTaskCompletionServices() {
         return m_taskCompletionServices;
     }
 
     public String getDefaultExecutor() {
         return m_defaultExecutor;
-    }
-
-    public CompletionService<Runnable> getDefaultCompletionService() {
-        return m_defaultCompletionService;
-    }
-
-    public Long getLoopDelay() {
-        return m_loopDelay;
     }
 }
