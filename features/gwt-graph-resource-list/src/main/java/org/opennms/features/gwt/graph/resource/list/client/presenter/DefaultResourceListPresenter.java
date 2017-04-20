@@ -44,6 +44,7 @@ import com.google.gwt.event.dom.client.HasKeyPressHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -156,7 +157,7 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         StringBuilder url = new StringBuilder(getBaseUrl());
         url.append("graph/chooseresource.htm");
         url.append("?reports=all");
-        url.append("&parentResourceId=" + getView().getSelectedResource().getId());
+        url.append("&parentResourceId=" + URL.encodeQueryString(getView().getSelectedResource().getId()));
         if (m_targetUrl != null) {
             url.append("&endUrl=").append(m_targetUrl);
         }

@@ -33,6 +33,7 @@ import org.opennms.features.gwt.graph.resource.list.client.view.ResourceListItem
 import org.opennms.features.gwt.graph.resource.list.client.view.SearchPopup;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window.Location;
 
 public class KscReportListPresenter extends DefaultResourceListPresenter {
@@ -48,7 +49,7 @@ public class KscReportListPresenter extends DefaultResourceListPresenter {
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append(getBaseUrl() + "/KSC/customView.htm");
         urlBuilder.append("?type=" + getView().getSelectedResource().getType());
-        urlBuilder.append("&report=" + getView().getSelectedResource().getId());
+        urlBuilder.append("&report=" + URL.encodeQueryString(getView().getSelectedResource().getId()));
         
         Location.assign(urlBuilder.toString());
     }

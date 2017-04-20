@@ -36,6 +36,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -80,7 +81,7 @@ public class KscCustomReportListPresenter extends DefaultResourceListPresenter i
                     }
                     
                     if(getView().getSelectedResource() != null) {
-                        urlBuilder.append("&report=" +  getView().getSelectedResource().getId());
+                        urlBuilder.append("&report=" + URL.encodeQueryString(getView().getSelectedResource().getId()));
                         Location.assign(urlBuilder.toString());
                     } else if(getView().getSelectedResource() == null && m_selectionDisplay.getSelectAction().equals(KscCustomSelectionView.CREATE_NEW)) {
                         Location.assign(urlBuilder.toString());

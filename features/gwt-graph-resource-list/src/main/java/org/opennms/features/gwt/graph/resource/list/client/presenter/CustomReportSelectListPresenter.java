@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -81,7 +82,7 @@ public class CustomReportSelectListPresenter implements Presenter, CustomReportS
 
     private void buildUrlAndGoToGraphPage(ResourceListItem report) {
         StringBuilder sb = new StringBuilder();
-        sb.append(m_baseUrl).append(m_endUrl).append("?resourceId=").append(report.getId());
+        sb.append(m_baseUrl).append(m_endUrl).append("?resourceId=").append(URL.encodeQueryString(report.getId()));
         Location.assign(sb.toString());
     }
     
