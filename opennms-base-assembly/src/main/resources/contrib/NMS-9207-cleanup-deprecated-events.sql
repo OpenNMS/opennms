@@ -3,6 +3,7 @@ DELETE
 FROM
     events
 WHERE
+    eventuei = 'uei.opennms.org/internal/capsd/addInterface' OR
     eventuei = 'uei.opennms.org/internal/capsd/updateServer' OR
     eventuei = 'uei.opennms.org/internal/capsd/updateService' OR
     eventuei = 'uei.opennms.org/internal/capsd/changeService' OR
@@ -50,13 +51,6 @@ SET
     eventuei = 'uei.opennms.org/internal/provisiond/deleteNode'
 WHERE
     eventuei = 'uei.opennms.org/internal/capsd/deleteNode';
-
-UPDATE
-    events
-SET
-    eventuei = 'uei.opennms.org/internal/provisiond/addInterface'
-WHERE
-    eventuei = 'uei.opennms.org/internal/capsd/addInterface';
 
 UPDATE
     events
