@@ -3,7 +3,7 @@ package org.opennms.netmgt.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ResourceId {
+public class ResourceId implements Comparable<ResourceId> {
     private final static Pattern PATTERN = Pattern.compile("(?:^|\\.)" + // Start with line beginning or a literal dot
                                                            "(?<type>\\w+)" + // Match the type identifier
                                                            "\\[" + // The opening bracket
@@ -22,10 +22,17 @@ public class ResourceId {
     private ResourceId(final ResourceId parent,
                        final String type,
                        final String name) {
-        // TODO: Check for valid type identifier (limit to java identifier rules?)
+        if (type == null) {
+            throw new IllegalArgumentException("Type must be non-null");
+        } else {
+            if (!type.matches("\\w+")) {
+                throw new IllegalArgumentException("Type must be a valid string");
+            }
+        }
+
         this.parent = parent;
         this.type = type;
-        this.name = name;
+        this.name = name == null ? "" : name;
     }
 
     public ResourceId resolve(final String type,
@@ -84,6 +91,31 @@ public class ResourceId {
         }
 
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResourceId that = (ResourceId) o;
+
+        if (parent != null ? !parent.equals(that.parent) : that.parent != null) return false;
+        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        return name != null ? name.equals(that.name) : that.name == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = parent != null ? parent.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public int compareTo(ResourceId resourceId) {
+        return toString().compareToIgnoreCase(resourceId.toString());
     }
 
     private static String escape(final String raw) {
