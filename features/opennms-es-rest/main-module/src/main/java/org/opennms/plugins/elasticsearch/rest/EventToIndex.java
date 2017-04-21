@@ -109,23 +109,6 @@ public class EventToIndex implements AutoCloseable {
 	public static final String ALARM_TROUBLETICKET_STATE_CHANGE_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange";
 	public static final String ALARM_CHANGED_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmChanged";
 
-	public static final String OLD_ALARM_VALUES="oldalarmvalues";
-	public static final String NEW_ALARM_VALUES="newalarmvalues";
-
-	public static final String NODE_LABEL="nodelabel";
-	public static final String INITIAL_SEVERITY="initialseverity";
-	public static final String INITIAL_SEVERITY_TEXT="initialseverity_text";
-	public static final String SEVERITY_TEXT="severity_text";
-	public static final String SEVERITY="severity";
-	public static final String FIRST_EVENT_TIME="firsteventtime";
-	public static final String EVENT_PARAMS="eventparms";
-	public static final String ALARM_ACK_TIME="alarmacktime";
-	public static final String ALARM_ACK_USER="alarmackuser";
-	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
-	public static final String ALARM_CLEAR_TIME="alarmcleartime";
-	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
-	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
-
 	// uei definitions of memo change events
 	// TODO: Move these into EventConstants
 	public static final String STICKY_MEMO_EVENT = "uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate";
@@ -138,6 +121,25 @@ public class EventToIndex implements AutoCloseable {
 	public static final String MEMO_BODY_PARAM="body";
 	public static final String MEMO_AUTHOR_PARAM="author";
 	public static final String MEMO_REDUCTIONKEY_PARAM="reductionkey";
+
+	public static final String OLD_ALARM_VALUES_PARAM="oldalarmvalues";
+	public static final String NEW_ALARM_VALUES_PARAM="newalarmvalues";
+
+	public static final String NODE_LABEL_PARAM="nodelabel";
+	public static final String INITIAL_SEVERITY_PARAM="initialseverity";
+	public static final String INITIAL_SEVERITY_PARAM_TEXT="initialseverity_text";
+	public static final String SEVERITY_TEXT="severity_text";
+	public static final String SEVERITY="severity";
+	public static final String ALARM_SEVERITY_PARAM="alarmseverity";
+	public static final String FIRST_EVENT_TIME="firsteventtime";
+	public static final String EVENT_PARAMS="eventparms";
+	public static final String ALARM_ACK_TIME_PARAM="alarmacktime";
+	public static final String ALARM_ACK_USER_PARAM="alarmackuser";
+	public static final String ALARM_ACK_DURATION="alarmackduration"; // duration from alarm raise to acknowledge
+	public static final String ALARM_CLEAR_TIME="alarmcleartime";
+	public static final String ALARM_CLEAR_DURATION="alarmclearduration"; //duration from alarm raise to clear
+	public static final String ALARM_DELETED_TIME="alarmdeletedtime";
+
 
 	public static final int DEFAULT_NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -627,11 +629,11 @@ public class EventToIndex implements AutoCloseable {
 
 		// remove old and new alarm values parms if not needed
 		if(! archiveNewAlarmValues){
-			body.remove("p_"+OLD_ALARM_VALUES);
+			body.remove("p_"+OLD_ALARM_VALUES_PARAM);
 		}
 
 		if(! archiveOldAlarmValues){
-			body.remove("p_"+NEW_ALARM_VALUES);
+			body.remove("p_"+NEW_ALARM_VALUES_PARAM);
 		}
 
 		body.put("interface", event.getInterface());
@@ -642,8 +644,8 @@ public class EventToIndex implements AutoCloseable {
 			body.put("nodeid", Long.toString(event.getNodeid()));
 
 			// if the event contains nodelabel parameter then do not use node cache
-			if(body.containsKey("p_"+NODE_LABEL)){
-				body.put(NODE_LABEL,body.get("p_"+NODE_LABEL));
+			if(body.containsKey("p_"+NODE_LABEL_PARAM)){
+				body.put(NODE_LABEL_PARAM,body.get("p_"+NODE_LABEL_PARAM));
 			} else {
 				// add node details from cache
 				if (nodeCache!=null){
@@ -708,8 +710,8 @@ public class EventToIndex implements AutoCloseable {
 			parmsMap.put( parm.getParmName(), parm.getValue().getContent());
 		}
 
-		String oldValuesStr=parmsMap.get(OLD_ALARM_VALUES);
-		String newValuesStr=parmsMap.get(NEW_ALARM_VALUES);
+		String oldValuesStr=parmsMap.get(OLD_ALARM_VALUES_PARAM);
+		String newValuesStr=parmsMap.get(NEW_ALARM_VALUES_PARAM);
 
 		if (LOG.isDebugEnabled()) LOG.debug("AlarmChangeEvent from eventid "+event.getDbid()
 				+ "\n  newValuesStr="+newValuesStr
@@ -769,10 +771,11 @@ public class EventToIndex implements AutoCloseable {
 				for(Parm parm : params) {
 					body.put("p_" + parm.getParmName(), parm.getValue().getContent());
 				}
-			} else if((SEVERITY.equals(key) && value!=null)){ 
+			} else if((ALARM_SEVERITY_PARAM.equals(key) && value!=null)){ 
 				try{
 					int id= Integer.parseInt(value);
 					String label = OnmsSeverity.get(id).getLabel();
+					// note alarm index uses severity even though alarm severity param is p_alarmseverity
 					body.put(SEVERITY,value);
 					body.put(SEVERITY_TEXT,label);
 				}
@@ -833,19 +836,19 @@ public class EventToIndex implements AutoCloseable {
 		}
 
 		// remove ack if not in parameters i,e alarm not acknowleged
-		if(parmsMap.get(ALARM_ACK_TIME)==null || "".equals(parmsMap.get(ALARM_ACK_TIME)) ){
-			body.put(ALARM_ACK_TIME, null);
-			body.put(ALARM_ACK_USER, null);
+		if(parmsMap.get(ALARM_ACK_TIME_PARAM)==null || "".equals(parmsMap.get(ALARM_ACK_TIME_PARAM)) ){
+			body.put(ALARM_ACK_TIME_PARAM, null);
+			body.put(ALARM_ACK_USER_PARAM, null);
 		}
 
 		// add "initialseverity"
-		if(parmsMap.get(INITIAL_SEVERITY)!=null){
+		if(parmsMap.get(INITIAL_SEVERITY_PARAM)!=null){
 			try{
-				String severityId = parmsMap.get(INITIAL_SEVERITY);
+				String severityId = parmsMap.get(INITIAL_SEVERITY_PARAM);
 				int id= Integer.parseInt(severityId);
 				String label = OnmsSeverity.get(id).getLabel();
-				body.put(INITIAL_SEVERITY,severityId);
-				body.put(INITIAL_SEVERITY_TEXT,label);
+				body.put(INITIAL_SEVERITY_PARAM,severityId);
+				body.put(INITIAL_SEVERITY_PARAM_TEXT,label);
 			}
 			catch (Exception e){
 				LOG.error("cannot parse initial severity for alarm change event id"+event.getDbid());
@@ -853,8 +856,8 @@ public class EventToIndex implements AutoCloseable {
 		}
 
 		// if the event contains nodelabel parameter then do not use node cache
-		if (parmsMap.get(NODE_LABEL)!=null){
-			body.put(NODE_LABEL, parmsMap.get(NODE_LABEL));
+		if (parmsMap.get(NODE_LABEL_PARAM)!=null){
+			body.put(NODE_LABEL_PARAM, parmsMap.get(NODE_LABEL_PARAM));
 		} else {
 			// add node details from cache
 			if (nodeCache!=null && event.getNodeid()!=null){

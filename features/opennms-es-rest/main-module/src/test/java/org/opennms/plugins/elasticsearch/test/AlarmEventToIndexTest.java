@@ -53,6 +53,8 @@ import io.searchbox.core.SearchResult;
 
 public class AlarmEventToIndexTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AlarmEventToIndexTest.class);
+	
+	public static final int INDEX_WAIT_SECONDS=10; // time to wait for index to catch up
 
 	public static final String ALARM_INDEX_NAME = "opennms-alarms";
 	public static final String ALARM_EVENT_INDEX_NAME = "opennms-events-alarmchange";
@@ -151,9 +153,9 @@ public class AlarmEventToIndexTest {
 			// forward event to Elasticsearch
 			eventToIndex.forwardEvents(Collections.singletonList(event));
 
-			// waiting 5 seconds for index 
+			// waiting INDEX_WAIT_SECONDS seconds for index 
 			try {
-				TimeUnit.SECONDS.sleep(5);
+				TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
 			} catch (InterruptedException e) { }
 
 			// send query to check that alarm has been created
@@ -193,9 +195,9 @@ public class AlarmEventToIndexTest {
 			assertEquals(Long.valueOf(1), hits.get("total"));
 			
 			
-			// waiting 5 seconds for index 
+			// waiting INDEX_WAIT_SECONDS seconds for index 
             try {
-            	TimeUnit.SECONDS.sleep(5);
+            	TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
             } catch (InterruptedException e) { }
 			
 			// search for resulting alarm change event
