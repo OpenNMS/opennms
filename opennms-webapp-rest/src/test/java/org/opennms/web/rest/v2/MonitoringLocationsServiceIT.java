@@ -30,8 +30,6 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collections;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -41,7 +39,6 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,9 +70,6 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
         super(CXF_REST_V2_CONTEXT_PATH);
     }
 
-    @Autowired
-    private ServletContext m_context;
-
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
@@ -86,7 +80,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
     @Transactional
     public void testFiqlSearch() throws Exception {
 
-        // Add 5 nodes
+        // Add 5 locations
         for (int i = 0; i < 5; i++) {
             String location = "<location location-name=\"hello-world-" + i + "\" monitoring-area=\"" + i + "\"/>";
             sendPost("/monitoringLocations", location, 201, null);

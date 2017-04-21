@@ -122,7 +122,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
     }
 
     // Do not allow update by default
-    protected Response doUpdate(UriInfo uriInfo, T object, I id) {
+    protected Response doUpdate(UriInfo uriInfo, T targetObject, I sourceId) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
@@ -261,8 +261,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             LOG.debug("update: updating object {}", object);
             RestUtils.setBeanProperties(object, params);
             LOG.debug("update: object {} updated", object);
-            getDao().saveOrUpdate(object);
-            return Response.noContent().build();
+            return doUpdate(uriInfo, object, id);
         } finally {
             writeUnlock();
         }

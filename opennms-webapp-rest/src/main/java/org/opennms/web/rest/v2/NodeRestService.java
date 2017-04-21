@@ -119,7 +119,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
             LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
             object.setLocation(location);
         }
-        Integer id = getDao().save(object);
+        final Integer id = getDao().save(object);
         final Event e = EventUtils.createNodeAddedEvent("Rest", id, object.getLabel(), object.getLabelSource());
         sendEvent(e);
 
@@ -127,15 +127,16 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsNode object, String id) {
-        OnmsNode retval = getNode(id);
-        if (retval == null) {
+    protected Response doUpdate(UriInfo uriInfo, OnmsNode targetObject, String sourceId) {
+        OnmsNode sourceObject = getNode(sourceId);
+        if (sourceObject == null) {
             throw getException(Status.BAD_REQUEST, "Node was not found.");
         }
-        if (!retval.getId().equals(object.getId())) {
+        if (!sourceObject.getId().equals(targetObject.getId())) {
             throw getException(Status.BAD_REQUEST, "Invalid Node (ID doesn't match).");
         }
-        return super.doUpdate(uriInfo, object, id);
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
     }
 
     @Override

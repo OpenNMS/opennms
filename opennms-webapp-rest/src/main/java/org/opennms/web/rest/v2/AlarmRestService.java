@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("events")
+@Path("alarms")
 @Transactional
 public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,Integer> {
 

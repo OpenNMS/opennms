@@ -31,12 +31,14 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,4 +87,11 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     protected OnmsMonitoringLocation doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
     }
+
+    @Override
+    public Response doCreate(final UriInfo uriInfo, final OnmsMonitoringLocation object) {
+        final String id = getDao().save(object);
+        return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+    }
+
 }

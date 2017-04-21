@@ -109,15 +109,16 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface object, String id) {
-        OnmsIpInterface retval = doGet(uriInfo, id);
-        if (retval == null) {
+    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface targetObject, String sourceId) {
+        OnmsIpInterface sourceObject = doGet(uriInfo, sourceId);
+        if (sourceObject == null) {
             throw getException(Status.BAD_REQUEST, "IP interface was not found.");
         }
-        if (!retval.getId().equals(object.getId())) {
+        if (!sourceObject.getId().equals(targetObject.getId())) {
             throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
         }
-        return super.doUpdate(uriInfo, object, id);
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
     }
 
     @Override

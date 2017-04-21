@@ -96,15 +96,16 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface object, Integer id) {
-        OnmsSnmpInterface retval = doGet(uriInfo, id);
-        if (retval == null) {
+    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface targetObject, Integer sourceId) {
+        OnmsSnmpInterface sourceObject = doGet(uriInfo, sourceId);
+        if (sourceObject == null) {
             throw getException(Status.BAD_REQUEST, "SNMP interface was not found.");
         }
-        if (!retval.getId().equals(object.getId())) {
+        if (!sourceObject.getId().equals(targetObject.getId())) {
             throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
         }
-        return super.doUpdate(uriInfo, object, id);
+        getDao().saveOrUpdate(targetObject);
+        return Response.noContent().build();
     }
 
     @Override

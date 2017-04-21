@@ -135,32 +135,33 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsMonitoredService svc, String id) {
-        OnmsMonitoredService retval = doGet(uriInfo, id);
-        if (retval == null) {
+    protected Response doUpdate(UriInfo uriInfo, OnmsMonitoredService targetObject, String sourceId) {
+        final OnmsMonitoredService sourceObject = doGet(uriInfo, sourceId);
+        if (sourceObject == null) {
             throw getException(Status.BAD_REQUEST, "Service was not found.");
         }
-        if (!retval.getId().equals(svc.getId())) {
+        if (!sourceObject.getId().equals(targetObject.getId())) {
             throw getException(Status.BAD_REQUEST, "Invalid Service (ID doesn't match).");
         }
         boolean modified = false;
-        final String currentStatus = retval.getStatus();
-        final String status = svc.getStatus();
-        if (svc.getStatus() != null && !currentStatus.equals(status)) {
+        final String previousStatus = sourceObject.getStatus();
+        final String status = targetObject.getStatus();
+        if (status != null && !previousStatus.equals(status)) {
             modified = true;
-            getDao().update(svc);
-            if ("S".equals(status) || ("A".equals(currentStatus) && "F".equals(status))) {
-                LOG.debug("doUpdate: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
-                sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
-                sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
+            getDao().update(targetObject);
+            if ("S".equals(status) || ("A".equals(previousStatus) && "F".equals(status))) {
+                LOG.debug("doUpdate: suspending polling for service {} on node with IP {}", targetObject.getServiceName(), targetObject.getIpAddress().getHostAddress());
+                sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, targetObject); // TODO ManageNodeServlet is sending this.
+                sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, targetObject);
             }
-            if ("R".equals(status) || ("F".equals(currentStatus) && "A".equals(status))) {
-                LOG.debug("doUpdate: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
-                sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
+            if ("R".equals(status) || ("F".equals(previousStatus) && "A".equals(status))) {
+                LOG.debug("doUpdate: resuming polling for service {} on node with IP {}", targetObject.getServiceName(), targetObject.getIpAddress().getHostAddress());
+                sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, targetObject);
             }
         }
         return modified ? Response.noContent().build() : Response.notModified().build();
     }
+
 
     @Override
     protected void doDelete(UriInfo uriInfo, OnmsMonitoredService svc) {

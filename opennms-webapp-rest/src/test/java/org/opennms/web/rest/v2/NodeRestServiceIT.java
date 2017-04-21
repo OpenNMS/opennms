@@ -150,6 +150,10 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 200));
         LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 200)); // By ifIndex
 
+        // UPDATE
+
+        LOG.warn(sendRequest(PUT, "/nodes/1", parseParamData("sysLocation=USA"), 204));
+
         // DELETE
 
         LOG.warn(sendRequest(DELETE, "/nodes/1/snmpinterfaces/6", 204));

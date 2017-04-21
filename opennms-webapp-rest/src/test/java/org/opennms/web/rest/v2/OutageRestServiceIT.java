@@ -59,10 +59,10 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRestServiceIT.class);
-
-    public NotificationRestServiceIT() {
+public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(OutageRestServiceIT.class);
+    
+    public OutageRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
 
@@ -75,33 +75,16 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
         m_databasePopulator.populateDatabase();
     }
 
-    /**
-     * Test to make sure that all of the orderBy clauses are working via REST.
-     */
+    // TODO Need some work
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testOrderBy() throws Exception {
-        String url = "/notifications";
+    public void testOutages() throws Exception {
+        String url = "/outages";
 
         LOG.warn(sendRequest(GET, url, parseParamData("orderBy=id"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=event.id"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=event.eventSeverity"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=pageTime"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=answeredBy"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=respondTime"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=node.label"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=ipAddress"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=serviceType.name"), 200));
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    @Transactional
-    public void testFiql() throws Exception {
-        String url = "/notifications";
-
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=answeredBy==\u0000"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=ifLostService=gt=2017-04-01T00:00:00.000-0400"), 204));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=ifRegainedService==1970-01-01T00:00:00.000-0000"), 200));
     }
 
 }
