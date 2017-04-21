@@ -188,8 +188,8 @@ public class MockDatabaseIT extends TestCase {
     }
 
     public void testUpdateNodeSequence() {
-        int maxNodeId = m_db.getJdbcTemplate().queryForInt("select max(nodeid) from node");
-        int nextSeqNum = m_db.getJdbcTemplate().queryForInt("select nextval('nodeNxtId')");
+        int maxNodeId = m_db.getJdbcTemplate().queryForObject("select max(nodeid) from node", Integer.class);
+        int nextSeqNum = m_db.getJdbcTemplate().queryForObject("select nextval('nodeNxtId')", Integer.class);
         assertTrue(nextSeqNum > maxNodeId);
         
     }
