@@ -25,7 +25,7 @@
             <feature>osgi-nrtg-base</feature>
             <feature>activemq</feature>
             <feature>activemq-blueprint</feature>
-            <feature>spring-jms</feature>
+            <feature>spring-jms/${springVersion}</feature>
           </features>
         </configuration>
       </plugin>

@@ -317,16 +317,16 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
-                <feature>spring</feature>
-                <feature>spring-aspects</feature>
-                <feature>spring-instrument</feature>
-                <feature>spring-jdbc</feature>
-                <feature>spring-jms</feature>
-                <feature>spring-test</feature>
-                <feature>spring-orm</feature>
-                <feature>spring-oxm</feature>
-                <feature>spring-tx</feature>
-                <feature>spring-web</feature>
+                <feature>spring/${springVersion}</feature>
+                <feature>spring-aspects/${springVersion}</feature>
+                <feature>spring-instrument/${springVersion}</feature>
+                <feature>spring-jdbc/${springVersion}</feature>
+                <feature>spring-jms/${springVersion}</feature>
+                <feature>spring-test/${springVersion}</feature>
+                <feature>spring-orm/${springVersion}</feature>
+                <feature>spring-oxm/${springVersion}</feature>
+                <feature>spring-tx/${springVersion}</feature>
+                <feature>spring-web/${springVersion}</feature>
 
                 <!-- Include everything in the opennms-${project.version} feature produced by container/features/pom.xml -->
                 <feature>opennms-${project.version}</feature>
