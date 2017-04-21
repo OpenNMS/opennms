@@ -19,8 +19,8 @@
     <!-- Automatically scan for @Component beans -->
     <context:component-scan base-package="org.opennms.web.rest.v2" />
 
-    <import resource="classpath:META-INF/cxf/cxf.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+    <import resource="classpath:/META-INF/cxf/cxf.xml" />
+    <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 
     <!--
       This ResourceContextProvider will manually tell CXF to use the Spring context to 

@@ -9,13 +9,13 @@
            http://cxf.apache.org/jaxws
            http://cxf.apache.org/schemas/jaxws.xsd">
 
-  <import resource="classpath:META-INF/cxf/cxf.xml" />
-  <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
-  <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+  <import resource="classpath:/META-INF/cxf/cxf.xml" />
+  <import resource="classpath:/META-INF/cxf/cxf-extension-soap.xml" />
+  <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 
   <!--Bean to load tipInterface.properties file -->
   <bean id="tipInterfaceProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:tipInterface.properties">  <!--reads tipInterface.properties file-->
+    <property name="location" value="classpath:/tipInterface.properties">  <!--reads tipInterface.properties file-->
       <!-- this should define the following properties -->
       <!-- http://<hostAddress>:<hostPort>/<systemName>/<serviceContext>/<InterfaceName> -->
       <!-- <InterfaceName> is standardised in the build for the particular interface     -->
