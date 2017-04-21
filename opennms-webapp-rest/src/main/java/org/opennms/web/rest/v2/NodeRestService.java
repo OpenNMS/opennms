@@ -35,7 +35,6 @@ import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -48,6 +47,8 @@ import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
 import org.slf4j.Logger;
@@ -127,15 +128,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsNode targetObject, String sourceId) {
-        OnmsNode sourceObject = getNode(sourceId);
-        if (sourceObject == null) {
-            throw getException(Status.BAD_REQUEST, "Node was not found.");
-        }
-        if (!sourceObject.getId().equals(targetObject.getId())) {
-            throw getException(Status.BAD_REQUEST, "Invalid Node (ID doesn't match).");
-        }
-        getDao().saveOrUpdate(targetObject);
+    protected Response doUpdate(UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
+        RestUtils.setBeanProperties(targetObject, params);
+        getDao().update(targetObject);
         return Response.noContent().build();
     }
 
@@ -147,10 +142,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Override
     protected OnmsNode doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
-    }
-
-    private OnmsNode getNode(final String lookupCriteria) {
-        return getDao().get(lookupCriteria);
     }
 
     @Path("{lookupCriteria}/ipinterfaces")

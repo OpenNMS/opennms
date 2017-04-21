@@ -46,6 +46,8 @@ import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,15 +111,9 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface targetObject, String sourceId) {
-        OnmsIpInterface sourceObject = doGet(uriInfo, sourceId);
-        if (sourceObject == null) {
-            throw getException(Status.BAD_REQUEST, "IP interface was not found.");
-        }
-        if (!sourceObject.getId().equals(targetObject.getId())) {
-            throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
-        }
-        getDao().saveOrUpdate(targetObject);
+    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
+        RestUtils.setBeanProperties(targetObject, params);
+        getDao().update(targetObject);
         return Response.noContent().build();
     }
 

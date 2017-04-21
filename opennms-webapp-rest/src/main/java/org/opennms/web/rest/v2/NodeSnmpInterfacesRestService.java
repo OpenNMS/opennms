@@ -40,6 +40,8 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterfaceList;
+import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,15 +98,9 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface targetObject, Integer sourceId) {
-        OnmsSnmpInterface sourceObject = doGet(uriInfo, sourceId);
-        if (sourceObject == null) {
-            throw getException(Status.BAD_REQUEST, "SNMP interface was not found.");
-        }
-        if (!sourceObject.getId().equals(targetObject.getId())) {
-            throw getException(Status.BAD_REQUEST, "Invalid Interface (ID doesn't match).");
-        }
-        getDao().saveOrUpdate(targetObject);
+    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface targetObject, MultivaluedMapImpl params) {
+        RestUtils.setBeanProperties(targetObject, params);
+        getDao().update(targetObject);
         return Response.noContent().build();
     }
 

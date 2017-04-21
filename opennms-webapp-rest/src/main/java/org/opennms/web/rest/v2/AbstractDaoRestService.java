@@ -122,7 +122,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
     }
 
     // Do not allow update by default
-    protected Response doUpdate(UriInfo uriInfo, T targetObject, I sourceId) {
+    protected Response doUpdate(UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
@@ -230,19 +230,18 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
-        return Response.status(Status.NOT_IMPLEMENTED).build();
-    }
-
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("{id}")
-    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final I id, final T object) {
         writeLock();
         try {
-            if (object == null) {
-                return Response.status(Status.BAD_REQUEST).build();
+            Criteria crit = getCriteria(uriInfo, searchContext);
+            final List<T> objects = getDao().findMatching(crit);
+            if (objects == null || objects.size() == 0) {
+                return Response.status(Status.NOT_FOUND).build();
             }
-            return doUpdate(uriInfo, object, id);
+            for (T object : objects) {
+                RestUtils.setBeanProperties(object, params);
+                doUpdate(uriInfo, object, params);
+            }
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -258,10 +257,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            LOG.debug("update: updating object {}", object);
-            RestUtils.setBeanProperties(object, params);
-            LOG.debug("update: object {} updated", object);
-            return doUpdate(uriInfo, object, id);
+            return doUpdate(uriInfo, object, params);
         } finally {
             writeUnlock();
         }
@@ -277,7 +273,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                LOG.debug("delete: deleting object {}", object);
                 doDelete(uriInfo, object);
             }
             return Response.noContent().build();
@@ -295,7 +290,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            LOG.debug("delete: deleting object {}", id);
             doDelete(uriInfo, object);
             return Response.noContent().build();
         } finally {
