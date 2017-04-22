@@ -62,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(port=NetScalerGroupHealthMonitorTest.TEST_SNMP_PORT,host=NetScalerGroupHealthMonitorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/netscaler-health.properties")
+@JUnitSnmpAgent(port=NetScalerGroupHealthMonitorTest.TEST_SNMP_PORT,host=NetScalerGroupHealthMonitorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/snmp/netscaler-health.properties")
 public class NetScalerGroupHealthMonitorTest implements InitializingBean {
     static final int TEST_SNMP_PORT = 9161;
     static final String TEST_IP_ADDRESS = "127.0.0.1";

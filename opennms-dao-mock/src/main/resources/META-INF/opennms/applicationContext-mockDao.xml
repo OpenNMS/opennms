@@ -70,7 +70,7 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
     <bean id="eventConfDao" class="org.opennms.netmgt.dao.mock.MockEventConfDao">
-        <property name="resource" value="classpath:minimal-eventconf.xml" />
+        <property name="resource" value="classpath:/minimal-eventconf.xml" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 

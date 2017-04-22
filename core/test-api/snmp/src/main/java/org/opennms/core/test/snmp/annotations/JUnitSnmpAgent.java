@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface JUnitSnmpAgent {
 
-    String resource() default "classpath:snmpwalk.properties";
+    String resource() default "classpath:/snmpwalk.properties";
     String host() default "";
     /**
      * This value should match the port value configured in the unit test spring context object
