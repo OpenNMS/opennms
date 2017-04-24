@@ -487,19 +487,6 @@
     <severity>Warning</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/unknownServiceStatus</uei>
-    <event-label>OpenNMS-defined internal event: unknownServiceStatus</event-label>
-    <descr>
-      &lt;p&gt;The Scheduler has received an unrecognized service
-      status from a scheduler.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logonly'>
-      The Scheduler has received an unrecognized service status
-      from a scheduler.
-    </logmsg>
-    <severity>Warning</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
     <event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
     <descr>

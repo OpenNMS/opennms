@@ -419,13 +419,6 @@ public abstract class EventConstants {
      */
     public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
 
-
-    /**
-     * A service poll returned an unknown status (due to a problem getting poll
-     * information).
-     */
-    public static final String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
-
     /**
      * Notification without users event.
      */
