@@ -429,12 +429,6 @@ public abstract class EventConstants {
     public static final String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
 
     /**
-     * The SNMP conflicts with db UEI.
-     */
-
-    public static final String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-
-    /**
      * The rescan completed UEI.
      */
 
