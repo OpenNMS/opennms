@@ -388,11 +388,6 @@ public abstract class EventConstants {
     public static final String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
 
     /**
-     * Thresholding succeeded.
-     */
-    public static final String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
-
-    /**
      * The force interface rescan event UEI
      */
     public static final String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
