@@ -164,20 +164,6 @@
         <severity>Normal</severity>
     </event>
     <event>
-        <uei>uei.opennms.org/internal/capsd/addInterface</uei>
-        <event-label>OpenNMS-defined internal event: capsd addInterface</event-label>
-        <descr>
-            &lt;p&gt;This event is an external command to add an interface
-            to the database. The required paramater is the IP
-            address for the main interface: %interface%.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logndisplay">
-            &lt;p&gt;A request has been made to add an interface
-            %interface%.&lt;/p&gt;
-        </logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
         <uei>uei.opennms.org/internal/capsd/deleteInterface</uei>
         <event-label>OpenNMS-defined internal event: capsd deleteInterface</event-label>
         <descr>
