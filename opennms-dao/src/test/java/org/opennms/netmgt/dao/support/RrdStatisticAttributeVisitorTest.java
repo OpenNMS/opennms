@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.dao.support;
 
-import junit.framework.TestCase;
+import static org.easymock.EasyMock.expect;
+
+import java.util.Collections;
+
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
@@ -42,9 +45,7 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
-import java.util.Collections;
-
-import static org.easymock.EasyMock.expect;
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
@@ -235,7 +236,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         attributeVisitor.afterPropertiesSet();
 
         MockResourceType resourceType = new MockResourceType();
-        resourceType.setName("something other than interfaceSnmp");
+        resourceType.setName("somethingOtherThanInterfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
         attribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo")));
         Source source = new Source();
