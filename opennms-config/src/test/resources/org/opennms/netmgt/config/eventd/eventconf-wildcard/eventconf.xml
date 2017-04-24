@@ -93,23 +93,6 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/duplicateIPAddress</uei>
-    <event-label>OpenNMS-defined internal event: capsd duplicateIPAddress</event-label>
-    <descr>
-      &lt;p&gt;A services scan has discovered an IP address on 
-            more than one device: IP Address: %interface%. The address
-      has been added to the database under all nodes that have it.
-      If this address is in error, please take steps to correct it.
-      &lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;A services scan has discovered a duplicate IP address:
-      %interface%.&lt;/p&gt;
-    </logmsg>
-    <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
-  </event>
-  <event>
     <uei>uei.opennms.org/internal/capsd/updateService</uei>
     <event-label>OpenNMS-defined internal event: capsd updateService</event-label>
     <descr>
