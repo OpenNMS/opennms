@@ -358,11 +358,6 @@ public abstract class EventConstants {
     public static final String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
 
     /**
-     * The node label source changed event.
-     */
-    public static final String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
-
-    /**
      * The node deleted event UEI.
      */
     public static final String DUP_NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/duplicateNodeDeleted";
