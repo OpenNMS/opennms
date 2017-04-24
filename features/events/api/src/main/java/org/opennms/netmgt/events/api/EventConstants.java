@@ -332,12 +332,6 @@ public abstract class EventConstants {
     public static final String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
 
     /**
-     * The interface supports SNMP event...generated during capability rescan
-     * when an already managed interface gains SNMP support for the first time.
-     */
-    public static final String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
-
-    /**
      * The interface reparented event.
      */
     public static final String INTERFACE_REPARENTED_EVENT_UEI = "uei.opennms.org/nodes/interfaceReparented";
