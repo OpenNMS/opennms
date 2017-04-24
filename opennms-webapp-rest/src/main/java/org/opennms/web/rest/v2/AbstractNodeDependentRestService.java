@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractNodeDependentRestService<T,K extends Serializable,I> extends AbstractDaoRestService<T,K,I> {
 
     @Autowired
-    private NodeDao m_nodeDao;
+    protected NodeDao m_nodeDao;
 
     protected void updateCriteria(final UriInfo uriInfo, final CriteriaBuilder builder) {
         builder.alias("node", "node");

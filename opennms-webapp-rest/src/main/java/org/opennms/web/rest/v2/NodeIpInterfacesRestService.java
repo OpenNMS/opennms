@@ -112,6 +112,9 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
 
     @Override
     protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
+        if (params.getFirst("ipAddress") != null) {
+            throw getException(Status.BAD_REQUEST, "Cannot change the IP address.");
+        }
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
         return Response.noContent().build();
@@ -121,6 +124,8 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     protected void doDelete(UriInfo uriInfo, OnmsIpInterface intf) {
         intf.getNode().getIpInterfaces().remove(intf);
         getDao().delete(intf);
+        final Event e = EventUtils.createDeleteInterfaceEvent("ReST", intf.getNodeId(), intf.getIpAddress().getHostAddress(), -1, -1L);
+        sendEvent(e);
     }
 
     @Override

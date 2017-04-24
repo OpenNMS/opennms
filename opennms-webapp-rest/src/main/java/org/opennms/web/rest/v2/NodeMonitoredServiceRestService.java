@@ -150,6 +150,8 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     protected void doDelete(UriInfo uriInfo, OnmsMonitoredService svc) {
         svc.getIpInterface().getMonitoredServices().remove(svc);
         getDao().delete(svc);
+        final Event e = EventUtils.createDeleteServiceEvent("ReST", svc.getNodeId(), svc.getIpAddress().getHostAddress(), svc.getServiceName(), -1L);
+        sendEvent(e);
     }
 
     @Override

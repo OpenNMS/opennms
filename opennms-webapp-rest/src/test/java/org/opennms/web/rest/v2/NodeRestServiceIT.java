@@ -28,6 +28,12 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertTrue;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -149,6 +155,17 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201);
         LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 200));
         LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 200)); // By ifIndex
+
+        LOG.warn(sendRequest(GET, "/nodes/1/hardwareInventory", 404));
+        byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
+        String entity = new String(encoded, StandardCharsets.UTF_8);
+        sendPost("/nodes/1/hardwareInventory", entity, 204, null);
+        String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
+        assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
+
+        String category = "<categories name=\"Production\"/>";
+        sendPost("/nodes/1/categories", category, 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
 
         // UPDATE
 

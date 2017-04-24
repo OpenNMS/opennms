@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
-import org.opennms.web.rest.v1.HardwareInventoryResource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,6 +137,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Override
     protected void doDelete(UriInfo uriInfo, OnmsNode node) {
         getDao().delete(node);
+        final Event e = EventUtils.createDeleteNodeEvent("ReST", node.getId(), -1L);
+        sendEvent(e);
     }
 
     @Override
@@ -144,20 +146,25 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
         return getDao().get(id);
     }
 
-    @Path("{lookupCriteria}/ipinterfaces")
+    @Path("{nodeCriteria}/ipinterfaces")
     public NodeIpInterfacesRestService getIpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(NodeIpInterfacesRestService.class);
     }
 
-    @Path("{lookupCriteria}/snmpinterfaces")
+    @Path("{nodeCriteria}/snmpinterfaces")
     public NodeSnmpInterfacesRestService getSnmpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(NodeSnmpInterfacesRestService.class);
     }
 
     // Reusing v1 version, as there is no need to have a new implementation.
     @Path("{nodeCriteria}/hardwareInventory")
-    public HardwareInventoryResource getHardwareInventoryResource(@Context final ResourceContext context) {
-        return context.getResource(HardwareInventoryResource.class);
+    public NodeHardwareInventoryRestService getHardwareInventoryResource(@Context final ResourceContext context) {
+        return context.getResource(NodeHardwareInventoryRestService.class);
+    }
+
+    @Path("{nodeCriteria}/categories")
+    public NodeCategoriesRestService getCategoriesResource(@Context final ResourceContext context) {
+        return context.getResource(NodeCategoriesRestService.class);
     }
 
 }
