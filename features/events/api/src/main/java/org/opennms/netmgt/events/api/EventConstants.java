@@ -388,11 +388,6 @@ public abstract class EventConstants {
     public static final String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
 
     /**
-     * Thresholding failed.
-     */
-    public static final String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
-
-    /**
      * Thresholding succeeded.
      */
     public static final String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";

@@ -1169,18 +1169,6 @@
                 <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
         </event>
   <event>
-    <uei>uei.opennms.org/nodes/thresholdingFailed</uei>
-    <event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
-    <descr>
-      &lt;p&gt;%service% thresholding on interface %interface%
-      failed.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      %service% thresholding on interface %interface% failed.
-    </logmsg>
-    <severity>Warning</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/nodes/thresholdingSucceeded</uei>
     <event-label>OpenNMS-defined threshold event: thresholdingSucceeded</event-label>
     <descr>
