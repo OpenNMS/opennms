@@ -263,7 +263,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testOspfGeneralGroupWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
@@ -306,7 +306,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testOspfNbrTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
@@ -339,7 +339,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testOspfIfTableWalk() throws Exception {
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
@@ -521,7 +521,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testLldpLocalGroupWalk() throws Exception {
 
@@ -553,7 +553,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testLldpLocGetter() throws Exception {
 
@@ -580,7 +580,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:/linkd/nms17216/switch2-walk.txt")
     })
     public void test2LldpLocGetter() throws Exception {
 
@@ -607,7 +607,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:/linkd/nms17216/switch2-walk.txt")
     })
     public void test3LldpRemoteTableWalk() throws Exception {
 
@@ -655,7 +655,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")
     })
     public void testLldpRemTableWalk() throws Exception {
 		

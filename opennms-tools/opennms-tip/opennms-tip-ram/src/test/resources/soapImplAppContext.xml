@@ -76,9 +76,9 @@
   <!--  </bean>-->
 
   <!-- see http://www.benmccann.com/dev-blog/web-services-tutorial-with-apache-cxf/ Web Services Tutorial with Apache CXF -->
-<!--  <import resource="classpath:META-INF/cxf/cxf.xml" />-->
-<!--  <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />-->
-<!--  <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />-->
+<!--  <import resource="classpath:/META-INF/cxf/cxf.xml" />-->
+<!--  <import resource="classpath:/META-INF/cxf/cxf-extension-soap.xml" />-->
+<!--  <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />-->
 <!--  <jaxws:endpoint id="auth" implementor="org.openoss.test.server.Test2InterfaceImpl" address="/tip" />-->
 
 

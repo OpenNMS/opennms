@@ -19,7 +19,7 @@ The following package repositories are available:
 | `testing`                 | Release candidate for the next stable release.
 | `snapshot`                | Latest successful development build, the "nightly" build.
 | `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
-                              Available branches can be found in http://yum.opennms.org/branches/ or http://debian.opennms.org/dists/branches/.
+                              Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
 |===
 
 To install a different release the repository files have to be installed and manually modified.
@@ -29,8 +29,8 @@ To install a different release the repository files have to be installed and man
 .Install the configuration for a package repository
 [source, shell]
 ----
-rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-${RELEASE}-rhel7.noarch.rpm <1>
-rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
+rpm -Uvh https://yum.opennms.org/repofiles/opennms-repo-${RELEASE}-rhel7.noarch.rpm <1>
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
 <1> Replace `${RELEASE}` with a release name like `stable` (recommended), `testing`, or `snapshot`.
@@ -42,8 +42,8 @@ Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and a
 .Package repository configuration for Debian-based systems
 [source, shell]
 ----
-deb http://debian.opennms.org ${RELEASE} main <1>
-deb-src http://debian.opennms.org ${RELEASE} main <1>
+deb https://debian.opennms.org ${RELEASE} main <1>
+deb-src https://debian.opennms.org ${RELEASE} main <1>
 ----
 
 <1> Replace `${RELEASE}` with a release name like `stable` (recommended), `testing`, or `snapshot`.
@@ -53,5 +53,5 @@ Import the packages' authentication key with the following command:
 .GPG key import for Debian-based systems
 [source, shell]
 ----
-wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----

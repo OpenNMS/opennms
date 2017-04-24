@@ -54,7 +54,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/bgpSessionDetectorTestData.properties")
+@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/bgpSessionDetectorTestData.properties")
 public class BgpSessionDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.205";
 

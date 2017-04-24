@@ -9,7 +9,7 @@
     <intercept-url pattern="/**" access="ROLE_USER" />
   </http> 
 
-  <ldap-server ldif="classpath:users.ldif" />
+  <ldap-server ldif="classpath:/users.ldif" />
 
   <authentication-manager>
     <authentication-provider>

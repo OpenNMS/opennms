@@ -79,7 +79,7 @@ import org.springframework.test.context.TestExecutionListeners;
 })
 @JUnitConfigurationEnvironment
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
-@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:loadSnmpDataTest.properties")
+@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:/loadSnmpDataTest.properties")
 public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";

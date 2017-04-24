@@ -61,7 +61,7 @@ public class JUnitSnmpAgentExecutionListenerIT {
     }
 
     @Test
-    @JUnitSnmpAgent(resource="classpath:loadSnmpDataTest.properties", host="192.168.0.254")
+    @JUnitSnmpAgent(resource="classpath:/loadSnmpDataTest.properties", host="192.168.0.254")
     public void testClassAgent() throws Exception {
     	assertEquals(
     			octetString("TestData"),
@@ -71,8 +71,8 @@ public class JUnitSnmpAgentExecutionListenerIT {
     
     @Test
     @JUnitSnmpAgents({
-    		@JUnitSnmpAgent(host="192.168.0.1", port=161, resource="classpath:loadSnmpDataTest.properties"),
-    		@JUnitSnmpAgent(host="192.168.0.2", port=161, resource="classpath:differentSnmpData.properties")
+    		@JUnitSnmpAgent(host="192.168.0.1", port=161, resource="classpath:/loadSnmpDataTest.properties"),
+    		@JUnitSnmpAgent(host="192.168.0.2", port=161, resource="classpath:/differentSnmpData.properties")
     })
     public void testMultipleHosts() throws Exception {
     	assertEquals(

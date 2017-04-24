@@ -23,7 +23,7 @@
 							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>src/main/resources/SHSIMPINC.wsdl</wsdl>
-									<wsdlLocation>classpath:SHSIMPINC.wsdl</wsdlLocation>
+									<wsdlLocation>classpath:/SHSIMPINC.wsdl</wsdlLocation>
 									<frontEnd>jaxws21</frontEnd>
 									<faultSerialVersionUID>1</faultSerialVersionUID>
 								</wsdlOption>
