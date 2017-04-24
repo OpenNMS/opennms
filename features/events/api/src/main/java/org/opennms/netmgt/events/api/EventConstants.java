@@ -162,11 +162,6 @@ public abstract class EventConstants {
     public static final String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
 
     /**
-     * The change service event UEI.
-     */
-    public static final String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
-
-    /**
      * The outage created event UEI.
      */
     public static final String OUTAGE_CREATED_EVENT_UEI = "uei.opennms.org/internal/poller/outageCreated";
