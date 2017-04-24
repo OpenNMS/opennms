@@ -33,14 +33,13 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
@@ -59,50 +58,21 @@ class DefaultJmxConnector implements JmxServerConnector {
     @Override
     public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         try {
-            final String factory = ParameterMap.getKeyedString(propertiesMap, "factory", "STANDARD");
-            final String port = ParameterMap.getKeyedString(propertiesMap, "port", "1099");
-            final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
-            final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
-            final String rmiServerPort = ParameterMap.getKeyedString(propertiesMap, "rmiServerport",  "45444");
-            final String remoteJMX = ParameterMap.getKeyedString(propertiesMap, "remoteJMX",  "false");
-            
+            final DefaultJmxConnectionConfig config = new DefaultJmxConnectionConfig(ipAddress, propertiesMap);
 
-            // If remote JMX access is enabled, this will return a non-null value
-            String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY);
-
-            if (
-                ipAddress != null && 
-                // If we're trying to create a connection to a localhost address...
-                ipAddress.isLoopbackAddress() &&
-                // port should never be null but let's check anyway 
-                port != null && 
-                (
-                    // If the port matches the port of the current JVM...
-                    port.equals(jmxPort) ||
-                    // Or if remote JMX RMI is disabled and we're attempting to connect
-                    // to the default OpenNMS JMX port...
-                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(port))
-                )
-            ) {
-                // ...then use the {@link PlatformMBeanServerConnector} to connect to 
+            // If we're trying to create a connection to a localhost address...
+            if (isLocalConnection(ipAddress, config.getPort())) {
+                // ...then use the {@link PlatformMBeanServerConnector} to connect to
                 // this JVM's MBeanServer directly.
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
-            JMXServiceURL url = null;
-            
-            if(remoteJMX.equalsIgnoreCase("true")){
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
-            }
-            else{
-            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
-            }
-             	
-            LOG.debug("JMX: {} - {}", factory, url);
 
+            final JMXServiceURL url = config.createJmxServiceURL();
             final Map<String,String[]> env = new HashMap<>();
 
             // use credentials?
-            if ("PASSWORD-CLEAR".equals(factory)) {
+            LOG.debug("JMX: {} - {}", config.getFactory(), url);
+            if ("PASSWORD-CLEAR".equals(config.getFactory())) {
                 final String username = propertiesMap.get("username");
                 final String password = propertiesMap.get("password");
 
@@ -130,5 +100,24 @@ class DefaultJmxConnector implements JmxServerConnector {
         } catch (IOException e) {
             throw new JmxServerConnectionException(e);
         }
+    }
+
+    private static boolean isLocalConnection(final InetAddress ipAddress, String port) {
+        Objects.requireNonNull(ipAddress);
+        Objects.requireNonNull(port);
+
+        // If we're trying to create a connection to a localhost address...
+        if (ipAddress.isLoopbackAddress()) {
+            final String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY); // returns null if REMOTE JMX is enabled
+
+            // ... and if the port matches the port of the current JVM...
+            if (port.equals(jmxPort) ||
+                    // ... or if remote JMX RMI is disabled and we're attempting to connect
+                    // to the default OpenNMS JMX port...
+                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(port))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
