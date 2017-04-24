@@ -256,8 +256,8 @@ sub cmd_requisition {
 		if ($key eq 'rescanExisting' and $value !~ /^(true|false|dbonly)$/i) {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a valid value for rescanExisting (true, false, dbonly)!", -verbose => 0);
 		}
-		my $query = "$key=$value" if $key eq 'rescanExisting';
-		put_simple($foreign_source . '/import', $query);
+		my $query = URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value) if $key eq 'rescanExisting';
+		put_simple(URI::Escape::uri_escape_utf8($foreign_source) . '/import', $query);
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command", -verbose => 0);
 	}
@@ -327,7 +327,7 @@ sub cmd_node {
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-id'} = $foreign_id;
 		$root->{'att'}->{'node-label'} = $node_label;
-		post("$foreign_source/nodes", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id);
 	} elsif (is_set($command)) {
@@ -340,7 +340,7 @@ sub cmd_node {
 
 		$key   = URI::Escape::uri_escape_utf8($key);
 		$value = URI::Escape::uri_escape_utf8($value);
-		put($foreign_source . '/nodes/' . $foreign_id, "$key=$value");
+		put(URI::Escape::uri_escape_utf8($foreign_source) . '/nodes/' . URI::Escape::uri_escape_utf8($foreign_id), URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value));
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
 	}
@@ -398,7 +398,7 @@ sub cmd_interface {
 		my $xml = get_element('interface');
 		my $root = $xml->root;
 		$root->{'att'}->{'ip-addr'} = $ip;
-		post("$foreign_source/nodes/$foreign_id/interfaces", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/ " . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
 	} elsif (is_set($command)) {
@@ -413,7 +413,7 @@ sub cmd_interface {
 		$key   = URI::Escape::uri_escape_utf8($key);
 		$value = URI::Escape::uri_escape_utf8($value);
 
-		put($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
+		put(URI::Escape::uri_escape_utf8($foreign_source) . '/nodes/' . URI::Escape::uri_escape_utf8($foreign_id) . '/interfaces/' . URI::Escape::uri_escape_utf8($ip), URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value));
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: interface $command", -verbose => 0);
 	}
@@ -461,7 +461,7 @@ sub cmd_service {
 		my $xml = get_element('monitored-service');
 		my $root = $xml->root;
 		$root->{'att'}->{'service-name'} = $service;
-		post("$foreign_source/nodes/$foreign_id/interfaces/$ip/services", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces/" . URI::Escape::uri_escape_utf8($ip) . "/services", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
 	} else {
@@ -507,7 +507,7 @@ sub cmd_category {
 		my $xml = get_element('category');
 		my $root = $xml->root;
 		$root->{'att'}->{'name'} = $category;
-		post("$foreign_source/nodes/$foreign_id/categories", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/categories", $root);
 	} elsif (is_remove($command)) {
 		remove("$foreign_source/nodes/$foreign_id/categories/$category");
 	} else {
@@ -560,7 +560,7 @@ sub cmd_asset {
 		my $root = $xml->root;
 		$root->{'att'}->{'name'}  = $key;
 		$root->{'att'}->{'value'} = $value;
-		post("$foreign_source/nodes/$foreign_id/assets", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/assets", $root);
 	} elsif (is_remove($command)) {
 		remove("$foreign_source/nodes/$foreign_id/assets/$key");
 	} else {
@@ -658,7 +658,7 @@ sub cmd_snmp {
 	}
 
 	if ($command eq 'get' or $command eq 'list') {
-		my $response = get($ip, '/snmpConfig');
+		my $response = get(URI::Escape::uri_escape_utf8($ip), '/snmpConfig');
 		$XML->parse($response->content);
 		my $root = $XML->root;
 		print "SNMP Configuration for $ip:\n";
@@ -666,7 +666,7 @@ sub cmd_snmp {
 			print "* ", $child->tag, ": ", $child->text, "\n";
 		}
 	} elsif ($command eq 'netsnmp') {
-		my $response = get($ip, '/snmpConfig');
+		my $response = get(URI::Escape::uri_escape_utf8($ip), '/snmpConfig');
 		$XML->parse($response->content);
 		my $root = $XML->root;
 		my $versionSwitch = "-" . $root->first_child('version')->text;
@@ -685,7 +685,7 @@ sub cmd_snmp {
 			my ($key, $value) = split(/=/, $arg);
 			$arguments .= "&" . URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value);
 		}
-		put($ip, $arguments, '/snmpConfig');
+		put(URI::Escape::uri_escape_utf8($ip), $arguments, '/snmpConfig');
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: snmp $command", -verbose => 0);
 	}
