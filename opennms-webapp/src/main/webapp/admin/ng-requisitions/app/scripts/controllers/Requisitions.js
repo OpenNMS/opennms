@@ -216,7 +216,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.editForeignSource = function(foreignSource) {
-      $window.location.href = '#/requisitions/' + foreignSource + '/foreignSource';
+      $window.location.href = '#/requisitions/' + encodeURIComponent(foreignSource) + '/foreignSource';
     };
 
     /**
@@ -228,7 +228,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.edit = function(foreignSource) {
-      $window.location.href = '#/requisitions/' + foreignSource;
+      $window.location.href = '#/requisitions/' + encodeURIComponent(foreignSource);
     };
 
     /**
