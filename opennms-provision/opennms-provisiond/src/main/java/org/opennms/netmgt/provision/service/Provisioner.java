@@ -853,29 +853,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * <p>handleUpdateServer</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
-    public void handleUpdateServer(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateServer(event.getInterface(), event.getHost(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doUpdateServer(String ipAddr, String host, String action, String nodeLabel) {
-        // FIXME: Handle Rackspace UPDATE_SERVER event
-        throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
-    }
-
-    /**
      * <p>handleUpdateService</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.

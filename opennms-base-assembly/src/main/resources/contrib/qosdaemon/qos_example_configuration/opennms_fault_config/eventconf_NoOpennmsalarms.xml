@@ -192,25 +192,6 @@
 	-->
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/capsd/updateServer</uei>
-		<event-label>OpenNMS-defined internal event: capsd updateServer</event-label>
-		<descr>
-			&lt;p&gt;This event is an external command to add an
-                        interface/server mapping to the database. The required 
-                        paramater is the IP address of the interface: %interface%, 
-                        the NMS host server name: %host%, and the optional parameter 
-                        of a node label: %nodelabel%. This event will cause an 
-                        addInterface event. &lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A request has been made to add an interface/server
-                        mapping as well as the interface to the database. The interface:
-			%interface%, the NMS host: %host%,  and node label: %nodelabel%
-                        are specified. &lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
-	<event>
 		<uei>uei.opennms.org/internal/capsd/updateService</uei>
 		<event-label>OpenNMS-defined internal event: capsd updateService</event-label>
 		<descr>
