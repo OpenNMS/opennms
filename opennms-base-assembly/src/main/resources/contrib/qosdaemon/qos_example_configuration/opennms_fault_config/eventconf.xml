@@ -187,20 +187,6 @@
 -->
     </event>
 <!-- New Importer Service Events -->
-        <event>
-                <uei>uei.opennms.org/nodes/restartPollingInterface</uei>
-                <event-label>OpeNMS-defined node event: restartPollingInterface</event-label>
-                <descr> 
-                        &lt;p&gt;This event is an external command to restart polling 
-                        all active services on a specified interface. The requeried 
-                        parameter is the IP address of the interface. (%parm[ipaddr]%). 
-                        &lt;/p&gt; 
-                </descr>
-                <logmsg dest='logndisplay'>
-                        Reschedule polling to services on a specified interface(%parm[ipaddr]%).                
-                </logmsg>
-                <severity>Normal</severity>
-        </event>
   <event>
     <uei>uei.opennms.org/internal/discovery/newSuspect</uei>
     <event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
