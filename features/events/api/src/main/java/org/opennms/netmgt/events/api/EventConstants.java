@@ -431,12 +431,6 @@ public abstract class EventConstants {
     public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 
     /**
-     * A vulnerability scan on a specific interface was initiated by the user
-     * via the web UI.
-     */
-    public static final String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
-
-    /**
      * Demand poll service event ui.
      */
 	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
