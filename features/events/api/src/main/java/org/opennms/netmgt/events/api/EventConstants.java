@@ -433,11 +433,6 @@ public abstract class EventConstants {
      */
 
     public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
-    
-    /**
-     * The suspect scan completed UEI.
-     */
-    public static final String SUSPECT_SCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/suspectScanCompleted";
 
     /**
      * The RTC subscribe event.
