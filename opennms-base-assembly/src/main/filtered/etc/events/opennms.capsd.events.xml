@@ -41,19 +41,6 @@
         <severity>Warning</severity>
     </event>
     <event>
-        <uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
-        <event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
-        <descr>
-            &lt;p&gt;A services scan has verified that this interface
-            supports the SNMP protocol.&lt;/p&gt;
-        </descr>
-        <logmsg dest="logonly">
-            &lt;p&gt;A services scan has verified that this interface
-            supports the SNMP protocol.&lt;/p&gt;
-        </logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
         <uei>uei.opennms.org/internal/capsd/addNode</uei>
         <event-label>OpenNMS-defined internal event: capsd addNode</event-label>
         <descr>
