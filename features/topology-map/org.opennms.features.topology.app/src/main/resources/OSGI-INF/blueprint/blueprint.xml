@@ -65,6 +65,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="ipInterfaceDao"/>
     </bean>
 
+    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.BundleContextServiceLocator" >
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <service ref="bundleContextServiceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" />
+
     <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
         <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
             <argument ref="categoryProvider"/>
