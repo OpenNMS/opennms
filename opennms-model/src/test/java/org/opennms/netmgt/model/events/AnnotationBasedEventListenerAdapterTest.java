@@ -77,7 +77,7 @@ public class AnnotationBasedEventListenerAdapterTest {
             receivedEventCount++;
         }
         
-        @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+        @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
         public void handleAnotherEvent(Event e) {
             throw new IllegalArgumentException("test generated exception");
         }
@@ -133,7 +133,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         Collections.addAll(m_subscriptions, 
                 EventConstants.NODE_DOWN_EVENT_UEI, 
                 EventConstants.ADD_NODE_EVENT_UEI,
-                EventConstants.ADD_INTERFACE_EVENT_UEI
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI
                 );
         
         m_eventIpcMgr.addEventListener(m_adapter, m_subscriptions);
@@ -227,7 +227,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(0, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);
 
-        m_adapter.onEvent(createEvent(EventConstants.ADD_INTERFACE_EVENT_UEI));
+        m_adapter.onEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);

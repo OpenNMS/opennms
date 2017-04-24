@@ -745,27 +745,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * <p>handleAddInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
-    public void handleAddInterface(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doAddInterface(event.getNodeid(), event.getInterface());
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doAddInterface(long nodeId, String ipAddr) {
-        // FIXME: Handle Rackspace ADD_INTERFACE event
-        throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
-    }
-
-    /**
      * <p>handleAddNode</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
