@@ -147,11 +147,6 @@ public abstract class EventConstants {
     public static final String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
 
     /**
-     * The update service event UEI.
-     */
-    public static final String UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
-
-    /**
      * The add node event UEI.
      */
     public static final String ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
