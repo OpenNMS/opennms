@@ -852,30 +852,6 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteService((int)nodeId, addr, service);
     }
 
-    /**
-     * <p>handleUpdateService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
-    public void handleUpdateService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateService(event.getInterface(), event.getService(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    
-    private void doUpdateService(String ipAddr, String service, String action, String nodeLabel) {
-        // FIXME: Handle Rackspace UPDATE_SERVICE event
-        throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
-    }
-
     private String getEventUrl(Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
