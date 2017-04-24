@@ -768,27 +768,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * <p>handleChangeService</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
-    public void handleChangeService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doChangeService(event.getInterface(), event.getService(), EventUtils.getParm(event, EventConstants.PARM_ACTION));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doChangeService(String ipAddr, String service, String action) {
-        // FIXME: Handle Rackspace CHANGE_SERVICE event
-        throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
-    }
-
-    /**
      * <p>handleDeleteInterface</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
