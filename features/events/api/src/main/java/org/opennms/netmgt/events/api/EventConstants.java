@@ -353,11 +353,6 @@ public abstract class EventConstants {
     public static final String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
 
     /**
-     * The interface IP host name changed event.
-     */
-    public static final String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
-
-    /**
      * The node label changed event.
      */
     public static final String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
