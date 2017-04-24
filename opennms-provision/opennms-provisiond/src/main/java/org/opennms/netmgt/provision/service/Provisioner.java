@@ -257,16 +257,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     /**
-     * <p>doNodeScan</p>
-     *
-     * @param nodeId a int.
-     * @throws java.lang.InterruptedException if any.
-     * @throws java.util.concurrent.ExecutionException if any.
-     */
-    public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
-    }
-    
-    /**
      * <p>createNodeScan</p>
      *
      * @param nodeId a {@link java.lang.Integer} object.
