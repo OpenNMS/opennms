@@ -42,13 +42,11 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
@@ -79,6 +77,9 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    private MonitoredServicesComponent m_component;
 
     @Autowired
     private MonitoredServiceDao m_dao;
@@ -141,7 +142,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         final String previousStatus = targetObject.getStatus();
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
-        boolean changed = hasStatusChanged(previousStatus, targetObject);
+        boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
     }
 
@@ -174,38 +175,10 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         return serviceType;
     }
 
-    private boolean hasStatusChanged(String previousStatus, OnmsMonitoredService targetObject) {
-        boolean modified = false;
-        final String status = targetObject.getStatus();
-        LOG.debug("hasStatusChanged: previous status was {}, and new status is {}", previousStatus, status);
-        if (status != null && previousStatus != null && !previousStatus.equals(status)) {
-            modified = true;
-            getDao().update(targetObject);
-            if ("S".equals(status) || ("A".equals(previousStatus) && "F".equals(status))) {
-                LOG.debug("hasStatusChanged: suspending polling for service {} on node with IP {}", targetObject.getServiceName(), targetObject.getIpAddress().getHostAddress());
-                sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, targetObject); // TODO ManageNodeServlet is sending this.
-                sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, targetObject);
-            }
-            if ("R".equals(status) || ("F".equals(previousStatus) && "A".equals(status))) {
-                LOG.debug("hasStatusChanged: resuming polling for service {} on node with IP {}", targetObject.getServiceName(), targetObject.getIpAddress().getHostAddress());
-                sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, targetObject);
-            }
-        }
-        return modified;
-    }
-
     private OnmsIpInterface getInterface(final UriInfo uriInfo) {
         final OnmsNode node = getNode(uriInfo);
         final String ipAddress =  uriInfo.getPathSegments(true).get(3).getPath();
         return node == null ? null : node.getIpInterfaceByIpAddress(ipAddress);
-    }
-
-    private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
-        final EventBuilder bldr = new EventBuilder(eventUEI, "ReST");
-        bldr.setNodeid(dbObj.getNodeId());
-        bldr.setInterface(dbObj.getIpAddress());
-        bldr.setService(dbObj.getServiceName());
-        sendEvent(bldr.getEvent());
     }
 
 }

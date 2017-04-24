@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
-
+import org.opennms.web.rest.v1.HardwareInventoryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,6 +152,12 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Path("{lookupCriteria}/snmpinterfaces")
     public NodeSnmpInterfacesRestService getSnmpInterfaceResource(@Context final ResourceContext context) {
         return context.getResource(NodeSnmpInterfacesRestService.class);
+    }
+
+    // Reusing v1 version, as there is no need to have a new implementation.
+    @Path("{nodeCriteria}/hardwareInventory")
+    public HardwareInventoryResource getHardwareInventoryResource(@Context final ResourceContext context) {
+        return context.getResource(HardwareInventoryResource.class);
     }
 
 }

@@ -153,6 +153,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // UPDATE
 
         LOG.warn(sendRequest(PUT, "/nodes/1", parseParamData("sysLocation=USA"), 204));
+        LOG.warn(sendRequest(PUT, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", parseParamData("status=F"), 204));
 
         // DELETE
 

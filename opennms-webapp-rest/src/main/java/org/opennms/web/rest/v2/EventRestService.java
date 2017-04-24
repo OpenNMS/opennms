@@ -78,6 +78,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", "category", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("eventTime").desc(); // order by event time by default
         return builder;
