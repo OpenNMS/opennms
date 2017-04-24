@@ -52,15 +52,15 @@
    <event>
       <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSeverityChanged</uei>
       <event-label>Alarm Change Notification Event : Alarm Severity Changed</event-label>
-      <descr>&lt;p>Alarm &lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmid]%&quot;>%parm[alarmid]%&lt;/a> Severity Changed to %parm[severity]%&lt;p>
+      <descr>&lt;p>Alarm &lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmid]%&quot;>%parm[alarmid]%&lt;/a> Severity Changed to %parm[alarmseverity]%&lt;p>
     
-    &lt;p>New Alarm Severity %parm[severity]%&lt;p>
+    &lt;p>New Alarm Severity %parm[alarmseverity]%&lt;p>
     
     &lt;p>Old Alarm Severity %parm[oldseverity]%&lt;p>
     
     &lt;p>New Alarm Values&lt;p>
     &lt;p>%parm[newalarmvalues]%&lt;p></descr>
-      <logmsg dest="logndisplay">&lt;p>Alarm &lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmid]%&quot;>%parm[alarmid]%&lt;/a> Severity Changed to %parm[severity]%&lt;p></logmsg>
+      <logmsg dest="logndisplay">&lt;p>Alarm &lt;a href=&quot;/opennms/alarm/detail.htm?id=%parm[alarmid]%&quot;>%parm[alarmid]%&lt;/a> Severity Changed to %parm[alarmseverity]%&lt;p></logmsg>
       <severity>Normal</severity>
       <operinstruct></operinstruct>
    </event>

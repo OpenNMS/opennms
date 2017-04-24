@@ -424,7 +424,7 @@
     */
     requisitionsService.updateDeployedStatsForRequisition = function(existingReq) {
       var deferred = $q.defer();
-      var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/' + existingReq.foreignSource;
+      var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/' + encodeURIComponent(existingReq.foreignSource);
       $log.debug('updateDeployedStatsForRequisition: retrieving deployed statistics for requisition ' + existingReq.foreignSource);
       $http.get(url)
       .success(function(deployedReq) {
@@ -462,7 +462,7 @@
         return deferred.promise;
       }
 
-      var url = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getRequisition: getting requisition ' + foreignSource);
       $http.get(url)
       .success(function(data) {
@@ -509,7 +509,7 @@
         }
       }
 
-      var url = requisitionsService.internal.requisitionsUrl + '/' + foreignSource + '/import';
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/import';
       $log.debug('synchronizeRequisition: synchronizing requisition ' + foreignSource + ' with rescanExisting=' + rescanExisting);
       $http({ method: 'PUT', url: url, params: { rescanExisting: rescanExisting }})
       .success(function(data) {
@@ -604,10 +604,10 @@
       }
 
       $log.debug('deleteRequisition: deleting requisition ' + foreignSource);
-      var deferredReqPending  = $http.delete(requisitionsService.internal.requisitionsUrl + '/' + foreignSource);
-      var deferredReqDeployed = $http.delete(requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource);
-      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource);
-      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource);
+      var deferredReqPending  = $http.delete(requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredReqDeployed = $http.delete(requisitionsService.internal.requisitionsUrl + '/deployed/' + encodeURIComponent(foreignSource));
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredReqPending, deferredReqDeployed, deferredFSPending, deferredFSDeployed ])
       .then(function(results) {
@@ -701,7 +701,7 @@
         return deferred.promise;
       }
 
-      var url  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource + '/nodes/' + foreignId;
+      var url  = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/nodes/' + encodeURIComponent(foreignId);
       $log.debug('getNode: getting node ' + foreignId + '@' + foreignSource);
       $http.get(url)
       .success(function(data) {
@@ -740,7 +740,7 @@
       var deferred = $q.defer();
       var requisitionNode = node.getOnmsRequisitionNode();
 
-      var url = requisitionsService.internal.requisitionsUrl + '/' + node.foreignSource + '/nodes';
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes';
       $log.debug('saveNode: saving node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
       $http.post(url, requisitionNode)
       .success(function(data) {
@@ -803,7 +803,7 @@
     requisitionsService.deleteNode = function(node) {
       var deferred = $q.defer();
 
-      var url = requisitionsService.internal.requisitionsUrl + '/' + node.foreignSource + '/nodes/' + node.foreignId;
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId);
       $log.debug('deleteNode: deleting node ' + node.nodeLabel + ' from requisition ' + node.foreignSource);
       $http.delete(url)
       .success(function(data) {
@@ -843,7 +843,7 @@
     requisitionsService.getForeignSourceDefinition = function(foreignSource) {
       var deferred = $q.defer();
 
-      var url = requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource;
+      var url = requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getForeignSourceDefinition: getting definition for requisition ' + foreignSource);
       $http.get(url)
       .success(function(data) {
@@ -952,8 +952,8 @@
       var deferred = $q.defer();
 
       $log.debug('deleteForeignSourceDefinition: deleting foreign source definition ' + foreignSource);
-      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource);
-      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource);
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredFSPending, deferredFSDeployed ])
       .then(function(results) {
@@ -1080,7 +1080,7 @@
         return deferred.promise;
       }
 
-      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/' + foreignSource;
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/' + encodeURIComponent(foreignSource);
       $log.debug('getAvailableServices: getting available services');
       $http.get(url)
       .success(function(data) {

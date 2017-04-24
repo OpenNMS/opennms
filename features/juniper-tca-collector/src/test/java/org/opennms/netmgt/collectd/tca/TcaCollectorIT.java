@@ -94,7 +94,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // These tests rely on JRobin to verify the values
@@ -102,7 +102,7 @@ import org.springframework.transaction.annotation.Transactional;
         "org.opennms.rrd.usequeue=false"
 })
 @JUnitTemporaryDatabase(reuseDatabase=false)
-@JUnitSnmpAgent(host = TcaCollectorIT.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
+@JUnitSnmpAgent(host = TcaCollectorIT.TEST_NODE_IP, port = 9161, resource = "classpath:/juniperTcaSample.properties")
 @Transactional
 public class TcaCollectorIT implements InitializingBean {
 

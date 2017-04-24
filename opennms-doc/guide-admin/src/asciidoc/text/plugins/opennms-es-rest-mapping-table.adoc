@@ -306,7 +306,7 @@ _Alarm Change Events:_
 
 Corresponds to the alarm's service ID.
 
-| "severity": "2", |"severity": |"p_severity": | "p_severity": "2",
+| "severity": "2", |"severity": |"p_alarmseverity": | "p_alarmseverity": "2",
 |string |
 _Alarm Change Events:_
 
