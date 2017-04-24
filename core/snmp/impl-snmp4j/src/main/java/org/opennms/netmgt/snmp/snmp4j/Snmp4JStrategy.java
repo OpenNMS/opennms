@@ -88,7 +88,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
-    private static final ExecutorService REAPER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "SNMP4J-Session-Reaper");
