@@ -120,7 +120,7 @@
     * @methodOf RequisitionController
     */
     $scope.editForeignSource = function() {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/foreignSource';
+      $window.location.href = '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/foreignSource';
     };
 
     /**
@@ -169,7 +169,7 @@
     * @methodOf RequisitionController
     */
     $scope.addNode = function() {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/__new__' + $scope.getVerticalLayout();
+      $window.location.href = '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/__new__' + $scope.getVerticalLayout();
     };
 
     /**
@@ -182,7 +182,7 @@
     * @param {object} The node's object to edit
     */
     $scope.editNode = function(node) {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/' + node.foreignId + $scope.getVerticalLayout();
+      $window.location.href = '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId) + $scope.getVerticalLayout();
     };
 
     /**
