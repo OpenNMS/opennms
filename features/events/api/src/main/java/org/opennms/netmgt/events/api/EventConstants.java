@@ -418,8 +418,6 @@ public abstract class EventConstants {
     public static final String LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorDisconnected";
     /** Constant <code>LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */
     public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
-    /** Constant <code>LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationCha"{trunked}</code> */
-    public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
     public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI="uei.opennms.org/remote/locationMonitorConnectionAddressChanged";
 
     public static final String REMOTE_SUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/successfulScanReport";

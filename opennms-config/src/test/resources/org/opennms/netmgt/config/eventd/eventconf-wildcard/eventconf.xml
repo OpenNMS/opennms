@@ -1269,19 +1269,6 @@
                 clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" 
                 auto-clean="false"/>
   </event>
-  
-  <event>
-    <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's configuration has been changed</event-label>
-    <descr>
-      This event is sent when a remote poller's configuration has been
-      changed and was detected by the monitor.
-    </descr>
-    <logmsg dest='logndisplay'>
-      The configuration has changed for the remote poller %parm[locationMonitorId]% in location %parm[location]%.
-    </logmsg>
-    <severity>Normal</severity>
-  </event> 
 
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
