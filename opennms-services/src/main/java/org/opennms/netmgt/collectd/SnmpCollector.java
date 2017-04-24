@@ -102,16 +102,6 @@ public class SnmpCollector extends AbstractLegacyServiceCollector {
         + "ORDER BY eventid DESC " + "LIMIT 1";
 
     /**
-     * SQL statement to retrieve most recent rescan completed eventid for a
-     * node.
-     */
-    static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid "
-        + "FROM events "
-        + "WHERE nodeid=? "
-        + "AND eventuei='" + EventConstants.RESCAN_COMPLETED_EVENT_UEI + "' "
-        + "ORDER BY eventid DESC " + "LIMIT 1";
-
-    /**
      * Object identifier used to retrieve interface count. This is the MIB-II
      * interfaces.ifNumber value.
      */

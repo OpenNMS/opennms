@@ -427,12 +427,6 @@ public abstract class EventConstants {
      */
 
     public static final String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
-
-    /**
-     * The rescan completed UEI.
-     */
-
-    public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
     
     /**
      * The suspect scan completed UEI.
