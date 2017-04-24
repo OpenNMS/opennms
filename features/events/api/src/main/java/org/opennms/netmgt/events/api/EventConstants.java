@@ -330,11 +330,6 @@ public abstract class EventConstants {
      * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
     public static final String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
-    
-    /**
-     * The interface index changed event.
-     */
-    public static final String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
 
     /**
      * The interface supports SNMP event...generated during capability rescan
