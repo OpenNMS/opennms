@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -61,37 +60,29 @@ class DefaultJmxConnector implements JmxServerConnector {
             final DefaultJmxConnectionConfig config = new DefaultJmxConnectionConfig(ipAddress, propertiesMap);
 
             // If we're trying to create a connection to a localhost address...
-            if (isLocalConnection(ipAddress, config.getPort())) {
+            if (config.isLocalConnection()) {
                 // ...then use the {@link PlatformMBeanServerConnector} to connect to
                 // this JVM's MBeanServer directly.
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
 
+            // Create URL
             final JMXServiceURL url = config.createJmxServiceURL();
-            final Map<String,String[]> env = new HashMap<>();
-
-            // use credentials?
             LOG.debug("JMX: {} - {}", config.getFactory(), url);
-            if ("PASSWORD-CLEAR".equals(config.getFactory())) {
-                final String username = propertiesMap.get("username");
-                final String password = propertiesMap.get("password");
 
-                // Provide the credentials required by the server to successfully
-                // perform user authentication
-                final String[] credentials = new String[]{username, password};
-                env.put("jmx.remote.credentials", credentials);
-            }
+            // Apply password strategy
+            final Map<String,Object> env = new HashMap<>();
+            config.getPasswordStategy().apply(env, config);
 
-            // Connect a JSR 160 JMXConnector to the server side
-            final JMXConnector connector = JMXConnectorFactory.connect(url, env);
-
+            // Create connection and connect
+            final JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, env);
             try {
                 connector.connect(env);
             } catch (SecurityException x) {
                 throw new JmxServerConnectionException("Security exception: bad credentials", x);
             }
 
-            // Connect a JSR 160 JMXConnector to the server side
+            // Wrap Connection
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             JmxServerConnectionWrapper connectionWrapper = new DefaultConnectionWrapper(connector, connection);
             return connectionWrapper;
@@ -100,24 +91,5 @@ class DefaultJmxConnector implements JmxServerConnector {
         } catch (IOException e) {
             throw new JmxServerConnectionException(e);
         }
-    }
-
-    private static boolean isLocalConnection(final InetAddress ipAddress, String port) {
-        Objects.requireNonNull(ipAddress);
-        Objects.requireNonNull(port);
-
-        // If we're trying to create a connection to a localhost address...
-        if (ipAddress.isLoopbackAddress()) {
-            final String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY); // returns null if REMOTE JMX is enabled
-
-            // ... and if the port matches the port of the current JVM...
-            if (port.equals(jmxPort) ||
-                    // ... or if remote JMX RMI is disabled and we're attempting to connect
-                    // to the default OpenNMS JMX port...
-                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(port))) {
-                return true;
-            }
-        }
-        return false;
     }
 }
