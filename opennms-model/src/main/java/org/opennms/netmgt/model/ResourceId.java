@@ -24,10 +24,9 @@ public class ResourceId implements Comparable<ResourceId> {
                        final String name) {
         if (type == null) {
             throw new IllegalArgumentException("Type must be non-null");
-        } else {
-            if (!type.matches("\\w+")) {
-                throw new IllegalArgumentException("Type must be a valid string");
-            }
+        }
+        if (!type.matches("\\w+")) {
+            throw new IllegalArgumentException("Type must be a valid string");
         }
 
         this.parent = parent;

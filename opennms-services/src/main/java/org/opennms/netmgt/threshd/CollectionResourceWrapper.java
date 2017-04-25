@@ -281,6 +281,10 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public ResourceId getResourceId() {
+        if (m_resource == null) {
+            return null;
+        }
+
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
         if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
@@ -293,7 +297,7 @@ public class CollectionResourceWrapper {
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
             String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {

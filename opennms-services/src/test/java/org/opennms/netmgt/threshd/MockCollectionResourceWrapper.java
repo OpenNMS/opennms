@@ -50,7 +50,7 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
             }
             @Override
             public String getResourceTypeName() {
-                return null;
+                return "test";
             }
             @Override
             public boolean rescanNeeded() {
