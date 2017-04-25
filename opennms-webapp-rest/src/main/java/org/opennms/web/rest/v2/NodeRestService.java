@@ -34,6 +34,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -114,7 +115,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
-    public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
+    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsNode object) {
         if (object.getLocation() == null) {
             OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
             LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
@@ -128,14 +129,14 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsNode targetObject, MultivaluedMapImpl params) {
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
         return Response.noContent().build();
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsNode node) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsNode node) {
         getDao().delete(node);
         final Event e = EventUtils.createDeleteNodeEvent("ReST", node.getId(), -1L);
         sendEvent(e);

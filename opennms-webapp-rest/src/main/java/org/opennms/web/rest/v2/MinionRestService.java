@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -97,7 +98,7 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsMinion minion) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMinion minion) {
         final String location = minion.getLocation();
         final String id = minion.getId();
         getDao().delete(minion);

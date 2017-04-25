@@ -32,6 +32,7 @@ import java.util.Collection;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -89,7 +90,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     }
 
     @Override
-    public Response doCreate(final UriInfo uriInfo, final OnmsMonitoringLocation object) {
+    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation object) {
         final String id = getDao().save(object);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }

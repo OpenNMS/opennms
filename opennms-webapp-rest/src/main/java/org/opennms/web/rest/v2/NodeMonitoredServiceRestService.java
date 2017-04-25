@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -113,7 +114,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
-    protected Response doCreate(UriInfo uriInfo, OnmsMonitoredService service) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService service) {
         final OnmsIpInterface iface = getInterface(uriInfo);
         if (iface == null) {
             return Response.status(Status.BAD_REQUEST).build();
@@ -138,7 +139,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);
@@ -147,7 +148,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsMonitoredService svc) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService svc) {
         svc.getIpInterface().getMonitoredServices().remove(svc);
         getDao().delete(svc);
         final Event e = EventUtils.createDeleteServiceEvent("ReST", svc.getNodeId(), svc.getIpAddress().getHostAddress(), svc.getServiceName(), -1L);

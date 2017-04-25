@@ -34,6 +34,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -90,7 +91,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected Response doCreate(UriInfo uriInfo, OnmsIpInterface ipInterface) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface ipInterface) {
         OnmsNode node = getNode(uriInfo);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node was not found.");
@@ -111,7 +112,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface targetObject, MultivaluedMapImpl params) {
         if (params.getFirst("ipAddress") != null) {
             throw getException(Status.BAD_REQUEST, "Cannot change the IP address.");
         }
@@ -121,7 +122,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsIpInterface intf) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsIpInterface intf) {
         intf.getNode().getIpInterfaces().remove(intf);
         getDao().delete(intf);
         final Event e = EventUtils.createDeleteInterfaceEvent("ReST", intf.getNodeId(), intf.getIpAddress().getHostAddress(), -1, -1L);

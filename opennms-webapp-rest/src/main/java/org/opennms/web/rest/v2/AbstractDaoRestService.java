@@ -47,6 +47,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -117,17 +118,17 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
     }
 
     // Do not allow create by default
-    protected Response doCreate(UriInfo uriInfo, T object) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, T object) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
     // Do not allow update by default
-    protected Response doUpdate(UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, T targetObject, final MultivaluedMapImpl params) {
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
 
     // Do not allow delete by default
-    protected void doDelete(UriInfo uriInfo, T object) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, T object) {
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
 
@@ -218,10 +219,10 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response create(@Context final UriInfo uriInfo, T object) {
+    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, T object) {
         writeLock();
         try {
-            return doCreate(uriInfo, object);
+            return doCreate(securityContext, uriInfo, object);
         } finally {
             writeUnlock();
         }
@@ -229,7 +230,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
 
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
         writeLock();
         try {
             Criteria crit = getCriteria(uriInfo, searchContext);
@@ -239,7 +240,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
             }
             for (T object : objects) {
                 RestUtils.setBeanProperties(object, params);
-                doUpdate(uriInfo, object, params);
+                doUpdate(securityContext, uriInfo, object, params);
             }
             return Response.noContent().build();
         } finally {
@@ -250,21 +251,21 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{id}")
-    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final I id, final MultivaluedMapImpl params) {
+    public Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final I id, final MultivaluedMapImpl params) {
         writeLock();
         try {
             final T object = doGet(uriInfo, id);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            return doUpdate(uriInfo, object, params);
+            return doUpdate(securityContext, uriInfo, object, params);
         } finally {
             writeUnlock();
         }
     }
 
     @DELETE
-    public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         writeLock();
         try {
             Criteria crit = getCriteria(uriInfo, searchContext);
@@ -273,7 +274,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
                 return Response.status(Status.NOT_FOUND).build();
             }
             for (T object : objects) {
-                doDelete(uriInfo, object);
+                doDelete(securityContext, uriInfo, object);
             }
             return Response.noContent().build();
         } finally {
@@ -283,14 +284,14 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
 
     @DELETE
     @Path("{id}")
-    public Response delete(@Context final UriInfo uriInfo, @PathParam("id") final I id) {
+    public Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final I id) {
         writeLock();
         try {
             final T object = doGet(uriInfo, id);
             if (object == null) {
                 return Response.status(Status.NOT_FOUND).build();
             }
-            doDelete(uriInfo, object);
+            doDelete(securityContext, uriInfo, object);
             return Response.noContent().build();
         } finally {
             writeUnlock();

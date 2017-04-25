@@ -37,6 +37,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -125,7 +126,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     }
 
     @Override
-    protected Response doCreate(UriInfo uriInfo, OnmsCategory source) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory source) {
         OnmsNode node = getNode(uriInfo);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node was not found.");
@@ -145,7 +146,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsCategory targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory targetObject, MultivaluedMapImpl params) {
         if (params.getFirst("name") != null) {
             throw getException(Status.BAD_REQUEST, "Cannot rename category.");
         }
@@ -155,7 +156,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsCategory category) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsCategory category) {
         getNode(uriInfo).removeCategory(category);
         getDao().delete(category);
 

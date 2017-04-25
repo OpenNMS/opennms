@@ -33,6 +33,7 @@ import java.util.Collection;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -98,7 +99,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService targetObject, MultivaluedMapImpl params) {
         final String previousStatus = targetObject.getStatus();
         RestUtils.setBeanProperties(targetObject, params);
         getDao().update(targetObject);

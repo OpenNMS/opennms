@@ -30,17 +30,34 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-
+import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +74,12 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
 
     @Autowired
     private AlarmDao m_dao;
+
+    @Autowired
+    private AcknowledgmentDao m_ackDao;
+
+    @Autowired
+    private AlarmRepository m_repository;
 
     @Override
     protected AlarmDao getDao() {
@@ -90,6 +113,96 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     @Override
     protected OnmsAlarm doGet(UriInfo uriInfo, Integer id) {
         return getDao().get(id);
+    }
+
+    @Override
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
+        boolean isProcessAck = true;
+
+        final String ackValue = params.getFirst("ack");
+        final String escalateValue = params.getFirst("escalate");
+        final String clearValue = params.getFirst("clear");
+        final String ackUserValue = params.getFirst("ackUser");
+        final String ticketIdValue = params.getFirst("ticketId");
+        final String ticketStateValue = params.getFirst("ticketState");
+
+        final String ackUser = ackUserValue == null ? securityContext.getUserPrincipal().getName() : ackUserValue;
+        SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
+
+        final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
+        acknowledgement.setAckAction(AckAction.UNSPECIFIED);
+        if (ackValue != null) {
+            if (Boolean.parseBoolean(ackValue)) {
+                acknowledgement.setAckAction(AckAction.ACKNOWLEDGE);
+            } else {
+                acknowledgement.setAckAction(AckAction.UNACKNOWLEDGE);
+            }
+        } else if (escalateValue != null) {
+            if (Boolean.parseBoolean(escalateValue)) {
+                acknowledgement.setAckAction(AckAction.ESCALATE);
+            }
+        } else if (clearValue != null) {
+            if (Boolean.parseBoolean(clearValue)) {
+                acknowledgement.setAckAction(AckAction.CLEAR);
+            }
+        } else if (StringUtils.isNotBlank(ticketIdValue)) {
+            isProcessAck = false;
+            alarm.setTTicketId(ticketIdValue);
+        } else if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
+            isProcessAck = false;
+            alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
+        } else {
+            throw getException(Status.BAD_REQUEST, "Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
+        }
+        if (isProcessAck) {
+            m_ackDao.processAck(acknowledgement);
+        } else {
+            getDao().saveOrUpdate(alarm);
+        }
+
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("{id}/memo")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+        SecurityHelper.assertUserEditCredentials(securityContext, user);
+        final String body = params.getFirst("body");
+        if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
+        m_repository.updateStickyMemo(alarmId, body, user);
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("{id}/journal")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+        SecurityHelper.assertUserEditCredentials(securityContext, user);
+        final String body = params.getFirst("body");
+        if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
+        m_repository.updateReductionKeyMemo(alarmId, body, user);
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("{id}/memo")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        m_repository.removeStickyMemo(alarmId);
+        return Response.noContent().build();
+    }
+
+    @DELETE
+    @Path("{id}/journal")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        m_repository.removeReductionKeyMemo(alarmId);
+        return Response.noContent().build();
     }
 
 }

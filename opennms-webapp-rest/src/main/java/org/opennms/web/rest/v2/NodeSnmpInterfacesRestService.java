@@ -31,12 +31,14 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterfaceList;
@@ -83,7 +85,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     }
 
     @Override
-    protected Response doCreate(UriInfo uriInfo, OnmsSnmpInterface snmpInterface) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsSnmpInterface snmpInterface) {
         OnmsNode node = getNode(uriInfo);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "Node was not found.");
@@ -93,12 +95,16 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
             throw getException(Status.BAD_REQUEST, "SNMP Interface's ifIndex cannot be null");
         }
         node.addSnmpInterface(snmpInterface);
+        if (snmpInterface.getPrimaryIpInterface() != null) {
+            final OnmsIpInterface iface = snmpInterface.getPrimaryIpInterface();
+            iface.setSnmpInterface(snmpInterface);
+        }
         getDao().save(snmpInterface);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, snmpInterface.getIfIndex())).build();
     }
 
     @Override
-    protected Response doUpdate(UriInfo uriInfo, OnmsSnmpInterface targetObject, MultivaluedMapImpl params) {
+    protected Response doUpdate(SecurityContext securityContext, UriInfo uriInfo, OnmsSnmpInterface targetObject, MultivaluedMapImpl params) {
         if (params.getFirst("ifIndex") != null) {
             throw getException(Status.BAD_REQUEST, "Cannot change ifIndex.");
         }
@@ -108,7 +114,7 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     }
 
     @Override
-    protected void doDelete(UriInfo uriInfo, OnmsSnmpInterface intf) {
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsSnmpInterface intf) {
         intf.getNode().getSnmpInterfaces().remove(intf);
         getDao().delete(intf);
     }

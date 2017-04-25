@@ -33,6 +33,7 @@ import java.util.Date;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
@@ -96,7 +97,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     }
 
     @Override
-    protected Response doCreate(UriInfo uriInfo, OnmsEvent event) {
+    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsEvent event) {
         final Event e = convert(event);
         sendEvent(e);
         return Response.noContent().build();
