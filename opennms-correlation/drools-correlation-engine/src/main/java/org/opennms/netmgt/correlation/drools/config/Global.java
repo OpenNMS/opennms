@@ -33,10 +33,7 @@ package org.opennms.netmgt.correlation.drools.config;
 //---------------------------------/
 
 import java.beans.PropertyEditor;
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,7 +43,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.context.ApplicationContext;
-import org.xml.sax.ContentHandler;
 
 
 /**
@@ -55,12 +51,13 @@ import org.xml.sax.ContentHandler;
  * @version $Revision$ $Date$
  */
 
-@SuppressWarnings("all")
 @XmlRootElement(name="global")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Global implements Serializable {
-	
-	private static class SimplePropertyEditorRegistry extends PropertyEditorRegistrySupport {
+    private static final long serialVersionUID = -5037124721934942336L;
+
+
+    private static class SimplePropertyEditorRegistry extends PropertyEditorRegistrySupport {
 		public SimplePropertyEditorRegistry() {
 			registerDefaultEditors();
 		}

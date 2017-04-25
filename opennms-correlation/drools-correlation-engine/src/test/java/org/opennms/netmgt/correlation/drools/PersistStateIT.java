@@ -28,25 +28,28 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
-/**
- * <p>RootCause class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class RootCause extends Cause {
-    private static final long serialVersionUID = 4827846707785757651L;
+public class PersistStateIT extends CorrelationRulesTestCase {
 
-    /**
-     * <p>Constructor for RootCause.</p>
-     *
-     * @param cause a {@link java.lang.Long} object.
-     * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public RootCause(final Long cause, final Event symptom) {
-        super(Type.ROOT, cause, symptom);
+    @Test
+    public void testDroolsFusion() throws Exception {
+        DroolsCorrelationEngine engine = findEngineByName("persistStateTest");
+        Assert.assertNotNull(engine);
+        engine.correlate(createNodeLostServiceEvent(1, "SSH"));
+        Assert.assertEquals(3, engine.getKieSessionObjects().size());
+        engine.tearDown();
+        engine.initialize();
+        Assert.assertEquals(3, engine.getKieSessionObjects().size());
     }
 
+    private Event createNodeLostServiceEvent(int nodeid, String serviceName) {
+        return new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, serviceName)
+                .setNodeid(nodeid)
+                .getEvent();
+    }
 }
