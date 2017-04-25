@@ -39,6 +39,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
@@ -57,7 +58,7 @@ class DefaultJmxConnector implements JmxServerConnector {
     @Override
     public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         try {
-            final DefaultJmxConnectionConfig config = new DefaultJmxConnectionConfig(ipAddress, propertiesMap);
+            final JmxConnectionConfig config = new JmxConnectionConfig(ipAddress, propertiesMap);
 
             // If we're trying to create a connection to a localhost address...
             if (config.isLocalConnection()) {

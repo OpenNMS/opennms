@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.impl.connection.connectors;
+package org.opennms.netmgt.jmx.connection;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public interface PasswordStrategy {
 
-    void apply(Map<String, Object> env, DefaultJmxConnectionConfig config);
+    void apply(Map<String, Object> env, JmxConnectionConfig config);
 
     // Insecure connection with plain text credentials if given
     PasswordStrategy PASSWORD_CLEAR = (env, config) -> {

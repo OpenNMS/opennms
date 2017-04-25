@@ -26,15 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.impl.connection.connectors;
+package org.opennms.netmgt.jmx.connection;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.X509TrustManager;
 
-class AnyServerX509TrustManager implements X509TrustManager {
-    // Documented in X509TrustManager
+public class AnyServerX509TrustManager implements X509TrustManager {
     @Override
     public X509Certificate[] getAcceptedIssuers() {
         // since client authentication is not supported by this
@@ -43,18 +42,14 @@ class AnyServerX509TrustManager implements X509TrustManager {
         return new X509Certificate[0];
     }
 
-    // Documented in X509TrustManager
     @Override
-    public void checkClientTrusted(X509Certificate[] certs, String authType)
-            throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
         // this trust manager is dedicated to server authentication
         throw new CertificateException("not supported");
     }
 
-    // Documented in X509TrustManager
     @Override
-    public void checkServerTrusted(X509Certificate[] certs, String authType)
-            throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
         // any certificate sent by the server is automatically accepted
     }
 }

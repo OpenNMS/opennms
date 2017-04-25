@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * Responsible for instantiating detectors, gathering state information or agent specific details,
@@ -64,6 +65,8 @@ public interface ServiceDetectorFactory<T extends ServiceDetector> {
      * @return a new {@link DetectRequest}
      */
     DetectRequest buildRequest(String location, InetAddress address, Integer port);
+
+    DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes);
 
     /**
      * 

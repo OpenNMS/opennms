@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.impl.connection.connectors;
+package org.opennms.netmgt.jmx.connection;
 
 import static org.opennms.netmgt.jmx.connection.JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT;
 import static org.opennms.netmgt.jmx.connection.JmxServerConnector.JMX_PORT_SYSTEM_PROPERTY;
@@ -48,12 +48,12 @@ import org.opennms.core.utils.PropertiesUtils;
  *
  * @author mvrueden
  */
-class DefaultJmxConnectionConfig {
+public class JmxConnectionConfig {
 
     private final Map<String, String> properties;
     private final InetAddress ipAddress;
 
-    DefaultJmxConnectionConfig(final InetAddress ipAddress, final Map<String, String> properties) {
+    public JmxConnectionConfig(final InetAddress ipAddress, final Map<String, String> properties) {
         this.properties = Objects.requireNonNull(properties);
         this.ipAddress = Objects.requireNonNull(ipAddress);
     }
