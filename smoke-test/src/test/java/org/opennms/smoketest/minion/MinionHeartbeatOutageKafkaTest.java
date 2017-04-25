@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
+import org.junit.Ignore;
+
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
@@ -38,6 +40,7 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  * 
  * @author Seth
  */
+@Ignore
 public class MinionHeartbeatOutageKafkaTest extends MinionHeartbeatOutageTest {
 
     /**
