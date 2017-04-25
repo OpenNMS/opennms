@@ -40,9 +40,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.management.remote.JMXServiceURL;
-
-import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +76,7 @@ public abstract class Jsr160ConnectionFactory {
             final JmxServerConnectionWrapper connectionWrapper = future.get(timeout, TimeUnit.MILLISECONDS);
             return connectionWrapper;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            final JMXServiceURL url = new JmxConnectionConfig(address, propertiesMap).createJmxServiceURL();
+            final String url = JmxConnectionConfigBuilder.buildFrom(address, propertiesMap).build().getUrl();
             LOG.info("Exception connecting JMXConnectorFactory url {} , Error: {}", url, e.getMessage());
             if (!future.isDone()) {
                 future.cancel(true);

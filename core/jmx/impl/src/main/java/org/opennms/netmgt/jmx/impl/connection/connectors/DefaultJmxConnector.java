@@ -40,6 +40,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
@@ -51,24 +52,28 @@ import org.slf4j.LoggerFactory;
  * address on the default OpenNMS JMX port, it will also bypass using a socket connection
  * and connect directly to the JVM's MBeanServer.
  */
-class DefaultJmxConnector implements JmxServerConnector {
+public class DefaultJmxConnector implements JmxServerConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultJmxConnector.class);
 
     @Override
     public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
-        try {
-            final JmxConnectionConfig config = new JmxConnectionConfig(ipAddress, propertiesMap);
+        JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(ipAddress, propertiesMap).build();
+        return createConnection(config);
+    }
 
+    public JmxServerConnectionWrapper createConnection(JmxConnectionConfig config) throws JmxServerConnectionException {
+        try {
             // If we're trying to create a connection to a localhost address...
             if (config.isLocalConnection()) {
                 // ...then use the {@link PlatformMBeanServerConnector} to connect to
                 // this JVM's MBeanServer directly.
-                return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
+                return new PlatformMBeanServerConnector().createConnection();
             }
 
             // Create URL
-            final JMXServiceURL url = config.createJmxServiceURL();
+            final String urlString = config.getUrl();
+            final JMXServiceURL url = new JMXServiceURL(urlString);
             LOG.debug("JMX: {} - {}", config.getFactory(), url);
 
             // Apply password strategy

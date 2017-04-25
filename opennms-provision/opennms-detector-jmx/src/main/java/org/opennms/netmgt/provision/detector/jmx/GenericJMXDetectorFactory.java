@@ -33,9 +33,12 @@ import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.management.remote.JMXServiceURL;
+
 import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
@@ -62,7 +65,8 @@ public class GenericJMXDetectorFactory<T extends JMXDetector> extends GenericSer
         // in case port is null, but url is provided, the port is extracted from the url
         if (port == null && attributes.containsKey("url")) {
             try {
-                port = new JmxConnectionConfig(address, attributes).createJmxServiceURL().getPort();
+                final JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(address, attributes).build();
+                port = new JMXServiceURL(config.getUrl()).getPort();
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException("url is not valid", e);
             }

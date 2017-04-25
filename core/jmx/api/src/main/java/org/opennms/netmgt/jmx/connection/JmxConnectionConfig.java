@@ -40,7 +40,6 @@ import java.util.Objects;
 import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 
 /**
@@ -50,56 +49,24 @@ import org.opennms.core.utils.PropertiesUtils;
  */
 public class JmxConnectionConfig {
 
-    private final Map<String, String> properties;
-    private final InetAddress ipAddress;
-
-    public JmxConnectionConfig(final InetAddress ipAddress, final Map<String, String> properties) {
-        this.properties = Objects.requireNonNull(properties);
-        this.ipAddress = Objects.requireNonNull(ipAddress);
-    }
+    private String factory;
+    private InetAddress ipAddress;
+    private String url;
+    private String password;
+    private String username;
+    private boolean sunCacao;
+    private String port;
 
     public String getFactory() {
-        return ParameterMap.getKeyedString(properties, "factory", "STANDARD");
+        return factory;
     }
 
-    public JMXServiceURL createJmxServiceURL() throws MalformedURLException {
-        // For backwards compatibility keep old behaviour for now
-        if (isLegacyConnection()) {
-            if(isRemote()) {
-                final String url = String.format("service:jmx:%s:%s:%s://jndi/%s://%s:%s%s",
-                        getProtocol(),
-                        InetAddressUtils.toUrlIpAddress(ipAddress),
-                        getRmiServerPort(),
-                        getProtocol(),
-                        InetAddressUtils.toUrlIpAddress(ipAddress),
-                        getPort(),
-                        getUrlPath());
-                return new JMXServiceURL(url);
-            } else {
-                final String url = String.format("service:jmx:%s:///jndi/%s://%s:%s%s",
-                        getProtocol(),
-                        getProtocol(),
-                        InetAddressUtils.toUrlIpAddress(ipAddress),
-                        getPort(),
-                        getUrlPath());
-                return new JMXServiceURL(url);
-            }
-        } else {
-            // Create map to substitute url
-            final Map<String, Object> propertiesMap = new HashMap<>();
-            propertiesMap.put("ipaddr", InetAddressUtils.str(ipAddress));
-
-            final String url = PropertiesUtils.substitute(getUrl(), propertiesMap);
-            return new JMXServiceURL(url);
-        }
-    }
-
-    public boolean isLocalConnection() {
-        Objects.requireNonNull(ipAddress);
+    public boolean isLocalConnection() throws MalformedURLException {
+        Objects.requireNonNull(getIpAddress());
         Objects.requireNonNull(getPort());
 
         // If we're trying to create a connection to a localhost address...
-        if (ipAddress.isLoopbackAddress()) {
+        if (getIpAddress().isLoopbackAddress()) {
             final String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY); // returns null if REMOTE JMX is enabled
 
             // ... and if the port matches the port of the current JVM...
@@ -111,6 +78,17 @@ public class JmxConnectionConfig {
             }
         }
         return false;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    private String getPort() throws MalformedURLException {
+        if (port == null && url != null) {
+            port = String.valueOf(new JMXServiceURL(getUrl()).getPort());
+        }
+        return port;
     }
 
     public boolean hasCredentials() {
@@ -135,44 +113,57 @@ public class JmxConnectionConfig {
     }
 
     private boolean isSunCacao() {
-        return ParameterMap.getKeyedBoolean(properties, "sunCacao", false);
+        return sunCacao;
     }
 
     private String getPassword() {
-        return properties.get("password");
+        return password;
     }
 
     private String getUsername() {
-        return properties.get("username");
+        return username;
     }
 
-    private String getUrl() {
-        return properties.get("url");
+    public String getUrl() throws MalformedURLException {
+        final Map<String, Object> propertiesMap = new HashMap<>();
+        if (ipAddress != null) {
+            // Create map to substitute url
+            propertiesMap.put("ipaddr", InetAddressUtils.toUrlIpAddress(getIpAddress()));
+
+            final String theUrl = PropertiesUtils.substitute(url, propertiesMap);
+            return theUrl;
+        }
+        return url;
     }
 
-    private String getPort() {
-        return ParameterMap.getKeyedString(properties, "port", "1099");
+    public void setFactory(String factory) {
+        this.factory = factory;
     }
 
-    private String getProtocol() {
-        return ParameterMap.getKeyedString(properties, "protocol", "rmi");
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    private String getUrlPath() {
-        return ParameterMap.getKeyedString(properties, "urlPath",  "/jmxrmi");
+    public void setIpAddress(InetAddress ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
-    private String getRmiServerPort() {
-        return  ParameterMap.getKeyedString(properties, "rmiServerport",  "45444");
+    public InetAddress getIpAddress() throws MalformedURLException {
+        if (ipAddress == null && url != null) {
+            ipAddress = InetAddressUtils.getInetAddress(new JMXServiceURL(getUrl()).getHost());
+        }
+        return ipAddress;
     }
 
-    private boolean isRemote() {
-        return ParameterMap.getKeyedBoolean(properties, "remoteJMX",  false);
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    private boolean isLegacyConnection() {
-        return getUrl() == null;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-
+    public void setSunCacao(boolean sunCacao) {
+        this.sunCacao = sunCacao;
+    }
 }
