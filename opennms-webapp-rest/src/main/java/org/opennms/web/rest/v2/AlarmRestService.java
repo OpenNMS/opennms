@@ -77,6 +77,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
         builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
         return builder;
     }

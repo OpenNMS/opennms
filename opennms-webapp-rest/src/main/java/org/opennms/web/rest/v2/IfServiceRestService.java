@@ -85,6 +85,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("id");
