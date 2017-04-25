@@ -28,7 +28,10 @@
 
 package org.opennms.minion.heartbeat.consumer;
 
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -57,10 +60,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
@@ -154,7 +154,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             return;
         }
 
-        // Return fast until the provisioner is running to pick up the events send below
+        // Return fast until the provisioner is running to pick up the events sent below
         if (!this.eventSubscriptionService.hasEventListener(EventConstants.RELOAD_IMPORT_UEI)) {
             return;
         }

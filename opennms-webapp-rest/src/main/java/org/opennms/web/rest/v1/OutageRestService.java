@@ -134,6 +134,7 @@ public class OutageRestService extends OnmsRestService {
         builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
         builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);

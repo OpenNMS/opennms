@@ -75,6 +75,7 @@ public class AlarmRestServiceBase extends OnmsRestService {
         cb.alias("node", "node", JoinType.LEFT_JOIN);
         cb.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
         cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        cb.alias("node.location", "location", JoinType.LEFT_JOIN);
 
         if (params.containsKey("alarmId")) {
         	if (params.containsKey("id")) {

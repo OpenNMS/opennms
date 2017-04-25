@@ -243,6 +243,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         jo = ja.getJSONObject(0);
         assertEquals("A", jo.getString("type"));
         assertEquals("TestMachine0", jo.getString("label"));
+        assertEquals("Default", jo.getString("location"));
     }
 
     @Test

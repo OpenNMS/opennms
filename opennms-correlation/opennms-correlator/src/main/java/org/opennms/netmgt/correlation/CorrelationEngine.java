@@ -61,4 +61,8 @@ public interface CorrelationEngine {
 	 */
 	void correlate(Event e);
 
+	/**
+	 * <p>tearDown</p>
+	 */
+	void tearDown();
 }
