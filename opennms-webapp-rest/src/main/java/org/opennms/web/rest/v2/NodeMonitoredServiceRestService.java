@@ -117,7 +117,11 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoredService service) {
         final OnmsIpInterface iface = getInterface(uriInfo);
         if (iface == null) {
-            return Response.status(Status.BAD_REQUEST).build();
+            throw getException(Status.BAD_REQUEST, "IP interface was not found");
+        } else if (service == null) {
+            throw getException(Status.BAD_REQUEST, "Service object cannot be null");
+        } else if (service.getServiceType() == null || service.getServiceType().getName() == null) {
+            throw getException(Status.BAD_REQUEST, "Service type names cannot be null");
         }
         service.setServiceType(getServiceType(service.getServiceName()));
         service.setIpInterface(iface);

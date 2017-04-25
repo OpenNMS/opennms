@@ -31,10 +31,13 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -43,7 +46,6 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,25 +98,14 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
         return getDao().get(id);
     }
 
-    @Override
-    protected Response doCreate(SecurityContext securityContext, UriInfo uriInfo, OnmsEvent event) {
-        final Event e = convert(event);
-        sendEvent(e);
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, Event event) {
+        if (event.getTime() == null) event.setTime(new Date());
+        if (event.getSource() == null) event.setSource("ReST");
+
+        sendEvent(event);
         return Response.noContent().build();
     }
 
-    // Experimental
-    private Event convert(OnmsEvent event) {
-        if (event == null || event.getEventUei() == null) {
-            throw getException(Status.BAD_REQUEST, "Event UEI is required.");
-        }
-        EventBuilder builder = new EventBuilder(event.getEventUei(), "ReST");
-        if (event.getNodeId() != null) builder.setNodeid(event.getNodeId());
-        if (event.getIpAddr() != null) builder.setInterface(event.getIpAddr());
-        if (event.getServiceType() != null && event.getServiceType().getName() != null) builder.setService(event.getServiceType().getName());
-        if (event.getSeverityLabel() != null) builder.setSeverity(event.getSeverityLabel());
-        if (event.getEventTime() == null) builder.setTime(new Date());
-        event.getEventParameters().forEach(p -> builder.addParam(p.getName(), p.getValue()));
-        return builder.getEvent();
-    }
 }

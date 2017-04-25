@@ -34,6 +34,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.ws.rs.core.MediaType;
+
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -123,17 +126,15 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1", 200)); // By ID
         LOG.warn(sendRequest(GET, "/nodes/JUnit:TestMachine1", 200)); // By foreignSource/foreignId combination
 
-        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+        String ipInterface = "<ipInterface snmpPrimary=\"P\">" +
                 "<ipAddress>10.10.10.10</ipAddress>" +
                 "<hostName>TestMachine</hostName>" +
-                "<ipStatus>1</ipStatus>" +
                 "</ipInterface>";
         sendPost("/nodes/1/ipinterfaces", ipInterface, 201);
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 200));
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 200)); // By IP Address
 
-        String service = "<service source=\"P\" status=\"N\">" +
-                "<notify>Y</notify>" +
+        String service = "<service status=\"A\">" +
                 "<serviceType>" +
                 "<name>ICMP</name>" +
                 "</serviceType>" +
@@ -149,7 +150,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "<ifOperStatus>1</ifOperStatus>" +
                 "<ifSpeed>10000000</ifSpeed>" +
                 "<ifType>6</ifType>" +
-                "<netMask>255.255.255.0</netMask>" +
                 "<physAddr>001e5271136d</physAddr>" +
                 "</snmpInterface>";
         sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201);
@@ -163,7 +163,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
         assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
 
-        String category = "<categories name=\"Production\"/>";
+        String category = "<category name=\"Production\"/>";
         sendPost("/nodes/1/categories", category, 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
 
@@ -182,6 +182,72 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 404));
         LOG.warn(sendRequest(DELETE, "/nodes/1", 204));
         LOG.warn(sendRequest(GET, "/nodes/1", 404));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAllEndPointsWithJSON() throws Exception {
+        JSONObject node = new JSONObject();
+        node.put("type", "A");
+        node.put("label", "TestMachine1");
+        node.put("foreignSource", "JUnit");
+        node.put("foreignId", "TestMachine1");
+        node.put("location", "Default");
+        node.put("labelSource", "H");
+        node.put("sysContact", "The Owner");
+        node.put("sysDescription", "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386");
+        node.put("sysLocation", "Earth");
+        node.put("sysName", "TestMachine1");
+        node.put("sysObjectId", ".1.3.6.1.4.1.8072.3.2.255");
+
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
+        LOG.warn(sendRequest(GET, "/nodes", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1", 200)); // By ID
+        LOG.warn(sendRequest(GET, "/nodes/JUnit:TestMachine1", 200)); // By foreignSource/foreignId combination
+
+        JSONObject ipInterface = new JSONObject();
+        ipInterface.put("snmpPrimary", "P");
+        ipInterface.put("ipAddress", "10.10.10.10");
+        ipInterface.put("hostName", "TestMachine");
+
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces", ipInterface.toString(), 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 200)); // By IP Address
+
+        /*
+         * FIXME Doesn't work (the XML counterpart works without issues)
+         * Caused by: java.lang.IllegalArgumentException: Can not handle managed/back reference 'defaultReference':
+         * back reference type (java.util.Set) not compatible with managed type (org.opennms.netmgt.model.OnmsMonitoredService)
+         */
+        /*
+        JSONObject serviceType = new JSONObject();
+        serviceType.put("name", "ICMP");
+        JSONObject service = new JSONObject();
+        service.put("status", "A");
+        service.put("serviceType", serviceType);
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces/10.10.10.10/services", service.toString(), 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", 200)); // By Name
+        */
+
+        JSONObject snmpInterface = new JSONObject();
+        snmpInterface.put("ifIndex", 6);
+        snmpInterface.put("ifAdminStatus", 1);
+        snmpInterface.put("ifOperStatus", 1);
+        snmpInterface.put("ifDescr", "en1");
+        snmpInterface.put("ifName", "en1");
+        snmpInterface.put("ifSpeed", 10000000);
+        snmpInterface.put("ifType", 6);
+        snmpInterface.put("physAddr", "001e5271136d");
+
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/snmpinterfaces", snmpInterface.toString(), 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 200)); // By ifIndex
+
+        JSONObject category = new JSONObject();
+        category.put("name", "Production");
+        sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
+        LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
 
 }

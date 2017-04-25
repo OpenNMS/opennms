@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(EventRestServiceIT.class);
-    
+
     public EventRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -75,14 +75,17 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.populateDatabase();
     }
 
-    // TODO Need some work
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testEvents() throws Exception {
         String url = "/events";
 
-        LOG.warn(sendRequest(GET, url, parseParamData("orderBy=id"), 200));
+        LOG.warn(sendRequest(GET, url, 200));
+
+        String event = "<event><uei>uei.opennms.org/testEvent</uei></event>";
+        sendPost(url, event, 204);
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=uei==*testEvent"), 200));
     }
 
 }

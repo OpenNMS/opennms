@@ -36,6 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -116,9 +117,12 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
 
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsNode object) {
+        if (object == null) {
+            throw getException(Status.BAD_REQUEST, "Node object cannot be null");
+        }
         if (object.getLocation() == null) {
             OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
-            LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
+            LOG.debug("doCreate: Assigning new node to default location: {}", location.getLocationName());
             object.setLocation(location);
         }
         final Integer id = getDao().save(object);
@@ -157,7 +161,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
         return context.getResource(NodeSnmpInterfacesRestService.class);
     }
 
-    // Reusing v1 version, as there is no need to have a new implementation.
     @Path("{nodeCriteria}/hardwareInventory")
     public NodeHardwareInventoryRestService getHardwareInventoryResource(@Context final ResourceContext context) {
         return context.getResource(NodeHardwareInventoryRestService.class);
