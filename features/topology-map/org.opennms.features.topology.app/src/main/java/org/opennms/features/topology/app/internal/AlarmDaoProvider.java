@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.app.internal;
 
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
+import java.util.List;
+import java.util.Objects;
+
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
- * 
- * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
- * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- *
+ * Wrapper for an {@link AlarmDao} object
  */
-public class CategoryHopCriteriaFactory {
+public class AlarmDaoProvider implements AlarmProvider {
+	private AlarmDao alarmDao;
 
-	private final CategoryDao m_categoryDao;
-	private final NodeDao m_nodeDao;
-
-	public CategoryHopCriteriaFactory(CategoryDao categoryDao, NodeDao nodeDao) {
-		m_categoryDao = categoryDao;
-		m_nodeDao = nodeDao;
+	public AlarmDaoProvider(AlarmDao alarmDao) {
+		this.alarmDao = Objects.requireNonNull(alarmDao);
 	}
-	
-	public CategoryHopCriteria getCriteria(String categoryName) {
-		CategoryHopCriteria retval = new CategoryHopCriteria(categoryName, m_nodeDao, m_categoryDao);
-		return retval;
+
+	@Override
+	public List<OnmsAlarm> findMatchingAlarms(org.opennms.core.criteria.Criteria criteria) {
+		return alarmDao.findMatching(criteria);
 	}
 }
