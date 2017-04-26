@@ -1,0 +1,66 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== JmxCollector
+
+The _JmxCollector_ is used to collect performance data through via _JMX_.
+Attributes are extracted from the available _MBeans_.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.Jsr160Collector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the Jsr160Collector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                     | Required | Default value
+| `collection`           | The name of the _JMX Collection_ to use                                         | required | (none)
+| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds           | optional | `true`
+| `port`                 | JMX port. Also usedto lookup the MbeanServer configuration in `jmx-config.xml`  | optional | 1099
+| `retry`                | Number of retries                                                               | optional | 3
+| `friendlyName`         | Name of the path in which the metrics should be stored                          | optional | Value of the port, or the 'jsr160' if no port is set.
+| `factory`              | Set this to `PASSWORD-CLEAR` if credentials are required                        | optional | STANDARD
+| `protocol`             | Protocol used in the `JMX` connection string                                    | optional | rmi
+| `urlPath`              | Path used in `JMX` connection string                                            | optional | /jmxrmi
+| `rmiServerPort`        | RMI port.                                                                       | optional | 45444
+| `remoteJMX`            | Use an alternative `JMX` URL scheme                                             | optional | `false`
+|===
+
+===== JDBC Collection Configuration
+
+_JMX Collections_ are defined in the `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
+
+Here is a snippet providing a collection definition named `opennms-poller`:
+
+[source, xml]
+----
+<jmx-collection name="opennms-poller">
+    <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <mbeans>
+        <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
+            <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+        </mbean>
+    </mbeans>
+</jmx-collection>
+----
+
+Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+
+[source]
+----
+collection:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
+----
