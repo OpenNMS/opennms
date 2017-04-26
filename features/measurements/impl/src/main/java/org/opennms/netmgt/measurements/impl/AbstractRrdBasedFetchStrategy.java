@@ -72,8 +72,17 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         final Map<Source, String> rrdsBySource = Maps.newHashMap();
         
         for (final Source source : sources) {
+            final ResourceId resourceId;
+            try {
+                resourceId = ResourceId.fromString(source.getResourceId());
+            } catch (final IllegalArgumentException ex) {
+                if (relaxed) continue;
+                LOG.error("Ill-formed resource id: {}", source.getResourceId(), ex);
+                return null;
+            }
+
             // Grab the resource
-            final OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(source.getResourceId()));
+            final OnmsResource resource = m_resourceDao.getResourceById(resourceId);
             if (resource == null) {
                 if (relaxed) continue;
                 LOG.error("No resource with id: {}", source.getResourceId());
