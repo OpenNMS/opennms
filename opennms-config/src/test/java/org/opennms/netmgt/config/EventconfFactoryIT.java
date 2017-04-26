@@ -85,8 +85,8 @@ import org.springframework.util.StringUtils;
 public class EventconfFactoryIT {
     private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryIT.class);
 
-    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-    private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
+    private static final String knownUEI1="uei.opennms.org/nodes/nodeDown";
+    private static final String knownLabel1="OpenNMS-defined node event: nodeDown";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
