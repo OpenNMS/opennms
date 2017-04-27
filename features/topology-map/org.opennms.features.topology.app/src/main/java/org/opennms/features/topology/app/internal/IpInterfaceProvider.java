@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.correlation.drools;
+package org.opennms.features.topology.app.internal;
 
-import org.opennms.netmgt.xml.event.Event;
+import java.util.List;
 
-/**
- * <p>RootCause class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class RootCause extends Cause {
-    private static final long serialVersionUID = 4827846707785757651L;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
 
-    /**
-     * <p>Constructor for RootCause.</p>
-     *
-     * @param cause a {@link java.lang.Long} object.
-     * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public RootCause(final Long cause, final Event symptom) {
-        super(Type.ROOT, cause, symptom);
-    }
-
+public interface IpInterfaceProvider {
+	List<OnmsIpInterface> findMatching(Criteria criteria);
 }

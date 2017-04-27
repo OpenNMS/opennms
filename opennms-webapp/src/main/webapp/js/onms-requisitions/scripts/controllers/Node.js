@@ -167,7 +167,7 @@
     * @methodOf NodeController
     */
     $scope.goBack = function() {
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource));
     };
 
     /**
@@ -179,7 +179,7 @@
     */
     $scope.goVerticalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'true');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId) + '/vertical');
     };
 
     /**
@@ -191,7 +191,7 @@
     */
     $scope.goHorizontalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'false');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId));
     };
 
     /**

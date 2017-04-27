@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.correlation.drools;
+package org.opennms.features.topology.app.internal;
 
-import org.opennms.netmgt.xml.event.Event;
+import java.util.List;
+import java.util.Objects;
+
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 
 /**
- * <p>RootCause class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * Wrapper for an {@link IpInterfaceDao} object
  */
-public class RootCause extends Cause {
-    private static final long serialVersionUID = 4827846707785757651L;
+public class IpInterfaceDaoProvider implements IpInterfaceProvider {
+	private IpInterfaceDao ipInterfaceDao;
 
-    /**
-     * <p>Constructor for RootCause.</p>
-     *
-     * @param cause a {@link java.lang.Long} object.
-     * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    public RootCause(final Long cause, final Event symptom) {
-        super(Type.ROOT, cause, symptom);
-    }
+	public IpInterfaceDaoProvider(IpInterfaceDao ipInterfaceDao) {
+		this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
+	}
 
+	@Override
+	public List<OnmsIpInterface> findMatching(Criteria criteria) {
+		return ipInterfaceDao.findMatching(criteria);
+	}
 }

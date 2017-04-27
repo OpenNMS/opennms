@@ -22,8 +22,8 @@ Simply follow these instructions, they may vary depending on your Operating Syst
 [source, shell]
 ----
 # add OpenNMS as repository to install icmp and such
-echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list
-echo "deb-src https://debian.opennms.org stable main" >> /etc/apt/sources.list.d/opennms.list
+echo "deb http://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list
+echo "deb-src http://debian.opennms.org stable main" >> /etc/apt/sources.list.d/opennms.list
 # Add pgp key
 wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 

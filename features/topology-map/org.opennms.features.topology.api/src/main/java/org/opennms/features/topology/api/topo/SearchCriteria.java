@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
-
-import org.opennms.features.topology.app.internal.AlarmSearchProvider.AlarmSearchResult;
-import org.opennms.netmgt.dao.api.AlarmDao;
+package org.opennms.features.topology.api.topo;
 
 /**
- * This class supports creation of <IpLikeHopCriteria>.
- * 
- * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
- * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- * @author <a href=mailto:david@opennms.org>David Hustace</a>
- *
+ * This interface, is an extension of the {@link CollapsibleCriteria} interface - it allows
+ * saving {@link CollapsibleCriteria} objects to history and to load them from it afterwards
  */
-public class AlarmHopCriteriaFactory {
-
-	private final AlarmDao m_alarmDao;
-
-	public AlarmHopCriteriaFactory(AlarmDao dao) {
-		m_alarmDao = dao;
-	}
-	
+public interface SearchCriteria extends CollapsibleCriteria {
 	/**
-	 * The ipQuery value is a string representing an IP address or a valid IPLIKE query string
-	 * passed from the UI as a user selection of a <SearchResult>.
-	 * 
-	 * FIXME these should be static operations.
-	 * 
-	 * @param alarmQuery
+	 * Gets query string that was used for the generation of this criterion
 	 * @return
 	 */
-	public AlarmHopCriteria createCriteria(AlarmSearchResult result) {
-		return new AlarmHopCriteria(result, m_alarmDao);
-	}
+	String getSearchString();
 }
