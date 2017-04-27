@@ -36,6 +36,11 @@ import org.opennms.core.utils.ParameterMap;
 
 public class JmxConnectionConfigBuilder {
 
+    public static JmxConnectionConfigBuilder buildFrom(String ipAddress, Map<String, String> properties) {
+        InetAddress inetAddress = InetAddressUtils.getInetAddress(ipAddress);
+        return buildFrom(inetAddress, properties);
+    }
+
     public static JmxConnectionConfigBuilder buildFrom(InetAddress ipAddress, Map<String, String> properties) {
 
         final JmxConnectionConfigBuilder builder = new JmxConnectionConfigBuilder();
