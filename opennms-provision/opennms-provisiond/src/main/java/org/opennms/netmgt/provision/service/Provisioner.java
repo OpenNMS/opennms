@@ -34,17 +34,17 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
@@ -73,6 +73,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+
+import com.codahale.metrics.Timer;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -423,6 +425,22 @@ public class Provisioner implements SpringServiceDaemon {
 
     public ScheduledExecutorService getNodeScanExecutorService() {
         return m_scheduledExecutor;
+    }
+
+    public Map<String, List<TimerData>> getRequisitionMetrics() {
+        final SortedMap<String, Timer> requisitionTimer = m_importActivities.getRequisitionTimer();
+        final Map<String, List<TimerData>> metricMap = new HashMap<>();
+
+        for(Map.Entry<String, Timer> eachEntry : requisitionTimer.entrySet()) {
+            final String requisitionName = eachEntry.getKey().split("\\.")[0];
+            final String phaseName = eachEntry.getKey().substring(requisitionName.length() + 1);
+            metricMap.putIfAbsent(requisitionName, new ArrayList<>());
+
+            final Timer timer = eachEntry.getValue();
+            final TimerData timerData = new TimerData(phaseName, timer);
+            metricMap.get(requisitionName).add(timerData);
+        }
+        return metricMap;
     }
 
     //^ Helper functions for the schedule

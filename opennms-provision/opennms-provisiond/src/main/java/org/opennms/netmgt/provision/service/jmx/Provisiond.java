@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service.jmx;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionService;
@@ -37,11 +38,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.OpenType;
 import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularType;
 
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 import org.opennms.netmgt.provision.service.Provisioner;
+import org.opennms.netmgt.provision.service.TimerData;
 import org.opennms.netmgt.provision.service.jmx.statistics.QuartzJobStatistics;
 import org.opennms.netmgt.provision.service.jmx.statistics.ThreadPoolExecutorStatistics;
 import org.quartz.JobDetail;
@@ -120,6 +127,37 @@ public class Provisiond extends AbstractSpringContextJmxServiceDaemon<Provisione
         // convert to tabular data
         final TabularData tableData = JmxUtils.toTabularData(statistics);
         return tableData;
+    }
+
+    @Override
+    public CompositeData getRequisitionStatistics() {
+        final Map<String, List<TimerData>> requisitionMetrics = getDaemon().getRequisitionMetrics();
+        final List<String> requisitionNames = new ArrayList<>(requisitionMetrics.keySet());
+        final String[] requisitionNamesArray = requisitionNames.toArray(new String[requisitionNames.size()]);
+        final TabularType tableType = JmxUtils.createTableType(TimerData.class);
+
+        if (!requisitionMetrics.isEmpty()) {
+            final Object[] values = requisitionMetrics.values()
+                    .stream()
+                    .map(timerDataList -> JmxUtils.toTabularData(timerDataList))
+                    .toArray();
+            final OpenType[] tableTypes = new OpenType[requisitionMetrics.size()];
+            Arrays.fill(tableTypes, tableType);
+
+            try {
+                CompositeType requisitionType = new CompositeType(
+                        "RequisitionStatistics",
+                        "The statistics of the requisitions",
+                        requisitionNamesArray,
+                        requisitionNamesArray,
+                        tableTypes);
+                CompositeDataSupport data = new CompositeDataSupport(requisitionType, requisitionNamesArray, values);
+                return data;
+            } catch (OpenDataException e) {
+                // silently swallow
+            }
+        }
+        return null;
     }
 
     private ThreadPoolExecutor extractExecutor(Object object) {

@@ -30,11 +30,12 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
+import java.util.SortedMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.tasks.BatchTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -47,7 +48,17 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvid
 import org.opennms.netmgt.provision.service.operations.ImportOperation;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.RequisitionImport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * CoreImportActivities
@@ -57,25 +68,53 @@ import org.springframework.core.io.Resource;
  */
 @ActivityProvider
 public class CoreImportActivities {
+    private static class ImportActivityMetricRegistry extends MetricRegistry {
+
+        public void updateTimerNaming(Resource resource, String requisitionName, String phase) {
+            Metric metric = getMetrics().get(resource.toString());
+            if (metric != null) {
+                remove(resource.toString());
+                register(MetricRegistry.name(requisitionName, phase), metric);
+            }
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(CoreImportActivities.class);
-    
-    ProvisionService m_provisionService;
+
+    private ProvisionService m_provisionService;
+
+    private final ImportActivityMetricRegistry metricRegistry = new ImportActivityMetricRegistry();
+
+    private final LoadingCache<Resource, Timer> resourceTimerCache = CacheBuilder.newBuilder()
+            .build(new CacheLoader<Resource, Timer>() {
+                @Override
+                public Timer load(Resource resource) throws Exception {
+                    return metricRegistry.timer(resource.toString());
+                }
+            });
     
     public CoreImportActivities(final ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
 
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
-    public RequisitionImport loadSpecFile(final Resource resource) {
+    public RequisitionImport loadSpecFile(final Resource resource) throws ExecutionException {
+        Timer timer = resourceTimerCache.get(resource);
+        Timer.Context context = timer.time();
         final RequisitionImport ri = new RequisitionImport();
-
-        info("Loading requisition from resource {}", resource);
         try {
+            info("Loading requisition from resource {}", resource);
             final Requisition specFile = m_provisionService.loadRequisition(resource);
             ri.setRequisition(specFile);
             debug("Finished loading requisition.");
         } catch (final Throwable t) {
             ri.abort(t);
+        }  finally {
+            context.stop();
+            if (!ri.isAborted()) {
+                metricRegistry.updateTimerNaming(resource, ri.getRequisition().getForeignSource(), "validate");
+            }
+            metricRegistry.remove(resource.toString());
         }
 
         return ri;
@@ -87,22 +126,25 @@ public class CoreImportActivities {
             info("The import has been aborted, skipping audit phase import.");
             return null;
         }
-        
-        final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+        return time(ri, "audit", () -> {
 
-        final String foreignSource = specFile.getForeignSource();
-        final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
+            final Requisition specFile = ri.getRequisition();
 
-        final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
-        
-        opsMgr.setForeignSource(foreignSource);
-        opsMgr.auditNodes(specFile);
+            info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
 
-        debug("Finished auditing nodes.");
-        
-        return opsMgr;
+            final String foreignSource = specFile.getForeignSource();
+            final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
+
+            final ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, m_provisionService, rescanExisting);
+
+            opsMgr.setForeignSource(foreignSource);
+            opsMgr.auditNodes(specFile);
+
+            debug("Finished auditing nodes.");
+
+            return opsMgr;
+        });
     }
     
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
@@ -112,21 +154,22 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Scheduling nodes for phase {}", currentPhase);
-        
-        final Collection<ImportOperation> operations = opsMgr.getOperations();
-        
-        for(final ImportOperation op : operations) {
-            final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
+        time(ri, "scan", () -> {
+            info("Scheduling nodes for phase {}", currentPhase);
 
-            debug("Created lifecycle {} for operation {}", nodeScan, op);
-            
-            nodeScan.setAttribute("operation", op);
-            nodeScan.setAttribute("requisitionImport", ri);
-            nodeScan.trigger();
-        }
+            final Collection<ImportOperation> operations = opsMgr.getOperations();
 
+            for(final ImportOperation op : operations) {
+                final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
 
+                debug("Created lifecycle {} for operation {}", nodeScan, op);
+
+                nodeScan.setAttribute("operation", op);
+                nodeScan.setAttribute("requisitionImport", ri);
+                nodeScan.trigger();
+            }
+            return null;
+        });
     }
     
     
@@ -137,14 +180,17 @@ public class CoreImportActivities {
             return;
         }
 
-        if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
-            info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
-            operation.scan();
-    
-            info("Finished Running scan phase of {}", operation);
-        } else {
-            info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
-        }
+        time(ri, "scan", () -> {
+            if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
+                info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+                operation.scan();
+
+                info("Finished Running scan phase of {}", operation);
+            } else {
+                info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+            }
+            return null;
+        });
     }
     
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
@@ -154,9 +200,12 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Running persist phase of {}", operation);
-        operation.persist();
-        info("Finished Running persist phase of {}", operation);
+        time(ri, "persist", () -> {
+            info("Running persist phase of {}", operation);
+            operation.persist();
+            info("Finished Running persist phase of {}", operation);
+            return null;
+        });
 
     }
     
@@ -167,20 +216,23 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Running relate phase");
-        
-        final Requisition requisition = ri.getRequisition();
-        RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
-            @Override
-            public void visitNode(final OnmsNodeRequisition nodeReq) {
-                LOG.debug("Scheduling relate of node {}", nodeReq);
-                currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));
-            }
-        };
-        
-        requisition.visit(visitor);
-        
-        LOG.info("Finished Running relate phase");
+        time(ri, "relate", () -> {
+            info("Running relate phase");
+
+            final Requisition requisition = ri.getRequisition();
+            RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
+                @Override
+                public void visitNode(final OnmsNodeRequisition nodeReq) {
+                    LOG.debug("Scheduling relate of node {}", nodeReq);
+                    currentPhase.add(parentSetter(m_provisionService, nodeReq, requisition.getForeignSource()));
+                }
+            };
+
+            requisition.visit(visitor);
+
+            LOG.info("Finished Running relate phase");
+            return null;
+        });
 
     }
     
@@ -223,5 +275,35 @@ public class CoreImportActivities {
 
     protected void warn(String format, Object... args) {
         LOG.warn(format, args);
+    }
+
+    public SortedMap<String, Timer> getRequisitionTimer() {
+        return metricRegistry.getTimers();
+    }
+
+    private <T> T time(RequisitionImport ri, String phase, Callable<T> callable) {
+        Objects.requireNonNull(ri);
+        Objects.requireNonNull(phase);
+
+        try {
+            if (ri.getRequisition() != null && ri.getRequisition().getForeignSource() != null) {
+                final Timer timer = getTimer(ri.getRequisition().getForeignSource(), phase);
+                final Timer.Context context = timer.time();
+                try {
+                    return callable.call();
+                } finally {
+                    context.stop();
+                }
+            }
+            return callable.call();
+        } catch (Exception ex) {
+            throw Throwables.propagate(ex);
+        }
+    }
+
+    private Timer getTimer(String requisitionName, String phase) {
+        final String name = MetricRegistry.name(requisitionName, phase);
+        final Timer timer = metricRegistry.timer(name);
+        return timer;
     }
 }

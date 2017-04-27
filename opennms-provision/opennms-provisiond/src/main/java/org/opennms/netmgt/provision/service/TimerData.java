@@ -26,26 +26,53 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.jmx;
+package org.opennms.netmgt.provision.service;
 
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.TabularData;
+import org.opennms.netmgt.provision.service.jmx.annotation.TableId;
 
-import org.opennms.netmgt.daemon.BaseOnmsMBean;
+import com.codahale.metrics.Timer;
 
-public interface ProvisiondMBean extends BaseOnmsMBean {
+public class TimerData {
 
-    CompositeData getRequisitionImportScheduleMetaData();
+    @TableId
+    private final String name;
+    private final long count;
+    private final double fifteenMinuteRate;
+    private final double fiveMinuteRate;
+    private final double meanRate;
+    private final double oneMinuteRate;
 
-    TabularData getRequisitionImportScheduleDetails();
+    public TimerData(String name, Timer timer) {
+        this.name = name;
+        count = timer.getCount();
+        fifteenMinuteRate = timer.getFifteenMinuteRate();
+        fiveMinuteRate = timer.getFiveMinuteRate();
+        meanRate = timer.getMeanRate();
+        oneMinuteRate = timer.getOneMinuteRate();
+    }
 
-    TabularData getNodeScanSchedule();
+    public String getName() {
+        return name;
+    }
 
-    long getNodeScanScheduleLength();
+    public long getCount() {
+        return count;
+    }
 
-    String getDefaultThreadPoolExecutor();
+    public double getFifteenMinuteRate() {
+        return fifteenMinuteRate;
+    }
 
-    TabularData getThreadPoolExecutorStatistics();
+    public double getFiveMinuteRate() {
+        return fiveMinuteRate;
+    }
 
-    CompositeData getRequisitionStatistics();
+    public double getMeanRate() {
+        return meanRate;
+    }
+
+    public double getOneMinuteRate() {
+        return oneMinuteRate;
+    }
 }
+
