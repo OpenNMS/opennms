@@ -67,7 +67,7 @@ public class GenericServiceDetectorFactory<T extends ServiceDetector> implements
 
     @Override
     public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
-        return new DetectRequestImpl(address, port);
+        return new DetectRequestImpl(address, port, attributes);
     }
 
     @Override
