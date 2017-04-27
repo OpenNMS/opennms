@@ -1065,16 +1065,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         String fragment = event.getUriFragment();
         m_historyManager.applyHistory(fragment, m_graphContainer);
 
-        // This is a hack to fix issue SPC-796 so that the display states of the
-        // TopologyComponent and NoContentAvailableWindow are reset correctly
-        // after a history operation
-        graphChanged(m_graphContainer);
-
-        //Manually trigger the searchbox to refresh
-        m_searchBox.graphChanged(m_graphContainer);
-
-        // Manually trigger the breadcrumbs to refresh
-        m_breadcrumbComponent.graphChanged(m_graphContainer);
+        m_graphContainer.redoLayout();
 
         m_settingFragment--;
     }

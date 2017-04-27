@@ -3,10 +3,18 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
+    <!--
+     Usually the availability should be mandatory.
+     However the bundle "app" requires the HistoryManager created here, but it exports the ServiceLocator implementation.
+     Therefore both bundles would not start because of a circle dependency.
+     If availability is optional the references can be resolved and both bundles will start up.
+     -->
+    <reference id="serviceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" availability="optional"/>
+
     <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.BundleContextHistoryManager">
       <argument ref="blueprintBundleContext"/>
+      <argument ref="serviceLocator"/>
     </bean>
-
     <service interface="org.opennms.features.topology.api.HistoryManager" ref="historyManager"/>
 
     <reference-list interface="org.opennms.features.topology.api.HistoryOperation" availability="optional">

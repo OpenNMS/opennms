@@ -57,44 +57,39 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
 
-    <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
+    <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
+            <argument ref="ipInterfaceProvider"/>
+        </bean>
+    </service>
+    <bean id="ipInterfaceProvider" class="org.opennms.features.topology.app.internal.IpInterfaceDaoProvider">
+        <argument ref="ipInterfaceDao"/>
+    </bean>
+
+    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.BundleContextServiceLocator" >
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <service ref="bundleContextServiceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" />
+
+    <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
+            <argument ref="categoryProvider"/>
+            <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
+        </bean>
+    </service>
+    <bean id="categoryProvider" class="org.opennms.features.topology.app.internal.CategoryDaoProvider">
         <argument ref="categoryDao"/>
         <argument ref="nodeDao"/>
     </bean>
 
-    <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider">
-        <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
-            <argument ref="categoryDao"/>
-            <argument ref="nodeDao"/>
-            <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
+    <service id="alarmSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.AlarmSearchProvider" >
+            <argument ref="alarmProvider"/>
         </bean>
     </service>
-    
-    <bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation" >
-        <property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory" />
-    </bean>
-    
-    <service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
-
-    <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
-        <argument ref="ipInterfaceDao"/>
-    </bean>
-    
-    <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
-        <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
-            <argument ref="ipInterfaceDao" />
-        </bean>
-    </service>
-    
-    <bean id="AlarmHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.AlarmHopCriteriaFactory">
+    <bean id="alarmProvider" class="org.opennms.features.topology.app.internal.AlarmDaoProvider">
         <argument ref="alarmDao"/>
     </bean>
-    
-    <service id="AlarmSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
-        <bean class="org.opennms.features.topology.app.internal.AlarmSearchProvider" >
-            <argument ref="alarmDao" />
-        </bean>
-    </service>
 
     <bean id="topologyUIFactory" class="org.opennms.features.topology.app.internal.TopologyUIFactory" >
         <!-- Blueprint container bean -->

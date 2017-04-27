@@ -64,9 +64,7 @@ public abstract class SimpleSearchProvider extends AbstractSearchProvider {
 
         // Build search results from the matching vertices
         final List<SearchResult> results = queryVertices(searchQuery, container).stream().map(v -> {
-            SearchResult searchResult = new SearchResult(v);
-            searchResult.setCollapsed(false);
-            searchResult.setCollapsible(true);
+            SearchResult searchResult = new SearchResult(v, true, false);
             return searchResult;
         }).collect(Collectors.toList());
 

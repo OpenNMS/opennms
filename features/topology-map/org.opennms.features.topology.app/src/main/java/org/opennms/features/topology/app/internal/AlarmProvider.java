@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.app.internal;
 
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import java.util.List;
 
-/**
- * This class supports creation of <IpLikeHopCriteria>.
- * 
- * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
- * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- * @author <a href=mailto:david@opennms.org>David Hustace</a>
- *
- */
-public class IpLikeHopCriteriaFactory {
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.model.OnmsAlarm;
 
-	private final IpInterfaceDao m_ipInterfaceDao;
-
-	public IpLikeHopCriteriaFactory(IpInterfaceDao dao) {
-		m_ipInterfaceDao = dao;
-	}
-	
-	/**
-	 * The ipQuery value is a string representing an IP address or a valid IPLIKE query string
-	 * passed from the UI as a user selection of a <SearchResult>.
-	 * 
-	 * FIXME these should be static operations.
-	 * 
-	 * @param ipQuery
-	 * @return
-	 */
-	public IpLikeHopCriteria createCriteria(String ipQuery) {
-		IpLikeHopCriteria retval = new IpLikeHopCriteria(ipQuery, m_ipInterfaceDao);
-		return retval;
-	}
+public interface AlarmProvider {
+	List<OnmsAlarm> findMatchingAlarms(Criteria criteria);
 }
