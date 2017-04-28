@@ -101,6 +101,9 @@ public class CoreImportActivities {
 
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public RequisitionImport loadSpecFile(final Resource resource) throws ExecutionException {
+        // To time the validate phase correctly, a timer for each resource is cached, as the requisition name is not
+        // yet known. As soon as the validate phase is successful the timer is re-registered under the now
+        // known requisition name
         Timer timer = resourceTimerCache.get(resource);
         Timer.Context context = timer.time();
         final RequisitionImport ri = new RequisitionImport();
