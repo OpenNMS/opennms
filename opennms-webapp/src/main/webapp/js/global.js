@@ -17,6 +17,7 @@ if (typeof requirejs === "function") {
   requirejs.config({
     baseUrl: 'lib',
     paths: {
+      c3: 'c3/c3',
       d3: 'd3/d3.min',
       backshift: '../js/backshift.onms.min',
       geomap: '../geomap/js/geomap',
