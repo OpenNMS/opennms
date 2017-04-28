@@ -64,7 +64,7 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
 
     public static final String RPC_MODULE_ID = "SNMP";
 
-    private static final ExecutorService REAPER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "SNMP-Proxy-RPC-Session-Reaper");
