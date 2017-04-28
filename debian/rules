@@ -105,10 +105,11 @@ install: build
 	##
 	## Setup the provision adapter packages
 	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,reverse-dns,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/var/lib/opennms/etc-pristine
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
