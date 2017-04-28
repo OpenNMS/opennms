@@ -157,13 +157,21 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(ipaddrBy));
         enterText(ipaddrBy, NODE_IPADDR);
 
-        // Add a service to the IP Interface
+        // Add the HTTP-8980 service to the IP Interface
         findElementById("add-service").click();
-        final By xpath = By.cssSelector("input[name='serviceName']");
+        By xpath = By.cssSelector("input[name='serviceName']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(xpath));
         Thread.sleep(100);
         enterText(xpath, "HTTP-89");
         findElementByXpath("//a[@title='HTTP-8980']/strong").click();
+
+        // Add the ICMP service to the IP Interface
+        findElementById("add-service").click();
+        xpath = By.cssSelector("input[name='serviceName']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(xpath));
+        Thread.sleep(100);
+        enterText(xpath, "ICM");
+        findElementByXpath("//a[@title='ICMP']/strong").click();
 
         // Save the IP interface
         clickId("save-interface", false);
