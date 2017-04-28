@@ -66,7 +66,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="ipInterfaceDao"/>
     </bean>
 
-    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.BundleContextServiceLocator" >
+    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.service.BundleContextServiceLocator">
         <argument ref="blueprintBundleContext" />
     </bean>
     <service ref="bundleContextServiceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" />
@@ -133,11 +133,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
-
-    <!-- ServiceLocator -->
-    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.service.BundleContextServiceLocator" >
-        <argument ref="blueprintBundleContext" />
-    </bean>
 
     <!-- Topology Service -->
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
