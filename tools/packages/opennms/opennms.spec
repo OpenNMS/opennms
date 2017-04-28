@@ -306,7 +306,7 @@ Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
-%description plugin-provisioning-dns
+%description plugin-provisioning-reverse-dns
 The Reverse DNS provisioning adapter allows for updating the hostname on an
 interface based on its reverse DNS lookup.
 
