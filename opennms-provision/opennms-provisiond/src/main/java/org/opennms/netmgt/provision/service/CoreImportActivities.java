@@ -71,10 +71,12 @@ public class CoreImportActivities {
     private static class ImportActivityMetricRegistry extends MetricRegistry {
 
         public void updateTimerNaming(Resource resource, String requisitionName, String phase) {
-            Metric metric = getMetrics().get(resource.toString());
-            if (metric != null) {
-                remove(resource.toString());
-                register(MetricRegistry.name(requisitionName, phase), metric);
+            final String resourceName = resource.toString();
+            final String metricName = MetricRegistry.name(requisitionName, phase);
+            final Metric metric = getMetrics().get(resourceName);
+            if (metric != null && !getNames().contains(metricName)) {
+                remove(resourceName);
+                register(metricName, metric);
             }
         }
     }
