@@ -84,9 +84,9 @@ import io.searchbox.core.SearchResult;
  * @author Seth
  * @author jwhite
  */
-public abstract class AbstractSyslogTest {
+public abstract class AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractSyslogTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSyslogTestCase.class);
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
@@ -118,18 +118,18 @@ public abstract class AbstractSyslogTest {
                 .kafka();
         builder.withOpenNMSEnvironment()
                 // Set logging to INFO level
-                .addFile(AbstractSyslogTest.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
-                .addFile(AbstractSyslogTest.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
-                .addFile(AbstractSyslogTest.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
                 // Disable Alarmd, enable Syslogd
-                .addFile(AbstractSyslogTest.class.getResource("/service-configuration-disable-alarmd.xml"), "etc/service-configuration.xml")
-                .addFile(AbstractSyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
-                .addFile(AbstractSyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/service-configuration-disable-alarmd.xml"), "etc/service-configuration.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
+                .addFile(AbstractSyslogTestCase.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
                 // Switch sink impl to Kafka using opennms-properties.d file
-                .addFile(AbstractSyslogTest.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
+                .addFile(AbstractSyslogTestCase.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
         builder.withMinionEnvironment()
                 // Switch sink impl to Kafka using features.boot file
-                .addFile(AbstractSyslogTest.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
+                .addFile(AbstractSyslogTestCase.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
         OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
         return builder;
     }

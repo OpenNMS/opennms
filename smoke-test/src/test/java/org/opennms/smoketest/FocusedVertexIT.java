@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class FocusedVertexTest {
+public class FocusedVertexIT {
 
     private TopologyIT.TopologyUIPage topologyUIPage;
 

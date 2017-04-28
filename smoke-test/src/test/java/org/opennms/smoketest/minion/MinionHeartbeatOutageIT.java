@@ -75,9 +75,9 @@ import com.spotify.docker.client.exceptions.DockerException;
  * 
  * @author Seth
  */
-public class MinionHeartbeatOutageTest {
+public class MinionHeartbeatOutageIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MinionHeartbeatOutageKafkaTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MinionHeartbeatOutageKafkaIT.class);
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();

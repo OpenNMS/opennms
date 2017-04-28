@@ -53,9 +53,9 @@ import com.google.common.util.concurrent.RateLimiter;
  * 
  * @author Seth
  */
-public class SyslogKafkaElasticsearch2Test extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch2IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch2Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch2IT.class);
 
     @Override
     protected TestEnvironmentBuilder getEnvironmentBuilder() {

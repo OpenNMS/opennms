@@ -60,9 +60,9 @@ import com.google.common.collect.ImmutableList;
  *
  * @author fooker
  */
-public class SyslogOverlappingIpAddressTest extends AbstractSyslogTest {
+public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogOverlappingIpAddressTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogOverlappingIpAddressIT.class);
 
     /**
      * Override this method to customize the test environment.

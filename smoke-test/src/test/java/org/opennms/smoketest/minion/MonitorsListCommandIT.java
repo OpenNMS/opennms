@@ -55,9 +55,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
-public class MonitorsListCommandTest {
+public class MonitorsListCommandIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandIT.class);
 
     private static TestEnvironment m_testEnvironment;
 

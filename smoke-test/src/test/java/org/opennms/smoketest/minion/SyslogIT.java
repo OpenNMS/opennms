@@ -59,7 +59,7 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
  * @author Seth
  * @author jwhite
  */
-public class SyslogTest extends AbstractSyslogTest {
+public class SyslogIT extends AbstractSyslogTestCase {
 
     @Test
     public void canReceiveSyslogMessages() throws Exception {

@@ -66,7 +66,7 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  *
  * @author jwhite
  */
-public class DiscoveryTest {
+public class DiscoveryIT {
     private static TestEnvironment minionSystem;
 
     @ClassRule

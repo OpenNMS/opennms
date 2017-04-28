@@ -61,9 +61,9 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Seth
  */
 @Deprecated
-public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch1IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch1Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch1IT.class);
 
     /**
      * Start up a legacy Elasticsearch 1.0 server that the forwarder can
