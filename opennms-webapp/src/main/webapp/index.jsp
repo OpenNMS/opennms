@@ -37,38 +37,14 @@
 </jsp:include>
 
 <div class="row">
-	<!-- Left Column -->
-	<div class="col-md-3" id="index-contentleft">
-		<!-- Problems box -->
-		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
-           if (Boolean.parseBoolean(showNodesWithProblems)) { %>
-		<jsp:include page="/alarm/summary-box.htm" flush="false" />
-        <% } %>
-		<!-- Services down box -->
-		<% String showNodesWithOutages = System.getProperty("opennms.nodesWithOutages.show", "true");
-           if (Boolean.parseBoolean(showNodesWithOutages)) { %>
-		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
-        <% } %>
-		<!-- Business Services box -->
-		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
-			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
-		<jsp:include page="/bsm/summary-box.htm" flush="false" />
-		<% } %>
-		<!-- Applications box -->
-		<% String showApplicationsProblems = System.getProperty("opennms.applicationsWithProblems.show", "true");
-			if (Boolean.parseBoolean(showApplicationsProblems)) { %>
-		<jsp:include page="/application/summary-box.htm" flush="false" />
-		<% } %>
-	</div>
-
 	<!-- Middle Column -->
-	<div class="col-md-6" id="index-contentmiddle">
+	<div class="col-md-9" id="index-contentmiddle">
 		<%
 			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl",  "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>
-			<jsp:include page="<%=centerUrlItem%>" flush="false" />
+		<jsp:include page="<%=centerUrlItem%>" flush="false" />
 		<%
 			}
 		%>

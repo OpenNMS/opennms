@@ -74,6 +74,7 @@ public class ApplicationBoxController extends AbstractController implements Init
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final int numberOfRows = Integer.getInteger("opennms.applicationsWithProblems.count", DEFAULT_ROW_COUNT);
+        final boolean all = "true".equalsIgnoreCase(request.getParameter("all"));
 
         // Applications do not have a alarm mapping, so we group all alarms by node id, service type and ip address
         // as those define the status of the application
@@ -102,9 +103,11 @@ public class ApplicationBoxController extends AbstractController implements Init
         }
 
         // Define if there is a "more"
-        boolean more = summaryList.size() - numberOfRows > 0;
-        if (summaryList.size() > numberOfRows) {
-            summaryList = summaryList.subList(0, numberOfRows);
+        boolean more = !all && summaryList.size() - numberOfRows > 0;
+        if (!all) {
+            if (summaryList.size() > numberOfRows) {
+                summaryList = summaryList.subList(0, numberOfRows);
+            }
         }
 
         // Sort

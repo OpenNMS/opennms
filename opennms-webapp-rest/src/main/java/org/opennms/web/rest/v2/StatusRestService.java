@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,18 +52,14 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.web.rest.v2.model.ApplicationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("statusBoxRestService")
-@Path("status-box")
+@Path("status")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-public class StatusBoxRestService {
-
-    public static class StatusSummaryDTO {
-
-    }
-
+public class StatusRestService {
 
     public static class ApplicationSummary {
         private OnmsApplication application;
@@ -100,7 +96,7 @@ public class StatusBoxRestService {
     private ApplicationDao applicationDao;
 
     @GET
-    @Path("/nodes")
+    @Path("/summary/nodes")
     public List<Object[]> getNodeStatus() {
         final List<AlarmSummary> currentNodeAlarmSummaries = alarmDao.getNodeAlarmSummaries();
         final Map<OnmsSeverity, Long> severityMap = currentNodeAlarmSummaries.stream().collect(
@@ -115,7 +111,7 @@ public class StatusBoxRestService {
     }
 
     @GET
-    @Path("/applications")
+    @Path("/summary/applications")
     public List<Object[]> getApplicationStatus() {
         // Applications do not have a alarm mapping, so we group all alarms by node id, service type and ip address
         // as those define the status of the application
@@ -154,7 +150,7 @@ public class StatusBoxRestService {
     }
 
     @GET
-    @Path("/business-services")
+    @Path("/summary/business-services")
     public List<Object[]> getBusinessServiceStatus() {
         final Map<OnmsSeverity, Long> severityMap = businessServiceManager.getAllBusinessServices()
                 .stream()
@@ -177,7 +173,7 @@ public class StatusBoxRestService {
     }
 
     @GET
-    @Path("/outages")
+    @Path("/summary/outages")
     public List<Object[]> getOutageStatus() {
         long outageCount = outageDao.countOutagesByNode();
         long normalCount = nodeDao.countAll() - outageCount;
@@ -192,5 +188,11 @@ public class StatusBoxRestService {
                 .sorted(Comparator.comparing(Map.Entry::getKey))
                 .map(e -> new Object[]{e.getKey().getLabel(), e.getValue()})
                 .collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/applications")
+    public List<ApplicationDTO> getApplications() {
+
     }
 }

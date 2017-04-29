@@ -33,10 +33,21 @@
 
 <link href="/opennms/lib/c3/c3.css" rel="stylesheet" type="text/css">
 <style>
-    .c3 {
-        float: left;
+
+    #chart-content {
+        display: flex; /* Magic begins */
+        overflow: hidden;
     }
-    .c3-chart-arc path {
+    #chart-content > .c3 {
+        flex: 1; /* Distribute the width equally */
+        text-align: center;
+        margin-left: 5px;
+    }
+    #chart-content > .c3:first-child {
+        margin-left: 0;
+    }
+
+    .c3 .c3-chart-arc path {
         stroke-width: 0px;
     }
 </style>
@@ -46,16 +57,8 @@
         <h3 class="panel-title">Status Overview</h3>
     </div>
     <div class="panel-body">
-        <div id="nodeProblemChart" class="status-box" data-url="/opennms/rest/status-box/nodes" data-title="Alarms">
-        </div>
+        <div id="chart-content">
 
-        <div id="outageProblemChart" class="status-box" data-url="/opennms/rest/status-box/outages" data-title="Outages">
-        </div>
-
-        <div id="applicationProblemChart" class="status-box" data-url="/opennms/rest/status-box/applications" data-title="Applications">
-        </div>
-
-        <div id="businessServiceProblemChart" class="status-box" data-url="/opennms/rest/status-box/business-services" data-title="Business Services">
         </div>
     </div>
 </div>
@@ -63,63 +66,147 @@
 <script type="application/javascript">
 
     require(["d3", "c3", "jquery"], function(d3, c3, $) {
-        $("document").ready(function() {
-            $(".status-box").each(function() {
+
+        var chartMapping = [];
+
+        var severityIds = {
+            'Normal': 3,
+            'Warning': 4,
+            'Minor': 5,
+            'Major': 6,
+            'Critical': 7
+        };
+
+        var loadChartData = function(graph) {
+            $.getJSON(graph.url, function (data) {
+                chartMapping[graph.id].unload();
+                chartMapping[graph.id].load({columns: data});
+
+                var sum = 0;
+                for (var i=0; i<data.length; i++) {
+                    sum += data[i][1];
+                }
+                if (sum == 0) {
+                    $("#" + graph.id).hide();
+                } else {
+                    $("#" + graph.id).show();
+                }
+            });
+        };
+
+        var render = function(options) {
+            var graphs = options.graphs;
+            if (graphs === undefined || graphs === null || graphs.length == 0) {
+                return;
+            }
+            if (options.parentContainer === undefined || graphs.parentContainer === null) {
+                return;
+            }
+            if ($(options.parentContainer) === undefined) {
+                return;
+            }
+
+            for (var i=0; i < graphs.length; i++) {
                 // Gather options to draw graph
-                var el = $(this);
-                var def = {
-                    'id': el.attr("id"),
-                    'url': el.data("url"),
-                    'title': el.data("title"),
-                };
+                var graph = graphs[i];
 
                 // Skip the entry when any of the required fields are missing
-                if (def.id === undefined || def.id === null || def.id === "") {
+                if (graph.id === undefined || graph.id === null || graph.id === "") {
                     return;
                 }
-                if (def.url === undefined || def.url === null || def.url === "") {
+                if (graph.url === undefined || graph.url === null || graph.url === "") {
                     return;
                 }
 
-                // Generate graph
-                var chart = c3.generate({
-                    bindto: "#" + def.id,
-                    size: {
-                        width: 250,
-                        height: 250
-                    },
-                    data: {
-                        order: null,
-                        columns: [],
-                        colors: {
-                            'Normal': '#336600',
-                            'Warning': '#ffcc00',
-                            'Minor': '#ff9900',
-                            'Major': '#ff3300',
-                            'Critical': '#cc0000'
+                // create container for graphif it does not exist yet
+                if ($("#" + graph.id).length == 0) {
+                    $(options.parentContainer).append(
+                        $("<div>").attr({
+                            id: graph.id
+                        }));
+                    $("#" + graph.id).hide();
+
+                    // Generate graph
+                    var chart = c3.generate({
+                        bindto: "#" + graph.id,
+                        size: {
+                            width: 250,
+                            height: 250
                         },
-                        type : 'donut',
-                    },
-                    donut: {
-                        title: def.title,
-                        label: {
-                            format: function (value, id, ratio) {
-                                return value;
+                        data: {
+                            order: null,
+                            columns: [],
+                            colors: {
+                                'Normal': '#336600',
+                                'Warning': '#ffcc00',
+                                'Minor': '#ff9900',
+                                'Major': '#ff3300',
+                                'Critical': '#cc0000'
+                            },
+                            type : 'donut',
+                            onclick: graph.onclick
+                        },
+                        donut: {
+                            title: graph.title,
+                            label: {
+                                format: function(value, id, ratio) {
+                                    return value;
+                                }
                             }
                         }
-                    }
-                });
-
-                // when ready load data and populate graph
-                $("#" + def.id).ready(function () {
-                    var url = def.url;
-                    $.getJSON(url, function (data) {
-                        chart.unload();
-                        chart.load({columns: data});
                     });
-                });
-            });
+                    chartMapping[graph.id] = chart;
+                }
+
+                // load data and populate graph
+                loadChartData(graph);
+            };
+        };
+
+        $("document").ready(function() {
+            render({
+                parentContainer: '#chart-content',
+                graphs: [
+                    {
+                        id: "nodeProblemChart",
+                        title: "Alarms",
+                        url: "/opennms/rest/status-box/nodes",
+                        onclick: function(e) {
+                            window.location = "alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=severity%3D" + severityIds[e.id];
+                        }
+                    },
+                    {
+                        id: "outageProblemChart",
+                        title: "Outages",
+                        url: "/opennms/rest/status-box/outages",
+                        onclick: function(e) {
+                            if (e.id === "Normal") {
+                                window.location = "outage/list.htm?outtype=resolved";
+                            } else {
+                                window.location = "outage/list.htm?outtype=current";
+                            }
+                        }
+                    },
+                    {
+                        id: "applicationProblemChart",
+                        title: "Applications",
+                        url: "/opennms/rest/status-box/applications",
+                        onclick: function(e) {
+                            window.location = "application/summary-box.htm"
+                        }
+                    },
+                    {
+                        id: "businessServiceProblemChart",
+                        title: "Business Services",
+                        url: "/opennms/rest/status-box/business-services",
+                        onclick: function(e) {
+                            window.location = "bsm/summary-box.htm"
+                        }
+                    }
+                ]
+            })
         });
+
     });
 
 </script>
