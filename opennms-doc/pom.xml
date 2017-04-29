@@ -85,7 +85,8 @@
                             <backend>html5</backend>
                             <doctype>book</doctype>
                             <attributes>
-                                <stylesheet>../../../asciidoctor-default.css</stylesheet>
+                                <!--<stylesheet>../../../asciidoctor-default.css</stylesheet>-->
+                                <stylesheet>../../../opennms-horizon.css</stylesheet>
                             </attributes>
                         </configuration>
                     </execution>
