@@ -47,8 +47,8 @@
             $log.debug('ApplicationsListCtrl initializing...');
 
             // Set the default sort and set it on $scope.$parent.query
-            // $scope.$parent.defaults.orderBy = 'locationName';
-            // $scope.$parent.query.orderBy = 'locationName';
+            $scope.$parent.defaults.orderBy = 'id';
+            $scope.$parent.query.orderBy = 'id';
 
             // $scope.newItem = {};
 

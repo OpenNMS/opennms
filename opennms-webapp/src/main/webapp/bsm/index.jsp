@@ -29,7 +29,6 @@
 
 --%>
 
-<
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
     <jsp:param name="title" value="Application List" />
     <jsp:param name="headTitle" value="Application List" />
@@ -38,9 +37,9 @@
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-application.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-bsm.js"></script>' />
 </jsp:include>
 
-<ng-include src="'application/main.html'"></ng-include>
+<ng-include src="'bsm/main.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

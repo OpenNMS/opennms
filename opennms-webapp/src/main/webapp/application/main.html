@@ -10,7 +10,7 @@
                         <label>Add Filter:</label>
                         <form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
                             <div class="form-group">
-                                <select class="form-control" ng-model="clause.property" ng-init="clause.property = 'locationName'">
+                                <select class="form-control" ng-model="clause.property" ng-init="clause.property = 'severity'">
                                     <option value="severity">Severity</option>
                                 </select>
                                 <select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
@@ -21,7 +21,13 @@
                                     <option value="GT">&gt;</option>
                                     <option value="GE">&gt;=</option>
                                 </select>
-                                <input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value"/>
+                                <select name="clause-value-severity" class="form-control" ng-model="clause.value">
+                                    <option value="normal">Normal</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="minor">Minor</option>
+                                    <option value="major">Major</option>
+                                    <option value="critical">Critical</option>
+                                </select>
                             </div>
                             <br/><br/>
                             <button class="btn btn-default" type="submit">Submit</button>
@@ -35,9 +41,9 @@
         <div class="well well-sm">
 		<span class="h4" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
-			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			<a onClick="$('#filterModal').modal()"><i class="fa fa-filter fa-lg"></i></a>
 			&nbsp;
-			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+			<a ng-click="clearSearch()"><i class="fa fa-eraser fa-lg"></i></a>
 			&nbsp;
 		</span>
             <span ng-hide="query.searchClauses.length == 0">
