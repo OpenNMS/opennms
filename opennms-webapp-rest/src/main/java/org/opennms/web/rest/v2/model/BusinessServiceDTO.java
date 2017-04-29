@@ -30,16 +30,16 @@ package org.opennms.web.rest.v2.model;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
-public class ApplicationDTO {
-    private Integer id;
+public class BusinessServiceDTO {
+    private Long id;
     private String name;
     private OnmsSeverity status;
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 

@@ -28,34 +28,15 @@
 
 package org.opennms.web.rest.v2.model;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+public class SeveritySearchRequest {
 
-public class ApplicationDTO {
-    private Integer id;
-    private String name;
-    private OnmsSeverity status;
+    private String severity;
 
-    public void setId(Integer id) {
-        this.id = id;
+    public String getSeverity() {
+        return severity;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setStatus(OnmsSeverity status) {
-        this.status = status;
-    }
-
-    public OnmsSeverity getStatus() {
-        return status;
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 }

@@ -292,7 +292,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		}
 	}
 
-	private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+	public static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
 		applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
 	}
 

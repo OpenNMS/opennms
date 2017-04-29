@@ -1,5 +1,5 @@
 <div ng-controller="ListCtrl">
-    <div ng-controller="MonitoringLocationsListCtrl">
+    <div ng-controller="ApplicationsListCtrl">
 
         <!-- Modal form for adding filters -->
         <div id="filterModal" class="modal fade" tabindex="-1">
@@ -11,12 +11,7 @@
                         <form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
                             <div class="form-group">
                                 <select class="form-control" ng-model="clause.property" ng-init="clause.property = 'locationName'">
-                                    <option value="locationName">Location Name</option>
-                                    <option value="monitoringArea">Monitoring Area</option>
-                                    <option value="geolocation">Geolocation</option>
-                                    <option value="latitude">Latitude</option>
-                                    <option value="longitude">Longitude</option>
-                                    <option value="priority">Priority</option>
+                                    <option value="severity">Severity</option>
                                 </select>
                                 <select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
                                     <option value="EQ">=</option>
@@ -26,10 +21,7 @@
                                     <option value="GT">&gt;</option>
                                     <option value="GE">&gt;=</option>
                                 </select>
-                                <input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value" ng-if="clause.property !== 'latitude' &amp;&amp; clause.property !== 'longitude' &amp;&amp; clause.property !== 'priority'" />
-                                <input name="clause-value-number"    class="form-control" type="number" ng-model="clause.value" min="{{clause.property === 'priority' ? '0' : ''}}" ng-if="clause.property === 'priority'" />
-                                <input name="clause-value-latitude"  class="form-control" type="number" step="any" ng-model="clause.value" min="{{clause.property === 'latitude' ? '-90.0' : ''}}" max="{{clause.property === 'latitude' ? '90.0' : ''}}" ng-if="clause.property === 'latitude'" />
-                                <input name="clause-value-longitude" class="form-control" type="number" step="any" ng-model="clause.value" min="-180.0" max="180.0" ng-if="clause.property === 'longitude'" />
+                                <input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value"/>
                             </div>
                             <br/><br/>
                             <button class="btn btn-default" type="submit">Submit</button>
@@ -39,86 +31,11 @@
             </div>
         </div>
 
-        <!-- Modal form for adding a new location -->
-        <div id="addLocationModal" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <!-- Filter form -->
-                        <!-- TODO: Add client-side validation -->
-                        <h3>Add a new Monitoring Location</h3>
-                        <form onSubmit="$('#addLocationModal').modal('hide')" ng-submit="update(newItem)">
-                            <div class="form-group">
-                                <label for="locationName">Location Name</label>
-                                <input class="form-control" type="text" ng-model="newItem['location-name']" required/>
-                            </div>
-                            <div class="form-group">
-                                <label for="monitoringArea">Monitoring Area</label>
-                                <input class="form-control" type="text" ng-model="newItem['monitoring-area']" required/>
-                            </div>
-                            <div class="form-group">
-                                <label for="geolocation">Geolocation</label>
-                                <input class="form-control" type="text" ng-model="newItem.geolocation"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="latitude">Latitude</label>
-                                <input class="form-control" type="number" step="any" ng-model="newItem.latitude" min="-90.0" max="90.0"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="longitude">Longitude</label>
-                                <input class="form-control" type="number" step="any" ng-model="newItem.longitude" min="-180.0" max="180.0"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="priority">Priority</label>
-                                <input class="form-control" type="number" ng-model="newItem.priority"/>
-                            </div>
-                            <button class="btn btn-default" type="submit">Submit</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal help window -->
-        <div id="helpModal" class="modal fade" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <!-- Filter form -->
-                        <h3>Help</h3>
-
-                        <h4>Filtering</h4>
-                        <p>
-                            Click on the <i class="fa fa-search-plus"></i> icon to filter the list. You can match a portion of a value by using
-                            the * character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
-                        </p>
-
-                        <h4>Filter by Example</h4>
-                        <p>
-                            You can click on the <i class="fa fa-plus-square-o"></i> icon next to a value to only show rows that contain that value.
-                            If you click on the <i class="fa fa-minus-square-o"></i> icon, it will remove rows with that value from the results.
-                            For timestamp values, clicking on the <i class="fa fa-toggle-left"></i> icon will show timestamps newer than the specified
-                            value and clicking on the <i class="fa fa-toggle-right"></i> icon will show timestamps older than the value.
-                        </p>
-
-                        <h4>Sorting</h4>
-                        <p>Click on a column header to sort by that column. Click the same column again to reverse the sort order.</p>
-
-                        <h4>Items per Page</h4>
-                        <p>You can change the number of items per page by entering a numeric value in the <i class="fa fa-th-list"></i> box.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
         <!-- Filter list -->
         <div class="well well-sm">
 		<span class="h4" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
 			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
-			&nbsp;
-			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
 			&nbsp;
 			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
 			&nbsp;
@@ -206,101 +123,49 @@
         <br/>
 
         <div class="panel panel-default">
-            <!-- The style is here to override a weird Chrome user agent stylesheet issue -->
-            <table class="table table-bordered table-striped" style="font-size:100%">
+            <table class="table table-bordered severity">
                 <tbody>
                 <tr>
-                    <th class="col-sm-2 text-nowrap">
-                        <a ng-click="changeOrderBy('locationName')">Location Name</a>
-                        <i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    <th class="col-md-1 text-nowrap">
+                        <a ng-click="changeOrderBy('id')">ID</a>
+                        <i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-sm-1 text-nowrap">
-                        <a ng-click="changeOrderBy('monitoringArea')">Monitoring Area</a>
-                        <i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    <th class="col-md-3 text-nowrap">
+                        <a ng-click="changeOrderBy('severity')">Severity</a>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-sm-2 text-nowrap">
-                        <a ng-click="changeOrderBy('geolocation')">Geolocation</a>
-                        <i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    <th class="col-md-6 text-nowrap">
+                        <a ng-click="changeOrderBy('name')">Name</a>
+                        <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-sm-1 text-nowrap">
-                        <a ng-click="changeOrderBy('latitude')">Latitude</a>
-                        <i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                    </th>
-                    <th class="col-sm-1 text-nowrap">
-                        <a ng-click="changeOrderBy('longitude')">Longitude</a>
-                        <i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                    </th>
-                    <th class="col-sm-1 text-nowrap">
-                        <a ng-click="changeOrderBy('priority')">Priority</a>
-                        <i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                    </th>
-                    <th class="col-sm-2 text-nowrap">
-                        Polling Packages
-                    </th>
-                    <th class="col-sm-2 text-nowrap">
-                        Collection Packages
+                    <th class="col-md-2">
+                        Actions
                     </th>
                 </tr>
 
-                <tr ng-repeat="item in items">
+                <tr ng-repeat="item in items" class="severity-{{item.status | lowercase}}">
                     <td class="text-nowrap" style="line-height:24px;">
-                        {{item['location-name']}}
-                        <a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
-                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+                        {{item['id']}}
+                    </td>
+                    <td class="text-nowrap divider bright">
+                        {{item['status']}}
+                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'severity',operator:'EQ',value:item['status']})"><i class="fa fa-plus-square-o fa-lg"/></a>
+                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'severity',operator:'NE',value:item['status']})"><i class="fa fa-minus-square-o fa-lg"/></a>
                     </td>
                     <td class="text-nowrap">
-                        <onms-list-edit-in-place item="item" value="item['monitoring-area']" value-type="'text'" on-submit="update(item)">
-                            <a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-                            <a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o fa-lg"/></a>
-                        </onms-list-edit-in-place>
-                    </td>
-                    <td class="text-nowrap">
-                        <onms-list-edit-in-place item="item" value="item['geolocation']" value-type="'text'" on-submit="update(item)">
-                            <a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-                            <a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o fa-lg"/></a>
-                        </onms-list-edit-in-place>
-                    </td>
-                    <td class="text-nowrap">
-                        <onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" step="'any'" on-submit="update(item)">
-							<span ng-show="item['latitude'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
-							</span>
-                        </onms-list-edit-in-place>
-                    </td>
-                    <td class="text-nowrap">
-                        <onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" step="'any'" on-submit="update(item)">
-							<span ng-show="item['longitude'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o fa-lg"/></a>
-							</span>
-                        </onms-list-edit-in-place>
-                    </td>
-                    <td class="text-nowrap">
-                        <onms-list-edit-in-place item="item" value="item['priority']" value-type="'number'" on-submit="update(item)">
-							<span ng-show="item['priority'] !== null">
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o fa-lg"/></a>
-							</span>
-                        </onms-list-edit-in-place>
+                        {{item['name']}}
                     </td>
                     <td>
-                        <onms-list-edit-list-in-place values="item['polling-package-names']" value-type="'text'" on-edit="update(item)"/>
-                    </td>
-                    <td>
-                        <onms-list-edit-list-in-place values="item['collection-package-names']" value-type="'text'" on-edit="update(item)"/>
+                        <a href="topology?provider=Application&focus-vertices={{item['id']}}&layout=Hierarchy Layout">
+                            <i class="fa fa-external-link-square"></i> View in Topology
+                        </a>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <a class="btn btn-default" onClick="$('#addLocationModal').modal()">Add a new location</a>
     </div>
 </div>

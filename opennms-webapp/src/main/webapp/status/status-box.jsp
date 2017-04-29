@@ -169,7 +169,7 @@
                     {
                         id: "nodeProblemChart",
                         title: "Alarms",
-                        url: "/opennms/rest/status-box/nodes",
+                        url: "/opennms/api/v2/status/summary/nodes",
                         onclick: function(e) {
                             window.location = "alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=severity%3D" + severityIds[e.id];
                         }
@@ -177,7 +177,7 @@
                     {
                         id: "outageProblemChart",
                         title: "Outages",
-                        url: "/opennms/rest/status-box/outages",
+                        url: "/opennms/api/v2/status/summary/outages",
                         onclick: function(e) {
                             if (e.id === "Normal") {
                                 window.location = "outage/list.htm?outtype=resolved";
@@ -189,17 +189,17 @@
                     {
                         id: "applicationProblemChart",
                         title: "Applications",
-                        url: "/opennms/rest/status-box/applications",
+                        url: "/opennms/api/v2/status/summary/applications",
                         onclick: function(e) {
-                            window.location = "application/summary-box.htm"
+                            window.location = "application/index.jsp?_s=severity%3D%3D" + e.id;
                         }
                     },
                     {
                         id: "businessServiceProblemChart",
                         title: "Business Services",
-                        url: "/opennms/rest/status-box/business-services",
+                        url: "/opennms/api/v2/status/summary/business-services",
                         onclick: function(e) {
-                            window.location = "bsm/summary-box.htm"
+                            window.location = "bsm/index.jsp?_s=severity%3D%3D" + e.id;
                         }
                     }
                 ]
