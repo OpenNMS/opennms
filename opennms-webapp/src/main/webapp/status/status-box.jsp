@@ -35,16 +35,10 @@
 <style>
 
     #chart-content {
-        display: flex; /* Magic begins */
-        overflow: hidden;
     }
-    #chart-content > .c3 {
-        flex: 1; /* Distribute the width equally */
-        text-align: center;
-        margin-left: 5px;
-    }
-    #chart-content > .c3:first-child {
-        margin-left: 0;
+
+    .no-padding {
+        padding: 0px;
     }
 
     .c3 .c3-chart-arc path {
@@ -52,13 +46,15 @@
     }
 </style>
 
+
 <div class="panel panel-default fix-subpixel">
     <div class="panel-heading">
         <h3 class="panel-title">Status Overview</h3>
     </div>
     <div class="panel-body">
-        <div id="chart-content">
-
+        <div>
+            <div id="chart-content" class="row" stlye="display:flex; justify-content: space-around">
+            </div>
         </div>
     </div>
 </div>
@@ -87,9 +83,9 @@
                     sum += data[i][1];
                 }
                 if (sum == 0) {
-                    $("#" + graph.id).hide();
+                    $("#" + graph.id).parent().hide();
                 } else {
-                    $("#" + graph.id).show();
+                    $("#" + graph.id).parent().show();
                 }
             });
         };
@@ -120,11 +116,14 @@
 
                 // create container for graphif it does not exist yet
                 if ($("#" + graph.id).length == 0) {
-                    $(options.parentContainer).append(
-                        $("<div>").attr({
-                            id: graph.id
-                        }));
-                    $("#" + graph.id).hide();
+                    var graphContainer = $('<div/>', {
+                        class: 'no-padding col-lg-3 col-md-4 col-xs-6',
+                    });
+                    graphContainer.append($("<div></div>", {
+                        id: graph.id
+                    }));
+                    $(options.parentContainer).append(graphContainer);
+                    $("#" + graph.id).parent().hide();
 
                     // Generate graph
                     var chart = c3.generate({
