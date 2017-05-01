@@ -26,59 +26,46 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.rpc.camel;
+package org.opennms.core.ipc.sink.camel;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
-import org.opennms.core.rpc.echo.EchoClient;
-import org.opennms.core.rpc.echo.EchoRequest;
-import org.opennms.core.rpc.echo.EchoResponse;
-import org.opennms.core.rpc.echo.EchoRpcModule;
+import org.opennms.core.ipc.sink.api.MessageConsumer;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.opennms.core.ipc.sink.camel.heartbeat.Heartbeat;
+import org.opennms.core.ipc.sink.camel.heartbeat.HeartbeatModule;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.ThreadLocker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
-/**
- * Used to verify and validate the thread profiles of the RPC
- * server via the EchoRpcModule.
- *
- * @author jwhite
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml"
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml"
 })
-@JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.ipc.rpc.threads=1",
-        "org.opennms.ipc.rpc.queue.max=-1" ,
-        "org.opennms.ipc.rpc.threads.max=" + EchoRpcThreadIT.NTHREADS,
-        })
-public class EchoRpcThreadIT extends CamelBlueprintTest {
-
-    protected static final int NTHREADS = 100;
+@JUnitConfigurationEnvironment
+public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
@@ -90,68 +77,66 @@ public class EchoRpcThreadIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
-    private OnmsDistPoller identity;
-
-    @Autowired
-    private EchoClient echoClient;
-
-    private ThreadLockingEchoRpcModule lockingRpcModule = new ThreadLockingEchoRpcModule();
-
+    private MessageConsumerManager consumerManager;
+    
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
         services.put(MinionIdentity.class.getName(),
-                new KeyValueHolder<Object, Dictionary>(new MockMinionIdentity(REMOTE_LOCATION_NAME),
-                new Properties()));
+                new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
+                    @Override
+                    public String getId() {
+                        return "0";
+                    }
+                    @Override
+                    public String getLocation() {
+                        return REMOTE_LOCATION_NAME;
+                    }
+                }, new Properties()));
 
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(lockingRpcModule, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
+        return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
     @Test(timeout=60000)
-    public void canProcessManyRequestsAsynchronously() throws Exception {
-        // Execute a request via a remote location
-        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+    public void doesntLogMessageBody() throws Exception {
+        HeartbeatModule module = new HeartbeatModule();
 
-        // Lock the run method in our RPC module, we want to validate
-        // the number of threads that are "running" the module
-        CompletableFuture<Integer> runLockedFuture = lockingRpcModule.getRunLocker().waitForThreads(NTHREADS);
- 
-        // Fire off NTHREADS request
-        List<CompletableFuture<EchoResponse>> futures = new ArrayList<>();
-        for (int i = 0; i < NTHREADS; i++) {
-            EchoRequest request = new EchoRequest("ping");
-            request.setTimeToLiveMs(30000L);
-            request.setLocation(REMOTE_LOCATION_NAME);
-            futures.add(echoClient.execute(request));
-        }
+        final CountDownLatch consumed = new CountDownLatch(1);
+        // Create a consumer that just throws exceptions during the exchange
+        MessageConsumer<Heartbeat, Heartbeat> consumer = new MessageConsumer<Heartbeat, Heartbeat>() {
+            @Override
+            public SinkModule<Heartbeat, Heartbeat> getModule() {
+                return module;
+            }
 
-        // Wait for all the threads calling run() to be locked
-        runLockedFuture.get();
+            @Override
+            public void handleMessage(Heartbeat heartbeat) {
+                consumed.countDown();
+                throw new IllegalStateException();
+            }
+        };
+        consumerManager.registerConsumer(consumer);
 
-        // Release and verify that all the futures return
-        lockingRpcModule.getRunLocker().release();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[NTHREADS])).get();
-    }
+        // Fetch the remote dispatcher from the blueprint context
+        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 
-    public static class ThreadLockingEchoRpcModule extends EchoRpcModule {
+        dispatcher.send(new Heartbeat());
+        consumed.await();
 
-        private final ThreadLocker runLocker = new ThreadLocker();
+        // Sleep slightly longer to allow the body to be logged on the sink consumer listener thread
+        Thread.sleep(2000);
 
-        @Override
-        public void beforeRun() {
-            runLocker.park();
-        }
+        // Verify that the message body was suppressed
+        MockLogAppender.assertLogMatched(Level.DEBUG, "[Body is not logged]");
 
-        public ThreadLocker getRunLocker() {
-            return runLocker;
-        }
+        consumerManager.unregisterConsumer(consumer);
     }
 }

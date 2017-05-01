@@ -28,8 +28,12 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.util.Collection;
+
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricFilter;
@@ -43,6 +47,8 @@ import com.codahale.metrics.Timer;
  */
 public class DispatcherState<W, S extends Message, T extends Message> implements AutoCloseable {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DispatcherState.class);
+
     private final SinkModule<S, T> module;
 
     private final W metadata;
@@ -55,7 +61,27 @@ public class DispatcherState<W, S extends Message, T extends Message> implements
         this.module = module;
         metadata = dispatcherFactory.getModuleMetadata(module);
         metrics = dispatcherFactory.getMetrics();
-        dispatchTimer = metrics.timer(MetricRegistry.name(module.getId(), "dispatch"));
+
+        String metricName = MetricRegistry.name(module.getId(), "dispatch");
+
+        Collection<Timer> existingTimers = metrics.getTimers(new MetricFilter() {
+            @Override
+            public boolean matches(String name, Metric metric) {
+                return metricName.equals(name);
+            }
+        }).values();
+
+        switch(existingTimers.size()) {
+        case 0:
+            dispatchTimer = metrics.timer(metricName);
+            break;
+        case 1:
+            dispatchTimer = existingTimers.iterator().next();
+            break;
+        default:
+            LOG.warn("Multiple timers registered with name {} somehow", metricName);
+            dispatchTimer = existingTimers.iterator().next();
+        }
     }
 
     public SinkModule<S, T> getModule() {
