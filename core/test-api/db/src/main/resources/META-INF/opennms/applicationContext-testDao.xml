@@ -15,12 +15,11 @@
   <!--
   <onmsgi:reference id="dataSource" interface="javax.sql.DataSource"/>
   <onmsgi:reference id="jdbcTemplate" interface="org.springframework.jdbc.core.JdbcOperations" />
-  <onmsgi:reference id="simpleJdbcTemplate" interface="org.springframework.jdbc.core.simple.SimpleJdbcOperations" />
   -->
 
   <bean id="temporaryDatabase" class="org.opennms.core.test.db.TemporaryDatabaseHsqldb">
     <property name="dataSource" ref="dataSource" />
-    <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
 
   <!-- Set the HSQLDB datasource as the XADataSource -->
