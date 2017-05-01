@@ -74,9 +74,10 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	 */
 	private CriteriaBuilder m_criteriaBuilder;
 
+	private Map<String,String> m_criteriaMapping;
+
 	/**
 	 * Constructor that just specifies the target class.
-	 * @param clazz
 	 */
 	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz) {
 		this(criteriaBuilder, clazz, null);
@@ -84,12 +85,12 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 
 	/**
 	 * Constructor that specifies the target class and a list of field aliases.
-	 * @param clazz
 	 */
-	private CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> fieldMap) {
-		super(fieldMap);
+	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> criteriaMapping) {
+		super(null);
 		m_class = clazz;
 		m_criteriaBuilder = criteriaBuilder;
+                m_criteriaMapping = criteriaMapping;
 		setWildcardStringMatch(true);
 	}
 
@@ -121,6 +122,10 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 				// I think they're always identical if the PrimitiveStatement has a
 				// statement.
 				//switch(statement.getCondition()) {
+
+				if (m_criteriaMapping != null && m_criteriaMapping.containsKey(name)) {
+				    name = m_criteriaMapping.get(name);
+				}
 
 				switch(sc.getConditionType()) {
 				case EQUALS:

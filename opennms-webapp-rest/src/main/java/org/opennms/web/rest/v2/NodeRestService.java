@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
@@ -98,9 +100,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
 
-        builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
         builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
@@ -113,6 +115,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     @Override
     protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
         return new OnmsNodeList(list);
+    }
+
+    @Override
+    protected Map<String, String> getBeanPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("categoryName", "categories.name");
+        return map;
     }
 
     @Override

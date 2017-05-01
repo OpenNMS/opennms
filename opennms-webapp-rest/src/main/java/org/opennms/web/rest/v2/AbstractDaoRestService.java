@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import javax.ws.rs.Consumes;
@@ -132,13 +133,23 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
 
+    // To add filter aliases to simplify API queries
+    protected Map<String,String> getBeanPropertiesMapping() {
+        return null;
+    }
+
+    // To translate CXF mappings to HQL/Criteria mappings.
+    protected Map<String,String> getCriteriaPropertiesMapping() {
+        return null;
+    }
+
     protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
         if (searchContext != null) {
             try {
-                SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
+                SearchCondition<T> condition = searchContext.getCondition(getDaoClass(), getBeanPropertiesMapping());
                 if (condition != null) {
-                    SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
+                    SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass(), getCriteriaPropertiesMapping());
                     condition.accept(visitor);
                 }
             } catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {

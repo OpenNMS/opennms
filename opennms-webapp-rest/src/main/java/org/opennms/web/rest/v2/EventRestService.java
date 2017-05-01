@@ -30,6 +30,8 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -79,9 +81,9 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("eventTime").desc(); // order by event time by default
@@ -91,6 +93,20 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     @Override
     protected JaxbListWrapper<OnmsEvent> createListWrapper(Collection<OnmsEvent> list) {
         return new OnmsEventCollection(list);
+    }
+
+    @Override
+    protected Map<String, String> getBeanPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("categoryName", "node.categories.name");
+        return map;
+    }
+
+    @Override
+    protected Map<String, String> getCriteriaPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("node.categories.name", "categories.name");
+        return map;
     }
 
     @Override

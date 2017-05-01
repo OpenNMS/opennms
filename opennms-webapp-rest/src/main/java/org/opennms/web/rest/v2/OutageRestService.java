@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -74,7 +76,8 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
         builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
         builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
 
@@ -89,6 +92,20 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
     @Override
     protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
         return new OnmsOutageCollection(list);
+    }
+
+    @Override
+    protected Map<String, String> getBeanPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("categoryName", "ipInterface.node.categories.name");
+        return map;
+    }
+
+    @Override
+    protected Map<String, String> getCriteriaPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("ipInterface.node.categories.name", "categories.name");
+        return map;
     }
 
     @Override

@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -83,11 +85,11 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
-        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", "snmpInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface", "ipInterfaces", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("id");
         return builder;
@@ -96,6 +98,20 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     @Override
     protected JaxbListWrapper<OnmsMonitoredService> createListWrapper(Collection<OnmsMonitoredService> list) {
         return new OnmsMonitoredServiceList(list);
+    }
+
+    @Override
+    protected Map<String, String> getBeanPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("categoryName", "ipInterface.node.categories.name");
+        return map;
+    }
+
+    @Override
+    protected Map<String, String> getCriteriaPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("ipInterface.node.categories.name", "categories.name");
+        return map;
     }
 
     @Override

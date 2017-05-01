@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -97,9 +99,9 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
         builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.categories", "category", JoinType.LEFT_JOIN);
+        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
         return builder;
@@ -108,6 +110,20 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     @Override
     protected JaxbListWrapper<OnmsAlarm> createListWrapper(Collection<OnmsAlarm> list) {
         return new OnmsAlarmCollection(list);
+    }
+
+    @Override
+    protected Map<String, String> getBeanPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("categoryName", "node.categories.name");
+        return map;
+    }
+
+    @Override
+    protected Map<String, String> getCriteriaPropertiesMapping() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("node.categories.name", "categories.name");
+        return map;
     }
 
     @Override
