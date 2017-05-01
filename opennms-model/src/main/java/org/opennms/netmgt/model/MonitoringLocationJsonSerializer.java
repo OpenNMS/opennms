@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.netmgt.model;
 
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
+import java.io.IOException;
 
-/**
- * 
- * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
- * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- *
- */
-public class CategoryHopCriteriaFactory {
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.map.SerializerProvider;
+import org.codehaus.jackson.map.ser.std.SerializerBase;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-	private final CategoryDao m_categoryDao;
-	private final NodeDao m_nodeDao;
+public class MonitoringLocationJsonSerializer extends SerializerBase<OnmsMonitoringLocation> {
 
-	public CategoryHopCriteriaFactory(CategoryDao categoryDao, NodeDao nodeDao) {
-		m_categoryDao = categoryDao;
-		m_nodeDao = nodeDao;
-	}
-	
-	public CategoryHopCriteria getCriteria(String categoryName) {
-		CategoryHopCriteria retval = new CategoryHopCriteria(categoryName, m_nodeDao, m_categoryDao);
-		return retval;
-	}
+    protected MonitoringLocationJsonSerializer() {
+        super(OnmsMonitoringLocation.class);
+    }
+
+    @Override
+    public void serialize(OnmsMonitoringLocation value, JsonGenerator jgen, SerializerProvider provider)
+            throws IOException, JsonGenerationException {
+        jgen.writeString(value.getLocationName());
+    }
+
 }

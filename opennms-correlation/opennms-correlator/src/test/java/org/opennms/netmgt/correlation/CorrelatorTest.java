@@ -61,6 +61,8 @@ public class CorrelatorTest extends TestCase {
 
 		expect(m_engine.getName()).andStubReturn("myMockEngine");
 		expect(m_engine.getInterestingEvents()).andReturn(interestingEvents);
+		m_engine.tearDown();
+		EasyMock.expectLastCall().anyTimes();
 
 		m_eventIpcManager.addEventListener(isA(EventListener.class), same(interestingEvents));
 

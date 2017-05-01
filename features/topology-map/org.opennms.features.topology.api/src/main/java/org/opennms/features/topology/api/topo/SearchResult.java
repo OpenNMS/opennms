@@ -28,32 +28,55 @@
 
 package org.opennms.features.topology.api.topo;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.common.base.MoreObjects;
+
+@XmlRootElement(name = "search")
+@XmlAccessorType(value = XmlAccessType.FIELD)
 public class SearchResult {
 
-    private final String m_id;
-    private final String m_namespace;
-    private final String m_label;
-    private final String m_query;
+	public static final boolean COLLAPSIBLE = true;
+	public static final boolean COLLAPSED = true;
+
+	@XmlElement(name = "id")
+    private String m_id;
+	@XmlElement(name = "namespace")
+    private String m_namespace;
+	@XmlElement(name = "label")
+    private String m_label;
+	@XmlElement(name = "query")
+    private String m_query;
+	@XmlElement(name = "collapsible")
     private boolean m_collapsible = false;
+	@XmlElement(name = "collapsed")
     private boolean m_collapsed = false;
-    
-    public SearchResult(String namespace, String id, String label, String query) {
+
+	// Constructor for JAXB
+	public SearchResult() {
+	}
+
+	public SearchResult(String namespace, String id, String label, String query, boolean collapsible, boolean collapsed) {
         m_id = id;
         m_namespace = namespace;
         m_label = label;
         m_query = query;
+        m_collapsible = collapsible;
+        m_collapsed = collapsed;
     }
 
-    public SearchResult(VertexRef vertexRef) {
-        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(), null);
+    public SearchResult(VertexRef vertexRef, boolean collapsible, boolean collapsed) {
+        this(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(), null, collapsible, collapsed);
     }
 
-    public SearchResult(SearchResult result) {
-        this(result.getNamespace(), result.getId(), result.getLabel(), result.getQuery());
-        setCollapsible(result.isCollapsible());
-    }
+	public SearchResult(SearchCriteria criteria) {
+		this(criteria.getNamespace(), criteria.getId(), criteria.getLabel(), criteria.getSearchString(), SearchResult.COLLAPSIBLE, criteria.isCollapsed());
+	}
 
-    public final String getId() {
+	public final String getId() {
         return m_id;
     }
 
@@ -89,11 +112,18 @@ public class SearchResult {
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
-    
-    @Override
-    public String toString() {
-    	return "NameSpace:"+m_namespace+"; ID:"+m_id+"; Label:"+m_label;
-    }
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("id", m_id)
+				.add("namespace", m_namespace)
+				.add("label", m_label)
+				.add("query", m_query)
+				.add("collapsible", m_collapsible)
+				.add("collapsed", m_collapsed)
+				.toString();
+	}
 
 	public final boolean isCollapsible() {
 		return m_collapsible;

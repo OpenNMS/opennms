@@ -73,10 +73,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonValue;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
@@ -734,11 +735,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * Monitoring location that this node is located in.
      */
-    @JsonBackReference
+    @JsonSerialize(using=MonitoringLocationJsonSerializer.class)
+    @JsonDeserialize(using=MonitoringLocationJsonDeserializer.class)
     @XmlElement(name="location")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="location")
-    //@XmlIDREF
     @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
     public OnmsMonitoringLocation getLocation() {
         return m_location;

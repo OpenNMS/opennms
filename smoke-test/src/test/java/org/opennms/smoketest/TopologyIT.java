@@ -37,6 +37,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
@@ -710,6 +711,23 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         pingWindow.close();
     }
 
+    @Test
+	public void verifyCollapsibleCriteriaPersistence() {
+        // Search for category and select
+        topologyUiPage.search("Routers").selectItemThatContains("Routers");
+        List<FocusedVertex> focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+        
+        logout();
+        login();
+
+        topologyUiPage.open();
+        focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+    }
+    
     /**
      * This method is used to block and wait for any transitions to occur.
      * This should be used after adding or removing vertices from focus and/or
