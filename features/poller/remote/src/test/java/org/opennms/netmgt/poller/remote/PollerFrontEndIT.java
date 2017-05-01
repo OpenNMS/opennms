@@ -124,9 +124,9 @@ public class PollerFrontEndIT implements InitializingBean {
     public void testRegister() throws Exception {
         // Check preconditions
         assertFalse(m_frontEnd.isRegistered());
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
-        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+        assertEquals(new Integer(1), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(0), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes", Integer.class));
 
         // Start up the remote poller
         m_frontEnd.register("RDU");
@@ -135,8 +135,8 @@ public class PollerFrontEndIT implements InitializingBean {
 
         assertTrue(m_frontEnd.isRegistered());
         // Make sure there is a total of one remote poller
-        assertEquals(2, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(5, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", monitorId));
+        assertEquals(new Integer(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(5), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { monitorId }, Integer.class));
         // Make sure there is a total of one remote poller with the expected ID
         assertEquals(1, getMonitorCount(monitorId));
 
@@ -163,14 +163,14 @@ public class PollerFrontEndIT implements InitializingBean {
     }
 
     protected int getSpecificChangesCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes where systemid = ?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes where systemid = ?", new Object[] { monitorId }, Integer.class);
     }
 
     protected int getDisconnectedCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems where status=? and id=?", MonitorStatus.DISCONNECTED.toString(), monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where status=? and id=?", new Object[] { MonitorStatus.DISCONNECTED.toString(), monitorId}, Integer.class);
     }
 
     protected int getMonitorCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems where id=?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where id=?", new Object[] { monitorId }, Integer.class);
     }
 }

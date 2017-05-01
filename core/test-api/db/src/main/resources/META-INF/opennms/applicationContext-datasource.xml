@@ -32,8 +32,4 @@
       <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-    	<constructor-arg ref="jdbcTemplate" />
- 	</bean>
-
 </beans>

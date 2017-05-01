@@ -535,10 +535,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
 
-  <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-    <constructor-arg ref="jdbcTemplate" />
-  </bean>
-
   <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
