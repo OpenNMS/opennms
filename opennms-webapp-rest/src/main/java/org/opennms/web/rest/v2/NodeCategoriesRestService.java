@@ -92,7 +92,7 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
-        return new CriteriaBuilder(getDaoClass());
+        return new CriteriaBuilder(getDaoClass()).distinct();
     }
 
     @Override

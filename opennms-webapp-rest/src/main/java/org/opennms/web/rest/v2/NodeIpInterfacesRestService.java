@@ -81,6 +81,7 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
         builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.distinct();
         updateCriteria(uriInfo, builder);
         return builder;
     }

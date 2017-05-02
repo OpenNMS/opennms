@@ -75,6 +75,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
         // Order by location name by default
         builder.orderBy("locationName").asc();
+        builder.distinct();
 
         return builder;
     }

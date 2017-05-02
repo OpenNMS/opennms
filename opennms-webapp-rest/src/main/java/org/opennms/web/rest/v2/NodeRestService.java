@@ -108,6 +108,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
 
         // Order by label by default
         builder.orderBy("label").desc();
+        builder.distinct();
 
         return builder;
     }

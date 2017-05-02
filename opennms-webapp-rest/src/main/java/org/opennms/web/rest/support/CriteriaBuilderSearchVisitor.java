@@ -198,7 +198,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					builder = new CriteriaBuilder(m_class);
 				}
 				// Create a new visitor for the SearchCondition
-				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(builder, m_class);
+				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(builder, m_class, m_criteriaMapping);
 
 				// Visit the children
 				condition.accept(newVisitor);

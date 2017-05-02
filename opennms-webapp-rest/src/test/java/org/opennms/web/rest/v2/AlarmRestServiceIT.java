@@ -136,6 +136,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/alarms";
         JSONObject object = new JSONObject(sendRequest(GET, url, parseParamData("_s=categoryName==Linux"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=uei==*somethingWentWrong"), 200));
+        Assert.assertEquals(2, object.getInt("totalCount"));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=uei==*somethingWentWrong;categoryName==Linux"), 200));
+        Assert.assertEquals(1, object.getInt("totalCount"));
     }
 
     private OnmsNode createNode(final NetworkBuilder builder, final String label, final String ipAddress, final OnmsCategory category) {
@@ -177,6 +181,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
         event.setNode(node);
         event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
+        event.setEventSeverity(severity.getId());
         m_databasePopulator.getEventDao().save(event);
         m_databasePopulator.getEventDao().flush();
 

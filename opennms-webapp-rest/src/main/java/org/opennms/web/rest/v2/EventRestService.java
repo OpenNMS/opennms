@@ -87,6 +87,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("eventTime").desc(); // order by event time by default
+        builder.distinct();
         return builder;
     }
 
@@ -98,6 +99,8 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     @Override
     protected Map<String, String> getBeanPropertiesMapping() {
         final Map<String, String> map = new HashMap<>();
+        map.put("uei", "eventUei");
+        map.put("nodeLabel", "node.label");
         map.put("categoryName", "node.categories.name");
         return map;
     }

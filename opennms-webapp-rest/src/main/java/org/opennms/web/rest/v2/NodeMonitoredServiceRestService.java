@@ -104,6 +104,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("id");
+        builder.distinct();
         updateCriteria(uriInfo, builder);
         return builder;
     }

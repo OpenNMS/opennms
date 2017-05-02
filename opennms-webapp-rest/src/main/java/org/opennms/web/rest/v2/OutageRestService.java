@@ -85,6 +85,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
 
         // Order by ID by default
         builder.orderBy("id").desc();
+        builder.distinct();
 
         return builder;
     }

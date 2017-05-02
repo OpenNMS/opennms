@@ -92,6 +92,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         builder.alias("ipInterface.node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("id");
+        builder.distinct();
         return builder;
     }
 
