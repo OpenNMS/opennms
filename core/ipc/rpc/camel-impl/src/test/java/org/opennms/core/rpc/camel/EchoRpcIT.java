@@ -53,6 +53,8 @@ import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -114,6 +116,7 @@ public class EchoRpcIT {
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext context = new DefaultCamelContext(registry);
         context.addComponent("queuingservice", queuingservice);
+        context.start();
 
         CamelRpcServerRouteManager routeManager = new CamelRpcServerRouteManager(context,
                 new MockMinionIdentity(REMOTE_LOCATION_NAME));
@@ -158,6 +161,7 @@ public class EchoRpcIT {
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext context = new DefaultCamelContext(registry);
         context.addComponent("queuingservice", queuingservice);
+        context.start();
 
         CamelRpcServerRouteManager routeManager = new CamelRpcServerRouteManager(context,
                 new MockMinionIdentity(REMOTE_LOCATION_NAME));
@@ -283,6 +287,8 @@ public class EchoRpcIT {
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
             assertTrue("Cause is not of type RequestTimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);
+            // Verify that the message body was suppressed
+            MockLogAppender.assertLogMatched(Level.DEBUG, "[Body is not logged]");
         }
 
         routeManager.unbind(echoRpcModule);

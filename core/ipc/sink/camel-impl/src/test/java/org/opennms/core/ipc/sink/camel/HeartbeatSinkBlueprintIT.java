@@ -118,7 +118,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         HeartbeatModule module = new HeartbeatModule();
 
         AtomicInteger heartbeatCount = new AtomicInteger();
-        consumerManager.registerConsumer(new MessageConsumer<Heartbeat, Heartbeat>() {
+        MessageConsumer<Heartbeat, Heartbeat> consumer = new MessageConsumer<Heartbeat, Heartbeat>() {
             @Override
             public SinkModule<Heartbeat, Heartbeat> getModule() {
                 return module;
@@ -128,7 +128,8 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
             public void handleMessage(Heartbeat heartbeat) {
                 heartbeatCount.incrementAndGet();
             }
-        });
+        };
+        consumerManager.registerConsumer(consumer);
 
         SyncDispatcher<Heartbeat> localDispatcher = localMessageDispatcherFactory.createSyncDispatcher(module);
         localDispatcher.send(new Heartbeat());
@@ -138,6 +139,8 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         SyncDispatcher<Heartbeat> remoteDispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(module);
         remoteDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(2));
+
+        consumerManager.unregisterConsumer(consumer);
     }
 
     @Test(timeout=60000)
@@ -173,6 +176,9 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         assertEquals(0, consumer.getNumExtraThreadsWaiting());
 
         generator.stop();
-    }
 
+        // This doesn't work because the consumer seems to leave NUM_CONSUMER_THREADS
+        // messages in-flight if it's unregistered before the context shuts down
+        // consumerManager.unregisterConsumer(consumer);
+    }
 }
