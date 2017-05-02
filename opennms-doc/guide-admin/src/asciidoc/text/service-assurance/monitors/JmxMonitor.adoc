@@ -22,13 +22,18 @@ The monitor offers the following functionalities:
 [options="header, autowidth"]
 |===
 | Parameter               | Description                                                 | Required | Default value
-| `retry`                 | Number of attempts to get a response.                       | optional | `3`
-| `timeout`               | Time in milliseconds to wait for a response.                | optional | `?`
-| `port`                  | Destination port where the JMX requests shall be sent.      | optional | from `jmx-config.xml`
+| `retry`                 | Number of attempts to get a response                        | optional | `3`
+| `timeout`               | Time in milliseconds to wait for a response                 | optional | `?`
+| `port`                  | Destination port where the JMX requests shall be sent       | optional | from `jmx-config.xml`
+| `factory`               | Set this to `PASSWORD-CLEAR` if credentials are required    | optional | STANDARD
+| `protocol`              | Protocol used in the `JMX` connection string                | optional | rmi
+| `urlPath`               | Path used in `JMX` connection string                        | optional | /jmxrmi
+| `rmiServerPort`         | RMI port.                                                   | optional | 45444
+| `remoteJMX`             | Use an alternative `JMX` URL scheme                         | optional | `false`
 | `beans.<variable>`      | Defines a mbeans objectname to access. ´<variable>´ name is +
-                            arbitrary.                                                  | optional | `-`
+                            arbitrary                                                   | optional | `-`
 | `tests.<variable>`      | Tests a mbeans attribute value. ´<variable>´ name is +
-                            arbitrary.                                                  | optional | `-`
+                            arbitrary                                                   | optional | `-`
 |===
 
 ===== Examples
