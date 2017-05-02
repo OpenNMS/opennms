@@ -28,39 +28,34 @@
 
 package org.opennms.web.rest.v2.model;
 
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.core.config.api.JaxbListWrapper;
 
-@XmlRootElement(name="application")
-@JsonRootName("application")
-public class ApplicationDTO {
-    private Integer id;
-    private String name;
-    private OnmsSeverity status;
+@XmlRootElement(name="applications")
+@JsonRootName("applications")
+public class ApplicationDTOList extends JaxbListWrapper<ApplicationDTO> {
 
-    public void setId(Integer id) {
-        this.id = id;
+    private static final long serialVersionUID = 1L;
+
+    public ApplicationDTOList() {
+
     }
 
-    public Integer getId() {
-        return id;
+    public ApplicationDTOList(Collection<? extends ApplicationDTO> objects) {
+        super(objects);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setStatus(OnmsSeverity status) {
-        this.status = status;
-    }
-
-    public OnmsSeverity getStatus() {
-        return status;
+    @XmlElement(name="application")
+    @JsonProperty("applications")
+    @Override
+    public List<ApplicationDTO> getObjects() {
+        return super.getObjects();
     }
 }

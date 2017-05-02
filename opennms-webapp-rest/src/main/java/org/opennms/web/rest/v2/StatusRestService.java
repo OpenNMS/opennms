@@ -43,10 +43,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -60,6 +62,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.rest.v2.model.ApplicationDTO;
+import org.opennms.web.rest.v2.model.ApplicationDTOList;
 import org.opennms.web.rest.v2.model.BusinessServiceDTO;
 import org.opennms.web.rest.v2.model.SeveritySearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,7 +213,7 @@ public class StatusRestService {
 
     @GET
     @Path("/applications")
-    public List<ApplicationDTO> getApplications(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    public Response getApplications(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         // Remove the severity from orderBy because applications do not have a severity
         final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         final String orderSeverity = getOrderBySeverityAndRemoveIfExisting(queryParameters);
@@ -243,10 +246,28 @@ public class StatusRestService {
             }
             collect.sort(comparator);
         }
-        return collect;
+
+        // prepare result
+        Criteria criteria = criteriaBuilder.toCriteria();
+        final int offset = criteria.getOffset() == null ? 0 : criteria.getOffset().intValue();
+        criteria.setLimit(null);
+        criteria.setOffset(null);
+        criteria.setOrders(new ArrayList<>());
+        int totalCount = applicationDao.countMatching(criteria);
+
+        ApplicationDTOList list = new ApplicationDTOList(collect);
+        list.setTotalCount(totalCount);
+        list.setOffset(offset);
+
+        // Make sure that offset is set to a numeric value when setting the Content-Range header
+        return Response
+                .ok(list)
+                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
+                .build();
     }
 
     private String getOrderBySeverityAndRemoveIfExisting(MultivaluedMap<String, String> queryParameters) {
+        // TODO MVR remove limit settings as well, because we must apply them after sorting and not before
         String orderBy = queryParameters.getFirst("orderBy");
         String order = queryParameters.getFirst("order");
         if (orderBy != null && orderBy.equalsIgnoreCase("severity")) {

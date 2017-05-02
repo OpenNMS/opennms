@@ -1,10 +1,10 @@
 (function() {
     'use strict';
 
-    var MODULE_NAME = 'onmsList.application';
+    var MODULE_NAME = 'onmsList.bsm';
 
     // $filters that can be used to create human-readable versions of filter values
-    angular.module('applicationListFilters', [ 'onmsListFilters' ])
+    angular.module('bsmListFilters', [ 'onmsListFilters' ])
         .filter('property', function() {
             return function(input) {
                 switch (input) {
@@ -24,9 +24,9 @@
             }
         });
 
-    angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'applicationListFilters' ])
-        .factory('Applications', function($resource, $log, $http, $location) {
-            return $resource(BASE_REST_URL + '/status/applications/:id', {},
+    angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'bsmListFilters' ])
+        .factory('BusinessServices', function($resource, $log, $http, $location) {
+            return $resource(BASE_REST_URL + '/status/business-services/:id', {},
                 {
                     'query': {
                         method: 'GET',
@@ -36,15 +36,15 @@
                             if (status === 204) { // No content
                                 return [];
                             }
-                            return data.applications;
+                            return data;
                         })
                     }
                 }
             );
         })
 
-        .controller('ApplicationsListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'Applications', function($scope, $location, $window, $log, $filter, Applications) {
-            $log.debug('ApplicationsListCtrl initializing...');
+        .controller('BusinessServicesListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'BusinessServices', function($scope, $location, $window, $log, $filter, BusinessServices) {
+            $log.debug('BusinessServicesListCtrl initializing...');
 
             // Set the default sort and set it on $scope.$parent.query
             $scope.$parent.defaults.orderBy = 'id';
@@ -55,7 +55,7 @@
             // Reload all resources via REST
             $scope.$parent.refresh = function() {
                 // Fetch all of the items
-                Applications.query(
+                BusinessServices.query(
                     {
                         _s: $scope.$parent.query.searchParam,
                         limit: $scope.$parent.query.limit,
@@ -96,7 +96,7 @@
             // Refresh the item list;
             $scope.$parent.refresh();
 
-            $log.debug('ApplicationListCtrl initialized');
+            $log.debug('BusinessServicesListCtrl initialized');
         }])
 
         .run(['$rootScope', '$log', function($rootScope, $log) {
