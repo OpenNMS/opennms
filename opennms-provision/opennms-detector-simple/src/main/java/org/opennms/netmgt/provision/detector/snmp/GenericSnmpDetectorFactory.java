@@ -54,11 +54,11 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
     }
 
     @Override
-    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
-        return new DetectRequestImpl(address, port, getRuntimeAttributes(location, address, port));
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
+        return new DetectRequestImpl(address, port, getRuntimeAttributes(location, address));
     }
 
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
+    public Map<String, String> getRuntimeAttributes(String location, InetAddress address) {
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }

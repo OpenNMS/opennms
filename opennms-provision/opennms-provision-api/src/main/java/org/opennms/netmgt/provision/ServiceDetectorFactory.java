@@ -64,8 +64,6 @@ public interface ServiceDetectorFactory<T extends ServiceDetector> {
      *
      * @return a new {@link DetectRequest}
      */
-    DetectRequest buildRequest(String location, InetAddress address, Integer port);
-
     DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes);
 
     /**

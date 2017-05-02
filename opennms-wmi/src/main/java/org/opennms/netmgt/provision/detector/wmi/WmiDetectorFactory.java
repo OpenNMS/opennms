@@ -45,11 +45,11 @@ public class WmiDetectorFactory extends GenericServiceDetectorFactory<WmiDetecto
     }
 
     @Override
-    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
-        return new DetectRequestImpl(address, port, getRuntimeAttributes(location, address, port));
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
+        return new DetectRequestImpl(address, port, getRuntimeAttributes(address));
     }
 
-    public Map<String, String> getRuntimeAttributes(String location, InetAddress address, Integer port) {
+    public Map<String, String> getRuntimeAttributes(InetAddress address) {
         return WmiPeerFactory.getInstance().getAgentConfig(address).toMap();
     }
 

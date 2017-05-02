@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,11 +57,6 @@ public class GenericServiceDetectorFactory<T extends ServiceDetector> implements
     @Override
     public Class<T> getDetectorClass() {
         return clazz;
-    }
-
-    @Override
-    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
-        return buildRequest(location, address, port, new HashMap<>());
     }
 
     @Override
