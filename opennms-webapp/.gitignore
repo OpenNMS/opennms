@@ -5,6 +5,7 @@ src/main/webapp/WEB-INF/log4j.properties
 src/main/webapp/WEB-INF/version.properties
 bin
 node_modules
+bower_components
 tomcat
 www-test
 war

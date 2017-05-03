@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
@@ -137,7 +137,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             }
 
             try {
-                if (getType().toLowerCase().startsWith("counter")) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
+                if (AttributeType.COUNTER.equals(getType())) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
                     return Long.valueOf(getValue().toString());
                 }
                 return Double.valueOf(getValue().toString());

@@ -117,6 +117,9 @@ public class OnmsMonitoringSystem implements Serializable {
 
     @XmlAttribute(name="date")
     private Date m_lastUpdated;
+    
+    @XmlAttribute(name = "lastCheckedIn")
+    private Date m_lastCheckedIn;
 
     @XmlElementWrapper(name="properties")
     @XmlElement(name="property")
@@ -254,6 +257,7 @@ public class OnmsMonitoringSystem implements Serializable {
     }
     */
 
+    
     @ElementCollection
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))
     @MapKeyColumn(name="property", nullable=false)

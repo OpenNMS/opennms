@@ -33,27 +33,38 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
+
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SFreeTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+
+    public enum Type {
+        ErdosRenis, BarabasiAlbert;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SFreeTopologyProvider.class);
 
     private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
-    public static final String ERDOS_RENIS = "ErdosReniy";
-    public static final String BARABASI_ALBERT = "BarabasiAlbert";
-    
+
     private int m_nodeCount = 200;
+
     private double m_connectedness = 4.0;
+
+    private Type type = Type.BarabasiAlbert;
 
     public SFreeTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_SFREE);
@@ -75,30 +86,30 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 		m_connectedness = connectedness;
 	}
 
-	@Override
-    public void save() {
-        // Do nothing
+	public void setType(Type type) {
+        this.type = Objects.requireNonNull(type);
     }
 
     @Override
     public void refresh() {
-        // Do nothing
-    }
-
-    @Override
-    public Criteria getDefaultCriteria() {
-        return null; // no default focus
-    }
-
-    @Override
-    public void load(String filename) {
         clearVertices();
         clearEdges();
 
-        if (filename.equals(ERDOS_RENIS))
-            createERRandomTopology(m_nodeCount,m_connectedness);		
-        else if (filename.equals(BARABASI_ALBERT))
-            createBARandomTopology(m_nodeCount,m_connectedness);
+        switch (type) {
+            case ErdosRenis:
+                createERRandomTopology(m_nodeCount, m_connectedness);
+                break;
+            case BarabasiAlbert:
+                createBARandomTopology(m_nodeCount, m_connectedness);
+                break;
+            default:
+                throw new IllegalStateException("Type not supported");
+        }
+    }
+
+    @Override
+    public Defaults getDefaults() {
+        return new Defaults();
     }
 
     private void createBARandomTopology(int numberOfNodes, double averageNumberofNeighboors) {
@@ -110,7 +121,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
             int j=(i+1)%((int)Math.round(2*averageNumberofNeighboors));
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
-            vertexi.setIconKey("sfree:system");
+            vertexi.setIconKey("sfree.system");
             vertexi.setLabel("BarabasiAlbertNode"+i);
             if (!nodes.containsKey(i)) {
                 nodes.put(i, vertexi);
@@ -118,7 +129,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             SimpleLeafVertex vertexj = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(j), 0, 0);
-            vertexj.setIconKey("sfree:system");
+            vertexj.setIconKey("sfree.system");
             vertexj.setLabel("BarabasiAlbertNode"+j);
             if (!nodes.containsKey(j)) {
                 nodes.put(j, vertexj);
@@ -136,7 +147,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
         for(int i=((int)Math.floor(2*averageNumberofNeighboors));i<numberOfNodes;i++){
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
-            vertexi.setIconKey("sfree:system");
+            vertexi.setIconKey("sfree.system");
             vertexi.setLabel("BarabasiAlbertNode"+i);
             nodes.put(i, vertexi);
             LOG.debug("Adding Node: {}", i);
@@ -166,7 +177,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
         List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
         for (Integer i=0; i< numberOfNodes ;i++) {
             SimpleLeafVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
-            vertex.setIconKey("sfree:system");
+            vertex.setIconKey("sfree.system");
             vertex.setLabel("ErdosReniyNode"+i);
 
             nodes.put(i,vertex);
@@ -190,5 +201,15 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
         addVertices(nodes.values().toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return SelectionChangedListener.Selection.NONE;
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return false;
     }
 }

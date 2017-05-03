@@ -58,8 +58,12 @@
 							return [];
 						}
 						*/
-						// Always return the data as an array
-						return angular.isArray(data.location) ? data.location : [ data.location ];
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.location) ? data.location : [ data.location ];
+						}
 					})
 				},
 				'update': { 
@@ -86,29 +90,29 @@
 			// Fetch all of the items
 			MonitoringLocations.query(
 				{
-					_s: $scope.query.searchParam, // FIQL search
-					limit: $scope.query.limit,
-					offset: $scope.query.offset,
-					orderBy: $scope.query.orderBy,
-					order: $scope.query.order
+					_s: $scope.$parent.query.searchParam, // FIQL search
+					limit: $scope.$parent.query.limit,
+					offset: $scope.$parent.query.offset,
+					orderBy: $scope.$parent.query.orderBy,
+					order: $scope.$parent.query.order
 				}, 
 				function(value, headers) {
-					$scope.items = value;
+					$scope.$parent.items = value;
 
 					var contentRange = parseContentRange(headers('Content-Range'));
-					$scope.query.lastOffset = contentRange.end;
+					$scope.$parent.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
-					$scope.query.maxOffset = contentRange.total - 1;
-					$scope.setOffset(contentRange.start);
+					$scope.$parent.query.maxOffset = contentRange.total - 1;
+					$scope.$parent.query.offset = normalizeOffset(contentRange.start, $scope.$parent.query.maxOffset, $scope.$parent.query.limit);
 				},
 				function(response) {
 					switch(response.status) {
 					case 404:
 						// If we didn't find any elements, then clear the list
-						$scope.items = [];
-						$scope.query.lastOffset = 0;
-						$scope.query.maxOffset = -1;
-						$scope.setOffset(0);
+						$scope.$parent.items = [];
+						$scope.$parent.query.lastOffset = 0;
+						$scope.$parent.query.maxOffset = -1;
+						$scope.$parent.setOffset(0);
 						break;
 					case 401:
 					case 403:
@@ -182,7 +186,20 @@
 					// We have to provide the locationName here because it has a dash in its
 					// name and we can't use dot notation to refer to it as a default param
 					saveMe.$delete({id: item['location-name']}, function() {
-						$scope.refresh();
+						// Watch the item list
+						var cancelWatch = $scope.$watch('items', function() {
+							for (var i = 0; i < $scope.items.length; i++) {
+								// If it still contains the deleted item, then call refresh()
+								if ($scope.items[i]['location-name'] === item['location-name']) {
+									$scope.refresh();
+									return;
+								}
+							}
+							// If the deleted item is not in the item list, then cancel the $watch
+							cancelWatch();
+						});
+					}, function (response) {
+						$window.alert('Deletion of location \"' +  item['location-name'] + '\" failed. Please make sure that no nodes are associated with the given location.');
 					});
 				}
 			}, function(response) {

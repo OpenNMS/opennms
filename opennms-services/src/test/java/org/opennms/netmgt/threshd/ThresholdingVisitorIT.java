@@ -56,7 +56,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -75,11 +77,9 @@ import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -103,10 +103,14 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.FileAnticipator;
@@ -127,6 +131,7 @@ public class ThresholdingVisitorIT {
     Map<Integer, File> m_hrStorageProperties;
     List<Event> m_anticipatedEvents;
     private FilesystemResourceStorageDao m_resourceStorageDao;
+    private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
@@ -1488,7 +1493,7 @@ public class ThresholdingVisitorIT {
         // Creating Node ResourceType
         SnmpCollectionAgent agent = createCollectionAgent();
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
         // Creating strings.properties file
@@ -1657,30 +1662,40 @@ public class ThresholdingVisitorIT {
         EasyMock.verify(agent);        
         verifyEvents(0);
     }
-    
+
     private static SnmpCollectionAgent createCollectionAgent() {
         SnmpCollectionAgent agent = EasyMock.createMock(SnmpCollectionAgent.class);
         EasyMock.expect(agent.getNodeId()).andReturn(1).anyTimes();
-        EasyMock.expect(agent.getStorageDir()).andReturn(new File(String.valueOf(1))).anyTimes();
+        EasyMock.expect(agent.getStorageResourcePath()).andReturn(ResourcePath.get(String.valueOf(1))).anyTimes();
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
+        EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
+        EasyMock.expect(agent.getType()).andReturn(NetworkInterface.TYPE_INET).anyTimes();
+        EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
+        EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
+        EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();
+        EasyMock.expect(agent.getForeignSource()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getForeignId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getLocationName()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSysObjectId()).andReturn(null).anyTimes();
+        EasyMock.expect(agent.getSavedSysUpTime()).andReturn(0L).anyTimes();
         EasyMock.replay(agent);
         return agent;
     }
 
-    private static NodeResourceType createNodeResourceType(SnmpCollectionAgent agent) {
+    private NodeResourceType createNodeResourceType(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
         return new NodeResourceType(agent, collection);
     }
 
-    private static IfResourceType createInterfaceResourceType(SnmpCollectionAgent agent) {
+    private IfResourceType createInterfaceResourceType(SnmpCollectionAgent agent) {
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();        
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
         return new IfResourceType(agent, collection);
     }
 
-    private static GenericIndexResourceType createGenericIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
+    private GenericIndexResourceType createGenericIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
         org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
@@ -1691,7 +1706,7 @@ public class ThresholdingVisitorIT {
         pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
-        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
+        OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig, m_locationAwareSnmpClient);
         return new GenericIndexResourceType(agent, collection, type);
     }
 
@@ -1770,7 +1785,7 @@ public class ThresholdingVisitorIT {
 
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
-            List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();
+            List<Event> receivedList = new ArrayList<>(m_anticipator.getAnticipatedEventsReceived());
             
             Collections.sort(receivedList, EVENT_COMPARATOR);
             Collections.sort(m_anticipatedEvents, EVENT_COMPARATOR);
@@ -1833,28 +1848,9 @@ public class ThresholdingVisitorIT {
     }
 
     private static CollectionSet createAnonymousCollectionSet(long timestamp) {
-    	final Date internalTimestamp = new Date(timestamp);
-    	return new CollectionSet() {
-			@Override
-			public void visit(CollectionSetVisitor visitor) {
-				//Nothing to do
-			}
-			
-			@Override
-			public boolean ignorePersist() {
-				return true;
-			}
-			
-			@Override
-			public int getStatus() {
-				return ServiceCollector.COLLECTION_SUCCEEDED;
-			}
-			
-			@Override
-			public Date getCollectionTimestamp() {
-				return internalTimestamp;
-			}
-		};
+        final MockCollectionAgent agent = new MockCollectionAgent(1, "node", "fs", "fid", InetAddressUtils.ONE_TWENTY_SEVEN);
+        return new CollectionSetBuilder(agent)
+            .withTimestamp(new Date(timestamp)).build();
     }
 
 }

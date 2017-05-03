@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>20.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>datachoices</artifactId>
@@ -33,9 +33,13 @@
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>guava</feature>
+                        <feature>hibernate36</feature> <!-- Required by opennms-web-api -->
+                        <feature>quartz</feature> <!-- Required by opennms-web-api -->
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
-                        <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
                         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
                     </bundles>
                 </configuration>

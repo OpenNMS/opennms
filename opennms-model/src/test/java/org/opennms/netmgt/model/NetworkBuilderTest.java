@@ -33,8 +33,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;

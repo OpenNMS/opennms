@@ -29,6 +29,18 @@
 package org.opennms.netmgt.config.wmi;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 
 /**
  * <p>WmiAgentConfig class.</p>
@@ -36,7 +48,10 @@ import java.net.InetAddress;
  * @author ranger
  * @version $Id: $
  */
+@XmlRootElement(name = "wmi-agent-config")
+@XmlAccessorType(XmlAccessType.NONE)
 public class WmiAgentConfig {
+
     /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
     public static final int DEFAULT_TIMEOUT = 3000;
     /** Constant <code>DEFAULT_RETRIES=1</code> */
@@ -47,23 +62,26 @@ public class WmiAgentConfig {
     public static final String DEFAULT_USERNAME="Administrator";
     /** Constant <code>DEFAULT_DOMAIN="WORKGROUP"</code> */
     public static final String DEFAULT_DOMAIN="WORKGROUP";
-    
+
+    @XmlAttribute(name = "address")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress m_Address;
+
+    @XmlAttribute(name = "timeout")
     private int m_Timeout;
+
+    @XmlAttribute(name = "retries")
     private int m_Retries;
+
+    @XmlAttribute(name = "username")
     private String m_Username;
+
+    @XmlAttribute(name = "domain")
     private String m_Domain;
+
+    @XmlAttribute(name = "password")
     private String m_Password;
-    
-    
-	String user = "";
-	String pass = "";
-	String domain = "";
-	String matchType = "all";
-	String compVal = "";
-	String compOp = "NOOP";
-	String wmiClass = "";
-	String wmiObject = "";
+
     /**
      * <p>Constructor for WmiAgentConfig.</p>
      */
@@ -211,5 +229,48 @@ public class WmiAgentConfig {
     public void setDomain(String domain) {
     	m_Domain = domain;
     }
-    
+
+    public Map<String, String> toMap() {
+        final Map<String, String> map = new HashMap<>();
+        map.put("address", InetAddrUtils.str(m_Address));
+        map.put("domain", m_Domain);
+        map.put("password", m_Password);
+        map.put("retries", Integer.toString(m_Retries));
+        map.put("timeout", Integer.toString(m_Timeout));
+        map.put("username", m_Username);
+        return map;
+    }
+
+    public static WmiAgentConfig fromMap(Map<String, String> map) {
+        final WmiAgentConfig agentConfig = new WmiAgentConfig();
+        agentConfig.setAddress(InetAddrUtils.addr(map.get("address")));
+        agentConfig.setDomain(map.get("domain"));
+        agentConfig.setPassword(map.get("password"));
+        agentConfig.setRetries(Integer.parseInt(map.get("retries")));
+        agentConfig.setTimeout(Integer.parseInt(map.get("timeout")));
+        agentConfig.setUsername(map.get("username"));
+        return agentConfig;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_Address, m_Domain, m_Password, m_Retries, m_Timeout, m_Username);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        WmiAgentConfig other = (WmiAgentConfig) obj;
+        return Objects.equals(this.m_Address, other.m_Address)
+                && Objects.equals(this.m_Domain, other.m_Domain)
+                && Objects.equals(this.m_Password, other.m_Password)
+                && Objects.equals(this.m_Retries, other.m_Retries)
+                && Objects.equals(this.m_Timeout, other.m_Timeout)
+                && Objects.equals(this.m_Username, other.m_Username);
+    }
 }

@@ -63,6 +63,9 @@ public class OnmsUser {
     @XmlElement(name="duty-schedule", required=false)
     private List<String> m_dutySchedule = new ArrayList<String>();
 
+    @XmlElement(name="role", required=false)
+    private List<String> m_roles = new ArrayList<String>();
+
     public OnmsUser() { }
 
     public OnmsUser(final String username) {
@@ -117,12 +120,27 @@ public class OnmsUser {
         m_dutySchedule = dutySchedule;
     }
 
+    public List<String> getRoles() {
+        return m_roles;
+    }
+
+    public void addRole(String role) {
+        if (!getRoles().contains(role)) {
+            getRoles().add(role);
+        }
+    }
+
+    public void setRoles(List<String> roles) {
+        this.m_roles = roles;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
         .append("username", m_username)
         .append("full-name", m_fullName)
         .append("comments", m_comments)
+        .append("roles", m_roles)
         .toString();
     }
 
@@ -139,6 +157,7 @@ public class OnmsUser {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_comments == null) ? 0 : m_comments.hashCode());
+        result = prime * result + ((m_roles == null) ? 0 : m_roles.hashCode());
         result = prime * result + ((m_dutySchedule == null) ? 0 : m_dutySchedule.hashCode());
         result = prime * result + ((m_email == null) ? 0 : m_email.hashCode());
         result = prime * result + ((m_fullName == null) ? 0 : m_fullName.hashCode());
@@ -165,6 +184,13 @@ public class OnmsUser {
                 return false;
             }
         } else if (!m_comments.equals(other.m_comments)) {
+            return false;
+        }
+        if (m_roles == null) {
+            if (other.m_roles != null) {
+                return false;
+            }
+        } else if (!m_roles.equals(other.m_roles)) {
             return false;
         }
         if (m_dutySchedule == null) {

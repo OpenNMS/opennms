@@ -48,6 +48,8 @@ public interface QueryManager {
      */
     String getNodeLabel(int nodeId) throws SQLException;
 
+    String getNodeLocation(int nodeId);
+
     /**
      * Creates a new outage for the given service without setting
      * the lost event id.

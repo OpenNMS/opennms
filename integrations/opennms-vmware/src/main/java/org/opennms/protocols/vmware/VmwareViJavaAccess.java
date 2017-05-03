@@ -52,6 +52,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 
 import javax.net.ssl.HostnameVerifier;
@@ -61,8 +62,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
@@ -153,11 +152,9 @@ public class VmwareViJavaAccess {
      * are available in the Vmware config file.
      *
      * @param hostname the vCenter's hostname
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException
      */
-    public VmwareViJavaAccess(String hostname) throws MarshalException, ValidationException, IOException {
+    public VmwareViJavaAccess(String hostname) throws IOException {
         if (m_vmwareConfigDao == null) {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
@@ -191,6 +188,12 @@ public class VmwareViJavaAccess {
             logger.error("Error getting password for VMware management server '{}'.", m_hostname);
             this.m_password = "";
         }
+    }
+
+    public VmwareViJavaAccess(VmwareServer vmwareServer) {
+        m_hostname = Objects.requireNonNull(vmwareServer).getHostname();
+        m_username = vmwareServer.getUsername();
+        m_password = vmwareServer.getPassword();
     }
 
     /**

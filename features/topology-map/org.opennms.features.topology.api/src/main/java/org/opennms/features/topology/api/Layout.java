@@ -42,8 +42,6 @@ public interface Layout {
 	 */
 	Map<VertexRef, Point> getLocations();
 
-	void setLocation(VertexRef vertex, double x, double y);
-
 	void setLocation(VertexRef v, Point location);
 
 	Point getInitialLocation(VertexRef v);
@@ -51,4 +49,6 @@ public interface Layout {
 	BoundingBox getBounds();
 
 	BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs);
+
+    void updateLocations(Collection<VertexRef> displayVertices);
 }

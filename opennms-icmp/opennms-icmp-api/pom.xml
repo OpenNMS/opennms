@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms-icmp</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-icmp-api</artifactId>
-  <name>OpenNMS ICMP Pinger - API</name>
+  <name>OpenNMS :: ICMP :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -28,21 +28,15 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>tracker-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
   </dependencies>
-    
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -52,5 +46,4 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
-
 </project>

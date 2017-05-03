@@ -29,26 +29,33 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.geolocation.api.GeolocationInfo;
+import org.opennms.features.geolocation.api.GeolocationQueryBuilder;
+import org.opennms.features.geolocation.api.GeolocationService;
+import org.opennms.features.geolocation.api.GeolocationSeverity;
+import org.opennms.features.geolocation.api.NodeInfo;
+import org.opennms.features.geolocation.api.StatusCalculationStrategy;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MapNode;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.NodeIdSelectionRpc;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsGeolocation;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.UI;
 
-public class NodeMapComponent extends AbstractComponent {
+public class NodeMapComponent extends AbstractComponent implements GeoAssetProvider {
     private static final long serialVersionUID = 3L;
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapComponent.class);
 
@@ -64,35 +71,64 @@ public class NodeMapComponent extends AbstractComponent {
         }
     };
 
+    private NodeDao m_nodeDao;
+    private GeolocationService geolocationService;
+    private Boolean m_aclsEnabled = false;
+    private NodeMapConfiguration configuration;
+    private Map<Integer,MapNode> m_activeNodes = new HashMap<>();
+
     public NodeMapComponent() {
         registerRpc(m_rpc);
-        getState().tileServerUrl = NodeMapConfiguration.getTileServerUrl();
-        getState().tileLayerOptions = NodeMapConfiguration.getTileLayerOptions();
+        m_aclsEnabled = Boolean.valueOf(System.getProperty("org.opennms.web.aclsEnabled", "false"));
     }
 
-    protected NodeIdSelectionRpc getRpc() {
-        return m_rpc;
+    public void setGeolocationService(GeolocationService geolocationService) {
+        this.geolocationService = geolocationService;
     }
 
-    public void setGroupByState(final boolean groupByState) {
-        getState().groupByState = groupByState;
-    }
-
-    public void showNodes(final Map<Integer, NodeEntry> nodeEntries) {
-        LOG.info("Updating map node list: {} entries.", nodeEntries.size());
-
-        final List<MapNode> nodes = new LinkedList<MapNode>();
-        for (final NodeEntry node : nodeEntries.values()) {
-            nodes.add(node.createNode());
-        }
-        getState().nodes = nodes;
-
-        LOG.info("Finished updating map node list.");
+    public void setNodeDao(final NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
     @Override
-    protected NodeMapState getState() {
-        return (NodeMapState) super.getState();
+    public Collection<VertexRef> getNodesWithCoordinates() {
+        final List<VertexRef> nodes = new ArrayList<VertexRef>();
+        for (final Map.Entry<Integer,MapNode> entry : m_activeNodes.entrySet()) {
+            nodes.add(new AbstractVertex("nodes", entry.getKey().toString(), entry.getValue().getNodeLabel()));
+        }
+        return nodes;
+    }
+
+    public void refresh() {
+        List<GeolocationInfo> locations = geolocationService.getLocations(new GeolocationQueryBuilder()
+                .withIncludeAcknowledgedAlarms(false)
+                .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
+                .withSeverity(GeolocationSeverity.Normal)
+                .build());
+
+        // apply acl filter if enabled
+        if (m_aclsEnabled) {
+            Map<Integer, String> nodes = m_nodeDao.getAllLabelsById();
+            locations = locations.stream()
+                    .filter(l -> nodes.containsKey(l.getNodeInfo().getNodeId()))
+                    .collect(Collectors.toList());
+        }
+
+        // Convert
+        m_activeNodes = locations.stream()
+                .map(l -> createMapNode(l))
+                .collect(Collectors.toMap(l -> Integer.valueOf(l.getNodeId()), Function.identity()));
+        showNodes(m_activeNodes);
+    }
+
+    public void setMaxClusterRadius(final Integer radius) {
+        getState().maxClusterRadius = radius;
+    }
+
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = Objects.requireNonNull(configuration);
+        getState().tileServerUrl = configuration.getTileServerUrl();
+        getState().tileLayerOptions = configuration.getOptions();
     }
 
     public void setSearchString(final String searchString) {
@@ -105,93 +141,53 @@ public class NodeMapComponent extends AbstractComponent {
         getState().nodeIds = nodeIds;
     }
 
-    // TODO: combine this class and MapNode?
-    protected static final class NodeEntry {
 
-        private Float m_longitude;
-        private Float m_latitude;
-        private Integer m_nodeId;
-        private String m_nodeLabel;
-        private String m_foreignSource;
-        private String m_foreignId;
-        private String m_description;
-        private String m_maintcontract;
-        private String m_ipAddress;
-        private OnmsSeverity m_severity = OnmsSeverity.NORMAL;
-        private List<String> m_categories = new ArrayList<String>();
-        private int m_unackedCount = 0;
+    public void setGroupByState(final boolean groupByState) {
+        getState().groupByState = groupByState;
+    }
 
-        NodeEntry(final Integer nodeId, final String nodeLabel, final float longitude, final float latitude) {
-            m_nodeId = nodeId;
-            m_nodeLabel = nodeLabel;
-            m_longitude = longitude;
-            m_latitude = latitude;
+    public void showNodes(final Map<Integer, MapNode> nodeEntries) {
+        LOG.info("Updating map node list: {} entries.", nodeEntries.size());
+        getState().nodes = new ArrayList<>(nodeEntries.values());
+        LOG.info("Finished updating map node list.");
+    }
+
+    @Override
+    protected NodeMapState getState() {
+        return (NodeMapState) super.getState();
+    }
+
+    protected NodeIdSelectionRpc getRpc() {
+        return m_rpc;
+    }
+
+    private static MapNode createMapNode(GeolocationInfo geolocationInfo) {
+        final MapNode node = new MapNode();
+        
+        // Coordinates
+        if (geolocationInfo.getCoordinates() != null) {
+            node.setLatitude(geolocationInfo.getCoordinates().getLatitude());
+            node.setLongitude(geolocationInfo.getCoordinates().getLongitude());
         }
 
-        public NodeEntry(final OnmsNode node) {
-            final OnmsAssetRecord assetRecord = node.getAssetRecord();
-            if (assetRecord != null && assetRecord.getGeolocation() != null) {
-                final OnmsGeolocation geolocation = assetRecord.getGeolocation();
-                m_longitude = geolocation.getLongitude();
-                m_latitude  = geolocation.getLatitude();
-            }
+        // Node Info
+        final NodeInfo nodeInfo = geolocationInfo.getNodeInfo();
+        node.setNodeId(String.valueOf(nodeInfo.getNodeId()));
+        node.setNodeLabel(nodeInfo.getNodeLabel());
+        node.setForeignSource(nodeInfo.getForeignSource());
+        node.setForeignId(nodeInfo.getForeignId());
+        node.setIpAddress(nodeInfo.getIpAddress());
+        node.setDescription(nodeInfo.getDescription());
+        node.setMaintcontract(nodeInfo.getMaintcontract());
+        node.setCategories(new ArrayList<>(nodeInfo.getCategories()));
+        
+        // Severity
+        node.setSeverityLabel(geolocationInfo.getSeverityInfo().getLabel());
+        node.setSeverity(String.valueOf(geolocationInfo.getSeverityInfo().getId()));
+        
+        // Count
+        node.setUnackedCount(geolocationInfo.getAlarmUnackedCount());
 
-            m_nodeId        = node.getId();
-            m_nodeLabel     = node.getLabel();
-            m_foreignSource = node.getForeignSource();
-            m_foreignId     = node.getForeignId();
-
-            if (assetRecord != null) {
-                m_maintcontract = assetRecord.getMaintcontract();
-                m_description   = assetRecord.getDescription();
-            }
-
-            if (node.getPrimaryInterface() != null) {
-                m_ipAddress = InetAddressUtils.str(node.getPrimaryInterface().getIpAddress());
-            }
-
-            if (node.getCategories() != null && node.getCategories().size() > 0) {
-                for (final OnmsCategory category : node.getCategories()) {
-                    m_categories.add(category.getName());
-                }
-            }
-        }
-
-        public Integer getNodeId() {
-            return m_nodeId;
-        }
-
-        public String getNodeLabel() {
-            return m_nodeLabel;
-        }
-
-        public void setSeverity(final OnmsSeverity severity) {
-            m_severity = severity;
-        }
-
-        public MapNode createNode() {
-            final MapNode node = new MapNode();
-
-            node.setLatitude(m_latitude);
-            node.setLongitude(m_longitude);
-            node.setNodeId(String.valueOf(m_nodeId));
-            node.setNodeLabel(m_nodeLabel);
-            node.setForeignSource(m_foreignSource);
-            node.setForeignId(m_foreignId);
-            node.setIpAddress(m_ipAddress);
-            node.setDescription(m_description);
-            node.setMaintcontract(m_maintcontract);
-
-            node.setSeverityLabel(m_severity.getLabel());
-            node.setSeverity(String.valueOf(m_severity.getId()));
-            node.setUnackedCount(m_unackedCount);
-
-            node.setCategories(m_categories);
-            return node;
-        }
-
-        public void setUnackedCount(final int unackedCount) {
-            m_unackedCount = unackedCount;
-        }
+        return node;
     }
 }

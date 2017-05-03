@@ -33,11 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.servlet.MissingParameterException"
+	import="org.opennms.web.servlet.MissingParameterException, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <% 
-    MissingParameterException mpe = (MissingParameterException)exception;  
+    MissingParameterException mpe = ExceptionUtils.getRootCause(exception, MissingParameterException.class);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >

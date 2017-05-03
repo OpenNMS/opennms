@@ -32,14 +32,20 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class SnmpObjIdXmlAdapter extends XmlAdapter<String, SnmpObjId> {
 
-	@Override
-	public String marshal(SnmpObjId snmpObjId) throws Exception {
-		return snmpObjId.toString();
-	}
+    @Override
+    public String marshal(SnmpObjId snmpObjId) throws Exception {
+        final String oidStr = snmpObjId.toString();
+        if (oidStr.length() > 0 && oidStr.charAt(0) != '.') {
+            // Always prepend a '.' to the string representation
+            // These won't get added automatically if the SnmpObjId is actually a SnmpInstId
+            return "." + oidStr;
+        }
+        return oidStr;
+    }
 
-	@Override
-	public SnmpObjId unmarshal(String oid) throws Exception {
-		return SnmpObjId.get(oid);
-	}
+    @Override
+    public SnmpObjId unmarshal(String oid) throws Exception {
+        return SnmpObjId.get(oid);
+    }
 
 }

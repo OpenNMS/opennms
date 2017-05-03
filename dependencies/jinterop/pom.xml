@@ -3,20 +3,17 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jinterop-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies J-Interop</name>
+  <name>OpenNMS :: Dependencies :: J-Interop</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use J-Interop
   </description>
-  <properties>
-    <jinteropVersion>2.0.8</jinteropVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.jinterop</groupId>

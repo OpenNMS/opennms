@@ -31,12 +31,14 @@ package org.opennms.netmgt.jetty;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.jmx.MBeanContainer;
-import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.ConnectorStatistics;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
@@ -76,7 +78,7 @@ public class JettyServer extends AbstractServiceDaemon {
 
             // Add JMX MBeans for the Jetty server
             MBeanContainer mbeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-            m_server.getContainer().addEventListener(mbeanContainer);
+            m_server.addEventListener(mbeanContainer);
             m_server.addBean(mbeanContainer);
 
             // If we were using Jetty's loggers we would need to manually add it to the MBean registry
@@ -125,65 +127,65 @@ public class JettyServer extends AbstractServiceDaemon {
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
     }
-    
-    public long getHttpsConnectionsTotal() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SslSocketConnector) {
-                retval += conn.getConnections();
-            }
-        }
-        return retval;
+
+    private static boolean isSsl(final ServerConnector conn) {
+        return conn.getConnectionFactory(SslConnectionFactory.class) != null;
     }
-    
+
+    private Stream<ServerConnector> getHttpsServerStream() {
+        return Arrays.stream(m_server.getConnectors())
+                .filter(conn -> conn instanceof ServerConnector)
+                .map(conn -> (ServerConnector)conn)
+                .filter(conn -> isSsl(conn));
+    }
+
+    private Stream<ServerConnector> getHttpServerStream() {
+        return Arrays.stream(m_server.getConnectors())
+                .filter(conn -> conn instanceof ServerConnector)
+                .map(conn -> (ServerConnector)conn)
+                .filter(conn -> !isSsl(conn));
+    }
+
+    public long getHttpsConnectionsTotal() {
+        return getHttpsServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnections())
+                .sum();
+    }
+
     public long getHttpsConnectionsOpen() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SslSocketConnector) {
-                retval += conn.getConnectionsOpen();
-            }
-        }
-        return retval;
+        return getHttpsServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnectionsOpen())
+                .sum();
     }
 
     public long getHttpsConnectionsOpenMax() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SslSocketConnector) {
-                retval += conn.getConnectionsOpenMax();
-            }
-        }
-        return retval;
+        return getHttpsServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnectionsOpenMax())
+                .sum();
     }
-    
+
     public long getHttpConnectionsTotal() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SelectChannelConnector) {
-                retval += conn.getConnections();
-            }
-        }
-        return retval;
+        return getHttpServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnections())
+                .sum();
     }
     
     public long getHttpConnectionsOpen() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SelectChannelConnector) {
-                retval += conn.getConnectionsOpen();
-            }
-        }
-        return retval;
+        return getHttpServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnectionsOpen())
+                .sum();
     }
     
     public long getHttpConnectionsOpenMax() {
-        long retval = 0;
-        for (Connector conn : m_server.getConnectors()) {
-            if (conn instanceof SelectChannelConnector) {
-                retval += conn.getConnectionsOpenMax();
-            }
-        }
-        return retval;
+        return getHttpServerStream()
+                .map(conn -> conn.getBean(ConnectorStatistics.class))
+                .mapToLong(stats -> stats.getConnectionsOpenMax())
+                .sum();
     }
 
 }

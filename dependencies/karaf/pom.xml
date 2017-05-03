@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>karaf-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Apache Karaf</name>
+  <name>OpenNMS :: Dependencies :: Apache Karaf</name>
   <!--
   Other JARs that come with the installer for Karaf... do we need them?
 

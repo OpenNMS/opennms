@@ -33,10 +33,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.opennms.bootstrap.Bootstrap;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.notifd.MicroblogAuthorization.MicroblogAuthorizationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -46,7 +45,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MicroblogClient extends Bootstrap {
+public class MicroblogClient {
     private final MicroblogConfigurationDao m_configDao;
 
     public MicroblogClient(final MicroblogConfigurationDao dao) {

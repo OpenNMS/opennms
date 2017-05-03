@@ -1,0 +1,55 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion-troubleshooting]]
+=== Troubleshooting
+
+This section gives some hints how to troubleshoot _Minion_ deployments.
+The _{opennms-product-name}_ comes with a few useful built-in commands to verify configurations and debug access to _Management Agents_ through _Minion_.
+
+==== Verifying Connectivity
+
+Once the URLs and credentials for communicating with the _{opennms-product-name}_ instance are configured, you can verify connectivity using:
+
+.Verify connectivity with the _{opennms-product-name}_ endpoints
+[source]
+----
+admin@minion()> minion:ping
+Connecting to ReST...
+OK
+Connecting to Broker...
+OK
+admin@minion()>
+----
+
+==== Execute SNMP commands through a _Minion_
+
+The commands are available in the _Karaf CLI_ on the _{opennms-product-name}_ system.
+
+.Run SNMP commands from _{opennms-product-name}_ in a monitoring location
+[source]
+----
+ssh -oHostKeyAlgorithms=+ssh-dss -p 8101 localhost
+snmp:walk -l MyLocation IpAddressInMyLocation 1.3.6.1.4.1
+----
+
+This commmand allows you to verify the connection and _SNMP community_ configuration for a given host in a remote location.
+
+==== Run a monitor through a _Minion_
+
+.Show all available monitors
+[source]
+----
+poller:list-monitors
+----
+
+.Run an ICMP monitor through a _Minion_
+[source]
+----
+poller:poll -l MyLocation -t Time-To-Live-in-ms org.opennms.netmgt.poller.monitors.IcmpMonitor myIpAddress
+----
+
+The _Time To Live (TTL)_ is only related to messages in the _ActiveMQ_ communication.
+In case a poll is triggered manually through _Karaf CLI_ the message _TTL_ in _ActiveMQ_ should be at least the number of retries x timeout in ms, e.g. 3 x 2000ms = 6000ms.
+By default the configured polling interval is used, which is by default 5 minutes (300000 ms).

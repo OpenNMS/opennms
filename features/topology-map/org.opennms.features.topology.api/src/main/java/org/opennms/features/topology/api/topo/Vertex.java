@@ -73,4 +73,6 @@ public interface Vertex extends VertexRef {
 	String getIpAddress();
 
 	Integer getNodeID();
+
+	Integer getEdgePathOffset();
 }

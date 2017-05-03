@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
@@ -143,11 +144,34 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         xml = sendRequest(GET, "/users/test", 200); 
         OnmsUser testUser = JaxbUtils.unmarshal(OnmsUser.class,  xml);
         // ... but in xml-file
-        User castorUser = m_userManager.getUser("test");
-        assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
+        User xmlUser = m_userManager.getUser("test");
+        assertEquals(xmlUser.getPassword().getEncryptedPassword(), "MONKEYS");
 
         // validate change of email
         assertEquals("test@opennms.org", testUser.getEmail());
+    }
+
+    @Test
+    public void testAddAndRemoveRoles() throws Exception {
+        createUser("test");
+        String xml = sendRequest(GET, "/users/test", 200);
+        assertFalse(xml.contains("<role>"));
+
+        // Verify add an invalid role
+        sendRequest(PUT, "/users/test/roles/ROLE_INVALID", 400);
+
+        // Verify delete an invalid role
+        sendRequest(DELETE, "/users/test/roles/ROLE_INVALID", 400);
+
+        // Verify add an a new role
+        sendRequest(PUT, "/users/test/roles/ROLE_PROVISION", 204);
+        xml = sendRequest(GET, "/users/test", 200);
+        assertTrue(xml.contains("<role>ROLE_PROVISION</role>"));
+
+        // Verify delete an existing role
+        sendRequest(DELETE, "/users/test/roles/ROLE_PROVISION", 204);
+        xml = sendRequest(GET, "/users/test", 200);
+        assertFalse(xml.contains("<role>ROLE_PROVISION</role>"));
     }
 
     @Test
@@ -216,8 +240,8 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
             // validate change of password
             eachUser = JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/users/test" + i, 200));
-            User castorUser = m_userManager.getUser("test" + i);
-            assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
+            User xmlUser = m_userManager.getUser("test" + i);
+            assertEquals(xmlUser.getPassword().getEncryptedPassword(), "MONKEYS");
 
             // validate change of email
             assertEquals("TEST@OPENNMS.COM", eachUser.getEmail());

@@ -26,6 +26,7 @@
         <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
       </sequence>
       <attribute name="name" type="string" use="required" />
+      <attribute name="persist-state" type="boolean" use="optional" default="false" />
       <attribute name="assert-behaviour" use="optional" default="identity" >
         <simpleType>
           <restriction base="string">

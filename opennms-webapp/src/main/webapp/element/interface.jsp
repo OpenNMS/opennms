@@ -36,6 +36,7 @@
             org.opennms.netmgt.config.PollerConfig,
             org.opennms.netmgt.config.poller.Package,
             java.util.*,
+            java.util.stream.Collectors,
             org.opennms.netmgt.model.OnmsNode,
             org.opennms.netmgt.model.OnmsResource,
             org.opennms.web.api.Authentication,
@@ -95,12 +96,12 @@
   pollerCfgFactory.rebuildPackageIpListMap();    
 %>
 <c:url var="eventUrl1" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="interface=" + ipAddr%>'/>
 </c:url>
 <c:url var="eventUrl2" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="ifindex=" + ifIndex%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
 </c:url>
 
 <%
@@ -248,14 +249,14 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
           Collections.sort(inPkgs);
           for (String pkgName : inPkgs) {
             Package pkg = pollerCfgFactory.getPackage(pkgName);
-            boolean found = false;
+            List<String> svcs = new ArrayList<>();
             for (Service svc : services) {
               if (pollerCfgFactory.isServiceInPackageAndEnabled(svc.getServiceName(), pkg)) {
-                found = true;
+                svcs.add(svc.getServiceName());
                 continue;
               }
             }
-            String pkgInfo = pkgName + (found ? " (*)" : ""); %>
+            String pkgInfo = pkgName + (svcs.isEmpty() ? "" : (": " + svcs.stream().collect(Collectors.joining(", ")))); %>
             <tr>
               <th>Polling Package</th>
               <td><%= pkgInfo%></td>

@@ -3,31 +3,22 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>quartz-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Quartz</name>
+  <name>OpenNMS :: Dependencies :: Quartz</name>
   <description>
     This module is used to provide a single artifact that the opennms project
-    can depend on to use Quartz
+    can depend on to use Quartz.
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.opensymphony.quartz</groupId>
+      <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
       <version>${quartzVersion}</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>jboss-repo</id>
-      <name>JBoss Repository</name>
-      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
-    </repository>
-  </repositories>
 </project>

@@ -1,0 +1,12 @@
+<mbeans>
+  <mbean name="org.apache.activemq.Broker" objectname="org.apache.activemq:BrokerName=localhost,Type=Broker">
+    <attrib name="TotalEnqueueCount" alias="TotalEnqueueCnt" type="gauge"/>
+    <attrib name="TotalDequeueCount" alias="TotalDequeueCnt" type="gauge"/>
+    <attrib name="TotalConsumerCount" alias="TotalConsumerCnt" type="gauge"/>
+    <attrib name="TotalProducerCount" alias="TotalProducerCnt" type="gauge"/>
+    <attrib name="TotalMessageCount" alias="TotalMessageCnt" type="gauge"/>
+    <attrib name="MemoryPercentUsage" alias="MemPercentUsage" type="gauge"/>
+    <attrib name="StorePercentUsage" alias="StorePercentUsage" type="gauge"/>
+    <attrib name="TempPercentUsage" alias="TempPercentUsage" type="gauge"/>
+  </mbean>
+</mbeans>

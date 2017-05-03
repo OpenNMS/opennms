@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="xml-groups")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlGroups implements Serializable {
+public class XmlGroups implements Serializable, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 8626665420339279584L;
@@ -58,6 +58,10 @@ public class XmlGroups implements Serializable {
      * Instantiates a new XML source.
      */
     public XmlGroups() {
+    }
+
+    public XmlGroups(XmlGroups copy) {
+        copy.m_xmlGroups.stream().forEach(g -> m_xmlGroups.add(g.clone()));
     }
 
     /**
@@ -111,4 +115,8 @@ public class XmlGroups implements Serializable {
         }
     }
 
+    @Override
+    public XmlGroups clone() {
+        return new XmlGroups(this);
+    }
 }

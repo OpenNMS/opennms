@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/troubleTicket/create</uei>
+        <event-label>OpenNMS-defined trouble ticket event: A request has been made to create a trouble ticket
+        </event-label>
+        <descr>
+            This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+            for creating a new trouble ticket.
+        </descr>
+        <logmsg dest="logndisplay">
+            A request has been generated to create a trouble ticket.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/troubleTicket/update</uei>
+        <event-label>OpenNMS-defined trouble ticket event: A request has been made to update a trouble ticket
+        </event-label>
+        <descr>
+            This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+            for updating an existing trouble ticket.
+        </descr>
+        <logmsg dest="logndisplay">
+            A request has been generated to update a trouble ticket.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/troubleTicket/close</uei>
+        <event-label>OpenNMS-defined trouble ticket event: A request has been made to close a trouble ticket
+        </event-label>
+        <descr>
+            This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+            for closing an existing trouble ticket.
+        </descr>
+        <logmsg dest="logndisplay">
+            A request has been generated to close a trouble ticket.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/troubleTicket/cancel</uei>
+        <event-label>OpenNMS-defined trouble ticket event: A request has been made to cancel a trouble ticket
+        </event-label>
+        <descr>
+            This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+            for canceling an existing trouble ticket.
+        </descr>
+        <logmsg dest="logndisplay">
+            A request has been generated to cancel a trouble ticket.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/troubleTicket/communicationError</uei>
+        <event-label>OpenNMS-defined trouble ticket event: A communication error occurred</event-label>
+        <descr>
+            This event is generated when OpenNMS is unable to retrive, save or update a ticket
+            via the Trouble Ticket API.
+        </descr>
+        <logmsg dest="logndisplay">
+            A communication error occurred between OpenNMS and the Trouble Ticket system.
+            Communications failed with reason: %parm[reason]%.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>

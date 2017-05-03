@@ -41,13 +41,14 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -105,7 +106,7 @@ public class NewtsPersisterIT {
 
         int nodeId = 1;
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageDir()).thenReturn(new File(Integer.toString(nodeId)));
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get(Integer.toString(nodeId)));
         NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
 
         // Build a collection set with a single sample

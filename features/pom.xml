@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features</name>
+  <name>OpenNMS :: Features</name>
   <modules>
 
     <!-- ActiveMQ broker -->
@@ -26,6 +26,12 @@
     <!-- Events -->
     <module>events</module>
 
+    <!-- Graphml -->
+    <module>graphml</module>
+
+    <!-- Executor factories -->
+    <module>executor-factory</module>
+
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
     <module>jdbc-collector</module>
@@ -40,7 +46,7 @@
 
     <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
-    <module>remote-poller-jnlp</module>
+    <module>remote-poller-jnlp</module> 
     <module>remote-poller-gwt</module>
 
     <!-- OpenNMS Ticketing API and implementations -->
@@ -49,6 +55,9 @@
 
     <!-- OpenNMS Resource CLI tool -->
     <module>resource-cli</module>
+
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
 
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
@@ -78,22 +87,14 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
-    <!-- GWT UI plugins -->
-    <module>node-page-list</module>
-    <module>opennms-gwt-theme</module>
-    <module>gwt-bootstrap</module>
-    <module>gwt-suggestion-combobox</module>
-    <module>gwt-ksc-combobox</module>
-    <module>gwt-ksc-add</module>
-    <module>gwt-graph-resource-list</module>
-    <module>gwt-snmpselect-list</module>
-    <module>gwt-tableresources</module>
-
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
+
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
 
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
@@ -110,6 +111,7 @@
 
     <!-- Other projects -->
     <module>geocoder</module>
+    <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
     <module>ncs</module>
@@ -117,10 +119,20 @@
     <module>system-report</module>
     <module>timeseries-evaluate</module>
 
+    <!-- Elasticsearch event-forwarder-->
+    <module>elasticsearch</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
+
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
     
-    <!-- ReST Elastic Search Integration -->
+    <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
     
     <!-- Alarm Change Notifier -->
@@ -128,6 +140,8 @@
     
     <!-- Internal Plugins Descriptor -->
     <module>internal-plugins-descriptor</module>
-    
+
+    <!-- Event Integration Facility Adapter -->
+    <module>eif-adapter</module>
   </modules>
 </project>

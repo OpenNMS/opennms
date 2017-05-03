@@ -146,6 +146,10 @@ public class Criteria implements Cloneable {
         m_class = clazz;
     }
 
+    public void setClass(Class<?> m_class) {
+        this.m_class = m_class;
+    }
+
     public final Class<?> getCriteriaClass() {
         return m_class;
     }

@@ -26,32 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.server;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
+import java.net.InetAddress;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * Top-level element for the opennms-server.xml
@@ -74,7 +61,8 @@ public class LocalServer implements Serializable {
      * Field m_defaultCriticalPathIp.
      */
     @XmlAttribute(name="defaultCriticalPathIp")
-    private String m_defaultCriticalPathIp;
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    private InetAddress m_defaultCriticalPathIp;
 
     /**
      * Field m_defaultCriticalPathService.
@@ -122,8 +110,8 @@ public class LocalServer implements Serializable {
      * 
      * @return the value of field 'DefaultCriticalPathIp'.
      */
-    public String getDefaultCriticalPathIp() {
-        return m_defaultCriticalPathIp == null? "" : m_defaultCriticalPathIp;
+    public InetAddress getDefaultCriticalPathIp() {
+        return m_defaultCriticalPathIp;
     }
 
     /**
@@ -195,54 +183,12 @@ public class LocalServer implements Serializable {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
      * Sets the value of field 'defaultCriticalPathIp'.
      * 
      * @param ip the value of field
      * 'defaultCriticalPathIp'.
      */
-    public void setDefaultCriticalPathIp(final String ip) {
+    public void setDefaultCriticalPathIp(final InetAddress ip) {
         m_defaultCriticalPathIp = ip;
     }
 
@@ -295,31 +241,6 @@ public class LocalServer implements Serializable {
      */
     public void setVerifyServer(final String verifyServer) {
         m_verifyServer = verifyServer;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.config.server.LocalServer
-     */
-    public static LocalServer unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (LocalServer) Unmarshaller.unmarshal(org.opennms.netmgt.config.server.LocalServer.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
     @Override

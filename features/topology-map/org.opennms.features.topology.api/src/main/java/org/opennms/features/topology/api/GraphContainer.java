@@ -32,22 +32,38 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.VaadinApplicationContext;
 
 import com.vaadin.data.Property;
 
 public interface GraphContainer extends DisplayState {
 
-    public interface ChangeListener {
-        public void graphChanged(GraphContainer graphContainer);
+    interface ChangeListener {
+        void graphChanged(GraphContainer graphContainer);
     }
 
-    GraphProvider getBaseTopology();
+    /**
+     * Callback which is invoked after the {@link GraphProvider} has been changed.
+     *
+     * @see #selectTopologyProvider(GraphProvider, Callback...)
+     */
+    interface Callback {
+        /**
+         * is invoked after the {@link GraphProvider} has changed.
+         *
+         * @param graphContainer The container
+         * @param graphProvider The new graph provider
+         */
+        void callback(GraphContainer graphContainer, GraphProvider graphProvider);
+    }
 
-    void setBaseTopology(GraphProvider graphProvider);
+    void setMetaTopologyId(String metaTopologyId);
+
+    String getMetaTopologyId();
+
+    TopologyServiceClient getTopologyServiceClient();
 
     Criteria[] getCriteria();
 
@@ -57,6 +73,14 @@ public interface GraphContainer extends DisplayState {
 
     // clears all criteria which are currently sets
     void clearCriteria();
+
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param graphProvider the provider to select.
+     * @param callbacks callbacks to invoke after the provider has been selected (e.g. apply semantic zoom level, etc)
+     */
+    void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks);
 
     void addChangeListener(ChangeListener listener);
 
@@ -68,29 +92,51 @@ public interface GraphContainer extends DisplayState {
 
     Graph getGraph();
 
+    void setApplicationContext(VaadinApplicationContext applicationContext);
+
     AutoRefreshSupport getAutoRefreshSupport();
 
     boolean hasAutoRefreshSupport();
 
     Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
-    
+
+    void setSelectedNamespace(String namespace);
+
     MapViewManager getMapViewManager();
 
     Property<Double> getScaleProperty();
 
-    StatusProvider getVertexStatusProvider();
-
-    void setVertexStatusProvider(StatusProvider statusProvider);
-
-    Set<EdgeStatusProvider> getEdgeStatusProviders();
-
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();
 
-    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setSessionId(String sessionId);
+    VaadinApplicationContext getApplicationContext();
 
     void setDirty(boolean dirty);
     
     void fireGraphChanged();
+
+    /**
+     * Allows queriing the {@link GraphContainer} for specific types of criteria.
+     *
+     * @param criteriaType The type to look for. May not be null.
+     * @param <T> The criteria class.
+     * @return All criteria assigned to this {@link GraphContainer} which are of the same type (or a sub type) of <code>criteriaType</code>.
+     */
+    <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType);
+
+    /**
+     * Does the same as {@link #findCriteria(Class)}, but only returns one Criteria. If multiple criteria for the same
+     * type are found, the first one is returned. No exception is thrown in that case.
+     *
+     * @param criteriaType The type to look for.
+     * @param <T> The criteria class.
+     * @return The first found criteria, or null if none is found.
+     */
+    <T extends Criteria> T findSingleCriteria(Class<T> criteriaType);
+
+    IconManager getIconManager();
+
+    void setIconManager(IconManager iconManager);
+
+    void saveLayout();
 }

@@ -464,7 +464,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     }
 
     /**
-     * Takes a list of castor generated MibObj objects iterates over them
+     * Takes a list of MibObj objects iterates over them
      * creating corresponding MibObject objects and adding them to the supplied
      * MibObject list.
      * @param groupName TODO
@@ -477,7 +477,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
      */
     private void processObjectList(final String groupName, final String groupIfType, final List<MibObj> objectList, final List<MibObject> mibObjectList) {
         for (final MibObj mibObj : objectList) {
-            // Create a MibObject from the castor MibObj
+            // Create a MibObject from the XML MibObj
             final MibObject aMibObject = new MibObject();
             aMibObject.setGroupName(groupName);
             aMibObject.setGroupIfType(groupIfType);

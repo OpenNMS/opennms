@@ -30,6 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -161,7 +162,7 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap<String, Object>());
+            PollStatus pollResult = monitor.poll(service, Collections.emptyMap());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -385,7 +386,7 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(0, anticipator.unanticipatedEvents().size());
+        assertEquals(0, anticipator.getUnanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
         Event nodeEvent = MockEventUtil.createNodeDownEvent("Test", node);
@@ -394,7 +395,7 @@ public class MockNetworkTest extends TestCase {
         m_eventMgr.sendNow(nodeEvent);
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
     
@@ -402,9 +403,8 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddressUtils.addr("1.1.1.1"), "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap<String, Object>());
+        monitor.poll(svc, Collections.emptyMap());
         assertEquals(1, m_network.getInvalidPollCount());
-
     }
 
     public void testLookupNotThere() {
@@ -663,7 +663,7 @@ public class MockNetworkTest extends TestCase {
 
         assertEquals(1, anticipator.waitForAnticipated(1500).size());
         assertEquals(0, anticipator.waitForAnticipated(1000).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
 

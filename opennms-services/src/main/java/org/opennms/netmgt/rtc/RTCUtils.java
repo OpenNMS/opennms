@@ -35,11 +35,9 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.api.CatFactory;
-import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.config.categories.CategoryGroup;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
@@ -79,22 +77,16 @@ public abstract class RTCUtils {
 		} catch (IOException ex) {
 			LOG.error("Failed to load categories information", ex);
 			throw new UndeclaredThrowableException(ex);
-		} catch (MarshalException ex) {
-			LOG.error("Failed to load categories information", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-			LOG.error("Failed to load categories information", ex);
-			throw new UndeclaredThrowableException(ex);
 		}
 
 		HashMap<String, RTCCategory> retval = new HashMap<String, RTCCategory>();
 
 		cFactory.getReadLock().lock();
 		try {
-			for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
+			for (CategoryGroup cg : cFactory.getConfig().getCategoryGroups()) {
 				final String commonRule = cg.getCommon().getRule();
 
-				for (final org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
+				for (final org.opennms.netmgt.config.categories.Category cat : cg.getCategories()) {
 					RTCCategory rtcCat = new RTCCategory(cat, commonRule);
 					retval.put(rtcCat.getLabel(), rtcCat);
 				}

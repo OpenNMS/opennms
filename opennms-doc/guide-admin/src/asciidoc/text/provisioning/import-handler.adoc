@@ -4,18 +4,69 @@
 
 === Import Handlers
 
+The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
+
+One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL.
+Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
+However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs.
+For example a requisition can be retrieving the using HTTP protocol: http://myinventory.server.org/nodes.cgi
+
+In addition to the standard protocols supported by Java, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
+
+==== Generic Handler
+
+The generic handler is made available using URLs of the form: requisition://type?param=1;param=2
+
+Using these URLs various type handlers can be invoked, both locally and via a _Minion_.
+
+In addition to the type specific parameters, the following parameters are supported:
+
+.General parameters
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                    | Required | Default value
+| `location`             | The name of location at which the handler should be run                        | optional | Default
+| `ttl`                  | The maximum number of miliseconds to wait for the handler when ran remotely    | optional | 20000
+|===
+
+See the relevant sections bellow for additional details on the support types.
+
+The `provision:show-import` command available via the _Karaf Shell_ can be used to show the results of an import (without persisting or triggering the import):
+
+[source]
+----
+provision:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
+----
+
 ==== File Handler
+
+Examples:
+
+.Simple
+
+ file:///path/to/my/requisition.xml
+
+.Using the generic handler
+
+ requisition://file?path=/path/to/my/requisition.xml;location=MINION
 
 ==== HTTP Handler
 
+Examples:
+
+.Simple
+
+ http://myinventory.server.org/nodes.cgi
+
+.Using the generic handler
+
+ requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
+
+TIP: When using the generic handler, the URL should be "URL encoded".
+
 ==== DNS Handler
 
-The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
-
-One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL. Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
-However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs specifying the HTTP protocol: http://myinventory.server.org/nodes.cgi
-
-Now, using Java's extensible protocol handling specification, a new protocol handler was created so that a URL can be specified for requesting a _Zone Transfer (AXFR) request_ from a DNS server.
+The DNS handler requests a _Zone Transfer (AXFR) request_ from a DNS server.
 The A records are recorded and used to build an import requisition.
 This is handy for organizations that use DNS (possibly coupled with an IP management tool) as the data base of record for nodes in the network.
 So, rather than ping sweeping the network or entering the nodes manually into {opennms-product-name} Provisioning UI, nodes can be managed via 1 or more DNS servers.

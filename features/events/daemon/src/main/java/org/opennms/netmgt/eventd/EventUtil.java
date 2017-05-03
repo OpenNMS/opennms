@@ -31,6 +31,7 @@ package org.opennms.netmgt.eventd;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -54,10 +55,85 @@ public interface EventUtil {
 
 	void expandMapValues(Map<String, String> parmMap, Event event);
 
-	String getValueOfParm(String tagUei, Event m_svcLostEvent);
-
 	String getHostName(int nodeId, String hostip) throws SQLException;
 
 	String getEventHost(Event event);
 
+	/**
+	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
+	 * nodeId and ipAddr.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 * @param ipAddr
+	 *            Interface IP address
+	 *
+	 * @return ifAlias Retreived ifAlias
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	String getIfAlias(long nodeId, String ipAddr) throws SQLException;
+
+	/**
+	 * Helper method.
+	 *
+	 * @param parm
+	 * @param nodeId
+	 * @return The value of an asset field based on the nodeid of the event
+	 */
+	String getAssetFieldValue(String parm, long nodeId);
+
+	/**
+	 * Retrieve foreign id from the node table of the database given a particular nodeId.
+	 *
+	 * @param nodeId Node identifier
+	 * @return foreignId Retrieved foreign id
+	 * @throws SQLException if database error encountered
+	 */
+	String getForeignId(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve foreign source from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return foreignSource Retrieved foreign source
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	String getForeignSource(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve nodeLabel from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return nodeLabel Retreived nodeLabel
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	String getNodeLabel(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve nodeLocation from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return nodeLocation Retrieved nodeLocation
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	String getNodeLocation(long nodeId) throws SQLException;
+
+	ExpandableParameterResolver getResolver(String token);
 }

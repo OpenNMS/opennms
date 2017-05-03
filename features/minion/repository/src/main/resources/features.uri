@@ -1,0 +1,2 @@
+mvn:org.opennms.karaf/opennms/${project.version}/xml/minion
+mvn:io.hawt/hawtio-karaf/${minionHawtioVersion}/xml/features

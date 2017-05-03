@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,11 +40,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.nrtg.api.ProtocolCollector;
 import org.opennms.nrtg.api.model.CollectionJob;
 import org.opennms.nrtg.api.model.DefaultCollectionJob;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,13 +56,17 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Markus Neumann
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:SnmpProtocolCollectorTestContext.xml"})
-@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:SnmpSample.properties")
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/SnmpProtocolCollectorTestContext.xml"
+})
+@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:/SnmpSample.properties")
 public class SnmpProtocolCollectorTest implements InitializingBean {
 
     @Autowired
-    private ProtocolCollector protocolCollector;
-    
+    private SnmpProtocolCollector protocolCollector;
+
     private CollectionJob collectionJob;
     private InetAddress localhost;
     private SnmpAgentConfig snmpAgentConfig;
@@ -78,6 +81,7 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        protocolCollector.setNodeDao(new MockNodeDao());
     }
 
     @Before

@@ -30,15 +30,19 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-    public TestTopologyProvider(String namespace) {
+    public TestTopologyProvider() {
         super("test");
         
         resetContainer();
@@ -59,40 +63,40 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public void save() {
-        // Do nothing
-    }
-
-    @Override
     public void refresh() {
-        // Do nothing
-    }
-
-    @Override
-    public Criteria getDefaultCriteria() {
-        return null;
-    }
-
-    @Override
-    public void load(String filename) {
         clearEdges();
         clearVertices();
-        
+
         List<TestVertex> vertices = new ArrayList<TestVertex>();
-        
+
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestVertex(vId1, 0, 0);
         v1.setLabel("a leaf vertex");
-        
+
         vertices.add(v1);
-        
+
         String vId2 = getNextVertexId();
         TestVertex v2 = new TestVertex(vId2, 0, 0);
         v2.setLabel("another leaf");
         vertices.add(v2);
-        
+
         addVertices(vertices.toArray(new Vertex[0]));
-        
+
         connectVertices(v1, v2);
+    }
+
+    @Override
+    public Defaults getDefaults() {
+        return new Defaults();
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return SelectionChangedListener.Selection.NONE;
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return false;
     }
 }

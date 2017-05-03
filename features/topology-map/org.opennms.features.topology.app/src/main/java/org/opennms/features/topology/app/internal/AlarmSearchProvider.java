@@ -28,25 +28,24 @@
 
 package org.opennms.features.topology.app.internal;
 
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.AlarmHopCriteria;
-import org.opennms.features.topology.app.internal.support.AlarmHopCriteriaFactory;
-import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
@@ -60,40 +59,42 @@ import org.slf4j.LoggerFactory;
  * <AlarmHopCriteria> supports adding all the nodes having the selected UEI or Severity.
  * 
  * TODO: Improve the label to support showing how many vertices are supported
- * TODO: Add support for severity searching and collapsing
- * 
- * FIXME:  
- * by each <SearchResult>
+ * TODO: Add support for severity searching and collapsing by each <SearchResult>
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class AlarmSearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class AlarmSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
+
+	private final static String CONTRIBUTES_TO_NAMESPACE = "nodes";
 
 	private static Logger LOG = LoggerFactory.getLogger(AlarmSearchProvider.class);
-	
-    private AlarmDao m_alarmDao;
-    private AlarmHopCriteriaFactory m_alarmHopFactory;
 
-	public AlarmSearchProvider(AlarmDao dao) {
-    	m_alarmDao = dao;
-    	m_alarmHopFactory = new AlarmHopCriteriaFactory(m_alarmDao);
-    }
+	private AlarmProvider alarmProvider;
 
-    @Override
+	public AlarmSearchProvider(AlarmProvider alarmProvider) {
+		this.alarmProvider = Objects.requireNonNull(alarmProvider);
+	}
+
+	@Override
     public String getSearchProviderNamespace() {
         return AlarmHopCriteria.NAMESPACE;
     }
 
     @Override
     public boolean contributesTo(String namespace) {
-        return "nodes".equals(namespace);
+        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
     }
-    
-    public class AlarmSearchResult extends SearchResult {
+
+	@Override
+	public Criteria buildCriteriaFromQuery(SearchResult input) {
+		AlarmHopCriteria criteria = createCriteria(input);
+		return criteria;
+	}
+
+	public class AlarmSearchResult extends SearchResult {
         
         private Integer m_alarmId;
-        private Integer m_nodeId;
         private String m_nodeLabel;
         private boolean m_severityQuery = false;
         
@@ -106,14 +107,6 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
             m_alarmId = alarmId;
         }
         
-        public Integer getNodeId() {
-            return m_nodeId;
-        }
-        
-        public void setNodeId(Integer nodeId) {
-            m_nodeId = nodeId;
-        }
-        
         public String getNodeLabel() {
             return m_nodeLabel;
         }
@@ -122,26 +115,21 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
             m_nodeLabel = nodeLabel;
         }
         
-        public AlarmSearchResult (Integer alarmId, Integer nodeId, String nodeLabel) {
-            this(alarmId, nodeId, nodeLabel, null);
-        }
-        
-        public AlarmSearchResult (Integer alarmId, Integer nodeId, String nodeLabel, String query) {
-            super(getSearchProviderNamespace(), String.valueOf(nodeId)+":"+String.valueOf(alarmId), nodeLabel, query);
+        public AlarmSearchResult (Integer alarmId, String nodeLabel, String query, boolean collapsed) {
+            super(getSearchProviderNamespace(), String.valueOf(alarmId), nodeLabel, query, SearchResult.COLLAPSIBLE, collapsed);
             
             this.setAlarmId(alarmId);
-            this.setNodeId(nodeId);
             this.setNodeLabel(nodeLabel);
         }
         
         public AlarmSearchResult(String id) {
-            super(getSearchProviderNamespace(), id, id, id);
+            super(getSearchProviderNamespace(), id, id, id, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
         }
 
         public AlarmSearchResult(SearchResult searchResult) {
-            super(getSearchProviderNamespace(), searchResult.getId(), searchResult.getLabel(), searchResult.getQuery());
-            this.setAlarmId(null);
-            this.setNodeId(null);
+            super(getSearchProviderNamespace(), searchResult.getId(), searchResult.getLabel(), searchResult.getQuery(),
+					searchResult.isCollapsible(), searchResult.isCollapsed());
+            this.setAlarmId(Integer.valueOf(searchResult.getId()));
             this.setNodeLabel(searchResult.getLabel());
             this.setSeverityQuery(false);
         }
@@ -164,62 +152,47 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
      */
     @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-    	LOG.info("SearchProvider->query: called with search query: '{}'", searchQuery);
+    	LOG.info("SearchProvider.query: called with search query: '{}'", searchQuery);
 
-        final List<SearchResult> results = new ArrayList<SearchResult>();
-        
+        final List<SearchResult> results = new ArrayList<>();
 		final String queryString = searchQuery.getQueryString();
-		
 		if (!isAlarmQuery(queryString)) {
-			LOG.debug("SearchProvider->query: query not Alarm compatible.");
+			LOG.debug("SearchProvider.query: query not Alarm compatible.");
 			return results;
 		}
 		
 		List<OnmsAlarm> alarms = findAlarms(results, queryString);
+		if (!alarms.isEmpty()) {
+            try {
+                LOG.debug("SearchProvider.query: building search result from set of alarms.");
+                Set<AlarmSearchResult> queryResults = buildResults(queryString, alarms);
 
-		if (alarms.size() == 0) {
-		    return results;
-		}
-		
-		try {
-            LOG.info("SearchProvider->query: building search result from set of alarms.");
-		    Set<AlarmSearchResult> queryResults = buildResults(queryString, alarms);
+                //Put the alarm search results into a compatible result set for the graph container
+                for (AlarmSearchResult result : queryResults) {
+                    if (findCriterion(result, graphContainer) == null) { // if not already added, add
+                        results.add(result);
+                    }
+                }
+                LOG.debug("SearchProvider.query: found: '{}' alarms.", alarms.size());
+            } catch (Exception e) {
+                LOG.error("SearchProvider-query: caught exception during alarm query: {}", e);
+            }
+        }
 
-		    //Put the alarm search results into a compatible result set for the graph container
-		    IPLOOP: for (AlarmSearchResult result : queryResults) {
-
-		        if (findCriterion(result, graphContainer) != null) {
-		            continue IPLOOP;
-
-		        } else {
-		            results.add(result);
-		            
-		        }
-		    }
-
-		    LOG.info("SearchProvider->query: found: '{}' alarms.", alarms.size());
-
-		} catch (Exception e) {
-		    LOG.error("SearchProvider-query: caught exception during alarm query: {}", e);
-
-		}
-
-		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
+		LOG.info("SearchProvider.query: built search result with {} results.", results.size());
 		return results;
     }
 
     private Set<AlarmSearchResult> buildResults(final String queryString, List<OnmsAlarm> alarms) {
-        Set<AlarmSearchResult> queryResults = new HashSet<AlarmSearchResult>();
+        Set<AlarmSearchResult> queryResults = new HashSet<>();
 
-        LOG.info("SearchProvider->query: creating alarm results set.");
-        
+        LOG.debug("SearchProvider.query: creating alarm results set.");
         for (OnmsAlarm alarm : alarms) {
             String nodeLabel = alarm.getNodeLabel();
-            LOG.debug("SearchProvider->query: adding '{}' to set of results.", nodeLabel);
+            LOG.debug("SearchProvider.query: adding '{}' to set of results.", nodeLabel);
 
-            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeId(), alarm.getNodeLabel(), queryString);
+            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeLabel(), queryString, !SearchResult.COLLAPSED);
             queryResults.add(result);
-
         }
         return queryResults;
     }
@@ -234,19 +207,18 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
         if (!OnmsSeverity.INDETERMINATE.equals(severity)) {
             bldr = new CriteriaBuilder(OnmsAlarm.class);
             bldr.eq("severity", severity);
-            alarms = m_alarmDao.findMatching(bldr.toCriteria());
-            
+            alarms = alarmProvider.findMatchingAlarms(bldr.toCriteria());
+
             if (alarms.size() > 0) {
                 AlarmSearchResult result = new AlarmSearchResult(queryString);
                 result.setSeverityQuery(true);
                 results.add(result);
             }
-            
         } else {
             
             bldr.isNotNull("node").ilike("uei", "%"+queryString+"%").orderBy("node");
-            alarms = m_alarmDao.findMatching(bldr.toCriteria());
-            
+            alarms = alarmProvider.findMatchingAlarms(bldr.toCriteria());
+
         }
         return alarms;
     }
@@ -259,8 +231,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
      * @return true if the string is found in logmsg, description, UEI or severity
      */
     private boolean isAlarmQuery(String queryString) {
-        
-        //TODO: find away to throttle the queries
+        //TODO: find a way to throttle the queries
         if (queryString.length() > 3) {
             return true;
         } else {
@@ -270,41 +241,37 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return supportsPrefix("alarm=", searchPrefix);
+        return supportsPrefix(AlarmHopCriteria.NAMESPACE+"=", searchPrefix);
     }
 
     //FIXME so that the focus button works.???
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-    	
-    	LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
-    	org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult, container);
+    	LOG.debug("SearchProvider.getVertexRefsBy: called with search result: '{}'", searchResult);
+    	Criteria criterion = findCriterion(searchResult, container);
     	
     	Set<VertexRef> vertices = ((AlarmHopCriteria)criterion).getVertices();
-    	LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
-    	
+    	LOG.debug("SearchProvider.getVertexRefsBy: found '{}' vertices.", vertices.size());
 		return vertices;
     	
     }
     
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-    	// TODO Auto-generated method stub
-    	LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
+    	LOG.trace("SearchProvider.onCenterSearchResult: called with search result: '{}'", searchResult);
     	super.onCenterSearchResult(searchResult, graphContainer);
     }
     
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	// TODO Auto-generated method stub
-    	LOG.debug("SearchProvider->onFocusSearchResult: called with search result: '{}'", searchResult);
+    	LOG.trace("SearchProvider.onFocusSearchResult: called with search result: '{}'", searchResult);
     	super.onFocusSearchResult(searchResult, operationContext);
 
     }
     
     @Override
     public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	LOG.debug("SearchProvider->onDefocusSearchResult: called with search result: '{}'", searchResult);
+    	LOG.debug("SearchProvider.onDefocusSearchResult: called with search result: '{}'", searchResult);
     	super.onDefocusSearchResult(searchResult, operationContext);
 
     }
@@ -316,7 +283,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
      */
 	@Override
 	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
+        LOG.debug("SearchProvider.addVertexHopCriteria: called with search result: '{}'", searchResult);
         
         AlarmSearchResult aResult = new AlarmSearchResult(searchResult);
         
@@ -326,69 +293,61 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
         if (!OnmsSeverity.get(query).equals(OnmsSeverity.INDETERMINATE)) {
             aResult.setSeverityQuery(true);
         } else {
-            aResult.setAlarmId(Integer.valueOf(id.substring(id.indexOf(':')+1)));
-            aResult.setNodeId(Integer.valueOf(id.substring(0, id.indexOf(':'))));
+            aResult.setAlarmId(Integer.valueOf(id));
             aResult.setSeverityQuery(false);
         }
-        
-        container.addCriteria(m_alarmHopFactory.createCriteria(aResult));
-        
-        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", m_alarmHopFactory.createCriteria(aResult));
+
+        container.addCriteria(new AlarmHopCriteria(aResult, alarmProvider));
+
+        LOG.debug("SearchProvider.addVertexHop: adding hop criteria {}.", new AlarmHopCriteria(aResult, alarmProvider));
 	}
 
 	@Override
 	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-    	LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-		org.opennms.features.topology.api.topo.Criteria criterian = findCriterion(searchResult, container);
-		
-		if (criterian != null) {
-			container.removeCriteria(criterian);
+    	LOG.debug("SearchProvider.removeVertexHopCriteria: called with search result: '{}'", searchResult);
+		Criteria criterion = findCriterion(searchResult, container);
+
+		if (criterion != null) {
+			container.removeCriteria(criterion);
 		}
 	}
 	
 	@Override
 	public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
-    	LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
+    	LOG.debug("SearchProvider.onToggleCollapse: called with search result: '{}'", searchResult);
     	
         CollapsibleCriteria criteria = getMatchingCriteriaById(graphContainer, searchResult.getId());
         if (criteria != null) {
             criteria.setCollapsed(!criteria.isCollapsed());
             graphContainer.redoLayout();
         }
-        
 	}
 
 	//FIXME: Should only allow there to be one criteria in the container that matches a single node
 	private AlarmHopCriteria findCriterion(SearchResult result, GraphContainer container) {
-
-	    AlarmHopCriteria aCriterion = null;
-	    
 		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-		for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
+		for (Criteria criterion : criteria) {
 			if (criterion instanceof AlarmHopCriteria) {
-				
 				AlarmSearchResult searchResult = ((AlarmHopCriteria) criterion).getSearchResult();
-				
 				if (searchResult.equals(result)) {
-					aCriterion = (AlarmHopCriteria) criterion;
-					break;
+					return (AlarmHopCriteria) criterion;
 				}
 			}
 		}
-		
-		return aCriterion;
+	    return null;
 	}
-	
 
     private static CollapsibleCriteria getMatchingCriteriaById(GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
-        for (CollapsibleCriteria criterium : criteria) {
-            if (criterium.getId().equals(id)) {
-                return criterium;
+        for (CollapsibleCriteria criterion : criteria) {
+            if (criterion.getId().equals(id)) {
+                return criterion;
             }
         }
         return null;
     }
-	
-	
+
+    private AlarmHopCriteria createCriteria(SearchResult searchResult) {
+		return new AlarmHopCriteria(new AlarmSearchResult(searchResult), alarmProvider);
+	}
 }

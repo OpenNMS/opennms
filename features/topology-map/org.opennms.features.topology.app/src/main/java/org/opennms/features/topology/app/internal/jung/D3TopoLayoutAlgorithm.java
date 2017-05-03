@@ -28,34 +28,33 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import edu.uci.ics.jung.graph.SparseGraph;
+import java.awt.Dimension;
+import java.util.Collection;
+
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import java.awt.*;
-import java.util.Collection;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 public class D3TopoLayoutAlgorithm extends AbstractLayoutAlgorithm {
     @Override
-    public void updateLayout(GraphContainer graphContainer) {
-        Graph g = graphContainer.getGraph();
-
-        final Layout graphLayout = g.getLayout();
+    public void updateLayout(Graph graph) {
+        final Layout graphLayout = graph.getLayout();
 
         SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-        Collection<Vertex> vertices = g.getDisplayVertices();
+        Collection<Vertex> vertices = graph.getDisplayVertices();
 
         for(Vertex v : vertices) {
             jungGraph.addVertex(v);
         }
 
-        Collection<Edge> edges = g.getDisplayEdges();
+        Collection<Edge> edges = graph.getDisplayEdges();
 
         for(Edge e : edges) {
             jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
@@ -63,7 +62,7 @@ public class D3TopoLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
         D3TopoLayout<VertexRef, EdgeRef> layout = new D3TopoLayout<VertexRef, EdgeRef>(jungGraph);
         // Initialize the vertex positions to the last known positions from the layout
-        Dimension size = selectLayoutSize(graphContainer);
+        Dimension size = selectLayoutSize(graph);
         layout.setInitializer(initializer(graphLayout, (int)size.getWidth()/2, (int)size.getHeight()/2));
         // Resize the graph to accommodate the number of vertices
         layout.setSize(size);
@@ -74,7 +73,7 @@ public class D3TopoLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
         // Store the new positions in the layout
         for(Vertex v : vertices) {
-            graphLayout.setLocation(v, (int)layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2));
+            graphLayout.setLocation(v, new Point(layout.getX(v) - (size.getWidth()/2), layout.getY(v) - (size.getHeight()/2)));
         }
     }
 }

@@ -34,17 +34,14 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.ncs</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.ncs</groupId>
-  <artifactId>ncs-drools</artifactId>
-  <name>OpenNMS Features NCS Correlation Rules</name>
+  <artifactId>org.opennms.features.ncs.ncs-drools</artifactId>
+  <name>OpenNMS :: Features :: NCS :: Correlation Rules</name>
   <url>http://maven.apache.org</url>
   <packaging>bundle</packaging>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
@@ -60,31 +57,6 @@
             <phase>package</phase>
             <goals>
               <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
-          <forkMode>pertest</forkMode>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>     
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
             </goals>
           </execution>
         </executions>
@@ -108,7 +80,7 @@
   
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-persistence</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-persistence</artifactId>
     </dependency>
 
     <dependency>
@@ -153,14 +125,8 @@
     </dependency>
     
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-test</artifactId>
+      <artifactId>org.opennms.features.ncs.ncs-test</artifactId>
       <scope>test</scope>
     </dependency>
     

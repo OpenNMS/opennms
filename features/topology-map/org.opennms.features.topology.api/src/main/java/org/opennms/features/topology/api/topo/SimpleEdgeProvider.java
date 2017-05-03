@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -64,18 +65,23 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
         @Override
         public int hashCode() {
-            return m_namespace.hashCode() * 31 + m_regex.hashCode();
+            return Objects.hash(m_namespace, m_regex);
         }
 
         @Override
         public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
             if (obj instanceof MatchingCriteria) {
                 MatchingCriteria c = (MatchingCriteria) obj;
-                return c.getNamespace().equals(this.getNamespace()) && c.m_regex.equals(this.m_regex);
-            }else {
-                return false;
+                boolean equals = Objects.equals(c.m_namespace, m_namespace) && Objects.equals(c.m_regex, m_regex);
+				return equals;
             }
-
+			return false;
         }
 
         public  boolean matches(Edge edge){
@@ -103,7 +109,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public String getEdgeNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 	
@@ -127,7 +133,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	}
 
 	private Edge getSimpleEdge(EdgeRef reference) {
-		if (getEdgeNamespace().equals(reference.getNamespace())) {
+		if (getNamespace().equals(reference.getNamespace())) {
 			if (reference instanceof Edge) {
 				return Edge.class.cast(reference);
 			} else {
@@ -236,7 +242,7 @@ public class SimpleEdgeProvider implements EdgeProvider {
 					Edge next = itr.next();
 					if (
 						matchingCriteria.getType() == Criteria.ElementType.EDGE &&
-						matchingCriteria.getNamespace() == getEdgeNamespace() &&
+						matchingCriteria.getNamespace() == getNamespace() &&
 						!matchingCriteria.matches(next)
 					) {
 						itr.remove();
@@ -255,4 +261,8 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		fireEdgesRemoved(all);
 	}
 
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeMap.size();
+	}
 }

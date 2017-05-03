@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 /**
  * <p>PollerConfig interface.</p>
@@ -343,11 +344,6 @@ public interface PollerConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, ServiceMonitor> getServiceMonitors();
-    
-    /**
-     * <p>releaseAllServiceMonitors</p>
-     */
-    public void releaseAllServiceMonitors();
 
     /**
      * <p>getServiceMonitor</p>
@@ -401,6 +397,8 @@ public interface PollerConfig {
      * @return a {@link java.util.Collection} object.
      */
     Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+
+    ServiceMonitorRegistry getServiceMonitorRegistry();
 
     /**
      * <p>getReadLock</p>

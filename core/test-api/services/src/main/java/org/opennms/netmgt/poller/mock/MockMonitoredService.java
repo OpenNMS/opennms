@@ -29,23 +29,26 @@
 package org.opennms.netmgt.poller.mock;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 
 public class MockMonitoredService implements MonitoredService {
     private final int m_nodeId;
     private String m_nodeLabel;
+    private final String m_nodeLocation;
     private final String m_ipAddr;
     private final String m_svcName;
     private InetAddress m_inetAddr;
 
-    public MockMonitoredService(int nodeId, String nodeLabel, InetAddress inetAddress, String svcName) throws UnknownHostException {
+    public MockMonitoredService(int nodeId, String nodeLabel, InetAddress inetAddress, String svcName) {
+        this(nodeId, nodeLabel, null, inetAddress, svcName);
+    }
+
+    public MockMonitoredService(int nodeId, String nodeLabel, String nodeLocation, InetAddress inetAddress, String svcName) {
         m_nodeId = nodeId;
         m_nodeLabel = nodeLabel;
+        m_nodeLocation = nodeLocation;
         m_inetAddr = inetAddress;
         m_svcName = svcName;
         m_ipAddr = InetAddressUtils.str(m_inetAddr);
@@ -76,17 +79,12 @@ public class MockMonitoredService implements MonitoredService {
     }
 
     @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        return new InetNetworkInterface(m_inetAddr);
+    public String getNodeLocation() {
+        return m_nodeLocation;
     }
 
     @Override
     public InetAddress getAddress() {
         return m_inetAddr;
-    }
-
-    @Override
-    public String getSvcUrl() {
-        return null;
     }
 }

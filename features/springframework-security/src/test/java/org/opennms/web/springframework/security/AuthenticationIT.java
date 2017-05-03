@@ -31,9 +31,12 @@ package org.opennms.web.springframework.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,13 +44,16 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.web.api.Authentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,8 +81,11 @@ public class AuthenticationIT implements InitializingBean {
     private AuthenticationProvider m_provider; 
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        Userinfo users = JaxbUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("src/test/resources/org/opennms/web/springframework/security/users.xml")));
+        assertNotNull(users);
+        m_userManager.saveUsers(users.getUsers().getUsers());
     }
 
     @Test
@@ -146,6 +155,15 @@ public class AuthenticationIT implements InitializingBean {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
+    }
+
+    @Test
+    public void testAdditionalRoles() {
+        System.setProperty("opennms.home", "src/test/resources");
+        List<String> roles = Authentication.getAvailableRoles();
+        Assert.assertTrue(roles.contains("ROLE_MANAGER"));
+        Assert.assertTrue(roles.contains("ROLE_OPERATOR"));
+        Assert.assertTrue(roles.contains("ROLE_USER"));
     }
 
     @Override

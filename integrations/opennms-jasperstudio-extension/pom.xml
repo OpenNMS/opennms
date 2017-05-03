@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-integrations</artifactId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>20.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>opennms-jasperstudio-extension</artifactId>
     <name>OpenNMS Integration for Jaspersoft Studio</name>
@@ -46,10 +46,6 @@
             <artifactId>jasper-extensions</artifactId>
             <version>${project.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.opennms.dependencies</groupId>
-                    <artifactId>castor-dependencies</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.opennms.dependencies</groupId>
                     <artifactId>jasper-dependencies</artifactId>

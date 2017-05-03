@@ -1,0 +1,61 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-packages]]
+=== Collection Packages
+
+To define more complex collection configuration it is possible to group _Service_ configurations which provide performance metrics into _Collection Packages_.
+They allow to assign to _Nodes_ different _Service Configurations_ to differentiate collection of performance metrics and connection settings.
+To assign a _Collection Package_ to nodes the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax can be used.
+
+Multiple packages can be configured, and an interface can exist in more than one package.
+This gives great flexibility how the service levels will be determined for a given device.
+The order how _Collection Packages_ are defined is important when _IP Interfaces_ match multiple _Collection Packages_ with the same _Service_ configuration.
+The last _Collection Package_ on the service will be applied.
+This can be used to define a less specific catch all filter for a default configuration.
+A more specific _Collection Package_ can be used to overwrite the default setting.
+
+.Collection Package Attributes
+[source, xml]
+----
+<package name="package1"><1>
+  <filter>IPADDR != '0.0.0.0'</filter><2>
+  <include-range begin="1.1.1.1" end="254.254.254.254"/><3>
+  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/><4>
+----
+<1> Unique name of the collection package.
+<2> Apply this package to all _IP interfaces_ with a configured _IPv4_ address (not equal `0.0.0.0`)
+<3> Evaluate _IPv4 rule_ to collect for all _IPv4 interfaces_ in the given range
+<4> Evaluate _IPv6 rule_ to collect for all _IPv6 interfaces_ in the given range
+
+[[ga-collectd-packages-services]]
+==== Service Configurations
+
+_Service Configurations_ define what _Collector_ to use and which performance metrics needs to be collected.
+_Service Configurations_ contains common _Service Attributes_ as well as _Collector_ specific parameters.
+
+.Service Configuration Attributes
+[source, xml]
+----
+<service name="SNMP"<1>
+         interval="300000"<2>
+         user-defined="false"<3>
+         status="on"><4>
+  <parameter key="collection" value="default"/><5>
+  <parameter key="thresholding-enabled" value="true"/><6>
+</service>
+
+<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/><7>
+----
+<1> Service Configuration name which is mapped to a specific _Collector_ implementation.
+<2> The interval at which the service is to be collected. (in milliseconds).
+<3> Marker to say if service is user defined, used specifically for UI purposes.
+<4> Service is collected only if on.
+<5> Assign performance data collection metric groups named `default`.
+<6> Enable threshold evaluation for metrics provided by this service.
+<7> Run the _SnmpCollector_ implementation for the service named `SNMP`
+
+[[ga-performance-management-collectd-configuration-xml]]
+.Configuration overview for data collection with Collectd
+image::performance-management/02_collectd-configuration-xml.png[]

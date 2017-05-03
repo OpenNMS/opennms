@@ -34,8 +34,6 @@ import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>NrpeDetector class.</p>
@@ -43,8 +41,7 @@ import org.springframework.stereotype.Component;
  * @author Donald Desloge
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     
     private static final String DEFAULT_SERVICE_NAME = "NRPE";

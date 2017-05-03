@@ -33,8 +33,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -43,7 +41,6 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
@@ -78,21 +75,17 @@ public class CollectorConfigDaoImplIT extends TestCase {
         return getClass().getResourceAsStream(fileName);
     }
 
-    public void testInstantiate() throws MarshalException, ValidationException, IOException, Exception {
+    public void testInstantiate() throws IOException, Exception {
         initialize();
     }
 
-    private void initialize() throws IOException, MarshalException, ValidationException, Exception {
+    private void initialize() throws IOException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
 
         InputStream stream = null;
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/test-database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
-        stream.close();
-
-        stream = getInputStreamForFile("/org/opennms/netmgt/config/jmx-datacollection-testdata.xml");
-        JMXDataCollectionConfigFactory.setInstance(new JMXDataCollectionConfigFactory(stream));
         stream.close();
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");

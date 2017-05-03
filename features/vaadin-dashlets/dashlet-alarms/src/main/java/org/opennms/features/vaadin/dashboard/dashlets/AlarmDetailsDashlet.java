@@ -42,11 +42,12 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -78,11 +80,11 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * The {@link AlarmDao} used
      */
-    private AlarmDao m_alarmDao;
+    private final AlarmDao m_alarmDao;
     /**
      * The {@link NodeDao} used
      */
-    private NodeDao m_nodeDao;
+    private final NodeDao m_nodeDao;
     /**
      * Helper for handling criterias
      */
@@ -98,7 +100,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * alarm table
      */
-    AlarmRepository m_alarmRepository;
+    private final AlarmRepository m_alarmRepository;
+
+    private final TransactionOperations m_transactionTemplate;
 
     /**
      * Constructor for instantiating new objects.
@@ -107,7 +111,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
         super(name, dashletSpec);
 
         /**
@@ -116,6 +120,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
+        m_transactionTemplate = transactionTemplate;
     }
 
     @Override
@@ -180,7 +185,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 private AlarmTable m_alarmTable;
 
                 {
-                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao), m_alarmRepository);
+                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao, m_transactionTemplate), m_alarmRepository);
 
                     m_alarmTable.setSizeFull();
 
@@ -247,7 +252,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     List<Restriction> restrictions = new LinkedList<Restriction>();
                     restrictions.add(new InRestriction("id", alarmIds));
 
-                    ((OnmsDaoContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+                    ((OnmsVaadinContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
 
                     setBoosted(checkBoosted(alarms));
 
@@ -349,7 +354,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
@@ -386,13 +391,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
-        lastEvent.setValue(onmsAlarm.getLastEventTime().toString());
+        lastEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()));
 
         Label firstEvent = new Label();
         firstEvent.setSizeUndefined();
         firstEvent.addStyleName("alert-details-font");
         firstEvent.setCaption("First event");
-        firstEvent.setValue(onmsAlarm.getFirstEventTime().toString());
+        firstEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getFirstEventTime()));
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);

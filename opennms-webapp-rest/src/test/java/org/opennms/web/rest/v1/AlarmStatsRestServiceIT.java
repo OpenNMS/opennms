@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
@@ -36,11 +37,13 @@ import java.io.FileInputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -103,11 +106,11 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private ServletContext m_servletContext;
 
-    private int count = 0;
+    private int m_eventCount = 0;
 
-	@Override
-	protected void afterServletStart() throws Exception {
-	    count = 0;
+    @Override
+    protected void afterServletStart() throws Exception {
+        m_eventCount = 0;
         MockLogAppender.setupLogging(true, "DEBUG");
         m_databasePopulator.populateDatabase();
         for (final OnmsEvent event : m_eventDao.findAll()) {
@@ -118,7 +121,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
             m_alarmDao.delete(alarm);
         }
         m_alarmDao.flush();
-	}
+    }
 
     @Test
     public void testGetAlarmStats() throws Exception {
@@ -192,16 +195,20 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final String newestUnackedXml = getXml("newestUnacked", xml);
 
         assertXpathMatches("should contain WARNING with ID#" + oldestAckedAlarm.getId(), oldestAckedXml, "//alarm[@severity='WARNING' and @id='" + oldestAckedAlarm.getId() + "']");
-        assertTrue(oldestAckedXml.contains("<firstEventTime>2010-01-01T00:00:00"));
+        assertEquals("oldest acked XML firstEventTime", 1262322000000L, getFirstEventTime(oldestAckedXml).getTimeInMillis());
 
         assertXpathMatches("should contain WARNING with ID#" + newestAckedAlarm.getId(), newestAckedXml, "//alarm[@severity='WARNING' and @id='" + newestAckedAlarm.getId() + "']");
-        assertTrue(newestAckedXml.contains("<firstEventTime>2010-01-01T01:00:00"));
+        assertEquals("newest acked XML firstEventTime", 1262325600000L, getFirstEventTime(newestAckedXml).getTimeInMillis());
 
         assertXpathMatches("should contain WARNING with ID#" + oldestUnackedAlarm.getId(), oldestUnackedXml, "//alarm[@severity='WARNING' and @id='" + oldestUnackedAlarm.getId() + "']");
-        assertTrue(oldestUnackedXml.contains("<firstEventTime>2010-01-01T02:00:00"));
+        assertEquals("oldest unacked XML firstEventTime", 1262329200000L, getFirstEventTime(oldestUnackedXml).getTimeInMillis());
 
         assertXpathMatches("should contain WARNING with ID#" + newestUnackedAlarm.getId(), newestUnackedXml, "//alarm[@severity='WARNING' and @id='" + newestUnackedAlarm.getId() + "']");
-        assertTrue(newestUnackedXml.contains("<firstEventTime>2010-01-01T03:00:00"));
+        assertEquals("newest unacked XML firstEventTime", 1262332800000L, getFirstEventTime(newestUnackedXml).getTimeInMillis());
+    }
+
+    private Calendar getFirstEventTime(String xmlFragment) {
+        return DatatypeConverter.parseDateTime(xmlFragment.replaceFirst(".*<firstEventTime>(.*?)</firstEventTime>.*", "$1"));
     }
 
     private String getXml(final String tag, final String xml) {
@@ -270,21 +277,21 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     protected OnmsEvent createEvent() {
         final Calendar c = new GregorianCalendar();
         c.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
-
-        long time = c.getTimeInMillis();
-        time = (time - (time % 1000));
-        final Date date = new Date(time + (count * 60 * 60 * 1000));
+        c.setTimeZone(TimeZone.getTimeZone("EST")); // test data assumes hours starting at midnight EST (not GMT)
+        c.set(Calendar.MILLISECOND, 0);
+        c.add(Calendar.HOUR_OF_DAY, m_eventCount); // no matter how big m_eventCount gets, this will still work
+        final Date date = c.getTime();
 
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_distPollerDao.whoami());
-        event.setEventUei("uei.opennms.org/test/" + count);
+        event.setEventUei("uei.opennms.org/test/" + m_eventCount);
         event.setEventCreateTime(date);
         event.setEventTime(date);
-        event.setEventDescr("Test event " + count);
+        event.setEventDescr("Test event " + m_eventCount);
         event.setEventDisplay("Y");
         event.setEventLog("Y");
         event.setEventHost("es-with-the-most-es");
-        event.setEventLogMsg("Test event " + count + " (log)");
+        event.setEventLogMsg("Test event " + m_eventCount + " (log)");
         event.setEventParms("test=parm(string,text)");
         event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AlarmStatsRestServiceTest");
@@ -295,7 +302,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_eventDao.save(event);
         m_eventDao.flush();
 
-        count++;
+        m_eventCount++;
 
         return event;
     }

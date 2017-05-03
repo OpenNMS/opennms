@@ -51,7 +51,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
  */
 @XmlRootElement(name="xml-group")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlGroup implements Serializable, Comparable<XmlGroup> {
+public class XmlGroup implements Serializable, Comparable<XmlGroup>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 2716588565159391498L;
@@ -91,6 +91,19 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
     /** The m_xml resource key. */
     @XmlElement(name="resource-key", required=false)
     private XmlResourceKey m_xmlResourceKey;
+
+    public XmlGroup() { }
+
+    public XmlGroup(XmlGroup copy) {
+        m_name = copy.m_name;
+        m_resourceType = copy.m_resourceType;
+        m_resourceXpath = copy.m_resourceXpath;
+        m_keyXpath = copy.m_keyXpath;
+        m_timestampXpath = copy.m_timestampXpath;
+        m_timestampFormat = copy.m_timestampFormat;
+        copy.m_xmlObjects.stream().forEach(o -> m_xmlObjects.add(o.clone()));
+        m_xmlResourceKey = copy.m_xmlResourceKey != null ? copy.m_xmlResourceKey.clone() : m_xmlResourceKey;
+    }
 
     /**
      * Gets the name.
@@ -317,5 +330,10 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup> {
             .isEquals();
         }
         return false;
+    }
+
+    @Override
+    public XmlGroup clone() {
+        return new XmlGroup(this);
     }
 }

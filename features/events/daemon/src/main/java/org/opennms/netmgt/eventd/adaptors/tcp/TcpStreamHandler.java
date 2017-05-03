@@ -39,10 +39,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -319,7 +321,7 @@ final class TcpStreamHandler implements Runnable {
 
             // process the events
             if (events != null && events.length != 0) {
-                final List<Event> okEvents = new ArrayList<Event>(events.length);
+                final Collection<Event> okEvents = new LinkedHashSet<>(events.length);
 
                 /*
                  * This synchronization loop will hold onto the lock
@@ -374,7 +376,7 @@ final class TcpStreamHandler implements Runnable {
                 if (hasReceipt) {
                     // Transform it to XML and send it to the socket in one call
                     try {
-                    	final Writer writer = new BufferedWriter(new OutputStreamWriter(m_connection.getOutputStream(), "UTF-8"));
+                    	final Writer writer = new BufferedWriter(new OutputStreamWriter(m_connection.getOutputStream(), StandardCharsets.UTF_8));
                     	JaxbUtils.marshal(receipt, writer);
                         writer.flush();
 

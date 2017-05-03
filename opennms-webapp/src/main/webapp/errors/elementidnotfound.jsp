@@ -33,22 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.element.*"
+	import="org.opennms.web.element.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-     ElementIdNotFoundException einfe = null;
-    
-    if( exception instanceof ElementIdNotFoundException ) {
-        einfe = (ElementIdNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        einfe = (ElementIdNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
-    
+    ElementIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, ElementIdNotFoundException.class);
 %>
 
 

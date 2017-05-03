@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>NodeScanSchedule class.</p>
@@ -42,6 +43,7 @@ public class NodeScanSchedule {
     private int m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
+    private OnmsMonitoringLocation m_location;
     private Duration m_initialDelay;
     private Duration m_scanInterval;
     
@@ -54,10 +56,11 @@ public class NodeScanSchedule {
      * @param initialDelay a {@link org.joda.time.Duration} object.
      * @param scanInterval a {@link org.joda.time.Duration} object.
      */
-    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, Duration initialDelay, Duration scanInterval) {
+    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, Duration initialDelay, Duration scanInterval) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_location = location;
         m_initialDelay = initialDelay;
         m_scanInterval = scanInterval;
     }
@@ -89,6 +92,10 @@ public class NodeScanSchedule {
         return m_foreignSource;
     }
 
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
     /**
      * <p>getInitialDelay</p>
      *
@@ -118,6 +125,7 @@ public class NodeScanSchedule {
             .append("foreign source", m_foreignSource)
             .append("foreign id", m_foreignId)
             .append("node id", m_nodeId)
+            .append("location", m_location.getLocationName())
             .append("initial delay", m_initialDelay)
             .append("scan interval", m_scanInterval)
             .toString();

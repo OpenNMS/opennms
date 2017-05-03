@@ -32,8 +32,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 
 /**
@@ -65,21 +63,18 @@ public class XmpPeerFactory {
      * Set to true if our configuration has been loaded 
      */
     private static boolean m_loaded = false;
-    
-    private XmpPeerFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+
+    private XmpPeerFactory() throws FileNotFoundException, IOException {
         super();
     }
-    
-    
+
     /**
      * Initialize this factory
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public static synchronized void init() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public static synchronized void init() throws FileNotFoundException, IOException {
         if (m_loaded) {
             return;
         }
@@ -94,19 +89,17 @@ public class XmpPeerFactory {
     /**
      * <p>reload</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public static synchronized void reload() throws FileNotFoundException, IOException {
         m_singleton = null;
         m_loaded = false;
         
         XmpConfigFactory.init();
         init();
     }
-    
+
     /**
      * <p>getInstance</p>
      *

@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -79,21 +79,27 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
 
         assertNotNull(config);
 
-        assertEquals(4, config.getJmxCollectionCount());
-        assertEquals(config.getJmxCollection(0).getRrd().getStep(), 300);
-        assertEquals("jboss", config.getJmxCollection(0).getName());
-        assertEquals(4, config.getJmxCollection("jboss").getMbeanCount());
-        assertEquals(4, config.getJmxCollection(0).getMbeanCount());
-        assertEquals(config.getJmxCollection(1).getRrd().getStep(), 300);
-        assertEquals("jsr160", config.getJmxCollection(1).getName());
-        assertEquals(37, config.getJmxCollection("jsr160").getMbeanCount());
-        assertEquals(37, config.getJmxCollection(1).getMbeanCount());
+        assertEquals(6, config.getJmxCollectionCount());
 
-        assertEquals(config.getJmxCollection(2).getRrd().getStep(), 300);
-        assertEquals("cassandra30x", config.getJmxCollection(2).getName());
+        assertEquals("jmx-jboss", config.getJmxCollection("jmx-jboss").getName());
+        assertEquals(300, config.getJmxCollection("jmx-jboss").getRrd().getStep());
+        assertEquals(4, config.getJmxCollection("jmx-jboss").getMbeanCount());
 
-        assertEquals(config.getJmxCollection(3).getRrd().getStep(), 300);
-        assertEquals("cassandra30x-newts", config.getJmxCollection(3).getName());
+        assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
+        assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
+        assertEquals(38, config.getJmxCollection("jsr160").getMbeanCount());
+
+        assertEquals("jmx-minion", config.getJmxCollection("jmx-minion").getName());
+        assertEquals(300, config.getJmxCollection("jmx-minion").getRrd().getStep());
+        assertEquals(10, config.getJmxCollection("jmx-minion").getMbeanCount());
+
+        assertEquals("jmx-cassandra30x", config.getJmxCollection("jmx-cassandra30x").getName());
+        assertEquals(300, config.getJmxCollection("jmx-cassandra30x").getRrd().getStep());
+        assertEquals(53, config.getJmxCollection("jmx-cassandra30x").getMbeanCount());
+
+        assertEquals("jmx-cassandra30x-newts", config.getJmxCollection("jmx-cassandra30x-newts").getName());
+        assertEquals(300, config.getJmxCollection("jmx-cassandra30x-newts").getRrd().getStep());
+        assertEquals(22, config.getJmxCollection("jmx-cassandra30x-newts").getMbeanCount());
     }
 
 }

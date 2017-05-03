@@ -1,0 +1,63 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== PrTableMonitor
+
+The _PrTableMonitor_ monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a _Net-SNMP_ agent.
+
+.prTable definition
+[quote,,UCD-SNMP-MIB]
+____
+A table containing information on running programs/daemons configured for monitoring in the snmpd.conf file of the agent.
+Processes violating the number of running processes required by the agent's configuration file are flagged with numerical and textual errors.
+____
+
+The monitor looks up the _prErrorFlag_ entries of this table.
+If the value of a _prErrorFlag_ entry in this table is set to "1" the service is considered unavailable.
+
+.prErrorFlag definition
+[quote,,UCD-SNMP-MIB]
+____
+An Error flag to indicate trouble with a process.
+It goes to 1 if there is an error, 0 if no error.
+____
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.PrTableMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the PrTableMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                        | Required | Default value
+| `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
+| `retries` | *Deprecated*.
+              Same as `retry`.
+              Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+[source, xml]
+----
+<!-- Overriding default SNMP config -->
+<service name="Process-Table" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Process-Table" class-name="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
+----
+
+===== UCD-SNMP-MIB
+
+The UCD-SNMP-MIB may be found link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -63,6 +63,9 @@ class DefaultJmxConnector implements JmxServerConnector {
             final String port = ParameterMap.getKeyedString(propertiesMap, "port", "1099");
             final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
             final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
+            final String rmiServerPort = ParameterMap.getKeyedString(propertiesMap, "rmiServerport",  "45444");
+            final String remoteJMX = ParameterMap.getKeyedString(propertiesMap, "remoteJMX",  "false");
+            
 
             // If remote JMX access is enabled, this will return a non-null value
             String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY);
@@ -85,8 +88,15 @@ class DefaultJmxConnector implements JmxServerConnector {
                 // this JVM's MBeanServer directly.
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
-
-            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
+            JMXServiceURL url = null;
+            
+            if(remoteJMX.equalsIgnoreCase("true")){
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + rmiServerPort + "://jndi/"+ protocol +"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
+            }
+            else{
+            	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.toUrlIpAddress(ipAddress) + ":" + port + urlPath);
+            }
+             	
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();

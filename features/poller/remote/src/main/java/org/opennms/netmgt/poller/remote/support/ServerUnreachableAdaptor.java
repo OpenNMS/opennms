@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,16 +32,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.PollerTheme;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
@@ -91,7 +95,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<LocationDef> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.getMonitoringLocations();
     }
@@ -110,6 +114,40 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_serverUnresponsive = true;
             LOG.warn("Server is unable to respond due to the following exception.", e);
             return new EmptyPollerConfiguration();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(final String location) {
+        if (m_serverUnresponsive) {
+            return new EmptyPollerConfiguration();
+        }
+        try {
+            final PollerConfiguration config = m_remoteBackEnd.getPollerConfigurationForLocation(location);
+            m_serverUnresponsive = false;
+            return config;
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return new EmptyPollerConfiguration();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        if (m_serverUnresponsive) {
+            return Collections.emptySet();
+        }
+        try {
+            final Set<String> applications = m_remoteBackEnd.getApplicationsForLocation(location);
+            m_serverUnresponsive = false;
+            return applications;
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return Collections.emptySet();
         }
     }
 
@@ -210,5 +248,36 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
     }
 
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        try {
+            m_remoteBackEnd.reportSingleScan(report);
+        } catch (RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+        }
+    }
 
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        try {
+            return m_remoteBackEnd.getMetadataFields();
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return Collections.emptySet();
+        }
+    }
+
+
+    @Override
+    public PollerTheme getTheme() {
+        try {
+            return m_remoteBackEnd.getTheme();
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return new PollerTheme();
+        }
+    }
 }

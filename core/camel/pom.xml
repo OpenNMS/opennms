@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.camel</artifactId>
-  <name>OpenNMS Core Camel</name>
+  <name>OpenNMS :: Core :: Camel</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -21,7 +21,20 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.camel.*;version="${project.version}"</Export-Package>
+            <!-- 
+              Import all packages that can possibly be classloaded by 
+              JaxbUtilsMarshalProcessor or JaxbUtilsUnmarshalProcessor
+            -->
+            <Import-Package>
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.opennms.netmgt.config.trapd;resolution:=optional,
+              org.opennms.netmgt.snmp;resolution:=optional,
+              org.opennms.netmgt.syslogd;resolution:=optional,
+              org.opennms.netmgt.trapd;resolution:=optional,
+              org.opennms.minion.core.api;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -30,7 +43,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.api</artifactId>
+      <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -40,10 +53,7 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -52,7 +62,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

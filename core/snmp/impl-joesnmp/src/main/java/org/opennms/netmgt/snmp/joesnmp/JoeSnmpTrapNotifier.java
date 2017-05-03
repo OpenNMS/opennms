@@ -31,7 +31,6 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduTrap;
@@ -40,12 +39,10 @@ import org.opennms.protocols.snmp.SnmpTrapSession;
 
 public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     
-    private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;
 
-    public JoeSnmpTrapNotifier(TrapNotificationListener listener, TrapProcessorFactory factory) {
+    public JoeSnmpTrapNotifier(TrapNotificationListener listener) {
         m_listener = listener;
-        m_trapProcessorFactory = factory;
     }
 
     /**
@@ -69,7 +66,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        m_listener.trapReceived(new V2TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
+        m_listener.trapReceived(new V2TrapInformation(agent, new String(community.getString()), pdu));
     }
     
     /**
@@ -93,7 +90,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        m_listener.trapReceived(new V1TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
+        m_listener.trapReceived(new V1TrapInformation(agent, new String(community.getString()), pdu));
     }
     
     /**

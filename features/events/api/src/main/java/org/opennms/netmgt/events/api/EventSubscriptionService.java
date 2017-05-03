@@ -87,5 +87,14 @@ public interface EventSubscriptionService {
      */
     public void removeEventListener(EventListener listener, String uei);
 
+    /**
+     * Checks if there is at least one listener for the given uei.
+     *
+     * @param uei the uie to check for
+     *
+     * @return {@code true} iff there is at least one listener
+     */
+    public boolean hasEventListener(final String uei);
+
 
 }

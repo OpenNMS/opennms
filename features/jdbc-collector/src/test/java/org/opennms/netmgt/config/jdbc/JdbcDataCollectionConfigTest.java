@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -51,6 +52,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
 
@@ -58,7 +60,7 @@ public class JdbcDataCollectionConfigTest {
     private FileAnticipator fa;
     
     private JdbcDataCollectionConfig jdcc;
-    
+
     static private class TestOutputResolver extends SchemaOutputResolver {
         private final File m_schemaFile;
         
@@ -96,9 +98,9 @@ public class JdbcDataCollectionConfigTest {
         JdbcColumn column = new JdbcColumn();
         column.setColumnName("eventCount");
         column.setDataSourceName("EventCount");
-        column.setDataType("GAUGE");
+        column.setDataType(AttributeType.GAUGE);
         column.setAlias("eventCount");
-        
+
         JdbcQuery jdbcQuery = new JdbcQuery();
         jdbcQuery.setQueryName("opennmsQuery");
         jdbcQuery.setJdbcStatement(jdbcStatement);
@@ -146,7 +148,7 @@ public class JdbcDataCollectionConfigTest {
         StringBuffer exampleXML = new StringBuffer();
         File jdbcCollectionConfig = new File(ClassLoader.getSystemResource("jdbc-datacollection-config.xml").getFile());
         assertTrue("jdbc-datacollection-config.xml is readable", jdbcCollectionConfig.canRead());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(jdbcCollectionConfig), "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(jdbcCollectionConfig), StandardCharsets.UTF_8));
         String line;
         while (true) {
             line = reader.readLine();

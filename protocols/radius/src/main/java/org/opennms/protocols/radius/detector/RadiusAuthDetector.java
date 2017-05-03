@@ -51,17 +51,14 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.radius.detector.client.RadiusDetectorClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>RadiusAuthDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacket>{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthDetector.class);
@@ -116,7 +113,7 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     /**
      * Default constructor
      */
-    protected RadiusAuthDetector() {
+    public RadiusAuthDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_AUTH_PORT);
     }
 

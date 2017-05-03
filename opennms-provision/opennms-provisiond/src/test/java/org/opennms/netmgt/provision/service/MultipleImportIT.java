@@ -41,10 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -59,7 +56,6 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
@@ -78,16 +74,7 @@ public class MultipleImportIT extends ProvisioningITCase {
     private ResourceLoader m_resourceLoader;
     
     @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-    
-    @Autowired
     private NodeDao m_nodeDao;
-
-    @Autowired
-    private MockEventIpcManager m_eventSubscriber;
     
     @Before
     public void setUp() {
@@ -102,7 +89,7 @@ public class MultipleImportIT extends ProvisioningITCase {
 
     @Test
     @Ignore
-    @JUnitSnmpAgent(host="0.0.0.0", resource="classpath:snmpwalk-empty.properties")
+    @JUnitSnmpAgent(host="0.0.0.0", resource="classpath:/snmpwalk-empty.properties")
     public void testScanTwice() throws Exception {
         final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI };
         final CountDownLatch eventReceived = anticipateEvents(1, ueis);

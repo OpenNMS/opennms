@@ -55,12 +55,14 @@ public class DefinitionTest extends XmlTestNoCastor<Definition> {
 		def.addRange(range);
 		def.addSpecific("192.168.1.1");
 		def.addIpMatch("10.0.0.*");
+		def.setLocation("MINION");
 
 		return Arrays.asList(new Object[][] { {
 				def,
 				"  <definition "
 				+ "    read-community=\"public\" "
 				+ "    write-community=\"private\" "
+				+ "    location=\"MINION\""
 				+ "    version=\"v3\">" + "    <range "
 				+ "      begin=\"192.168.0.1\" "
 				+ "      end=\"192.168.0.255\"/>"

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.68</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/VRRP/traps/vrrpTrapNewMaster</uei>
+        <event-label>VRRP-MIB defined trap event: vrrpTrapNewMaster</event-label>
+        <descr>&lt;p&gt;The newMaster trap indicates that the sending agent
+            has transitioned to 'Master' state.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            vrrpOperMasterIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;VRRP Event: New Master.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.68</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/VRRP/traps/vrrpTrapAuthFailure</uei>
+        <event-label>VRRP-MIB defined trap event: vrrpTrapAuthFailure</event-label>
+        <descr>&lt;p&gt;A vrrpAuthFailure trap signifies that a packet has
+            been received from a router whose authentication key
+            or authentication type conflicts with this router's
+            authentication key or authentication type. Implementation
+            of this trap is optional.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            vrrpTrapPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            vrrpTrapAuthErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+            invalidAuthType(1) authTypeMismatch(2) authFailure(3)&lt;/p&gt;
+            &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;VRRP Event: Authentication Failure.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>

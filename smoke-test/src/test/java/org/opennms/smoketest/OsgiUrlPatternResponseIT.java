@@ -24,7 +24,9 @@ public class OsgiUrlPatternResponseIT extends OpenNMSSeleniumTestCase {
                 "vaadin-surveillance-views?dashboard=true",
                 "vaadin-surveillance-views?dashboard=false",
                 "vaadin-surveillance-views-config",
-                "wallboard-config"
+                "wallboard-config",
+                "bsm-admin-page",
+                "node-maps"
         };
 
         for (final String eachPath : paths) {

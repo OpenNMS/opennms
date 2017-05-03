@@ -62,13 +62,13 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,14 +80,14 @@ import de.novanic.eventservice.service.EventExecutorService;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataManagerTest.xml",
-        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(useExistingDatabase="opennms")
@@ -131,7 +131,7 @@ public class LocationDataManagerTest implements InitializingBean {
     public void testHandleAllMonitoringLocationDefinitions() {
         LocationDefHandler handler = m_easyMockUtils.createMock(LocationDefHandler.class);
         handler.start(2880);
-        handler.handle(isA(LocationDef.class));
+        handler.handle(isA(OnmsMonitoringLocation.class));
         expectLastCall().times(2880);
         handler.finish();
         
@@ -197,7 +197,7 @@ public class LocationDataManagerTest implements InitializingBean {
     @Test
     public void testGetStatusDetailsForLocation() {
         
-        LocationDef def = m_monitoringLocationDao.get("00002");
+        OnmsMonitoringLocation def = m_monitoringLocationDao.get("00002");
         
         m_locationDataService.getStatusDetailsForLocation(def);
     }

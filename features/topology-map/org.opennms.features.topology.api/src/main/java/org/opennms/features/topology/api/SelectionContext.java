@@ -35,22 +35,24 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface SelectionContext {
 
-	public boolean deselectAll();
+	boolean deselectAll();
 
-	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs);
+	boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs);
 
-	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs);
+	boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs);
 
-	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs);
+	boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs);
 
-	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs);
+	boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs);
 
-	public boolean isVertexRefSelected(VertexRef vertexRef);
+	boolean isVertexRefSelected(VertexRef vertexRef);
 
-	public boolean isEdgeRefSelected(EdgeRef edgeRef);
+	boolean isEdgeRefSelected(EdgeRef edgeRef);
 
-	public Collection<VertexRef> getSelectedVertexRefs();
+	Collection<VertexRef> getSelectedVertexRefs();
 
-	public Collection<EdgeRef> getSelectedEdgeRefs();
+	Collection<EdgeRef> getSelectedEdgeRefs();
+
+	GraphContainer getGraphContainer();
 
 }

@@ -77,8 +77,8 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
             group.setName(webGroup.getName());
         }
         group.setComments(webGroup.getComments());
-        group.setDutySchedule(webGroup.getDutySchedules());
-        group.setUser(webGroup.getUsers());
+        group.setDutySchedules(webGroup.getDutySchedules());
+        group.setUsers(webGroup.getUsers());
 
         groupService.saveGroup(group, webGroup.getAuthorizedCategories());
     }

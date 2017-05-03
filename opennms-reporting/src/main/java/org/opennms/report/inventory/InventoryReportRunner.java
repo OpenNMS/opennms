@@ -31,6 +31,7 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
@@ -230,7 +231,7 @@ public class InventoryReportRunner implements Runnable {
     @Override
     public void run() {
 
-        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, reportRequestDate.toString());
+        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, StringUtils.toStringEfficiently(reportRequestDate));
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);
         calculator.setTheDate(theDate);
@@ -301,7 +302,7 @@ public class InventoryReportRunner implements Runnable {
                 FileOutputStream hmtlFileWriter = new FileOutputStream(file);
                 PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-nbinventoryreport.xsl");
                 File fileR = new File(xmlFileName);
-                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), "UTF-8");
+                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), StandardCharsets.UTF_8);
                 htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                 log().debug("runNodeBaseInventoryReport html sending email");
                 ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Inventory Report");

@@ -4,16 +4,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-    <artifactId>plugins</artifactId>
+    <artifactId>org.opennms.features.topology.plugins</artifactId>
     <groupId>org.opennms.features.topology</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.plugins.topo</groupId>
-    <artifactId>history</artifactId>
+    <artifactId>org.opennms.features.topology.plugins.topo.history</artifactId>
     <packaging>bundle</packaging>
 
-    <name>${bundle.symbolicName}</name>
+    <name>OpenNMS :: Features :: Topology :: Plugins :: History</name>
     
     <properties>
         <bundle.symbolicName>org.opennms.features.topology.plugins.topo.history</bundle.symbolicName>
@@ -32,7 +32,7 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
@@ -53,8 +53,18 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>app</artifactId>
+            <artifactId>org.opennms.features.topology.app</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

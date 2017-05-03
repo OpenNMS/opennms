@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
+        <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
+        <descr>
+            A provisioning adapter failed for host: %host%.&lt;p&gt;
+            &lt;p&gt;Message: %parm[reason]% &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt; %host%:%parm[host]%:%parm[reason]% &lt;/p&gt;
+        </logmsg>
+        <severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/provisiond/nodeScanCompleted</uei>
+        <event-label>OpenNMS-defined Provisiond Event: nodeScanCompleted</event-label>
+        <descr>
+            A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:
+            &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            completed.&lt;/p&gt;
+            Typically the result of a request of an import request or a scheduled/user forced rescan.
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            completed.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/provisiond/nodeScanAborted</uei>
+        <event-label>OpenNMS-defined Provisiond Event: nodeScanAborted</event-label>
+        <descr>
+            A message from the Provisiond NodeScan lifecycle that a NodeScan has Aborted:
+            &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            aborted for the following reason: %parm[reason]% &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            aborted for the following reason: %parm[reason]% &lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/importer/reloadImport</uei>
+        <event-label>OpenNMS-defined internal event: importer reloadImport</event-label>
+        <descr>
+            &lt;p&gt;This event will cause the importer to run the model-import process.
+            The parameters include foreignSource, url, and deleteThreshold that override
+            configuration properties as well as XML and default values.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request had been made to run the model-import process with the
+            parms: %parm[all]%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/importer/importStarted</uei>
+        <event-label>OpenNMS-defined internal event: importer process has started</event-label>
+        <descr>
+            &lt;p&gt;This event indicates the model-importer process has started&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;This event indicates the model-importer process has started from resource: %parm[importResource]%
+            &lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/importer/importSuccessful</uei>
+        <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
+        <descr>
+            &lt;p&gt;This event indicates the model-importer process has completed successfully. There
+            is 1 parameter called importStats: %parm[importStats]%&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;This event indicates the model-importer process has completed successfully from resource:
+            %parm[importResource]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="2"
+                    clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%"
+                    auto-clean="true"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/importer/importFailed</uei>
+        <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
+        <descr>
+            &lt;p&gt;This event indicates the model-importer process has failed. There is 1 parameter
+            called failureMessage: %parm[failureMessage]%&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]%
+            with reason: %parm[failureMessage]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>

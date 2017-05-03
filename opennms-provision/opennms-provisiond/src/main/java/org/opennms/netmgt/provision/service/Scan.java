@@ -32,5 +32,5 @@ import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 
 public interface Scan extends RunInBatch {
-    public Task createTask();
+    Task createTask();
 }

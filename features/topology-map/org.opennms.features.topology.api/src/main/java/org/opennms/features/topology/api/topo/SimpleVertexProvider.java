@@ -55,7 +55,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public String getVertexNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 
@@ -66,10 +66,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public Vertex getVertex(String namespace, String id) {
-		if (getVertexNamespace().equals(namespace)) {
-			return m_vertexMap.get(id);
-		}
-		return null;
+		return getVertex(new DefaultVertexRef(namespace, id));
 	}
 
 	@Override
@@ -78,7 +75,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (reference != null && getVertexNamespace().equals(reference.getNamespace())) {
+		if (reference != null && getNamespace().equals(reference.getNamespace())) {
 			return m_vertexMap.get(reference.getId());
 		}
 		return null;
@@ -191,8 +188,8 @@ public class SimpleVertexProvider implements VertexProvider {
 		m_listeners.remove(vertexListener);
 	}
 
-	private void removeVertices(List<? extends VertexRef> all) {
-		for(VertexRef vertex : all) {
+	private void removeVertices(List<? extends VertexRef> vertices) {
+		for(VertexRef vertex : vertices) {
 			LoggerFactory.getLogger(this.getClass()).trace("Removing vertex: {}", vertex);
 			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
@@ -240,7 +237,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	@Override
 	public List<Vertex> getVertices(Criteria... criteria) {
 		// TODO: Change code to properly filter on Criteria
-		return Collections.unmodifiableList(new ArrayList<Vertex>(m_vertexMap.values()));
+		return Collections.unmodifiableList(new ArrayList<>(m_vertexMap.values()));
 	}
 
 	@Override
@@ -266,7 +263,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	 */
 	@Override
 	public boolean containsVertexId(String id) {
-		return containsVertexId(new DefaultVertexRef(getVertexNamespace(), id));
+		return containsVertexId(new DefaultVertexRef(getNamespace(), id));
 	}
 
 	@Override

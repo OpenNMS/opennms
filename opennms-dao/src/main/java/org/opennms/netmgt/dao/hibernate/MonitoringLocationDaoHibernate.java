@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +39,15 @@ import org.slf4j.LoggerFactory;
  * @author Seth
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class MonitoringLocationDaoHibernate extends AbstractDaoHibernate<LocationDef, String> implements MonitoringLocationDao {
+public class MonitoringLocationDaoHibernate extends AbstractDaoHibernate<OnmsMonitoringLocation, String> implements MonitoringLocationDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationDaoHibernate.class);
 
     public MonitoringLocationDaoHibernate() {
-        super(LocationDef.class);
+        super(OnmsMonitoringLocation.class);
     }
 
+    public OnmsMonitoringLocation getDefaultLocation() {
+        return get(DEFAULT_MONITORING_LOCATION_ID);
+    }
 }

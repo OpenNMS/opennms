@@ -30,20 +30,21 @@ package org.opennms.features.topology.app.internal.support;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.AlarmProvider;
 import org.opennms.features.topology.app.internal.AlarmSearchProvider.AlarmSearchResult;
-import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -57,16 +58,20 @@ import org.opennms.netmgt.model.OnmsSeverity;
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
  *
  */
-public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+public class AlarmHopCriteria extends VertexHopCriteria implements SearchCriteria {
 
 	public static final String NAMESPACE = "alarm";
 	
 	private boolean m_collapsed = false;
 	private AlarmVertex m_collapsedVertex;
 	
-	private AlarmDao m_alarmDao;
-
+	private AlarmProvider alarmProvider;
     private AlarmSearchResult m_searchResult;
+
+	@Override
+	public String getSearchString() {
+		return m_searchResult.getQuery();
+	}
 
 	public static class AlarmVertex extends AbstractVertex implements GroupRef {
 		private Set<VertexRef> m_children = new HashSet<VertexRef>();
@@ -91,15 +96,17 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
         }
     }
 
-	public AlarmHopCriteria(AlarmSearchResult result, AlarmDao alarmDao) {
+	public AlarmHopCriteria(AlarmSearchResult result, AlarmProvider alarmProvider) {
         super(result.getId(), result.getNodeLabel());
+        m_collapsed = result.isCollapsed();
         m_searchResult = result;
-        m_alarmDao = alarmDao;
-        
+        this.alarmProvider = Objects.requireNonNull(alarmProvider);
+
         String severityLabel = OnmsSeverity.get(result.getLabel()).getLabel();
         
         m_collapsedVertex = new AlarmVertex(NAMESPACE, severityLabel, "Alarms: "+severityLabel);
         m_collapsedVertex.setChildren(getVertices());
+        setId(result.getId());
     }
 
 	public AlarmSearchResult getSearchResult() {
@@ -108,14 +115,6 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
 	
 	public void setSearchResult(AlarmSearchResult searchResult) {
 	    m_searchResult = searchResult;
-	}
-	
-    public AlarmDao getAlarmDao() {
-		return m_alarmDao;
-	}
-
-	public void setAlarmDao(AlarmDao dao) {
-		this.m_alarmDao = dao;
 	}
 
 	@Override
@@ -179,8 +178,8 @@ public class AlarmHopCriteria extends VertexHopCriteria implements CollapsibleCr
 		} else {
             bldr.eq("id", getSearchResult().getAlarmId());
 		}
-		
-        return m_alarmDao.findMatching(bldr.toCriteria());
+
+		return alarmProvider.findMatchingAlarms(bldr.toCriteria());
     }
 
 	private boolean isSeverityQuery() {

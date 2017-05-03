@@ -42,16 +42,16 @@ import org.opennms.netmgt.icmp.EchoPacket;
  * @author brozow
  */
 public abstract class AbstractPinger<T extends InetAddress> implements Runnable {
-    
+
     public static final double NANOS_PER_MILLI = 1000000.0;
 
     private int m_pingerId;
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
-    private final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
+    protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
-    
+
     protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
         m_pingerId = pingerId;
         m_pingSocket = pingSocket;

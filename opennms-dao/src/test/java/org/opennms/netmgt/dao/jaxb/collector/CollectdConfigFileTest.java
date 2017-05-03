@@ -32,7 +32,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.castor.InvocationAnticipator;
+import org.opennms.netmgt.dao.jaxb.InvocationAnticipator;
 import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigFile;
 import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigVisitor;
 import org.springframework.core.io.ClassPathResource;

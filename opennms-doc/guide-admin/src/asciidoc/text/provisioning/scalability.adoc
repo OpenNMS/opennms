@@ -39,7 +39,7 @@ The policies for an auto-discovered node or nodes from provisioning groups that 
 
 Contained in the libraries of the Provisioning service is the "template" or default foreign source.
 The template stored in the library is used until the {opennms-product-name} admin user alters the default from the _Provisioning Groups_ WebUI.
-Upon edit, this template is exported to the {opennms-product-name} `etc/` directory with the file name: `default-foreign-source.xml.
+Upon edit, this template is exported to the {opennms-product-name} `etc/` directory with the file name: `default-foreign-source.xml`.
 
 [source, xml]
 ----
@@ -67,4 +67,21 @@ Upon edit, this template is exported to the {opennms-product-name} `etc/` direct
 </foreign-source>
 ----
 
-===== Default Foreign Source
+===== Automatic Rescanning
+
+The default foreign source defines a `scan-interval` of `1d`, which will cause all nodes in the requisition to be scanned daily.  You may set the scan interval using any combination of the following signifiers:
+
+* w: Weeks
+* d: Days
+* h: Hours
+* m: Minutes
+* s: Seconds
+* ms: Milliseconds
+
+For example, to rescan every 6 days and 53 minutes, you would set the `scan-interval` to `7d 53m`.
+
+Don't forget, for the new scan interval to take effect, you will need to import the requisition one more time so that the foreign source becomes active.
+
+===== Disabling Rescan
+
+For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.  {opennms-product-name} will not attempt to rescan the nodes in the requisition unless you trigger a manual (forced) rescan through the web UI or Provisioning ReST API.

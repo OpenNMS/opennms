@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -480,7 +481,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
     private void importKscReport(int reportId) {
         Report report = kscPerformanceReportFactory.getReportByIndex(reportId);
 
-        int columns = report.getGraphs_per_line();
+        int columns = report.getGraphsPerLine();
 
         if (columns == 0) {
             columns = 1;

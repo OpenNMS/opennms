@@ -47,7 +47,15 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
     private static final long serialVersionUID = -8169533436306268574L;
 
     private PolledService m_polledService;
+
+    /**
+     * @deprecated SL 2015-12-15: I think this field is unused. It was possibly intended
+     * to be used as an index indicating which row should be updated when a 
+     * {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedListener#pollStateChange(ServicePollStateChangedEvent)}
+     * is fired.
+     */
     private int m_index;
+
     private PollStatus m_lastPoll;
     private Date m_initialPollTime;
 
@@ -104,9 +112,8 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
     }
 
     /**
-     * <p>getIndex</p>
-     *
-     * @return a int.
+     * @deprecated SL 2015-12-15: I think this value is not used by any listeners
+     * for {@link ServicePollStateChangedEvent)} events.
      */
     public int getIndex() {
         return m_index;
@@ -166,6 +173,7 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
         return new CompareToBuilder()
             .append(thisService.getNodeLabel(), thatService.getNodeLabel())
             .append(thisService.getIpAddr(), thatService.getIpAddr())
+            // TODO: getLastPoll() can return null so this seems dangerous...
             .append(this.getLastPoll().getStatusName(), that.getLastPoll().getStatusName())
             .append(thisService.getServiceId(), thatService.getServiceId())
             .append(thisService.getNodeId(), thatService.getNodeId())

@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -42,7 +41,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +188,16 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     public String getForeignId() {
        return getIpInterface().getNode().getForeignId();
     }
-    
+
+    @Override
+    public String getLocationName() {
+        final OnmsMonitoringLocation location = getIpInterface().getNode().getLocation();
+        if (location != null) {
+            return location.getLocationName();
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getStorageDir()
      */
@@ -197,14 +207,19 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @return a {@link java.io.File} object.
      */
     @Override
-    public File getStorageDir() {
-        File dir = new File(String.valueOf(getNodeId()));
+    public ResourcePath getStorageResourcePath() {
         final String foreignSource = getForeignSource();
         final String foreignId = getForeignId();
+
+        final ResourcePath dir;
         if(isStoreByForeignSource() && foreignSource != null && foreignId != null) {
-            File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, foreignSource);
-            dir = new File(fsDir, foreignId);
+            dir = ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY,
+                                   foreignSource,
+                                   foreignId);
+        } else {
+            dir = ResourcePath.get(String.valueOf(getNodeId()));
         }
+
         LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), foreignSource, foreignId, dir);
         return dir;
     }
@@ -265,7 +280,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public SnmpAgentConfig getAgentConfig() {
-        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress(), getLocationName());
     }
 
     /* (non-Javadoc)

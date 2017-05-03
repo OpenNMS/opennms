@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>container</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <artifactId>org.opennms.container</artifactId>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.container</groupId>
-  <artifactId>standalone</artifactId>
+  <artifactId>org.opennms.container.standalone</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container - Standalone</name>
+  <name>OpenNMS :: OSGi Container :: Standalone</name>
 
   <dependencies>
     <dependency>
@@ -63,7 +63,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>branding</artifactId>
+      <artifactId>org.opennms.container.branding</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -117,6 +117,14 @@
            </configuration>
           </execution>
         </executions>
+        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+            <version>2.6</version>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>
@@ -135,7 +143,7 @@
                <artifactItems>
                  <artifactItem>
                     <groupId>org.opennms.container</groupId>
-                    <artifactId>branding</artifactId>
+                    <artifactId>org.opennms.container.branding</artifactId>
                     <version>${project.version}</version>
                     <outputDirectory>target/dependencies</outputDirectory>
                     <destFileName>opennms-branding.jar</destFileName>

@@ -1,0 +1,18 @@
+<div class="form-group">
+  <div class="input-group">
+    <input type="text" class="form-control" ng-model="asyncNode" placeholder="Type the node label"
+      uib-typeahead="node as node.label for node in getNodes($viewValue)"
+      typeahead-editable="false"
+      typeahead-loading="nodeLoadingNodes"
+      typeahead-no-results="nodeNoResults"
+      typeahead-min-length="1"
+      typeahead-on-select="goToChooseResources($item)"/>
+    <span class="input-group-addon">
+      <span class="glyphicon glyphicon-search"></span>
+    </span>
+  </div>
+  <i ng-show="nodeLoadingNodes" class="glyphicon glyphicon-refresh"></i>
+  <p class="help-block" ng-show="nodeNoResults">
+    <i class="glyphicon glyphicon-remove"></i> No Results Found
+  </p>
+</div>

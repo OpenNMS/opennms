@@ -54,12 +54,17 @@ REDIRECT="$LOG_DIRECTORY/output.log"
 
 # Number of times to do "opennms status" after starting OpenNMS to see
 # if it comes up completely.  Set to "0" to disable.  Between each
-# attempt we sleep for STATUS_WAIT seconds.  
-START_TIMEOUT=10
+# attempt we sleep for STATUS_WAIT seconds.
+START_TIMEOUT=0
 
 # Number of seconds to wait between each "opennms status" check when
 # START_TIMEOUT > 0.
 STATUS_WAIT=5
+
+# Number of times to do "opennms status" after stopping OpenNMS to see
+# if it has shut down completely.  Set to "0" to disable.  Between each
+# attempt we sleep for STATUS_WAIT seconds.
+STOP_TIMEOUT=10
 
 # Value of the -Xmx<size>m option passed to Java.
 JAVA_HEAP_SIZE=1024
@@ -457,8 +462,8 @@ doStop() {
 		kill -3 "$pid" >> $REDIRECT 2>&1
 	fi
 
-	STOP_ATTEMPTS=0
-	while [ $STOP_ATTEMPTS -lt 5 ]; do
+	STATUS_ATTEMPTS=0
+	while [ $STATUS_ATTEMPTS -lt $STOP_TIMEOUT ]; do
 		doStatus
 		if [ $? -eq 3 ]; then
 			echo "" > "$OPENNMS_PIDFILE"
@@ -479,9 +484,8 @@ doStop() {
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 
-		sleep 5
-
-		STOP_ATTEMPTS=`expr $STOP_ATTEMPTS + 1`
+		sleep $STATUS_WAIT
+		STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
 	done
 
 	return 1
@@ -772,7 +776,9 @@ case "$COMMAND" in
 			ret=$?
 			if [ $ret -eq 0 ]; then
 				echo_success
-				touch /var/lock/subsys/${NAME}
+				if [ -w /var/lock/subsys ]; then
+					touch /var/lock/subsys/${NAME}
+				fi
 			else
 				echo_failure
 			fi
@@ -805,7 +811,9 @@ case "$COMMAND" in
 			else
 				echo_failure
 			fi
-			rm -f /var/lock/subsys/${NAME}
+			if [ -w /var/lock/subsys ]; then
+				rm -f /var/lock/subsys/${NAME}
+			fi
 			echo ""
 
 			doKill

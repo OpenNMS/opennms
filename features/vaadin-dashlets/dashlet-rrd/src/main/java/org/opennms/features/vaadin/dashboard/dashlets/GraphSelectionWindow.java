@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.ResourceId;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -166,6 +167,7 @@ public class GraphSelectionWindow extends Window {
                         for (OnmsResource onmsResource : resourceTypeMapEntry.getValue()) {
 
                             String newResourceItemId = onmsResource.getId().toString();
+
                             Item newResourceItem = hierarchicalContainer.addItem(newResourceItemId);
 
                             newResourceItem.getItemProperty("label").setValue(onmsResource.getLabel());

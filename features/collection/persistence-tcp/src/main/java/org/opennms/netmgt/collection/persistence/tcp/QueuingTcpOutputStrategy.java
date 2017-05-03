@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
+    private static final long SLEEP_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpSleepTime", 1000);
+    private static final long OFFER_WAIT_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpOfferWaitTime", 500);
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpOutputStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue;
@@ -104,7 +106,7 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
                         }
                         socket.writeData();
                     } else {
-                        Thread.sleep(1000);
+                        Thread.sleep(SLEEP_TIME);
                     }
                 }
             } catch (InterruptedException e) {
@@ -129,7 +131,7 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     /** {@inheritDoc} */
     @Override
     public void updateData(String path, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) throws Exception {
-        if (m_queue.offer(new PerformanceDataReading(path, owner, timestamp, dblValues, strValues), 500, TimeUnit.MILLISECONDS)) {
+        if (m_queue.offer(new PerformanceDataReading(path, owner, timestamp, dblValues, strValues), OFFER_WAIT_TIME, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
                 LOG.warn("Skipped {} performance data message(s) because of queue overflow", m_skippedReadings);
                 m_skippedReadings = 0;

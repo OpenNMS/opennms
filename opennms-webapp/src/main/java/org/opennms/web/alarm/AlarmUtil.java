@@ -54,17 +54,21 @@ import org.opennms.web.alarm.filter.EventParmLikeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
+import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
+import org.opennms.web.alarm.filter.NegativeLocationFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
+import org.opennms.web.alarm.filter.NegativeNodeLocationFilter;
 import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
 import org.opennms.web.alarm.filter.NegativeServiceFilter;
 import org.opennms.web.alarm.filter.NegativeSeverityFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
+import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
@@ -91,6 +95,8 @@ public abstract class AlarmUtil extends Object {
     public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
 
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
@@ -259,6 +265,14 @@ public abstract class AlarmUtil extends Object {
             filter = new EventParmLikeFilter(value);
         } else if(type.equals(NegativeEventParmLikeFilter.TYPE)) {
             filter = new NegativeEventParmLikeFilter(value);
+        } else if (type.equals(LocationFilter.TYPE)) {
+            filter = new LocationFilter(value);
+        } else if (type.equals(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(value);
+        } else if (type.equals(NodeLocationFilter.TYPE)) {
+            filter = new NodeLocationFilter(value);
+        } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
+            filter = new NegativeNodeLocationFilter(value);
         }
 
         return filter;

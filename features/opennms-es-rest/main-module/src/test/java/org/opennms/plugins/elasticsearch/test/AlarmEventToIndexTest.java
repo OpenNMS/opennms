@@ -28,39 +28,33 @@
 
 package org.opennms.plugins.elasticsearch.test;
 
-import java.net.InetAddress;
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-
-import org.opennms.plugins.elasticsearch.rest.EventToIndex;
-import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
-import org.opennms.plugins.elasticsearch.rest.NodeCache;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.DocumentResult;
-import io.searchbox.core.Index;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-import io.searchbox.core.Update;
-import static org.junit.Assert.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Test;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.plugins.elasticsearch.rest.EventToIndex;
+import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
+import org.opennms.plugins.elasticsearch.rest.NodeCache;
+import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 
 public class AlarmEventToIndexTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AlarmEventToIndexTest.class);
+	
+	public static final int INDEX_WAIT_SECONDS=10; // time to wait for index to catch up
 
 	public static final String ALARM_INDEX_NAME = "opennms-alarms";
 	public static final String ALARM_EVENT_INDEX_NAME = "opennms-events-alarmchange";
@@ -156,13 +150,13 @@ public class AlarmEventToIndexTest {
 			event.setDbid(100);
 			event.setNodeid((long) 34);
 
-			// forward event to elastic search
-			eventToIndex.forwardEvent(event);
-			
-			// waiting 5 seconds for index 
-            try {
-            	TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) { }
+			// forward event to Elasticsearch
+			eventToIndex.forwardEvents(Collections.singletonList(event));
+
+			// waiting INDEX_WAIT_SECONDS seconds for index 
+			try {
+				TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+			} catch (InterruptedException e) { }
 
 			// send query to check that alarm has been created
 			jestClient = restClientFactory.getJestClient();
@@ -201,9 +195,9 @@ public class AlarmEventToIndexTest {
 			assertEquals(Long.valueOf(1), hits.get("total"));
 			
 			
-			// waiting 5 seconds for index 
+			// waiting INDEX_WAIT_SECONDS seconds for index 
             try {
-            	TimeUnit.SECONDS.sleep(5);
+            	TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
             } catch (InterruptedException e) { }
 			
 			// search for resulting alarm change event
@@ -262,7 +256,7 @@ public class AlarmEventToIndexTest {
 		} finally {
 			// shutdown client
 			if (jestClient !=null )   jestClient.shutdownClient();
-			if (eventToIndex !=null ) eventToIndex.destroy();
+			if (eventToIndex !=null ) eventToIndex.close();
 		}
 		LOG.debug("***************** end of test jestClientAlarmToESTest");
 	}

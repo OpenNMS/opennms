@@ -31,6 +31,7 @@ package org.opennms.netmgt.collection.api;
 import java.util.LinkedList;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
@@ -80,15 +81,16 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
      * <p>commitBuilder</p>
      */
     public void commitBuilder() {
-        if (isPersistDisabled())
+        if (isPersistDisabled()) {
+            LOG.debug("Persist disabled for {}", m_builder.getName());
             return;
-        String name = m_builder.getName();
+        }
         try {
             m_builder.commit();
-            m_builder = null;
         } catch (PersistException e) {
-            LOG.error("Unable to persist data for {}", name, e);
+            LOG.error("Unable to persist data for {}", m_builder.getName(), e);
         }
+        m_builder = null;
     }
 
     private boolean isPersistDisabled() {
@@ -136,7 +138,7 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
     /** {@inheritDoc} */
     @Override
     public void persistNumericAttribute(CollectionAttribute attribute) {
-        boolean shouldIgnorePersist = isIgnorePersist() && attribute.getType().toLowerCase().startsWith("counter");
+        boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
         LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
         Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
         m_builder.setAttributeValue(attribute.getAttributeType(), value);

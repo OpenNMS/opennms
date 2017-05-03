@@ -1,5 +1,4 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
@@ -22,11 +21,11 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
- ******************************************************************************
- */
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
@@ -35,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Entity;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -53,11 +51,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -109,6 +104,21 @@ public class KscRestService extends OnmsRestService {
     @Transactional
     public String getCount() {
         return Integer.toString(m_kscReportService.getReportList().size());
+    }
+
+    @PUT
+    @Path("reloadConfig")
+    @Transactional
+    public Response reloadConfiguration() {
+        writeLock();
+        try {
+            KSC_PerformanceReportFactory.getInstance().reload();
+            return Response.noContent().build();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, e);
+        } finally {
+            writeUnlock();
+        }
     }
 
     @PUT
@@ -173,13 +183,13 @@ public class KscRestService extends OnmsRestService {
             report.setId(kscReport.getId());
             report.setTitle(kscReport.getLabel());
             if (kscReport.getShowGraphtypeButton() != null) {
-                report.setShow_graphtype_button(kscReport.getShowGraphtypeButton());
+                report.setShowGraphtypeButton(kscReport.getShowGraphtypeButton());
             }
             if (kscReport.getShowTimespanButton() != null) {
-                report.setShow_timespan_button(kscReport.getShowTimespanButton());
+                report.setShowTimespanButton(kscReport.getShowTimespanButton());
             }
             if (kscReport.getGraphsPerLine() != null) {
-                report.setGraphs_per_line(kscReport.getGraphsPerLine());
+                report.setGraphsPerLine(kscReport.getGraphsPerLine());
             }
             if (kscReport.hasGraphs()) {
                 for (KscGraph kscGraph : kscReport.getGraphs()) {
@@ -200,9 +210,7 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscReports")
-    @JsonRootName("kscReports")
     public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
 
         private static final long serialVersionUID = 1L;
@@ -227,13 +235,11 @@ public class KscRestService extends OnmsRestService {
         }
 
         @XmlElement(name = "kscReport")
-        @JsonProperty("kscReport")
         public List<KscReport> getObjects() {
             return super.getObjects();
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscReport")
     @XmlAccessorType(XmlAccessType.NONE)
     public static final class KscReport {
@@ -253,7 +259,7 @@ public class KscRestService extends OnmsRestService {
         @XmlAttribute(name = "graphs_per_line", required = false)
         private Integer m_graphs_per_line;
 
-        @XmlElements(@XmlElement(name = "kscGraph"))
+        @XmlElement(name = "kscGraph")
         private List<KscGraph> m_graphs = new ArrayList<KscGraph>();
 
         public KscReport() {
@@ -267,9 +273,9 @@ public class KscRestService extends OnmsRestService {
         public KscReport(Report report) {
             m_id = report.getId();
             m_label = report.getTitle();
-            m_show_timespan_button = report.getShow_timespan_button();
-            m_show_graphtype_button = report.getShow_graphtype_button();
-            m_graphs_per_line = report.getGraphs_per_line();
+            m_show_timespan_button = report.getShowTimespanButton();
+            m_show_graphtype_button = report.getShowGraphtypeButton();
+            m_graphs_per_line = report.getGraphsPerLine();
             m_graphs.clear();
 
             for(Graph graph : report.getGraphCollection()) {
@@ -326,7 +332,6 @@ public class KscRestService extends OnmsRestService {
         }
     }
 
-    @Entity
     @XmlRootElement(name = "kscGraph")
     @XmlAccessorType(XmlAccessType.NONE)
     public static final class KscGraph {

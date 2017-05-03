@@ -29,35 +29,38 @@
 package org.opennms.features.topology.api.topo;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 
 public class AbstractTopologyProviderTest {
 
     @Test
     public void testIdGenerator() throws MalformedURLException, JAXBException {
         AbstractTopologyProvider provider = new AbstractTopologyProvider("test") {
-            
+
             @Override
-            public void save() {
-                ; // nothing to do 
+            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+                return SelectionChangedListener.Selection.NONE;
             }
-            
+
+            @Override
+            public boolean contributesTo(ContentType type) {
+                return true;
+            }
+
+            @Override
+            public Defaults getDefaults() {
+                return new Defaults();
+            }
+
             @Override
             public void refresh() {
-                ; // nothing to do
-            }
-
-            @Override
-            public Criteria getDefaultCriteria() {
-                return null;  // no default
-            }
-
-            @Override
-            public void load(String filename) throws MalformedURLException, JAXBException {
                 for (int i=0; i<10; i++) 
                     addVertex(0, i);
                 
@@ -68,7 +71,7 @@ public class AbstractTopologyProviderTest {
                     addEdges(new AbstractEdge("test", getNextEdgeId(), getVertices().get(i), getVertices().get(i+1)));
             }
         };
-        provider.load(null);
+        provider.refresh();
         
         Assert.assertEquals(10, provider.getVerticesWithoutGroups().size());
         Assert.assertEquals(5,  provider.getGroups().size());

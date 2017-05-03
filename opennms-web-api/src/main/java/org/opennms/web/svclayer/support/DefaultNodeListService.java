@@ -96,10 +96,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          * All search queries can be done solely with
          * criteria, so we build a common criteria object with common
          * restrictions and sort options.  Each specific search query
-         * adds its own crtieria restrictions (if any).
+         * adds its own criteria restrictions (if any).
          * 
          * A set of booleans is maintained for aliases that might be
-         * added in muliple places to ensure we don't add the same alias
+         * added in multiple places to ensure we don't add the same alias
          * multiple times.
          */
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
@@ -147,15 +147,21 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForCategories(criteria, command.getCategory1());
         } else if (command.hasStatusViewName() && command.hasStatusSite() && command.hasStatusRowLabel()) {
             addCriteriaForSiteStatusView(criteria, command.getStatusViewName(), command.getStatusSite(), command.getStatusRowLabel());
-        }else if(command.hasForeignSource()) {
+        } else if(command.hasForeignSource()) {
             addCriteriaForForeignSource(criteria, command.getForeignSource());
-        }else {
+        } else if(command.hasMonitoringLocation()) {
+            addCriteriaForMonitoringLocation(criteria, command.getMonitoringLocation());
+        } else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
 
         if (command.getNodesWithOutages()) {
             addCriteriaForCurrentOutages(criteria);
         }
+    }
+
+    private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
+        criteria.add(Restrictions.eq("node.location.locationName", monitoringLocation));
     }
 
     private static void addCriteriaForMib2Parm(OnmsCriteria criteria, String mib2Parm, String mib2ParmValue, String mib2ParmMatchType) {

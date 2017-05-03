@@ -37,11 +37,23 @@
 <%@page import="java.text.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
-<%@page import="org.opennms.web.api.Util" %>
+<%@page import="org.opennms.web.api.Util"%>
+<%@page import="org.opennms.web.api.Authentication"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<%
+<%!
+    private String createSelectList(String name, List<String> elements) {
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
+        for(String element : elements){
+            buffer.append("<option>" + element + "</option>");
+        }
+        buffer.append("</select>");
 
+        return buffer.toString();
+    }
+%>
+
+<%
         final HttpSession userSession = request.getSession(false);
         User user = null;
         String userid = "";
@@ -72,7 +84,63 @@
 </jsp:include>
 
 <script type="text/javascript" >
+
+    function addRoles() 
+    {
+        m1len = m1.length ;
+        for ( i=0; i<m1len ; i++)
+        {
+            if (m1.options[i].selected == true ) 
+            {
+                m2len = m2.length;
+                m2.options[m2len]= new Option(m1.options[i].text);
+            }
+        }
+        for ( i = (m1len -1); i>=0; i--)
+        {
+            if (m1.options[i].selected == true ) 
+            {
+                m1.options[i] = null;
+            }
+        }
+    }
+
+    function removeRoles() 
+    {
+        m2len = m2.length ;
+        for ( i=0; i<m2len ; i++)
+        {
+            if (m2.options[i].selected == true ) 
+            {
+                m1len = m1.length;
+                m1.options[m1len]= new Option(m2.options[i].text);
+            }
+        }
+        for ( i=(m2len-1); i>=0; i--) 
+        {
+            if (m2.options[i].selected == true ) 
+            {
+                m2.options[i] = null;
+            }
+        }
+    }
+
+    function selectAllAvailable()
+    {
+        for (i=0; i < m1.length; i++) 
+        {
+            m1.options[i].selected = true;
+        }
+    }
     
+    function selectAllSelected()
+    {
+        for (i=0; i < m2.length; i++) 
+        {
+            m2.options[i].selected = true;
+        }
+    }
+
     function validate()
     {
         var minDurationMinsWarning = 5;
@@ -140,6 +208,7 @@
 
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/addDutySchedules";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -152,6 +221,7 @@
         
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -164,6 +234,7 @@
 
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/saveUser";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -212,8 +283,9 @@
         String microblog = null;
         String fullName = null;
         String comments = null;
-        Boolean isReadOnly = false;
-        try {
+        List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
+        Collections.sort(availableRoles);
+        List<String> configuredRoles = new ArrayList<String>();
             User usertemp = userFactory.getUser(userid);
             if (usertemp != null) {
                     email = userFactory.getEmail(userid);
@@ -228,38 +300,39 @@
                     homePhone = userFactory.getHomePhone(userid);
                     microblog = userFactory.getMicroblogName(userid);
             } else {
-                    Contact[] contact = user.getContact();
-                    for (int i = 0; i < contact.length; i++) {
-                            if (contact[i].getType().equals("email")) {
-                                    email = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("pagerEmail")) {
-                                    pagerEmail = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("xmppAddress")) {
-                                    xmppAddress = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("numericPage")) {
-                                    numericPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("textPage")) {
-                                    textPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("workPhone")) {
-                                    workPhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("mobilePhone")) {
-                                    mobilePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("homePhone")) {
-                                    homePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("microblog")) {
-                            		microblog = contact[i].getInfo();
+                    List<Contact> contacts = user.getContacts();
+                    for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).getType().equals("email")) {
+                                    email = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("pagerEmail")) {
+                                    pagerEmail = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("xmppAddress")) {
+                                    xmppAddress = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("numericPage")) {
+                                    numericPage = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("textPage")) {
+                                    textPage = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("workPhone")) {
+                                    workPhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("mobilePhone")) {
+                                    mobilePhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("homePhone")) {
+                                    homePhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("microblog")) {
+                            		microblog = contacts.get(i).getInfo();
                             }
                     }
             }
             fullName = user.getFullName();
             comments = user.getUserComments();
             tuiPin = user.getTuiPin();
-            isReadOnly = user.isReadOnly();
-        } catch (org.exolab.castor.xml.MarshalException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        } catch (org.exolab.castor.xml.ValidationException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        }
+
+            configuredRoles = user.getRoles();
+            for (String role : configuredRoles) {
+                if (availableRoles.contains(role)) {
+                    availableRoles.remove(role);
+                }
+            }
 
         %>
 
@@ -274,6 +347,20 @@
           <label for="userComments" class="col-sm-2 control-label">Comments:</label>
           <div class="col-sm-10">
             <textarea class="form-control" rows="5" id="userComments" name="userComments"><%=(comments == null ? "" : comments)%></textarea>
+          </div>
+        </div>
+
+	<div class="form-group">
+          <label for="securityRoles" class="col-sm-2 control-label">Security Roles:</label>
+          <div class="col-sm-5">
+              <label class="control-label">Available Roles</label>
+              <%=createSelectList("availableRoles", availableRoles)%><br/>
+              <button type="button" class="btn btn-default" id="roles.doAdd" onClick="javascript:addRoles()">&nbsp;&#155;&#155;&nbsp; Add</button>
+          </div>
+          <div class="col-sm-5">
+              <label class="control-label">Currently in User</label>
+              <%=createSelectList("configuredRoles", configuredRoles)%><br/>
+              <button type="button" class="btn btn-default" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
           </div>
         </div>
 
@@ -422,9 +509,9 @@
 </div> <!-- row -->
 
 <%
-Collection<String> dutySchedules = user.getDutyScheduleCollection();
+Collection<String> dutySchedules = user.getDutySchedules();
 %>
-<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
+<input type="hidden" name="dutySchedules" value="<%=user.getDutySchedules().size()%>"/>
 
 <div class="row">
   <div class="col-md-12">
@@ -516,4 +603,9 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
 
 </form>
 
+<script type="text/javascript" >
+    var m1 = document.modifyUser.availableRoles;
+    var m2 = document.modifyUser.configuredRoles;
+</script>
+ 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

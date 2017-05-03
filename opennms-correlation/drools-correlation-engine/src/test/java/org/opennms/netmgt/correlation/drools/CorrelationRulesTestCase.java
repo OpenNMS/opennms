@@ -47,13 +47,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:META-INF/opennms/applicationContext-soa.xml",
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:META-INF/opennms/correlation-engine.xml",
-        "classpath:test-context.xml"
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/correlation-engine.xml",
+        "classpath:/test-context.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={"org.opennms.activemq.broker.disable=true"})
 @DirtiesContext
 public abstract class CorrelationRulesTestCase {
 
@@ -80,7 +80,7 @@ public abstract class CorrelationRulesTestCase {
     protected void verify(DroolsCorrelationEngine engine) {
     	getAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
         if (m_anticipatedMemorySize != null) {
-            assertEquals("Unexpected number of objects in working memory: "+engine.getMemoryObjects(), m_anticipatedMemorySize.intValue(), engine.getMemorySize());
+            assertEquals("Unexpected number of objects in working memory: "+engine.getKieSessionObjects(), m_anticipatedMemorySize.intValue(), engine.getKieSessionObjects().size());
         }
     }
 

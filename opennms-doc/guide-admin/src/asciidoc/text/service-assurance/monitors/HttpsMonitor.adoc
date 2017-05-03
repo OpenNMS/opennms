@@ -1,0 +1,41 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== HttpsMonitor
+
+The HTTPS monitor tests the response of an SSL-enabled HTTP server.
+The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
+All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpMonitor's documentation>> for more information.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.HttpsMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the HttpsMonitor
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                             | Required | Default value
+| `port`                 | A list of TCP ports to which connection shall be tried. | optional | `443`
+|===
+
+===== Examples
+
+[source, xml]
+----
+<!-- Test HTTPS service on port 8443 -->
+<service name="HTTPS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="8443"/>
+  <parameter key="url" value="/"/>
+</service>
+
+<monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+----

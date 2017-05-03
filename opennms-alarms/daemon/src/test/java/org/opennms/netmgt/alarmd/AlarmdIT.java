@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -52,6 +53,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -88,7 +90,7 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
@@ -135,6 +137,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     private Alarmd m_alarmd;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -167,9 +172,8 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         m_eventdIpcMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         
         m_northbounder = new MockNorthbounder();
@@ -182,12 +186,11 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
         final MockNode node = m_mockNetwork.getNode(1);
 
         //there should be no alarms in the alarms table
-        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
+        assertEmptyAlarmTable();
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
@@ -219,12 +222,11 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testPersistManyAlarmsAtOnce() throws InterruptedException {
         int numberOfAlarmsToReduce = 10;
 
         //there should be no alarms in the alarms table
-        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
+        assertEmptyAlarmTable();
 
         final String reductionKey = "countThese";
         final MockNode node = m_mockNetwork.getNode(1);
@@ -302,14 +304,14 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid is null", Integer.class).intValue();
         MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
-        assertEquals(0, rowCount);
+        assertEquals(10, rowCount);
 
     }
 
     @Test
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("event argument must not be null"));
+        ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
         try {
             m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {
@@ -319,7 +321,6 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
         assertTrue(m_northbounder.getAlarms().isEmpty());
@@ -379,18 +380,12 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
     
     @Test
-    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void changeFields() throws InterruptedException, SQLException {
-        assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
-        
+        assertEmptyAlarmTable();
+
         String reductionKey = "testUpdateField";
-        
-        int alarmCount = m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue();
-        
-        assertEquals(0, alarmCount);
-        
         MockNode node1 = m_mockNetwork.getNode(1);
-        
+
         //Verify we have the default alarm
         sendNodeDownEvent(reductionKey, node1);
         int severity = m_jdbcTemplate.queryForObject("select severity from alarms a where a.reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
@@ -572,5 +567,17 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         event.setLogMessage("testing");
 
         m_eventdIpcMgr.sendNow(event.getEvent());
+    }
+
+    private void assertEmptyAlarmTable() {
+        List<String> alarmDescriptions = new LinkedList<>();
+        m_jdbcTemplate.query("select alarmId, reductionKey, severity from alarms", new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                alarmDescriptions.add(String.format("Alarm[id=%s, reductionKey=%s, severity=%s]",
+                        rs.getString(1), rs.getObject(2), rs.getObject(3)));
+            }
+        });
+        assertEquals("Found one or more alarms: " + alarmDescriptions, 0, alarmDescriptions.size());
     }
 }

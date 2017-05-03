@@ -34,7 +34,8 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,14 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
 import org.opennms.netmgt.config.snmpinterfacepoller.ExcludeRange;
 import org.opennms.netmgt.config.snmpinterfacepoller.IncludeRange;
@@ -59,6 +55,8 @@ import org.opennms.netmgt.config.snmpinterfacepoller.Interface;
 import org.opennms.netmgt.config.snmpinterfacepoller.Package;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract SnmpInterfacePollerConfigManager class.</p>
@@ -78,11 +76,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @param stream a {@link java.io.InputStream} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public SnmpInterfacePollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public SnmpInterfacePollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
         reloadXML(stream);
@@ -92,11 +88,9 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public abstract void update() throws IOException, MarshalException, ValidationException;
+    public abstract void update() throws IOException;
 
     /**
      * <p>saveXml</p>
@@ -161,12 +155,12 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * <p>reloadXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(SnmpInterfacePollerConfiguration.class, stream);
+    protected synchronized void reloadXML(InputStream stream) throws IOException {
+        try(final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(SnmpInterfacePollerConfiguration.class, reader);
+        }
         createUrlIpMap();
         createPackageIpListMap();
     }
@@ -174,19 +168,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     /**
      * Saves the current in-memory configuration to disk and reloads
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void save() throws MarshalException, IOException, ValidationException {
-    
+    public synchronized void save() throws IOException {
         // Marshal to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-        saveXml(stringWriter.toString());
-    
+        saveXml(JaxbUtils.marshal(m_config));
+
         update();
     }
 

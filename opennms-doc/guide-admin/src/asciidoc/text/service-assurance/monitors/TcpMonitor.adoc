@@ -1,0 +1,62 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== TcpMonitor
+
+This monitor is used to test IP Layer 4 connectivity using _TCP_.
+The monitor establishes an _TCP_ connection to a specific port.
+To test the availability of the service, the greetings banner of the application is evaluated.
+The behavior is similar to a simple test using the `telnet` command as shown in the example.
+
+.Simulating behavior of the monitor with `telnet`
+[source, bash]
+----
+root@vagrant:~# telnet 127.0.0.1 22
+Trying 127.0.0.1...
+Connected to 127.0.0.1.
+Escape character is '^]'.
+SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
+----
+<1> Service greeting banner
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.TcpMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the TcpMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                                                        | Required | Default value
+| `port`    | TCP port of the application.                                                                       | required | `-1`
+| `retry`   | Number of retries before the service is marked as _down_.                                          | optional | `0`
+| `banner`  | Evaluation of the service connection banner with regular expression. By default any banner result
+              is valid.                                                                                          | optional | `*`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+This example shows to test if the link:https://en.wikipedia.org/wiki/Independent_Computing_Architecture[ICA] service is available on _TCP_ port 1494.
+The test evaluates the connection banner starting with `ICA`.
+
+[source, xml]
+----
+<service name="TCP-Citrix-ICA" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="0" />
+  <parameter key="banner" value="ICA" />
+  <parameter key="port" value="1494" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
+  <parameter key="rrd-base-name" value="tcpCitrixIca" />
+  <parameter key="ds-name" value="tcpCitrixIca" />
+</service>
+
+<monitor service="TCP-Citrix-ICA" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+----

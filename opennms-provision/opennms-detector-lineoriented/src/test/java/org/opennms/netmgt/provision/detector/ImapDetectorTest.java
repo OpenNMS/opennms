@@ -38,27 +38,27 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
+import org.opennms.netmgt.provision.detector.simple.ImapDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class ImapDetectorTest implements ApplicationContextAware {
+public class ImapDetectorTest {
+
+    @Autowired
+    private ImapDetectorFactory m_detectorFactory;
     private ImapDetector m_detector = null;
     private SimpleServer m_server = null;
-    private ApplicationContext m_applicationContext = null;
 
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
 
-        m_detector = getDetector(ImapDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setServiceName("Imap");
         m_detector.setPort(143);
         m_detector.setTimeout(500);
@@ -164,20 +164,4 @@ public class ImapDetectorTest implements ApplicationContextAware {
             m_server.stopServer();
         }
     }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-
-    private ImapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (ImapDetector)bean;
-    }
-
 }

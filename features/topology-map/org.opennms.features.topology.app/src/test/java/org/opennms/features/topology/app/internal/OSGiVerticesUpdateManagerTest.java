@@ -28,32 +28,30 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Property;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphVisitor;
-import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.LayoutAlgorithm;
-import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
 import org.opennms.osgi.VaadinApplicationContextCreator;
 import org.osgi.framework.BundleContext;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class OSGiVerticesUpdateManagerTest {
 
@@ -223,7 +221,16 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private GraphContainer createGraph(int... vertIds) {
-        return new MockGraphContainer(new MockGraph(createVerticsWithIds(vertIds)));
+        final List<Vertex> vertexRefsWithIds = createVerticsWithIds(vertIds);
+
+        final Graph graphMock = EasyMock.createNiceMock(Graph.class);
+        final GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
+
+        EasyMock.expect(graphMock.getDisplayVertices()).andReturn(vertexRefsWithIds).anyTimes();
+        EasyMock.expect(graphContainerMock.getGraph()).andReturn(graphMock).anyTimes();
+        EasyMock.replay(graphMock, graphContainerMock);
+
+        return graphContainerMock;
     }
 
     private List<Vertex> createVerticsWithIds(int... vertexIds) {
@@ -237,7 +244,7 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private SelectionContext createContextWithVertRefIds(int... vertIds) {
-        SelectionContext context = new DefaultSelectionManager();
+        SelectionContext context = new DefaultSelectionManager(createGraph());
         List<VertexRef> vertices = createVertexRefsWithIds(vertIds);
 
         context.setSelectedVertexRefs(vertices);
@@ -252,201 +259,5 @@ public class OSGiVerticesUpdateManagerTest {
             vertices.add(vRef);
         }
         return vertices;
-    }
-
-    private class MockGraph implements Graph{
-
-        private final List<Vertex> m_displayVertices;
-
-        public MockGraph(List<Vertex> vertexRefs) {
-            m_displayVertices = vertexRefs;
-        }
-
-        @Override
-        public Layout getLayout() {
-            return null; 
-        }
-
-        @Override
-        public Collection<Vertex> getDisplayVertices() {
-            return m_displayVertices; 
-        }
-
-        @Override
-        public Collection<Edge> getDisplayEdges() {
-            return null; 
-        }
-
-        @Override
-        public Edge getEdgeByKey(String edgeKey) {
-            return null; 
-        }
-
-        @Override
-        public Vertex getVertexByKey(String vertexKey) {
-            return null; 
-        }
-
-        @Override
-        public void visit(GraphVisitor visitor) throws Exception {
-           
-        }
-    }
-
-    private class MockGraphContainer implements GraphContainer {
-        private final MockGraph m_graph;
-
-        public MockGraphContainer(MockGraph graph) {
-            m_graph = graph;
-        }
-
-        @Override
-        public GraphProvider getBaseTopology() {
-            return null; 
-        }
-
-        @Override
-        public void setBaseTopology(GraphProvider graphProvider) {
-           
-        }
-
-        @Override
-        public Criteria[] getCriteria() {
-            return null; 
-        }
-
-        @Override
-        public void addCriteria(Criteria critiera) {
-           
-        }
-
-        @Override
-        public void removeCriteria(Criteria critiera) {
-           
-        }
-
-        @Override
-        public void clearCriteria() {
-
-        }
-
-        @Override
-        public void addChangeListener(ChangeListener listener) {
-           
-        }
-
-        @Override
-        public void removeChangeListener(ChangeListener listener) {
-           
-        }
-
-        @Override
-        public SelectionManager getSelectionManager() {
-            return null; 
-        }
-
-        @Override
-        public void setSelectionManager(SelectionManager selectionManager) {
-           
-        }
-
-        @Override
-        public Graph getGraph() {
-            return m_graph; 
-        }
-
-        @Override
-        public AutoRefreshSupport getAutoRefreshSupport() {
-            return null;
-        }
-
-        @Override
-        public boolean hasAutoRefreshSupport() {
-            return getAutoRefreshSupport() != null;
-        }
-
-        @Override
-        public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
-            return null; 
-        }
-
-        @Override
-        public MapViewManager getMapViewManager() {
-            return null; 
-        }
-
-        @Override
-        public Property<Double> getScaleProperty() {
-            return null; 
-        }
-
-        @Override
-        public StatusProvider getVertexStatusProvider() {
-            return null; 
-        }
-
-        @Override
-        public void setVertexStatusProvider(StatusProvider statusProvider) {
-           
-        }
-
-        @Override
-        public Set<EdgeStatusProvider> getEdgeStatusProviders() {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public String getSessionId() {
-            return null; 
-        }
-
-        @Override
-        public void setSessionId(String sessionId) {
-           
-        }
-
-        @Override
-        public void setDirty(boolean dirty) {
-        }
-
-        @Override
-        public int getSemanticZoomLevel() {
-            return 0; 
-        }
-
-        @Override
-        public void setSemanticZoomLevel(int level) {
-           
-        }
-
-        @Override
-        public double getScale() {
-            return 0; 
-        }
-
-        @Override
-        public void setScale(double scale) {
-           
-        }
-
-        @Override
-        public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-           
-        }
-
-        @Override
-        public LayoutAlgorithm getLayoutAlgorithm() {
-            return null; 
-        }
-
-        @Override
-        public void redoLayout() {
-        }
-
-        @Override
-        public void fireGraphChanged() {
-            // TODO Auto-generated method stub
-            
-        }
     }
 }

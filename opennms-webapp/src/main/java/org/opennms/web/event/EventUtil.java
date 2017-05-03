@@ -46,20 +46,26 @@ import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
+import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
 import org.opennms.web.event.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.event.filter.NegativeExactUEIFilter;
 import org.opennms.web.event.filter.NegativeInterfaceFilter;
+import org.opennms.web.event.filter.NegativeLocationFilter;
 import org.opennms.web.event.filter.NegativeNodeFilter;
+import org.opennms.web.event.filter.NegativeNodeLocationFilter;
 import org.opennms.web.event.filter.NegativePartialUEIFilter;
 import org.opennms.web.event.filter.NegativeServiceFilter;
 import org.opennms.web.event.filter.NegativeSeverityFilter;
+import org.opennms.web.event.filter.NegativeSystemIdFilter;
 import org.opennms.web.event.filter.NodeFilter;
+import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.PartialUEIFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 
 /**
@@ -142,6 +148,18 @@ public abstract class EventUtil {
             filter = new AfterDateFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AlarmIDFilter.TYPE)) {
             filter = new AlarmIDFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(LocationFilter.TYPE)) {
+            filter = new LocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(SystemIdFilter.TYPE)) {
+            filter = new SystemIdFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeSystemIdFilter.TYPE)) {
+            filter = new NegativeSystemIdFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NodeLocationFilter.TYPE)) {
+            filter = new NodeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
+            filter = new NegativeNodeLocationFilter(WebSecurityUtils.sanitizeString(value));
         }
 
         return filter;

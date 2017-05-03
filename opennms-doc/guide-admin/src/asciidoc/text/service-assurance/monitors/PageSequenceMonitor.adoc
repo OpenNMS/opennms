@@ -1,0 +1,312 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== PageSequenceMonitor
+
+The _PageSequenceMonitor_ (PSM) allows OpenNMS to monitor web applications.
+This monitor has several configuration options regarding _IPv4_, _IPv6_ and how to deal with name resolution.
+To add flexibility, the node label and IP address can be passed as variable into the monitor.
+This allows running the monitor with node dependent configuration.
+Beyond testing a web application with a single _URL_ it can also test a path through a web application.
+A test path through an web application can look like this:
+
+. login to a certain web application
+. Execute an action while being logged in
+. Log off
+
+The service is considered as _up_ if all this is working ok.
+If there's an error somewhere, your application will need attention and the service changes the state to _down_.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.PageSequenceMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+The configuration for this monitor consists of several parts.
+First is the overall configuration for `retries` and `timeouts`.
+These parameters are global for the whole path through the web application.
+
+.Configuration overview of the _PSM_
+image::service-assurance/monitors/03_page-sequence-monitor-config.png[]
+
+The overall layout of the monitor configuration is more complex.
+Additionally, it is possible to configure a page sequence containing a path through a web application.
+
+.Monitor parameters for the PageSequenceMonitor
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                          | Required | Default value
+| `retry`          | The number of retries per page.                                                                      | optional | `0`
+| `strict-timeout` | Defines a timer to wait before a retry attempt is made.
+                     It is only used if at least one (1) retry is configured.
+                     If `retry >= 1` and `strict-timeout` is `true` the next attempt is delayed and the _Poller Daemon_
+                     waits `NOW - InitialAttempt ms + Timeout ms`.
+                     With `strict-timout = false` the next attempt is started right after a failure.                      | optional | `false`
+| `page-sequence`  | Definition of the page-sequence to execute, see table with _Page Sequence Parameter_                 | required | `-`
+| `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Page Sequence Parameter
+[options="header, autowidth"]
+|===
+| Parameter                  | Description                                                                                | Required | Default
+| `name`                     | The name of the page-sequence. *(Is this relevant/used?)*                                  | optional | `-`
+| `method`                   | _HTTP_ method for example _GET_ or _POST_                                                  | `-`      | `-`
+| `http-version`             | _HTTP_ protocol version number, 0.9, 1.0 or 1.1                                            | optional | `HTTP/1.1`
+| `user-agent`               | Set the _user agent_ field in _HTTP_ header to identify the OpenNMS monitor                | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
+| `virtual-host`             | Set the _virtual host_ field in _HTTP_ header.
+                               In case of an HTTPS request, this is also the virtual domain to send as part of the _TLS_
+                               negotiation, known as server name indication (_SNI_)
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)                      | `-`      | `-`
+| `path`                     | The relative URL to call in the request.                                                   | required | `-`
+| `scheme`                   | Define the _URL_ scheme as `http` or `https`                                               | optional | `http`
+| `user-info`                | Set _user info_ field in the _HTTP_ header                                                 | `-`      | `-`
+| `host`                     | Set _host_ field in _HTTP_ header                                                          | optional | `IP interface address of the service`
+| `requireIPv6`              | Communication requires a connection to an _IPv6_ address. (`true` or `false`)              | `-`      | `-`
+| `requireIPv4`              | Communication requires a connection to an _IPv4_ address. (`true` or `false`)              | `-`      | `-`
+| `disable-ssl-verification` | Enable or disable _SSL_ certificate verification for _HTTPS_ tests.
+                               Please use this option carefully, for self-signed certificates import the CA certificate
+                               in the JVM and don't just disable it.                                                      | optional | `false`
+| `port`                     | Port of the web server connecting to                                                       | optional | `80`
+| `query`                    | ??                                                                                         | `-`      | `-`
+| `failureMatch`             | Text to look for in the response body.
+                               This is a _Regular Expression_ matched against every line, and it will be considered a
+                               failure at the first match and sets the service with this monitor _Down_.                  | `-`      | `-`
+| `failureMessage`           | The failure message is used to construct the reason code.
+                               `${n}` values may be used to pull information from matching groups in the `failureMatch`
+                               regular expression.                                                                        | `-`      | `-`
+| `successMatch`             | Text to look for in the response body.
+                               This is a _Regular Expression_ matched against every line, and it will be considered a
+                               success at the first match and sets the service with this monitor _Up_.                    | optional | `-`
+| `locationMatch`            | The relative URL which must be loaded for the request to be considered successful.         | optional | `-`
+| `response-range`           | Range for allowed HTTP error codes from the response.                                      | `-`      | `-`
+| `session-variable`         | Assign the value of a regex match group to a session variable with a user-defined name.
+                               The match group is identified by number and must be zero or greater.                       | `-`      | `-`
+| `response-range`           | A comma-separated list of acceptable _HTTP_ response code ranges (`200-202,299`).          | optional | `100-399`
+|===
+
+TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
+
+.Variables which can be passed in the configuration
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
+|===
+
+===== Session variables
+
+It is possible to assign strings from a retrieved page to variables that can be used in page parameters later in the same sequence.
+First, specify one or more capturing groups in the `successMatch` expression (see link:http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Class Pattern] for more information on regular expressions in Java).
+The captured values can then be assigned to variable names by using the session-variable parameter, and used in a later page load.
+
+===== Per-page response times
+
+It is possible to collect response times for individual pages in a sequence.
+To use this functionality, a `ds-name` attribute must be added to each page whose load time should be tracked.
+The response time for each page will be stored in the same _RRD_ file specified for the service via the `rrd-base-name` parameter under the specified datasource name.
+
+WARNING: You will need to delete existing _RRD_ files and let them be recreated with the new list of datasources when you add a `ds-name` attribute to a page in a sequence that is already storing response time data.
+
+===== Examples
+
+The following example shows how to monitor the _OpenNMS_ web application using several mechanisms.
+It first does an _HTTP GET_ of `${ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
+Next, a login is attempted using _HTTP POST_ to the relative _URL_ for submitting form data (usually, the _URL_ which the form action points to).
+The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to be submitted.
+After getting the resulting page, first the expression specified in the page's `failureMatch` attribute is verified, which when found anywhere on the page indicates that the page has failed.
+If the `failureMatch` expression is not found in the resulting page, then the expression specified in the page's `successMatch` attribute is checked to ensure it matches the resulting page.
+If the `successMatch` expression is not found on the page, then the page fails.
+If the monitor was able to successfully login, then the next page is processed.
+In the example, the monitor navigates to the Event page, to ensure that the text _Event Queries_ is found on the page.
+Finally, the monitor calls the URL of the logout page to close the session.
+By using the `locationMatch` parameter, it is verified that the logout was successful and a redirect was triggered.
+
+NOTE: Each page is checked to ensure its _HTTP_ response code fits into the `response-range`, before the `failureMatch`, `successMatch`, and `locationMatch` expressions are evaluated.
+
+.Configuration to test the login to the OpenNMS Web application
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page path="/opennms/login.jsp"
+            port="8980"
+            successMatch="Password" />
+      <page path="/opennms/j_spring_security_check"
+            port="8980"
+            method="POST">
+        <parameter key="j_username" value="admin"/>
+        <parameter key="j_password" value="admin"/>
+      </page>
+      <page path="/opennms/index.jsp"
+            port="8980"
+            successMatch="Log Out" />
+      <page path="/opennms/event/index"
+            port="8980" successMatch="Event Queries" />
+      <page path="/opennms/j_spring_security_logout"
+            port="8980"
+            method="POST"
+            response-range="300-399"
+            locationMatch="/opennms" />
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+----
+
+.Test with mixing HTTP and HTTPS in a page sequence
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page scheme="http"
+            host="ecomm.example.com"
+            port="80"
+            path="/ecomm/jsp/Login.jsp"
+            virtual-host="ecomm.example.com"
+            successMatch="eComm Login"
+            timeout="10000"
+            http-version="1.1"/>
+      <page scheme="https"
+            method="POST"
+            host="ecomm.example.com" port="443"
+            path="/ecomm/controller"
+            virtual-host="ecomm.example.com"
+            successMatch="requesttab_select.gif"
+            failureMessage="Login failed: ${1}"
+            timeout="10000"
+            http-version="1.1">
+        <parameter key="action_name" value="XbtnLogin"/>
+        <parameter key="session_timeout" value=""/>
+        <parameter key="userid" value="EXAMPLE"/>
+        <parameter key="password" value="econ"/>
+      </page>
+      <page scheme="http"
+            host="ecomm.example.com" port="80"
+            path="/econsult/controller"
+            virtual-host="ecomm.example.com"
+            successMatch="You have successfully logged out of eComm"
+            timeout="10000" http-version="1.1">
+        <parameter key="action_name" value="XbtnLogout"/>
+      </page>
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+----
+
+.Test login with dynamic credentials using session variables
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence name="opennms-login-seq-dynamic-credentials">
+      <page path="/opennms"
+            port="80"
+            virtual-host="demo.opennms.org"
+            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>">
+        <session-variable name="username" match-group="1" />
+        <session-variable name="password" match-group="2" />
+      </page>
+      <page path="/opennms/j_acegi_security_check"
+            port="80"
+            virtual-host="demo.opennms.org"
+            method="POST"
+            failureMatch="(?s)Your log-in attempt failed.*Reason: ([^<]*)"
+            failureMessage="Login Failed: ${1}"
+            successMatch="Log out">"
+        <parameter key="j_username" value="${username}" />
+        <parameter key="j_password" value="${password}" />
+      </page>
+      <page path="/opennms/event/index.jsp"
+            port="80"
+            virtual-host="demo.opennms.org"
+            successMatch="Event Queries" />
+      <page path="/opennms/j_acegi_logout"
+            port="80"
+            virtual-host="demo.opennms.org"
+            successMatch="logged off" />
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+----
+
+.Log in to demo.opennms.org without knowing username and password
+[source, xml]
+----
+<service name="OpenNMS-Demo-Login" interval="300000" user-defined="true" status="on">
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page path="/opennms"
+            port="80"
+            virtual-host="demo.opennms.org"
+            successMatch="(?s)User:.*<strong>(.*?)</strong>.*?Password:.*?<strong>(.*?)</strong>">
+        <session-variable name="username" match-group="1" />
+        <session-variable name="password" match-group="2" />
+      </page>
+      <page path="/opennms/j_acegi_security_check"
+            port="80"
+            virtual-host="demo.opennms.org"
+            method="POST"
+            successMatch="Log out">"
+        <parameter key="j_username" value="${username}" />
+        <parameter key="j_password" value="${password}" />
+      </page>
+      <page path="/opennms/j_acegi_logout"
+            port="80"
+            virtual-host="demo.opennms.org"
+            successMatch="logged off" />
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Demo-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+----
+
+.Example with per-page response times
+[source, xml]
+----
+<service name="OpenNMS-Login" interval="300000" user-defined="false" status="on">
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="opennmslogin"/>
+  <parameter key="ds-name" value="overall"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page path="/opennms/acegilogin.jsp"
+            port="8980"
+            ds-name="login-page"/>
+      <page path="/opennms/event/index.jsp"
+            port="8980"
+            ds-name="event-page"/>
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+----
