@@ -40,11 +40,12 @@ import org.opennms.web.rest.support.CriteriaBuilderUtils;
 import org.opennms.web.rest.support.QueryParameters;
 import org.opennms.web.rest.v2.status.AbstractStatusService;
 import org.opennms.web.rest.v2.status.StatusSummary;
+import org.opennms.web.rest.v2.status.application.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BusinessServiceStatusService extends AbstractStatusService<BusinessServiceDTO> {
+public class BusinessServiceStatusService extends AbstractStatusService<BusinessServiceDTO, Query> {
 
     @Autowired
     private BusinessServiceManager businessServiceManager;
@@ -59,7 +60,6 @@ public class BusinessServiceStatusService extends AbstractStatusService<Business
         return businessServiceManager.countMatching(criteria);
     }
 
-    @Override
     public StatusSummary getSummary() {
         final List<BusinessService> businessServices = businessServiceManager.getAllBusinessServices();
         final List<OnmsSeverity> severityList = businessServices.stream().map(bs -> OnmsSeverity.get(bs.getOperationalStatus().getLabel())).collect(Collectors.toList());
@@ -68,12 +68,12 @@ public class BusinessServiceStatusService extends AbstractStatusService<Business
     }
 
     @Override
-    protected List<BusinessServiceDTO> findMatching(CriteriaBuilder criteriaBuilder) {
+    protected List<BusinessServiceDTO> findMatching(Query query, CriteriaBuilder criteriaBuilder) {
         List<BusinessService> services = businessServiceManager.findMatching(criteriaBuilder.toCriteria());
         List<BusinessServiceDTO> mappedServices = services.stream()
                 .map(eachService -> {
                     BusinessServiceDTO mappedservice = new BusinessServiceDTO();
-                    mappedservice.setId(eachService.getId());
+                    mappedservice.setId(eachService.getId().intValue());
                     mappedservice.setName(eachService.getName());
                     mappedservice.setSeverity(OnmsSeverity.get(eachService.getOperationalStatus().getLabel()));
                     return mappedservice;

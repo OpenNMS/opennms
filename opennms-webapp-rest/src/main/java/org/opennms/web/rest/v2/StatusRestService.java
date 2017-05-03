@@ -28,16 +28,15 @@
 
 package org.opennms.web.rest.v2;
 
-import static org.opennms.web.rest.v2.status.StatusSummary.enrich;
-
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -46,11 +45,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.rest.support.QueryParameters;
 import org.opennms.web.rest.support.QueryParametersBuilder;
 import org.opennms.web.rest.v2.status.SeverityFilter;
@@ -62,6 +57,11 @@ import org.opennms.web.rest.v2.status.application.Query;
 import org.opennms.web.rest.v2.status.bsm.BusinessServiceDTO;
 import org.opennms.web.rest.v2.status.bsm.BusinessServiceDTOList;
 import org.opennms.web.rest.v2.status.bsm.BusinessServiceStatusService;
+import org.opennms.web.rest.v2.status.node.NodeDTO;
+import org.opennms.web.rest.v2.status.node.NodeDTOList;
+import org.opennms.web.rest.v2.status.node.NodeQuery;
+import org.opennms.web.rest.v2.status.node.NodeStatusService;
+import org.opennms.web.rest.v2.status.node.strategy.StatusCalculationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -73,27 +73,25 @@ import com.google.common.base.Strings;
 public class StatusRestService {
 
     @Autowired
-    private NodeDao nodeDao;
-
-    @Autowired
-    private OutageDao outageDao;
-
-    @Autowired
-    private AlarmDao alarmDao;
-
-    @Autowired
     private BusinessServiceStatusService businessServiceStatusService;
 
     @Autowired
     private ApplicationStatusService applicationStatusService;
 
+    @Autowired
+    private NodeStatusService nodeStatusService;
+
     @GET
-    @Path("/summary/nodes")
-    public List<Object[]> getNodeStatus() {
-        final List<AlarmSummary> currentNodeAlarmSummaries = alarmDao.getNodeAlarmSummaries();
-        final List<OnmsSeverity> severityList = currentNodeAlarmSummaries.stream().map(summary -> summary.getMaxSeverity()).collect(Collectors.toList());
-        final StatusSummary statusSummary = new StatusSummary(severityList, nodeDao.countAll());
-        return convert(statusSummary);
+    @Path("/summary/nodes/{type}")
+    public Response getNodeStatus(@PathParam("type") String type) {
+        final StatusCalculationStrategy strategy = StatusCalculationStrategy.createFrom(type);
+        if (strategy == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Strategy '" + type + "' not supported. Supported values are:" + Arrays.toString(StatusCalculationStrategy.values()))
+                    .build();
+        }
+        final StatusSummary summary = nodeStatusService.getSummary(strategy);
+        return Response.ok().entity(convert(summary)).build();
     }
 
     @GET
@@ -108,20 +106,6 @@ public class StatusRestService {
     public List<Object[]> getBusinessServiceStatus() {
         StatusSummary summary = businessServiceStatusService.getSummary();
         return convert(summary);
-    }
-
-    @GET
-    @Path("/summary/outages")
-    public List<Object[]> getOutageStatus() {
-        long outageCount = outageDao.countOutagesByNode();
-        long normalCount = nodeDao.countAll() - outageCount;
-        final Map<OnmsSeverity, Long> severityMap = new HashMap<>();
-        severityMap.put(OnmsSeverity.NORMAL, normalCount);
-        severityMap.put(OnmsSeverity.MAJOR, outageCount);
-
-        enrich(severityMap);
-
-        return convert(severityMap);
     }
 
     @GET
@@ -166,7 +150,36 @@ public class StatusRestService {
                 .ok(list)
                 .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
                 .build();
+    }
 
+    @GET
+    @Path("/nodes/{type}")
+    public Response getNodes(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, @PathParam("type") String type) {
+        final StatusCalculationStrategy strategy = StatusCalculationStrategy.createFrom(type);
+        if (strategy == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Strategy '" + type + "' not supported. Supported values are:" + Arrays.toString(StatusCalculationStrategy.values()))
+                    .build();
+        }
+
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
+        final NodeQuery query = new NodeQuery(queryParameters, searchCondition);
+        query.setStatusCalculationStrategy(strategy);
+
+        final List<NodeDTO> nodes = nodeStatusService.getStatus(query);
+        final int totalCount = nodeStatusService.count(query);
+        final int offset = queryParameters.getOffset();
+
+        final NodeDTOList list = new NodeDTOList(nodes);
+        list.setOffset(queryParameters.getOffset());
+        list.setTotalCount(totalCount);
+
+        // Make sure that offset is set to a numeric value when setting the Content-Range header
+        return Response
+                .ok(list)
+                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
+                .build();
     }
 
     private static List<Object[]> convert(StatusSummary statusSummary) {

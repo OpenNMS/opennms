@@ -26,9 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node.strategy;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+/**
+ * The strategy, determining how the status of the nodes with geolocations are calculated.
+ *
+ * @author mvrueden
+ */
+public enum StatusCalculationStrategy {
+    /**
+     * Do not calculate the status.
+     */
+    None,
+    /**
+     * Calculate the status based on alarms.
+     */
+    Alarms,
+    /**
+     * Calculate the status based on outages.
+     */
+    Outages;
 
-public class BusinessServiceDTO extends StatusDTO {
+
+    public static StatusCalculationStrategy createFrom(String input) {
+        for (StatusCalculationStrategy eachStrategy : values()) {
+            if (eachStrategy.name().equalsIgnoreCase(input)) {
+                return eachStrategy;
+            }
+        }
+        return null;
+    }
 }

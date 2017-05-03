@@ -26,9 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import java.util.Collection;
+import java.util.List;
 
-public class BusinessServiceDTO extends StatusDTO {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.opennms.core.config.api.JaxbListWrapper;
+
+@XmlRootElement(name="nodes")
+@JsonRootName("nodes")
+public class NodeDTOList extends JaxbListWrapper<NodeDTO> {
+
+    private static final long serialVersionUID = 1L;
+
+    public NodeDTOList() {
+
+    }
+
+    public NodeDTOList(Collection<? extends NodeDTO> objects) {
+        super(objects);
+    }
+
+    @XmlElement(name="node")
+    @JsonProperty("nodes")
+    @Override
+    public List<NodeDTO> getObjects() {
+        return super.getObjects();
+    }
 }

@@ -1,7 +1,8 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,9 +27,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+--%>
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="title" value="Node List" />
+    <jsp:param name="headTitle" value="Node List" />
+    <jsp:param name="breadcrumb" value="Node List" />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 
-public class BusinessServiceDTO extends StatusDTO {
-}
+    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-node.js"></script>' />
+</jsp:include>
+
+<ng-include src="'node/main.html'"></ng-include>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

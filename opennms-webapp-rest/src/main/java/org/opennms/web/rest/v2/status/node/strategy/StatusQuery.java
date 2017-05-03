@@ -26,9 +26,48 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node.strategy;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class BusinessServiceDTO extends StatusDTO {
+import org.opennms.netmgt.model.OnmsSeverity;
+
+public class StatusQuery {
+    private boolean includeAcknowledgedAlarms;
+    private String location;
+    private Collection<Integer> nodeIds = new ArrayList<>();
+    private OnmsSeverity severity = OnmsSeverity.NORMAL;
+
+    public OnmsSeverity getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(OnmsSeverity severity) {
+        this.severity = severity;
+    }
+
+    public boolean isIncludeAcknowledgedAlarms() {
+        return includeAcknowledgedAlarms;
+    }
+
+    public void setIncludeAcknowledgedAlarms(boolean includeAcknowledgedAlarms) {
+        this.includeAcknowledgedAlarms = includeAcknowledgedAlarms;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setNodeIds(Collection<Integer> nodeIds) {
+        this.nodeIds = nodeIds;
+    }
+
+    public Collection<Integer> getNodeIds() {
+        return nodeIds;
+    }
 }

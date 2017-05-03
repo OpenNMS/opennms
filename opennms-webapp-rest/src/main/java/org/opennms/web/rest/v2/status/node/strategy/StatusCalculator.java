@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node.strategy;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+public interface StatusCalculator {
 
-public class BusinessServiceDTO extends StatusDTO {
+    Status calculateStatus(StatusQuery query);
 }

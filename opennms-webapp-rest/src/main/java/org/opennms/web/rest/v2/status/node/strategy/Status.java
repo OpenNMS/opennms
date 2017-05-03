@@ -26,9 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node.strategy;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import java.util.Map;
 
-public class BusinessServiceDTO extends StatusDTO {
+import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.google.common.collect.Maps;
+
+public class Status {
+
+    final Map<Integer, OnmsSeverity> severityMap = Maps.newHashMap();
+
+    final Map<Integer, Long> alarmCountMap = Maps.newHashMap();
+
+    final Map<Integer, Long> unacknowledgedCountMap = Maps.newHashMap();
+
+    public void add(int nodeId, OnmsSeverity severity, long alarmCount, long unacknowledgedCount) {
+        severityMap.put(nodeId, severity);
+        alarmCountMap.put(nodeId, alarmCount);
+        unacknowledgedCountMap.put(nodeId, unacknowledgedCount);
+    }
+
+    public OnmsSeverity getSeverity(int nodeId) {
+        return severityMap.get(nodeId);
+    }
+
+    public int getUnacknowledgedAlarmCount(int nodeId) {
+        final Long value = unacknowledgedCountMap.get(nodeId);
+        if (value != null) {
+            return value.intValue();
+        }
+        return 0;
+    }
+
+    public int size() {
+        return severityMap.size();
+    }
 }

@@ -28,41 +28,7 @@
 
 package org.opennms.web.rest.v2.status.application;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.opennms.web.rest.v2.status.StatusDTO;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.rest.v2.status.SeveritySupplier;
-
-@XmlRootElement(name="application")
-@JsonRootName("application")
-public class ApplicationDTO implements SeveritySupplier {
-    private Integer id;
-    private String name;
-    private OnmsSeverity severity;
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public OnmsSeverity getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(OnmsSeverity severity) {
-        this.severity = severity;
-    }
+public class ApplicationDTO extends StatusDTO {
 }

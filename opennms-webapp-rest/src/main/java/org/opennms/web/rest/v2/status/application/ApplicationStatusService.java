@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatus;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -46,13 +45,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ApplicationStatusService extends AbstractStatusService<ApplicationDTO> {
+public class ApplicationStatusService extends AbstractStatusService<ApplicationDTO, Query> {
 
     @Autowired
     private ApplicationDao applicationDao;
-
-    @Autowired
-    private AlarmDao alarmDao;
 
     protected CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters) {
         return CriteriaBuilderUtils.buildFrom(OnmsApplication.class, queryParameters);
@@ -63,7 +59,6 @@ public class ApplicationStatusService extends AbstractStatusService<ApplicationD
         return applicationDao.countMatching(criteria);
     }
 
-    @Override
     public StatusSummary getSummary() {
         final List<ApplicationStatus> statusList = getApplicationStatus();
         final List<OnmsSeverity> severityList = statusList.stream().map(status -> status.getSeverity()).collect(Collectors.toList());
@@ -72,7 +67,7 @@ public class ApplicationStatusService extends AbstractStatusService<ApplicationD
     }
 
     @Override
-    protected List<ApplicationDTO> findMatching(CriteriaBuilder criteriaBuilder) {
+    protected List<ApplicationDTO> findMatching(Query query, CriteriaBuilder criteriaBuilder) {
         final List<OnmsApplication> applications = applicationDao.findMatching(criteriaBuilder.toCriteria());
         List<ApplicationStatus> applicationStatus = getApplicationStatus(applications);
 

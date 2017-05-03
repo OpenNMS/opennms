@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node;
 
 import org.opennms.web.rest.v2.status.StatusDTO;
 
-public class BusinessServiceDTO extends StatusDTO {
+public class NodeDTO extends StatusDTO {
 }

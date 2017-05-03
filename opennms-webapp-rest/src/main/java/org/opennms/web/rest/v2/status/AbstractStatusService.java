@@ -40,9 +40,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.support.QueryParameters;
 import org.opennms.web.rest.v2.status.application.Query;
 
-public abstract class AbstractStatusService<T extends SeveritySupplier> {
+public abstract class AbstractStatusService<T extends SeveritySupplier, X extends Query> {
 
-    public List<T> getStatus(Query query) {
+    public List<T> getStatus(X query) {
         final QueryParameters queryParameters = query.getParameters();
         final SearchCondition<SeverityFilter> filter = query.getSearchCondition();
         final CriteriaBuilder criteriaBuilder = getCriteriaBuilder(queryParameters);
@@ -56,7 +56,7 @@ public abstract class AbstractStatusService<T extends SeveritySupplier> {
         }
 
         // Query and apply filters
-        List<T> collect = findMatching(criteriaBuilder);
+        List<T> collect = findMatching(query, criteriaBuilder);
         collect = apply(collect, filter);
 
         // sort manually if required
@@ -76,7 +76,7 @@ public abstract class AbstractStatusService<T extends SeveritySupplier> {
         return queryParameters.getPage().apply(list);
     }
 
-    public int count(Query query) {
+    public int count(X query) {
         final QueryParameters queryParameters = query.getParameters();
         final SearchCondition<SeverityFilter> filter = query.getSearchCondition();
         final CriteriaBuilder builder = getCriteriaBuilder(queryParameters);
@@ -88,7 +88,7 @@ public abstract class AbstractStatusService<T extends SeveritySupplier> {
 
         // If a severity is given, we must count manually!
         if (filter != null && filter.getCondition() != null && filter.getCondition().getSeverity() != null) {
-            List<T> collect = findMatching(builder);
+            List<T> collect = findMatching(query, builder);
             collect = apply(collect, filter);
             return collect.size();
         } else {
@@ -98,9 +98,7 @@ public abstract class AbstractStatusService<T extends SeveritySupplier> {
 
     protected abstract int countMatching(Criteria criteria);
 
-    public abstract StatusSummary getSummary();
-
-    protected abstract List<T> findMatching(CriteriaBuilder criteriaBuilder);
+    protected abstract List<T> findMatching(X query, CriteriaBuilder criteriaBuilder);
 
     protected abstract CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters);
 

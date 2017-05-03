@@ -26,9 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node.strategy;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public class BusinessServiceDTO extends StatusDTO {
+class Utils {
+
+    static OnmsSeverity getSeverity(StatusQuery query) {
+        OnmsSeverity severity = OnmsSeverity.NORMAL;
+        if (query.getSeverity() != null && OnmsSeverity.get(query.getSeverity().getId()).isGreaterThanOrEqual(severity)) {
+            severity = OnmsSeverity.get(query.getSeverity().getId());
+        }
+        return severity;
+    }
 }

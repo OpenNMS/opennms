@@ -26,9 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public class BusinessServiceDTO extends StatusDTO {
+public abstract class StatusDTO implements SeveritySupplier {
+
+    private Integer id;
+    private String name;
+    private OnmsSeverity severity;
+
+    @Override
+    public OnmsSeverity getSeverity() {
+        return severity;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSeverity(OnmsSeverity severity) {
+        this.severity = severity;
+    }
 }

@@ -181,23 +181,19 @@
                 parentContainer: '#chart-content',
                 graphs: [
                     {
-                        id: "nodeProblemChart",
+                        id: "nodeProblemChartsByAlarms",
                         title: "Alarms",
-                        url: "/opennms/api/v2/status/summary/nodes",
+                        url: "/opennms/api/v2/status/summary/nodes/alarms",
                         onclick: function(e) {
-                            window.location = "alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=severity%3D" + severityIds[e.id];
+                            window.location = "node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
                         }
                     },
                     {
-                        id: "outageProblemChart",
+                        id: "nodeProblemChartByOutages",
                         title: "Outages",
-                        url: "/opennms/api/v2/status/summary/outages",
+                        url: "/opennms/api/v2/status/summary/nodes/outages",
                         onclick: function(e) {
-                            if (e.id === "Normal") {
-                                window.location = "outage/list.htm?outtype=resolved";
-                            } else {
-                                window.location = "outage/list.htm?outtype=current";
-                            }
+                            window.location = "node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
                         }
                     },
                     {

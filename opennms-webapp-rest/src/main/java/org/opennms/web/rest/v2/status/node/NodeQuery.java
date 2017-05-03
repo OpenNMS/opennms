@@ -26,9 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.status.bsm;
+package org.opennms.web.rest.v2.status.node;
 
-import org.opennms.web.rest.v2.status.StatusDTO;
+import org.apache.cxf.jaxrs.ext.search.SearchCondition;
+import org.opennms.web.rest.support.QueryParameters;
+import org.opennms.web.rest.v2.status.SeverityFilter;
+import org.opennms.web.rest.v2.status.application.Query;
+import org.opennms.web.rest.v2.status.node.strategy.StatusCalculationStrategy;
 
-public class BusinessServiceDTO extends StatusDTO {
+public class NodeQuery extends Query {
+
+    private StatusCalculationStrategy statusCalculationStrategy;
+
+    public NodeQuery(QueryParameters parameters, SearchCondition<SeverityFilter> searchCondition) {
+        super(parameters, searchCondition);
+    }
+
+    public StatusCalculationStrategy getStatusCalculationStrategy() {
+        return statusCalculationStrategy;
+    }
+
+    public void setStatusCalculationStrategy(StatusCalculationStrategy statusCalculationStrategy) {
+        this.statusCalculationStrategy = statusCalculationStrategy;
+    }
 }
