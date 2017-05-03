@@ -528,7 +528,7 @@ public class JRobinRrdStrategyTest {
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         RrdDef def = m_strategy.createDefinition("hello!", m_fileAnticipator.getTempDir().getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
-        m_strategy.createFile(def, null);
+        m_strategy.createFile(def);
         
         return m_fileAnticipator.expecting(rrdFileBase + rrdExtension);
     }
