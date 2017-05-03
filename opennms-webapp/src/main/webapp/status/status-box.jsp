@@ -75,9 +75,23 @@
 
         var loadChartData = function(graph) {
             $.getJSON(graph.url, function (data) {
-                chartMapping[graph.id].unload();
-                chartMapping[graph.id].load({columns: data});
+                var columns = [];
 
+                // Only include values > 0
+                for (var i=0; i<data.length; i++) {
+                    if (data[i].length >= 2) {
+                        if (data[i][1] > 0) {
+                            columns.push(data[i]);
+                        }
+                    }
+                }
+                console.log(columns);
+
+                // Reload graph
+                chartMapping[graph.id].unload();
+                chartMapping[graph.id].load({columns: columns});
+
+                // Decide wether to show or hide the graph
                 var sum = 0;
                 for (var i=0; i<data.length; i++) {
                     sum += data[i][1];
