@@ -30,9 +30,9 @@
 --%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application List" />
-    <jsp:param name="headTitle" value="Application List" />
-    <jsp:param name="breadcrumb" value="Application List" />
+    <jsp:param name="title" value="Business Service List" />
+    <jsp:param name="headTitle" value="Business Service List" />
+    <jsp:param name="breadcrumb" value="Business Service List" />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 

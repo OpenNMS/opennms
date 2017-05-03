@@ -36,7 +36,7 @@
                             if (status === 204) { // No content
                                 return [];
                             }
-                            return data;
+                            return data.businessservices;
                         })
                     }
                 }

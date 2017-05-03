@@ -128,8 +128,8 @@ public class StatusRestService {
     @Path("/applications")
     public Response getApplications(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SearchCondition<SeverityFilter> applicationSearchCondition = getSearchCondition(searchContext);
-        final Query query = new Query(queryParameters, applicationSearchCondition);
+        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
+        final Query query = new Query(queryParameters, searchCondition);
 
         final List<ApplicationDTO> applications = applicationStatusService.getStatus(query);
         final int totalCount = applicationStatusService.count(query);
@@ -150,7 +150,7 @@ public class StatusRestService {
     @Path("/business-services")
     public Response getBusinessServices(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SearchCondition<SeverityFilter> searchCondition = searchContext.getCondition(SeverityFilter.class);
+        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
         final Query query = new Query(queryParameters, searchCondition);
 
         final List<BusinessServiceDTO> services = businessServiceStatusService.getStatus(query);

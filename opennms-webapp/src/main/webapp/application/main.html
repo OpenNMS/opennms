@@ -100,25 +100,17 @@
                 </div>
 
                 <div class="pull-right">
-                    <!-- Add 1 to each offset since they are zero-based -->
-                    <form class="form-inline" ng-submit="setLimit(query.newLimit)">
-                        <div class="input-group" style="margin-left:10px;">
-                            <span class="input-group-addon"><i class="fa fa-th-list"></i></span>
-                            <input class="form-control" type="number" ng-model="query.newLimit"/>
-                        </div>
+                    <div class="btn-group" style="margin-left:5px;">
+                        <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+                            Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+                        </a>
+                    </div>
 
-                        <div class="btn-group" style="margin-left:5px;">
-                            <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
-                                Next&nbsp;&nbsp;<i class="fa fa-play"></i>
-                            </a>
-                        </div>
-
-                        <div class="btn-group" style="margin-left:5px;">
-                            <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
-                                Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
-                            </a>
-                        </div>
-                    </form>
+                    <div class="btn-group" style="margin-left:5px;">
+                        <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+                            Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+                        </a>
+                    </div>
                 </div>
 
                 <h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
