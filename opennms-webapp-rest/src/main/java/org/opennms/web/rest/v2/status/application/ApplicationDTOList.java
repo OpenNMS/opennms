@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,19 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.web.rest.v2.status.application;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application List" />
-    <jsp:param name="headTitle" value="Application List" />
-    <jsp:param name="breadcrumb" value="Application List" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+import java.util.Collection;
+import java.util.List;
 
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-application.js"></script>' />
-</jsp:include>
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-<ng-include src="'application/main.html'"></ng-include>
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.opennms.core.config.api.JaxbListWrapper;
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+@XmlRootElement(name="applications")
+@JsonRootName("applications")
+public class ApplicationDTOList extends JaxbListWrapper<ApplicationDTO> {
+
+    private static final long serialVersionUID = 1L;
+
+    public ApplicationDTOList() {
+
+    }
+
+    public ApplicationDTOList(Collection<? extends ApplicationDTO> objects) {
+        super(objects);
+    }
+
+    @XmlElement(name="application")
+    @JsonProperty("applications")
+    @Override
+    public List<ApplicationDTO> getObjects() {
+        return super.getObjects();
+    }
+}

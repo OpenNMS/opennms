@@ -26,17 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.model;
+package org.opennms.web.rest.v2.status.bsm;
 
-public class SeveritySearchRequest {
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.v2.status.SeveritySupplier;
 
-    private String severity;
+public class BusinessServiceDTO implements SeveritySupplier {
+    private Long id;
+    private String name;
+    private OnmsSeverity severity;
 
-    public String getSeverity() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public OnmsSeverity getSeverity() {
         return severity;
     }
 
-    public void setSeverity(String severity) {
+    public void setSeverity(OnmsSeverity severity) {
         this.severity = severity;
     }
 }

@@ -28,19 +28,16 @@
 
 package org.opennms.web.controller.application;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
+import org.opennms.netmgt.dao.api.ApplicationStatus;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
@@ -76,47 +73,26 @@ public class ApplicationBoxController extends AbstractController implements Init
         final int numberOfRows = Integer.getInteger("opennms.applicationsWithProblems.count", DEFAULT_ROW_COUNT);
         final boolean all = "true".equalsIgnoreCase(request.getParameter("all"));
 
-        // Applications do not have a alarm mapping, so we group all alarms by node id, service type and ip address
-        // as those define the status of the application
-        final List<ApplicationStatusEntity> alarmStatusList = applicationDao.getAlarmStatus();
+        // Get application status, but only consider everything > NORMAL
+        List<ApplicationStatus> applicationStatus = applicationDao.getApplicationStatus();
+        applicationStatus = applicationStatus.stream().filter(a -> a.getSeverity().isGreaterThan(OnmsSeverity.NORMAL)).collect(Collectors.toList());
 
         // Calculate status for application
-        List<ApplicationSummary> summaryList = new ArrayList<>();
-        for (OnmsApplication application : applicationDao.findAll()) {
-            final List<ApplicationStatusEntity> statusList = new ArrayList<>();
-            for (OnmsMonitoredService eachService : application.getMonitoredServices()) {
-                ApplicationStatusEntity.Key key = new ApplicationStatusEntity.Key(eachService.getNodeId(), eachService.getServiceType(), eachService.getIpAddress());
-                alarmStatusList.stream().filter(s -> s.getKey().equals(key)).collect(Collectors.toList()).forEach(s -> statusList.add(s));
-            }
-
-            // We have determined all severities from all ip services, now get the max severity
-            Optional<ApplicationStatusEntity> maxSeverity = statusList.stream().reduce((statusEntity1, statusEntity2) -> {
-                if (statusEntity1.getSeverity().isGreaterThan(statusEntity2.getSeverity())) {
-                    return statusEntity1;
-                }
-                return statusEntity2;
-            });
-            if (maxSeverity.isPresent()) {
-                summaryList.add(new ApplicationSummary(application, maxSeverity.get().getSeverity()));
-            }
-
-        }
-
         // Define if there is a "more"
-        boolean more = !all && summaryList.size() - numberOfRows > 0;
+        boolean more = !all && applicationStatus.size() - numberOfRows > 0;
         if (!all) {
-            if (summaryList.size() > numberOfRows) {
-                summaryList = summaryList.subList(0, numberOfRows);
+            if (applicationStatus.size() > numberOfRows) {
+                applicationStatus = applicationStatus.subList(0, numberOfRows);
             }
         }
 
         // Sort
-        summaryList.sort((s1, s2) -> -1 * s1.getSeverity().compareTo(s2.getSeverity())); // desc sort
+        applicationStatus.sort((s1, s2) -> -1 * s1.getSeverity().compareTo(s2.getSeverity())); // desc sort
 
         // Prepare Model
         ModelAndView modelAndView = new ModelAndView(m_successView);
         modelAndView.addObject("more", more);
-        modelAndView.addObject("summaries", summaryList);
+        modelAndView.addObject("summaries", applicationStatus);
         return modelAndView;
     }
 

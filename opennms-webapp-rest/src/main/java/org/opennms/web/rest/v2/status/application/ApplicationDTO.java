@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,19 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.web.rest.v2.status.application;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application List" />
-    <jsp:param name="headTitle" value="Application List" />
-    <jsp:param name="breadcrumb" value="Application List" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+import javax.xml.bind.annotation.XmlRootElement;
 
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-application.js"></script>' />
-</jsp:include>
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.v2.status.SeveritySupplier;
 
-<ng-include src="'application/main.html'"></ng-include>
+@XmlRootElement(name="application")
+@JsonRootName("application")
+public class ApplicationDTO implements SeveritySupplier {
+    private Integer id;
+    private String name;
+    private OnmsSeverity severity;
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public OnmsSeverity getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(OnmsSeverity severity) {
+        this.severity = severity;
+    }
+}

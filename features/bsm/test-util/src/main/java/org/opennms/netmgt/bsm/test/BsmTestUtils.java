@@ -42,7 +42,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
-import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
+import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;

@@ -61,7 +61,10 @@ import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
+import org.opennms.web.rest.support.CriteriaBuilderUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.QueryParameters;
+import org.opennms.web.rest.support.QueryParametersBuilder;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,37 +300,11 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	}
 
 	private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
-
-		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		params.putAll(p);
-
-		builder.limit(defaultLimit);
-
-		if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
-			builder.limit(Integer.valueOf(params.getFirst("limit").trim()));
-			params.remove("limit");
+		final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(p);
+		if (queryParameters.getLimit() == null) {
+			queryParameters.setLimit(defaultLimit);
 		}
-
-		if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
-			builder.offset(Integer.valueOf(params.getFirst("offset").trim()));
-			params.remove("offset");
-		}
-
-		if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
-			builder.clearOrder();
-
-			builder.orderBy(params.getFirst("orderBy").trim());
-			params.remove("orderBy");
-
-			if (params.containsKey("order") && params.getFirst("order") != null && !"".equals(params.getFirst("order").trim())) {
-				if("desc".equalsIgnoreCase(params.getFirst("order").trim())) {
-					builder.desc();
-				} else {
-					builder.asc();
-				}
-				params.remove("order");
-			}
-		}
+		CriteriaBuilderUtils.applyQueryParameters(builder, queryParameters);
 	}
 
 	private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {

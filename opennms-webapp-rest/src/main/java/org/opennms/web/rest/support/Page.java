@@ -26,36 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.model;
+package org.opennms.web.rest.support;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+import java.util.Collections;
+import java.util.List;
 
-public class BusinessServiceDTO {
-    private Long id;
-    private String name;
-    private OnmsSeverity status;
+public class Page {
+    private Integer offset;
+    private Integer limit;
 
-    public void setId(Long id) {
-        this.id = id;
+    public Page(Integer offset, Integer limit) {
+        if (offset != null && offset.intValue() < 0) {
+            throw new IllegalArgumentException("Offset must be > 0");
+        }
+        if (limit != null && limit <= 0) {
+            throw new IllegalArgumentException("limit must be > 0");
+        }
+        this.offset = offset;
+        this.limit = limit;
     }
 
-    public Long getId() {
-        return id;
+    public <T> List<T> apply(List<T> list) {
+        if (offset != null && offset > list.size()) {
+            return Collections.emptyList();
+        }
+        if (offset != null && limit != null) {
+            return sublist(list, offset, limit);
+        }
+        if (offset != null) {
+            return list.subList(offset, list.size());
+        }
+        if (limit != null) {
+            sublist(list, 0, limit);
+        }
+        return list;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    private static <T> List<T> sublist(List<T> list, int start, int limit) {
+        if (start + limit > list.size()) {
+            limit = list.size() - start;
+        }
+        return list.subList(start, start + limit);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setStatus(OnmsSeverity status) {
-        this.status = status;
-    }
-
-    public OnmsSeverity getStatus() {
-        return status;
-    }
 }

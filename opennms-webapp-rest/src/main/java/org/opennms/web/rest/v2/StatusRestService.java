@@ -28,13 +28,12 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.ArrayList;
+import static org.opennms.web.rest.v2.status.StatusSummary.enrich;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
@@ -42,57 +41,36 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.rest.v2.model.ApplicationDTO;
-import org.opennms.web.rest.v2.model.ApplicationDTOList;
-import org.opennms.web.rest.v2.model.BusinessServiceDTO;
-import org.opennms.web.rest.v2.model.SeveritySearchRequest;
+import org.opennms.web.rest.support.QueryParameters;
+import org.opennms.web.rest.support.QueryParametersBuilder;
+import org.opennms.web.rest.v2.status.SeverityFilter;
+import org.opennms.web.rest.v2.status.StatusSummary;
+import org.opennms.web.rest.v2.status.application.ApplicationDTO;
+import org.opennms.web.rest.v2.status.application.ApplicationDTOList;
+import org.opennms.web.rest.v2.status.application.ApplicationStatusService;
+import org.opennms.web.rest.v2.status.application.Query;
+import org.opennms.web.rest.v2.status.bsm.BusinessServiceDTO;
+import org.opennms.web.rest.v2.status.bsm.BusinessServiceDTOList;
+import org.opennms.web.rest.v2.status.bsm.BusinessServiceStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
-@Component("statusBoxRestService")
+@Component("statusRestService")
 @Path("status")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class StatusRestService {
-
-    public static class ApplicationSummary {
-        private OnmsApplication application;
-        private OnmsSeverity severity;
-
-        public ApplicationSummary(OnmsApplication application, OnmsSeverity severity) {
-            this.application = application;
-            this.severity = severity;
-        }
-
-        public OnmsApplication getApplication() {
-            return application;
-        }
-
-        public OnmsSeverity getSeverity() {
-            return severity;
-        }
-
-    }
 
     @Autowired
     private NodeDao nodeDao;
@@ -104,100 +82,32 @@ public class StatusRestService {
     private AlarmDao alarmDao;
 
     @Autowired
-    private BusinessServiceManager businessServiceManager;
+    private BusinessServiceStatusService businessServiceStatusService;
 
     @Autowired
-    private ApplicationDao applicationDao;
+    private ApplicationStatusService applicationStatusService;
 
     @GET
     @Path("/summary/nodes")
     public List<Object[]> getNodeStatus() {
         final List<AlarmSummary> currentNodeAlarmSummaries = alarmDao.getNodeAlarmSummaries();
-        final Map<OnmsSeverity, Long> severityMap = currentNodeAlarmSummaries.stream().collect(
-                Collectors.groupingBy(summary -> summary.getMaxSeverity(), Collectors.counting()));
-
-        // update normal severity
-        final long nodeCount = nodeDao.countAll();
-        final long nodesWithSeverityCount = severityMap.values().stream().count();
-        final long normalCount = nodeCount - nodesWithSeverityCount + severityMap.getOrDefault(OnmsSeverity.NORMAL, 0L);
-        severityMap.put(OnmsSeverity.NORMAL, normalCount);
-        return convert(enrich(severityMap));
+        final List<OnmsSeverity> severityList = currentNodeAlarmSummaries.stream().map(summary -> summary.getMaxSeverity()).collect(Collectors.toList());
+        final StatusSummary statusSummary = new StatusSummary(severityList, nodeDao.countAll());
+        return convert(statusSummary);
     }
 
     @GET
     @Path("/summary/applications")
     public List<Object[]> getApplicationStatus() {
-        final List<ApplicationSummary> summaryList = getApplicationSummary();
-        final Map<OnmsSeverity, Long> severityMap = summaryList.stream().collect(
-                Collectors.groupingBy(summary -> summary.getSeverity(), Collectors.counting()));
-
-        // update normal severity
-        final long applicationCount = applicationDao.countAll();
-        final long applicationWithSeverityCount = severityMap.values().stream().count();
-        final long normalCount = applicationCount - applicationWithSeverityCount + severityMap.getOrDefault(OnmsSeverity.NORMAL, 0L);
-        severityMap.put(OnmsSeverity.NORMAL, normalCount);
-
-        return convert(enrich(severityMap));
-    }
-
-    private List<ApplicationSummary> getApplicationSummary() {
-        return getApplicationSummary(applicationDao.findAll());
-    }
-
-    private List<ApplicationSummary> getApplicationSummary(List<OnmsApplication> applications) {
-        // Applications do not have a alarm mapping, so we group all alarms by node id, service type and ip address
-        // as those define the status of the application
-        final List<ApplicationStatusEntity> alarmStatusList = applicationDao.getAlarmStatus();
-
-        // Calculate status for application
-        final List<ApplicationSummary> summaryList = new ArrayList<>();
-        for (OnmsApplication application : applications) {
-            final List<ApplicationStatusEntity> statusList = new ArrayList<>();
-            for (OnmsMonitoredService eachService : application.getMonitoredServices()) {
-                ApplicationStatusEntity.Key key = new ApplicationStatusEntity.Key(eachService.getNodeId(), eachService.getServiceType(), eachService.getIpAddress());
-                alarmStatusList.stream().filter(s -> s.getKey().equals(key)).collect(Collectors.toList()).forEach(s -> statusList.add(s));
-            }
-
-            // We have determined all severities from all ip services, now get the max severity
-            Optional<ApplicationStatusEntity> maxSeverity = statusList.stream().reduce((statusEntity1, statusEntity2) -> {
-                if (statusEntity1.getSeverity().isGreaterThan(statusEntity2.getSeverity())) {
-                    return statusEntity1;
-                }
-                return statusEntity2;
-            });
-            if (maxSeverity.isPresent()) {
-                summaryList.add(new ApplicationSummary(application, maxSeverity.get().getSeverity()));
-            }
-        }
-
-        // Merge with no status
-        final List<OnmsApplication> applicationsWithStatus = summaryList.stream().map(s -> s.getApplication()).collect(Collectors.toList());
-        final List<OnmsApplication> applicationsWithoutStatus = applications.stream().filter(a -> !applicationsWithStatus.contains(a)).collect(Collectors.toList());
-        applicationsWithoutStatus.stream().forEach(a -> summaryList.add(new ApplicationSummary(a, OnmsSeverity.NORMAL)));
-        return summaryList;
+        StatusSummary summary = applicationStatusService.getSummary();
+        return convert(summary);
     }
 
     @GET
     @Path("/summary/business-services")
     public List<Object[]> getBusinessServiceStatus() {
-        final Map<OnmsSeverity, Long> severityMap = businessServiceManager.getAllBusinessServices()
-                .stream()
-                .collect(
-                    Collectors.groupingBy(b -> {
-                        final Status operationalStatus = b.getOperationalStatus();
-                        final OnmsSeverity severity = OnmsSeverity.get(operationalStatus.getLabel());
-                        return severity;
-                    }, Collectors.counting()));
-        return convert(enrich(severityMap));
-    }
-
-    private Map<OnmsSeverity, Long> enrich(Map<OnmsSeverity, Long> severityMap) {
-        severityMap.putIfAbsent(OnmsSeverity.NORMAL, 0L);
-        severityMap.putIfAbsent(OnmsSeverity.WARNING, 0L);
-        severityMap.putIfAbsent(OnmsSeverity.MINOR, 0L);
-        severityMap.putIfAbsent(OnmsSeverity.MAJOR, 0L);
-        severityMap.putIfAbsent(OnmsSeverity.CRITICAL, 0L);
-        return severityMap;
+        StatusSummary summary = businessServiceStatusService.getSummary();
+        return convert(summary);
     }
 
     @GET
@@ -207,57 +117,27 @@ public class StatusRestService {
         long normalCount = nodeDao.countAll() - outageCount;
         final Map<OnmsSeverity, Long> severityMap = new HashMap<>();
         severityMap.put(OnmsSeverity.NORMAL, normalCount);
-        severityMap.put(OnmsSeverity.CRITICAL, outageCount);
-        return convert(enrich(severityMap));
+        severityMap.put(OnmsSeverity.MAJOR, outageCount);
+
+        enrich(severityMap);
+
+        return convert(severityMap);
     }
 
     @GET
     @Path("/applications")
     public Response getApplications(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-        // Remove the severity from orderBy because applications do not have a severity
-        final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        final String orderSeverity = getOrderBySeverityAndRemoveIfExisting(queryParameters);
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final SearchCondition<SeverityFilter> applicationSearchCondition = getSearchCondition(searchContext);
+        final Query query = new Query(queryParameters, applicationSearchCondition);
 
-        // Build criteria
-        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsApplication.class);
-        AbstractDaoRestService.applyLimitOffsetOrderBy(queryParameters, criteriaBuilder);
+        final List<ApplicationDTO> applications = applicationStatusService.getStatus(query);
+        final int totalCount = applicationStatusService.count(query);
+        final int offset = queryParameters.getOffset();
 
-        // Query and apply filters
-        final List<OnmsApplication> applications = applicationDao.findMatching(criteriaBuilder.toCriteria());
-        List<ApplicationSummary> applicationSummaries = getApplicationSummary(applications);
-        if (!applicationSummaries.isEmpty()) {
-            final Predicate<? super ApplicationSummary> filter = getApplicationFilter(searchContext);
-            applicationSummaries = applicationSummaries.stream().filter(filter).collect(Collectors.toList());
-        }
-
-        final List<ApplicationDTO> collect = applicationSummaries.stream().map(applicationSummary -> {
-            ApplicationDTO dto = new ApplicationDTO();
-            dto.setId(applicationSummary.getApplication().getId());
-            dto.setName(applicationSummary.getApplication().getName());
-            dto.setStatus(applicationSummary.getSeverity());
-            return dto;
-        }).collect(Collectors.toList());
-
-        // sort if required
-        if (orderSeverity != null) {
-            Comparator<ApplicationDTO> comparator = Comparator.comparing(ApplicationDTO::getStatus);
-            if ("desc".equals(orderSeverity)) {
-                comparator = comparator.reversed();
-            }
-            collect.sort(comparator);
-        }
-
-        // prepare result
-        Criteria criteria = criteriaBuilder.toCriteria();
-        final int offset = criteria.getOffset() == null ? 0 : criteria.getOffset().intValue();
-        criteria.setLimit(null);
-        criteria.setOffset(null);
-        criteria.setOrders(new ArrayList<>());
-        int totalCount = applicationDao.countMatching(criteria);
-
-        ApplicationDTOList list = new ApplicationDTOList(collect);
+        final ApplicationDTOList list = new ApplicationDTOList(applications);
+        list.setOffset(queryParameters.getOffset());
         list.setTotalCount(totalCount);
-        list.setOffset(offset);
 
         // Make sure that offset is set to a numeric value when setting the Content-Range header
         return Response
@@ -266,52 +146,31 @@ public class StatusRestService {
                 .build();
     }
 
-    private String getOrderBySeverityAndRemoveIfExisting(MultivaluedMap<String, String> queryParameters) {
-        // TODO MVR remove limit settings as well, because we must apply them after sorting and not before
-        String orderBy = queryParameters.getFirst("orderBy");
-        String order = queryParameters.getFirst("order");
-        if (orderBy != null && orderBy.equalsIgnoreCase("severity")) {
-            queryParameters.remove("orderBy");
-            queryParameters.remove("order");
-            return order;
-        }
-        return null;
-    }
-
-    private Predicate<? super ApplicationSummary> getApplicationFilter(final SearchContext searchContext) {
-        if (searchContext != null && !Strings.isNullOrEmpty(searchContext.getSearchExpression())) {
-            final SearchCondition<SeveritySearchRequest> search = searchContext.getCondition(SeveritySearchRequest.class);
-            if (search != null && search.getCondition().getSeverity() != null) {
-                final OnmsSeverity searchSeverity = OnmsSeverity.get(search.getCondition().getSeverity());
-                switch (search.getConditionType()) {
-                    case EQUALS:
-                        return applicationSummary -> applicationSummary.getSeverity().equals(searchSeverity);
-                    case GREATER_OR_EQUALS:
-                        return applicationSummary -> applicationSummary.getSeverity().isGreaterThanOrEqual(searchSeverity);
-                    case LESS_OR_EQUALS:
-                        return applicationSummary -> applicationSummary.getSeverity().isLessThanOrEqual(searchSeverity);
-                    case NOT_EQUALS:
-                        return applicationSummary -> !applicationSummary.getSeverity().equals(searchSeverity);
-                }
-            }
-        }
-        // Include all
-        return (Predicate<ApplicationSummary>) applicationSummary -> true;
-    }
-
     @GET
     @Path("/business-services")
-    public List<BusinessServiceDTO> getBusinessServices() {
-        final List<BusinessServiceDTO> businessServices = businessServiceManager.getAllBusinessServices()
-                .stream()
-                .map(b -> {
-                    final BusinessServiceDTO dto = new BusinessServiceDTO();
-                    dto.setId(b.getId());
-                    dto.setName(b.getName());
-                    dto.setStatus(OnmsSeverity.get(b.getOperationalStatus().getLabel()));
-                    return dto;
-                }).collect(Collectors.toList());
-        return businessServices;
+    public Response getBusinessServices(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
+        final SearchCondition<SeverityFilter> searchCondition = searchContext.getCondition(SeverityFilter.class);
+        final Query query = new Query(queryParameters, searchCondition);
+
+        final List<BusinessServiceDTO> services = businessServiceStatusService.getStatus(query);
+        final int totalCount = businessServiceStatusService.count(query);
+        final int offset = queryParameters.getOffset();
+
+        final BusinessServiceDTOList list = new BusinessServiceDTOList(services);
+        list.setOffset(queryParameters.getOffset());
+        list.setTotalCount(totalCount);
+
+        // Make sure that offset is set to a numeric value when setting the Content-Range header
+        return Response
+                .ok(list)
+                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
+                .build();
+
+    }
+
+    private static List<Object[]> convert(StatusSummary statusSummary) {
+        return convert(statusSummary.getSeverityMap());
     }
 
     private static List<Object[]> convert(Map<OnmsSeverity, Long> input) {
@@ -319,5 +178,12 @@ public class StatusRestService {
                 .sorted(Comparator.comparing(Map.Entry::getKey))
                 .map(e -> new Object[]{e.getKey().getLabel(), e.getValue()})
                 .collect(Collectors.toList());
+    }
+
+    private static SearchCondition<SeverityFilter> getSearchCondition(SearchContext searchContext) {
+        if (!Strings.isNullOrEmpty(searchContext.getSearchExpression())) {
+            return searchContext.getCondition(SeverityFilter.class);
+        }
+        return null;
     }
 }

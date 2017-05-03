@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.persistence.api;
+package org.opennms.netmgt.dao.util;
 
 import java.util.HashSet;
 import java.util.Objects;

@@ -26,37 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.netmgt.dao.api;
 
-import java.util.Collection;
-import java.util.List;
+import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class ApplicationStatus {
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.web.rest.v2.model.BusinessServiceDTO;
+    private final OnmsApplication application;
+    private final OnmsSeverity severity;
 
-@XmlRootElement(name="businessservices")
-@JsonRootName("businessservices")
-public class BusinessServiceDTOList extends JaxbListWrapper<BusinessServiceDTO> {
-
-    private static final long serialVersionUID = 1L;
-
-    public BusinessServiceDTOList() {
-
+    public ApplicationStatus(OnmsApplication application, OnmsSeverity severity) {
+        this.application = application;
+        this.severity = severity;
     }
 
-    public BusinessServiceDTOList(Collection<? extends BusinessServiceDTO> objects) {
-        super(objects);
+    public OnmsApplication getApplication() {
+        return application;
     }
 
-    @XmlElement(name="businessservice")
-    @JsonProperty("businessservices")
-    @Override
-    public List<BusinessServiceDTO> getObjects() {
-        return super.getObjects();
+    public OnmsSeverity getSeverity() {
+        return severity;
     }
 }

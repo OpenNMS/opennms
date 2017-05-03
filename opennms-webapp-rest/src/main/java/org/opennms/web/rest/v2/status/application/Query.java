@@ -26,41 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.model;
+package org.opennms.web.rest.v2.status.application;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.apache.cxf.jaxrs.ext.search.SearchCondition;
+import org.opennms.web.rest.support.QueryParameters;
+import org.opennms.web.rest.v2.status.SeverityFilter;
 
-@XmlRootElement(name="application")
-@JsonRootName("application")
-public class ApplicationDTO {
-    private Integer id;
-    private String name;
-    private OnmsSeverity status;
+public class Query {
 
-    public void setId(Integer id) {
-        this.id = id;
+    private final QueryParameters parameters;
+    private final SearchCondition<SeverityFilter> searchCondition;
+
+    public Query(QueryParameters parameters, SearchCondition<SeverityFilter> searchCondition) {
+        this.parameters = Objects.requireNonNull(parameters);
+        this.searchCondition = searchCondition;
     }
 
-    public Integer getId() {
-        return id;
+    public QueryParameters getParameters() {
+        return parameters;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setStatus(OnmsSeverity status) {
-        this.status = status;
-    }
-
-    public OnmsSeverity getStatus() {
-        return status;
+    public SearchCondition<SeverityFilter> getSearchCondition() {
+        return searchCondition;
     }
 }

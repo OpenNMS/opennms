@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,19 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.web.rest.v2.status;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application List" />
-    <jsp:param name="headTitle" value="Application List" />
-    <jsp:param name="breadcrumb" value="Application List" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+import org.opennms.netmgt.model.OnmsSeverity;
 
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-application.js"></script>' />
-</jsp:include>
+public interface SeveritySupplier {
 
-<ng-include src="'application/main.html'"></ng-include>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    OnmsSeverity getSeverity();
+}

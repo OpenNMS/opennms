@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,19 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.web.rest.support;
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application List" />
-    <jsp:param name="headTitle" value="Application List" />
-    <jsp:param name="breadcrumb" value="Application List" />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
+import java.util.Objects;
 
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-application.js"></script>' />
-</jsp:include>
+import org.opennms.core.criteria.CriteriaBuilder;
 
-<ng-include src="'application/main.html'"></ng-include>
+public class CriteriaBuilderUtils {
 
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+    public static CriteriaBuilder buildFrom(Class<?> clazz, QueryParameters queryParameters) {
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(queryParameters);
+
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(clazz);
+
+        applyQueryParameters(criteriaBuilder, queryParameters);
+
+        return criteriaBuilder;
+    }
+
+    public static void applyQueryParameters(CriteriaBuilder builder, QueryParameters queryParameters) {
+        Objects.requireNonNull(builder);
+        Objects.requireNonNull(queryParameters);
+
+        builder.limit(queryParameters.getLimit());
+        if (queryParameters.getOffset() != null) {
+            builder.offset(queryParameters.getOffset());
+        }
+        if (queryParameters.getOrder() != null) {
+            builder.clearOrder();
+            builder.orderBy(queryParameters.getOrder().getColumn(), !queryParameters.getOrder().isDesc());
+        }
+    }
+}

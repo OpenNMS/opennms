@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.model;
+package org.opennms.web.rest.v2.status.bsm;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,24 +38,24 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
-@XmlRootElement(name="applications")
-@JsonRootName("applications")
-public class ApplicationDTOList extends JaxbListWrapper<ApplicationDTO> {
+@XmlRootElement(name="businessservices")
+@JsonRootName("businessservices")
+public class BusinessServiceDTOList extends JaxbListWrapper<BusinessServiceDTO> {
 
     private static final long serialVersionUID = 1L;
 
-    public ApplicationDTOList() {
+    public BusinessServiceDTOList() {
 
     }
 
-    public ApplicationDTOList(Collection<? extends ApplicationDTO> objects) {
+    public BusinessServiceDTOList(Collection<? extends BusinessServiceDTO> objects) {
         super(objects);
     }
 
-    @XmlElement(name="application")
-    @JsonProperty("applications")
+    @XmlElement(name="businessservice")
+    @JsonProperty("businessservices")
     @Override
-    public List<ApplicationDTO> getObjects() {
+    public List<BusinessServiceDTO> getObjects() {
         return super.getObjects();
     }
 }
