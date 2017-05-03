@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.context.annotation.Bean;
@@ -89,10 +90,10 @@ public class CustomSpringConfiguration {
             }
 
             @Override
-            public OnmsResource getResourceById(String id) {
-                if (id.startsWith("node[1]")) {
-                    final OnmsResource onmsResource = new OnmsResource(id, id, new InterfaceSnmpResourceType(null), new HashSet<OnmsAttribute>(), new ResourcePath());
-                    if (id.contains("interfaceSnmp[127.0.0.1]")) {
+            public OnmsResource getResourceById(ResourceId id) {
+                if (id.toString().startsWith("node[1]")) {
+                    final OnmsResource onmsResource = new OnmsResource(id.toString(), id.toString(), new InterfaceSnmpResourceType(null), new HashSet<OnmsAttribute>(), new ResourcePath());
+                    if (id.toString().contains("interfaceSnmp[127.0.0.1]")) {
                         final RrdGraphAttribute attribute = new RrdGraphAttribute();
                         attribute.setName("ifInErrors");
                         attribute.setResource(onmsResource);
@@ -114,7 +115,7 @@ public class CustomSpringConfiguration {
             }
 
             @Override
-            public boolean deleteResourceById(String resourceId) {
+            public boolean deleteResourceById(ResourceId resourceId) {
                 throw new UnsupportedOperationException();
             }
         };

@@ -148,7 +148,7 @@ public class FormProcReportController extends AbstractController implements Init
             String graphType = graph.getGraphtype();
             
             Map<String,String> modelData = new HashMap<String,String>();
-            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId());
+            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId().toString());
             modelData.put(CustomGraphEditDetailsController.Parameters.graphtype.toString(), graphType);
             return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", modelData);
         } else {

@@ -44,6 +44,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -280,7 +281,11 @@ public class CollectionResourceWrapper {
      * 
      * @return a {@link java.lang.String} object.
      */
-    public String getResourceId() {
+    public ResourceId getResourceId() {
+        if (m_resource == null) {
+            return null;
+        }
+
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
         if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
@@ -293,7 +298,7 @@ public class CollectionResourceWrapper {
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+        if (m_resource.getParent() != null && m_resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
             String[] parts = m_resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
@@ -301,7 +306,7 @@ public class CollectionResourceWrapper {
                 parentResourceName = parts[1] + ":" + parts[2];
             }
         }
-        return OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceType, resourceLabel);
+        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
     }
 
     /**
