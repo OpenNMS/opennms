@@ -98,7 +98,7 @@ public class SyslogKafkaElasticsearch5OutageIT extends AbstractSyslogTestCase {
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")

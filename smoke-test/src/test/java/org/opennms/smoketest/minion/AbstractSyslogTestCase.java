@@ -94,7 +94,7 @@ public abstract class AbstractSyslogTestCase {
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    protected HibernateDaoFactory daoFactory;
+    private HibernateDaoFactory m_daoFactory;
 
     private static final AtomicInteger ORDINAL = new AtomicInteger();
 
@@ -107,6 +107,15 @@ public abstract class AbstractSyslogTestCase {
         } catch (final Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    protected HibernateDaoFactory getDaoFactory() {
+        if (m_daoFactory == null) {
+            // Connect to the postgresql container
+            final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
+            m_daoFactory = new HibernateDaoFactory(pgsql);
+        }
+        return m_daoFactory;
     }
 
     /**
@@ -137,13 +146,6 @@ public abstract class AbstractSyslogTestCase {
     @Before
     public void checkForDocker() {
         Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-    }
-
-    @Before
-    public void setup() {
-        // Connect to the postgresql container
-        final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        this.daoFactory = new HibernateDaoFactory(pgsql);
     }
 
     /**

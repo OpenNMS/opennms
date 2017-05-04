@@ -49,8 +49,6 @@ import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 
@@ -61,9 +59,6 @@ import com.google.common.collect.ImmutableList;
  * @author fooker
  */
 public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogOverlappingIpAddressIT.class);
-
     /**
      * Override this method to customize the test environment.
      */
@@ -112,14 +107,14 @@ public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
         // Wait for the nodes to be provisioned
         final OnmsNode onmsNode1 = await()
                 .atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                .until(DaoUtils.findMatchingCallable(getDaoFactory().getDao(NodeDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsNode.class)
                                                              .eq("label", "node_1")
                                                              .toCriteria()),
                        notNullValue());
         final OnmsNode onmsNode2 = await()
                 .atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                .until(DaoUtils.findMatchingCallable(getDaoFactory().getDao(NodeDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsNode.class)
                                                              .eq("label", "node_2")
                                                              .toCriteria()),
@@ -128,7 +123,7 @@ public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
         // Sending syslog messages to each node and expect it to appear on the node
         sendMessage(ContainerAlias.MINION, hostIpAddress, 1);
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+               .until(DaoUtils.countMatchingCallable(getDaoFactory().getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
                                                              .ge("eventCreateTime", startOfTest)
@@ -138,7 +133,7 @@ public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
 
         sendMessage(ContainerAlias.MINION_OTHER_LOCATION, hostIpAddress, 1);
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+               .until(DaoUtils.countMatchingCallable(getDaoFactory().getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
                                                              .ge("eventCreateTime", startOfTest)

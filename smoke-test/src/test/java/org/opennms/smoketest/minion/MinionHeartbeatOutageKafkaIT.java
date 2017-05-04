@@ -30,6 +30,8 @@ package org.opennms.smoketest.minion;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This test starts up Minion with the Apache Kafka sink and makes sure
@@ -56,5 +58,9 @@ public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
                 .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
         OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
         return builder;
+    }
+
+    protected static Logger getLogger() {
+        return LoggerFactory.getLogger(MinionHeartbeatOutageKafkaIT.class);
     }
 }
