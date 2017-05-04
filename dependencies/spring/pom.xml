@@ -70,6 +70,17 @@
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.spring-jms</artifactId>
       <version>${springVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-messaging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.spring-messaging</artifactId>
+      <version>${springVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
