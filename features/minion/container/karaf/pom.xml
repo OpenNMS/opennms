@@ -74,6 +74,7 @@
                         <feature>wrap</feature>
                     </bootFeatures>
                     <installedFeatures>
+                        <feature>spring/3.1.4.RELEASE</feature>
                         <feature>spring/${springVersion}</feature>
                     </installedFeatures>
                 </configuration>

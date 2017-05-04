@@ -194,6 +194,10 @@
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
+          <instructions>
+            <!-- Don't add Import-Service MANIFEST.MF headers, just rely on normal OSGi service resolution -->
+            <_removeheaders>Import-Service</_removeheaders>
+          </instructions>
         </configuration>
       </plugin>
       <plugin>
@@ -1321,7 +1325,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>4.0.8</minionKarafVersion>
+    <minionKarafVersion>${karafVersion}</minionKarafVersion>
     <netty4Version>4.0.34.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
