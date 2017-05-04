@@ -40,7 +40,7 @@ Install the feature:
 
 [source]
 ----
-features:install opennms-amqp-event-forwarder
+feature:install opennms-amqp-event-forwarder
 ----
 
 ==== Debugging

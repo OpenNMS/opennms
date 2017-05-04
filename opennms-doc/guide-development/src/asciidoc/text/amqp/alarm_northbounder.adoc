@@ -41,7 +41,7 @@ Install the feature:
 
 [source]
 ----
-features:install opennms-amqp-alarm-northbounder
+feature:install opennms-amqp-alarm-northbounder
 ----
 
 ==== Debugging

@@ -178,9 +178,9 @@ public abstract class AbstractSyslogTestCase {
             // even if transient ES outages occur
             pipe.println("config:propset retries 200");
             pipe.println("config:update");
-            pipe.println("features:install opennms-es-rest");
+            pipe.println("feature:install opennms-es-rest");
 
-            pipe.println("features:list -i");
+            pipe.println("feature:list -i");
             // Set the log level to INFO
             pipe.println("log:set INFO");
             pipe.println("logout");

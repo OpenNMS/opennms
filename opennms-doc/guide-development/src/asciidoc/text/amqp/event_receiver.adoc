@@ -39,7 +39,7 @@ Install the feature:
 
 [source]
 ----
-features:install opennms-amqp-event-receiver
+feature:install opennms-amqp-event-receiver
 ----
 
 ==== Debugging
