@@ -30,7 +30,6 @@ package org.opennms.assemblies.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.karaf.KarafTestCase;
@@ -40,7 +39,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("Disabling until the tests can be stabilized")
 public class FeatureInstallKarafIT extends KarafTestCase {
 
     /**
@@ -79,6 +77,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jfreechart");
         installFeature("jicmp");
         installFeature("jicmp6");
+        // Test fails because of dependence on 'http' feature
         //installFeature("jolokia");
         installFeature("jrobin");
         installFeature("json-lib");
@@ -89,31 +88,32 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-activemq-dispatcher");
         // Causes the test to die?
         //installFeature("opennms-amqp-alarm-northbounder");
-        // OSGi dependency problems: javax.transaction
-        //installFeature("opennms-amqp-event-forwarder");
-        // OSGi dependency problems: javax.transaction
-        //installFeature("opennms-amqp-event-receiver");
-        //installFeature("opennms-collection-api");
-        // OSGi dependency problems: javax.transaction
-        //installFeature("opennms-collection-persistence-rrd");
+        installFeature("opennms-amqp-event-forwarder");
+        installFeature("opennms-amqp-event-receiver");
+        installFeature("opennms-collection-api");
+        installFeature("opennms-collection-persistence-rrd");
         installFeature("opennms-config-api");
         installFeature("opennms-config");
         installFeature("opennms-config-jaxb");
         installFeature("opennms-core-camel");
-        installFeature("opennms-core-daemon");
+        // OSGi dependency problems: org.apache.activemq.broker
+        //installFeature("opennms-core-daemon");
         installFeature("opennms-core-db");
         installFeature("opennms-core");
         installFeature("opennms-core-web");
         installFeature("opennms-dao-api");
-        installFeature("opennms-dao");
+        // OSGi dependency problems: org.apache.activemq.broker
+        //installFeature("opennms-dao");
         // Minion-only feature
         //installFeature("opennms-discoverer");
         //installFeature("opennms-discovery-daemon");
-        installFeature("opennms-discovery");
+        // OSGi dependency problems: org.apache.activemq.broker
+        //installFeature("opennms-discovery");
         // Minion-only feature
         //installFeature("opennms-discovery-distPollerDaoMinion");
         installFeature("opennms-events-api");
-        installFeature("opennms-events-daemon");
+        // OSGi dependency problems: org.apache.activemq.broker
+        //installFeature("opennms-events-daemon");
         installFeature("opennms-icmp-api");
         installFeature("opennms-icmp-jna");
         installFeature("opennms-icmp-jni");
@@ -134,13 +134,8 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         // Syslog listeners can only be installed one at a time
         //installFeature("opennms-syslogd-listener-javanet");
         //installFeature("opennms-syslogd-listener-camel-netty");
-        //installFeature("opennms-syslogd-listener-nio");
-        installFeature("opennms-syslogd-handler-default");
 
         installFeature("opennms-trapd");
-        installFeature("opennms-trapd-listener");
-        installFeature("opennms-trapd-handler-default");
-        installFeature("opennms-trapd-handler-kafka-default");
 
         // OSGi dependency problems
         //installFeature("opennms-webapp");
@@ -149,6 +144,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("spring-security32");
         installFeature("spring-webflow");
 
-        System.out.println(executeCommand("feature:list -i"));
+//        System.out.println(executeCommand("feature:list -i"));
     }
 }

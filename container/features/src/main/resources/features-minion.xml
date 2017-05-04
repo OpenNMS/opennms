@@ -29,6 +29,7 @@
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
       <feature version="${guavaVersion}">guava</feature>
       <feature>minion-core-api</feature>
+      <feature>opennms-core</feature>
       <feature>opennms-core-ipc-sink-api</feature>
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.producer/${project.version}</bundle>

@@ -50,7 +50,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("NMS-8305: Disabling until the tests can be stabilized")
 public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
@@ -359,6 +358,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsPollerShell() {
+		installFeature("opennms-config"); // System classpath
+		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-poller-api"); // System classpath
 		installFeature("opennms-poller-shell");
 		System.out.println(executeCommand("feature:list -i"));
@@ -475,6 +476,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureTsrmTroubleticketer() {
+		installFeature("opennms-core"); // System classpath
 		installFeature("tsrm-troubleticketer");
 		System.out.println(executeCommand("feature:list -i"));
 	}
