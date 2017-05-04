@@ -305,7 +305,8 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
                     datacollectionType = "snmp",
-                    anticipateRrds = { "test" }
+                    anticipateRrds = { "test" },
+                    anticipateMetaFiles = false
             )
     public void testUsingFetch() throws Exception {
         System.err.println("=== testUsingFetch ===");
