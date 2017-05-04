@@ -33,11 +33,20 @@ package org.opennms.netmgt.model;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dschlenk@convergeone.com">David Schlenk</a>
  * @version $Id: $
  */
 public enum TroubleTicketState {
+    /* KEEP THESE IN ORDER or the DEFAULT ALARM VACUUM QUERIES will BREAK */
+    
+    /* TODO: once JPA 2.1+ in use, change things that use this to also use a
+     * javax.persistence.AttributeConverter<TroubleTicketState, Integer> that
+     * returns TroubleTicketState.getValue() in the converter. That should
+     * maintain backwords compatibility to the current default 
+     * Enum.toOrdinal() JPA behavior and prevent breaking when reordering items
+     * in the Enum. 
+     */
+    
     OPEN(0),
     CREATE_PENDING(1),
     CREATE_FAILED(2),
@@ -62,4 +71,6 @@ public enum TroubleTicketState {
     public int getValue() {
         return this.m_value;
     }
+    
+    
 }
