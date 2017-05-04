@@ -65,14 +65,6 @@
 
         var chartMapping = [];
 
-        var severityIds = {
-            'Normal': 3,
-            'Warning': 4,
-            'Minor': 5,
-            'Major': 6,
-            'Critical': 7
-        };
-
         var loadChartData = function(graph) {
             $.getJSON(graph.url, function (data) {
                 var columns = [];
@@ -182,6 +174,22 @@
                 parentContainer: '#chart-content',
                 graphs: [
                     {
+                        id: "businessServiceProblemChart",
+                        title: "Business Services",
+                        url: "/opennms/api/v2/status/summary/business-services",
+                        onclick: function(e) {
+                            window.location = "bsm/index.jsp?_s=severity%3D%3D" + e.id;
+                        }
+                    },
+                    {
+                        id: "applicationProblemChart",
+                        title: "Applications",
+                        url: "/opennms/api/v2/status/summary/applications",
+                        onclick: function(e) {
+                            window.location = "application/index.jsp?_s=severity%3D%3D" + e.id;
+                        }
+                    },
+                    {
                         id: "nodeProblemChartsByAlarms",
                         title: "Alarms",
                         url: "/opennms/api/v2/status/summary/nodes/alarms",
@@ -197,22 +205,6 @@
                             window.location = "node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
                         }
                     },
-                    {
-                        id: "applicationProblemChart",
-                        title: "Applications",
-                        url: "/opennms/api/v2/status/summary/applications",
-                        onclick: function(e) {
-                            window.location = "application/index.jsp?_s=severity%3D%3D" + e.id;
-                        }
-                    },
-                    {
-                        id: "businessServiceProblemChart",
-                        title: "Business Services",
-                        url: "/opennms/api/v2/status/summary/business-services",
-                        onclick: function(e) {
-                            window.location = "bsm/index.jsp?_s=severity%3D%3D" + e.id;
-                        }
-                    }
                 ]
             })
         });
