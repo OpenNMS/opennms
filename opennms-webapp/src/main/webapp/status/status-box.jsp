@@ -47,7 +47,7 @@
 </style>
 
 
-<div class="panel panel-default fix-subpixel">
+<div id="status-overview-box" class="panel panel-default fix-subpixel" style="display: none;">
     <div class="panel-heading">
         <h3 class="panel-title">Status Overview</h3>
     </div>
@@ -100,6 +100,7 @@
                     $("#" + graph.id).parent().hide();
                 } else {
                     $("#" + graph.id).parent().show();
+                    $("#status-overview-box").show(); // the first chart with data shows the box
                 }
             });
         };
