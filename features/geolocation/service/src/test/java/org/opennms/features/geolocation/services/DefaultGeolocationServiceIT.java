@@ -41,16 +41,17 @@ import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geolocation.api.GeolocationInfo;
 import org.opennms.features.geolocation.api.GeolocationQuery;
 import org.opennms.features.geolocation.api.GeolocationQueryBuilder;
-import org.opennms.features.geolocation.api.GeolocationResolver;
 import org.opennms.features.geolocation.api.StatusCalculationStrategy;
-import org.opennms.features.geolocation.services.status.AlarmStatusCalculator;
-import org.opennms.features.geolocation.services.status.OutageStatusCalculator;
+import org.opennms.features.status.api.node.NodeStatusCalculatorManager;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsGeolocation;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,14 +89,14 @@ public class DefaultGeolocationServiceIT {
     @Autowired
     private DatabasePopulator databasePopulator;
 
-    private GeolocationResolver geolocationResolver;
+    @Autowired
+    private NodeStatusCalculatorManager statusCalculatorManager;
 
     private DefaultGeolocationService geolocationService;
 
     @Before
     public void before() {
-        geolocationResolver = new DefaultGeolocationResolver(address -> coordinates, nodeDao);
-        geolocationService = new DefaultGeolocationService(genericPersistenceAccessor, geolocationResolver);
+        geolocationService = new DefaultGeolocationService(genericPersistenceAccessor, statusCalculatorManager);
 
         // Initialize Database and clean up alarms
         databasePopulator.populateDatabase();
@@ -109,13 +110,6 @@ public class DefaultGeolocationServiceIT {
     }
 
     @Test
-    public void verifyGetStatusCalculator() {
-        Assert.assertEquals(DefaultGeolocationService.NULL_STATUS_CALCULATOR, geolocationService.getStatusCalculator(null));
-        Assert.assertEquals(AlarmStatusCalculator.class, geolocationService.getStatusCalculator(StatusCalculationStrategy.Alarms).getClass());
-        Assert.assertEquals(OutageStatusCalculator.class, geolocationService.getStatusCalculator(StatusCalculationStrategy.Outages).getClass());
-    }
-
-    @Test
     @Transactional
     public void verifyMerging() {
         // Set coordinates for all
@@ -125,7 +119,7 @@ public class DefaultGeolocationServiceIT {
             nodeDao.saveOrUpdate(n);
         });
         // Query
-        GeolocationQuery query = new GeolocationQueryBuilder()
+        final GeolocationQuery query = new GeolocationQueryBuilder()
                 .withStatusCalculationStrategy(StatusCalculationStrategy.Alarms)
                 .build();
 
@@ -135,7 +129,7 @@ public class DefaultGeolocationServiceIT {
         locations.forEach(l -> Assert.assertEquals("Normal", l.getSeverityInfo().getLabel()));
 
         // Add an alarm for one node and try again
-        alarmDao.save(TestUtils.createAlarm(databasePopulator.getNode1(), OnmsSeverity.MAJOR, distPollerDao.whoami()));
+        alarmDao.save(createAlarm(databasePopulator.getNode1(), OnmsSeverity.MAJOR, distPollerDao.whoami()));
         locations = geolocationService.getLocations(query);
         Assert.assertEquals(nodeDao.countAll(), locations.size());
         locations.forEach(l -> {
@@ -145,5 +139,15 @@ public class DefaultGeolocationServiceIT {
                 Assert.assertEquals("Normal", l.getSeverityInfo().getLabel());
             }
         });
+    }
+
+    private static OnmsAlarm createAlarm(OnmsNode node, OnmsSeverity severity, OnmsDistPoller distpoller) {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
+        alarm.setDistPoller(distpoller);
+        alarm.setCounter(1);
+        alarm.setSeverity(severity);
+        alarm.setNode(node);
+        return alarm;
     }
 }

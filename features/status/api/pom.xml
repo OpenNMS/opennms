@@ -2,75 +2,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.opennms.features</groupId>
-    <artifactId>org.opennms.features.geolocation</artifactId>
+    <artifactId>org.opennms.features.status</artifactId>
     <version>20.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.geolocation</groupId>
-  <artifactId>org.opennms.features.geolocation.services</artifactId>
-  <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: Geolocation :: Services</name>
+  <groupId>org.opennms.features.status</groupId>
+  <artifactId>org.opennms.features.status.api</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS :: Features :: Status :: API</name>
   <description>Geolocation Services</description>
   <properties>
-    <bundle.symbolicName>org.opennms.features.geolocation.services</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.geolocation.services</bundle.namespace>
+    <bundle.symbolicName>org.opennms.features.status.api</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.status.api</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.geocoder</groupId>
-      <artifactId>org.opennms.features.geocoder.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.geolocation</groupId>
-      <artifactId>org.opennms.features.geolocation.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.status</groupId>
-      <artifactId>org.opennms.features.status.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- Test Dependencies -->
-    <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service.api</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
-      <version>${project.version}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <artifactId>org.opennms.features.bsm.service.api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -105,6 +74,18 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.features.bsm</groupId>
+        <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+        <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

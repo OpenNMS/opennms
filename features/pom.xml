@@ -116,6 +116,7 @@
     <module>name-cutter</module>
     <module>ncs</module>
     <module>springframework-security</module>
+    <module>status</module>
     <module>system-report</module>
     <module>timeseries-evaluate</module>
 
