@@ -50,7 +50,10 @@ public class JmxConfigDaoJaxb extends AbstractJaxbConfigDao<JmxConfig, JmxConfig
      */
     @Override
     public JmxConfig getConfig() {
-        return getContainer().getObject();
+        if (getContainer() != null) {
+            return getContainer().getObject();
+        }
+        return null;
     }
 
     /**

@@ -112,7 +112,7 @@ public final class JmxUtils {
     public static Map<String, String> getRuntimeAttributes(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
         Objects.requireNonNull(address);
         Objects.requireNonNull(parameters);
-        if (jmxConfigDao != null) {
+        if (jmxConfigDao != null && jmxConfigDao.getConfig() != null) {
             try {
                 final JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(address, parameters).build();
                 final int port = new JMXServiceURL(config.getUrl()).getPort();
