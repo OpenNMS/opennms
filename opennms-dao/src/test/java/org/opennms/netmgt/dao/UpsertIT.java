@@ -116,7 +116,7 @@ public class UpsertIT implements InitializingBean {
     
     @SuppressWarnings("deprecation")
 	private int countIfs(int nodeId, int ifIndex, String ifName) {
-        return m_jdbcTemplate.queryForInt("select count(*) from snmpInterface where nodeid=? and snmpifindex=? and snmpifname=?", nodeId, ifIndex, ifName);
+        return m_jdbcTemplate.queryForObject("select count(*) from snmpInterface where nodeid=? and snmpifindex=? and snmpifname=?", new Object[] { nodeId, ifIndex, ifName }, Integer.class);
     }
     
     @Test

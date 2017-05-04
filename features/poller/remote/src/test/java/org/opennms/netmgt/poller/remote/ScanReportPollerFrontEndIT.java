@@ -123,9 +123,9 @@ public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDa
     public void testRegister() throws Exception {
         // Check preconditions
         assertFalse(m_frontEnd.isRegistered());
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
-        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+        assertEquals(new Integer(1), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(0), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes", Integer.class));
 
         // Add a PropertyChangeListener that will report the scan result to
         // the PollerBackEnd
@@ -156,9 +156,9 @@ public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDa
 
         // Initialization shouldn't change anything since we're unregistered
         assertFalse(m_frontEnd.isRegistered());
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
-        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+        assertEquals(new Integer(1), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(0), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes", Integer.class));
 
         // Start up the remote poller
         m_frontEnd.register("RDU");
@@ -172,19 +172,19 @@ public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDa
     }
 
     protected int getSpecificChangesCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes where systemid = ?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes where systemid = ?", new Object[] { monitorId }, Integer.class);
     }
 
     protected int getDisconnectedCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems where status=? and id=?", MonitorStatus.DISCONNECTED.toString(), monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where status=? and id=?", new Object[] { MonitorStatus.DISCONNECTED.toString(), monitorId }, Integer.class);
     }
 
     protected int getMonitorCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems where id=?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where id=?", new Object[] { monitorId }, Integer.class);
     }
 
     protected int getEventCount() {
-        return m_jdbcTemplate.queryForInt("select count(*) from events");
+        return m_jdbcTemplate.queryForObject("select count(*) from events", Integer.class);
     }
 
     protected void queryEvents() {

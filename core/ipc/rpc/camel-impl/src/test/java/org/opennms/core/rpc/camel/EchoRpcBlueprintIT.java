@@ -94,7 +94,7 @@ public class EchoRpcBlueprintIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "blueprint-empty-camel-context.xml";
+        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
     @Test(timeout=60000)

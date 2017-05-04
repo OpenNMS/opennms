@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.Route;
 import org.apache.camel.builder.RouteBuilder;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.rpc.api.RpcModule;
@@ -62,7 +63,6 @@ public class CamelRpcServerRouteManager {
     public CamelRpcServerRouteManager(CamelContext context, MinionIdentity identity) throws Exception {
         this.context = Objects.requireNonNull(context);
         this.identity = Objects.requireNonNull(identity);
-        context.start();
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
@@ -76,8 +76,8 @@ public class CamelRpcServerRouteManager {
                     module.getId(), identity.getLocation());
         }
 
-        public String getRouteId() {
-            return "RPC.Server." + module.getId();
+        public String getQueueName() {
+            return queueNameFactory.getName();
         }
 
         @Override
@@ -85,31 +85,69 @@ public class CamelRpcServerRouteManager {
             from(String.format("queuingservice:%s?asyncConsumer=true", queueNameFactory.getName()))
                 .setExchangePattern(ExchangePattern.InOut)
                 .process(new CamelRpcServerProcessor(module))
-                .routeId(getRouteId());
+                .routeId(getRouteId(module));
         }
+    }
+
+    public static String getRouteId(RpcModule<?,?> module) {
+        return "RPC.Server." + module.getId();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void bind(RpcModule module) throws Exception {
         if (module != null) {
             final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
+            final String routeId = getRouteId(rpcModule);
+            final Route existingRoute = context.getRoute(routeId);
             if (routeIdsByModule.containsKey(rpcModule)) {
-                LOG.warn("RPC module {} was already registered.", rpcModule.getId());
-                return;
+                if (existingRoute == null) {
+                    LOG.error("RpcModule {} ({}) was marked as registered but its route {} cannot be found in the Camel context", 
+                        rpcModule.getId(),
+                        Integer.toHexString(rpcModule.hashCode()),
+                        routeId
+                    );
+                } else {
+                    LOG.warn("RpcModule {} ({}) was already registered on route {}: {}",
+                        rpcModule.getId(),
+                        Integer.toHexString(rpcModule.hashCode()),
+                        routeId,
+                        existingRoute
+                    );
+                }
+            } else {
+                if (existingRoute == null) {
+                    final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
+                    context.addRoutes(routeBuilder);
+                    routeIdsByModule.put(rpcModule, routeId);
+                    LOG.info("Registered RpcModule {} ({}) on route {} with queue {}",
+                        rpcModule.getId(),
+                        Integer.toHexString(rpcModule.hashCode()),
+                        routeId,
+                        routeBuilder.getQueueName()
+                    );
+                } else {
+                    LOG.warn("RpcModule {} ({}) cannot be registered, route {} is already present: {}",
+                        rpcModule.getId(),
+                        Integer.toHexString(rpcModule.hashCode()),
+                        routeId,
+                        existingRoute
+                    );
+                }
             }
-            final DynamicRpcRouteBuilder routeBuilder = new DynamicRpcRouteBuilder(context, identity, rpcModule);
-            context.addRoutes(routeBuilder);
-            routeIdsByModule.put(rpcModule, routeBuilder.getRouteId());
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void unbind(RpcModule module) throws Exception {
         if (module != null) {
-            final String routeId = routeIdsByModule.remove((RpcModule<RpcRequest,RpcResponse>)module);
+            final RpcModule<RpcRequest,RpcResponse> rpcModule = (RpcModule<RpcRequest,RpcResponse>)module;
+            final String routeId = routeIdsByModule.remove(rpcModule);
             if (routeId != null) {
                 context.stopRoute(routeId);
                 context.removeRoute(routeId);
+                LOG.info("Deregistered RpcModule {} ({})", rpcModule.getId(), Integer.toHexString(rpcModule.hashCode()));
+            } else {
+                LOG.warn("Could not determine route ID for RpcModule {} ({})", rpcModule.getId(), Integer.toHexString(rpcModule.hashCode()));
             }
         }
     }
