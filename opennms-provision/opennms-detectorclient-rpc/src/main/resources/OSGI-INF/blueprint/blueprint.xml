@@ -14,12 +14,13 @@
     <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
     <bean id="detectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
     <bean id="detectorRpcModule" class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule" >
-       <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry"/>
-       <property name="executor" ref="detectorExecutor"/>
+        <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry"/>
+        <property name="executor" ref="detectorExecutor"/>
     </bean>
     <service ref="detectorRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
 
-    <bean id="dnsLookupRpcModule" class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
-    <service ref="dnsLookupRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
+    <service interface="org.opennms.core.rpc.api.RpcModule">
+        <bean class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
+    </service>
 
 </blueprint>

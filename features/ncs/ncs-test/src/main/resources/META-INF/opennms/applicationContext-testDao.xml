@@ -16,7 +16,6 @@
   <onmsgi:reference id="dataSource" interface="javax.sql.DataSource"/>
  
   <onmsgi:reference id="jdbcTemplate" interface="org.springframework.jdbc.core.JdbcOperations" />
-  <onmsgi:reference id="simpleJdbcTemplate" interface="org.springframework.jdbc.core.simple.SimpleJdbcOperations" />
  -->  
  
   <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">

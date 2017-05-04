@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -120,12 +119,11 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(SnmpProxyRpcModule.INSTANCE, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "blueprint-empty-camel-context.xml";
+        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
     @Before

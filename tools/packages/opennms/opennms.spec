@@ -223,6 +223,8 @@ Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
 Requires(pre):	%{name}-plugin-provisioning-rancid
 Requires:	%{name}-plugin-provisioning-rancid
+Requires(pre):	%{name}-plugin-provisioning-reverse-dns
+Requires:	%{name}-plugin-provisioning-reverse-dns
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
 Requires:	%{name}-plugin-provisioning-snmp-asset
 Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
@@ -295,6 +297,20 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
 provisioned nodes.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-reverse-dns
+Summary:	Reverse DNS Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-reverse-dns
+The Reverse DNS provisioning adapter allows for updating the hostname on an
+interface based on its reverse DNS lookup.
 
 %{extrainfo}
 %{extrainfo2}
@@ -791,6 +807,10 @@ rm -rf %{buildroot}
 %files plugin-provisioning-dns
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
+
+%files plugin-provisioning-reverse-dns
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-reverse-dns-provisioning-adapter*.jar
 
 %files plugin-provisioning-rancid
 %defattr(664 root root 775)

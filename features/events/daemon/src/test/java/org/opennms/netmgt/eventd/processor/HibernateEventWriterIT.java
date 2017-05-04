@@ -192,7 +192,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetEventHostWithNullHost() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
-        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
         // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
@@ -204,7 +204,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetEventHostWithHostNoNodeId() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
-        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
         // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
@@ -217,7 +217,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetEventHostWithOneMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
-        long nodeId = jdbcTemplate.queryForLong("SELECT nodeId FROM node LIMIT 1");
+        long nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Long.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
 
         // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
@@ -231,7 +231,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetHostNameWithOneMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
-        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
         assertEquals("getHostName should return the hostname for the IP address that was passed", "First Interface", m_eventUtil.getHostName(1, "192.168.1.1"));
@@ -240,7 +240,7 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetHostNameWithOneMatchNullHostname() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
-        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr) VALUES (?, ?)", nodeId, "192.168.1.1");
     
         assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_eventUtil.getHostName(1, "192.168.1.1"));
@@ -249,9 +249,9 @@ public class HibernateEventWriterIT {
     @Test
     public void testGetHostNameWithTwoMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), ?)", "First Node");
-        int nodeId1 = jdbcTemplate.queryForInt("SELECT nodeId FROM node WHERE nodeLabel = ?", "First Node");
+        int nodeId1 = jdbcTemplate.queryForObject("SELECT nodeId FROM node WHERE nodeLabel = ?", new Object[] { "First Node" }, Integer.class);
         jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), ?)", "Second Node");
-        int nodeId2 = jdbcTemplate.queryForInt("SELECT nodeId FROM node WHERE nodeLabel = ?", "Second Node");
+        int nodeId2 = jdbcTemplate.queryForObject("SELECT nodeId FROM node WHERE nodeLabel = ?", new Object[] { "Second Node" }, Integer.class);
         
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId1, "192.168.1.1", "First Interface");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId2, "192.168.1.1", "Second Interface");
@@ -280,7 +280,7 @@ public class HibernateEventWriterIT {
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
         
-        assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));
-        assertEquals("event service ID", serviceId, jdbcTemplate.queryForInt("select serviceID from events"));
+        assertEquals("event count", new Integer(1), jdbcTemplate.queryForObject("select count(*) from events", Integer.class));
+        assertEquals("event service ID", new Integer(serviceId), jdbcTemplate.queryForObject("select serviceID from events", Integer.class));
     }
 }

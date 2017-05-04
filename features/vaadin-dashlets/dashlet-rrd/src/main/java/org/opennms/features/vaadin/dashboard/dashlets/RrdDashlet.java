@@ -28,15 +28,25 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.*;
-
-import org.opennms.features.vaadin.components.graph.GraphContainer;
-import org.opennms.features.vaadin.dashboard.model.*;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import org.opennms.features.vaadin.components.graph.GraphContainer;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class implements a {@link Dashlet} for displaying a Rrd graph.
@@ -138,7 +148,7 @@ public class RrdDashlet extends AbstractDashlet {
 
                     int i = 0;
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100% }");
                     Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
                     Page.getCurrent().getStyles().add(".margin { margin:5px; }");
 
@@ -251,7 +261,7 @@ public class RrdDashlet extends AbstractDashlet {
 
                     int i = 0;
 
-                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; }");
+                    Page.getCurrent().getStyles().add(".box { margin: 5px; background-color: #444; border: 1px solid #999; border-top: 0; overflow: auto; width: 100%; }");
                     Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
                     Page.getCurrent().getStyles().add(".margin { margin:5px; }");
 
@@ -311,7 +321,6 @@ public class RrdDashlet extends AbstractDashlet {
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.addStyleName("box");
-        horizontalLayout.setWidth("100%");
         horizontalLayout.setHeight("42px");
 
         VerticalLayout leftLayout = new VerticalLayout();
