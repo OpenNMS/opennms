@@ -2,19 +2,18 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[gi-install-minion-rhel]]
-==== RHEL
+[[gi-install-minion-debian]]
+==== Debian/Ubuntu
 
-NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
+Start by <<gi-install-opennms-repo-releases,setting up the OpenNMS Apt repository>> and <<gi-install-oracle-java,installing Java>>.
 
-Start by <<gi-install-opennms-repo-releases,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
-
-Once the _Yum_ repository has been configured:
+Once the _Apt_ repository has been configured:
 
 .Install the _Minion_ packages
 [source, bash]
 ----
-yum -y install opennms-minion
+apt-get update
+apt-get -y install opennms-minion
 ----
 
 The following packages will be automatically installed:
@@ -28,7 +27,7 @@ The _Minion_ packages setup the following directory structure:
 
 [source, shell]
 ----
-[root@localhost /opt/minion]# $ tree -L 1
+[root@localhost /usr/share/minion]# $ tree -L 1
 .
 ├── bin
 ├── deploy
@@ -38,24 +37,26 @@ The _Minion_ packages setup the following directory structure:
 └── system
 ----
 
+Additionally, symbolic links are set up pointing to `/etc/minion` and `/var/log/minion` to match Debian's expected filesystem layout.
+
 ===== Configuring Startup
 
-The Minion's startup configuration can be changed by editing the `/etc/sysconfig/minion` file.  It allows you to override many of the defaults used at startup including the location of your JDK, how much memory to use, and what user to run as.
+The Minion's startup configuration can be changed by editing the `/etc/default/minion` file.  It allows you to override many of the defaults used at startup including the location of your JDK, how much memory to use, and what user to run as.
 
 ===== Starting the Minion
 
-After successful installation a `minion` service can be started and enabled using _systemd_ commands.
+After successful installation a `minion` service can be started and enabled using standard Debian commands.
 
 .System startup configuration for _Minion_
 [source, shell]
 ----
-systemctl enable minion
+update-rc.d minion enable
 ----
 
 .Startup _Minion_
 [source, shell]
 ----
-systemctl start minion
+service minion start
 ----
 
 After starting _Minion_ the shell can be accessed locally on ssh://localhost:8201.
