@@ -119,9 +119,6 @@
     <module>system-report</module>
     <module>timeseries-evaluate</module>
 
-    <!-- Elasticsearch event-forwarder-->
-    <module>elasticsearch</module>
-
     <!-- Business Service Monitor -->
     <module>bsm</module>
 

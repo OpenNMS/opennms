@@ -80,7 +80,7 @@ public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
         installFeaturesOnMinion(minionSshAddr, kafkaAddress);
 
         // Install the Kafka and Elasticsearch features on the OpenNMS system
-        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, true);
+        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress);
 
         final String sender = testEnvironment.getContainerInfo(ContainerAlias.SNMPD).networkSettings().ipAddress();
 

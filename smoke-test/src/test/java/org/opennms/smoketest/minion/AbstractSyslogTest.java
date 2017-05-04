@@ -35,14 +35,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.StandardProtocolFamily;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,17 +48,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.Timeout;
-import org.opennms.core.camel.IndexNameFunction;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
@@ -169,33 +162,21 @@ public abstract class AbstractSyslogTest {
         }
     }
 
-    protected static void installFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr, InetSocketAddress kafkaAddress, InetSocketAddress zookeeperAddress, boolean useEsRest) throws Exception {
+    protected static void installFeaturesOnOpenNMS(InetSocketAddress opennmsSshAddr, InetSocketAddress kafkaAddress, InetSocketAddress zookeeperAddress) throws Exception {
         try (final SshClient sshClient = new SshClient(opennmsSshAddr, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
 
-            if (useEsRest) {
-                // Configure and install the Elasticsearch REST event forwarder
-                pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
-                pipe.println("config:propset logAllEvents true");
-                pipe.println("config:propset batchSize 500");
-                pipe.println("config:propset batchInterval 500");
-                pipe.println("config:propset timeout 5000");
-                // Retry enough times that all events are eventually sent
-                // even if transient ES outages occur
-                pipe.println("config:propset retries 200");
-                pipe.println("config:update");
-                pipe.println("features:install opennms-es-rest");
-            } else {
-                // Configure and install the Elasticsearch event forwarder
-                pipe.println("config:edit org.opennms.features.elasticsearch.eventforwarder");
-                // Set the IP address for Elasticsearch to the address of the Docker host
-                pipe.println("config:propset elasticsearchIp " + InetAddress.getLocalHost().getHostAddress());
-                pipe.println("config:propset elasticsearchHttpPort 9200");
-                pipe.println("config:propset elasticsearchTransportPort 9300");
-                pipe.println("config:propset logAllEvents true");
-                pipe.println("config:update");
-                pipe.println("features:install opennms-elasticsearch-event-forwarder");
-            }
+            // Configure and install the Elasticsearch REST event forwarder
+            pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
+            pipe.println("config:propset logAllEvents true");
+            pipe.println("config:propset batchSize 500");
+            pipe.println("config:propset batchInterval 500");
+            pipe.println("config:propset timeout 5000");
+            // Retry enough times that all events are eventually sent
+            // even if transient ES outages occur
+            pipe.println("config:propset retries 200");
+            pipe.println("config:update");
+            pipe.println("features:install opennms-es-rest");
 
             pipe.println("features:list -i");
             // Set the log level to INFO
@@ -243,32 +224,6 @@ public abstract class AbstractSyslogTest {
                 LOG.info("Karaf output:\n{}", sshClient.getStdout());
             }
         }
-    }
-
-    protected static void createElasticsearchIndex(InetSocketAddress esTransportAddr, Date date) {
-        Settings settings = ImmutableSettings.settingsBuilder()
-            .put("cluster.name", "opennms").build();
-        TransportClient esClient = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(esTransportAddr));
-
-        String indexName = new IndexNameFunction().apply("opennms", date);
-
-        try {
-            // Delete the index if it already exists
-            boolean indexExists = esClient.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
-            if (indexExists) {
-                esClient.admin().indices().prepareDelete(indexName).execute().actionGet();
-            }
-            esClient.admin().indices().prepareCreate(indexName).execute().actionGet();
-        } catch (Throwable e) {
-            LOG.warn("Error while trying to create index: " + indexName, e);
-        } finally {
-            esClient.close();
-        }
-
-        LOG.info("Finished creating index {}", new IndexNameFunction().apply("opennms", date));
-
-        // Sleep to ensure that the index is fully operational
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
     }
 
     protected static void pollForElasticsearchEventsUsingJest(InetSocketAddress esTransportAddr, int numMessages) {
