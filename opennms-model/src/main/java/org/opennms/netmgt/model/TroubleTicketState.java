@@ -71,6 +71,5 @@ public enum TroubleTicketState {
     public int getValue() {
         return this.m_value;
     }
-    
-    
+
 }
