@@ -206,19 +206,25 @@ rm -rf %{buildroot}
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
 %pre container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 getent group minion >/dev/null || groupadd -r minion
 getent passwd minion >/dev/null || \
-	useradd -r -g minion -d "%{minioninstprefix}" -s /sbin/nologin \
+	useradd -r -g minion -d "${ROOT_INST}" -s /sbin/nologin \
 	-c "OpenNMS Minion" minion
 exit 0
 
 %post container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 # Clean out the data directory
-rm -rf "%{minioninstprefix}/data"
+rm -rf "${ROOT_INST}/data"
 # Generate an SSH key if necessary
-if [ ! -f "%{minioninstprefix}/etc/host.key" ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "%{minioninstprefix}/etc/host.key"
-    chown minion:minion "%{minioninstprefix}/etc/"host.key*
+if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
+    chown minion:minion "${ROOT_INST}/etc/"host.key*
 fi
 
 %files features-core
@@ -227,11 +233,14 @@ fi
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 %post features-core
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 # Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
-sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
 # Remove the directory used as the local Maven repo cache
-rm -rf %{minionrepoprefix}/.local
+rm -rf "${ROOT_INST}/repositories/.local"
 
 %files features-default
 %defattr(644 minion minion 755)
