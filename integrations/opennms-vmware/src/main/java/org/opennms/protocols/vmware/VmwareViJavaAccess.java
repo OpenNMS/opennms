@@ -62,6 +62,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
@@ -249,19 +250,7 @@ public class VmwareViJavaAccess {
      */
     protected void relax() {
 
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-                return;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-                return;
-            }
-        }};
+        TrustManager[] trustAllCerts = new TrustManager[]{new AnyServerX509TrustManager()};
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");

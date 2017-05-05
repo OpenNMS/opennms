@@ -58,6 +58,7 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,22 +102,7 @@ public class TsrmTicketerPlugin implements Plugin {
 
                 LOG.debug("Disabling strict SSL checking.");
                 // Accept all certificates
-                final TrustManager[] simpleTrustManager = new TrustManager[] {
-                        new X509TrustManager() {
-                            public void checkClientTrusted(
-                                    java.security.cert.X509Certificate[] certs,
-                                    String authType) {
-                            }
-
-                            public void checkServerTrusted(
-                                    java.security.cert.X509Certificate[] certs,
-                                    String authType) {
-                            }
-
-                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                                return null;
-                            }
-                        } };
+                final TrustManager[] simpleTrustManager = new TrustManager[] { new AnyServerX509TrustManager() };
                 final TLSClientParameters tlsParams = new TLSClientParameters();
                 tlsParams.setTrustManagers(simpleTrustManager);
                 tlsParams.setDisableCNCheck(true);

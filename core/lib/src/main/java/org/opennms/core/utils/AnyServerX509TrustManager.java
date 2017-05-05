@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.jmxconfiggenerator.data;
+package org.opennms.core.utils;
 
-/**
- * Meta interface to address all properties of an ConfigModel bean in vaadin
- * framework. In this way we do not need use strings!
- * 
- * @author Markus von Rüden
- * @see ServiceConfig
- */
-public interface MetaConfigModel {
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
-	String SERVICE_NAME = "serviceName";
-	String PASSWORD = "password";
-	String AUTHENTICATE = "authenticate";
-	String USER = "user";
-	String SKIP_DEFAULT_VM = "skipDefaultVM";
-	String SKIP_NON_NUMBER = "skipNonNumber";
-	String CONNECTION = "connection";
+import javax.net.ssl.X509TrustManager;
+
+public class AnyServerX509TrustManager implements X509TrustManager {
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+        // since client authentication is not supported by this
+        // trust manager, there's no certificate authority trusted
+        // for authenticating peers
+        return new X509Certificate[0];
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        // this trust manager is dedicated to server authentication
+        throw new CertificateException("not supported");
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        // any certificate sent by the server is automatically accepted
+    }
 }

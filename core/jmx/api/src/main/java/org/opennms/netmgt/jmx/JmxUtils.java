@@ -28,14 +28,25 @@
 
 package org.opennms.netmgt.jmx;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.management.remote.JMXServiceURL;
+
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.config.jmx.MBeanServer;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class JmxUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmxUtils.class);
 
     /**
      * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
@@ -100,6 +111,24 @@ public final class JmxUtils {
         final boolean useMbeanForRrds = Boolean.valueOf(map.get(ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString()));
         final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
         return groupName;
+    }
+
+    public static Map<String, String> getRuntimeAttributes(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
+        Objects.requireNonNull(address);
+        Objects.requireNonNull(parameters);
+        if (jmxConfigDao != null && jmxConfigDao.getConfig() != null) {
+            try {
+                final JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(address, parameters).build();
+                final int port = new JMXServiceURL(config.getUrl()).getPort();
+                final MBeanServer mBeanServer = jmxConfigDao.getConfig().lookupMBeanServer(address, port);
+                if (mBeanServer != null) {
+                    return new HashMap<>(mBeanServer.getParameterMap());
+                }
+            } catch (MalformedURLException e) {
+                LOG.warn("Unexpected exception: {}", e.getMessage(), e);
+            }
+        }
+        return Collections.emptyMap();
     }
 
     private JmxUtils() {

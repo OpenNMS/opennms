@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +40,6 @@ import org.apache.commons.jexl2.ReadonlyContext;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
@@ -54,7 +52,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,14 +107,12 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     @Override
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        final Integer port = AbstractServiceMonitor.getKeyedInteger(parameters, "port", null);
-        if (port != null) {
-            final MBeanServer mbeanServer = jmxConfigDao.get().getConfig().lookupMBeanServer(InetAddrUtils.str(svc.getAddress()), port.toString());
-            if (mbeanServer != null) {
-                return new HashMap<>(mbeanServer.getParameterMap());
-            }
+        Map<String, String> convert = new HashMap<>();
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            convert.put(entry.getKey(), (String) entry.getValue());
         }
-        return Collections.emptyMap();
+        Map<String, String> attributes = JmxUtils.getRuntimeAttributes(jmxConfigDao.get(), InetAddressUtils.str(svc.getAddress()), convert);
+        return new HashMap<>(attributes);
     }
 
     /**
