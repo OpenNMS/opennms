@@ -4,13 +4,13 @@
 
 === Using Kafka
 
-By default, we use the embedded _ActiveMQ_ broker to communicate with the _Minions_.
-This broker is used for both issuing remote procedure calls (RPCs) i.e. ping this host, and for transporting unsolicited messages such as SNMP traps and Syslogs.
+By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
+This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
-_Apache Kafka_ can be used as an alternative to  _ActiveMQ_ for transporting the unsolicited messages.
+_Apache Kafka_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
 
-WARNING: _Kafka_ cannot currently be used for handling the RPCs.
-This means that _ActiveMQ_ is still required when the _Kafka_ support is enabled.
+WARNING: _Kafka_ cannot currently be used for handling RPC messages.
+This means that _ActiveMQ_ is still required even when _Kafka_ support is enabled.
 
 _Kafka_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
@@ -18,10 +18,11 @@ The _Kafka_ server must be compatible with _Kafka_ client version `0.10.1.1_1`.
 
 ==== Consumer Configuration
 
-Enable and configure the _Kafka_ consumer on _{opennms-product-name}_ using:
+Enable and configure the _Kafka_ consumer on _{opennms-product-name}_ by using the following commands. The `initialSleepTime` property will ensure that messages are not consumed from _Kafka_ until the _{opennms-product-name}_ system has fully initialized.
 
 [source, sh]
 ----
+echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
 echo 'org.opennms.core.ipc.sink.strategy=kafka
 org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
 ----
