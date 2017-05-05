@@ -28,12 +28,6 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import org.apache.commons.cli.*;
-
-import javax.net.ssl.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,6 +38,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.AnyServerX509TrustManager;
+
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
 
 public class VmwareConfigBuilder {
 
@@ -111,31 +134,6 @@ public class VmwareConfigBuilder {
     private Map<String, Map<String, TreeSet<VMwareConfigMetric>>> collections = new HashMap<String, Map<String, TreeSet<VMwareConfigMetric>>>();
     private Map<Integer, PerfCounterInfo> perfCounterInfoMap = new HashMap<Integer, PerfCounterInfo>();
     private String versionInformation = "", apiVersion = "";
-
-    private static class TrustAllManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
-        @Override
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-
-        public boolean isServerTrusted(java.security.cert.X509Certificate[] certs) {
-            return true;
-        }
-
-        public boolean isClientTrusted(java.security.cert.X509Certificate[] certs) {
-            return true;
-        }
-
-        @Override
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-            return;
-        }
-
-        @Override
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-            return;
-        }
-    }
 
     public VmwareConfigBuilder(String hostname, String username, String password) {
         this.hostname = hostname;
@@ -508,9 +506,7 @@ public class VmwareConfigBuilder {
             rrdRepository = "/opt/opennms/share/rrd/snmp/";
         }
 
-        TrustManager[] trustAllCerts = new TrustManager[1];
-
-        trustAllCerts[0] = new TrustAllManager();
+        TrustManager[] trustAllCerts = new TrustManager[] { new AnyServerX509TrustManager() };
 
         SSLContext sc = null;
         try {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection;
+package org.opennms.core.utils;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
