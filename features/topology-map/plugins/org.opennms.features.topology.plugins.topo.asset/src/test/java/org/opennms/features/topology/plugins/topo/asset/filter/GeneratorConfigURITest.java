@@ -24,7 +24,9 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/package org.opennms.features.topology.plugins.topo.asset.filter;
+ *******************************************************************************/
+ 
+ package org.opennms.features.topology.plugins.topo.asset.filter;
 
 import static org.junit.Assert.*;
 
@@ -39,8 +41,6 @@ import org.opennms.features.topology.plugins.topo.asset.UriParameters;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 public class GeneratorConfigURITest{
 	private static final Logger LOG = LoggerFactory.getLogger(GeneratorConfigURITest.class);
