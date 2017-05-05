@@ -31,47 +31,61 @@ import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.is;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.test.elasticsearch.JUnitElasticsearchServer;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
- * This test will send syslog messages over the following message bus:
+ * Verifies that syslog messages sent to the Minion generate
+ * events in OpenNMS.
  * 
- * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 2
- * 
+ * @deprecated This tests the opennms-elasticsearch-event-forwarder
+ * feature which is being deprecated in favor of the opennms-es-rest
+ * feature.
+ *
  * @author Seth
  */
-public class SyslogKafkaElasticsearch2Test extends AbstractSyslogTest {
+@Deprecated
+public class SyslogKafkaElasticsearch1IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch2Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch1IT.class);
 
-    @Override
-    protected TestEnvironmentBuilder getEnvironmentBuilder() {
-        TestEnvironmentBuilder builder = super.getEnvironmentBuilder();
-        // Enable Elasticsearch 2
-        return builder.es2();
-    }
+    /**
+     * Start up a legacy Elasticsearch 1.0 server that the forwarder can
+     * communicate with.
+     */
+    @ClassRule
+    public static final JUnitElasticsearchServer ELASTICSEARCH = new JUnitElasticsearchServer();
 
+    /**
+     * This test will send syslog messages over the following message bus:
+     * 
+     * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch Forwarder -> Elasticsearch 1.0
+     */
     @Test
-    public void testMinionSyslogsOverKafkaToEsRest() throws Exception {
+    public void testMinionSyslogsOverKafkaToEsForwarder() throws Exception {
         Date startOfTest = new Date();
         int numMessages = 10000;
         int packetsPerSecond = 500;
 
         InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress esRestAddr = testEnvironment.getServiceAddress(ContainerAlias.ELASTICSEARCH_2, 9200);
+        InetSocketAddress esRestAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9200);
+        InetSocketAddress esTransportAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9300);
         InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 9092);
         InetSocketAddress zookeeperAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 2181);
@@ -80,14 +94,14 @@ public class SyslogKafkaElasticsearch2Test extends AbstractSyslogTest {
         installFeaturesOnMinion(minionSshAddr, kafkaAddress);
 
         // Install the Kafka and Elasticsearch features on the OpenNMS system
-        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, true);
+        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, false);
 
         final String sender = testEnvironment.getContainerInfo(ContainerAlias.SNMPD).networkSettings().ipAddress();
 
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")
@@ -95,6 +109,15 @@ public class SyslogKafkaElasticsearch2Test extends AbstractSyslogTest {
                  ),
                  is(1)
              );
+
+        // Create the indices manually. If we don't do this, some versions of 
+        // ES will drop messages while the index is being auto-created.
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(startOfTest);
+        calendar.set(Calendar.MONTH, Calendar.MARCH);
+
+        createElasticsearchIndex(esTransportAddr, startOfTest);
+        createElasticsearchIndex(esTransportAddr, calendar.getTime());
 
         LOG.info("Warming up syslog routes by sending 100 packets");
 

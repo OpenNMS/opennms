@@ -30,61 +30,48 @@ package org.opennms.smoketest.minion;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.utils.DaoUtils;
-import org.opennms.test.system.api.AbstractTestEnvironment;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.RateLimiter;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerInfo;
 
 /**
  * This test will send syslog messages over the following message bus:
  * 
- * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 5
- * 
- * and will restart the Elasticsearch system several times to ensure that
- * no messages are lost.
+ * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 2
  * 
  * @author Seth
  */
-@Ignore
-public class SyslogKafkaElasticsearch5OutageTest extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch2IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5OutageTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch2IT.class);
 
     @Override
     protected TestEnvironmentBuilder getEnvironmentBuilder() {
         TestEnvironmentBuilder builder = super.getEnvironmentBuilder();
-        // Enable Elasticsearch 5
-        return builder.es5();
+        // Enable Elasticsearch 2
+        return builder.es2();
     }
 
     @Test
     public void testMinionSyslogsOverKafkaToEsRest() throws Exception {
         Date startOfTest = new Date();
         int numMessages = 10000;
-        int packetsPerSecond = 250;
+        int packetsPerSecond = 500;
 
         InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
+        InetSocketAddress esRestAddr = testEnvironment.getServiceAddress(ContainerAlias.ELASTICSEARCH_2, 9200);
         InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 9092);
         InetSocketAddress zookeeperAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 2181);
@@ -100,7 +87,7 @@ public class SyslogKafkaElasticsearch5OutageTest extends AbstractSyslogTest {
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")
@@ -128,32 +115,12 @@ public class SyslogKafkaElasticsearch5OutageTest extends AbstractSyslogTest {
         }
 
         // Make sure that this evenly divides into the numMessages
-        final int chunk = 250;
+        final int chunk = 500;
         // Make sure that this is an even multiple of chunk
         final int logEvery = 1000;
 
         int count = 0;
         long start = System.currentTimeMillis();
-
-        AtomicInteger restartCounter = new AtomicInteger();
-
-        // Start a timer that occasionally restarts Elasticsearch
-        Timer restarter = new Timer("Elasticsearch-Restarter", true);
-        restarter.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
-                final String id = testEnvironment.getContainerInfo(ContainerAlias.ELASTICSEARCH_5).id();
-                try {
-                    LOG.info("Restarting container: {}", id);
-                    docker.restartContainer(id);
-                    restartCounter.incrementAndGet();
-                    LOG.info("Container restarted: {}", id);
-                } catch (DockerException | InterruptedException e) {
-                    LOG.warn("Unexpected exception while restarting container {}", id, e);
-                }
-            }
-        }, 0L, TimeUnit.SECONDS.toMillis(29));
 
         // Send ${numMessages} syslog messages
         RateLimiter limiter = RateLimiter.create(packetsPerSecond);
@@ -168,25 +135,7 @@ public class SyslogKafkaElasticsearch5OutageTest extends AbstractSyslogTest {
             }
         }
 
-        // Stop restarting Elasticsearch
-        restarter.cancel();
-
         // 100 warm-up messages plus ${numMessages} messages
-        pollForElasticsearchEventsUsingJest(this::getEs5Address, 100 + numMessages);
-
-        assertTrue("Elasticsearch was never restarted", restartCounter.get() > 0);
-    }
-
-    protected InetSocketAddress getEs5Address() {
-        try {
-            // Fetch an up-to-date ContainerInfo for the ELASTICSEARCH_5 container
-            final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
-            final String id = testEnvironment.getContainerInfo(ContainerAlias.ELASTICSEARCH_5).id();
-            ContainerInfo info = docker.inspectContainer(id);
-            return testEnvironment.getServiceAddress(info, 9200, "tcp"); 
-        } catch (DockerException | InterruptedException e) {
-            LOG.error("Unexpected exception trying to fetch Elassticsearch port", e);
-            return null;
-        }
+        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages);
     }
 }

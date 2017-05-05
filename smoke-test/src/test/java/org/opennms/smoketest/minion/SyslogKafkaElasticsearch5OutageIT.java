@@ -30,62 +30,60 @@ package org.opennms.smoketest.minion;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.test.elasticsearch.JUnitElasticsearchServer;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.smoketest.utils.DaoUtils;
+import org.opennms.test.system.api.AbstractTestEnvironment;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
+import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.ContainerInfo;
 
 /**
- * Verifies that syslog messages sent to the Minion generate
- * events in OpenNMS.
+ * This test will send syslog messages over the following message bus:
  * 
- * @deprecated This tests the opennms-elasticsearch-event-forwarder
- * feature which is being deprecated in favor of the opennms-es-rest
- * feature.
- *
+ * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 5
+ * 
+ * and will restart the Elasticsearch system several times to ensure that
+ * no messages are lost.
+ * 
  * @author Seth
  */
-@Deprecated
-public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch5OutageIT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch1Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5OutageIT.class);
 
-    /**
-     * Start up a legacy Elasticsearch 1.0 server that the forwarder can
-     * communicate with.
-     */
-    @ClassRule
-    public static final JUnitElasticsearchServer ELASTICSEARCH = new JUnitElasticsearchServer();
+    @Override
+    protected TestEnvironmentBuilder getEnvironmentBuilder() {
+        TestEnvironmentBuilder builder = super.getEnvironmentBuilder();
+        // Enable Elasticsearch 5
+        return builder.es5();
+    }
 
-    /**
-     * This test will send syslog messages over the following message bus:
-     * 
-     * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch Forwarder -> Elasticsearch 1.0
-     */
     @Test
-    public void testMinionSyslogsOverKafkaToEsForwarder() throws Exception {
+    public void testMinionSyslogsOverKafkaToEsRest() throws Exception {
         Date startOfTest = new Date();
         int numMessages = 10000;
-        int packetsPerSecond = 500;
+        int packetsPerSecond = 250;
 
         InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress esRestAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9200);
-        InetSocketAddress esTransportAddr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 9300);
         InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 9092);
         InetSocketAddress zookeeperAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 2181);
@@ -94,14 +92,14 @@ public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
         installFeaturesOnMinion(minionSshAddr, kafkaAddress);
 
         // Install the Kafka and Elasticsearch features on the OpenNMS system
-        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, false);
+        installFeaturesOnOpenNMS(opennmsSshAddr, kafkaAddress, zookeeperAddress, true);
 
         final String sender = testEnvironment.getContainerInfo(ContainerAlias.SNMPD).networkSettings().ipAddress();
 
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")
@@ -109,15 +107,6 @@ public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
                  ),
                  is(1)
              );
-
-        // Create the indices manually. If we don't do this, some versions of 
-        // ES will drop messages while the index is being auto-created.
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(startOfTest);
-        calendar.set(Calendar.MONTH, Calendar.MARCH);
-
-        createElasticsearchIndex(esTransportAddr, startOfTest);
-        createElasticsearchIndex(esTransportAddr, calendar.getTime());
 
         LOG.info("Warming up syslog routes by sending 100 packets");
 
@@ -138,12 +127,32 @@ public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
         }
 
         // Make sure that this evenly divides into the numMessages
-        final int chunk = 500;
+        final int chunk = 250;
         // Make sure that this is an even multiple of chunk
         final int logEvery = 1000;
 
         int count = 0;
         long start = System.currentTimeMillis();
+
+        AtomicInteger restartCounter = new AtomicInteger();
+
+        // Start a timer that occasionally restarts Elasticsearch
+        Timer restarter = new Timer("Elasticsearch-Restarter", true);
+        restarter.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
+                final String id = testEnvironment.getContainerInfo(ContainerAlias.ELASTICSEARCH_5).id();
+                try {
+                    LOG.info("Restarting container: {}", id);
+                    docker.restartContainer(id);
+                    restartCounter.incrementAndGet();
+                    LOG.info("Container restarted: {}", id);
+                } catch (DockerException | InterruptedException e) {
+                    LOG.warn("Unexpected exception while restarting container {}", id, e);
+                }
+            }
+        }, 0L, TimeUnit.SECONDS.toMillis(29));
 
         // Send ${numMessages} syslog messages
         RateLimiter limiter = RateLimiter.create(packetsPerSecond);
@@ -158,7 +167,25 @@ public class SyslogKafkaElasticsearch1Test extends AbstractSyslogTest {
             }
         }
 
+        // Stop restarting Elasticsearch
+        restarter.cancel();
+
         // 100 warm-up messages plus ${numMessages} messages
-        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages);
+        pollForElasticsearchEventsUsingJest(this::getEs5Address, 100 + numMessages);
+
+        assertTrue("Elasticsearch was never restarted", restartCounter.get() > 0);
+    }
+
+    protected InetSocketAddress getEs5Address() {
+        try {
+            // Fetch an up-to-date ContainerInfo for the ELASTICSEARCH_5 container
+            final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
+            final String id = testEnvironment.getContainerInfo(ContainerAlias.ELASTICSEARCH_5).id();
+            ContainerInfo info = docker.inspectContainer(id);
+            return testEnvironment.getServiceAddress(info, 9200, "tcp"); 
+        } catch (DockerException | InterruptedException e) {
+            LOG.error("Unexpected exception trying to fetch Elassticsearch port", e);
+            return null;
+        }
     }
 }

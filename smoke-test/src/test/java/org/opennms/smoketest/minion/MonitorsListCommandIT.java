@@ -55,12 +55,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
-/**
- * Verifies the output of "poller:list-monitors" on both OpenNMS and Minion. 
- */
-public class MonitorListTest {
+public class MonitorsListCommandIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MonitorListTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandIT.class);
 
     private static TestEnvironment m_testEnvironment;
 

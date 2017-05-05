@@ -53,9 +53,9 @@ import com.google.common.util.concurrent.RateLimiter;
  * 
  * @author Seth
  */
-public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch5IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5IT.class);
 
     @Override
     protected TestEnvironmentBuilder getEnvironmentBuilder() {
@@ -87,7 +87,7 @@ public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")

@@ -59,7 +59,7 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
  * @author Seth
  * @author jwhite
  */
-public class SyslogTest extends AbstractSyslogTest {
+public class SyslogIT extends AbstractSyslogTestCase {
 
     @Test
     public void canReceiveSyslogMessages() throws Exception {
@@ -69,7 +69,7 @@ public class SyslogTest extends AbstractSyslogTest {
         sendMessage(ContainerAlias.MINION, "myhost", 1);
 
         // Parsing the message correctly relies on the customized syslogd-configuration.xml that is part of the OpenNMS image
-        final EventDao eventDao = this.daoFactory.getDao(EventDaoHibernate.class);
+        final EventDao eventDao = getDaoFactory().getDao(EventDaoHibernate.class);
         final Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
                 .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
                 // eventCreateTime is the storage time of the event in the database so 
@@ -88,7 +88,7 @@ public class SyslogTest extends AbstractSyslogTest {
 
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(MinionDaoHibernate.class),
+               .until(DaoUtils.countMatchingCallable(getDaoFactory().getDao(MinionDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsMinion.class)
                                                              .gt("lastUpdated", startOfTest)
                                                              .eq("location", "MINION")
@@ -100,7 +100,7 @@ public class SyslogTest extends AbstractSyslogTest {
 
         // Wait for the syslog message
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+               .until(DaoUtils.countMatchingCallable(getDaoFactory().getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
                                                              .ge("eventCreateTime", startOfTest)
@@ -110,7 +110,7 @@ public class SyslogTest extends AbstractSyslogTest {
         //Wait for the new suspect
         final OnmsEvent event = await()
                 .atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+                .until(DaoUtils.findMatchingCallable(getDaoFactory().getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/internal/discovery/newSuspect")
                                                              .ge("eventTime", startOfTest)
@@ -123,7 +123,7 @@ public class SyslogTest extends AbstractSyslogTest {
         // Check if the node was detected
         final OnmsNode node = await()
                 .atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.findMatchingCallable(this.daoFactory.getDao(NodeDaoHibernate.class),
+                .until(DaoUtils.findMatchingCallable(getDaoFactory().getDao(NodeDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsNode.class)
                                                              .eq("label", "snmpd")
                                                              .toCriteria()),
@@ -132,7 +132,7 @@ public class SyslogTest extends AbstractSyslogTest {
 
         // Check if the service was discovered
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(() -> this.daoFactory.getDao(MonitoredServiceDaoHibernate.class)
+               .until(() -> getDaoFactory().getDao(MonitoredServiceDaoHibernate.class)
                                            .getPrimaryService(node.getId(), "SNMP"),
                       notNullValue());
 
@@ -141,7 +141,7 @@ public class SyslogTest extends AbstractSyslogTest {
 
         // Wait for the second message with the node assigned
         await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-               .until(DaoUtils.countMatchingCallable(this.daoFactory.getDao(EventDaoHibernate.class),
+               .until(DaoUtils.countMatchingCallable(getDaoFactory().getDao(EventDaoHibernate.class),
                                                      new CriteriaBuilder(OnmsEvent.class)
                                                              .eq("eventUei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic")
                                                              .ge("eventCreateTime", startOfTest)
