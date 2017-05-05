@@ -41,8 +41,12 @@ import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
 import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class JmxUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmxUtils.class);
 
     /**
      * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
@@ -120,8 +124,8 @@ public final class JmxUtils {
                 if (mBeanServer != null) {
                     return new HashMap<>(mBeanServer.getParameterMap());
                 }
-            } catch (MalformedURLException ex) {
-                // swallow
+            } catch (MalformedURLException e) {
+                LOG.warn("Unexpected exception: {}", e.getMessage(), e);
             }
         }
         return Collections.emptyMap();
