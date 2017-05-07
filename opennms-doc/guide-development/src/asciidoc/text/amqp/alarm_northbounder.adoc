@@ -31,9 +31,9 @@ Update the properties with your deployment specific values:
 [source]
 ----
 config:edit org.opennms.features.amqp.alarmnorthbounder
-propset connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
-propset destination amqp:OpenNMS-Exchange/opennms-routing-key
-propset processorName default-alarm-northbounder-processor
+config:property-set connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
+config:property-set destination amqp:OpenNMS-Exchange/opennms-routing-key
+config:property-set processorName default-alarm-northbounder-processor
 config:update
 ----
 

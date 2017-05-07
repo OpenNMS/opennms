@@ -170,13 +170,13 @@ public abstract class AbstractSyslogTestCase {
 
             // Configure and install the Elasticsearch REST event forwarder
             pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
-            pipe.println("config:propset logAllEvents true");
-            pipe.println("config:propset batchSize 500");
-            pipe.println("config:propset batchInterval 500");
-            pipe.println("config:propset timeout 5000");
+            pipe.println("config:property-set logAllEvents true");
+            pipe.println("config:property-set batchSize 500");
+            pipe.println("config:property-set batchInterval 500");
+            pipe.println("config:property-set timeout 5000");
             // Retry enough times that all events are eventually sent
             // even if transient ES outages occur
-            pipe.println("config:propset retries 200");
+            pipe.println("config:property-set retries 200");
             pipe.println("config:update");
             pipe.println("feature:install opennms-es-rest");
 
