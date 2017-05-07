@@ -15,6 +15,7 @@
   
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/AlarmChangeNotifierEvents.xml</event-file>
+  <event-file>events/GraphMLAssetPluginEvents.xml</event-file>
   
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>

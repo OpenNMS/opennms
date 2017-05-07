@@ -62,25 +62,7 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
         try {
             // Use a blank list of key managers so no SSL keys will be available
             KeyManager[] keyManager = null;
-            TrustManager[] trustManagers = { new X509TrustManager() {
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                    // Perform no checks
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                    // Perform no checks
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }}
-            };
+            TrustManager[] trustManagers = { new AnyServerX509TrustManager() };
             customContext = SSLContext.getInstance("SSL");
             customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {

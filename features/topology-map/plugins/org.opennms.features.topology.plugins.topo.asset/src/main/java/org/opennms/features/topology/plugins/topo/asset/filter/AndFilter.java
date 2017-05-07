@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.support.graphml;
+package org.opennms.features.topology.plugins.topo.asset.filter;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-import org.graphdrawing.graphml.GraphmlType;
+public class AndFilter<T> implements Filter<T> {
 
-public interface GraphmlRepository {
+	private final List<Filter> andFilters;
 
-    GraphmlType findByName(String name) throws IOException;
+    public AndFilter(Filter... filters) {
+    	this(filters == null ? new ArrayList<>() : Arrays.asList(filters));
+    }
+    
+	public AndFilter(List<Filter> andFilters){
+		this.andFilters= Objects.requireNonNull(andFilters);
+	}
 
-    void save(String name, String label, GraphmlType graphmlType) throws IOException;
-
-    void delete(String name) throws IOException;
-
-    boolean exists(String name);
+    @Override
+    public boolean apply(T value) {
+		for(Filter f : andFilters) {
+			if(! f.apply(value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+    
 }

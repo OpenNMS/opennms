@@ -138,6 +138,7 @@ include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
+include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
 include::text/performance-data-collection/collectors/wsman/detector.adoc[]
@@ -191,6 +192,9 @@ include::text/bsm/bsmd.adoc[]
 [[ga-topology]]
 == Topology Map
 include::text/topology/topology.adoc[]
+
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
 
 [[ga-database-reports]]
 == Database Reports

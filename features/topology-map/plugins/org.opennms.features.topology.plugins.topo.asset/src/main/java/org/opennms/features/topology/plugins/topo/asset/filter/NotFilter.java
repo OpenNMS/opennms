@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.camel;
+package org.opennms.features.topology.plugins.topo.asset.filter;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+public class NotFilter<T> implements Filter<T> {
 
-import javax.net.ssl.X509TrustManager;
+    private final Filter filter;
 
-class DefaultTrustManager implements X509TrustManager {
-    
-    @Override
-    public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+    public NotFilter(Filter filter) {
+        this.filter = filter;
+    }
 
     @Override
-    public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-            return null;
+    public boolean apply(T value) {
+        return !filter.apply(value);
     }
 }

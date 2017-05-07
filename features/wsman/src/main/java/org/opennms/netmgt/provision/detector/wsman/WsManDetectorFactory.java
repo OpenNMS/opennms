@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.wsman;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
@@ -69,7 +70,7 @@ public class WsManDetectorFactory extends GenericServiceDetectorFactory<WsManDet
     }
 
     @Override
-    public DetectRequest buildRequest(String location, InetAddress address, Integer port) {
+    public DetectRequest buildRequest(String location, InetAddress address, Integer port, Map<String, String> attributes) {
         return new DetectRequestImpl(address, port, WsmanEndpointUtils.toMap(m_wsmanConfigDao.getEndpoint(address)));
     }
 

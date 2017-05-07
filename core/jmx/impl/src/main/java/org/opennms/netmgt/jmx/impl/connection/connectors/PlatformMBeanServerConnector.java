@@ -48,6 +48,10 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 public class PlatformMBeanServerConnector implements JmxServerConnector {
     @Override
     public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
+        return createConnection();
+    }
+
+    public JmxServerConnectionWrapper createConnection() {
         final MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         final JmxServerConnectionWrapper jmxConnectionWrapper = new JmxServerConnectionWrapper() {
             @Override

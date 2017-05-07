@@ -120,6 +120,7 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			passwordField.setDescription("Password for JMX-RMI Authentication");
 
 			final TextField serviceNameField = new TextField();
+			serviceNameField.setWidth(400, Unit.PIXELS);
 			serviceNameField.setCaption("Service name");
 			serviceNameField.setNullRepresentation("");
 			serviceNameField.setRequired(true);
@@ -128,22 +129,15 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 					"You must specify a valid name. Allowed characters: (A-Za-z0-9_-)"));
 			serviceNameField.setDescription("The service name of the JMX data collection config, e.g. cassandra, jboss, tomcat");
 
-			final TextField hostNameField = new TextField();
-			hostNameField.setCaption("Host");
-			hostNameField.setRequired(true);
-			hostNameField.setRequiredError("required");
-			hostNameField.setDescription("Hostname or ip address of JMX-RMI host");
-
-			final TextField portField = new TextField();
-			portField.setCaption("Port");
-			portField.setRequired(true);
-			portField.setRequiredError("required");
-			portField.setId("port");
-			portField.setDescription("Port of JMX-RMI service");
+			final TextField connectionTextField = new TextField();
+			connectionTextField.setWidth(400, Unit.PIXELS);
+			connectionTextField.setCaption("Connection");
+			connectionTextField.setRequired(true);
+			connectionTextField.setRequiredError("required");
+			connectionTextField.setDescription("The JMX connection string, e.g.: <hostname>:<port> OR service:jmx:<protocol>:<sap>");
 
 			addComponent(serviceNameField);
-			addComponent(hostNameField);
-			addComponent(portField);
+			addComponent(connectionTextField);
 			addComponent(authenticateField);
 			addComponent(userField);
 			addComponent(passwordField);
@@ -159,14 +153,8 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			((AbstractComponent) skipNonNumberField).setDescription("Set to include/exclude non-number values");
 			addComponent(skipNonNumberField);
 
-			final Field<?> jmxMpField = configFieldGroup.buildAndBind(MetaConfigModel.JMXMP);
-			jmxMpField.setCaption("JMXMP");
-			((AbstractComponent) jmxMpField).setDescription("Use JMXMP instead of JMX-RMI");
-			addComponent(jmxMpField);
-
 			configFieldGroup.bind(serviceNameField, MetaConfigModel.SERVICE_NAME);
-			configFieldGroup.bind(hostNameField, MetaConfigModel.HOST);
-			configFieldGroup.bind(portField, MetaConfigModel.PORT);
+			configFieldGroup.bind(connectionTextField, MetaConfigModel.CONNECTION);
 			configFieldGroup.bind(passwordField, MetaConfigModel.PASSWORD);
 			configFieldGroup.bind(authenticateField, MetaConfigModel.AUTHENTICATE);
 			configFieldGroup.bind(userField, MetaConfigModel.USER);
