@@ -28,17 +28,20 @@
 
 package org.opennms.container.jaas;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.util.Map;
 
-public class Activator implements BundleActivator {
-    @Override
-    public synchronized void start(final BundleContext context) throws Exception {
-        JaasSupport.setContext(context);
-    }
+import org.apache.karaf.jaas.modules.BackingEngine;
+import org.apache.karaf.jaas.modules.BackingEngineFactory;
 
-    @Override
-    public synchronized void stop(final BundleContext context) throws Exception {
-        JaasSupport.setContext(null);
-    }
+public class OpenNMSBackingEngineFactory implements BackingEngineFactory {
+
+	@Override
+	public String getModuleClass() {
+		return OpenNMSLoginModule.class.getName();
+	}
+
+	@Override
+	public BackingEngine build(Map<String, ?> options) {
+		return new OpenNMSBackingEngine();
+	}
 }
