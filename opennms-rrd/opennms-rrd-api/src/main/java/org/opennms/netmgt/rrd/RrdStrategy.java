@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -91,15 +90,10 @@ public interface RrdStrategy<D extends Object,F extends Object> {
 	 * @param rrdDef
 	 *            an round robin database definition created using the
 	 *            createDefinition call.
-	 * @param attributeMappings
-	 *            a {@link Map<String, String>} that represents the mapping of
-	 *            attributeId to rrd track names. default there is only one
-	 *            track per datasource, but it is possible to store multiple
-	 *            tracks in one datasource
 	 * @throws java.lang.Exception
 	 *             if an error occurs create the file
 	 */
-    public void createFile(D rrdDef, Map<String, String> attributeMappings) throws Exception;
+    public void createFile(D rrdDef) throws Exception;
 
     /**
      * Opens the round robin database with the supplied name. It is assumed the

@@ -57,7 +57,7 @@ public abstract class RrdMetaDataUtils {
      * @param attributeMappings a {@link Map<String, String>} that represents
      * the mapping of attributeId to rrd track names
      */
-    public static void createMetaDataFile(final File directory, final String rrdName, final Map<String, String> attributeMappings) {
+    public static void createMetaDataFile(final String directory, final String rrdName, final Map<String, String> attributeMappings) {
         final File metaFile = new File(directory + File.separator + rrdName + ".meta");
 
         LOG.info("createMetaDataFile: creating meta data file {} with values '{}'", metaFile, attributeMappings);
