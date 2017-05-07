@@ -30,7 +30,6 @@ package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -155,26 +154,17 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
      *
-     * @param createCommand a {@link java.lang.String} object.
+     * @param createCommand a {@link String} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
+    public void createFile(CreateCommand createCommand) throws Exception {
         if (createCommand == null) {
             LOG.debug("createRRD: skipping RRD file");
             return;
         }
         LOG.debug("Executing: rrdtool {}", createCommand.toString());
         Interface.launch(createCommand.toString());
-        
-        String filenameWithoutExtension = createCommand.filename.replace(getDefaultFileExtension(), "");
-        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
-        
-        RrdMetaDataUtils.createMetaDataFile(
-            new File(filenameWithoutExtension.substring(0, lastIndexOfSeparator)),
-            filenameWithoutExtension.substring(lastIndexOfSeparator),
-            attributeMappings
-        );
     }
 
     /**
