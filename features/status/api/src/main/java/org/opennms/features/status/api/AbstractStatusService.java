@@ -109,12 +109,16 @@ public abstract class AbstractStatusService<T, Q extends Query> {
             switch (searchCondition.getConditionType()) {
                 case EQUALS:
                     return statusEntity -> statusEntity.getStatus().equals(searchSeverity);
+                case NOT_EQUALS:
+                    return statusEntity -> !statusEntity.getStatus().equals(searchSeverity);
                 case GREATER_OR_EQUALS:
                     return statusEntity -> statusEntity.getStatus().isGreaterThanOrEqual(searchSeverity);
                 case LESS_OR_EQUALS:
                     return statusEntity -> statusEntity.getStatus().isLessThanOrEqual(searchSeverity);
-                case NOT_EQUALS:
-                    return statusEntity -> !statusEntity.getStatus().equals(searchSeverity);
+                case GREATER_THAN:
+                    return statusEntity -> statusEntity.getStatus().isGreaterThan(searchSeverity);
+                case LESS_THAN:
+                    return statusEntity -> statusEntity.getStatus().isLessThan(searchSeverity);
             }
         }
         // Include all
