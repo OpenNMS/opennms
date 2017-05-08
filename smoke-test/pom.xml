@@ -11,6 +11,7 @@
     <updatePolicy>interval:60</updatePolicy>
     <camelVersion>2.16.5</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
+    <karafVersion>4.0.8</karafVersion>
     <nodeVersion>v6.10.2</nodeVersion>
     <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>
