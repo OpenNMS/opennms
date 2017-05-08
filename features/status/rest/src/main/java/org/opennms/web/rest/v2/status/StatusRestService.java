@@ -45,6 +45,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.features.status.api.Query;
 import org.opennms.features.status.api.SeverityFilter;
 import org.opennms.features.status.api.StatusEntity;
@@ -135,11 +136,7 @@ public class StatusRestService {
         list.setOffset(queryParameters.getOffset());
         list.setTotalCount(totalCount);
 
-        // Make sure that offset is set to a numeric value when setting the Content-Range header
-        return Response
-                .ok(list)
-                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
-                .build();
+        return createResponse(list, offset, totalCount);
     }
 
     @GET
@@ -164,11 +161,7 @@ public class StatusRestService {
         list.setOffset(queryParameters.getOffset());
         list.setTotalCount(totalCount);
 
-        // Make sure that offset is set to a numeric value when setting the Content-Range header
-        return Response
-                .ok(list)
-                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
-                .build();
+        return createResponse(list, offset, totalCount);
     }
 
     @GET
@@ -201,11 +194,7 @@ public class StatusRestService {
         list.setOffset(queryParameters.getOffset());
         list.setTotalCount(totalCount);
 
-        // Make sure that offset is set to a numeric value when setting the Content-Range header
-        return Response
-                .ok(list)
-                .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
-                .build();
+        return createResponse(list, offset, totalCount);
     }
 
     private static List<Object[]> convert(StatusSummary statusSummary) {
@@ -224,5 +213,17 @@ public class StatusRestService {
             return searchContext.getCondition(SeverityFilter.class);
         }
         return null;
+    }
+
+    private static Response createResponse(JaxbListWrapper list, int offset, int totalCount) {
+        if (list.isEmpty()) {
+            return Response.noContent().build();
+        } else {
+            // Make sure that offset is set to a numeric value when setting the Content-Range header
+            return Response
+                    .ok(list)
+                    .header("Content-Range", String.format("items %d-%d/%d", offset, offset + list.size() - 1, totalCount))
+                    .build();
+        }
     }
 }
