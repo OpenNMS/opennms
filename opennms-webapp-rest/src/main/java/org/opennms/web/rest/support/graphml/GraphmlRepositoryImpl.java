@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.web.rest.support.graphml;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -40,7 +40,6 @@ import java.util.Properties;
 import javax.xml.bind.JAXB;
 
 import org.graphdrawing.graphml.GraphmlType;
-import org.opennms.features.graphml.service.GraphmlRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

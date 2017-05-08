@@ -40,7 +40,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -57,7 +56,7 @@ public class GraphMLMetaTopologyProviderTest {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
-    public void load() throws IOException, InvalidGraphException {
+    public void load() throws IOException {
         final File graphXml = tempFolder.newFile();
         Resources.asByteSource(Resources.getResource("test-graph.xml")).copyTo(Files.asByteSink(graphXml));
 

@@ -33,12 +33,5 @@
 // Generated on: 2017.04.14 at 07:47:42 AM EDT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(
-        namespace = "http://graphml.graphdrawing.org/xmlns",
-        elementFormDefault = XmlNsForm.QUALIFIED,
-        xmlns = {@XmlNs(prefix = "", namespaceURI = "http://graphml.graphdrawing.org/xmlns")}
-)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://graphml.graphdrawing.org/xmlns", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.graphdrawing.graphml;
-
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;

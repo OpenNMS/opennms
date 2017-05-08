@@ -67,7 +67,7 @@ public class GraphMLWriter {
         JAXB.marshal(graphmlType, file);
     }
 
-    public static GraphmlType convert(GraphML graphML) throws InvalidGraphException {
+    private static GraphmlType convert(GraphML graphML) throws InvalidGraphException {
         GraphmlType graphmlType = new GraphmlType();
         addProperties(graphmlType, KeyForType.GRAPHML, graphML, dataType -> graphmlType.getGraphOrData().add(dataType));
 
