@@ -64,7 +64,6 @@
                         order: $scope.$parent.query.order
                     },
                     function(value, headers) {
-                        console.log(value);
                         $scope.$parent.items = value;
 
                         var contentRange = parseContentRange(headers('Content-Range'));

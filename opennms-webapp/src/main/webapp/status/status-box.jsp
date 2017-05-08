@@ -77,7 +77,6 @@
                         }
                     }
                 }
-                console.log(columns);
 
                 // Reload graph
                 chartMapping[graph.id].unload();
