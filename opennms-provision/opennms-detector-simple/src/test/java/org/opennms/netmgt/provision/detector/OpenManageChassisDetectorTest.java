@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
         m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
-        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
     }
 
     @Test(timeout=20000)

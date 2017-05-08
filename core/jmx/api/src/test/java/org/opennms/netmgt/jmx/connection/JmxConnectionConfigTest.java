@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.camel;
+package org.opennms.netmgt.jmx.connection;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.net.MalformedURLException;
 
-import javax.net.ssl.X509TrustManager;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 
-class DefaultTrustManager implements X509TrustManager {
-    
-    @Override
-    public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+public class JmxConnectionConfigTest {
 
-    @Override
-    public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+    @Test
+    public void verifyIsLocalConnection() throws MalformedURLException {
+        JmxConnectionConfig config = new JmxConnectionConfigBuilder()
+                .withUrl("service:jmx:rmi://localhost:18980")
+                .withUsername("admin")
+                .withPassword("admin")
+                .build();
+        Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
 
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-            return null;
+        // Try with substitution
+        config.setUrl("service:jmx:rmi://${ipaddr}:18980");
+        config.setIpAddress(InetAddressUtils.getInetAddress("localhost"));
+        Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
     }
 }

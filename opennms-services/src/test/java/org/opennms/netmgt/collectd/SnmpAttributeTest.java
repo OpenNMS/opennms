@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -158,7 +157,7 @@ public class SnmpAttributeTest {
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
 
-        m_rrdStrategy.createFile(isA(Object.class), isA(Map.class));
+        m_rrdStrategy.createFile(isA(Object.class));
 
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));

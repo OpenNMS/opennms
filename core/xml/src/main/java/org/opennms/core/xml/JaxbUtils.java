@@ -88,9 +88,9 @@ public abstract class JaxbUtils {
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
 
-    private static final class LoggingValidationEventHandler implements ValidationEventHandler {
+    protected static final class LoggingValidationEventHandler implements ValidationEventHandler {
 
-        private LoggingValidationEventHandler() {
+        protected LoggingValidationEventHandler() {
         }
 
         @Override
