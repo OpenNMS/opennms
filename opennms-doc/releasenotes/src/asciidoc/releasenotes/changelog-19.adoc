@@ -9,9 +9,6 @@ For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.ado
 
 The codename for 19.1.0 is _link:https://en.wikipedia.org/wiki/Octopush[Octopush]_.
 
-[releasenotes-changelog-19.1.0]
-==== Release 19.1.0
-
 ===== Bug
 
 * HTTPS modules fail because of algorithm constraints (Issue http://issues.opennms.org/browse/NMS-6500[NMS-6500])
