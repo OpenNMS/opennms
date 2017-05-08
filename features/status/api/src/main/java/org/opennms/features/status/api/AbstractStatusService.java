@@ -39,6 +39,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.utils.QueryParameters;
 
+import com.google.common.base.Strings;
+
 public abstract class AbstractStatusService<T, Q extends Query> {
 
     public List<StatusEntity<T>> getStatus(Q query) {
@@ -102,8 +104,8 @@ public abstract class AbstractStatusService<T, Q extends Query> {
     protected abstract CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters);
 
     private Predicate<StatusEntity<T>> getSeverityFilterPredicate(final SearchCondition<SeverityFilter> searchCondition) {
-        if (searchCondition != null && searchCondition.getCondition().getSeverity() != null) {
-            final OnmsSeverity searchSeverity = OnmsSeverity.get(searchCondition.getCondition().getSeverity());
+        final OnmsSeverity searchSeverity = getSeverity(searchCondition);
+        if (searchSeverity != null) {
             switch (searchCondition.getConditionType()) {
                 case EQUALS:
                     return statusEntity -> statusEntity.getStatus().equals(searchSeverity);
@@ -127,4 +129,15 @@ public abstract class AbstractStatusService<T, Q extends Query> {
         return statusList; // don't filter
     }
 
+    private static OnmsSeverity getSeverity(SearchCondition<SeverityFilter> searchCondition) {
+        if (searchCondition != null && searchCondition.getCondition() != null && !Strings.isNullOrEmpty(searchCondition.getCondition().getSeverity())) {
+            final String severityString = searchCondition.getCondition().getSeverity();
+            for (OnmsSeverity eachSeverity : OnmsSeverity.values()) {
+                if (eachSeverity.getLabel().equalsIgnoreCase(severityString)) {
+                    return eachSeverity;
+                }
+            }
+        }
+        return null;
+    }
 }
