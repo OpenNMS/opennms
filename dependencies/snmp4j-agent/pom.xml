@@ -37,13 +37,4 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>oosnmp-repo</id>
-      <name>OOSNMP Repository</name>
-      <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
-    </repository>
-  </repositories>
 </project>

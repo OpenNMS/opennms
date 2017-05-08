@@ -27,7 +27,7 @@
               Add all optional imports of RRD strategies to the import list as well.
             -->
             <Import-Package>
-              org.springframework.beans.factory.config;version="[4.0,4.1)",
+              org.springframework.beans.factory.config;version="[4.1,4.2)",
               org.opennms.netmgt.rrd.jrobin;resolution:=optional,
               org.opennms.netmgt.rrd.rrdtool;resolution:=optional,
               org.opennms.netmgt.rrd.tcp;resolution:=optional,

@@ -38,7 +38,7 @@ class V6PingReply extends ICMPv6EchoPacket implements PingReply {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string
-    // Charset.forName("US-ASCII").encode("OpenNMS!").getLong(0);
+    // StandardCharsets.US_ASCII.encode("OpenNMS!").getLong(0);
     public static final long COOKIE = 0x4F70656E4E4D5321L;
     
     private long m_receivedTimeNanos;

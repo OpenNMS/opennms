@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +37,7 @@ import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
 import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,24 +65,29 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     protected void runCollection() {
 
     	final Date now = new Date(); 
-        LOG.debug("run: collecting : {}", getPeer());
 
         final IsisSysObjectGroupTracker isisSysObject = new IsisSysObjectGroupTracker();
 
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: Agent error while scanning the isisSysObjectCollection table", e);
+            LOG.info("run: node [{}]. Agent error while scanning the isisSysObjectCollection table",
+                     getNodeId(),
+                     e);
             return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            LOG.info("run: node [{}]. Is-Is Linkd node collection interrupted, exiting",
+                      getNodeId(),
+                      e);
             return;
         }
-
-        if (isisSysObject.getIsisSysId() == null) {
-            LOG.info("Is-Is mib not supported on: {}",
-                     str(getPeer().getAddress()));
+        
+        if (isisSysObject.getIsisSysId() == null ) {
+            LOG.info( "run: node [{}], address {}. Is-Is mib not supported ", 
+            		getNodeId(),
+            		getPrimaryIpAddressString());
             return;
         }
 
@@ -98,18 +102,23 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     		links.add(row.getIsisLink());
     	   }
         };
+        
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                       isisISAdjTableTracker)
                       .withDescription("isisISAdjTable")
                       .withLocation(getLocation())
                       .execute()
                       .get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.error("run: node [{}]. Is-Is collection execution failed, exiting",
+                      getNodeId(),
+                      e);
             return;
        } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            LOG.error("run: node [{}]. Is-Is collection interrupted, exiting", 
+                      getNodeId(),
+                      e);
             return;
         }
         
@@ -125,17 +134,22 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     		}
     	}
         };
+
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                               isisCircTableTracker)
                               .withDescription("isisCircTable")
                               .withLocation(getLocation())
                               .execute().get();
         } catch (ExecutionException e) {
-            LOG.error("run: collection execution failed, exiting",e);
+            LOG.error("run: node [{}]. Is-Is collection execution failed, exiting",
+                      getNodeId(),
+                      e);
             return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Is-Is Linkd node collection interrupted, exiting", e);
+            LOG.error("run: node [{}]. Is-Is collection interrupted, exiting", 
+                      getNodeId(),
+                      e);
             return;
         }
         
@@ -144,12 +158,6 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
 
         m_linkd.getQueryManager().reconcileIsis(getNodeId(), now);
     }
-
-	@Override
-	public String getInfo() {
-        return "ReadyRunnable:IsisLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
 
 	@Override
 	public String getName() {

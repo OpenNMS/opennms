@@ -47,7 +47,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@ContextConfiguration(locations="classpath:/META-INF/opennms/emptyContext.xml")
 public class NCSPathProviderTest{
     
     protected NCSPathProviderService m_ncsPathService;

@@ -30,6 +30,7 @@ package org.opennms.core.ipc.sink.common;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -48,11 +49,39 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMessageConsumerManager.class);
 
+    public static final String SINK_INITIAL_SLEEP_TIME = "org.opennms.core.ipc.sink.initialSleepTime";
+
     private final Multimap<SinkModule<?, Message>, MessageConsumer<?, Message>> consumersByModule = LinkedListMultimap.create();
 
-    public abstract void startConsumingForModule(SinkModule<?, Message> module) throws Exception;
+    protected abstract void startConsumingForModule(SinkModule<?, Message> module) throws Exception;
 
-    public abstract void stopConsumingForModule(SinkModule<?, Message> module) throws Exception;
+    protected abstract void stopConsumingForModule(SinkModule<?, Message> module) throws Exception;
+
+    public final CompletableFuture<Void> waitForStartup;
+
+    protected AbstractMessageConsumerManager() {
+        // By default, do not introduce any delay on startup
+        CompletableFuture<Void> startupFuture = CompletableFuture.completedFuture(null);
+        String initialSleepString = System.getProperty(SINK_INITIAL_SLEEP_TIME, "0");
+        try {
+            int initialSleep = Integer.parseInt(initialSleepString);
+            if (initialSleep > 0) {
+                startupFuture = CompletableFuture.runAsync(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(initialSleep);
+                        } catch (InterruptedException e) {
+                            LOG.warn(e.getMessage(), e);
+                        }
+                    }
+                });
+            }
+        } catch (NumberFormatException e) {
+            LOG.warn("Invalid value for system property {}: {}", SINK_INITIAL_SLEEP_TIME, initialSleepString);
+        }
+        waitForStartup = startupFuture;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -75,8 +104,17 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
             final int numConsumersBefore = consumersByModule.get(module).size();
             consumersByModule.put(module, (MessageConsumer<?, Message>)consumer);
             if (numConsumersBefore < 1) {
-                LOG.info("Starting consuming messages for module: {}", module);
-                startConsumingForModule(module);
+                waitForStartup.thenRunAsync(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LOG.info("Starting to consume messages for module: {}", module);
+                            startConsumingForModule(module);
+                        } catch (Exception e) {
+                            LOG.error("Unexpected exception while trying to start consumer for module: {}", module, e);
+                        }
+                    }
+                });
             }
         }
     }
@@ -94,8 +132,17 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
             final SinkModule<?, Message> module = (SinkModule<?, Message>)consumer.getModule();
             consumersByModule.remove(module, (MessageConsumer<?, Message>)consumer);
             if (consumersByModule.get(module).size() < 1) {
-                LOG.info("Stopping consuming messages for module: {}", module);
-                stopConsumingForModule(module);
+                waitForStartup.thenRunAsync(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LOG.info("Stopping consumption of messages for module: {}", module);
+                            stopConsumingForModule(module);
+                        } catch (Exception e) {
+                            LOG.error("Unexpected exception while trying to stop consumer for module: {}", module, e);
+                        }
+                    }
+                });
             }
         }
     }

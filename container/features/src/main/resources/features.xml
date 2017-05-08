@@ -171,16 +171,6 @@
       <bundle>wrap:mvn:com.zaxxer/HikariCP/${hikaricpVersion}$Bundle-SymbolicName=HikariCP&amp;Bundle-Version=${hikaricpVersion}&amp;Import-Package=javax.management,javax.naming,javax.sql,javax.xml.parsers,org.postgresql,org.w3c.dom</bundle>
     </feature>
 
-    <feature name="castor" description="Castor" version="1.1.2.1">
-      <!-- This castor.properties file overrides the default settings for Castor so that it works with JDK5+ -->
-      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.castor-properties/${project.version}</bundle>
-      <bundle dependency="true">wrap:mvn:oro/oro/${oroVersion}</bundle>
-      <!--
-        We must make sure that the Bundle-SymbolicName matches the Fragment-Host of org.opennms.core.castor-properties.
-      -->
-      <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
-    </feature>
-
     <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
       <feature>commons-collections</feature>
 
@@ -373,7 +363,7 @@
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
       <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[4.0,4.1)">spring-web</feature>
+      <feature version="[4.1,4.2)">spring-web</feature>
       <feature>commons-codec</feature>
 
       <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
@@ -402,8 +392,9 @@
       <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
     </feature>
     
-    <feature name="quartz" description="quartz" version="1.6.5">
-      <bundle>wrap:mvn:org.opensymphony.quartz/quartz/1.6.5</bundle>
+    <feature name="quartz" description="quartz" version="${quartzVersion}">
+      <feature>c3p0</feature>
+      <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     
     <feature name="twitter4j" description="twitter4j" version="3.0.6">
@@ -419,15 +410,16 @@
     
     
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
-      <feature version="[4.0,4.1)">spring-orm</feature>
+      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.1,4.2)">spring-orm</feature>
 
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
       <feature>owasp-encoder</feature>
 
+      <!-- Used by org.opennms.core.spring -->
+      <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
       <!-- Used by org.opennms.core.xml -->
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -467,7 +459,6 @@
       <feature>atomikos</feature>
       <feature>c3p0</feature>
       <feature>hikari-cp</feature>
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>postgresql</feature>
 
@@ -490,12 +481,11 @@
     </feature>
 
     <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
-      <feature version="[4.0,4.1)">spring-jdbc</feature>
-      <feature version="[4.0,4.1)">spring-orm</feature>
-      <feature version="[4.0,4.1)">spring-tx</feature>
+      <feature version="[4.1,4.2)">spring</feature>
+      <feature version="[4.1,4.2)">spring-jdbc</feature>
+      <feature version="[4.1,4.2)">spring-orm</feature>
+      <feature version="[4.1,4.2)">spring-tx</feature>
 
-      <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>commons-lang</feature>
       <feature>dnsjava</feature>
@@ -512,7 +502,7 @@
     </feature>
 
     <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
       <feature>opennms-config-api</feature>
       <feature>opennms-poller-api</feature>
@@ -522,6 +512,8 @@
     </feature>
 
     <feature name="opennms-collection-commands" description="OpenNMS :: Collection :: Shell Commands" version="${project.version}">
+      <feature>dropwizard-metrics</feature>
+      <feature version="${guavaVersion}">guava</feature>
       <!--
       These classes are in the system classpath inside OpenNMS
       <feature>opennms-collection-api</feature>
@@ -622,6 +614,7 @@
       <feature>opennms-model</feature>
       <feature>opennms-config-api</feature>
 
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
     </feature>
 
@@ -637,7 +630,6 @@
     </feature>
 
     <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
-      <feature>castor</feature>
       <feature version="${guavaVersion}">guava</feature>
       <feature>opennms-core-ipc-rpc</feature>
 
@@ -650,9 +642,8 @@
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
-      <feature>castor</feature>
       <feature>commons-lang</feature>
       <feature>jaxb</feature>
 
@@ -666,6 +657,16 @@
     <feature name="opennms-events-commands" description="OpenNMS :: Events :: Shell Commands" version="${project.version}">
       <!-- Other dependencies are available via the root classloader -->
       <feature>commons-jexl</feature>
+      <feature>dropwizard-metrics</feature>
+      <feature version="${guavaVersion}">guava</feature>
+
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-core</feature>
+      <feature>opennms-events-api</feature>
+      <feature>opennms-model</feature>
+      -->
+
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
     </feature>
 
@@ -734,7 +735,7 @@
     </feature>
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
       <feature>hibernate36</feature>
 
@@ -743,7 +744,7 @@
     </feature>
 
     <feature name="opennms-measurements-api" description="OpenNMS :: Measurements :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
       <feature>commons-lang</feature>
       <feature version="${guavaVersion}">guava</feature>
@@ -752,8 +753,15 @@
     </feature>
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
-      <feature>opennms-provisioning-api</feature>
       <feature>commons-lang</feature>
+
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-core</feature>
+      <feature>opennms-model</feature>
+      <feature>opennms-provisioning-api</feature>
+      -->
+
       <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
 
@@ -764,18 +772,16 @@
     </feature>
 
     <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
-      <feature>castor</feature>
       <feature>commons-beanutils</feature>
       <feature>commons-io</feature>
       <feature>fop</feature>
+      <feature>quartz</feature>
 
       <feature>opennms-config</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-javamail</feature>
-
-      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
 
       <bundle>mvn:org.opennms/opennms-reporting/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
@@ -791,7 +797,7 @@
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
       <feature>opennms-core</feature>
 
@@ -799,7 +805,7 @@
     </feature>
 
     <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
 
       <feature>jrobin</feature>
       <feature>opennms-rrd-api</feature>
@@ -832,7 +838,7 @@
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
       <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
@@ -868,7 +874,7 @@
 
     <!-- TrapD feature -->
     <feature name="opennms-trapd" description="OpenNMS :: Trapd" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.1,4.2)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
       <feature>camel-netty</feature>
@@ -904,6 +910,7 @@
       <feature>jfreechart</feature>
       <feature>jrobin</feature>
       <feature>json-lib</feature>
+      <feature>quartz</feature>
       <feature>spring-webflow</feature>
 
       <feature>opennms-config</feature>
@@ -914,7 +921,6 @@
       <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
       <bundle>wrap:mvn:xalan/serializer/2.7.2</bundle>
       <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
       <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>
       <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
       <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>
@@ -970,7 +976,10 @@
 
 
     <feature name="opennms-provisioning-detectors" description="OpenNMS :: Provisioning :: Detectors" version="${project.version}">
+      <feature>bsf</feature>
       <feature>commons-cli</feature>
+      <feature>jcifs</feature>
+      <feature>jldap</feature>
       <feature>spring-security32</feature>
 
       <feature>opennms-collection-api</feature>
@@ -980,9 +989,10 @@
       <feature>wsman-integration</feature>
       <feature>wmi-integration</feature>
 
-      <feature>bsf</feature>
-      <feature>jcifs</feature>
-      <feature>jldap</feature>
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-config</feature>
+      -->
 
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
@@ -1000,6 +1010,10 @@
 
     <feature name="opennms-provisioning-shell" description="OpenNMS :: Provisioning :: Shell" version="${project.version}">
       <!-- Dependencies should be available from the parent classloader and from the ONMSGi registry -->
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-provisioning</feature>
+      -->
       <bundle>mvn:org.opennms/opennms-provision-shell/${project.version}</bundle>
     </feature>
     
@@ -1032,6 +1046,10 @@
     </feature>
 
     <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-poller-api</feature>
+      -->
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 </features>

@@ -166,7 +166,7 @@
           buttons: {
             success: {
               label: 'Yes',
-              className: 'btn-danger',
+              className: 'btn-primary',
               callback: handler
             },
             main: {
@@ -206,7 +206,7 @@
         if ($scope.foreignSource == 'default') {
           $window.location.href = Configuration.baseHref + '#/requisitions';
         } else {
-          $window.location.href = Configuration.baseHref + '#/requisitions/' + $scope.foreignSource;
+          $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource);
         }
       };
       $scope.goTo(doGoBack);

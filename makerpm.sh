@@ -212,7 +212,7 @@ function main()
         echo "=== Copying Source to Source Directory ==="
         run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/"
 
-        echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
+        echo "=== Creating a tar.gz Archive of the Source in $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
         run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
 
         SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec"

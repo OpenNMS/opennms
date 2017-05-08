@@ -4,26 +4,21 @@
  * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is Copyright (C) 2002-2015 The OpenNMS Group, Inc.  All rights
- * reserved.  OpenNMS(R) is a derivative work, containing both original code,
- * included code and modified code that was published under the GNU General
- * Public License.  Copyrights for modified and included code are below.
- *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License with the Classpath
- * Exception; either version 2 of the License, or (at your option) any later
- * version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -37,7 +32,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -178,11 +172,11 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
      *
-     * @param createCommand a {@link java.lang.String} object.
+     * @param createCommand a {@link String} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
+    public void createFile(CreateCommand createCommand) throws Exception {
         if (createCommand == null) {
             LOG.debug("createRRD: skipping RRD file");
             return;
@@ -190,15 +184,6 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
         
         LOG.debug("Executing: rrdtool {}", createCommand);
         createCommand.execute(jrrd2);
-
-        String filenameWithoutExtension = createCommand.getFilename().replace(getDefaultFileExtension(), "");
-        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
-        
-        RrdMetaDataUtils.createMetaDataFile(
-            new File(filenameWithoutExtension.substring(0, lastIndexOfSeparator)),
-            filenameWithoutExtension.substring(lastIndexOfSeparator),
-            attributeMappings
-        );
     }
 
     /**

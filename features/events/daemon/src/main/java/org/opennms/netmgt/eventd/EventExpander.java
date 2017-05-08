@@ -793,6 +793,14 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
     } // end expandEvent()
 
+    /**
+     * Event expansion is always synchronous so this method just 
+     * delegates to {@link #process(Log)}.
+     */
+    @Override
+    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
+        process(eventLog);
+    }
 
     @Override
     public void process(Log eventLog) throws EventProcessorException {

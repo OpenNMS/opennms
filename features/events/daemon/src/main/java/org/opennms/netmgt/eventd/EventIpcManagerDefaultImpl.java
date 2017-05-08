@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -169,8 +170,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             );
         }
 
-        public void addEvent(final Event event) {
-            m_delegateThread.execute(new Runnable() {
+        public CompletableFuture<Void> addEvent(final Event event) {
+            return CompletableFuture.runAsync(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -187,7 +188,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                         LOG.warn("run: an unexpected error occured during ListenerThread {}", m_listener.getName(), t);
                     }
                 }
-            });
+            }, m_delegateThread);
         }
 
         /**
@@ -280,15 +281,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         // Create the runnable and invoke it using the current thread
         // Also set the logging prefix to ensure that the log messages are
         // properly routed to eventd's log file
-        Logging.withPrefix(Eventd.LOG4J_CATEGORY, m_eventHandler.createRunnable(eventLog));
+        Logging.withPrefix(Eventd.LOG4J_CATEGORY, m_eventHandler.createRunnable(eventLog, true));
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
-     */
-    /** {@inheritDoc} */
     @Override
-    public void broadcastNow(Event event) {
+    public void broadcastNow(Event event, boolean synchronous) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
         }
@@ -297,9 +294,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             LOG.debug("No listeners interested in all events");
         }
 
+        List<CompletableFuture<Void>> listenerFutures = new ArrayList<>();
+
         // Send to listeners interested in receiving all events
         for (EventListener listener : m_listeners) {
-            queueEventToListener(event, listener);
+            listenerFutures.add(queueEventToListener(event, listener));
         }
 
         if (event.getUei() == null) {
@@ -318,7 +317,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             if (m_ueiListeners.containsKey(uei)) {
                 for (EventListener listener : m_ueiListeners.get(uei)) {
                     if (!sentToListeners.contains(listener)) {
-                        queueEventToListener(event, listener);
+                        listenerFutures.add(queueEventToListener(event, listener));
                         sentToListeners.add(listener);
                     }
                 }
@@ -340,10 +339,16 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
             }
         }
+
+        // If synchronous...
+        if (synchronous) {
+            // Wait for all of the listeners to complete before returning
+            CompletableFuture.allOf(listenerFutures.toArray(new CompletableFuture[0])).join();
+        }
     }
 
-    private void queueEventToListener(Event event, EventListener listener) {
-        m_listenerThreads.get(listener.getName()).addEvent(event);
+    private CompletableFuture<Void> queueEventToListener(Event event, EventListener listener) {
+        return m_listenerThreads.get(listener.getName()).addEvent(event);
     }
 
     /**

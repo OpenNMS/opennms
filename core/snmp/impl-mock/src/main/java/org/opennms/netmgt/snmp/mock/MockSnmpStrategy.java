@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +88,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         LOG.debug("createWalker({}/{}, {}, {})", InetAddrUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
         final PropertyOidContainer oidContainer = getOidContainer(aa);
-        return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu());
+        return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu(), agentConfig.getRetries());
     }
 
     @Override
@@ -247,11 +248,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     public static void updateStringValue(final SnmpAgentAddress agentAddress, String oid, String value) {
-        try {
-            m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getOctetString(value.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            // Should be impossible
-        }
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getOctetString(value.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static void updateCounter32Value(final SnmpAgentAddress agentAddress, String oid, long value) {

@@ -38,19 +38,17 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
+import org.opennms.netmgt.config.wmi.agent.Definition;
+import org.opennms.netmgt.config.wmi.agent.Range;
+import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.AbstractWritableCastorConfigDao;
-import org.opennms.netmgt.config.wmi.Definition;
-import org.opennms.netmgt.config.wmi.Range;
-import org.opennms.netmgt.config.wmi.WmiAgentConfig;
-import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -71,7 +69,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  */
-public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,WmiConfig> {
+public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(WmiPeerFactory.class);
 
     /**
@@ -93,10 +91,6 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
     WmiPeerFactory(final String configFile) {
         super(WmiConfig.class, "WMI peer configuration");
@@ -117,18 +111,10 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException
      *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -146,18 +132,10 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be
      *                read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException
      *             if any.
-     * @throws org.exolab.castor.xml.MarshalException
-     *             if any.
-     * @throws org.exolab.castor.xml.ValidationException
-     *             if any.
      */
-    public static void reload() throws IOException, MarshalException, ValidationException {
+    public static void reload() throws IOException {
         init();
         getInstance().update();
     }
@@ -441,7 +419,7 @@ public class WmiPeerFactory extends AbstractWritableCastorConfigDao<WmiConfig,Wm
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(Definition def) {
-        return (def.getPassword() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
+        return (def.getUsername() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
     }
 
     /**

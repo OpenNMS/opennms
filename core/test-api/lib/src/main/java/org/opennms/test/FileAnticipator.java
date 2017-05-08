@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -346,7 +347,7 @@ public class FileAnticipator extends Assert {
         PrintWriter printWriter = null;
         try {
         	out = new FileOutputStream(f);
-        	writer = new OutputStreamWriter(out, "UTF-8");
+        	writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         	printWriter = new PrintWriter(writer);
         	printWriter.print(contents);
         } finally {

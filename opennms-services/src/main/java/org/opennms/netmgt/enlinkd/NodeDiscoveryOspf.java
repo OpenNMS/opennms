@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +44,7 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,15 +73,15 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     protected void runCollection() {
 
     	final Date now = new Date(); 
-        LOG.debug("run: collecting : {}", getPeer());
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(getPeer(),
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
+
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
                                                                                   m_linkd.getLocationAwareSnmpClient(),
                                                                                   getLocation());
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
-            
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfGeneralGroup).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
             withDescription("ospfGeneralGroup").
             withLocation(getLocation()).
             execute().
@@ -95,21 +94,25 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
            return;
        }
 
-        if (ospfGeneralGroup.getOspfRouterId() == null) {
-            LOG.info("ospf mib not supported on: {}",
-                     str(getPeer().getAddress()));
+        
+        if (ospfGeneralGroup.getOspfRouterId() == null ) {
+    		LOG.info( "run: node[{}]: address {}. ospf mib not supported",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
-        }
+        } 
 
         if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
-            LOG.info("ospf not supported, ospf identifier 0.0.0.0 is not valid on: {}",
-                     str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: address {}. ospf identifier 0.0.0.0 is not valid",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         }
 
         if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
-            LOG.info("ospf status disabled on: {}",
-                     str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: address {}. ospf status: disabled",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         }
 
@@ -124,7 +127,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfNbrTableTracker).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfNbrTableTracker).
             withDescription("ospfNbrTable").
             withLocation(getLocation()).
             execute().
@@ -145,7 +148,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         };
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(), ospfIfTableTracker).
+            m_linkd.getLocationAwareSnmpClient().walk(peer, ospfIfTableTracker).
             withDescription("ospfIfTable").
             withLocation(getLocation()).
             execute().
@@ -173,12 +176,6 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
         m_linkd.getQueryManager().reconcileOspf(getNodeId(),now);
     }
-
-	@Override
-	public String getInfo() {
-        return "ReadyRunnable:OspfLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
 
 	@Override
 	public String getName() {

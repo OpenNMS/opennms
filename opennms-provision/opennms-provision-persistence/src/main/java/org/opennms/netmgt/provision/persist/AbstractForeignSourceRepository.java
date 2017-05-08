@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -98,7 +99,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(outputFile);
-            writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             JaxbUtils.marshal(foreignSource, writer);
         } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);

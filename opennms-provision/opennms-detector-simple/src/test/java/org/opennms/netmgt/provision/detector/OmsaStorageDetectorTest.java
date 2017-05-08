@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -76,17 +77,17 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         m_detector.setRetries(2);
         m_detector.setTimeout(5000);
         m_detector.setVirtualDiskNumber("1");
-        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
     }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
+    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.detect(m_request).isServiceDetected());
     }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
+    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setVirtualDiskNumber("2");
         assertFalse(m_detector.detect(m_request).isServiceDetected());

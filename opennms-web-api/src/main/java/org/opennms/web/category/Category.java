@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +116,8 @@ public class Category {
     protected Category(String categoryName) {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
         m_categoryDef.setLabel(categoryName);
+        m_categoryDef.setNormalThreshold(0d);
+        m_categoryDef.setWarningThreshold(0d);
         m_rtcCategory = null;
         m_lastUpdated = null;
     }
@@ -156,7 +156,7 @@ public class Category {
      */
     @XmlAttribute(name="name")
     public String getName() {
-        return m_categoryDef.getLabel();
+        return m_categoryDef == null? null : m_categoryDef.getLabel();
     }
 
     /**
@@ -166,7 +166,7 @@ public class Category {
      */
     @XmlAttribute(name="normal-threshold")
     public double getNormalThreshold() {
-        return m_categoryDef.getNormal();
+        return m_categoryDef == null? null : m_categoryDef.getNormalThreshold();
     }
 
     /**
@@ -178,7 +178,7 @@ public class Category {
      */
     @XmlAttribute(name="warning-threshold")
     public double getWarningThreshold() {
-        return m_categoryDef.getWarning();
+        return m_categoryDef == null? null : m_categoryDef.getWarningThreshold();
     }
 
     /**
@@ -188,7 +188,7 @@ public class Category {
      */
     @XmlElement(name="comment")
     public String getComment() {
-        return m_categoryDef.getComment();
+        return m_categoryDef == null? null : m_categoryDef.getComment();
     }
 
     /**
@@ -217,8 +217,8 @@ public class Category {
 
     /**
      * Package protected implementation method that exposes the internal
-     * representation (a Castor-generated object) of the data from the RTC,
-     * strictly for use in marshalling the data back to XML (via Castor). In
+     * representation (a JAXB-generated object) of the data from the RTC,
+     * strictly for use in marshalling the data back to XML (via JAXB). In
      * other words, this method is only for debugging purposes, please do not
      * use in normal situations. Instead please use the public methods of this
      * class.
@@ -298,47 +298,13 @@ public class Category {
     }
 
     /**
-     * Returns the outage background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getOutageColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this, getServicePercentage());
-        }
-    }
-
-    /**
-     * Returns the availability background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getAvailColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this);
-        }
-    }
-
-    /**
      * Returns the outage CSS class for this category.
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @XmlElement(name="outage-class")
-    public String getOutageClass() throws IOException, MarshalException, ValidationException {
+    public String getOutageClass() throws IOException {
         if (m_lastUpdated == null) {
             return "Indeterminate";
         } else {
@@ -351,11 +317,9 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @XmlElement(name="availability-class")
-    public String getAvailClass() throws IOException, MarshalException, ValidationException {
+    public String getAvailClass() throws IOException {
         if (m_lastUpdated == null) {
             return "Indeterminate";
         } else {

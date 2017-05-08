@@ -69,8 +69,8 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
 
     /** {@inheritDoc} */
     @Override
-    public AckdConfiguration translateConfig(AckdConfiguration castorConfig) {
-        return castorConfig;
+    public AckdConfiguration translateConfig(AckdConfiguration config) {
+        return config;
     }
 
     /** {@inheritDoc} */

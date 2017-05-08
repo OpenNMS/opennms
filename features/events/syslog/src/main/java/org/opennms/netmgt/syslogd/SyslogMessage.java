@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -39,9 +40,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SyslogMessage {
+public class SyslogMessage implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogMessage.class);
-    private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
+    private static final ThreadLocal<DateFormat> m_rfc3164Format = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
@@ -68,25 +69,81 @@ public class SyslogMessage {
     private SyslogSeverity m_severity = SyslogSeverity.UNKNOWN;
     private Integer m_version;
     private Date m_date;
+
+    private Integer m_year;
+    private Integer m_month;
+    private Integer m_dayOfMonth;
+    private Integer m_hourOfDay;
+    private Integer m_minute;
+    private Integer m_second;
+    private Integer m_millisecond;
+    private ZoneId m_zoneId;
+
     private String m_hostname;
     private String m_processName;
-    private Integer m_processId;
+    private String m_processId;
     private String m_messageId;
     private String m_message;
-    private String m_matchedMessage;
-    private String m_fullText;
-    
+
     public SyslogMessage() {
     }
 
-    public SyslogMessage(final int facility, final int severity, final Date date, String hostname, final String processName, final Integer processId, final String message) {
-        this();
-
-        m_facility = SyslogFacility.getFacility(facility);
-        m_severity = SyslogSeverity.getSeverity(severity);
+    /**
+     * Copy constructor used by {@link #clone()}.
+     * 
+     * @param facility
+     * @param severity
+     * @param version
+     * @param date
+     * @param year
+     * @param month
+     * @param dayOfMonth
+     * @param hourOfDay
+     * @param minute
+     * @param second
+     * @param millisecond
+     * @param zoneId
+     * @param hostname
+     * @param processName
+     * @param processId
+     * @param messageId
+     * @param message
+     */
+    protected SyslogMessage(
+        final SyslogFacility facility,
+        final SyslogSeverity severity,
+        final Integer version,
+        final Date date,
+        final Integer year,
+        final Integer month,
+        final Integer dayOfMonth,
+        final Integer hourOfDay,
+        final Integer minute,
+        final Integer second,
+        final Integer millisecond,
+        final ZoneId zoneId,
+        final String hostname,
+        final String processName,
+        final String processId,
+        final String messageId,
+        final String message
+    ) {
+        m_facility = facility;
+        m_severity = severity;
+        m_version = version;
         m_date = date;
+        m_year = year;
+        m_month = month;
+        m_dayOfMonth = dayOfMonth;
+        m_hourOfDay = hourOfDay;
+        m_minute = minute;
+        m_second = second;
+        m_millisecond = millisecond;
+        m_zoneId = zoneId;
+        m_hostname = hostname;
         m_processName = processName;
         m_processId = processId;
+        m_messageId = messageId;
         m_message = message;
     }
 
@@ -103,7 +160,6 @@ public class SyslogMessage {
     }
 
     public void setFacility(final SyslogFacility facility) {
-        m_fullText = null;
         m_facility = facility;
     }
 
@@ -112,7 +168,6 @@ public class SyslogMessage {
     }
 
     public void setSeverity(final SyslogSeverity severity) {
-        m_fullText = null;
         m_severity = severity;
     }
 
@@ -121,17 +176,79 @@ public class SyslogMessage {
     }
 
     public void setVersion(final Integer version) {
-        m_fullText = null;
         m_version = version;
     }
 
     public Date getDate() {
         return m_date;
     }
-    
+
     public void setDate(final Date date) {
-        m_fullText = null;
         m_date = date;
+    }
+
+    public Integer getYear() {
+        return m_year;
+    }
+
+    public void setYear(Integer year) {
+        m_year = year;
+    }
+
+    public Integer getMonth() {
+        return m_month;
+    }
+
+    public void setMonth(Integer month) {
+        m_month = month;
+    }
+
+    public Integer getDayOfMonth() {
+        return m_dayOfMonth;
+    }
+
+    public void setDayOfMonth(Integer dayOfMonth) {
+        m_dayOfMonth = dayOfMonth;
+    }
+
+    public Integer getHourOfDay() {
+        return m_hourOfDay;
+    }
+
+    public void setHourOfDay(Integer hourOfDay) {
+        m_hourOfDay = hourOfDay;
+    }
+
+    public Integer getMinute() {
+        return m_minute;
+    }
+
+    public void setMinute(Integer minute) {
+        m_minute = minute;
+    }
+
+    public Integer getSecond() {
+        return m_second;
+    }
+
+    public void setSecond(Integer second) {
+        m_second = second;
+    }
+
+    public Integer getMillisecond() {
+        return m_millisecond;
+    }
+
+    public void setMillisecond(Integer millisecond) {
+        m_millisecond = millisecond;
+    }
+
+    public ZoneId getZoneId() {
+        return m_zoneId;
+    }
+
+    public void setZoneId(ZoneId zoneId) {
+        m_zoneId = zoneId;
     }
 
     public String getHostName() {
@@ -139,7 +256,6 @@ public class SyslogMessage {
     }
     
     public void setHostName(final String hostname) {
-        m_fullText = null;
         m_hostname = hostname;
     }
 
@@ -148,10 +264,14 @@ public class SyslogMessage {
             try {
                 return InetAddress.getByName(m_hostname);
             } catch (UnknownHostException e) {
-                LOG.debug("Unable to resolve hostname '" + m_hostname + "' in syslog message.", e);
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Unable to resolve hostname '{}' in syslog message", m_hostname, e);
+                } else {
+                    LOG.debug("Unable to resolve hostname '{}' in syslog message", m_hostname);
+                }
                 return null;
             } catch (final IllegalArgumentException e) {
-                LOG.debug("Illegal argument when trying to resolve hostname '" + m_hostname + "' in syslog message.", e);
+                LOG.debug("Illegal argument when trying to resolve hostname '{}' in syslog message", m_hostname, e);
                 return null;
             }
         } else {
@@ -164,16 +284,14 @@ public class SyslogMessage {
     }
     
     public void setProcessName(final String processName) {
-        m_fullText = null;
         m_processName = processName;
     }
 
-    public Integer getProcessId() {
+    public String getProcessId() {
         return m_processId;
     }
     
-    public void setProcessId(final Integer processId) {
-        m_fullText = null;
+    public void setProcessId(final String processId) {
         m_processId = processId;
     }
 
@@ -182,7 +300,6 @@ public class SyslogMessage {
     }
 
     public void setMessageID(final String messageId) {
-        m_fullText = null;
         m_messageId = messageId;
     }
 
@@ -191,29 +308,24 @@ public class SyslogMessage {
     }
 
     public void setMessage(final String message) {
-        m_fullText = null;
         m_message = message;
     }
 
-    public String getMatchedMessage() {
-        return m_matchedMessage == null? m_message : m_matchedMessage;
-    }
-
-    public void setMatchedMessage(final String matchedMessage) {
-        m_fullText = null;
-        m_matchedMessage = matchedMessage;
-    }
-
-    public int getPriorityField() {
+    private int getPriorityField() {
         if (m_severity != null && m_facility != null) {
             return m_severity.getPriority(m_facility);
         }
         return 0;
     }
 
-    public String getSyslogFormattedDate() {
+    public String getRfc3164FormattedDate() {
         if (m_date == null) return null;
-        return m_dateFormat.get().format(m_date);
+        return m_rfc3164Format.get().format(m_date);
+    }
+
+    public static String getRfc3164FormattedDate(Date date) {
+        if (date == null) return null;
+        return m_rfc3164Format.get().format(date);
     }
 
     public String getRfc3339FormattedDate() {
@@ -221,17 +333,16 @@ public class SyslogMessage {
         return m_rfc3339Format.get().format(m_date);
     }
 
-    public String getFullText() {
-        if (m_fullText == null) {
-            if (m_processId != null && m_processName != null) {
-                m_fullText = String.format("<%d>%s %s %s[%d]: %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
-            } else if (m_processName != null) {
-                m_fullText = String.format("<%d>%s %s %s: %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getProcessName(), getMessage());
-            } else {
-                m_fullText = String.format("<%d>%s %s %s", getPriorityField(), getSyslogFormattedDate(), getHostName(), getMessage());
+    public String asRfc3164Message() {
+        if (m_processName != null) {
+            if (m_processId != null) {
+                return String.format("<%d>%s %s %s[%s]: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getProcessId(), getMessage());
+            } else  {
+                return String.format("<%d>%s %s %s: %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getProcessName(), getMessage());
             }
+        } else {
+            return String.format("<%d>%s %s %s", getPriorityField(), getRfc3164FormattedDate(), getHostName(), getMessage());
         }
-        return m_fullText;
     }
 
     @Override
@@ -242,6 +353,14 @@ public class SyslogMessage {
             .append("severity", m_severity)
             .append("version", m_version)
             .append("date", m_date)
+            .append("year", m_year)
+            .append("month", m_month)
+            .append("dayOfMonth", m_dayOfMonth)
+            .append("hourOfDay", m_hourOfDay)
+            .append("minute", m_minute)
+            .append("second", m_second)
+            .append("millisecond", m_millisecond)
+            .append("zoneId", m_zoneId == null ? null : m_zoneId.getId())
             .append("hostname", m_hostname)
             .append("message ID", m_messageId)
             .append("process name", m_processName)
@@ -250,4 +369,34 @@ public class SyslogMessage {
             .toString();
     }
 
+    public void setParam(String key, String value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %s, setting arbitrary params is not supported yet", key, value));
+    }
+
+    public void setParam(String key, Integer value) {
+        throw new UnsupportedOperationException(String.format("Cannot process param %s -> %d, setting arbitrary params is not supported yet", key, value));
+    }
+
+    @Override
+    public SyslogMessage clone() {
+        return new SyslogMessage(
+            m_facility,
+            m_severity,
+            m_version,
+            m_date,
+            m_year,
+            m_month,
+            m_dayOfMonth,
+            m_hourOfDay,
+            m_minute,
+            m_second,
+            m_millisecond,
+            m_zoneId,
+            m_hostname,
+            m_processName,
+            m_processId,
+            m_messageId,
+            m_message
+        );
+    }
 }

@@ -167,6 +167,28 @@ function parseContentRange(contentRange) {
 	};
 }
 
+function normalizeOffset(offset, maxOffset, limit) {
+	var newOffset = offset;
+
+	// Offset of the last page
+	var lastPageOffset;
+	if (maxOffset < 0) {
+		newOffset = 0;
+		lastPageOffset = 0;
+	} else {
+		lastPageOffset = Math.floor(maxOffset / limit) * limit; 
+	}
+
+	// Bounds checking
+	newOffset = ((newOffset < 0) ? 0 : newOffset);
+	newOffset = ((newOffset > lastPageOffset) ? lastPageOffset : newOffset);
+
+	// Make sure that offset is a multiple of limit
+	newOffset = Math.floor(newOffset / limit) * limit;
+
+	return newOffset;
+}
+
 
 (function() {
 	'use strict';
@@ -409,17 +431,19 @@ function parseContentRange(contentRange) {
 			order: 'asc'
 		}
 
+		var initialLimit = typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit);
+
 		// Restore any query parameters that you can from the 
 		// query string, blank out the rest
 		$scope.query = {
-			searchParam: typeof $location.search()._s === 'undefined' ? $scope.defaults._s : $location.search()._s,
-			searchClauses: typeof $location.search()._s === 'undefined' ? $scope.defaults.searchClauses : fromFiql($location.search()._s),
-			limit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
-			newLimit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
-			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.defaults.offset),
-
 			lastOffset: 0,
 			maxOffset: 0,
+
+			searchParam: typeof $location.search()._s === 'undefined' ? $scope.defaults._s : $location.search()._s,
+			searchClauses: typeof $location.search()._s === 'undefined' ? $scope.defaults.searchClauses : fromFiql($location.search()._s),
+			limit: initialLimit,
+			newLimit: initialLimit,
+			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? normalizeOffset(Number($location.search().offset), Number.MAX_VALUE, initialLimit) : $scope.defaults.offset),
 
 			// TODO: Validate that the orderBy is in a list of supported properties
 			orderBy: typeof $location.search().orderBy === 'undefined' ? $scope.defaults.orderBy : $location.search().orderBy,
@@ -585,18 +609,7 @@ function parseContentRange(contentRange) {
 		}
 
 		$scope.setOffset = function(offset) {
-			// Offset of the last page
-			var lastPageOffset;
-			if ($scope.query.maxOffset < 0) { 
-				offset = 0;
-				lastPageOffset = 0; 
-			} else {
-				lastPageOffset = Math.floor($scope.query.maxOffset / $scope.query.limit) * $scope.query.limit; 
-			}
-
-			// Bounds checking
-			offset = ((offset < 0) ? 0 : offset);
-			offset = ((offset > lastPageOffset) ? lastPageOffset : offset);
+			offset = normalizeOffset(offset, $scope.query.maxOffset, $scope.query.limit);
 
 			if ($scope.query.offset !== offset) {
 				$scope.query.offset = offset;
@@ -612,7 +625,7 @@ function parseContentRange(contentRange) {
 			}
 			if ($scope.query.limit !== limit) {
 				$scope.query.limit = limit;
-				$scope.query.offset = Math.floor($scope.query.offset / limit) * limit;
+				$scope.query.offset = normalizeOffset($scope.query.offset, $scope.query.maxOffset, $scope.query.limit);
 				$scope.refresh();
 			}
 		}

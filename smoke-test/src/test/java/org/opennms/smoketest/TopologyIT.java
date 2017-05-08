@@ -37,6 +37,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
@@ -193,10 +194,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
         }
-
-        public PingWindow ping() {
-            return new PingWindow(testCase, contextMenu()).open();
-        }
     }
 
     public static class PingWindow {
@@ -249,6 +246,18 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                     testCase.setImplicitWait();
                 }
             }
+        }
+
+        public void addToFocus() {
+            click("Add To Focus");
+        }
+
+        public void setAsFocus() {
+            click("Set As Focal Point");
+        }
+
+        public PingWindow ping() {
+            return new PingWindow(testCase, this).open();
         }
     }
 
@@ -387,6 +396,20 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait();
             }
             return verticesInFocus;
+        }
+
+        public List<VisibleVertex> getNotFocusedVertices() {
+            final List<FocusedVertex> focusedVertices = getFocusedVertices();
+            final List<VisibleVertex> notFocusedVertices = getVisibleVertices()
+                    .stream()
+                    // Remove all vertices from "visible vertices list" if it is already in focus
+                    .filter(visibleVertex ->
+                        !focusedVertices.stream()
+                                .filter(focusedVertex -> focusedVertex.getLabel().equals(visibleVertex.getLabel()))
+                                .findAny()
+                                .isPresent())
+                    .collect(Collectors.toList());
+            return notFocusedVertices;
         }
 
         public List<VisibleVertex> getVisibleVertices() {
@@ -558,6 +581,18 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public SaveLayoutButton getSaveLayoutButton() {
             return new SaveLayoutButton(testCase);
         }
+
+        public boolean isSimulationModeEnabled() {
+            try {
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.findElementByXpath("//*[@id='info-panel-component']//div[text() = 'Simulation Mode Enabled']");
+                return true;
+            } catch (org.openqa.selenium.NoSuchElementException e) {
+                return false;
+            } finally {
+                testCase.setImplicitWait();
+            }
+        }
     }
 
     public static class SaveLayoutButton {
@@ -672,10 +707,27 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         topologyUiPage.clearFocus();
         topologyUiPage.refreshNow();
         topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
-        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").ping();
+        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").contextMenu().ping();
         pingWindow.close();
     }
 
+    @Test
+	public void verifyCollapsibleCriteriaPersistence() {
+        // Search for category and select
+        topologyUiPage.search("Routers").selectItemThatContains("Routers");
+        List<FocusedVertex> focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+        
+        logout();
+        login();
+
+        topologyUiPage.open();
+        focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+    }
+    
     /**
      * This method is used to block and wait for any transitions to occur.
      * This should be used after adding or removing vertices from focus and/or

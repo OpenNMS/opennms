@@ -41,5 +41,13 @@
       <groupId>org.opennms.features.poller</groupId>
       <artifactId>org.opennms.features.poller.api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+    </dependency>
   </dependencies>
 </project>

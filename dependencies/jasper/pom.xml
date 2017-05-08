@@ -17,16 +17,8 @@
       <version>${jasperreportsVersion}</version>
       <exclusions>
         <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+          <groupId>org.codehaus.castor</groupId>
+          <artifactId>castor-xml</artifactId>
         </exclusion>
         <exclusion>
           <groupId>eclipse</groupId>
@@ -39,6 +31,30 @@
         <exclusion>
           <groupId>com.lowagie</groupId>
           <artifactId>itext</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- if we can't get rid of castor completely, at least we can update it to the latest version -->
+    <dependency>
+      <groupId>org.codehaus.castor</groupId>
+      <artifactId>castor-xml</artifactId>
+      <version>1.4.1</version>
+      <exclusions>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -154,34 +154,52 @@ image::service-assurance/03_polling-package.png[]
 [[ga-pollerd-packages-test-service-manually]]
 ==== Test Services on manually
 
-For troubleshooting it is possible to run a test on the _Command Line Interface_.
-
-[source, shell]
+For troubleshooting it is possible to run a test via the _Karaf Shell_:
+[source]
 ----
-cd $OPENNMS_HOME
-./poller-test
+ssh -p 8101 admin@localhost
+----
 
--c,--class <arg>       Monitor Class
--i,--ipaddress <arg>   IP Address to test [required]
--P,--package <arg>     Poller Package
--p,--param <arg>       Service parameter ~ key=value
--s,--service <arg>     Service name [required]
+Once in the shell, you can print show the commands help as follows:
+[source]
+----
+opennms> poller:test --help
+DESCRIPTION
+        poller:test
+
+        Execute a poller test from the command line using current settings from poller-configuration.xml
+
+SYNTAX
+        poller:test [options]
+
+OPTIONS
+        -s, --service
+                Service name
+        -p, --param
+                Service parameter ~ key=value
+        -i, --ipaddress
+                IP Address to test
+        -P, --package
+                Poller Package
+        -c, --class
+                Monitor Class
+        --help
+                Display this help message
 ----
 
 The following example runs the _ICMP_ monitor on a specific _IP Interface_.
 
 .Run ICMP monitor configuration defined in specific Polling Package
-[source, shell]
+[source]
 ----
-cd $OPENNMS_HOME
-./poller-test -i 10.23.42.1 -s ICMP -P example1
+opennms> poller:test -i 10.23.42.1 -s ICMP -P example1
 ----
 
 The output is verbose which allows debugging of _Monitor_ configurations.
 Important output lines are shown as the following:
 
 .Important output testing a service on the CLI
-[source, shell]
+[source]
 ----
 Checking service ICMP on IP 10.23.42.1 <1>
 Package: example1 <2>

@@ -89,7 +89,7 @@ public class MultipleImportIT extends ProvisioningITCase {
 
     @Test
     @Ignore
-    @JUnitSnmpAgent(host="0.0.0.0", resource="classpath:snmpwalk-empty.properties")
+    @JUnitSnmpAgent(host="0.0.0.0", resource="classpath:/snmpwalk-empty.properties")
     public void testScanTwice() throws Exception {
         final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI };
         final CountDownLatch eventReceived = anticipateEvents(1, ueis);

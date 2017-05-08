@@ -23,7 +23,7 @@
 							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>src/main/resources/SHSIMPINC.wsdl</wsdl>
-									<wsdlLocation>classpath:SHSIMPINC.wsdl</wsdlLocation>
+									<wsdlLocation>classpath:/SHSIMPINC.wsdl</wsdlLocation>
 									<frontEnd>jaxws21</frontEnd>
 									<faultSerialVersionUID>1</faultSerialVersionUID>
 								</wsdlOption>
@@ -68,6 +68,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>org.opennms.core</groupId>
+			<artifactId>org.opennms.core.lib</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.ticketing</groupId>
 			<artifactId>org.opennms.features.ticketing.api</artifactId>

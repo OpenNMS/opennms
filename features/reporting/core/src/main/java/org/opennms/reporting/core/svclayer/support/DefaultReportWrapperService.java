@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.ValidationException;
 import org.apache.commons.io.IOUtils;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
@@ -58,12 +57,6 @@ import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>DefaultReportWrapperService class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class DefaultReportWrapperService implements ReportWrapperService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultReportWrapperService.class);
 
@@ -97,10 +90,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                     if (emailAddress != null && !emailAddress.isEmpty()) {
                         options.setMailTo(emailAddress);
                     }
-                } catch (final ValidationException e) {
-                    LOG.error("Validation exception trying to set destination email address", e);
-                } catch (final NullPointerException e) { // See NMS-5111 for more details.
-                    LOG.warn("The user {} does not have any email configured.", userId);
                 } catch (final Exception e) {
                     LOG.error("An error occurred while attempting to determine and set the destination email address for user {}", userId, e);
                 }
@@ -198,11 +187,11 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         });
     }
 
-    private void logError(final String reportId, final Exception exception) {
+    private static void logError(final String reportId, final Exception exception) {
         LOG.error("failed to run or render report: {}", reportId, exception);
     }
 
-    private void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
+    private static void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
         ByteArrayInputStream inputStream = null;
         try {
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());

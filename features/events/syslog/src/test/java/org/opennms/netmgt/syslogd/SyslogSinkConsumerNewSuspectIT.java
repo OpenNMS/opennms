@@ -39,8 +39,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,7 +134,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         m_cache.clear();
     }
 
-    private SyslogdConfigFactory loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
+    private SyslogdConfigFactory loadSyslogConfiguration(final String configuration) throws IOException {
         try (InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration)) {
             return new SyslogdConfigFactory(stream);
         }
@@ -153,7 +151,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         // One of the interfaces on node1
         final InetAddress addr = InetAddressUtils.addr("192.168.1.3");
 
-        final byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + InetAddressUtils.str(addr) + " - - - - BOMfoo0: load test 0 on tty1\0").getBytes();
+        final byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + InetAddressUtils.str(addr) + " - - - - \uFEFFfoo0: load test 0 on tty1\0").getBytes();
         final DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, addr, SyslogClient.PORT);
 
         // Create a new SyslogConnection and call it to create the processed event
@@ -205,7 +203,7 @@ public class SyslogSinkConsumerNewSuspectIT {
         // One of the interfaces on node1
         final InetAddress addr = InetAddressUtils.addr("192.168.1.3");
 
-        final byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + InetAddressUtils.str(addr) + " - - - - BOMfoo0: load test 0 on tty1\0").getBytes();
+        final byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + InetAddressUtils.str(addr) + " - - - - \uFEFFfoo0: load test 0 on tty1\0").getBytes();
         final DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, addr, SyslogClient.PORT);
 
         // Sync the cache with the database

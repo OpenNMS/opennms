@@ -91,9 +91,12 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//div/button[text()='OK']").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
 
+        // trigger dropdown menu
+        final String moreActionsButton = "button.btn[uib-tooltip='More actions for requisition "+REQUISITION_NAME+"']";
+        clickElement(By.cssSelector(moreActionsButton));
+
         // Edit the foreign source
-        final String editForeignSourceButton = "button.btn[uib-tooltip='Edit detectors and policies of the "+REQUISITION_NAME+" Requisition']";
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(editForeignSourceButton))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("editForeignSource-"+REQUISITION_NAME))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("ul.nav-tabs > li > a.nav-link")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
@@ -197,7 +200,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
 
         // Synchronize the requisition
         clickId("synchronize", false);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button.btn.btn-success")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button.btn.btn-primary")));
         WebElement modal = findModal();
         modal.findElement(By.xpath("//div/button[text()='Yes']")).click();
         waitForModalClose();

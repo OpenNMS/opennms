@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import com.google.common.collect.Sets;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,11 +40,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -66,11 +71,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
@@ -106,6 +113,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlCollectionHandler.class);
+
+    private static final Set<String> PROPERTY_BLACKLIST = Sets.newHashSet("SERVICE", "collection", "xml-collection", "handler-class");
 
     /** The Service Name associated with this Collection Handler. */
     private String m_serviceName;
@@ -189,14 +198,18 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         XmlCollectionSet collectionSet = new XmlCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
         collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
+
+        // Create a map of parameters from the service to use in URLs, etc.
+        Map<String, String> params = filterParameters(parameters);
+
         DateTime startTime = new DateTime();
         try {
             LOG.debug("collect: looping sources for collection {}", collection.getName());
             for (XmlSource source : collection.getXmlSources()) {
                 LOG.debug("collect: starting source url '{}' collection", source.getUrl());
-                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
+                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep(), params);
                 LOG.debug("collect: parsed url for source url '{}'", urlStr);
-                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
+                Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep(), params);
                 LOG.debug("collect: parsed request for source url '{}' : {}", urlStr, request);
                 fillCollectionSet(urlStr, request, agent, collectionSet, source);
                 LOG.debug("collect: finished source url '{}' collection with {} resources", urlStr, collectionSet.getCollectionResources().size());
@@ -372,13 +385,14 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param unformattedUrl the unformatted URL
      * @param agent the collection agent
      * @param collectionStep the collection step (in seconds)
+     * @param parameters the service parameters
      * @return the string
      * 
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
+    protected String parseUrl(final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException {
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
-        return parseString("URL", unformattedUrl, node, agent.getHostAddress(), collectionStep);
+        return parseString("URL", unformattedUrl, node, agent.getHostAddress(), collectionStep, parameters);
     }
 
     /**
@@ -387,24 +401,25 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param unformattedRequest the unformatted request
      * @param agent the agent
      * @param collectionStep the collection step
+     * @param parameters the service parameters
      * @return the request
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected Request parseRequest(final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
+    protected Request parseRequest(final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException {
         if (unformattedRequest == null)
             return null;
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
         final Request request = new Request();
         request.setMethod(unformattedRequest.getMethod());
         for (Header header : unformattedRequest.getHeaders()) {
-            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep));
+            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep, parameters));
         }
         for (Parameter param : unformattedRequest.getParameters()) {
-            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress(), collectionStep));
+            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress(), collectionStep, parameters));
         }
         final Content cnt = unformattedRequest.getContent();
         if (cnt != null)
-            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress(), collectionStep)));
+            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress(), collectionStep, parameters)));
         return request;
     }
 
@@ -427,10 +442,11 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param node the node
      * @param ipAddress the IP address
      * @param collectionStep the collection step
+     * @param parameters the service parameters
      * @return the string
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep) throws IllegalArgumentException {
+    protected String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException {
         if (unformattedString == null || node == null)
             return null;
         String formattedString = unformattedString.replaceAll("[{](?i)(ipAddr|ipAddress)[}]", ipAddress);
@@ -442,6 +458,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             formattedString = formattedString.replaceAll("[{](?i)foreignId[}]", node.getForeignId());
         if (node.getForeignSource() != null)
             formattedString = formattedString.replaceAll("[{](?i)foreignSource[}]", node.getForeignSource());
+        for(Map.Entry<String, String> entry : parameters.entrySet()) {
+            formattedString = formattedString.replaceAll("[{]parameter:"+entry.getKey()+"[}]", entry.getValue());
+        }
         if (node.getAssetRecord() != null) {
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {
@@ -450,7 +469,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                     String objStr = obj.toString();
                     try {
                         //NMS-7381 - if pulling from asset info you'd expect to not have to encode reserved words yourself.  
-                        objStr = URLEncoder.encode(obj.toString(), "UTF-8");
+                        objStr = URLEncoder.encode(obj.toString(), StandardCharsets.UTF_8.name());
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -502,15 +521,15 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         StringWriter writer = new StringWriter();
-        IOUtils.copy(is, writer, "UTF-8");
+        IOUtils.copy(is, writer, StandardCharsets.UTF_8);
         String contents = writer.toString();
-        Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+        Document doc = builder.parse(IOUtils.toInputStream(contents, StandardCharsets.UTF_8));
         // Ugly hack to deal with DOM & XPath 1.0's battle royale 
         // over handling namespaces without a prefix. 
         if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
             factory.setNamespaceAware(false);
             builder = factory.newDocumentBuilder();
-            doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            doc = builder.parse(IOUtils.toInputStream(contents, StandardCharsets.UTF_8));
         }
         return doc;
     }
@@ -586,4 +605,14 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         return new XmlResourceType(agent, rt);
     }
 
+    /**
+     * Filter out blacklisted key/values out from an input Map.
+     * @param input the original parameters
+     * @return a new map containing the filtered parameters
+     */
+    protected Map<String, String> filterParameters(Map<String, Object> input) {
+        return input.entrySet().stream()
+            .filter(e -> !PROPERTY_BLACKLIST.contains(e.getKey()))
+            .collect(Collectors.toMap(e -> e.getKey(), e -> ParameterMap.getKeyedString(input, e.getKey(), "")));
+    }
 }

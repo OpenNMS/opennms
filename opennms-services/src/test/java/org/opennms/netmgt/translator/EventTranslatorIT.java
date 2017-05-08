@@ -34,16 +34,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +101,7 @@ public class EventTranslatorIT {
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 
-        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes("UTF-8"));
+        InputStream rdr = new ByteArrayInputStream(m_passiveStatusConfiguration.getBytes(StandardCharsets.UTF_8));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         
@@ -225,7 +224,7 @@ public class EventTranslatorIT {
     }
     
     @Test
-    public void testTranslateEvent() throws MarshalException, ValidationException {
+    public void testTranslateEvent() {
     	
    		// test non matching uei match fails
         Event pse = createTestEvent("someOtherUei", "Router", "192.168.1.1", "ICMP", "Down");
@@ -266,8 +265,8 @@ public class EventTranslatorIT {
     }
     
     @Test
-    public void testTranslateLinkDown() throws MarshalException, ValidationException, SQLException, UnsupportedEncodingException {
-        InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation().getBytes("UTF-8"));
+    public void testTranslateLinkDown() throws SQLException, IOException {
+        InputStream rdr = new ByteArrayInputStream(getLinkDownTranslation().getBytes(StandardCharsets.UTF_8));
         m_config = new EventTranslatorConfigFactory(rdr, m_db);
         EventTranslatorConfigFactory.setInstance(m_config);
         

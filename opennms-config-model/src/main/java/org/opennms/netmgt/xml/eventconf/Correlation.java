@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -44,13 +41,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * The event correlation information
@@ -150,28 +141,8 @@ public class Correlation implements Serializable {
         return m_state == null? "off" : m_state; // XSD default is off
     }
 
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
     public Iterator<String> iterateCuei() {
         return m_cueis.iterator();
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     public void removeAllCuei() {
@@ -226,14 +197,6 @@ public class Correlation implements Serializable {
 
     public void setState(final String state) {
         m_state = state.intern();
-    }
-
-    public static Correlation unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Correlation) Unmarshaller.unmarshal(Correlation.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 	@Override

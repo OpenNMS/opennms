@@ -35,8 +35,6 @@ import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -123,12 +121,6 @@ public class VmwareMonitor extends AbstractServiceMonitor {
 
             try {
                 vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
-            } catch (MarshalException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            } catch (ValidationException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
             } catch (IOException e) {
                 logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
                 return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");

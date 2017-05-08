@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,12 +33,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 
 import org.junit.Before;
@@ -146,7 +146,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void canRetrieveMeasurementsAsXmlOrJson() throws Exception {
         final String url = String.format("/measurements/%s/%s",
-                URLEncoder.encode("node[1].interfaceSnmp[eth0-04013f75f101]", Charsets.UTF_8.name()),
+                URLEncoder.encode("node[1].interfaceSnmp[eth0-04013f75f101]", StandardCharsets.UTF_8.name()),
                 "ifInOctets");
 
         final Map<String, String> parameters = Maps.newHashMap();

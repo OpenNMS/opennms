@@ -7,61 +7,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
-  <name>OpenNMS :: Model :: Config :: Castor</name>
+  <name>OpenNMS :: Model :: Config</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
-      <!-- don't generate eventconf.xsd for now, we have some issues with validation...
-      <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/netmgt/xml/eventconf/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/eventconf</namespace>
-              <file>eventconf.xsd</file>
-            </schema>
-          </schemas>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/castor</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <extensions>true</extensions>
@@ -154,11 +103,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>

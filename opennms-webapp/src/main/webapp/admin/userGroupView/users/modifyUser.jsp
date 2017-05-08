@@ -286,7 +286,6 @@
         List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
         Collections.sort(availableRoles);
         List<String> configuredRoles = new ArrayList<String>();
-        try {
             User usertemp = userFactory.getUser(userid);
             if (usertemp != null) {
                     email = userFactory.getEmail(userid);
@@ -301,26 +300,26 @@
                     homePhone = userFactory.getHomePhone(userid);
                     microblog = userFactory.getMicroblogName(userid);
             } else {
-                    Contact[] contact = user.getContact();
-                    for (int i = 0; i < contact.length; i++) {
-                            if (contact[i].getType().equals("email")) {
-                                    email = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("pagerEmail")) {
-                                    pagerEmail = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("xmppAddress")) {
-                                    xmppAddress = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("numericPage")) {
-                                    numericPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("textPage")) {
-                                    textPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("workPhone")) {
-                                    workPhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("mobilePhone")) {
-                                    mobilePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("homePhone")) {
-                                    homePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("microblog")) {
-                            		microblog = contact[i].getInfo();
+                    List<Contact> contacts = user.getContacts();
+                    for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).getType().equals("email")) {
+                                    email = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("pagerEmail")) {
+                                    pagerEmail = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("xmppAddress")) {
+                                    xmppAddress = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("numericPage")) {
+                                    numericPage = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("textPage")) {
+                                    textPage = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("workPhone")) {
+                                    workPhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("mobilePhone")) {
+                                    mobilePhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("homePhone")) {
+                                    homePhone = contacts.get(i).getInfo();
+                            } else if (contacts.get(i).getType().equals("microblog")) {
+                            		microblog = contacts.get(i).getInfo();
                             }
                     }
             }
@@ -328,17 +327,12 @@
             comments = user.getUserComments();
             tuiPin = user.getTuiPin();
 
-            configuredRoles = user.getRoleCollection();
+            configuredRoles = user.getRoles();
             for (String role : configuredRoles) {
                 if (availableRoles.contains(role)) {
                     availableRoles.remove(role);
                 }
             }
-        } catch (org.exolab.castor.xml.MarshalException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        } catch (org.exolab.castor.xml.ValidationException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        }
 
         %>
 
@@ -515,9 +509,9 @@
 </div> <!-- row -->
 
 <%
-Collection<String> dutySchedules = user.getDutyScheduleCollection();
+Collection<String> dutySchedules = user.getDutySchedules();
 %>
-<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
+<input type="hidden" name="dutySchedules" value="<%=user.getDutySchedules().size()%>"/>
 
 <div class="row">
   <div class="col-md-12">

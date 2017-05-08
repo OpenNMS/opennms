@@ -41,6 +41,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,9 +88,9 @@ public abstract class JaxbUtils {
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
 
-    private static final class LoggingValidationEventHandler implements ValidationEventHandler {
+    protected static final class LoggingValidationEventHandler implements ValidationEventHandler {
 
-        private LoggingValidationEventHandler() {
+        protected LoggingValidationEventHandler() {
         }
 
         @Override
@@ -125,7 +126,7 @@ public abstract class JaxbUtils {
         String xmlString = marshal(obj);
 
         if (xmlString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             fileWriter.write(xmlString);
             fileWriter.flush();
             fileWriter.close();
@@ -138,7 +139,7 @@ public abstract class JaxbUtils {
         final Class<?> existing = m_elementClasses.get(elementName);
         if (existing != null) return existing;
 
-        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(true);
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(XmlRootElement.class));
         for (final BeanDefinition bd : scanner.findCandidateComponents("org.opennms")) {
             final String className = bd.getBeanClassName();
@@ -311,7 +312,7 @@ public abstract class JaxbUtils {
                 context = jaxbContext;
             }
             final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
@@ -487,5 +488,9 @@ public abstract class JaxbUtils {
             LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz, e);
             return null;
         }
+    }
+
+    public static <T> T duplicateObject(T obj, final Class<T> clazz) {
+        return unmarshal(clazz, marshal(obj));
     }
 }

@@ -163,7 +163,6 @@
             <feature>batik</feature>
             <feature>c3p0</feature>
             <feature>hikari-cp</feature>
-            <feature>castor</feature>
             <feature>commons-beanutils</feature>
             <feature>commons-cli</feature>
             <feature>commons-codec</feature>
@@ -256,6 +255,7 @@
             <feature>dashlet-surveillance</feature>
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
+            <feature>dashlet-grafana</feature>
             <feature>nrtg</feature>
             <feature>opennms-amqp-event-forwarder</feature>
             <feature>opennms-amqp-event-receiver</feature>

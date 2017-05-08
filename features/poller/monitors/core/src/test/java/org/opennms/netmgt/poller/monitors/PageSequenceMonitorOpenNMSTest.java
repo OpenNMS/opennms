@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Seth
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@ContextConfiguration(locations="classpath:/META-INF/opennms/emptyContext.xml")
 public class PageSequenceMonitorOpenNMSTest {
 
     AbstractServiceMonitor m_monitor;
@@ -97,7 +98,7 @@ public class PageSequenceMonitorOpenNMSTest {
         LineNumberReader in = new LineNumberReader(
             new InputStreamReader(
                 Thread.currentThread().getContextClassLoader().getResourceAsStream("opennmsPageSequence.xml"),
-                "UTF-8"
+                StandardCharsets.UTF_8
             )
         );
         String line;

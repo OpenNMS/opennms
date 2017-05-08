@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +51,7 @@ public class CustomSyslogParser extends SyslogParser {
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
 
-    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
+    public CustomSyslogParser(final SyslogdConfig config, final ByteBuffer text) throws SyslogParserException {
         super(config, text);
 
         final String forwardingRegexp = config.getForwardingRegexp();
@@ -62,12 +64,12 @@ public class CustomSyslogParser extends SyslogParser {
     }
 
     @Override
-    public SyslogMessage parse() throws SyslogParserException {
+    protected SyslogMessage parse() throws SyslogParserException {
         LOG.debug("Message parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
 
-        String message = getText();
+        String message = SyslogParser.fromByteBuffer(getText());
 
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');
@@ -152,7 +154,6 @@ public class CustomSyslogParser extends SyslogParser {
         if (m.matches()) {
 
             final String matchedMessage = m.group(m_matchingGroupMessage);
-            syslogMessage.setMatchedMessage(matchedMessage);
 
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
@@ -173,25 +174,27 @@ public class CustomSyslogParser extends SyslogParser {
         final int colonIdx = message.indexOf(':');
         final int spaceIdx = message.indexOf(' ');
 
-        int processId = 0;
-        String processName = "";
-        String processIdStr = "";
+        String processId = null;
+        String processName = null;
 
         // If statement has been reversed in order to make the decision faster
         // rather than always calculating lbIdx < (rbIdx - 1) which might fail
 
-        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
+        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, lbIdx);
+            processId = message.substring(lbIdx + 1, rbIdx);
+            message = message.substring(colonIdx + 2);
+        } else if (colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
-        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
-            processName = message.substring(0, lbIdx);
-            processIdStr = message.substring(lbIdx + 1, rbIdx);
-            message = message.substring(colonIdx + 2);
-            processId = parseInt(processIdStr, "Bad process id '{}'");
         }
 
-        syslogMessage.setProcessId(processId);
-        syslogMessage.setProcessName(processName);
+        if (processId != null) {
+            syslogMessage.setProcessId(processId);
+        }
+        if (processName != null) {
+            syslogMessage.setProcessName(processName);
+        }
         syslogMessage.setMessage(message.trim());
 
         LOG.debug("Message parse end");

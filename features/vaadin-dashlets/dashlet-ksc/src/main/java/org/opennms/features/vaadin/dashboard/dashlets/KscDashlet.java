@@ -33,6 +33,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -132,7 +133,7 @@ public class KscDashlet extends AbstractDashlet {
 
                     Report kscReport = kscPerformanceReportFactory.getReportByIndex(kscReportId);
 
-                    columns = kscReport.getGraphs_per_line();
+                    columns = kscReport.getGraphsPerLine();
 
                     if (columns == 0) {
                         columns = 1;
@@ -201,10 +202,10 @@ public class KscDashlet extends AbstractDashlet {
 
                                 labelTitle.addStyleName("text");
 
-                                Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                                Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + endTime.getTime().toString());
+                                Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -336,10 +337,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + beginTime.getTime().toString());
+                        Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + endTime.getTime().toString());
+                        Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));

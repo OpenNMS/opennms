@@ -16,7 +16,6 @@
     <module>atomikos</module>
     <module>camel</module>
     <module>camel-test</module>
-    <module>castor</module>
     <module>cxf</module>
     <module>dnsjava</module>
     <module>drools</module>

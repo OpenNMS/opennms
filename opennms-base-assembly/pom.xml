@@ -370,6 +370,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.tcp</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>owasp-encoder-dependencies</artifactId>
       <type>pom</type>
@@ -722,10 +727,6 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
     </dependency>
     <!-- dependencies for XML/JSON collector -->
     <dependency>

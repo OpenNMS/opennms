@@ -29,8 +29,6 @@
 package org.opennms.netmgt.provision.service.dns;
 
 import org.junit.Assert;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -212,7 +210,7 @@ public class DnsRequisitionUrlConnectionIT {
                     @DNSEntry(hostname="www", address="72.14.204.99")
             })
     })
-    public void dwoUrlAsResource() throws IOException, MarshalException, ValidationException, JAXBException {
+    public void dwoUrlAsResource() throws IOException, JAXBException {
         Resource resource = new UrlResource(TEST_URL);
         
         Assert.assertEquals(TEST_URL, resource.getURL().toString());
@@ -236,7 +234,7 @@ public class DnsRequisitionUrlConnectionIT {
                     @DNSEntry(hostname="monkey", address="72.14.204.99")
             })
     })
-    public void dwoUrlAsResourceUsingMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+    public void dwoUrlAsResourceUsingMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=[Ww]ww.*";
         Resource resource = new UrlResource(urlString);
 
@@ -261,7 +259,7 @@ public class DnsRequisitionUrlConnectionIT {
                     @DNSEntry(hostname="monkey", address="72.14.204.99")
             })
     })
-    public void dwoUrlAsResourceUsingNonMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+    public void dwoUrlAsResourceUsingNonMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=Local.*";
         Resource resource = new UrlResource(urlString);
         
@@ -285,7 +283,7 @@ public class DnsRequisitionUrlConnectionIT {
                     @DNSEntry(hostname="www", address="72.14.204.99")
             })
     })
-    public void dwoUrlAsResourceUsingComplexMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
+    public void dwoUrlAsResourceUsingComplexMatchingExpression() throws IOException, JAXBException {
         String urlString = "dns://localhost:9153/example.com/?expression=(%3Fi)^WWW.EXAM.*";
         Resource resource = new UrlResource(urlString);
         

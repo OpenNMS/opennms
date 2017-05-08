@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 
@@ -77,7 +78,7 @@ public class InvalidConfigurationWindow extends Window {
 
     private String getErrorLabel(NodeMapConfiguration nodeMapConfiguration) {
         try {
-            String errorTemplate = IOUtils.toString(getClass().getResourceAsStream("/error-configuration.txt"), "UTF-8");
+            String errorTemplate = IOUtils.toString(getClass().getResourceAsStream("/error-configuration.txt"), StandardCharsets.UTF_8);
             String problems = "";
             if (Strings.isNullOrEmpty(nodeMapConfiguration.getTileServerUrl())) {
                 problems = "<li>No <i>gwt.openlayers.url</i> property defined</li>";

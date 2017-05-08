@@ -23,7 +23,7 @@
 							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>src/main/resources/GenericTicketConnectorSOAP.wsdl</wsdl>
-									<wsdlLocation>classpath:GenericTicketConnectorSOAP.wsdl</wsdlLocation>
+									<wsdlLocation>classpath:/GenericTicketConnectorSOAP.wsdl</wsdlLocation>
 									<frontEnd>jaxws21</frontEnd>
 									<faultSerialVersionUID>1</faultSerialVersionUID>
 									<bindingFiles>

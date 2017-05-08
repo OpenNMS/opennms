@@ -217,7 +217,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.editForeignSource = function(foreignSource) {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + foreignSource + '/foreignSource';
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent(foreignSource) + '/foreignSource';
     };
 
     /**
@@ -229,7 +229,7 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.edit = function(foreignSource) {
-      $window.location.href = Configuration.baseHref + '#/requisitions/' + foreignSource;
+      $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent(foreignSource);
     };
 
     /**
@@ -365,14 +365,14 @@
         buttons: {
           reloadAll: {
             label: 'Reload Everything',
-            className: 'btn-danger',
+            className: 'btn-primary',
             callback: function() {
               $scope.refreshRequisitions();
             }
           },
           reloadDeployed: {
             label: 'Reload Deployed Data',
-            className: 'btn-success',
+            className: 'btn-default',
             callback: function() {
               $scope.refreshDeployedStats();
             }

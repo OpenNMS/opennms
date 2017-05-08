@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -75,8 +75,8 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     @Qualifier("queuingservice")
@@ -113,17 +113,12 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         return "classpath:/OSGI-INF/blueprint/blueprint-ipc-client.xml";
     }
 
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
-    }
-
     @Test(timeout=60000)
     public void canProduceAndConsumerMessages() throws Exception {
         HeartbeatModule module = new HeartbeatModule();
 
         AtomicInteger heartbeatCount = new AtomicInteger();
-        consumerManager.registerConsumer(new MessageConsumer<Heartbeat, Heartbeat>() {
+        MessageConsumer<Heartbeat, Heartbeat> consumer = new MessageConsumer<Heartbeat, Heartbeat>() {
             @Override
             public SinkModule<Heartbeat, Heartbeat> getModule() {
                 return module;
@@ -133,7 +128,8 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
             public void handleMessage(Heartbeat heartbeat) {
                 heartbeatCount.incrementAndGet();
             }
-        });
+        };
+        consumerManager.registerConsumer(consumer);
 
         SyncDispatcher<Heartbeat> localDispatcher = localMessageDispatcherFactory.createSyncDispatcher(module);
         localDispatcher.send(new Heartbeat());
@@ -143,6 +139,8 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         SyncDispatcher<Heartbeat> remoteDispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(module);
         remoteDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(2));
+
+        consumerManager.unregisterConsumer(consumer);
     }
 
     @Test(timeout=60000)
@@ -178,6 +176,9 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         assertEquals(0, consumer.getNumExtraThreadsWaiting());
 
         generator.stop();
-    }
 
+        // This doesn't work because the consumer seems to leave NUM_CONSUMER_THREADS
+        // messages in-flight if it's unregistered before the context shuts down
+        // consumerManager.unregisterConsumer(consumer);
+    }
 }

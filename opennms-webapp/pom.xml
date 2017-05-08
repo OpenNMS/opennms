@@ -11,8 +11,8 @@
   <name>OpenNMS Web Application</name>
   <properties>
     <frontendPluginVersion>1.0</frontendPluginVersion>
-    <nodeVersion>v5.8.0</nodeVersion>
-    <npmVersion>3.7.1</npmVersion>
+    <nodeVersion>v6.10.2</nodeVersion>
+    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -22,73 +22,6 @@
   </properties>
   <build>
     <plugins>
-      <plugin>
-        <!-- https://github.com/eirslett/frontend-maven-plugin -->
-        <groupId>com.github.eirslett</groupId>
-        <artifactId>frontend-maven-plugin</artifactId>
-        <version>${frontendPluginVersion}</version>
-        <configuration>
-          <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-          <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-          <installDirectory>target</installDirectory>
-          <triggerfiles>
-            <triggerfile>package.json</triggerfile>
-          </triggerfiles>
-        </configuration>
-        <executions>
-          <execution>
-            <id>install node and npm</id>
-            <goals>
-              <goal>install-node-and-npm</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <nodeVersion>${nodeVersion}</nodeVersion>
-              <npmVersion>${npmVersion}</npmVersion>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install nodejs dependencies</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install bower dependencies</id>
-            <goals>
-              <goal>bower</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>install --allow-root</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy third-party dependencies</id>
-            <goals>
-              <goal>gulp</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>vendor</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>execute karma tests</id>
-            <goals>
-              <goal>karma</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <arguments>start</arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.jasig.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
@@ -316,10 +249,6 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>castor-maven-plugin</artifactId>
-      </plugin>
 
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
@@ -384,18 +313,6 @@
                     </artifacts>
                 </configuration>
             </execution>
-            <execution>
-              <id>add-source</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>add-source</goal>
-              </goals>
-              <configuration>
-                <sources>
-                  <source>${project.build.directory}/generated-sources/castor</source>
-                </sources>
-              </configuration>
-            </execution>
         </executions>
       </plugin>
     </plugins>
@@ -435,6 +352,86 @@
     </pluginManagement>
   </build>
   <profiles>
+    <profile>
+      <id>runJSTests</id>
+      <activation>
+        <property>
+          <name>skipITs</name>
+          <value>false</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- https://github.com/eirslett/frontend-maven-plugin -->
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontendPluginVersion}</version>
+            <configuration>
+              <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
+              <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
+              <installDirectory>target</installDirectory>
+              <triggerfiles>
+                <triggerfile>package.json</triggerfile>
+              </triggerfiles>
+            </configuration>
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <nodeVersion>${nodeVersion}</nodeVersion>
+                  <npmVersion>${npmVersion}</npmVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install nodejs dependencies</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install bower dependencies</id>
+                <goals>
+                  <goal>bower</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install --allow-root</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy third-party dependencies</id>
+                <goals>
+                  <goal>gulp</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>vendor</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>execute karma tests</id>
+                <goals>
+                  <goal>karma</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>start</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>runInPlace</id>
       <activation><activeByDefault>false</activeByDefault></activation>
@@ -790,11 +787,6 @@
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
 
     <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->

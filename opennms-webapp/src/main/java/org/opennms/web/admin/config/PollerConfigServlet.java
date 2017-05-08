@@ -28,17 +28,16 @@
 
 package org.opennms.web.admin.config;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
@@ -47,10 +46,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Monitor;
@@ -189,15 +186,8 @@ public class PollerConfigServlet extends HttpServlet {
             adjustNonChecked(checkedList);
             deleteThese(deleteList);
 
-            Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
-            try {
-                Marshaller.marshal(pollerConfig, poller_fileWriter);
-            } catch (MarshalException e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
-            } catch (ValidationException e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
+            try(Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), StandardCharsets.UTF_8)) {
+                JaxbUtils.marshal(pollerConfig, poller_fileWriter);
             }
         }
 

@@ -39,11 +39,9 @@ import java.util.concurrent.ExecutionException;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
@@ -80,13 +78,13 @@ import org.springframework.test.context.TestExecutionListeners;
 })
 @JUnitConfigurationEnvironment
 @TestExecutionListeners(JUnitSnmpAgentExecutionListener.class)
-@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:loadSnmpDataTest.properties")
+@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:/loadSnmpDataTest.properties")
 public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     private OnmsDistPoller identity;
@@ -121,17 +119,11 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(RpcModule.class.getName(), new KeyValueHolder<Object, Dictionary>(SnmpProxyRpcModule.INSTANCE, new Properties()));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml";
-    }
-
-    @Override
-    public boolean isCreateCamelContextPerClass() {
-        return true;
+        return "classpath:OSGI-INF/blueprint/blueprint-rpc-server.xml";
     }
 
     @Before
@@ -234,7 +226,6 @@ public class LocationAwareSnmpClientIT extends CamelBlueprintTest {
      * This should invoke the route in the Camel context initialize in this blueprint.
      */
     @Test(timeout=60000)
-    @Ignore("flapping with NPE at org.springframework.jms.support.JmsAccessor.createSession(JmsAccessor.java:197)")
     public void canWalkIpAddressTableViaAnotherLocation() throws Exception {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
 

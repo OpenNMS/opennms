@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -216,7 +217,7 @@ public abstract class RequisitionFileUtils {
 
     private static String getFilename(final URL url) {
         try {
-            return URLDecoder.decode(url.getFile(), "UTF-8");
+            return URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             LOG.warn("Failed to decode URL {} as a file.", url.getFile(), e);
             return null;

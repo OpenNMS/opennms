@@ -64,7 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(port=HostResourceSWRunMonitorTest.TEST_SNMP_PORT,host=HostResourceSWRunMonitorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+@JUnitSnmpAgent(port=HostResourceSWRunMonitorTest.TEST_SNMP_PORT,host=HostResourceSWRunMonitorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/snmp/snmpTestData1.properties")
 public class HostResourceSWRunMonitorTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSWRunMonitorTest.class);
     static final int TEST_SNMP_PORT = 9161;

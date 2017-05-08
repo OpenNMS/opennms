@@ -30,6 +30,7 @@ package org.opennms.web.element;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>ElementIdNotFoundException class.</p>
@@ -109,7 +110,7 @@ public class ElementIdNotFoundException extends RuntimeException {
     
     private void setBadId(String idIn) {
     	try {
-			this.badId = URLEncoder.encode(idIn, "UTF-8");
+			this.badId = URLEncoder.encode(idIn, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			this.badId = "";
 		}

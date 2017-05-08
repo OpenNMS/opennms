@@ -31,9 +31,6 @@ package org.opennms.netmgt.snmp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.PduBuilder;
-import org.opennms.netmgt.snmp.ResponseProcessor;
 import org.opennms.netmgt.snmp.proxy.WalkRequest;
 import org.opennms.netmgt.snmp.proxy.WalkResponse;
 
@@ -58,6 +55,11 @@ public class GatheringTracker extends CollectionTracker {
 
     @Override
     public void setMaxRepetitions(int maxRepetitions) {
+        // pass
+    }
+
+    @Override
+    public void setMaxRetries(int maxRetries) {
         // pass
     }
 

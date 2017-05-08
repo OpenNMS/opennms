@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -91,7 +92,7 @@ public class DiscoveryConfigurationMigratorOffline extends AbstractOnmsUpgrade {
                 final Element el = (Element)found.item(0);
                 el.removeAttribute("threads");
                 final Transformer tf = TransformerFactory.newInstance().newTransformer();
-                tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                tf.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
                 tf.setOutputProperty(OutputKeys.INDENT, "yes");
                 out = new StringWriter();
                 tf.transform(new DOMSource(doc), new StreamResult(out));

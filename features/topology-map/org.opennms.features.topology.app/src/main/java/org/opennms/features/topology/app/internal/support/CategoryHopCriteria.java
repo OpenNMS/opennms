@@ -28,13 +28,24 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GroupRef;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.SearchCriteria;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.CategoryProvider;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -44,11 +55,12 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
  *
  */
-public class CategoryHopCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+public class CategoryHopCriteria extends VertexHopCriteria implements SearchCriteria {
+
+	public final static String NAMESPACE = "category";
 
 	private final String m_categoryName;
-	private CategoryDao m_categoryDao;
-	private NodeDao m_nodeDao;
+	private CategoryProvider categoryProvider;
 	private boolean m_collapsed = false;
 	private CategoryVertex m_collapsedVertex;
 
@@ -75,19 +87,24 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
         }
     }
 
-    protected CategoryHopCriteria(String categoryName, NodeDao nodeDao, CategoryDao categoryDao){
-		super(categoryName);
-		m_categoryName = categoryName;
-		m_collapsedVertex = new CategoryVertex("category", "category:" + m_categoryName, m_categoryName);
-		m_nodeDao = Objects.requireNonNull(nodeDao);
-		m_categoryDao = Objects.requireNonNull(categoryDao);
+    public CategoryHopCriteria(SearchResult searchResult, CategoryProvider categoryProvider) {
+		super(searchResult.getLabel());
+		m_collapsed = searchResult.isCollapsed();
+		m_categoryName = searchResult.getLabel();
+		m_collapsedVertex = new CategoryVertex(NAMESPACE, NAMESPACE + ":" + m_categoryName, m_categoryName);
+		this.categoryProvider = Objects.requireNonNull(categoryProvider);
         m_collapsedVertex.setChildren(getVertices());
-		setId(m_categoryDao.findByName(m_categoryName).getId().toString());
+		setId(this.categoryProvider.findCategoryByName(m_categoryName).getId().toString());
     }
 
 	@Override
+	public String getSearchString() {
+		return this.m_categoryName;
+	}
+
+	@Override
 	public String getNamespace() {
-		return "category";
+		return NAMESPACE;
 	}
 
     @Override
@@ -110,11 +127,11 @@ public class CategoryHopCriteria extends VertexHopCriteria implements Collapsibl
 
 	@Override
 	public Set<VertexRef> getVertices() {
-		OnmsCategory category = m_categoryDao.findByName(m_categoryName);
+		OnmsCategory category = categoryProvider.findCategoryByName(m_categoryName);
 		if (category == null) {
 			return Collections.emptySet();
 		} else {
-			List<OnmsNode> nodes = m_nodeDao.findByCategory(category);
+			List<OnmsNode> nodes = categoryProvider.findNodesForCategory(category);
 			Set<VertexRef> retval = new TreeSet<VertexRef>(new RefComparator());
 			for (OnmsNode node : nodes) {
 				retval.add(new DefaultVertexRef("nodes", String.valueOf(node.getId())));

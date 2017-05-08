@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.config.poller.outages;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
@@ -43,13 +42,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * A scheduled outage
@@ -242,22 +236,6 @@ public class Outage extends BasicSchedule implements Serializable {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    @Deprecated
-    @Override
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateInterface.
      * 
      * @return an Iterator over all possible elements in this
@@ -275,38 +253,6 @@ public class Outage extends BasicSchedule implements Serializable {
      */
     public Iterator<Node> iterateNode() {
         return m_nodes.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    @Override
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    @Deprecated
-    @Override
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -457,34 +403,6 @@ public class Outage extends BasicSchedule implements Serializable {
         m_nodes = new ArrayList<Node>(nodes);
     }
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.config.poller.BasicSchedule
-     */
-    @Deprecated
-    public static BasicSchedule unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (BasicSchedule) Unmarshaller.unmarshal(Outage.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    @Override
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -530,5 +448,13 @@ public class Outage extends BasicSchedule implements Serializable {
                 ",times=" + getTime() +
                 ",interfaces=" + m_interfaces +
                 ",nodes=" + m_nodes + "]";
+    }
+
+    public static Outage unmarshal(Reader reader) {
+        return JaxbUtils.unmarshal(Outage.class, reader);
+    }
+
+    public void marshal(Writer writer) {
+        JaxbUtils.marshal(this, writer);
     }
 }

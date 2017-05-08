@@ -28,14 +28,12 @@
 
 package org.opennms.core.test;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import junit.framework.AssertionFailedError;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>MockLogAppender class. If you do not specify the log level specifically, the level
@@ -76,7 +74,7 @@ public class MockLogAppender {
      * <p>resetEvents</p>
      */
     public static void resetEvents() {
-        s_events = Collections.synchronizedList(new LinkedList<LoggingEvent>());
+        s_events = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -193,7 +191,6 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
-        setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
         // One of these is probably unused...

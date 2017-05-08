@@ -6,8 +6,8 @@
     xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
 
@@ -70,7 +70,7 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
     <bean id="eventConfDao" class="org.opennms.netmgt.dao.mock.MockEventConfDao">
-        <property name="resource" value="classpath:minimal-eventconf.xml" />
+        <property name="resource" value="classpath:/minimal-eventconf.xml" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
@@ -142,7 +142,7 @@
         <constructor-arg value="classpath:/statsd-configuration.xml" />
     </bean>
 
-    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
+    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
         <property name="configResource" ref="statsdConfigResourceLocation" />
         <property name="reloadCheckInterval" value="-1" />
     </bean>
@@ -159,7 +159,7 @@
     <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
         <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
     </bean>
-    <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+    <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
         <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SurveillanceViewConfigDao" ref="surveillanceViewConfigDao" />

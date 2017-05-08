@@ -54,6 +54,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -305,7 +307,8 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
                     datacollectionType = "snmp",
-                    anticipateRrds = { "test" }
+                    anticipateRrds = { "test" },
+                    anticipateMetaFiles = false
             )
     public void testUsingFetch() throws Exception {
         System.err.println("=== testUsingFetch ===");
@@ -327,7 +330,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def, attributeMappings);
+        m_rrdStrategy.createFile(def);
 
         RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
@@ -552,6 +555,22 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         // see http://issues.opennms.org/browse/NMS-7367
         value = properties.get("swFCPortWwn");
         assertEquals("1100334455667788", value);
+    }
+
+    @Test(expected=CollectionTimedOut.class)
+    @Transactional
+    @JUnitCollector(
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml",
+                    datacollectionType = "snmp"
+            )
+    public void collectionTimedOutExceptionOnAgentTimeout() throws CollectionInitializationException, CollectionException {
+        // Initialize the agent and perform the collection
+        m_collectionSpecification.initialize(m_collectionAgent);
+        m_collectionSpecification.collect(m_collectionAgent);
+
+        // There is no @JUnitSnmpAgent annotation on this method, so
+        // we don't actually start the SNMP agent, which should
+        // generate a CollectionTimedOut exception
     }
 
     private String rrd(String file) {

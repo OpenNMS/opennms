@@ -40,32 +40,9 @@
           </instructions>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/castor</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
@@ -80,12 +57,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <!-- used by castor -->
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

@@ -36,8 +36,6 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *<P>The Dot1dStpPortTableTracker class is designed to hold all the MIB-II
@@ -56,8 +54,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Dot1dStpPortTableTracker extends TableTracker {
 
-	private final static Logger LOG = LoggerFactory.getLogger(Dot1dStpPortTableTracker.class); 
-	
 	public final static SnmpObjId DOT1D_STP_PORT                   = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.1");
 	public final static SnmpObjId DOT1D_STP_PORT_PRIORITY          = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.2");
 	public final static SnmpObjId DOT1D_STP_PORT_STATE             = SnmpObjId.get(".1.3.6.1.2.1.17.2.15.1.3");
@@ -230,7 +226,6 @@ public class Dot1dStpPortTableTracker extends TableTracker {
 		}
 
 		public BridgeStpLink getLink() {
-            LOG.info("processStpPortRow: row count: {}", getColumnCount());
 			BridgeStpLink link = new BridgeStpLink();
             link.setStpPort(getDot1dStpPort());
             link.setStpPortPriority(getDot1dStpPortPriority());

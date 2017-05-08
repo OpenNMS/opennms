@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -48,13 +49,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
@@ -108,17 +107,17 @@ public abstract class UserManager implements UserConfig {
      * <p>parseXML</p>
      *
      * @param in a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void parseXML(final InputStream in) throws MarshalException, ValidationException {
+    public void parseXML(final InputStream in) {
         m_writeLock.lock();
-        
+
+        InputStreamReader isr = null;
         try {
-            final Userinfo userinfo = CastorUtils.unmarshal(Userinfo.class, in);
+            isr = new InputStreamReader(in);
+            final Userinfo userinfo = JaxbUtils.unmarshal(Userinfo.class, isr);
             final Users users = userinfo.getUsers();
             oldHeader = userinfo.getHeader();
-            final List<User> usersList = users.getUserCollection();
+            final List<User> usersList = users.getUsers();
             m_users = new TreeMap<String, User>();
         
             for (final User curUser : usersList) {
@@ -127,6 +126,7 @@ public abstract class UserManager implements UserConfig {
         
             _buildDutySchedules(m_users);
         } finally {
+            IOUtils.closeQuietly(isr);
             m_writeLock.unlock();
         }
     }
@@ -167,30 +167,30 @@ public abstract class UserManager implements UserConfig {
         m_writeLock.lock();
         
         try {
-            User castorUser = _getUser(onmsUser.getUsername());
-            if (castorUser == null) {
-                castorUser = new User();
-                castorUser.setUserId(onmsUser.getUsername());
+            User xmlUser = _getUser(onmsUser.getUsername());
+            if (xmlUser == null) {
+                xmlUser = new User();
+                xmlUser.setUserId(onmsUser.getUsername());
             }
-            castorUser.setFullName(onmsUser.getFullName());
-            castorUser.setUserComments(onmsUser.getComments());
+            xmlUser.setFullName(onmsUser.getFullName());
+            xmlUser.setUserComments(onmsUser.getComments());
 
             // Contact info
-            _setContact(castorUser, ContactType.email, onmsUser.getEmail());
+            _setContact(xmlUser, ContactType.email, onmsUser.getEmail());
             
             final Password pass = new Password();
-            pass.setContent(onmsUser.getPassword());
+            pass.setEncryptedPassword(onmsUser.getPassword());
             pass.setSalt(onmsUser.getPasswordSalted());
-            castorUser.setPassword(pass);
+            xmlUser.setPassword(pass);
     
             if (onmsUser.getDutySchedule() != null) {
-                castorUser.setDutySchedule(new ArrayList<String>(onmsUser.getDutySchedule()));
+                xmlUser.setDutySchedules(new ArrayList<String>(onmsUser.getDutySchedule()));
             }
             if (onmsUser.getRoles() != null) {
-                castorUser.setRole(new ArrayList<String>(onmsUser.getRoles()));
+                xmlUser.setRoles(new ArrayList<String>(onmsUser.getRoles()));
             }
             
-            _writeUser(onmsUser.getUsername(), castorUser);
+            _writeUser(onmsUser.getUsername(), xmlUser);
         } finally {
             m_writeLock.unlock();
         }
@@ -211,9 +211,9 @@ public abstract class UserManager implements UserConfig {
             final String key = entry.getKey();
             final User curUser = entry.getValue();
     
-            if (curUser.getDutyScheduleCount() > 0) {
+            if (curUser.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
-                for (final String duty : curUser.getDutyScheduleCollection()) {
+                for (final String duty : curUser.getDutySchedules()) {
                 	dutyList.add(new DutySchedule(duty));
                 }
     
@@ -233,10 +233,8 @@ public abstract class UserManager implements UserConfig {
      *            the time to check for a duty schedule
      * @return boolean, true if the user is on duty, false otherwise.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public boolean isUserOnDuty(final String user, final Calendar time) throws IOException, MarshalException, ValidationException {
+    public boolean isUserOnDuty(final String user, final Calendar time) throws IOException {
         update();
     
         m_readLock.lock();
@@ -262,10 +260,8 @@ public abstract class UserManager implements UserConfig {
      *
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public Map<String, User> getUsers() throws IOException, MarshalException, ValidationException {
+    public Map<String, User> getUsers() throws IOException {
         update();
     
         m_readLock.lock();
@@ -276,7 +272,7 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
-    public OnmsUserList getOnmsUserList() throws MarshalException, ValidationException, IOException {
+    public OnmsUserList getOnmsUserList() throws IOException {
         update();
 
         final OnmsUserList list = new OnmsUserList();
@@ -295,7 +291,7 @@ public abstract class UserManager implements UserConfig {
         }
     }
     
-    public OnmsUser getOnmsUser(final String username) throws MarshalException, ValidationException, IOException {
+    public OnmsUser getOnmsUser(final String username) throws IOException {
         update();
 
         m_readLock.lock();
@@ -306,25 +302,29 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
-    private OnmsUser _getOnmsUser(final String username) throws IOException, MarshalException, ValidationException {
-        final User castorUser = _getUser(username);
-        if (castorUser == null) return null;
+    private OnmsUser _getOnmsUser(final String username) throws IOException {
+        final User xmlUser = _getUser(username);
+        if (xmlUser == null) return null;
 
         final OnmsUser user = new OnmsUser(username);
-        user.setFullName(castorUser.getFullName());
-        user.setComments(castorUser.getUserComments());
-        user.setPassword(castorUser.getPassword().getContent());
-        user.setPasswordSalted(castorUser.getPassword().getSalt());
-        user.setDutySchedule(castorUser.getDutyScheduleCollection());
-        user.setRoles(castorUser.getRoleCollection());
-        user.setEmail(_getContactInfo(castorUser, ContactType.email));
+        user.setFullName(trim(xmlUser.getFullName()));
+        user.setComments(trim(xmlUser.getUserComments()));
+        user.setPassword(xmlUser.getPassword().getEncryptedPassword());
+        user.setPasswordSalted(Boolean.valueOf(xmlUser.getPassword().getSalt()));
+        user.setDutySchedule(xmlUser.getDutySchedules());
+        user.setRoles(xmlUser.getRoles());
+        user.setEmail(_getContactInfo(xmlUser, ContactType.email));
         return user;
     }
     
+    private String trim(final String text) {
+        return text == null? null : text.trim();
+    }
+
     private Contact _getContact(final String userId, final ContactType contactType) {
     	User user = _getUser(userId);
     	if (user != null && contactType != null) {
-    		for (Contact eachContact : user.getContactCollection()) {
+    		for (Contact eachContact : user.getContacts()) {
     			if (contactType.name().equals(eachContact.getType())) {
     				return eachContact;
     			}
@@ -339,10 +339,8 @@ public abstract class UserManager implements UserConfig {
      * @return true if the user exists in the XML file, false otherwise
      * @param userName a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public boolean hasUser(final String userName) throws IOException, MarshalException, ValidationException {
+    public boolean hasUser(final String userName) throws IOException {
         update();
 
         m_readLock.lock();
@@ -358,10 +356,8 @@ public abstract class UserManager implements UserConfig {
      *
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public List<String> getUserNames() throws IOException, MarshalException, ValidationException {
+    public List<String> getUserNames() throws IOException {
         update();
 
         m_readLock.lock();
@@ -385,10 +381,8 @@ public abstract class UserManager implements UserConfig {
      *            the name of the user to return
      * @return the user specified by name
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public User getUser(final String name) throws IOException, MarshalException, ValidationException {
+    public User getUser(final String name) throws IOException {
         update();
 
         m_readLock.lock();
@@ -410,10 +404,8 @@ public abstract class UserManager implements UserConfig {
      *            the name of the user to return
      * @return the telephone PIN of the user specified by name
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTuiPin(final String name) throws IOException, MarshalException, ValidationException {
+    public String getTuiPin(final String name) throws IOException {
     
         update();
 
@@ -431,10 +423,8 @@ public abstract class UserManager implements UserConfig {
      * @return the telephone PIN of the user specified by user
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTuiPin(final User user) throws IOException, MarshalException, ValidationException {
+    public String getTuiPin(final User user) throws IOException {
     
         update();
     
@@ -454,10 +444,8 @@ public abstract class UserManager implements UserConfig {
      * @return the microblog username of the specified user
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public String getMicroblogName(final String name) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public String getMicroblogName(final String name) throws FileNotFoundException, IOException {
         return getContactInfo(name, ContactType.microblog.toString());
     }
 
@@ -469,10 +457,8 @@ public abstract class UserManager implements UserConfig {
      * @return the microblog username of the specified user
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public String getMicroblogName(final User user) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public String getMicroblogName(final User user) throws FileNotFoundException, IOException {
         return getContactInfo(user, ContactType.microblog.toString());
     }
     
@@ -506,7 +492,7 @@ public abstract class UserManager implements UserConfig {
     /**
      * @see {@link #getContactInfo(String, String)} 
      */
-    public String getContactInfo(final String userId, final ContactType contactType) throws MarshalException, ValidationException, IOException {
+    public String getContactInfo(final String userId, final ContactType contactType) throws IOException {
     	if (userId == null || contactType == null) return null;
     	return getContactInfo(userId, contactType.name());
 	}
@@ -520,10 +506,8 @@ public abstract class UserManager implements UserConfig {
      *            the command to look up the contact info for
      * @return the contact information
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getContactInfo(final String userID, final String command) throws IOException, MarshalException, ValidationException {
+    public String getContactInfo(final String userID, final String command) throws IOException {
         update();
 
         m_readLock.lock();
@@ -542,10 +526,8 @@ public abstract class UserManager implements UserConfig {
      * @param command a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getContactInfo(final User user, final String command) throws IOException, MarshalException, ValidationException {
+    public String getContactInfo(final User user, final String command) throws IOException {
         update();
 
         m_readLock.lock();
@@ -564,7 +546,7 @@ public abstract class UserManager implements UserConfig {
     private String _getContactInfo(final User user, final String command) {
         if (user == null) return "";
         
-        for (final Contact contact : user.getContactCollection()) {
+        for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(command)) {
         		return contact.getInfo();
         	}
@@ -581,10 +563,8 @@ public abstract class UserManager implements UserConfig {
      *            the command to look up the contact info for
      * @return the contact information
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getContactServiceProvider(final String userID, final String command) throws IOException, MarshalException, ValidationException {
+    public String getContactServiceProvider(final String userID, final String command) throws IOException {
         update();
 
         m_readLock.lock();
@@ -603,10 +583,8 @@ public abstract class UserManager implements UserConfig {
      * @param command a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getContactServiceProvider(final User user, final String command) throws IOException, MarshalException, ValidationException {
+    public String getContactServiceProvider(final User user, final String command) throws IOException {
         update();
         
         m_readLock.lock();
@@ -620,7 +598,7 @@ public abstract class UserManager implements UserConfig {
     private String _getContactServiceProvider(final User user, final String command) {
         if (user == null) return "";
 
-        for (final Contact contact : user.getContactCollection()) {
+        for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(command)) {
         		return contact.getServiceProvider();
         	}
@@ -636,10 +614,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the email specified by name
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getEmail(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getEmail(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.email.toString());
     }
     
@@ -649,10 +625,8 @@ public abstract class UserManager implements UserConfig {
      * @param user the user to find the email for
      * @return String the email specified by name
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getEmail(final User user) throws IOException, MarshalException, ValidationException {
+    public String getEmail(final User user) throws IOException {
         return getContactInfo(user, ContactType.email.toString());
     }
 
@@ -663,10 +637,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the pager email
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getPagerEmail(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getPagerEmail(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.pagerEmail.toString());
     }
 
@@ -676,10 +648,8 @@ public abstract class UserManager implements UserConfig {
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @return String the pager email
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getPagerEmail(final User user) throws IOException, MarshalException, ValidationException {
+    public String getPagerEmail(final User user) throws IOException {
         return getContactInfo(user, ContactType.pagerEmail.toString());
     }
 
@@ -690,10 +660,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the numeric pin
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getNumericPin(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getNumericPin(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.numericPage.toString());
     }
 
@@ -703,10 +671,8 @@ public abstract class UserManager implements UserConfig {
      * @return String the numeric pin
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getNumericPin(final User user) throws IOException, MarshalException, ValidationException {
+    public String getNumericPin(final User user) throws IOException {
         return getContactInfo(user, ContactType.numericPage.toString());
     }
 
@@ -717,10 +683,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the XMPP address
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getXMPPAddress(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getXMPPAddress(final String userID) throws IOException {
         update();
         
         m_readLock.lock();
@@ -738,10 +702,8 @@ public abstract class UserManager implements UserConfig {
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @return String the XMPP address
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getXMPPAddress(final User user) throws IOException, MarshalException, ValidationException {
+    public String getXMPPAddress(final User user) throws IOException {
         update();
 
         m_readLock.lock();
@@ -756,7 +718,7 @@ public abstract class UserManager implements UserConfig {
         if (user == null)
             return "";
         
-        for (final Contact contact : user.getContactCollection()) {
+        for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(ContactType.xmppAddress.toString())) {
         		return contact.getInfo();
         	}
@@ -772,10 +734,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the service provider
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getNumericPage(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getNumericPage(final String userID) throws IOException {
         return getContactServiceProvider(userID, ContactType.numericPage.toString());
     }
     
@@ -785,10 +745,8 @@ public abstract class UserManager implements UserConfig {
      * @return String the service provider
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getNumericPage(final User user) throws IOException, MarshalException, ValidationException {
+    public String getNumericPage(final User user) throws IOException {
         return getContactServiceProvider(user, ContactType.numericPage.toString());
     }
 
@@ -799,10 +757,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the text pin
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTextPin(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getTextPin(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.textPage.toString());
     }
     
@@ -812,10 +768,8 @@ public abstract class UserManager implements UserConfig {
      * @return String the text pin
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTextPin(final User user) throws IOException, MarshalException, ValidationException {
+    public String getTextPin(final User user) throws IOException {
         return getContactInfo(user, ContactType.textPage.toString());
     }
 
@@ -826,10 +780,8 @@ public abstract class UserManager implements UserConfig {
      *            the user ID of the user to return
      * @return String the text page service provider.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTextPage(final String userID) throws IOException, MarshalException, ValidationException {
+    public String getTextPage(final String userID) throws IOException {
         return getContactServiceProvider(userID, ContactType.textPage.toString());
     }
     
@@ -839,10 +791,8 @@ public abstract class UserManager implements UserConfig {
      * @return String the text page service provider.
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getTextPage(final User user) throws IOException, MarshalException, ValidationException {
+    public String getTextPage(final User user) throws IOException {
         return getContactServiceProvider(user, ContactType.textPage.toString());
     }
     
@@ -853,10 +803,8 @@ public abstract class UserManager implements UserConfig {
      *             the user ID of the user to return
      * @return String the work phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public String getWorkPhone(final String userID) throws MarshalException, ValidationException, IOException {
+    public String getWorkPhone(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.workPhone.toString());
     }
     
@@ -865,11 +813,9 @@ public abstract class UserManager implements UserConfig {
      *
      * @return String the work phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
-    public String getWorkPhone(final User user) throws MarshalException, ValidationException, IOException {
+    public String getWorkPhone(final User user) throws IOException {
         return getContactInfo(user, ContactType.workPhone.toString());
     }
 
@@ -880,10 +826,8 @@ public abstract class UserManager implements UserConfig {
      *             the user ID of the user to return
      * @return String the mobile phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public String getMobilePhone(final String userID) throws MarshalException, ValidationException, IOException {
+    public String getMobilePhone(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.mobilePhone.toString());
     }
     
@@ -892,11 +836,9 @@ public abstract class UserManager implements UserConfig {
      *
      * @return String the mobile phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
-    public String getMobilePhone(final User user) throws MarshalException, ValidationException, IOException {
+    public String getMobilePhone(final User user) throws IOException {
         return getContactInfo(user, ContactType.mobilePhone.toString());
     }
 
@@ -907,10 +849,8 @@ public abstract class UserManager implements UserConfig {
      *             the user ID of the user to return
      * @return String the home phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      */
-    public String getHomePhone(final String userID) throws MarshalException, ValidationException, IOException {
+    public String getHomePhone(final String userID) throws IOException {
         return getContactInfo(userID, ContactType.homePhone.toString());
     }
     
@@ -919,11 +859,9 @@ public abstract class UserManager implements UserConfig {
      *
      * @return String the home phone number
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @param user a {@link org.opennms.netmgt.config.users.User} object.
      */
-    public String getHomePhone(final User user) throws MarshalException, ValidationException, IOException {
+    public String getHomePhone(final User user) throws IOException {
         return getContactInfo(user, ContactType.homePhone.toString());
     }
 
@@ -1008,7 +946,7 @@ public abstract class UserManager implements UserConfig {
         // way the original configuration
         // isn't lost if the XML from the marshal is hosed.
         final StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(userinfo, stringWriter);
+        JaxbUtils.marshal(userinfo, stringWriter);
         final String writerString = stringWriter.toString();
         saveXML(writerString);
     }
@@ -1085,7 +1023,7 @@ public abstract class UserManager implements UserConfig {
             final User user = m_users.get(userID);
             if (user != null) {
                 final Password pass = new Password();
-                pass.setContent(aPassword);
+                pass.setEncryptedPassword(aPassword);
                 pass.setSalt(salted);
                 user.setPassword(pass);
             }
@@ -1114,7 +1052,7 @@ public abstract class UserManager implements UserConfig {
             final User user =  m_users.get(userID);
             if (user != null) {
                 final Password pass = new Password();
-                pass.setContent(encryptedPassword(aPassword, true));
+                pass.setEncryptedPassword(encryptedPassword(aPassword, true));
                 pass.setSalt(true);
                 user.setPassword(pass);
             }
@@ -1191,8 +1129,8 @@ public abstract class UserManager implements UserConfig {
             final User user = m_users.get(userID);
             if (user == null) return false;
 
-            final String password = user.getPassword().getContent().trim();
-            final boolean isSalted = user.getPassword().getSalt();
+            final String password = user.getPassword().getEncryptedPassword().trim();
+            final boolean isSalted = Boolean.valueOf(user.getPassword().getSalt());
             if (isSalted) {
                 return checkSaltedPassword(aPassword, password);
             } else {
@@ -1212,12 +1150,10 @@ public abstract class UserManager implements UserConfig {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    protected abstract void doUpdate() throws IOException, FileNotFoundException, MarshalException, ValidationException;
+    protected abstract void doUpdate() throws IOException, FileNotFoundException;
 
-    public final void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public final void update() throws IOException, FileNotFoundException {
         m_writeLock.lock();
         try {
             doUpdate();
@@ -1232,10 +1168,8 @@ public abstract class UserManager implements UserConfig {
      * @param roleid a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String[] getUsersWithRole(final String roleid) throws IOException, MarshalException, ValidationException {
+    public String[] getUsersWithRole(final String roleid) throws IOException {
         update();
 
         m_readLock.lock();
@@ -1246,7 +1180,7 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
-    private String[] _getUsersWithRole(final String roleid) throws MarshalException, ValidationException, IOException {
+    private String[] _getUsersWithRole(final String roleid) throws IOException {
         final List<String> usersWithRole = new ArrayList<String>();
    
         for (final User user : m_users.values()) {
@@ -1265,11 +1199,9 @@ public abstract class UserManager implements UserConfig {
      * @param roleid a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean userHasRole(final User user, final String roleid) throws FileNotFoundException, MarshalException, ValidationException, IOException {
+    public boolean userHasRole(final User user, final String roleid) throws FileNotFoundException, IOException {
         update();
 
         m_readLock.lock();
@@ -1280,12 +1212,11 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
-    private boolean _userHasRole(final User user, final String roleid) throws MarshalException, ValidationException, IOException {
+    private boolean _userHasRole(final User user, final String roleid) throws IOException {
         if (roleid == null) throw new NullPointerException("roleid is null");
-        
         return m_groupManager.userHasRole(user.getUserId(), roleid);
     }
-    
+
     /**
      * <p>isUserScheduledForRole</p>
      *
@@ -1294,11 +1225,9 @@ public abstract class UserManager implements UserConfig {
      * @param time a {@link java.util.Date} object.
      * @return a boolean.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean isUserScheduledForRole(final User user, final String roleid, final Date time) throws FileNotFoundException, MarshalException, ValidationException, IOException {
+    public boolean isUserScheduledForRole(final User user, final String roleid, final Date time) throws FileNotFoundException, IOException {
         update();
         
         m_readLock.lock();
@@ -1309,23 +1238,20 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
-    private boolean _isUserScheduledForRole(final User user, final String roleid, final Date time) throws MarshalException, ValidationException, IOException {
+    private boolean _isUserScheduledForRole(final User user, final String roleid, final Date time) throws IOException {
         if (roleid == null) throw new NullPointerException("roleid is null");
-        
         return m_groupManager.isUserScheduledForRole(user.getUserId(), roleid, time);
     }
-    
+
     /**
      * <p>getUsersScheduledForRole</p>
      *
      * @param roleid a {@link java.lang.String} object.
      * @param time a {@link java.util.Date} object.
      * @return an array of {@link java.lang.String} objects.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public String[] getUsersScheduledForRole(final String roleid, final Date time) throws MarshalException, ValidationException, IOException {
+    public String[] getUsersScheduledForRole(final String roleid, final Date time) throws IOException {
         update();
 
         m_readLock.lock();
@@ -1349,11 +1275,9 @@ public abstract class UserManager implements UserConfig {
      *
      * @param roleid a {@link java.lang.String} object.
      * @return a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public boolean hasOnCallRole(final String roleid) throws MarshalException, ValidationException, IOException {
+    public boolean hasOnCallRole(final String roleid) throws IOException {
         update();
 
         m_readLock.lock();
@@ -1369,11 +1293,9 @@ public abstract class UserManager implements UserConfig {
      *
      * @param roleid a {@link java.lang.String} object.
      * @return a int.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public int countUsersWithRole(final String roleid) throws MarshalException, ValidationException, IOException {
+    public int countUsersWithRole(final String roleid) throws IOException {
         update();
 
         m_readLock.lock();
@@ -1389,5 +1311,5 @@ public abstract class UserManager implements UserConfig {
     public abstract boolean isUpdateNeeded();
     public abstract long getLastModified();
     public abstract long getFileSize();
-    public abstract void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException;
+    public abstract void reload() throws IOException, FileNotFoundException;
 }

@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -314,7 +315,7 @@ public class ManageNodeServlet extends HttpServlet {
         Writer fileWriter = null;
         try {
         	fos = new FileOutputStream(fileName);
-            fileWriter = new OutputStreamWriter(fos, "UTF-8");
+            fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 
             for (int i = 0; i < interfaceList.size(); i++) {
                 fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));

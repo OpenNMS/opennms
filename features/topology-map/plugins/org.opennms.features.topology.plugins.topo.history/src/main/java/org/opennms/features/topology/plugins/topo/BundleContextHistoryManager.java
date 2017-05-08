@@ -47,6 +47,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.support.SavedHistory;
+import org.opennms.features.topology.api.support.ServiceLocator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +57,13 @@ public class BundleContextHistoryManager implements HistoryManager {
 
 	private final BundleContext m_bundleContext;
 
+	private final ServiceLocator m_serviceLocator;
+
 	private final List<HistoryOperation> m_operations = new CopyOnWriteArrayList<>();
 
-	public BundleContextHistoryManager(BundleContext bundleContext) {
+	public BundleContextHistoryManager(BundleContext bundleContext, ServiceLocator serviceLocator) {
 		m_bundleContext = bundleContext;
+		m_serviceLocator = serviceLocator;
 	}
 
 	public synchronized void onBind(HistoryOperation operation) {
@@ -82,7 +86,7 @@ public class BundleContextHistoryManager implements HistoryManager {
 	public void applyHistory(String fragment, GraphContainer container) {
 		SavedHistory hist = getHistoryByFragment(fragment);
 		if (hist != null) {
-			hist.apply(container, m_operations);
+			hist.apply(container, m_operations, m_serviceLocator);
 		}
 	}
 

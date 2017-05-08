@@ -47,7 +47,7 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
 /**
- * EventProcessor that braodcasts events to other interested
+ * EventProcessor that broadcasts events to other interested
  * daemons with EventIpcBroadcaster.broadcastNow(Event).
  *
  * @author ranger
@@ -75,24 +75,32 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
         Assert.state(m_eventIpcBroadcaster != null, "property eventIpcBroadcaster must be set");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * If synchronous mode is not specified, the event is broadcasted 
+     * asynchronously by default.
+     */
     @Override
     public void process(Log eventLog) throws EventProcessorException {
+        process(eventLog, false);
+    }
+
+    @Override
+    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
         if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
             try (Context context = logBroadcastTimer.time()) {
                 for(Event eachEvent : eventLog.getEvents().getEvent()) {
-                    process(eventLog.getHeader(), eachEvent);
+                    process(eventLog.getHeader(), eachEvent, synchronous);
                     eventBroadcastMeter.mark();
                 }
             }
         }
     }
 
-    private void process(Header eventHeader, Event event) {
+    private void process(Header eventHeader, Event event, boolean synchronous) {
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
             LOG.debug("process: skip sending event {} to other daemons because is marked as suppress", event.getUei());
         } else {
-            m_eventIpcBroadcaster.broadcastNow(event);
+            m_eventIpcBroadcaster.broadcastNow(event, synchronous);
         }
     }
 

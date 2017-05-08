@@ -32,11 +32,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
-import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -48,12 +46,10 @@ import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
 public class NSClientPeerFactoryTest {
 
     /**
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testOneSpecific() throws MarshalException, ValidationException, IOException {
+    public final void testOneSpecific() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -65,7 +61,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
 
@@ -78,12 +74,10 @@ public class NSClientPeerFactoryTest {
      * This tests the merging of a new specific into a definition that already contains a specific
      * that is adjacent.  The two specifics should be converted to a single range in the definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testAddAdjacentSpecificToDef() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -96,7 +90,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -112,7 +106,7 @@ public class NSClientPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -125,7 +119,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -141,7 +135,7 @@ public class NSClientPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6WithSameScopeId() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -154,7 +148,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -170,7 +164,7 @@ public class NSClientPeerFactoryTest {
     }
 
     @Test
-    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDefIPv6WithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -183,7 +177,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(2, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -203,12 +197,10 @@ public class NSClientPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testRecombineSpecificIntoRange() throws MarshalException, ValidationException, IOException {
+    public void testRecombineSpecificIntoRange() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -222,7 +214,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -243,12 +235,10 @@ public class NSClientPeerFactoryTest {
      * the single IP address that was in a different existing definition that will now be removed and the definition
      * deleted.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws MarshalException, ValidationException, IOException {
+    public void testRecombineSpecificIntoRangeWithDifferentScopeIds() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -262,7 +252,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -283,12 +273,10 @@ public class NSClientPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testNewSpecificSameAsBeginInOldDef() throws MarshalException, ValidationException, IOException {
+    public final void testNewSpecificSameAsBeginInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -301,7 +289,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -320,12 +308,10 @@ public class NSClientPeerFactoryTest {
      * This tests the addition of a new specific definition that is the same address as the beginning of
      * a range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public final void testNewSpecificSameAsEndInOldDef() throws MarshalException, ValidationException, IOException {
+    public final void testNewSpecificSameAsEndInOldDef() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -338,7 +324,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(1, factory.getConfig().getDefinition().get(0).getSpecific().size());
@@ -357,12 +343,10 @@ public class NSClientPeerFactoryTest {
      * This tests the merging of a new definition that contains a range of IP addresses that overlaps
      * the end of one range and the beginning of another range in a current definition.
      * 
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException 
      */
     @Test
-    public void testOverlapsTwoRanges() throws MarshalException, ValidationException, IOException {
+    public void testOverlapsTwoRanges() throws IOException {
 
         String amiConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<nsclient-config retry=\"3\" timeout=\"800\"\n" + 
@@ -376,7 +360,7 @@ public class NSClientPeerFactoryTest {
         "</nsclient-config>\n" + 
         "";
 
-        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes("UTF-8")));
+        NSClientPeerFactory factory = new NSClientPeerFactory(new ByteArrayInputStream(amiConfigXml.getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(1, factory.getConfig().getDefinition().size());
         assertEquals(0, factory.getConfig().getDefinition().get(0).getSpecific().size());

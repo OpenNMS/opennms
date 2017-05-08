@@ -34,6 +34,8 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,13 +50,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
 import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
 import org.opennms.netmgt.config.rancid.adapter.Mapping;
@@ -63,6 +61,8 @@ import org.opennms.netmgt.config.rancid.adapter.PolicyManage;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.Schedule;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract RancidAdapterConfigManager class.</p>
@@ -116,12 +116,10 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
      * @param reader a {@link java.io.InputStream} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @param serverName a {@link java.lang.String} object.
      */
-    public RancidAdapterConfigManager(final InputStream reader,final String serverName, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public RancidAdapterConfigManager(final InputStream reader,final String serverName, final boolean verifyServer) throws IOException {
          m_localServer = serverName;
          m_verifyServer = verifyServer;
          reloadXML(reader);
@@ -145,14 +143,12 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
      * <p>reloadXML</p>
      *
      * @param reader a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected void reloadXML(final InputStream reader) throws MarshalException, ValidationException, IOException {
-        try {
+    protected void reloadXML(final InputStream is) throws IOException {
+        try (Reader reader = new InputStreamReader(is)) {
             getWriteLock().lock();
-            m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader);
+            m_config = JaxbUtils.unmarshal(RancidConfiguration.class, reader);
             createPolicyNamePkgMap();
             createUrlIpMap();
             createPackageIpListMap();

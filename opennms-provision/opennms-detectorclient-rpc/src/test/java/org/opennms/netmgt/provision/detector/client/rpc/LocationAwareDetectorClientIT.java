@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -70,8 +70,8 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    @Rule
-    public ActiveMQBroker broker = new ActiveMQBroker();
+    @ClassRule
+    public static ActiveMQBroker broker = new ActiveMQBroker();
 
     @Autowired
     @Qualifier("queuingservice")
@@ -94,6 +94,12 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
         super.setUp();
         
         detectorClientRpcModule.setExecutor(Executors.newSingleThreadExecutor());
+    }
+
+    @Override
+    protected String setConfigAdminInitialConfiguration(Properties props) {
+        props.put("body.debug", "-5");
+        return "org.opennms.core.ipc";
     }
 
     @SuppressWarnings( "rawtypes" )
@@ -119,7 +125,7 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-rpc-server.xml,classpath:/OSGI-INF/blueprint/blueprint.xml";
+        return "classpath:/OSGI-INF/blueprint/blueprint.xml";
     }
 
     /**
@@ -186,5 +192,10 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
             final String message = e.getCause().getMessage();
             assertTrue(message, message.contains("Failure on async detection."));
         }
+    }
+
+    @Test
+    public void didOverrideBodyDebug() throws Exception {
+        assertEquals("-5", context.getProperty("CamelLogDebugBodyMaxChars"));
     }
 }

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +38,7 @@ import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,12 +73,12 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
     protected void runCollection() {
 
     	final Date now = new Date(); 
-        LOG.debug("run: collecting : {}", getPeer());
 
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
 
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                           lldpLocalGroup)
                           .withDescription("lldpLocalGroup")
                           .withLocation(getLocation())
@@ -92,29 +91,37 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
                 LOG.info("run: Lldp Linkd lldpLocalGroup table collection interrupted", e);
                 return;
         }
-       if (lldpLocalGroup.getLldpLocChassisid() == null) {
-            LOG.info("lldp mib not supported on: {}",
-                     str(getPeer().getAddress()));
+        
+        if (lldpLocalGroup.getLldpLocChassisid() == null ) {
+    		LOG.info( "run: node[{}]: address {}. LLDP_MIB not supported",
+    				getNodeId(),
+    				getPrimaryIpAddressString());
             return;
         } else {
-            LOG.info("found lldp identifier : {}",
-                     lldpLocalGroup.getLldpElement());
+    		LOG.info( "run: node[{}]: address {}. lldp identifier : {}",
+    				getNodeId(),
+    				getPrimaryIpAddressString(),
+    				lldpLocalGroup.getLldpElement());
         }
 
         m_linkd.getQueryManager().store(getNodeId(),
                 lldpLocalGroup.getLldpElement());
 
-        if (getSysoid() == null || getSysoid().equals(DW_SYSOID)) {
-            if (lldpLocalGroup.getLldpLocChassisid().toHexString().equals(DW_NULL_CHASSIS_ID)
-                    && lldpLocalGroup.getLldpLocChassisidSubType() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
-                LOG.info("lldp not active for Dragon Wave Device identifier : {}",
-                         lldpLocalGroup.getLldpElement());
+        if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
+            if (lldpLocalGroup.getLldpLocChassisid().toHexString().equals(DW_NULL_CHASSIS_ID) &&
+                    lldpLocalGroup.getLldpLocChassisidSubType() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
+        		LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
+        				getNodeId(),
+        				getPrimaryIpAddressString(),
+        				lldpLocalGroup.getLldpElement());
                 return;
             }
-
-            if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID)) {
-                LOG.info("lldp not active for Dragon Wave Device identifier : {}",
-                         lldpLocalGroup.getLldpElement());
+    
+            if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID) ) {
+        		LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
+        				getNodeId(),
+        				getPrimaryIpAddressString(),
+        				lldpLocalGroup.getLldpElement());
                 return;
             }
         }
@@ -127,7 +134,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         	}
         };
         try {
-            m_linkd.getLocationAwareSnmpClient().walk(getPeer(),
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
                                       lldpRemTable)
                                   .withDescription("lldpRemTable")
                                   .withLocation(getLocation())
@@ -143,7 +150,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
         
         
         final LldpLocPortGetter lldpLocPort = 
-                new LldpLocPortGetter(getPeer(),
+                new LldpLocPortGetter(peer,
                                 m_linkd.getLocationAwareSnmpClient(),
                                 getLocation());
         for (LldpLink link: links)
@@ -151,12 +158,6 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
 
         m_linkd.getQueryManager().reconcileLldp(getNodeId(),now);
     }
-
-	@Override
-	public String getInfo() {
-        return "ReadyRunnable:LldpLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
 
 	@Override
 	public String getName() {

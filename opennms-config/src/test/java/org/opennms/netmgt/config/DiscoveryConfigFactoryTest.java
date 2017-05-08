@@ -98,11 +98,11 @@ public class DiscoveryConfigFactoryTest {
         conf.addIncludeRange(ir);
 
         Specific s = new Specific();
-        s.setContent("192.168.1.1");
+        s.setAddress("192.168.1.1");
         conf.addSpecific(s);
 
         s = new Specific();
-        s.setContent("192.168.4.1");
+        s.setAddress("192.168.4.1");
         conf.addSpecific(s);
 
         ExcludeRange er = new ExcludeRange();

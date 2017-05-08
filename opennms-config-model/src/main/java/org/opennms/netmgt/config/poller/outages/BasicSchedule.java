@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.config.poller.outages;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -43,13 +40,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class BasicSchedule.
@@ -187,21 +178,6 @@ public class BasicSchedule implements java.io.Serializable {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    @Deprecated
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateTime.
      * 
      * @return an Iterator over all possible elements in this
@@ -209,36 +185,6 @@ public class BasicSchedule implements java.io.Serializable {
      */
     public Iterator<Time> iterateTime() {
         return m_times.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    @Deprecated
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -333,33 +279,6 @@ public class BasicSchedule implements java.io.Serializable {
      */
     public void setType(final String type) {
         m_type = type;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.config.poller.BasicSchedule
-     */
-    @Deprecated
-    public static BasicSchedule unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (BasicSchedule) Unmarshaller.unmarshal(BasicSchedule.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
     @Override
