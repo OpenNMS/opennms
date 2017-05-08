@@ -6,7 +6,7 @@ opennms (19.1.0-1) stable; urgency=medium
     For details on what has changed, see:
     http://docs.opennms.org/opennms/releases/19.1.0/releasenotes/releasenotes.html
 
- -- OpenNMS Release Manager <opennms@opennms.org>  Man, 08 May 2017 10:34:00 -0500
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 08 May 2017 10:34:00 -0500
 
 opennms (19.0.1-1) stable; urgency=high
 
