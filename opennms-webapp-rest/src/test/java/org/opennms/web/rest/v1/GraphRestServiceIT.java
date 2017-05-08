@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -44,6 +45,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdStrategyFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +85,10 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
 
+    private final String dummyForeignSource = "dummy-fs";
+    private final String dummyForeignIdA = "my-dummy-nodeA";
+    private final String dummyForeignIdB = "my-dummy+node-B";
+
     @Before
     public void setUp() throws Throwable {
         super.setUp();
@@ -96,6 +104,52 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
         File nodeSnmp1 = m_tempFolder.newFolder("snmp", "1");
         FileUtils.touch(new File(nodeSnmp1, "SwapIn" + extension));
         FileUtils.touch(new File(nodeSnmp1, "SwapOut" + extension));
+
+        additionalNodeWithResources(
+                m_tempFolder,
+                m_dbPopulator,
+                "dummyA",
+                dummyForeignSource,
+                dummyForeignIdA,
+                "SwapIn" + extension,
+                "SwapOut" + extension
+        );
+
+        additionalNodeWithResources(
+                m_tempFolder,
+                m_dbPopulator,
+                "dummyB",
+                dummyForeignSource,
+                dummyForeignIdB,
+                "SwapIn" + extension,
+                "SwapOut" + extension
+        );
+    }
+
+    private void additionalNodeWithResources(TemporaryFolder tempFolder, DatabasePopulator databasePopulator, String label, String foreignSource, String foreignId, String ... resources) throws Throwable {
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode(label).setForeignSource(foreignSource).setForeignId(foreignId).setType(OnmsNode.NodeType.ACTIVE);
+        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P");
+
+        final String icmp = "ICMP";
+
+        OnmsServiceType service = databasePopulator.getServiceTypeDao().findByName(icmp);
+        if (service == null) {
+            service = new OnmsServiceType(icmp);
+            databasePopulator.getServiceTypeDao().save(service);
+            databasePopulator.getServiceTypeDao().flush();
+        }
+
+        builder.addService(service);
+
+        databasePopulator.getNodeDao().save(builder.getCurrentNode());
+        databasePopulator.getNodeDao().flush();
+
+        File nodeResourceDir = tempFolder.newFolder("snmp", databasePopulator.getNodeDao().getForeignIdToNodeIdMap(foreignSource).get(foreignId).toString());
+
+        for(String resource : resources) {
+            FileUtils.touch(new File(nodeResourceDir, resource));
+        }
     }
 
     @Test
@@ -115,18 +169,28 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, 404);
 
         // By resource
-        url = "/graphs/for/" + URLEncoder.encode("node[1].nodeSnmp[]", "UTF-8");
+        url = "/graphs/for/" + URLEncoder.encode("node[1].nodeSnmp[]", StandardCharsets.UTF_8.name());
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("netsnmp.swapinout"));
 
         // 404 on invalid resource
-        url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", "UTF-8");
+        url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", StandardCharsets.UTF_8.name());
         sendRequest(GET, url, 404);
 
         url = "/graphs/fornode/1";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("netsnmp.swapinout"));
         assertTrue(xml.contains("Node-level Performance Data"));
-    }
 
+        url = "/graphs/for/" + URLEncoder.encode("node[" + dummyForeignSource + ":non-existing-id].nodeSnmp[]", StandardCharsets.UTF_8.name());
+        sendRequest(GET, url, 404);
+
+        url = "/graphs/for/" + URLEncoder.encode("node[" + dummyForeignSource + ":" + dummyForeignIdA + "].nodeSnmp[]", StandardCharsets.UTF_8.name());
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("netsnmp.swapinout"));
+
+        url = "/graphs/for/" + URLEncoder.encode("node[" + dummyForeignSource + ":" + dummyForeignIdB + "].nodeSnmp[]", StandardCharsets.UTF_8.name());
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("netsnmp.swapinout"));
+    }
 }
