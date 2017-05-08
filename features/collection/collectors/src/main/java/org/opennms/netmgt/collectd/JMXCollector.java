@@ -48,7 +48,6 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
@@ -236,10 +235,9 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
         nodeInfo.setDsMap(dsList);
         nodeInfo.setMBeans(JMXDataCollectionConfigDao.getMBeanInfo(jmxCollection));
 
-        // Metrics collected from JMX are currently modeled as "interface" resources with
-        // the interface name set to the service name
-        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-        final InterfaceLevelResource ifResource = new InterfaceLevelResource(nodeResource, collDir);
+        // Metrics collected from JMX are currently modeled as node level resources,
+        // but live in a sub-directory set to the service name
+        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId(), collDir);
 
         // Used to gather the results
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
@@ -300,7 +298,7 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
                     metricId = metricId.concat(ds.getName());
                     metricId = "JMX_".concat(metricId);
 
-                    collectionSetBuilder.withIdentifiedNumericAttribute(ifResource, groupName, ds.getName(), value, ds.getType(), metricId);
+                    collectionSetBuilder.withIdentifiedNumericAttribute(nodeResource, groupName, ds.getName(), value, ds.getType(), metricId);
                 }
             });
         } catch (final Exception e) {

@@ -45,6 +45,9 @@ public class NodeLevelResourceDTO {
     @XmlAttribute(name = "node-id")
     private int nodeId;
 
+    @XmlAttribute(name = "path")
+    private String path;
+
     @XmlAttribute(name = "timestamp")
     private Date timestamp;
 
@@ -57,12 +60,12 @@ public class NodeLevelResourceDTO {
 
     @Override
     public String toString() {
-        return String.format("NodeLevelResourceDTO[nodeId=%d]", nodeId);
+        return String.format("NodeLevelResourceDTO[nodeId=%d, path=%s]", nodeId, path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nodeId, timestamp);
+        return Objects.hash(nodeId, path, timestamp);
     }
 
     @Override
@@ -76,11 +79,12 @@ public class NodeLevelResourceDTO {
         }
         NodeLevelResourceDTO other = (NodeLevelResourceDTO) obj;
         return Objects.equals(this.nodeId, other.nodeId)
+                && Objects.equals(this.path, other.path)
                 && Objects.equals(this.timestamp, other.timestamp);
     }
 
     public NodeLevelResource toResource() {
-        final NodeLevelResource resource = new NodeLevelResource(nodeId);
+        final NodeLevelResource resource = new NodeLevelResource(nodeId, path);
         resource.setTimestamp(timestamp);
         return resource;
     }
