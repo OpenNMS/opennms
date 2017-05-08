@@ -91,6 +91,24 @@
                 );
             };
 
+            // Update the severity
+            $scope.setSeverityFilter = function(searchClause) {
+                $scope.$parent.query.searchClauses = [];
+                $scope.$parent.query.searchParam = '';
+                $scope.$parent.addSearchClause(searchClause);
+            };
+
+            // set clause
+            if ($scope.$parent.query.searchClauses.length > 0) {
+                var clause = $scope.$parent.query.searchClauses[0];
+                var clone = {
+                    property: clause.property,
+                    value: clause.value,
+                    operator: clause.operator
+                };
+                $scope.clause = clone;
+            }
+
 
             // Refresh the item list;
             $scope.$parent.refresh();

@@ -8,7 +8,7 @@
                     <div class="modal-body">
                         <!-- Filter form -->
                         <label>Add Filter:</label>
-                        <form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
+                        <form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="setSeverityFilter(clause)">
                             <div class="form-group">
                                 <select class="form-control" ng-model="clause.property" ng-init="clause.property = 'severity'">
                                     <option value="severity">Severity</option>
@@ -22,15 +22,15 @@
                                     <option value="GE">&gt;=</option>
                                 </select>
                                 <select name="clause-value-severity" class="form-control" ng-model="clause.value">
-                                    <option value="normal">Normal</option>
-                                    <option value="warning">Warning</option>
-                                    <option value="minor">Minor</option>
-                                    <option value="major">Major</option>
-                                    <option value="critical">Critical</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Warning">Warning</option>
+                                    <option value="Minor">Minor</option>
+                                    <option value="Major">Major</option>
+                                    <option value="Critical">Critical</option>
                                 </select>
                             </div>
                             <br/><br/>
-                            <button class="btn btn-default" type="submit">Submit</button>
+                            <button class="btn btn-default btn-primary" type="submit">Submit</button>
                         </form>
                     </div>
                 </div>
