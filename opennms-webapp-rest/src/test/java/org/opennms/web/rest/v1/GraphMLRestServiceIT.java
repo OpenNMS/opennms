@@ -33,11 +33,15 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.test.xml.XmlTest;
+import org.opennms.features.graphml.service.GraphmlRepository;
+import org.opennms.features.graphml.service.InMemoryGraphmlRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -64,6 +68,10 @@ public class GraphMLRestServiceIT extends AbstractSpringJerseyRestTestCase {
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
         System.setProperty("opennms.home", "target/" + getClass().getSimpleName().toLowerCase());
+
+        // Register dummy graphml repository
+        final ServiceRegistry serviceRegistry = BeanUtils.getBean("soaContext", "serviceRegistry", ServiceRegistry.class);
+        serviceRegistry.register(new InMemoryGraphmlRepository(), GraphmlRepository.class);
     }
 
     @Test

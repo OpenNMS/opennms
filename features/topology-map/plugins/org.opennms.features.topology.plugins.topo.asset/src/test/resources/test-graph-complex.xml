@@ -1,0 +1,1129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:ns2="http://www.w3.org/1999/xlink">
+    <key id="label" for="graphml" attr.name="label" attr.type="string"/>
+    <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"/>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"/>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"/>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"/>
+    <key id="description" for="graph" attr.name="description" attr.type="string"/>
+    <key id="vertex-status-provider" for="graph" attr.name="vertex-status-provider" attr.type="boolean"/>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <key id="label" for="node" attr.name="label" attr.type="string"/>
+    <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"/>
+    <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"/>
+    <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"/>
+    <data key="label">testgraph</data>
+    <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
+    <graph id="asset:asset-region">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:asset-region</data>
+        <data key="label">Region</data>
+        <data key="description">Displays all regions of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="region_A">
+            <data key="label">region_A</data>
+        </node>
+        <node id="region_B">
+            <data key="label">region_B</data>
+        </node>
+        <edge id="region_A_region_A.21" source="region_A" target="region_A.21"/>
+        <edge id="region_A_region_A.22" source="region_A" target="region_A.22"/>
+        <edge id="region_A_region_A.28" source="region_A" target="region_A.28"/>
+        <edge id="region_B_region_B.31" source="region_B" target="region_B.31"/>
+        <edge id="region_B_region_B.32" source="region_B" target="region_B.32"/>
+        <edge id="region_B_region_B.33" source="region_B" target="region_B.33"/>
+        <edge id="region_B_region_B.34" source="region_B" target="region_B.34"/>
+        <edge id="region_B_region_B.35" source="region_B" target="region_B.35"/>
+        <edge id="region_B_region_B.36" source="region_B" target="region_B.36"/>
+    </graph>
+    <graph id="asset:asset-building">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:asset-building</data>
+        <data key="label">Building</data>
+        <data key="description">Displays all buildings of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="region_A.21">
+            <data key="label">21</data>
+        </node>
+        <node id="region_A.22">
+            <data key="label">22</data>
+        </node>
+        <node id="region_A.28">
+            <data key="label">28</data>
+        </node>
+        <node id="region_B.31">
+            <data key="label">31</data>
+        </node>
+        <node id="region_B.32">
+            <data key="label">32</data>
+        </node>
+        <node id="region_B.33">
+            <data key="label">33</data>
+        </node>
+        <node id="region_B.34">
+            <data key="label">34</data>
+        </node>
+        <node id="region_B.35">
+            <data key="label">35</data>
+        </node>
+        <node id="region_B.36">
+            <data key="label">36</data>
+        </node>
+        <edge id="region_A.21_region_A.21.A" source="region_A.21" target="region_A.21.A"/>
+        <edge id="region_A.21_region_A.21.B" source="region_A.21" target="region_A.21.B"/>
+        <edge id="region_A.22_region_A.22.A" source="region_A.22" target="region_A.22.A"/>
+        <edge id="region_A.22_region_A.22.B" source="region_A.22" target="region_A.22.B"/>
+        <edge id="region_A.28_region_A.28.A" source="region_A.28" target="region_A.28.A"/>
+        <edge id="region_A.28_region_A.28.B" source="region_A.28" target="region_A.28.B"/>
+        <edge id="region_B.31_region_B.31.A" source="region_B.31" target="region_B.31.A"/>
+        <edge id="region_B.31_region_B.31.B" source="region_B.31" target="region_B.31.B"/>
+        <edge id="region_B.32_region_B.32.A" source="region_B.32" target="region_B.32.A"/>
+        <edge id="region_B.32_region_B.32.B" source="region_B.32" target="region_B.32.B"/>
+        <edge id="region_B.33_region_B.33.A" source="region_B.33" target="region_B.33.A"/>
+        <edge id="region_B.34_region_B.34.A" source="region_B.34" target="region_B.34.A"/>
+        <edge id="region_B.34_region_B.34.B" source="region_B.34" target="region_B.34.B"/>
+        <edge id="region_B.35_region_B.35.A" source="region_B.35" target="region_B.35.A"/>
+        <edge id="region_B.35_region_B.35.B" source="region_B.35" target="region_B.35.B"/>
+        <edge id="region_B.36_region_B.36.A" source="region_B.36" target="region_B.36.A"/>
+        <edge id="region_B.36_region_B.36.B" source="region_B.36" target="region_B.36.B"/>
+    </graph>
+    <graph id="asset:asset-rack">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:asset-rack</data>
+        <data key="label">Rack</data>
+        <data key="description">Displays all racks of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="region_A.21.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_A.21.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_A.22.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_A.22.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_A.28.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_A.28.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_B.31.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.31.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_B.32.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.32.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_B.33.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.34.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.34.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_B.35.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.35.B">
+            <data key="label">B</data>
+        </node>
+        <node id="region_B.36.A">
+            <data key="label">A</data>
+        </node>
+        <node id="region_B.36.B">
+            <data key="label">B</data>
+        </node>
+        <edge id="region_A.21.A_nodes:25:2102-0502" source="region_A.21.A" target="nodes:25:2102-0502"/>
+        <edge id="region_A.21.A_nodes:26:2102-0503" source="region_A.21.A" target="nodes:26:2102-0503"/>
+        <edge id="region_A.21.A_nodes:27:2102-0504" source="region_A.21.A" target="nodes:27:2102-0504"/>
+        <edge id="region_A.21.A_nodes:11:2101-0903" source="region_A.21.A" target="nodes:11:2101-0903"/>
+        <edge id="region_A.21.A_nodes:17:2101-0904" source="region_A.21.A" target="nodes:17:2101-0904"/>
+        <edge id="region_A.21.A_nodes:31:2102-0501" source="region_A.21.A" target="nodes:31:2102-0501"/>
+        <edge id="region_A.21.A_nodes:12:2101-0701" source="region_A.21.A" target="nodes:12:2101-0701"/>
+        <edge id="region_A.21.A_nodes:18:2101-0801-1" source="region_A.21.A" target="nodes:18:2101-0801-1"/>
+        <edge id="region_A.21.A_nodes:2:2101-0101" source="region_A.21.A" target="nodes:2:2101-0101"/>
+        <edge id="region_A.21.A_nodes:15:2102-0702" source="region_A.21.A" target="nodes:15:2102-0702"/>
+        <edge id="region_A.21.A_nodes:13:2102-0601" source="region_A.21.A" target="nodes:13:2102-0601"/>
+        <edge id="region_A.21.A_nodes:21:2102-0901" source="region_A.21.A" target="nodes:21:2102-0901"/>
+        <edge id="region_A.21.A_nodes:5:2101-0601" source="region_A.21.A" target="nodes:5:2101-0601"/>
+        <edge id="region_A.21.A_nodes:19:2102-0301" source="region_A.21.A" target="nodes:19:2102-0301"/>
+        <edge id="region_A.21.A_nodes:24:2102-1601" source="region_A.21.A" target="nodes:24:2102-1601"/>
+        <edge id="region_A.21.A_nodes:8:2101-1202" source="region_A.21.A" target="nodes:8:2101-1202"/>
+        <edge id="region_A.21.A_nodes:6:2101-0301" source="region_A.21.A" target="nodes:6:2101-0301"/>
+        <edge id="region_A.21.A_nodes:29:2102-0904" source="region_A.21.A" target="nodes:29:2102-0904"/>
+        <edge id="region_A.21.A_nodes:16:2102-0703" source="region_A.21.A" target="nodes:16:2102-0703"/>
+        <edge id="region_A.21.A_nodes:4:2101-0703" source="region_A.21.A" target="nodes:4:2101-0703"/>
+        <edge id="region_A.21.A_nodes:23:2102-0903" source="region_A.21.A" target="nodes:23:2102-0903"/>
+        <edge id="region_A.21.A_nodes:1:2101-0702" source="region_A.21.A" target="nodes:1:2101-0702"/>
+        <edge id="region_A.21.A_nodes:22:2102-0902" source="region_A.21.A" target="nodes:22:2102-0902"/>
+        <edge id="region_A.21.A_nodes:3:2101-1201" source="region_A.21.A" target="nodes:3:2101-1201"/>
+        <edge id="region_A.21.A_nodes:14:2102-0701" source="region_A.21.A" target="nodes:14:2102-0701"/>
+        <edge id="region_A.21.A_nodes:9:2101-0901" source="region_A.21.A" target="nodes:9:2101-0901"/>
+        <edge id="region_A.21.A_nodes:7:2101-1601" source="region_A.21.A" target="nodes:7:2101-1601"/>
+        <edge id="region_A.21.B_nodes:20:2102-1201" source="region_A.21.B" target="nodes:20:2102-1201"/>
+        <edge id="region_A.21.B_nodes:10:2101-0902" source="region_A.21.B" target="nodes:10:2101-0902"/>
+        <edge id="region_A.21.B_nodes:30:2102-0704" source="region_A.21.B" target="nodes:30:2102-0704"/>
+        <edge id="region_A.22.A_nodes:39:2202-0301" source="region_A.22.A" target="nodes:39:2202-0301"/>
+        <edge id="region_A.22.A_nodes:33:2201-1601" source="region_A.22.A" target="nodes:33:2201-1601"/>
+        <edge id="region_A.22.A_nodes:34:2201-1202" source="region_A.22.A" target="nodes:34:2201-1202"/>
+        <edge id="region_A.22.A_nodes:47:2202-0705" source="region_A.22.A" target="nodes:47:2202-0705"/>
+        <edge id="region_A.22.A_nodes:46:2202-0704" source="region_A.22.A" target="nodes:46:2202-0704"/>
+        <edge id="region_A.22.A_nodes:37:2201-0705" source="region_A.22.A" target="nodes:37:2201-0705"/>
+        <edge id="region_A.22.A_nodes:32:2201-0601" source="region_A.22.A" target="nodes:32:2201-0601"/>
+        <edge id="region_A.22.A_nodes:38:2201-0801-1" source="region_A.22.A" target="nodes:38:2201-0801-1"/>
+        <edge id="region_A.22.A_nodes:48:2202-0701" source="region_A.22.A" target="nodes:48:2202-0701"/>
+        <edge id="region_A.22.A_nodes:28:2201-0101" source="region_A.22.A" target="nodes:28:2201-0101"/>
+        <edge id="region_A.22.A_nodes:42:2201-0703" source="region_A.22.A" target="nodes:42:2201-0703"/>
+        <edge id="region_A.22.A_nodes:41:2201-0702" source="region_A.22.A" target="nodes:41:2201-0702"/>
+        <edge id="region_A.22.A_nodes:36:2201-0301" source="region_A.22.A" target="nodes:36:2201-0301"/>
+        <edge id="region_A.22.A_nodes:53:2202-0801-2" source="region_A.22.A" target="nodes:53:2202-0801-2"/>
+        <edge id="region_A.22.A_nodes:44:2202-0702" source="region_A.22.A" target="nodes:44:2202-0702"/>
+        <edge id="region_A.22.A_nodes:45:2202-0703" source="region_A.22.A" target="nodes:45:2202-0703"/>
+        <edge id="region_A.22.A_nodes:43:2201-0704" source="region_A.22.A" target="nodes:43:2201-0704"/>
+        <edge id="region_A.22.A_nodes:35:2201-0701" source="region_A.22.A" target="nodes:35:2201-0701"/>
+        <edge id="region_A.22.B_nodes:40:2202-0601" source="region_A.22.B" target="nodes:40:2202-0601"/>
+        <edge id="region_A.28.A_nodes:57:2801-0906" source="region_A.28.A" target="nodes:57:2801-0906"/>
+        <edge id="region_A.28.A_nodes:56:2801-0905" source="region_A.28.A" target="nodes:56:2801-0905"/>
+        <edge id="region_A.28.A_nodes:52:2801-1202" source="region_A.28.A" target="nodes:52:2801-1202"/>
+        <edge id="region_A.28.A_nodes:55:2801-0301" source="region_A.28.A" target="nodes:55:2801-0301"/>
+        <edge id="region_A.28.A_nodes:51:2801-1201" source="region_A.28.A" target="nodes:51:2801-1201"/>
+        <edge id="region_A.28.A_nodes:59:2801-0801-1" source="region_A.28.A" target="nodes:59:2801-0801-1"/>
+        <edge id="region_A.28.A_nodes:54:2801-0101" source="region_A.28.A" target="nodes:54:2801-0101"/>
+        <edge id="region_A.28.A_nodes:58:2801-0907" source="region_A.28.A" target="nodes:58:2801-0907"/>
+        <edge id="region_A.28.A_nodes:49:2801-0601" source="region_A.28.A" target="nodes:49:2801-0601"/>
+        <edge id="region_A.28.B_nodes:50:2801-1601" source="region_A.28.B" target="nodes:50:2801-1601"/>
+        <edge id="region_A.28.B_nodes:60:2801-0904" source="region_A.28.B" target="nodes:60:2801-0904"/>
+        <edge id="region_B.31.A_nodes:66:3101-0301" source="region_B.31.A" target="nodes:66:3101-0301"/>
+        <edge id="region_B.31.A_nodes:64:3101-1601" source="region_B.31.A" target="nodes:64:3101-1601"/>
+        <edge id="region_B.31.A_nodes:71:3101-0904" source="region_B.31.A" target="nodes:71:3101-0904"/>
+        <edge id="region_B.31.A_nodes:72:3101-1201" source="region_B.31.A" target="nodes:72:3101-1201"/>
+        <edge id="region_B.31.A_nodes:77:3101-0801-1" source="region_B.31.A" target="nodes:77:3101-0801-1"/>
+        <edge id="region_B.31.A_nodes:65:3101-0101" source="region_B.31.A" target="nodes:65:3101-0101"/>
+        <edge id="region_B.31.A_nodes:68:3101-0901" source="region_B.31.A" target="nodes:68:3101-0901"/>
+        <edge id="region_B.31.A_nodes:62:3101-0702" source="region_B.31.A" target="nodes:62:3101-0702"/>
+        <edge id="region_B.31.A_nodes:67:3101-0601" source="region_B.31.A" target="nodes:67:3101-0601"/>
+        <edge id="region_B.31.A_nodes:69:3101-0902" source="region_B.31.A" target="nodes:69:3101-0902"/>
+        <edge id="region_B.31.A_nodes:61:3101-0701" source="region_B.31.A" target="nodes:61:3101-0701"/>
+        <edge id="region_B.31.A_nodes:63:3101-0703" source="region_B.31.A" target="nodes:63:3101-0703"/>
+        <edge id="region_B.31.B_nodes:70:3101-0903" source="region_B.31.B" target="nodes:70:3101-0903"/>
+        <edge id="region_B.32.A_nodes:82:3201-0902" source="region_B.32.A" target="nodes:82:3201-0902"/>
+        <edge id="region_B.32.A_nodes:89:3201-0904" source="region_B.32.A" target="nodes:89:3201-0904"/>
+        <edge id="region_B.32.A_nodes:83:3201-0903" source="region_B.32.A" target="nodes:83:3201-0903"/>
+        <edge id="region_B.32.A_nodes:73:3201-0601" source="region_B.32.A" target="nodes:73:3201-0601"/>
+        <edge id="region_B.32.A_nodes:78:3201-0301" source="region_B.32.A" target="nodes:78:3201-0301"/>
+        <edge id="region_B.32.A_nodes:76:3201-0703" source="region_B.32.A" target="nodes:76:3201-0703"/>
+        <edge id="region_B.32.A_nodes:81:3201-1201" source="region_B.32.A" target="nodes:81:3201-1201"/>
+        <edge id="region_B.32.A_nodes:79:3201-0101" source="region_B.32.A" target="nodes:79:3201-0101"/>
+        <edge id="region_B.32.A_nodes:84:3201-1601" source="region_B.32.A" target="nodes:84:3201-1601"/>
+        <edge id="region_B.32.A_nodes:74:3201-0701" source="region_B.32.A" target="nodes:74:3201-0701"/>
+        <edge id="region_B.32.A_nodes:75:3201-0702" source="region_B.32.A" target="nodes:75:3201-0702"/>
+        <edge id="region_B.32.B_nodes:80:3201-0901" source="region_B.32.B" target="nodes:80:3201-0901"/>
+        <edge id="region_B.32.B_nodes:90:3201-0801-1" source="region_B.32.B" target="nodes:90:3201-0801-1"/>
+        <edge id="region_B.33.A_nodes:101:3301-0903" source="region_B.33.A" target="nodes:101:3301-0903"/>
+        <edge id="region_B.33.A_nodes:93:3301-1201" source="region_B.33.A" target="nodes:93:3301-1201"/>
+        <edge id="region_B.33.A_nodes:102:3301-0904" source="region_B.33.A" target="nodes:102:3301-0904"/>
+        <edge id="region_B.33.A_nodes:91:3301-0101" source="region_B.33.A" target="nodes:91:3301-0101"/>
+        <edge id="region_B.33.A_nodes:96:3201-0703" source="region_B.33.A" target="nodes:96:3201-0703"/>
+        <edge id="region_B.33.A_nodes:85:3301-0301" source="region_B.33.A" target="nodes:85:3301-0301"/>
+        <edge id="region_B.33.A_nodes:94:3301-0901" source="region_B.33.A" target="nodes:94:3301-0901"/>
+        <edge id="region_B.33.A_nodes:95:3301-0902" source="region_B.33.A" target="nodes:95:3301-0902"/>
+        <edge id="region_B.33.A_nodes:103:3301-0801-1" source="region_B.33.A" target="nodes:103:3301-0801-1"/>
+        <edge id="region_B.33.A_nodes:92:3301-1601" source="region_B.33.A" target="nodes:92:3301-1601"/>
+        <edge id="region_B.33.A_nodes:86:3301-0601" source="region_B.33.A" target="nodes:86:3301-0601"/>
+        <edge id="region_B.33.A_nodes:87:3301-0701" source="region_B.33.A" target="nodes:87:3301-0701"/>
+        <edge id="region_B.33.A_nodes:88:3301-0702" source="region_B.33.A" target="nodes:88:3301-0702"/>
+        <edge id="region_B.34.A_nodes:106:3401-1201" source="region_B.34.A" target="nodes:106:3401-1201"/>
+        <edge id="region_B.34.A_nodes:109:3401-0801-1" source="region_B.34.A" target="nodes:109:3401-0801-1"/>
+        <edge id="region_B.34.A_nodes:98:3401-0301" source="region_B.34.A" target="nodes:98:3401-0301"/>
+        <edge id="region_B.34.A_nodes:104:3401-0703" source="region_B.34.A" target="nodes:104:3401-0703"/>
+        <edge id="region_B.34.A_nodes:107:3401-0901" source="region_B.34.A" target="nodes:107:3401-0901"/>
+        <edge id="region_B.34.A_nodes:108:3401-0702" source="region_B.34.A" target="nodes:108:3401-0702"/>
+        <edge id="region_B.34.A_nodes:113:3401-0902" source="region_B.34.A" target="nodes:113:3401-0902"/>
+        <edge id="region_B.34.A_nodes:99:3401-0601" source="region_B.34.A" target="nodes:99:3401-0601"/>
+        <edge id="region_B.34.A_nodes:97:3401-0101" source="region_B.34.A" target="nodes:97:3401-0101"/>
+        <edge id="region_B.34.A_nodes:114:3401-0903" source="region_B.34.A" target="nodes:114:3401-0903"/>
+        <edge id="region_B.34.A_nodes:115:3401-0904" source="region_B.34.A" target="nodes:115:3401-0904"/>
+        <edge id="region_B.34.A_nodes:105:3401-1601" source="region_B.34.A" target="nodes:105:3401-1601"/>
+        <edge id="region_B.34.B_nodes:100:3401-0701" source="region_B.34.B" target="nodes:100:3401-0701"/>
+        <edge id="region_B.35.A_nodes:119:3501-1201" source="region_B.35.A" target="nodes:119:3501-1201"/>
+        <edge id="region_B.35.A_nodes:125:3501-0901" source="region_B.35.A" target="nodes:125:3501-0901"/>
+        <edge id="region_B.35.A_nodes:112:3501-0601" source="region_B.35.A" target="nodes:112:3501-0601"/>
+        <edge id="region_B.35.A_nodes:122:3501-0801-1" source="region_B.35.A" target="nodes:122:3501-0801-1"/>
+        <edge id="region_B.35.A_nodes:127:3501-0903" source="region_B.35.A" target="nodes:127:3501-0903"/>
+        <edge id="region_B.35.A_nodes:117:3501-0703" source="region_B.35.A" target="nodes:117:3501-0703"/>
+        <edge id="region_B.35.A_nodes:126:3501-0902" source="region_B.35.A" target="nodes:126:3501-0902"/>
+        <edge id="region_B.35.A_nodes:116:3501-0702" source="region_B.35.A" target="nodes:116:3501-0702"/>
+        <edge id="region_B.35.A_nodes:111:3501-0301" source="region_B.35.A" target="nodes:111:3501-0301"/>
+        <edge id="region_B.35.A_nodes:121:3501-0904" source="region_B.35.A" target="nodes:121:3501-0904"/>
+        <edge id="region_B.35.A_nodes:118:3501-1601" source="region_B.35.A" target="nodes:118:3501-1601"/>
+        <edge id="region_B.35.B_nodes:120:3501-0701" source="region_B.35.B" target="nodes:120:3501-0701"/>
+        <edge id="region_B.35.B_nodes:110:3501-0101" source="region_B.35.B" target="nodes:110:3501-0101"/>
+        <edge id="region_B.36.A_nodes:137:3601-0901" source="region_B.36.A" target="nodes:137:3601-0901"/>
+        <edge id="region_B.36.A_nodes:136:3601-1201" source="region_B.36.A" target="nodes:136:3601-1201"/>
+        <edge id="region_B.36.A_nodes:135:3601-0801-1" source="region_B.36.A" target="nodes:135:3601-0801-1"/>
+        <edge id="region_B.36.A_nodes:131:3601-1601" source="region_B.36.A" target="nodes:131:3601-1601"/>
+        <edge id="region_B.36.A_nodes:123:3601-0101" source="region_B.36.A" target="nodes:123:3601-0101"/>
+        <edge id="region_B.36.A_nodes:133:3601-0903" source="region_B.36.A" target="nodes:133:3601-0903"/>
+        <edge id="region_B.36.A_nodes:128:3601-0701" source="region_B.36.A" target="nodes:128:3601-0701"/>
+        <edge id="region_B.36.A_nodes:129:3601-0702" source="region_B.36.A" target="nodes:129:3601-0702"/>
+        <edge id="region_B.36.A_nodes:132:3601-0601" source="region_B.36.A" target="nodes:132:3601-0601"/>
+        <edge id="region_B.36.A_nodes:134:3601-0904" source="region_B.36.A" target="nodes:134:3601-0904"/>
+        <edge id="region_B.36.A_nodes:138:3601-0902" source="region_B.36.A" target="nodes:138:3601-0902"/>
+        <edge id="region_B.36.A_nodes:124:3601-0301" source="region_B.36.A" target="nodes:124:3601-0301"/>
+        <edge id="region_B.36.B_nodes:130:3601-0703" source="region_B.36.B" target="nodes:130:3601-0703"/>
+    </graph>
+    <graph id="asset:nodes">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:nodes</data>
+        <data key="label">Nodes</data>
+        <data key="description">The nodes in the hierarchy of the topology</data>
+        <data key="vertex-status-provider">true</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="nodes:25:2102-0502">
+            <data key="foreignID">630878819443779</data>
+            <data key="label">2102-0502</data>
+            <data key="nodeID">25</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:26:2102-0503">
+            <data key="foreignID">630878819443780</data>
+            <data key="label">2102-0503</data>
+            <data key="nodeID">26</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:27:2102-0504">
+            <data key="foreignID">630878819443781</data>
+            <data key="label">2102-0504</data>
+            <data key="nodeID">27</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:11:2101-0903">
+            <data key="foreignID">630878819443763</data>
+            <data key="label">2101-0903</data>
+            <data key="nodeID">11</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:17:2101-0904">
+            <data key="foreignID">630878819443764</data>
+            <data key="label">2101-0904</data>
+            <data key="nodeID">17</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:31:2102-0501">
+            <data key="foreignID">630878819443778</data>
+            <data key="label">2102-0501</data>
+            <data key="nodeID">31</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:12:2101-0701">
+            <data key="foreignID">630878819443755</data>
+            <data key="label">2101-0701</data>
+            <data key="nodeID">12</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:18:2101-0801-1">
+            <data key="foreignID">630878819443765</data>
+            <data key="label">2101-0801-1</data>
+            <data key="nodeID">18</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:2:2101-0101">
+            <data key="foreignID">630878819443752</data>
+            <data key="label">2101-0101</data>
+            <data key="nodeID">2</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:15:2102-0702">
+            <data key="foreignID">630878819443769</data>
+            <data key="label">2102-0702</data>
+            <data key="nodeID">15</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:13:2102-0601">
+            <data key="foreignID">630878819443767</data>
+            <data key="label">2102-0601</data>
+            <data key="nodeID">13</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:21:2102-0901">
+            <data key="foreignID">630878819443773</data>
+            <data key="label">2102-0901</data>
+            <data key="nodeID">21</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:5:2101-0601">
+            <data key="foreignID">630878819443754</data>
+            <data key="label">2101-0601</data>
+            <data key="nodeID">5</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:19:2102-0301">
+            <data key="foreignID">630878819443766</data>
+            <data key="label">2102-0301</data>
+            <data key="nodeID">19</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:24:2102-1601">
+            <data key="foreignID">630878819443771</data>
+            <data key="label">2102-1601</data>
+            <data key="nodeID">24</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:8:2101-1202">
+            <data key="foreignID">630878819443760</data>
+            <data key="label">2101-1202</data>
+            <data key="nodeID">8</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:6:2101-0301">
+            <data key="foreignID">630878819443753</data>
+            <data key="label">2101-0301</data>
+            <data key="nodeID">6</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:29:2102-0904">
+            <data key="foreignID">630878819443776</data>
+            <data key="label">2102-0904</data>
+            <data key="nodeID">29</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:16:2102-0703">
+            <data key="foreignID">630878819443770</data>
+            <data key="label">2102-0703</data>
+            <data key="nodeID">16</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:4:2101-0703">
+            <data key="foreignID">630878819443757</data>
+            <data key="label">2101-0703</data>
+            <data key="nodeID">4</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:23:2102-0903">
+            <data key="foreignID">630878819443775</data>
+            <data key="label">2102-0903</data>
+            <data key="nodeID">23</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:1:2101-0702">
+            <data key="foreignID">630878819443756</data>
+            <data key="label">2101-0702</data>
+            <data key="nodeID">1</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:22:2102-0902">
+            <data key="foreignID">630878819443774</data>
+            <data key="label">2102-0902</data>
+            <data key="nodeID">22</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:3:2101-1201">
+            <data key="foreignID">630878819443759</data>
+            <data key="label">2101-1201</data>
+            <data key="nodeID">3</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:14:2102-0701">
+            <data key="foreignID">630878819443768</data>
+            <data key="label">2102-0701</data>
+            <data key="nodeID">14</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:9:2101-0901">
+            <data key="foreignID">630878819443761</data>
+            <data key="label">2101-0901</data>
+            <data key="nodeID">9</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:7:2101-1601">
+            <data key="foreignID">630878819443758</data>
+            <data key="label">2101-1601</data>
+            <data key="nodeID">7</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:20:2102-1201">
+            <data key="foreignID">630878819443772</data>
+            <data key="label">2102-1201</data>
+            <data key="nodeID">20</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:10:2101-0902">
+            <data key="foreignID">630878819443762</data>
+            <data key="label">2101-0902</data>
+            <data key="nodeID">10</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:30:2102-0704">
+            <data key="foreignID">630878819443777</data>
+            <data key="label">2102-0704</data>
+            <data key="nodeID">30</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:39:2202-0301">
+            <data key="foreignID">630878819443793</data>
+            <data key="label">2202-0301</data>
+            <data key="nodeID">39</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:33:2201-1601">
+            <data key="foreignID">630878819443785</data>
+            <data key="label">2201-1601</data>
+            <data key="nodeID">33</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:34:2201-1202">
+            <data key="foreignID">630878819443786</data>
+            <data key="label">2201-1202</data>
+            <data key="nodeID">34</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:47:2202-0705">
+            <data key="foreignID">630878819443799</data>
+            <data key="label">2202-0705</data>
+            <data key="nodeID">47</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:46:2202-0704">
+            <data key="foreignID">630878819443798</data>
+            <data key="label">2202-0704</data>
+            <data key="nodeID">46</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:37:2201-0705">
+            <data key="foreignID">630878819443791</data>
+            <data key="label">2201-0705</data>
+            <data key="nodeID">37</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:32:2201-0601">
+            <data key="foreignID">630878819443784</data>
+            <data key="label">2201-0601</data>
+            <data key="nodeID">32</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:38:2201-0801-1">
+            <data key="foreignID">630878819443792</data>
+            <data key="label">2201-0801-1</data>
+            <data key="nodeID">38</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:48:2202-0701">
+            <data key="foreignID">630878819443795</data>
+            <data key="label">2202-0701</data>
+            <data key="nodeID">48</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:28:2201-0101">
+            <data key="foreignID">630878819443782</data>
+            <data key="label">2201-0101</data>
+            <data key="nodeID">28</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:42:2201-0703">
+            <data key="foreignID">630878819443789</data>
+            <data key="label">2201-0703</data>
+            <data key="nodeID">42</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:41:2201-0702">
+            <data key="foreignID">630878819443788</data>
+            <data key="label">2201-0702</data>
+            <data key="nodeID">41</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:36:2201-0301">
+            <data key="foreignID">630878819443783</data>
+            <data key="label">2201-0301</data>
+            <data key="nodeID">36</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:53:2202-0801-2">
+            <data key="foreignID">630878819443800</data>
+            <data key="label">2202-0801-2</data>
+            <data key="nodeID">53</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:44:2202-0702">
+            <data key="foreignID">630878819443796</data>
+            <data key="label">2202-0702</data>
+            <data key="nodeID">44</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:45:2202-0703">
+            <data key="foreignID">630878819443797</data>
+            <data key="label">2202-0703</data>
+            <data key="nodeID">45</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:43:2201-0704">
+            <data key="foreignID">630878819443790</data>
+            <data key="label">2201-0704</data>
+            <data key="nodeID">43</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:35:2201-0701">
+            <data key="foreignID">630878819443787</data>
+            <data key="label">2201-0701</data>
+            <data key="nodeID">35</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:40:2202-0601">
+            <data key="foreignID">630878819443794</data>
+            <data key="label">2202-0601</data>
+            <data key="nodeID">40</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:57:2801-0906">
+            <data key="foreignID">630878819443809</data>
+            <data key="label">2801-0906</data>
+            <data key="nodeID">57</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:56:2801-0905">
+            <data key="foreignID">630878819443808</data>
+            <data key="label">2801-0905</data>
+            <data key="nodeID">56</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:52:2801-1202">
+            <data key="foreignID">630878819443806</data>
+            <data key="label">2801-1202</data>
+            <data key="nodeID">52</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:55:2801-0301">
+            <data key="foreignID">630878819443802</data>
+            <data key="label">2801-0301</data>
+            <data key="nodeID">55</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:51:2801-1201">
+            <data key="foreignID">630878819443805</data>
+            <data key="label">2801-1201</data>
+            <data key="nodeID">51</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:59:2801-0801-1">
+            <data key="foreignID">630878819443811</data>
+            <data key="label">2801-0801-1</data>
+            <data key="nodeID">59</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:54:2801-0101">
+            <data key="foreignID">630878819443801</data>
+            <data key="label">2801-0101</data>
+            <data key="nodeID">54</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:58:2801-0907">
+            <data key="foreignID">630878819443810</data>
+            <data key="label">2801-0907</data>
+            <data key="nodeID">58</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:49:2801-0601">
+            <data key="foreignID">630878819443803</data>
+            <data key="label">2801-0601</data>
+            <data key="nodeID">49</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:50:2801-1601">
+            <data key="foreignID">630878819443804</data>
+            <data key="label">2801-1601</data>
+            <data key="nodeID">50</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:60:2801-0904">
+            <data key="foreignID">630878819443807</data>
+            <data key="label">2801-0904</data>
+            <data key="nodeID">60</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:66:3101-0301">
+            <data key="foreignID">630878819443813</data>
+            <data key="label">3101-0301</data>
+            <data key="nodeID">66</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:64:3101-1601">
+            <data key="foreignID">630878819443818</data>
+            <data key="label">3101-1601</data>
+            <data key="nodeID">64</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:71:3101-0904">
+            <data key="foreignID">630878819443823</data>
+            <data key="label">3101-0904</data>
+            <data key="nodeID">71</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:72:3101-1201">
+            <data key="foreignID">630878819443819</data>
+            <data key="label">3101-1201</data>
+            <data key="nodeID">72</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:77:3101-0801-1">
+            <data key="foreignID">630878819443824</data>
+            <data key="label">3101-0801-1</data>
+            <data key="nodeID">77</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:65:3101-0101">
+            <data key="foreignID">630878819443812</data>
+            <data key="label">3101-0101</data>
+            <data key="nodeID">65</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:68:3101-0901">
+            <data key="foreignID">630878819443820</data>
+            <data key="label">3101-0901</data>
+            <data key="nodeID">68</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:62:3101-0702">
+            <data key="foreignID">630878819443816</data>
+            <data key="label">3101-0702</data>
+            <data key="nodeID">62</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:67:3101-0601">
+            <data key="foreignID">630878819443814</data>
+            <data key="label">3101-0601</data>
+            <data key="nodeID">67</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:69:3101-0902">
+            <data key="foreignID">630878819443821</data>
+            <data key="label">3101-0902</data>
+            <data key="nodeID">69</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:61:3101-0701">
+            <data key="foreignID">630878819443815</data>
+            <data key="label">3101-0701</data>
+            <data key="nodeID">61</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:63:3101-0703">
+            <data key="foreignID">630878819443817</data>
+            <data key="label">3101-0703</data>
+            <data key="nodeID">63</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:70:3101-0903">
+            <data key="foreignID">630878819443822</data>
+            <data key="label">3101-0903</data>
+            <data key="nodeID">70</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:82:3201-0902">
+            <data key="foreignID">630878819443834</data>
+            <data key="label">3201-0902</data>
+            <data key="nodeID">82</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:89:3201-0904">
+            <data key="foreignID">630878819443836</data>
+            <data key="label">3201-0904</data>
+            <data key="nodeID">89</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:83:3201-0903">
+            <data key="foreignID">630878819443835</data>
+            <data key="label">3201-0903</data>
+            <data key="nodeID">83</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:73:3201-0601">
+            <data key="foreignID">630878819443827</data>
+            <data key="label">3201-0601</data>
+            <data key="nodeID">73</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:78:3201-0301">
+            <data key="foreignID">630878819443826</data>
+            <data key="label">3201-0301</data>
+            <data key="nodeID">78</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:96:3201-0703">
+            <data key="foreignID">630878819443843</data>
+            <data key="label">3201-0703</data>
+            <data key="nodeID">96</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:76:3201-0703">
+            <data key="foreignID">630878819443830</data>
+            <data key="label">3201-0703</data>
+            <data key="nodeID">76</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:81:3201-1201">
+            <data key="foreignID">630878819443832</data>
+            <data key="label">3201-1201</data>
+            <data key="nodeID">81</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:79:3201-0101">
+            <data key="foreignID">630878819443825</data>
+            <data key="label">3201-0101</data>
+            <data key="nodeID">79</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:84:3201-1601">
+            <data key="foreignID">630878819443831</data>
+            <data key="label">3201-1601</data>
+            <data key="nodeID">84</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:74:3201-0701">
+            <data key="foreignID">630878819443828</data>
+            <data key="label">3201-0701</data>
+            <data key="nodeID">74</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:75:3201-0702">
+            <data key="foreignID">630878819443829</data>
+            <data key="label">3201-0702</data>
+            <data key="nodeID">75</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:80:3201-0901">
+            <data key="foreignID">630878819443833</data>
+            <data key="label">3201-0901</data>
+            <data key="nodeID">80</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:90:3201-0801-1">
+            <data key="foreignID">630878819443837</data>
+            <data key="label">3201-0801-1</data>
+            <data key="nodeID">90</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:101:3301-0903">
+            <data key="foreignID">630878819443848</data>
+            <data key="label">3301-0903</data>
+            <data key="nodeID">101</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:93:3301-1201">
+            <data key="foreignID">630878819443845</data>
+            <data key="label">3301-1201</data>
+            <data key="nodeID">93</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:102:3301-0904">
+            <data key="foreignID">630878819443849</data>
+            <data key="label">3301-0904</data>
+            <data key="nodeID">102</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:91:3301-0101">
+            <data key="foreignID">630878819443838</data>
+            <data key="label">3301-0101</data>
+            <data key="nodeID">91</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:85:3301-0301">
+            <data key="foreignID">630878819443839</data>
+            <data key="label">3301-0301</data>
+            <data key="nodeID">85</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:94:3301-0901">
+            <data key="foreignID">630878819443846</data>
+            <data key="label">3301-0901</data>
+            <data key="nodeID">94</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:95:3301-0902">
+            <data key="foreignID">630878819443847</data>
+            <data key="label">3301-0902</data>
+            <data key="nodeID">95</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:103:3301-0801-1">
+            <data key="foreignID">630878819443850</data>
+            <data key="label">3301-0801-1</data>
+            <data key="nodeID">103</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:92:3301-1601">
+            <data key="foreignID">630878819443844</data>
+            <data key="label">3301-1601</data>
+            <data key="nodeID">92</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:86:3301-0601">
+            <data key="foreignID">630878819443840</data>
+            <data key="label">3301-0601</data>
+            <data key="nodeID">86</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:87:3301-0701">
+            <data key="foreignID">630878819443841</data>
+            <data key="label">3301-0701</data>
+            <data key="nodeID">87</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:88:3301-0702">
+            <data key="foreignID">630878819443842</data>
+            <data key="label">3301-0702</data>
+            <data key="nodeID">88</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:106:3401-1201">
+            <data key="foreignID">630878819443858</data>
+            <data key="label">3401-1201</data>
+            <data key="nodeID">106</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:109:3401-0801-1">
+            <data key="foreignID">630878819443863</data>
+            <data key="label">3401-0801-1</data>
+            <data key="nodeID">109</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:98:3401-0301">
+            <data key="foreignID">630878819443852</data>
+            <data key="label">3401-0301</data>
+            <data key="nodeID">98</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:104:3401-0703">
+            <data key="foreignID">630878819443856</data>
+            <data key="label">3401-0703</data>
+            <data key="nodeID">104</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:107:3401-0901">
+            <data key="foreignID">630878819443859</data>
+            <data key="label">3401-0901</data>
+            <data key="nodeID">107</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:108:3401-0702">
+            <data key="foreignID">630878819443855</data>
+            <data key="label">3401-0702</data>
+            <data key="nodeID">108</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:113:3401-0902">
+            <data key="foreignID">630878819443860</data>
+            <data key="label">3401-0902</data>
+            <data key="nodeID">113</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:99:3401-0601">
+            <data key="foreignID">630878819443853</data>
+            <data key="label">3401-0601</data>
+            <data key="nodeID">99</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:97:3401-0101">
+            <data key="foreignID">630878819443851</data>
+            <data key="label">3401-0101</data>
+            <data key="nodeID">97</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:114:3401-0903">
+            <data key="foreignID">630878819443861</data>
+            <data key="label">3401-0903</data>
+            <data key="nodeID">114</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:115:3401-0904">
+            <data key="foreignID">630878819443862</data>
+            <data key="label">3401-0904</data>
+            <data key="nodeID">115</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:105:3401-1601">
+            <data key="foreignID">630878819443857</data>
+            <data key="label">3401-1601</data>
+            <data key="nodeID">105</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:100:3401-0701">
+            <data key="foreignID">630878819443854</data>
+            <data key="label">3401-0701</data>
+            <data key="nodeID">100</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:119:3501-1201">
+            <data key="foreignID">630878819443871</data>
+            <data key="label">3501-1201</data>
+            <data key="nodeID">119</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:125:3501-0901">
+            <data key="foreignID">630878819443872</data>
+            <data key="label">3501-0901</data>
+            <data key="nodeID">125</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:112:3501-0601">
+            <data key="foreignID">630878819443866</data>
+            <data key="label">3501-0601</data>
+            <data key="nodeID">112</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:122:3501-0801-1">
+            <data key="foreignID">630878819443876</data>
+            <data key="label">3501-0801-1</data>
+            <data key="nodeID">122</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:127:3501-0903">
+            <data key="foreignID">630878819443874</data>
+            <data key="label">3501-0903</data>
+            <data key="nodeID">127</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:117:3501-0703">
+            <data key="foreignID">630878819443869</data>
+            <data key="label">3501-0703</data>
+            <data key="nodeID">117</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:126:3501-0902">
+            <data key="foreignID">630878819443873</data>
+            <data key="label">3501-0902</data>
+            <data key="nodeID">126</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:116:3501-0702">
+            <data key="foreignID">630878819443868</data>
+            <data key="label">3501-0702</data>
+            <data key="nodeID">116</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:111:3501-0301">
+            <data key="foreignID">630878819443865</data>
+            <data key="label">3501-0301</data>
+            <data key="nodeID">111</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:121:3501-0904">
+            <data key="foreignID">630878819443875</data>
+            <data key="label">3501-0904</data>
+            <data key="nodeID">121</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:118:3501-1601">
+            <data key="foreignID">630878819443870</data>
+            <data key="label">3501-1601</data>
+            <data key="nodeID">118</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:120:3501-0701">
+            <data key="foreignID">630878819443867</data>
+            <data key="label">3501-0701</data>
+            <data key="nodeID">120</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:110:3501-0101">
+            <data key="foreignID">630878819443864</data>
+            <data key="label">3501-0101</data>
+            <data key="nodeID">110</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:137:3601-0901">
+            <data key="foreignID">630878819443885</data>
+            <data key="label">3601-0901</data>
+            <data key="nodeID">137</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:136:3601-1201">
+            <data key="foreignID">630878819443884</data>
+            <data key="label">3601-1201</data>
+            <data key="nodeID">136</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:135:3601-0801-1">
+            <data key="foreignID">630878819443889</data>
+            <data key="label">3601-0801-1</data>
+            <data key="nodeID">135</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:131:3601-1601">
+            <data key="foreignID">630878819443883</data>
+            <data key="label">3601-1601</data>
+            <data key="nodeID">131</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:123:3601-0101">
+            <data key="foreignID">630878819443877</data>
+            <data key="label">3601-0101</data>
+            <data key="nodeID">123</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:133:3601-0903">
+            <data key="foreignID">630878819443887</data>
+            <data key="label">3601-0903</data>
+            <data key="nodeID">133</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:128:3601-0701">
+            <data key="foreignID">630878819443880</data>
+            <data key="label">3601-0701</data>
+            <data key="nodeID">128</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:129:3601-0702">
+            <data key="foreignID">630878819443881</data>
+            <data key="label">3601-0702</data>
+            <data key="nodeID">129</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:132:3601-0601">
+            <data key="foreignID">630878819443879</data>
+            <data key="label">3601-0601</data>
+            <data key="nodeID">132</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:134:3601-0904">
+            <data key="foreignID">630878819443888</data>
+            <data key="label">3601-0904</data>
+            <data key="nodeID">134</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:138:3601-0902">
+            <data key="foreignID">630878819443886</data>
+            <data key="label">3601-0902</data>
+            <data key="nodeID">138</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:124:3601-0301">
+            <data key="foreignID">630878819443878</data>
+            <data key="label">3601-0301</data>
+            <data key="nodeID">124</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+        <node id="nodes:130:3601-0703">
+            <data key="foreignID">630878819443882</data>
+            <data key="label">3601-0703</data>
+            <data key="nodeID">130</data>
+            <data key="foreignSource">TestOpenNMSInventory</data>
+        </node>
+    </graph>
+</graphml>
