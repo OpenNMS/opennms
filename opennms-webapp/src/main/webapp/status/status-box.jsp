@@ -168,7 +168,7 @@
             };
         };
 
-        $("document").ready(function() {
+        $("#footer").ready(function() {
             render({
                 parentContainer: '#chart-content',
                 graphs: [
