@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.web.rest.support.graphml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -53,7 +53,7 @@ public class GraphmlRepositoryImplTest {
 
         // Create
         GraphmlRepositoryImpl graphmlRepository = new GraphmlRepositoryImpl();
-        GraphmlType graphmlType = JAXB.unmarshal(getClass().getResource("/test-graph.xml"), GraphmlType.class);
+        GraphmlType graphmlType = JAXB.unmarshal(getClass().getResource("/v1/test-graph.xml"), GraphmlType.class);
         graphmlRepository.save(NAME, "Label *yay*", graphmlType);
 
         // Verify that xml was generated
