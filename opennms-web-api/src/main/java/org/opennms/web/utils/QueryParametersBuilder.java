@@ -47,7 +47,11 @@ public class QueryParametersBuilder {
         }
         if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
             String orderBy = params.getFirst("orderBy").trim();
-            queryParameters.setOrder(new QueryParameters.Order(orderBy, "desc".equalsIgnoreCase(params.getFirst("order").trim())));
+            String order = params.getFirst("order");
+            if (order != null) {
+                order = order.trim();
+            }
+            queryParameters.setOrder(new QueryParameters.Order(orderBy, "desc".equalsIgnoreCase(order)));
         }
         return queryParameters;
     }
