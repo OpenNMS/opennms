@@ -6,7 +6,7 @@
     <parent>
     <artifactId>org.opennms.features.topology.themes</artifactId>
     <groupId>org.opennms.features.topology</groupId>
-    <version>19.0.1</version>
+    <version>19.1.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.themes</groupId>
