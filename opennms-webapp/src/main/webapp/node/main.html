@@ -139,12 +139,12 @@
                         <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                         <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-md-6 text-nowrap">
+                    <th class="col-md-5 text-nowrap">
                         <a ng-click="changeOrderBy('name')">Name</a>
                         <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                         <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-md-2">
+                    <th class="col-md-3">
                         Actions
                     </th>
                 </tr>
@@ -164,6 +164,12 @@
                     <td>
                         <a href="element/node.jsp?node={{item['id']}}">
                             <i class="fa fa-external-link-square"></i> View Details
+                        </a>
+                        <a href="outage/list?outtype=current&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && type === 'outages'">
+                            <i class="fa fa-external-link-square"></i> View Outages
+                        </a>
+                        <a href="alarm/list?sortby=lasteventtime&acktype=unack&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && type === 'alarms'">
+                            <i class="fa fa-external-link-square"></i> View Alarms
                         </a>
                     </td>
                 </tr>
