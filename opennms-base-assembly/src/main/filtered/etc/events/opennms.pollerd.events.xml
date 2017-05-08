@@ -75,10 +75,10 @@
         <event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
         <descr>
             &lt;p&gt;%service% data collection on interface %interface%
-            failed.&lt;/p&gt;
+            failed because of the following condition: '%parm[reason]%'.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
-            %service% data collection on interface %interface% failed with '%parm[reason]%'.
+            %service% data collection on interface %interface% failed.
         </logmsg>
         <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
