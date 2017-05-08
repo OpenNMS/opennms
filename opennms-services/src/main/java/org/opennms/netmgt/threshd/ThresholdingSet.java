@@ -320,15 +320,19 @@ public class ThresholdingSet {
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
-        if (filters.length == 0) return true;
+        if (filters.length == 0) {
+            LOG.info("passedThresholdFilters: No filters found for threshold {}", thresholdEntity);
+            return true;
+        }
+
         // Threshold definition with filters must match ThresholdEntity (checking DataSource and ResourceType)
-        LOG.debug("passedThresholdFilters: applying {} filters to resource {}", filters.length, resource);
-        int count = 1;
         String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
-        boolean andResult = true;
+        LOG.debug("passedThresholdFilters: applying {} filters to resource {} with logical connection operator '{}'", filters.length, resource, operator);
+        int count = 0;
+        boolean result = true;
         for (ResourceFilter f : filters) {
-            LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent());
             count++;
+            LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent());
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = resource.getFieldValue(f.getField());
             if (attr != null) {
@@ -337,13 +341,18 @@ public class ThresholdingSet {
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
                     LOG.debug("passedThresholdFilters: the value of {} is {}. Pass filter? {}", f.getField(), attr, pass);
+
                     if (operator.equals("or") && pass) {
-                        return true;
+                        LOG.debug("passedThresholdFilters: Filter #{} passed and logical connection operator is 'or', no need to apply other filters", count);
+                        break;
                     }
+
                     if (operator.equals("and")) {
-                        andResult = andResult && pass;
-                        if (andResult == false)
-                            return false;
+                        result = result && pass;
+                        if (result == false) {
+                            LOG.debug("passedThresholdFilters: Filter #{} didn't pass and logical connection operator is 'and', no need to apply other filters", count);
+                            break;
+                        }
                     }
                 } catch (PatternSyntaxException e) {
                     LOG.warn("passedThresholdFilters: the regular expression {} is invalid: {}", f.getContent(), e.getMessage(), e);
@@ -356,10 +365,14 @@ public class ThresholdingSet {
                 }
             }
         }
-        if (operator.equals("and") && andResult) {
+
+        if (result) {
+            LOG.info("passedThresholdFilters: Resource {} passed threshold filters", resource);
             return true;
+        } else {
+            LOG.info("passedThresholdFilters: Resource {} didn't pass threshold filters", resource);
+            return false;
         }
-        return false;
     }
 
     /**
