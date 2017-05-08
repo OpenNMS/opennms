@@ -42,4 +42,5 @@ public @interface JUnitCollector {
     String[] anticipateRrds() default {};
     String[] anticipateFiles() default {};
     int timeout() default 5000;
+    boolean anticipateMetaFiles() default true;
 }
