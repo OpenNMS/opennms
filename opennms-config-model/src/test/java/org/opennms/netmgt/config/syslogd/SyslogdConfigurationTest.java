@@ -56,6 +56,8 @@ public class SyslogdConfigurationTest extends XmlTestNoCastor<SyslogdConfigurati
                 "            matching-group-message=\"8\"\n" + 
                 "            discard-uei=\"DISCARD-MATCHING-MESSAGES\"\n" + 
                 "            />\n" +
+                "    <ueiList/>" +
+                "    <hideMessage/>" +
                 "    <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>" +
                 "</syslogd-configuration>"
             }

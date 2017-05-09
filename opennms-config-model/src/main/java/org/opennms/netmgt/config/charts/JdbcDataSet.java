@@ -30,20 +30,16 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class JdbcDataSet.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "jdbc-data-set")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JdbcDataSet implements java.io.Serializable {
-    private static final long serialVersionUID = -6174683875337958651L;
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "db-name", required = true)
     private String dbName;
@@ -112,6 +108,9 @@ public class JdbcDataSet implements java.io.Serializable {
      * @param dbName the value of field 'dbName'.
      */
     public void setDbName(final String dbName) {
+        if (dbName == null) {
+            throw new IllegalArgumentException("'db-name' is a required attribute!");
+        }
         this.dbName = dbName;
     }
 
@@ -121,6 +120,9 @@ public class JdbcDataSet implements java.io.Serializable {
      * @param sql the value of field 'sql'.
      */
     public void setSql(final String sql) {
+        if (sql == null) {
+            throw new IllegalArgumentException("'sql' is a required attribute!");
+        }
         this.sql = sql;
     }
 

@@ -29,179 +29,110 @@
 package org.opennms.netmgt.config.reporting;
 
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * A string parameter passed to the report engine
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "string-parm")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StringParm implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reporting.xsd")
+public class StringParm implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
-     * the name of this parameter as passed to the report
-     *  engine
+     * the name of this parameter as passed to the report engine
      */
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
-     * the name of this parameter as displayed in the
-     *  webui
+     * the name of this parameter as displayed in the webui
      */
     @XmlAttribute(name = "display-name", required = true)
-    private String displayName;
+    private String m_displayName;
 
     /**
      * the type of input field used. Allows the webUI to use pre-filled 
      *  drop-down boxes (reportCategorySelector) or freeText
      */
     @XmlAttribute(name = "input-type", required = true)
-    private String inputType;
+    private String m_inputType;
 
     /**
      * value
      */
     @XmlElement(name = "default")
-    private String _default;
+    private String m_default;
 
     public StringParm() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getDisplayName() {
+        return m_displayName;
+    }
+
+    public void setDisplayName(final String displayName) {
+        m_displayName = ConfigUtils.assertNotEmpty(displayName, "display-name");
+    }
+
+    public String getInputType() {
+        return m_inputType;
+    }
+
+    public void setInputType(final String inputType) {
+        m_inputType = ConfigUtils.assertOnlyContains(ConfigUtils.assertNotEmpty(inputType, "input-type"), Arrays.asList("reportCategorySelector", "freeText"), "input-type");
+    }
+
+    public String getDefault() {
+        return m_default;
+    }
+
+    public void setDefault(final String defaultValue) {
+        m_default = ConfigUtils.assertNotEmpty(defaultValue, "default");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_displayName, 
+                            m_inputType, 
+                            m_default);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof StringParm) {
-            StringParm temp = (StringParm)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.displayName, displayName)
-                && Objects.equals(temp.inputType, inputType)
-                && Objects.equals(temp._default, _default);
-            return equals;
+            final StringParm that = (StringParm)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_displayName, that.m_displayName)
+                    && Objects.equals(this.m_inputType, that.m_inputType)
+                    && Objects.equals(this.m_default, that.m_default);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'default'. The field 'default' has the following
-     * description: value
-     * 
-     * @return the value of field 'Default'.
-     */
-    public String getDefault() {
-        return this._default;
-    }
-
-    /**
-     * Returns the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @return the value of field 'DisplayName'.
-     */
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    /**
-     * Returns the value of field 'inputType'. The field 'inputType' has the
-     * following description: the type of input field used. Allows the webUI to
-     * use pre-filled 
-     *  drop-down boxes (reportCategorySelector) or freeText
-     * 
-     * @return the value of field 'InputType'.
-     */
-    public String getInputType() {
-        return this.inputType;
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            displayName, 
-            inputType, 
-            _default);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'default'. The field 'default' has the following
-     * description: value
-     * 
-     * @param _default
-     * @param default the value of field 'default'.
-     */
-    public void setDefault(final String _default) {
-        this._default = _default;
-    }
-
-    /**
-     * Sets the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @param displayName the value of field 'displayName'.
-     */
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
-    }
-
-    /**
-     * Sets the value of field 'inputType'. The field 'inputType' has the
-     * following description: the type of input field used. Allows the webUI to
-     * use pre-filled 
-     *  drop-down boxes (reportCategorySelector) or freeText
-     * 
-     * @param inputType the value of field 'inputType'.
-     */
-    public void setInputType(final String inputType) {
-        this.inputType = inputType;
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
 }

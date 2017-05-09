@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,20 +29,21 @@
 package org.opennms.netmgt.config.tl1d;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Tl1Element.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "tl1-element")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Tl1Element implements java.io.Serializable {
+@ValidateUsing("tl1d-configuration.xsd")
+public class Tl1Element implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String DEFAULT_USERID = "opennms";
@@ -51,224 +52,110 @@ public class Tl1Element implements java.io.Serializable {
     private static final String DEFAULT_TL1_MESSAGE_PARSER = "org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor";
 
     @XmlAttribute(name = "host", required = true)
-    private String host;
+    private String m_host;
 
     @XmlAttribute(name = "port")
-    private Integer port;
+    private Integer m_port;
 
     @XmlAttribute(name = "userid")
-    private String userid;
+    private String m_userid;
 
     @XmlAttribute(name = "password")
-    private String password;
+    private String m_password;
 
     @XmlAttribute(name = "tl1-client-api")
-    private String tl1ClientApi;
+    private String m_tl1ClientApi;
 
     @XmlAttribute(name = "tl1-message-parser")
-    private String tl1MessageParser;
+    private String m_tl1MessageParser;
 
     @XmlAttribute(name = "reconnect-delay")
-    private Long reconnectDelay;
+    private Long m_reconnectDelay;
 
-    /**
-     */
-    public void deletePort() {
-        this.port= null;
+    public String getHost() {
+        return m_host;
     }
 
-    /**
-     */
-    public void deleteReconnectDelay() {
-        this.reconnectDelay= null;
+    public void setHost(final String host) {
+        m_host = ConfigUtils.assertNotEmpty(host, "host");
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Integer getPort() {
+        return m_port != null ? m_port : 502;
+    }
+
+    public void setPort(final Integer port) {
+        m_port = port;
+    }
+
+    public String getUserid() {
+        return m_userid != null ? m_userid : DEFAULT_USERID;
+    }
+
+    public void setUserid(final String userid) {
+        m_userid = ConfigUtils.normalizeAndTrimString(userid);
+    }
+
+    public String getPassword() {
+        return m_password != null ? m_password : DEFAULT_PASSWORD;
+    }
+
+    public void setPassword(final String password) {
+        m_password = ConfigUtils.normalizeString(password);
+    }
+
+    public String getTl1ClientApi() {
+        return m_tl1ClientApi != null ? m_tl1ClientApi : DEFAULT_TL1_CLIENT_API;
+    }
+
+    public void setTl1ClientApi(final String tl1ClientApi) {
+        this.m_tl1ClientApi = ConfigUtils.normalizeString(tl1ClientApi);
+    }
+
+    public String getTl1MessageParser() {
+        return m_tl1MessageParser != null ? m_tl1MessageParser : DEFAULT_TL1_MESSAGE_PARSER;
+    }
+
+    public void setTl1MessageParser(final String tl1MessageParser) {
+        m_tl1MessageParser = ConfigUtils.normalizeString(tl1MessageParser);
+    }
+
+    public Long getReconnectDelay() {
+        return m_reconnectDelay != null ? m_reconnectDelay : 30000L;
+    }
+
+    public void setReconnectDelay(final Long reconnectDelay) {
+        m_reconnectDelay = reconnectDelay;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_host, 
+                            m_port, 
+                            m_userid, 
+                            m_password, 
+                            m_tl1ClientApi, 
+                            m_tl1MessageParser, 
+                            m_reconnectDelay);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Tl1Element) {
-            Tl1Element temp = (Tl1Element)obj;
-            boolean equals = Objects.equals(temp.host, host)
-                && Objects.equals(temp.port, port)
-                && Objects.equals(temp.userid, userid)
-                && Objects.equals(temp.password, password)
-                && Objects.equals(temp.tl1ClientApi, tl1ClientApi)
-                && Objects.equals(temp.tl1MessageParser, tl1MessageParser)
-                && Objects.equals(temp.reconnectDelay, reconnectDelay);
-            return equals;
+            final Tl1Element that = (Tl1Element)obj;
+            return Objects.equals(this.m_host, that.m_host)
+                    && Objects.equals(this.m_port, that.m_port)
+                    && Objects.equals(this.m_userid, that.m_userid)
+                    && Objects.equals(this.m_password, that.m_password)
+                    && Objects.equals(this.m_tl1ClientApi, that.m_tl1ClientApi)
+                    && Objects.equals(this.m_tl1MessageParser, that.m_tl1MessageParser)
+                    && Objects.equals(this.m_reconnectDelay, that.m_reconnectDelay);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'host'.
-     * 
-     * @return the value of field 'Host'.
-     */
-    public String getHost() {
-        return this.host;
-    }
-
-    /**
-     * Returns the value of field 'password'.
-     * 
-     * @return the value of field 'Password'.
-     */
-    public String getPassword() {
-        return this.password != null ? this.password : DEFAULT_PASSWORD;
-    }
-
-    /**
-     * Returns the value of field 'port'.
-     * 
-     * @return the value of field 'Port'.
-     */
-    public Integer getPort() {
-        return this.port != null ? this.port : Integer.valueOf("502");
-    }
-
-    /**
-     * Returns the value of field 'reconnectDelay'.
-     * 
-     * @return the value of field 'ReconnectDelay'.
-     */
-    public Long getReconnectDelay() {
-        return this.reconnectDelay != null ? this.reconnectDelay : Long.valueOf("30000");
-    }
-
-    /**
-     * Returns the value of field 'tl1ClientApi'.
-     * 
-     * @return the value of field 'Tl1ClientApi'.
-     */
-    public String getTl1ClientApi() {
-        return this.tl1ClientApi != null ? this.tl1ClientApi : DEFAULT_TL1_CLIENT_API;
-    }
-
-    /**
-     * Returns the value of field 'tl1MessageParser'.
-     * 
-     * @return the value of field 'Tl1MessageParser'.
-     */
-    public String getTl1MessageParser() {
-        return this.tl1MessageParser != null ? this.tl1MessageParser : DEFAULT_TL1_MESSAGE_PARSER;
-    }
-
-    /**
-     * Returns the value of field 'userid'.
-     * 
-     * @return the value of field 'Userid'.
-     */
-    public String getUserid() {
-        return this.userid != null ? this.userid : DEFAULT_USERID;
-    }
-
-    /**
-     * Method hasPort.
-     * 
-     * @return true if at least one Port has been added
-     */
-    public boolean hasPort() {
-        return this.port != null;
-    }
-
-    /**
-     * Method hasReconnectDelay.
-     * 
-     * @return true if at least one ReconnectDelay has been added
-     */
-    public boolean hasReconnectDelay() {
-        return this.reconnectDelay != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            host, 
-            port, 
-            userid, 
-            password, 
-            tl1ClientApi, 
-            tl1MessageParser, 
-            reconnectDelay);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'host'.
-     * 
-     * @param host the value of field 'host'.
-     */
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
-    /**
-     * Sets the value of field 'password'.
-     * 
-     * @param password the value of field 'password'.
-     */
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    /**
-     * Sets the value of field 'port'.
-     * 
-     * @param port the value of field 'port'.
-     */
-    public void setPort(final Integer port) {
-        this.port = port;
-    }
-
-    /**
-     * Sets the value of field 'reconnectDelay'.
-     * 
-     * @param reconnectDelay the value of field 'reconnectDelay'.
-     */
-    public void setReconnectDelay(final Long reconnectDelay) {
-        this.reconnectDelay = reconnectDelay;
-    }
-
-    /**
-     * Sets the value of field 'tl1ClientApi'.
-     * 
-     * @param tl1ClientApi the value of field 'tl1ClientApi'.
-     */
-    public void setTl1ClientApi(final String tl1ClientApi) {
-        this.tl1ClientApi = tl1ClientApi;
-    }
-
-    /**
-     * Sets the value of field 'tl1MessageParser'.
-     * 
-     * @param tl1MessageParser the value of field 'tl1MessageParser'.
-     */
-    public void setTl1MessageParser(final String tl1MessageParser) {
-        this.tl1MessageParser = tl1MessageParser;
-    }
-
-    /**
-     * Sets the value of field 'userid'.
-     * 
-     * @param userid the value of field 'userid'.
-     */
-    public void setUserid(final String userid) {
-        this.userid = userid;
     }
 
 }

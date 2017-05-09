@@ -76,7 +76,7 @@ public class OpennmsServerConfigManager implements OpennmsServerConfig {
      * @return the default critical path IP
      */
     public InetAddress getDefaultCriticalPathIp() {
-        return m_config.getDefaultCriticalPathIp();
+        return m_config.getDefaultCriticalPathIp().orElse(null);
     }
 
     /**
@@ -85,7 +85,7 @@ public class OpennmsServerConfigManager implements OpennmsServerConfig {
      * @return the default critical path service
      */
     public String getDefaultCriticalPathService() {
-        return m_config.getDefaultCriticalPathService();
+        return m_config.getDefaultCriticalPathService().orElse(null);
     }
 
     /**

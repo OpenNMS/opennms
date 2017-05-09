@@ -81,14 +81,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Uris }
-     * 
-     */
-    public Uris createUris() {
-        return new Uris();
-    }
-
-    /**
      * Create an instance of {@link Uri }
      * 
      */
@@ -105,27 +97,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Parameters }
-     * 
-     */
-    public Parameters createParameters() {
-        return new Parameters();
-    }
-
-    /**
      * Create an instance of {@link Parameter }
      * 
      */
     public Parameter createParameter() {
         return new Parameter();
-    }
-
-    /**
-     * Create an instance of {@link Attributes }
-     * 
-     */
-    public Attributes createAttributes() {
-        return new Attributes();
     }
 
     /**

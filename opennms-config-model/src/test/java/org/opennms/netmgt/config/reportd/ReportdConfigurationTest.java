@@ -61,7 +61,7 @@ public class ReportdConfigurationTest extends XmlTestNoCastor<ReportdConfigurati
     private static ReportdConfiguration getConfig() {
         ReportdConfiguration config = new ReportdConfiguration();
         config.setStorageLocation("${install.share.dir}/reports/");
-        config.setPersistReports("yes");
+        config.setPersistReports(true);
         
         Report report = new Report();
         report.setReportName("sample-report");

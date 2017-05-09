@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
-import org.opennms.web.rest.v1.config.AgentConfigurationResource;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -118,8 +117,10 @@ public class AgentConfigurationResourceTest {
         final List<AgentResponse> agentResponses = (List<AgentResponse>)entity;
         System.err.println(agentResponses);
         assertEquals(1, agentResponses.size());
-        assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress());
-        assertEquals(1161, agentResponses.get(0).getPort().intValue());
+        assertTrue(agentResponses.get(0).getAddress().isPresent());
+        assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress().get());
+        assertTrue(agentResponses.get(0).getPort().isPresent());
+        assertEquals(1161, agentResponses.get(0).getPort().get().intValue());
         assertEquals(".1.2.3.4.5", agentResponses.get(0).getParameters().get("sysObjectId"));
         assertEquals("1", agentResponses.get(0).getParameters().get("nodeId"));
         assertEquals("foo", agentResponses.get(0).getParameters().get("foreignSource"));

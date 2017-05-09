@@ -28,13 +28,20 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -60,93 +67,47 @@ import java.util.Objects;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "rrd",
-    "uris"
+        "m_rrd",
+        "m_uris"
 })
 @XmlRootElement(name = "http-collection")
+@ValidateUsing("http-datacollection-config.xsd")
 public class HttpCollection {
 
-    @XmlElement(required = true)
-    protected Rrd rrd;
-    @XmlElement(required = true)
-    protected Uris uris;
+    @XmlElement(name = "rrd", required = true)
+    protected Rrd m_rrd;
+
+    @XmlElementWrapper(name="uris")
+    @XmlElement(name="uri", required = true)
+    protected List<Uri> m_uris = new ArrayList<>();
+
     @XmlAttribute(name = "name")
-    protected String name;
+    protected String m_name;
 
-    /**
-     * Gets the value of the rrd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Rrd }
-     *     
-     */
     public Rrd getRrd() {
-        return rrd;
+        return m_rrd;
     }
 
-    /**
-     * Sets the value of the rrd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Rrd }
-     *     
-     */
-    public void setRrd(Rrd value) {
-        this.rrd = value;
+    public void setRrd(final Rrd value) {
+        m_rrd = ConfigUtils.assertNotNull(value, "rrd");
     }
 
-    /**
-     * Gets the value of the uris property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Uris }
-     *     
-     */
-    public Uris getUris() {
-        return uris;
+    public List<Uri> getUris() {
+        return m_uris;
     }
 
-    /**
-     * Sets the value of the uris property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Uris }
-     *     
-     */
-    public void setUris(Uris value) {
-        this.uris = value;
+    public void setUris(final List<Uri> value) {
+        if (value == m_uris) return;
+        m_uris.clear();
+        if (value != null) m_uris.addAll(value);
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getName() {
-        if (name == null) {
-            return "default";
-        } else {
-            return name;
-        }
+        return m_name == null? "default" : m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
+    public void setName(final String value) {
+        m_name = ConfigUtils.normalizeString(value);
     }
 
     @Override
@@ -154,14 +115,15 @@ public class HttpCollection {
         if (!(other instanceof HttpCollection)) {
             return false;
         }
-        HttpCollection castOther = (HttpCollection) other;
-        return Objects.equals(rrd, castOther.rrd) && Objects.equals(uris, castOther.uris)
-                && Objects.equals(name, castOther.name);
+        final HttpCollection that = (HttpCollection) other;
+        return Objects.equals(this.m_rrd, that.m_rrd)
+                && Objects.equals(this.m_uris, that.m_uris)
+                && Objects.equals(this.m_name, that.m_name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rrd, uris, name);
+        return Objects.hash(m_rrd, m_uris, m_name);
     }
 
 }

@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "discovery-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -142,7 +143,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setLocation(final String location) {
-        m_location = location;
+        m_location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Double> getPacketsPerSecond() {
@@ -193,7 +194,7 @@ public class DiscoveryConfiguration implements Serializable {
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = foreignSource;
+        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     public Optional<Integer> getChunkSize() {
@@ -208,13 +209,10 @@ public class DiscoveryConfiguration implements Serializable {
         return m_specifics;
     }
 
-    public Specific getSpecific(final int index) {
-        return getSpecifics().get(index);
-    }
-
     public void setSpecifics(final List<Specific> specifics) {
+        if (specifics == m_specifics) return;
         m_specifics.clear();
-        m_specifics.addAll(specifics);
+        if (specifics != null) m_specifics.addAll(specifics);
     }
 
     public void addSpecific(final Specific specific) {
@@ -235,13 +233,10 @@ public class DiscoveryConfiguration implements Serializable {
         return m_includeRanges;
     }
 
-    public IncludeRange getIncludeRange(final int index) {
-        return getIncludeRanges().get(index);
-    }
-
     public void setIncludeRanges(final List<IncludeRange> includeRanges) {
+        if (includeRanges == m_includeRanges) return;
         m_includeRanges.clear();
-        m_includeRanges.addAll(includeRanges);
+        if (includeRanges != null) m_includeRanges.addAll(includeRanges);
     }
 
     public void addIncludeRange(final IncludeRange includeRange) {
@@ -262,13 +257,10 @@ public class DiscoveryConfiguration implements Serializable {
         return m_excludeRanges;
     }
 
-    public ExcludeRange getExcludeRange(final int index) {
-        return getExcludeRanges().get(index);
-    }
-
     public void setExcludeRanges(final List<ExcludeRange> excludeRanges) {
+        if (excludeRanges == m_excludeRanges) return;
         m_excludeRanges.clear();
-        m_excludeRanges.addAll(excludeRanges);
+        if (excludeRanges != null) m_excludeRanges.addAll(excludeRanges);
     }
 
     public void addExcludeRange(final ExcludeRange excludeRange) {
@@ -289,13 +281,10 @@ public class DiscoveryConfiguration implements Serializable {
         return m_includeUrls;
     }
 
-    public IncludeUrl getIncludeUrl(final int index) {
-        return getIncludeUrls().get(index);
-    }
-
     public void setIncludeUrls(final List<IncludeUrl> includeUrls) {
+        if (includeUrls == m_includeUrls) return;
         m_includeUrls.clear();
-        m_includeUrls.addAll(includeUrls);
+        if (includeUrls != null) m_includeUrls.addAll(includeUrls);
     }
 
     public void addIncludeUrl(final IncludeUrl includeUrl) {
@@ -336,19 +325,19 @@ public class DiscoveryConfiguration implements Serializable {
         }
 
         if (obj instanceof DiscoveryConfiguration) {
-            final DiscoveryConfiguration temp = (DiscoveryConfiguration)obj;
-            return Objects.equals(temp.m_location, m_location)
-                    && Objects.equals(temp.m_packetsPerSecond, m_packetsPerSecond)
-                    && Objects.equals(temp.m_initialSleepTime, m_initialSleepTime)
-                    && Objects.equals(temp.m_restartSleepTime, m_restartSleepTime)
-                    && Objects.equals(temp.m_retries, m_retries)
-                    && Objects.equals(temp.m_timeout, m_timeout)
-                    && Objects.equals(temp.m_foreignSource, m_foreignSource)
-                    && Objects.equals(temp.m_chunkSize, m_chunkSize)
-                    && Objects.equals(temp.m_specifics, m_specifics)
-                    && Objects.equals(temp.m_includeRanges, m_includeRanges)
-                    && Objects.equals(temp.m_excludeRanges, m_excludeRanges)
-                    && Objects.equals(temp.m_includeUrls, m_includeUrls);
+            final DiscoveryConfiguration that = (DiscoveryConfiguration)obj;
+            return Objects.equals(this.m_location, that.m_location)
+                    && Objects.equals(this.m_packetsPerSecond, that.m_packetsPerSecond)
+                    && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
+                    && Objects.equals(this.m_restartSleepTime, that.m_restartSleepTime)
+                    && Objects.equals(this.m_retries, that.m_retries)
+                    && Objects.equals(this.m_timeout, that.m_timeout)
+                    && Objects.equals(this.m_foreignSource, that.m_foreignSource)
+                    && Objects.equals(this.m_chunkSize, that.m_chunkSize)
+                    && Objects.equals(this.m_specifics, that.m_specifics)
+                    && Objects.equals(this.m_includeRanges, that.m_includeRanges)
+                    && Objects.equals(this.m_excludeRanges, that.m_excludeRanges)
+                    && Objects.equals(this.m_includeUrls, that.m_includeUrls);
         }
         return false;
     }

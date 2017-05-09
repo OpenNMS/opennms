@@ -268,6 +268,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private void createUser(final String userName) throws Exception {
         OnmsUser user = new OnmsUser();
         user.setUsername(userName);
+        user.setPassword("blah");
         sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + userName);
     }
     

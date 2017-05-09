@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -61,15 +66,17 @@ import java.util.Objects;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "httpCollection"
+        "m_httpCollection"
 })
 @XmlRootElement(name = "http-datacollection-config")
-public class HttpDatacollectionConfig {
+@ValidateUsing("http-datacollection-config.xsd")
+public class HttpDatacollectionConfig implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "http-collection")
-    protected List<HttpCollection> httpCollection;
+    protected List<HttpCollection> m_httpCollection = new ArrayList<>();
     @XmlAttribute(name = "rrdRepository", required = true)
-    protected String rrdRepository;
+    protected String m_rrdRepository;
 
     /**
      * Gets the value of the httpCollection property.
@@ -94,34 +101,15 @@ public class HttpDatacollectionConfig {
      * 
      */
     public List<HttpCollection> getHttpCollection() {
-        if (httpCollection == null) {
-            httpCollection = new ArrayList<HttpCollection>();
-        }
-        return this.httpCollection;
+        return m_httpCollection;
     }
 
-    /**
-     * Gets the value of the rrdRepository property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getRrdRepository() {
-        return rrdRepository;
+        return m_rrdRepository;
     }
 
-    /**
-     * Sets the value of the rrdRepository property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setRrdRepository(String value) {
-        this.rrdRepository = value;
+    void setRrdRepository(final String value) {
+        m_rrdRepository = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
@@ -129,14 +117,14 @@ public class HttpDatacollectionConfig {
         if (!(other instanceof HttpDatacollectionConfig)) {
             return false;
         }
-        HttpDatacollectionConfig castOther = (HttpDatacollectionConfig) other;
-        return Objects.equals(httpCollection, castOther.httpCollection)
-                && Objects.equals(rrdRepository, castOther.rrdRepository);
+        final HttpDatacollectionConfig that = (HttpDatacollectionConfig) other;
+        return Objects.equals(this.m_httpCollection, that.m_httpCollection)
+                && Objects.equals(this.m_rrdRepository, that.m_rrdRepository);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(httpCollection, rrdRepository);
+        return Objects.hash(m_httpCollection, m_rrdRepository);
     }
 
 }

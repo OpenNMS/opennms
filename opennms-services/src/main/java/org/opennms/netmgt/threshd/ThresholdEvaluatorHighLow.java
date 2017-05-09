@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -55,8 +56,8 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
     
     /** {@inheritDoc} */
     @Override
-    public boolean supportsType(String type) {
-        return "low".equals(type) || "high".equals(type);
+    public boolean supportsType(ThresholdType type) {
+        return ThresholdType.LOW.equals(type) || ThresholdType.HIGH.equals(type);
     }
     
     /** {@inheritDoc} */
@@ -130,7 +131,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             m_thresholdConfig = thresholdConfig;
         }
         
-        public String getType() {
+        public ThresholdType getType() {
             return getThresholdConfig().getType();
         }
         
@@ -169,9 +170,9 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
 
         protected boolean isThresholdExceeded(double dsValue) {
-            if ("high".equals(getThresholdConfig().getType())) {
+            if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                 return dsValue >= getThresholdConfig().getValue();
-            } else if ("low".equals(getThresholdConfig().getType())) {
+            } else if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
                 return dsValue <= getThresholdConfig().getValue();
             } else {
                 throw new IllegalStateException("This thresholding strategy can only be used for thresholding types of 'high' and 'low'.");
@@ -179,9 +180,9 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
         }
 
         protected boolean isRearmExceeded(double dsValue) {
-            if ("high".equals(getThresholdConfig().getType())) {
+            if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                 return dsValue <= getThresholdConfig().getRearm();
-            } else if ("low".equals(getThresholdConfig().getType())) {
+            } else if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
                 return dsValue >= getThresholdConfig().getRearm();
             } else {
                 throw new IllegalStateException("This thresholding strategy can only be used for thresholding types of 'high' and 'low'.");
@@ -206,13 +207,13 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             String uei;
             switch (status) {
             case TRIGGERED:
-                uei=getThresholdConfig().getTriggeredUEI();
-                if ("low".equals(getThresholdConfig().getType())) {
+                uei=getThresholdConfig().getTriggeredUEI().orElse(null);
+                if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_EVENT_UEI;
                     }
                     return createBasicEvent(uei, date, dsValue, resource);
-                } else if ("high".equals(getThresholdConfig().getType())) {
+                } else if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_EVENT_UEI;
                     }
@@ -222,13 +223,13 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                 } 
                 
             case RE_ARMED:
-                uei=getThresholdConfig().getRearmedUEI();
-                if ("low".equals(getThresholdConfig().getType())) {
+                uei=getThresholdConfig().getRearmedUEI().orElse(null);
+                if (ThresholdType.LOW.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
                     }
                     return createBasicEvent(uei, date, dsValue, resource);
-                } else if ("high".equals(getThresholdConfig().getType())) {
+                } else if (ThresholdType.HIGH.equals(getThresholdConfig().getType())) {
                     if(uei==null || "".equals(uei)) {
                         uei=EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
                     }

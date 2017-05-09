@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,25 +33,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.opennms.core.utils.InetAddressUtils;
 
-/**
- * <p>WmiAgentConfig class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class WmiAgentConfig {
-
-    /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
     public static final int DEFAULT_TIMEOUT = 3000;
-    /** Constant <code>DEFAULT_RETRIES=1</code> */
     public static final int DEFAULT_RETRIES = 1;
-    /** Constant <code>DEFAULT_PASSWORD=""</code> */
     public static final String DEFAULT_PASSWORD = "";
-    /** Constant <code>DEFAULT_USERNAME="Administrator"</code> */
     public static final String DEFAULT_USERNAME="Administrator";
-    /** Constant <code>DEFAULT_DOMAIN="WORKGROUP"</code> */
     public static final String DEFAULT_DOMAIN="WORKGROUP";
     
     private InetAddress m_Address;
@@ -220,7 +208,7 @@ public class WmiAgentConfig {
 
     public Map<String, String> toMap() {
         final Map<String, String> map = new HashMap<>();
-        map.put("address", InetAddrUtils.str(m_Address));
+        map.put("address", InetAddressUtils.str(m_Address));
         map.put("domain", m_Domain);
         map.put("password", m_Password);
         map.put("retries", Integer.toString(m_Retries));
@@ -231,7 +219,7 @@ public class WmiAgentConfig {
 
     public static WmiAgentConfig fromMap(Map<String, String> map) {
         final WmiAgentConfig agentConfig = new WmiAgentConfig();
-        agentConfig.setAddress(InetAddrUtils.addr(map.get("address")));
+        agentConfig.setAddress(InetAddressUtils.addr(map.get("address")));
         agentConfig.setDomain(map.get("domain"));
         agentConfig.setPassword(map.get("password"));
         agentConfig.setRetries(Integer.parseInt(map.get("retries")));

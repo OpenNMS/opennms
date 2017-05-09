@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.opennms.netmgt.config.surveillanceViews.Category;
@@ -44,8 +45,8 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.api.Util;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.opennms.web.svclayer.model.ProgressMonitor;
@@ -255,27 +256,27 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
 
         public int getRowCount() {
-            return m_view.getRows().getRowDefCount();
+            return m_view.getRows().size();
         }
 
         public int getColumnCount() {
-            return m_view.getColumns().getColumnDefCount();
+            return m_view.getColumns().size();
         }
 
         public Set<OnmsCategory> getCategoriesForRow(final int rowIndex) {
-            return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategoryCollection());
+            return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategories());
         }
 
         private RowDef getRowDef(final int rowIndex) {
-            return m_view.getRows().getRowDef(rowIndex);
+            return m_view.getRows().get(rowIndex);
         }
 
         public Set<OnmsCategory> getCategoriesForColumn(final int colIndex) {
-            return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategoryCollection());
+            return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategories());
         }
 
         private ColumnDef getColumnDef(final int colIndex) {
-            return m_view.getColumns().getColumnDef(colIndex);
+            return m_view.getColumns().get(colIndex);
         }
 
         private Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
@@ -299,11 +300,11 @@ public class DefaultSurveillanceService implements SurveillanceService {
             return getColumnDef(colIndex).getLabel();
         }
 
-        public String getColumnReportCategory(final int colIndex) {
+        public Optional<String> getColumnReportCategory(final int colIndex) {
             return getColumnDef(colIndex).getReportCategory();
         }
 
-        public String getRowReportCategory(final int rowIndex) {
+        public Optional<String> getRowReportCategory(final int rowIndex) {
             return getRowDef(rowIndex).getReportCategory();
         }
 
@@ -336,7 +337,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         // set up the column headings
         for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
             webTable.addColumn(sView.getColumnLabel(colIndex), "simpleWebTableHeader")
-            	.setLink(computeReportCategoryLink(sView.getColumnReportCategory(colIndex)));
+            	.setLink(computeReportCategoryLink(sView.getColumnReportCategory(colIndex).orElse(null)));
         }
 
 
@@ -349,7 +350,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
             webTable.newRow();
             webTable.addCell(sView.getRowLabel(rowIndex), "simpleWebTableRowLabel")
-            	.setLink(computeReportCategoryLink(sView.getRowReportCategory(rowIndex)));
+            	.setLink(computeReportCategoryLink(sView.getRowReportCategory(rowIndex).orElse(null)));
 
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
@@ -472,7 +473,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
     /** {@inheritDoc} */
     @Override
-    public String getHeaderRefreshSeconds(final String viewName) {
+    public Integer getHeaderRefreshSeconds(final String viewName) {
         return m_surveillanceConfigDao.getView(viewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : viewName).getRefreshSeconds();
     }
 
@@ -490,16 +491,12 @@ public class DefaultSurveillanceService implements SurveillanceService {
      */
     @Override
     public List<String> getViewNames() {
-    	final List<String> viewNames = new ArrayList<String>(m_surveillanceConfigDao.getViews().getViewCount());
-        for (final View view : getViewCollection()) {
+    	final List<String> viewNames = new ArrayList<String>(m_surveillanceConfigDao.getViews().size());
+        for (final View view : m_surveillanceConfigDao.getViews()) {
             viewNames.add(view.getName());
         }
         Collections.sort(viewNames);
         return viewNames;
-    }
-    
-    private Collection<View> getViewCollection() {
-        return m_surveillanceConfigDao.getViews().getViewCollection();
     }
 
 }

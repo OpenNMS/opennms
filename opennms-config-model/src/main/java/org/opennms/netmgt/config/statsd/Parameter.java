@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,106 +29,74 @@
 package org.opennms.netmgt.config.statsd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Parameters to be used for this report.
  *  Parameters are specfic to the report.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-
-@SuppressWarnings("all") public class Parameter implements java.io.Serializable {
-
+@ValidateUsing("statistics-daemon-configuration.xsd")
+public class Parameter implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "key", required = true)
-    private String key;
+    private String m_key;
 
     @XmlAttribute(name = "value", required = true)
-    private String value;
+    private String m_value;
 
     public Parameter() {
     }
 
-    public Parameter(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public Parameter(final String key, final String value) {
+        setKey(key);
+        setValue(value);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getKey() {
+        return m_key;
+    }
+
+    public void setKey(final String key) {
+        m_key = ConfigUtils.assertNotEmpty(key, "key");
+    }
+
+    public String getValue() {
+        return m_value;
+    }
+
+    public void setValue(final String value) {
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_key, m_value);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Parameter) {
-            Parameter temp = (Parameter)obj;
-            boolean equals = Objects.equals(temp.key, key)
-                && Objects.equals(temp.value, value);
-            return equals;
+            final Parameter that = (Parameter)obj;
+            return Objects.equals(this.m_key, that.m_key)
+                    && Objects.equals(this.m_value, that.m_value);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'key'.
-     * 
-     * @return the value of field 'Key'.
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
-    public String getValue() {
-        return this.value;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            key, 
-            value);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'key'.
-     * 
-     * @param key the value of field 'key'.
-     */
-    public void setKey(final String key) {
-        this.key = key;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
-    public void setValue(final String value) {
-        this.value = value;
     }
 
 }

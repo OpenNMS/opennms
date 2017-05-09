@@ -76,7 +76,7 @@ public class NotificationCommandsTest extends XmlTestNoCastor<NotificationComman
         commands.setHeader(header);
 
         Command command = new Command();
-        command.setBinary("false");
+        command.setBinary(false);
         command.setName("javaEmail");
         command.setExecute("org.opennms.netmgt.notifd.JavaMailNotificationStrategy");
         command.setComment("class for sending email notifications");
@@ -84,7 +84,7 @@ public class NotificationCommandsTest extends XmlTestNoCastor<NotificationComman
         commands.addCommand(command);
 
         Argument arg = new Argument();
-        arg.setStreamed("false");
+        arg.setStreamed(false);
         arg.setSwitch("-subject");
         command.addArgument(arg);
 

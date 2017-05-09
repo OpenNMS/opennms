@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,8 @@ package org.opennms.netmgt.config.server;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,6 +41,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Top-level element for the opennms-server.xml
@@ -49,36 +52,21 @@ import org.opennms.core.xml.ValidateUsing;
 @ValidateUsing("opennms-server.xsd")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LocalServer implements Serializable {
-    private static final long serialVersionUID = -8351197310769498904L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_serverName.
-     */
     @XmlAttribute(name="server-name")
     private String m_serverName;
 
-    /**
-     * Field m_defaultCriticalPathIp.
-     */
     @XmlAttribute(name="defaultCriticalPathIp")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress m_defaultCriticalPathIp;
 
-    /**
-     * Field m_defaultCriticalPathService.
-     */
     @XmlAttribute(name="defaultCriticalPathService")
     private String m_defaultCriticalPathService;
 
-    /**
-     * Field m_defaultCriticalPathTimeout.
-     */
     @XmlAttribute(name="defaultCriticalPathTimeout")
     private Integer m_defaultCriticalPathTimeout;
 
-    /**
-     * Field m_defaultCriticalPathRetries.
-     */
     @XmlAttribute(name="defaultCriticalPathRetries")
     private Integer m_defaultCriticalPathRetries;
 
@@ -87,173 +75,67 @@ public class LocalServer implements Serializable {
      *  server to restrict services to poll.
      */
     @XmlAttribute(name="verify-server")
-    private String m_verifyServer;
+    private Boolean m_verifyServer;
 
     public LocalServer() {
-        super();
     }
 
-    /**
-     */
-    public void deleteDefaultCriticalPathRetries() {
-        m_defaultCriticalPathRetries = null;
-    }
-
-    /**
-     */
-    public void deleteDefaultCriticalPathTimeout() {
-        m_defaultCriticalPathTimeout = null;
-    }
-
-    /**
-     * Returns the value of field 'defaultCriticalPathIp'.
-     * 
-     * @return the value of field 'DefaultCriticalPathIp'.
-     */
-    public InetAddress getDefaultCriticalPathIp() {
-        return m_defaultCriticalPathIp;
-    }
-
-    /**
-     * Returns the value of field 'defaultCriticalPathRetries'.
-     * 
-     * @return the value of field 'DefaultCriticalPathRetries'.
-     */
-    public int getDefaultCriticalPathRetries() {
-        return m_defaultCriticalPathRetries == null? 0 : m_defaultCriticalPathRetries;
-    }
-
-    /**
-     * Returns the value of field 'defaultCriticalPathService'.
-     * 
-     * @return the value of field 'DefaultCriticalPathService'.
-     */
-    public String getDefaultCriticalPathService() {
-        return m_defaultCriticalPathService == null? "" : m_defaultCriticalPathService;
-    }
-
-    /**
-     * Returns the value of field 'defaultCriticalPathTimeout'.
-     * 
-     * @return the value of field 'DefaultCriticalPathTimeout'.
-     */
-    public Integer getDefaultCriticalPathTimeout() {
-        return m_defaultCriticalPathTimeout == null? 1500 : m_defaultCriticalPathTimeout;
-    }
-
-    /**
-     * Returns the value of field 'serverName'.
-     * 
-     * @return the value of field 'ServerName'.
-     */
     public String getServerName() {
         return m_serverName == null? "localhost" : m_serverName;
     }
 
-    /**
-     * Returns the value of field 'verifyServer'. The field
-     * 'verifyServer' has the following description: A flag to
-     * indicate if poller has to identify the nms
-     *  server to restrict services to poll.
-     * 
-     * @return the value of field 'VerifyServer'.
-     */
-    public String getVerifyServer() {
-        return m_verifyServer == null? "false" : m_verifyServer;
+    public void setServerName(final String serverName) {
+        m_serverName = ConfigUtils.normalizeString(serverName);
     }
 
-    /**
-     * Method hasDefaultCriticalPathRetries.
-     * 
-     * @return true if at least one DefaultCriticalPathRetries has
-     * been added
-     */
-    public boolean hasDefaultCriticalPathRetries() {
-        return m_defaultCriticalPathRetries != null;
+    public Optional<InetAddress> getDefaultCriticalPathIp() {
+        return Optional.ofNullable(m_defaultCriticalPathIp);
     }
 
-    /**
-     * Method hasDefaultCriticalPathTimeout.
-     * 
-     * @return true if at least one DefaultCriticalPathTimeout has
-     * been added
-     */
-    public boolean hasDefaultCriticalPathTimeout() {
-        return m_defaultCriticalPathTimeout != null;
-    }
-
-    /**
-     * Sets the value of field 'defaultCriticalPathIp'.
-     * 
-     * @param ip the value of field
-     * 'defaultCriticalPathIp'.
-     */
     public void setDefaultCriticalPathIp(final InetAddress ip) {
         m_defaultCriticalPathIp = ip;
     }
 
-    /**
-     * Sets the value of field 'defaultCriticalPathRetries'.
-     * 
-     * @param defaultCriticalPathRetries the value of field
-     * 'defaultCriticalPathRetries'.
-     */
-    public void setDefaultCriticalPathRetries(final Integer retries) {
-        m_defaultCriticalPathRetries = retries;
+    public Optional<String> getDefaultCriticalPathService() {
+        return Optional.ofNullable(m_defaultCriticalPathService);
     }
 
-    /**
-     * Sets the value of field 'defaultCriticalPathService'.
-     * 
-     * @param defaultCriticalPathService the value of field
-     * 'defaultCriticalPathService'.
-     */
     public void setDefaultCriticalPathService(final String defaultCriticalPathService) {
-        m_defaultCriticalPathService = defaultCriticalPathService;
+        m_defaultCriticalPathService = ConfigUtils.normalizeString(defaultCriticalPathService);
     }
 
-    /**
-     * Sets the value of field 'defaultCriticalPathTimeout'.
-     * 
-     * @param defaultCriticalPathTimeout the value of field
-     * 'defaultCriticalPathTimeout'.
-     */
+    public Integer getDefaultCriticalPathTimeout() {
+        return m_defaultCriticalPathTimeout == null? 1500 : m_defaultCriticalPathTimeout;
+    }
+
     public void setDefaultCriticalPathTimeout(final Integer timeout) {
         m_defaultCriticalPathTimeout = timeout;
     }
 
-    /**
-     * Sets the value of field 'serverName'.
-     * 
-     * @param serverName the value of field 'serverName'.
-     */
-    public void setServerName(final String serverName) {
-        m_serverName = serverName;
+    public int getDefaultCriticalPathRetries() {
+        return m_defaultCriticalPathRetries == null? 0 : m_defaultCriticalPathRetries;
     }
 
-    /**
-     * Sets the value of field 'verifyServer'. The field
-     * 'verifyServer' has the following description: A flag to
-     * indicate if poller has to identify the nms
-     *  server to restrict services to poll.
-     * 
-     * @param verifyServer the value of field 'verifyServer'.
-     */
-    public void setVerifyServer(final String verifyServer) {
+    public void setDefaultCriticalPathRetries(final Integer retries) {
+        m_defaultCriticalPathRetries = retries;
+    }
+
+    public Boolean getVerifyServer() {
+        return m_verifyServer == null? Boolean.FALSE : m_verifyServer;
+    }
+
+    public void setVerifyServer(final Boolean verifyServer) {
         m_verifyServer = verifyServer;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 59;
-        int result = 1;
-        result = prime * result + ((m_defaultCriticalPathIp == null) ? 0 : m_defaultCriticalPathIp.hashCode());
-        result = prime * result + ((m_defaultCriticalPathRetries == null) ? 0 : m_defaultCriticalPathRetries.hashCode());
-        result = prime * result + ((m_defaultCriticalPathService == null) ? 0 : m_defaultCriticalPathService.hashCode());
-        result = prime * result + ((m_defaultCriticalPathTimeout == null) ? 0 : m_defaultCriticalPathTimeout.hashCode());
-        result = prime * result + ((m_serverName == null) ? 0 : m_serverName.hashCode());
-        result = prime * result + ((m_verifyServer == null) ? 0 : m_verifyServer.hashCode());
-        return result;
+        return Objects.hash(m_serverName,
+                            m_defaultCriticalPathIp,
+                            m_defaultCriticalPathService,
+                            m_defaultCriticalPathTimeout,
+                            m_defaultCriticalPathRetries,
+                            m_verifyServer);
     }
 
     @Override
@@ -261,56 +143,16 @@ public class LocalServer implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof LocalServer) {
+            final LocalServer that = (LocalServer) obj;
+            return Objects.equals(this.m_serverName, that.m_serverName) &&
+                    Objects.equals(this.m_defaultCriticalPathIp, that.m_defaultCriticalPathIp) &&
+                    Objects.equals(this.m_defaultCriticalPathService, that.m_defaultCriticalPathService) &&
+                    Objects.equals(this.m_defaultCriticalPathTimeout, that.m_defaultCriticalPathTimeout) &&
+                    Objects.equals(this.m_defaultCriticalPathRetries, that.m_defaultCriticalPathRetries) &&
+                    Objects.equals(this.m_verifyServer, that.m_verifyServer);
         }
-        if (!(obj instanceof LocalServer)) {
-            return false;
-        }
-        final LocalServer other = (LocalServer) obj;
-        if (m_defaultCriticalPathIp == null) {
-            if (other.m_defaultCriticalPathIp != null) {
-                return false;
-            }
-        } else if (!m_defaultCriticalPathIp.equals(other.m_defaultCriticalPathIp)) {
-            return false;
-        }
-        if (m_defaultCriticalPathRetries == null) {
-            if (other.m_defaultCriticalPathRetries != null) {
-                return false;
-            }
-        } else if (!m_defaultCriticalPathRetries.equals(other.m_defaultCriticalPathRetries)) {
-            return false;
-        }
-        if (m_defaultCriticalPathService == null) {
-            if (other.m_defaultCriticalPathService != null) {
-                return false;
-            }
-        } else if (!m_defaultCriticalPathService.equals(other.m_defaultCriticalPathService)) {
-            return false;
-        }
-        if (m_defaultCriticalPathTimeout == null) {
-            if (other.m_defaultCriticalPathTimeout != null) {
-                return false;
-            }
-        } else if (!m_defaultCriticalPathTimeout.equals(other.m_defaultCriticalPathTimeout)) {
-            return false;
-        }
-        if (m_serverName == null) {
-            if (other.m_serverName != null) {
-                return false;
-            }
-        } else if (!m_serverName.equals(other.m_serverName)) {
-            return false;
-        }
-        if (m_verifyServer == null) {
-            if (other.m_verifyServer != null) {
-                return false;
-            }
-        } else if (!m_verifyServer.equals(other.m_verifyServer)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

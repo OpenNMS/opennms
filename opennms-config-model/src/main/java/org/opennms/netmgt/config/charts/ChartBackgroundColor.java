@@ -30,16 +30,12 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class ChartBackgroundColor.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "chart-background-color")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ChartBackgroundColor implements java.io.Serializable {
@@ -98,6 +94,9 @@ public class ChartBackgroundColor implements java.io.Serializable {
      * @param rgb the value of field 'rgb'.
      */
     public void setRgb(final Rgb rgb) {
+        if (rgb == null) {
+            throw new IllegalArgumentException("'rgb' is a required element!");
+        }
         this.rgb = rgb;
     }
 

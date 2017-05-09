@@ -30,9 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.List;
 
 import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
 import org.opennms.netmgt.config.poller.outages.Interface;
@@ -91,10 +89,10 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
      *
      * @return the outages configured
      */
-    public Outage[] getOutages() {
+    public List<Outage> getOutages() {
         getReadLock().lock();
         try {
-            return getObject().getOutage();
+            return getObject().getOutages();
         } finally {
             getReadLock().unlock();
         }
@@ -136,10 +134,10 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
      *            the outage that is to be looked up
      * @return the outage times for the specified outage, null if not found
      */
-    public Time[] getOutageTimes(final String name) {
+    public List<Time> getOutageTimes(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getTime();
+        return out.getTimes();
     }
 
     /**
@@ -149,10 +147,10 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
      *            the outage that is to be looked up
      * @return the interfaces for the specified outage, null if not found
      */
-    public Interface[] getInterfaces(final String name) {
+    public List<Interface> getInterfaces(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getInterface();
+        return out.getInterfaces();
     }
 
     /**
@@ -179,7 +177,7 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
     public boolean isInterfaceInOutage(final String linterface, final Outage out) {
         if (out == null) return false;
 
-        for (final Interface ointerface : out.getInterfaceCollection()) {
+        for (final Interface ointerface : out.getInterfaces()) {
             if (ointerface.getAddress().equals("match-any") || ointerface.getAddress().equals(linterface)) {
                 return true;
             }
@@ -301,13 +299,7 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
         getWriteLock().lock();
         try {
-            int count = getObject().getOutageCount();
-            for (int i = 0; i < count; i++) {
-                if (getObject().getOutage(i).equals(oldOutage)) {
-                    getObject().setOutage(i, newOutage);
-                    return;
-                }
-            }
+            getObject().replaceOutage(oldOutage, newOutage);
         } finally {
             getWriteLock().unlock();
         }
@@ -326,10 +318,10 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
      * @param name a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.poller.outages.Node} objects.
      */
-    public Node[] getNodeIds(final String name) {
+    public List<Node> getNodeIds(final String name) {
         final Outage out = getOutage(name);
         if (out == null) return null;
-        return out.getNode();
+        return out.getNodes();
     }
 
     /**
@@ -386,7 +378,7 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
     public boolean isNodeIdInOutage(final long lnodeid, final Outage out) {
         if (out == null) return false;
 
-        for (final Node onode : out.getNodeCollection()) {
+        for (final Node onode : out.getNodes()) {
             if (onode.getId() == lnodeid) {
                 return true;
             }

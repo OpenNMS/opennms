@@ -364,11 +364,11 @@ public class VacuumdIT implements TemporaryDatabaseAware<MockDatabase>, Initiali
     @Test
     public final void testGetTrigger() {
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectAll"));
-        assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount());
+        assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount().intValue());
         assertEquals(">=", VacuumdConfigFactory.getInstance().getTrigger("selectAll").getOperator());
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter"));
         assertNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getOperator());
-        assertEquals(0,VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getRowCount());
+        assertEquals(0,VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getRowCount().intValue());
     }
     
     /**

@@ -130,8 +130,8 @@ public class AsteriskOriginator {
         
         final AmiAgentConfig agentConfig = AmiPeerFactory.getInstance().getAgentConfig(m_amiHost);
         // Now create and configure the manager connection
-        final ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
-        if (agentConfig.getUseTls()) {
+        final ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort().orElse(null), agentConfig.getUsername().orElse(null), agentConfig.getPassword().orElse(null));
+        if (agentConfig.getUseTls().orElse(false)) {
             m_managerConnection = (DefaultManagerConnection)mcf.createSecureManagerConnection();
         } else {
             m_managerConnection = (DefaultManagerConnection)mcf.createManagerConnection();

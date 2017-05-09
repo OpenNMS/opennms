@@ -86,25 +86,19 @@ public class SurveillanceViewConfigurationTest extends XmlTestNoCastor<Surveilla
     private static SurveillanceViewConfiguration getConfig() {
         SurveillanceViewConfiguration config = new SurveillanceViewConfiguration();
         config.setDefaultView("default");
-        Views views = new Views();
-        config.setViews(views);
 
         View view = new View();
         view.setName("default");
-        view.setRefreshSeconds("300");
-        views.addView(view);
+        view.setRefreshSeconds(300);
+        config.addView(view);
 
-        Rows rows = new Rows();
-        rows.addRow("Routers", "Routers");
-        rows.addRow("Switches", "Switches");
-        rows.addRow("Servers", "Servers");
-        view.setRows(rows);
+        view.addRow("Routers", "Routers");
+        view.addRow("Switches", "Switches");
+        view.addRow("Servers", "Servers");
 
-        Columns columns = new Columns();
-        columns.addColumn("PROD", "Production");
-        columns.addColumn("TEST", "Test");
-        columns.addColumn("DEV", "Development");
-        view.setColumns(columns);
+        view.addColumn("PROD", "Production");
+        view.addColumn("TEST", "Test");
+        view.addColumn("DEV", "Development");
 
         return config;
     }

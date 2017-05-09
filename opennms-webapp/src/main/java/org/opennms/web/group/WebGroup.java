@@ -63,7 +63,7 @@ public class WebGroup {
      */
     public WebGroup(Group group, List<String> authorizedCategories) {
         m_name = group.getName();
-        m_comments = group.getComments();
+        m_comments = group.getComments().orElse(null);
         m_dutySchedules.addAll(group.getDutySchedules());
         m_users.addAll(group.getUsers());
         m_authorizedCategories.addAll(authorizedCategories);

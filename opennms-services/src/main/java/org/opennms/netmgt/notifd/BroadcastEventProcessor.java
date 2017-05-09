@@ -61,6 +61,7 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -294,12 +295,12 @@ public final class BroadcastEventProcessor implements EventListener {
                     try {
                         LOG.debug("Acknowledging event {} {}:{}:{}", curAck.getAcknowledge(), event.getNodeid(), event.getInterface(), event.getService());
                         
-                        Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatches().toArray(new String[0]));
                         processed = true;
                         try {
                             // only send resolution notifications if notifications are globally turned on
                             if (curAck.getNotify() && notifsOn) {
-                                sendResolvedNotifications(notifIDs, event, curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                                sendResolvedNotifications(notifIDs, event, curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().getNumericSkipResolutionPrefix());
                             }
                         } catch (Throwable e) {
                             LOG.error("Failed to send resolution notifications.", e);
@@ -314,18 +315,18 @@ public final class BroadcastEventProcessor implements EventListener {
             if (processed) {
                 return;
             }
-            final AutoAcknowledgeAlarm autoAck = getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm();
-            if (autoAck == null) {
+            if (!getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm().isPresent()) {
                 return;
             }
-            if (autoAck.getUeiCollection().isEmpty() || !autoAck.getUeiCollection().contains(event.getUei())) {
+            final AutoAcknowledgeAlarm autoAck = getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm().get();
+            if ( autoAck.getUeis().isEmpty() || !autoAck.getUeis().contains(event.getUei()) ) {
                 return;
             }
             Collection<Integer> notifIDs = getNotificationManager().acknowledgeNoticeBasedOnAlarms(event);
             try {
                 // only send resolution notifications if notifications are globally turned on
                 if (autoAck.getNotify() && !notifIDs.isEmpty() && notifsOn) {
-                    sendResolvedNotifications(notifIDs, event, autoAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
+                    sendResolvedNotifications(notifIDs, event, autoAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().getNumericSkipResolutionPrefix());
                 }
             } catch (Throwable e) {
                 LOG.error("Failed to send resolution notifications.", e);
@@ -527,7 +528,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
 
                         Map<String, String> paramMap = buildParameterMap(notification, event, noticeId);
-                        String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
+                        String queueID = (notification.getNoticeQueue().orElse("default"));
 
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("destination : {}", notification.getDestinationPath());
@@ -554,7 +555,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             LOG.error("Could not get destination path for {}, please check the destinationPath.xml for errors.", notification.getDestinationPath(), e);
                             return;
                         }
-                        String initialDelay = (path.getInitialDelay() == null ? Path.DEFAULT_INITIAL_DELAY : path.getInitialDelay());
+                        final String initialDelay = path.getInitialDelay().orElse(Path.DEFAULT_INITIAL_DELAY);
                         Target[] targets = path.getTargets().toArray(new Target[0]);
                         Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
@@ -735,16 +736,16 @@ public final class BroadcastEventProcessor implements EventListener {
         if (event == null) {
             return null;
         }
-        if (event.getVarbindsdecodeCollection().isEmpty()) {
+        if (event.getVarbindsdecodes().isEmpty()) {
             return null;
         }
         Map<String, Map<String, String>> decodeMap = new HashMap<String, Map<String, String>>();
-        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodes()) {
             String paramId = vb.getParmid();
             if (decodeMap.get(paramId) == null) {
                 decodeMap.put(paramId, new HashMap<String,String>());
             }
-            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodeCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodes()) {
                 decodeMap.get(paramId).put(d.getVarbindvalue(), d.getVarbinddecodedstring());
             }
         }
@@ -757,11 +758,11 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     private static String nullSafeSubj(Notification notification, int noticeId) {
-        return notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId;
+        return notification.getSubject().orElse("Notice #" + noticeId);
     }
 
     private static String nullSafeNumerMsg(Notification notification, int noticeId) {
-        return notification.getNumericMessage() != null ? notification.getNumericMessage() : "111-" + noticeId;
+        return notification.getNumericMessage().orElse("111-" + noticeId);
     }
 
     private static String nullSafeTextMsg(Notification notification) {
@@ -773,11 +774,12 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void processTargets(Target[] targets, List<NotificationTask> targetSiblings, NoticeQueue noticeQueue, long startTime, Map<String, String> params, int noticeId) throws IOException {
         for (int i = 0; i < targets.length; i++) {
-            String interval = (targets[i].getInterval() == null ? Target.DEFAULT_INTERVAL : targets[i].getInterval());
+            String interval = (targets[i].getInterval().orElse(Target.DEFAULT_INTERVAL));
 
             String targetName = targets[i].getName();
-            String autoNotify = targets[i].getAutoNotify();
-            if(autoNotify != null) {
+            String autoNotify = null;
+            if (targets[i].getAutoNotify().isPresent()) {
+                autoNotify = targets[i].getAutoNotify().get();
                 if(autoNotify.equalsIgnoreCase("on")) {
                     autoNotify = "Y";
                 } else if(autoNotify.equalsIgnoreCase("off")) {
@@ -785,7 +787,8 @@ public final class BroadcastEventProcessor implements EventListener {
                 } else {
                     autoNotify = "C";
                 }
-            } else {
+            }
+            if (autoNotify == null) {
                 autoNotify = "C";
             }
             LOG.debug("Processing target {}:{}", targetName, interval);
@@ -907,8 +910,8 @@ public final class BroadcastEventProcessor implements EventListener {
         Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
-            if (commands[i] != null && commands[i].getContactType() != null) {
-                if (! userHasContactType(user, commands[i].getContactType())) {
+            if (commands[i] != null && commands[i].getContactType().isPresent()) {
+                if (! userHasContactType(user, commands[i].getContactType().orElse(null))) {
                     LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
                 }
             }
@@ -956,6 +959,8 @@ public final class BroadcastEventProcessor implements EventListener {
     }
     
     boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
+        ConfigUtils.assertNotEmpty(user, "user");
+        ConfigUtils.assertNotEmpty(contactType, "contactType");
         boolean retVal = false;
         for (Contact c : user.getContacts()) {
             if (contactType.equalsIgnoreCase(c.getType())) {

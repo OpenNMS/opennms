@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,99 +29,88 @@
 package org.opennms.netmgt.config.syslogd;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class SyslogdConfigurationGroup.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "syslogd-configuration-group")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SyslogdConfigurationGroup implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("syslog.xsd")
+public class SyslogdConfigurationGroup implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    @XmlElement(name = "ueiList")
-    private UeiList ueiList;
+    @XmlElementWrapper(name = "ueiList", required=false)
+    @XmlElement(name = "ueiMatch")
+    private List<UeiMatch> m_ueiMatches = new ArrayList<>();
 
-    @XmlElement(name = "hideMessage")
-    private HideMessage hideMessage;
+    @XmlElementWrapper(name = "hideMessage", required=false)
+    @XmlElement(name = "hideMatch")
+    private List<HideMatch> m_hideMessages = new ArrayList<>();
 
     public SyslogdConfigurationGroup() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public List<UeiMatch> getUeiMatches() {
+        return m_ueiMatches;
+    }
+
+    public void setUeiMatches(final List<UeiMatch> ueiList) {
+        if (ueiList == m_ueiMatches) return;
+        m_ueiMatches.clear();
+        if (ueiList != null) m_ueiMatches.addAll(ueiList);
+    }
+
+    public void addUeiMatch(final UeiMatch ueiMatch) {
+        m_ueiMatches.add(ueiMatch);
+    }
+
+    public boolean removeUeiMatch(final UeiMatch ueiMatch) {
+        return m_ueiMatches.remove(ueiMatch);
+    }
+
+    public List<HideMatch> getHideMatches() {
+        return m_hideMessages;
+    }
+
+    public void setHideMatches(final List<HideMatch> hideMessages) {
+        if (hideMessages == m_hideMessages) return;
+        m_hideMessages.clear();
+        if (hideMessages != null) m_hideMessages.addAll(hideMessages);
+    }
+
+    public void addHideMatch(final HideMatch hideMatch) {
+        m_hideMessages.add(hideMatch);
+    }
+
+    public boolean removeHideMatch(final HideMatch hideMatch) {
+        return m_hideMessages.remove(hideMatch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_ueiMatches, m_hideMessages);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof SyslogdConfigurationGroup) {
-            SyslogdConfigurationGroup temp = (SyslogdConfigurationGroup)obj;
-            boolean equals = Objects.equals(temp.ueiList, ueiList)
-                && Objects.equals(temp.hideMessage, hideMessage);
-            return equals;
+            final SyslogdConfigurationGroup that = (SyslogdConfigurationGroup)obj;
+            return Objects.equals(this.m_ueiMatches, that.m_ueiMatches)
+                    && Objects.equals(this.m_hideMessages, that.m_hideMessages);
         }
         return false;
     }
-
-    /**
-     * Returns the value of field 'hideMessage'.
-     * 
-     * @return the value of field 'HideMessage'.
-     */
-    public HideMessage getHideMessage() {
-        return this.hideMessage;
-    }
-
-    /**
-     * Returns the value of field 'ueiList'.
-     * 
-     * @return the value of field 'UeiList'.
-     */
-    public UeiList getUeiList() {
-        return this.ueiList;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            ueiList, 
-            hideMessage);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'hideMessage'.
-     * 
-     * @param hideMessage the value of field 'hideMessage'.
-     */
-    public void setHideMessage(final HideMessage hideMessage) {
-        this.hideMessage = hideMessage;
-    }
-
-    /**
-     * Sets the value of field 'ueiList'.
-     * 
-     * @param ueiList the value of field 'ueiList'.
-     */
-    public void setUeiList(final UeiList ueiList) {
-        this.ueiList = ueiList;
-    }
-
 }

@@ -113,28 +113,28 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         Assert.notNull(graph, "graph argument cannot be null");
 
         String resourceId;
-        if (graph.getResourceId() != null) {
-            resourceId = graph.getResourceId();
+        if (graph.getResourceId().isPresent()) {
+            resourceId = graph.getResourceId().get();
         } else {
             String parentResourceTypeName;
             String parentResourceName;
             String resourceTypeName;
             String resourceName;
 
-            if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
+            if (graph.getNodeId().isPresent() && !graph.getNodeId().get().equals("null")) {
                 parentResourceTypeName = "node";
-                parentResourceName = graph.getNodeId();
-            } else if (graph.getNodeSource() != null && !graph.getNodeSource().equals("null")) {
+                parentResourceName = graph.getNodeId().get();
+            } else if (graph.getNodeSource().isPresent() && !graph.getNodeSource().get().equals("null")) {
                 parentResourceTypeName = "nodeSource";
-                parentResourceName = graph.getNodeSource();
-            } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
+                parentResourceName = graph.getNodeSource().get();
+            } else if (graph.getDomain().isPresent() && !graph.getDomain().get().equals("null")) {
                 parentResourceTypeName = "domain";
-                parentResourceName = graph.getDomain();
+                parentResourceName = graph.getDomain().get();
             } else {
                 throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
             }
 
-            String intf = graph.getInterfaceId();
+            String intf = graph.getInterfaceId().orElse(null);
             if (intf == null || "".equals(intf)) {
                 resourceTypeName = "nodeSnmp";
                 resourceName = "";

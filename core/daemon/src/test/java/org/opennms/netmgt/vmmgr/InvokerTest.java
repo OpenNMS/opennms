@@ -43,8 +43,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -204,8 +204,8 @@ public class InvokerTest {
         return new ToStringBuilder(service)
             .append("name", service.getName())
             .append("class", service.getClassName())
-            .append("attributes", service.getAttributeCollection())
-            .append("invoke", service.getInvokeCollection())
+            .append("attributes", service.getAttributes())
+            .append("invoke", service.getInvokes())
             .toString();
     }
 

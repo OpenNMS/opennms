@@ -78,7 +78,7 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
         org.opennms.netmgt.xml.eventconf.Event econf = EventExpander.lookup(m_eventConfDao, event);
         if (econf.getFilters() != null) {
 
-            for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters().getFilterCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters()) {
                 if (!m_filterMap.containsKey(fConf.getEventparm() + "|" + event.getUei())) {
                     m_filterMap.put(fConf.getEventparm() + "|" + event.getUei(), fConf);
                     LOG.debug("adding [{}|{}] to filter map", fConf.getEventparm(), event.getUei());

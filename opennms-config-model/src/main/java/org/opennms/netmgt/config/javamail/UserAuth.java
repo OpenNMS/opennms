@@ -28,10 +28,16 @@
 
 package org.opennms.netmgt.config.javamail;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class UserAuth.
@@ -40,115 +46,55 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="user-auth", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserAuth implements java.io.Serializable {
-
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
+@ValidateUsing("javamail-configuration.xsd")
+public class UserAuth implements Serializable {
     /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -107408608071332141L;
+    private static final long serialVersionUID = 2L;
 
     /** The user name. */
     @XmlAttribute(name="user-name")
-    private String _userName;
+    private String m_userName;
 
     /** The password. */
     @XmlAttribute(name="password")
-    private String _password;
+    private String m_password;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new user auth.
-     */
     public UserAuth() {
-        super();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj )
-            return true;
-        if (obj instanceof UserAuth) {
-            UserAuth temp = (UserAuth)obj;
-            if (this._userName != null) {
-                if (temp._userName == null) return false;
-                else if (!(this._userName.equals(temp._userName))) 
-                    return false;
-            }
-            else if (temp._userName != null)
-                return false;
-            if (this._password != null) {
-                if (temp._password == null) return false;
-                else if (!(this._password.equals(temp._password))) 
-                    return false;
-            }
-            else if (temp._password != null)
-                return false;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'password'.
-     * 
-     * @return the value of field 'Password'.
-     */
-    public String getPassword() {
-        return this._password == null ? "opennms" : this._password;
-    }
-
-    /**
-     * Returns the value of field 'userName'.
-     * 
-     * @return the value of field 'UserName'.
-     */
     public String getUserName() {
-        return this._userName == null ? "opennms" : this._userName;
+        return m_userName == null ? "opennms" : m_userName;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    public void setUserName(final String userName) {
+        m_userName = ConfigUtils.normalizeString(userName);
+    }
+
+    public String getPassword() {
+        return m_password == null ? "opennms" : m_password;
+    }
+
+    public void setPassword(final String password) {
+        m_password = ConfigUtils.normalizeString(password);
+    }
+
     @Override
     public int hashCode() {
-        int result = 17;
-        if (_userName != null) {
-            result = 37 * result + _userName.hashCode();
-        }
-        if (_password != null) {
-            result = 37 * result + _password.hashCode();
-        }
-        return result;
+        return Objects.hash(m_userName, m_password);
     }
 
-    /**
-     * Sets the value of field 'password'.
-     * 
-     * @param password the value of field 'password'.
-     */
-    public void setPassword(final String password) {
-        this._password = password;
-    }
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
 
-    /**
-     * Sets the value of field 'userName'.
-     * 
-     * @param userName the value of field 'userName'.
-     */
-    public void setUserName(final String userName) {
-        this._userName = userName;
+        if (obj instanceof UserAuth) {
+            final UserAuth that = (UserAuth)obj;
+            return Objects.equals(this.m_userName, that.m_userName)
+                    && Objects.equals(this.m_password, that.m_password);
+        }
+        return false;
     }
 
 }

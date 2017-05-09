@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,26 +37,23 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Define the host and port of the sendmail server. If you don't,
- * defaults will be used and
- *  ${ipaddr} is replaced with the IP address of the service.
+ * defaults will be used and ${ipaddr} is replaced with the IP address of the service.
  */
 
 @XmlRootElement(name="readmail-host")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class ReadmailHost implements Serializable {
-    private static final long serialVersionUID = 1723200582958011828L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_host.
-     */
     @XmlAttribute(name="host")
     private String m_host;
 
-    /**
-     * Field m_port.
-     */
     @XmlAttribute(name="port")
     private Long m_port;
 
@@ -63,163 +61,57 @@ public class ReadmailHost implements Serializable {
      * Basically attributes that help setup the javamailer's
      * confusion set of properties.
      */
-    @XmlElement(name="readmail-protocol")
+    @XmlElement(name="readmail-protocol", required=true)
     private ReadmailProtocol m_readmailProtocol;
 
     public ReadmailHost() {
-        super();
     }
 
     public ReadmailHost(final String host, final Long port) {
-        super();
-        m_host = host;
-        m_port = port;
+        setHost(host);
+        setPort(port);
     }
 
-    public void deletePort() {
-        m_port = null;
-    }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj ) return true;
-        
-        if (obj instanceof ReadmailHost) {
-            final ReadmailHost temp = (ReadmailHost)obj;
-            if (m_host != null) {
-                if (temp.m_host == null) {
-                    return false;
-                } else if (!(m_host.equals(temp.m_host))) {
-                    return false;
-                }
-            } else if (temp.m_host != null) {
-                return false;
-            }
-            if (m_port != null) {
-                if (temp.m_port == null) {
-                    return false;
-                } else if (!(m_port.equals(temp.m_port))) {
-                    return false;
-                }
-            } else if (temp.m_port != null) {
-                return false;
-            }
-            if (m_readmailProtocol != null) {
-                if (temp.m_readmailProtocol == null) {
-                    return false;
-                } else if (!(m_readmailProtocol.equals(temp.m_readmailProtocol))) {
-                    return false;
-                }
-            } else if (temp.m_readmailProtocol != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'host'.
-     * 
-     * @return the value of field 'Host'.
-     */
     public String getHost() {
         return m_host == null? "${ipaddr}" : m_host;
     }
 
-    /**
-     * Returns the value of field 'port'.
-     * 
-     * @return the value of field 'Port'.
-     */
+    public void setHost(final String host) {
+        m_host = ConfigUtils.normalizeString(host);
+    }
+
     public Long getPort() {
         return m_port == null? 110 : m_port;
     }
 
-    /**
-     * Returns the value of field 'readmailProtocol'. The field
-     * 'readmailProtocol' has the following description: Basically
-     * attributes that help setup the javamailer's confusion set of
-     * properties.
-     *  
-     *  
-     * 
-     * @return the value of field 'ReadmailProtocol'.
-     */
-    public ReadmailProtocol getReadmailProtocol() {
-        return m_readmailProtocol;
-    }
-
-    /**
-     * Method hasPort.
-     * 
-     * @return true if at least one Port has been added
-     */
-    public boolean hasPort() {
-        return m_port != null;
-    }
-
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode(
-    ) {
-        int result = 17;
-        
-        if (m_host != null) {
-           result = 37 * result + m_host.hashCode();
-        }
-        if (m_port != null) {
-            result = 37 * result + m_port.hashCode();
-        }
-        if (m_readmailProtocol != null) {
-           result = 37 * result + m_readmailProtocol.hashCode();
-        }
-        
-        return result;
-    }
-
-    /**
-     * Sets the value of field 'host'.
-     * 
-     * @param host the value of field 'host'.
-     */
-    public void setHost(final String host) {
-        m_host = host;
-    }
-
-    /**
-     * Sets the value of field 'port'.
-     * 
-     * @param port the value of field 'port'.
-     */
     public void setPort(final Long port) {
         m_port = port;
     }
 
-    /**
-     * Sets the value of field 'readmailProtocol'. The field
-     * 'readmailProtocol' has the following description: Basically
-     * attributes that help setup the javamailer's confusion set of
-     * properties.
-     *  
-     *  
-     * 
-     * @param readmailProtocol the value of field 'readmailProtocol'
-     */
+    public ReadmailProtocol getReadmailProtocol() {
+        return m_readmailProtocol;
+    }
+
     public void setReadmailProtocol(final ReadmailProtocol readmailProtocol) {
-        m_readmailProtocol = readmailProtocol;
+        m_readmailProtocol = ConfigUtils.assertNotNull(readmailProtocol, "readmail-protocol");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_host, m_port, m_readmailProtocol);
+    }
+
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) return true;
+
+        if (obj instanceof ReadmailHost) {
+            final ReadmailHost that = (ReadmailHost)obj;
+            return Objects.equals(this.m_host, that.m_host) &&
+                    Objects.equals(this.m_port, that.m_port) &&
+                    Objects.equals(this.m_readmailProtocol, that.m_readmailProtocol);
+        }
+        return false;
     }
 
 }

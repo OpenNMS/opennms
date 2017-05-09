@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,6 +44,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SiteStatusViewsFactory {
     
@@ -104,7 +104,7 @@ public class SiteStatusViewsFactory {
 
     private void initializeViewsMap() {
         m_viewsMap = new HashMap<String, View>();
-        for (View view : m_config.getViews().getViewCollection()) {
+        for (final View view : m_config.getViews()) {
             m_viewsMap.put(view.getName(), view);
         }
     }

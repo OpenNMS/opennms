@@ -388,9 +388,9 @@ public class MibCompilerPanel extends Panel {
         if (events == null) {
             Notification.show("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);                
         } else {
-            if (events.getEventCount() > 0) {
+            if (events.getEvents().size() > 0) {
                 try {
-                    logger.info("Found " + events.getEventCount() + " events.");
+                    logger.info("Found " + events.getEvents().size() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
                     final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "events");
                     final File eventFile = new File(configDir, eventsFileName);

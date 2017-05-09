@@ -227,11 +227,11 @@ public class ImportScheduler implements InitializingBean {
                 CronTriggerImpl trigger = null;
                 
                 try {
-                    detail = new JobDetailImpl(def.getImportName(), JOB_GROUP, ImportJob.class, false, false);
+                    detail = new JobDetailImpl(def.getImportName().orElse(null), JOB_GROUP, ImportJob.class, false, false);
                     detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
                     detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
                     
-                    trigger = new CronTriggerImpl(def.getImportName(), JOB_GROUP, def.getCronSchedule());
+                    trigger = new CronTriggerImpl(def.getImportName().orElse(null), JOB_GROUP, def.getCronSchedule().orElse(null));
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
                     getScheduler().scheduleJob(detail, trigger);
                     

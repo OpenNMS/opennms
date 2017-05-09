@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,123 +29,95 @@
 package org.opennms.netmgt.config.snmpAsset.adapter;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class AssetField.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "assetField")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AssetField implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("snmp-asset-adapter-configuration.xsd")
+public class AssetField implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     @XmlAttribute(name = "formatString", required = true)
-    private String formatString;
+    private String m_formatString;
 
-    @XmlElement(name = "mibObjs", required = true)
-    private MibObjs mibObjs;
+    @XmlElementWrapper(name = "mibObjs", required = true)
+    @XmlElement(name = "mibObj", required = true)
+    private List<MibObj> m_mibObjs = new ArrayList<>();
 
     public AssetField() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getFormatString() {
+        return m_formatString;
+    }
+
+    public void setFormatString(final String formatString) {
+        m_formatString = ConfigUtils.assertNotEmpty(formatString, "formatString");
+    }
+
+    public List<MibObj> getMibObjs() {
+        return m_mibObjs;
+    }
+
+    public void setMibObjs(final List<MibObj> mibObjs) {
+        ConfigUtils.assertMinimumSize(mibObjs, 1, "mibObj");
+        if (mibObjs == m_mibObjs) return;
+        m_mibObjs.clear();
+        if (mibObjs != null) m_mibObjs.addAll(mibObjs);
+    }
+
+    public void addMibObj(final MibObj mibObj) {
+        m_mibObjs.add(mibObj);
+    }
+
+    public boolean removeMibObj(final MibObj mibObj) {
+        return m_mibObjs.remove(mibObj);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_formatString, 
+                            m_mibObjs);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof AssetField) {
-            AssetField temp = (AssetField)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.formatString, formatString)
-                && Objects.equals(temp.mibObjs, mibObjs);
-            return equals;
+            final AssetField that = (AssetField)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_formatString, that.m_formatString)
+                    && Objects.equals(this.m_mibObjs, that.m_mibObjs);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'formatString'.
-     * 
-     * @return the value of field 'FormatString'.
-     */
-    public String getFormatString() {
-        return this.formatString;
-    }
-
-    /**
-     * Returns the value of field 'mibObjs'.
-     * 
-     * @return the value of field 'MibObjs'.
-     */
-    public MibObjs getMibObjs() {
-        return this.mibObjs;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            formatString, 
-            mibObjs);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'formatString'.
-     * 
-     * @param formatString the value of field 'formatString'.
-     */
-    public void setFormatString(final String formatString) {
-        this.formatString = formatString;
-    }
-
-    /**
-     * Sets the value of field 'mibObjs'.
-     * 
-     * @param mibObjs the value of field 'mibObjs'.
-     */
-    public void setMibObjs(final MibObjs mibObjs) {
-        this.mibObjs = mibObjs;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
 }

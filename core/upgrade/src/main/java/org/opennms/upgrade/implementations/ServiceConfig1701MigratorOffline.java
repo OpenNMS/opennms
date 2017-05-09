@@ -155,18 +155,18 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
 
-            log("Current configuration: " + currentCfg.getServiceCount() + " services.\n");
+            log("Current configuration: " + currentCfg.getServices().size() + " services.\n");
 
-            for (int i=currentCfg.getServiceCount() - 1; i >= 0; i--) {
-                final Service localSvc = currentCfg.getService(i);
+            for (int i=currentCfg.getServices().size() - 1; i >= 0; i--) {
+                final Service localSvc = (Service) currentCfg.getServices().get(i);
                 final String name = localSvc.getName();
                 if (oldServices.contains(name)) {
                     log("Removing old service %s\n", name);
-                    currentCfg.getServiceCollection().remove(i);
+                    currentCfg.getServices().remove(i);
                 }
             }
 
-            log("New configuration: " + currentCfg.getServiceCount() + " services.\n");
+            log("New configuration: " + currentCfg.getServices().size() + " services.\n");
 
             // now remove 
             final StringWriter sw = new StringWriter();

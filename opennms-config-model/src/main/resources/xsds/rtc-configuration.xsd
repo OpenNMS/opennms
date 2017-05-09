@@ -19,6 +19,9 @@
     </annotation>
 
     <complexType>
+    <simpleContent>
+    <extension base="string">
+
       <attribute name="updaters" use="required">
         <annotation>
           <documentation>Maximum number of threads reading the events and
@@ -90,6 +93,9 @@
           received.</documentation>
         </annotation>
       </attribute>
+
+    </extension>
+    </simpleContent>
     </complexType>
   </element>
 </schema>

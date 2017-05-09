@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,23 +29,26 @@
 package org.opennms.netmgt.config.syslogd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * For regex matches, assign the value of a matching group
  *  to a named event parameter
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "parameter-assignment")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ParameterAssignment implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("syslog.xsd")
+public class ParameterAssignment implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * The number of the matching group from the regex
@@ -53,124 +56,53 @@ public class ParameterAssignment implements java.io.Serializable {
      *  to the entire string matched by the expression. If
      *  the referenced group does not exist, the empty string
      *  will be assigned.
-     *  
      */
     @XmlAttribute(name = "matching-group", required = true)
-    private Integer matchingGroup;
+    private Integer m_matchingGroup;
 
     /**
      * The name of the event parameter to which the named
      *  matching group's value will be assigned
-     *  
      */
     @XmlAttribute(name = "parameter-name", required = true)
-    private String parameterName;
+    private String m_parameterName;
 
     public ParameterAssignment() {
     }
 
-    /**
-     */
-    public void deleteMatchingGroup() {
-        this.matchingGroup= null;
+    public Integer getMatchingGroup() {
+        return m_matchingGroup;
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public void setMatchingGroup(final Integer matchingGroup) {
+        m_matchingGroup = ConfigUtils.assertNotNull(matchingGroup, "matching-group");
+    }
+
+    public String getParameterName() {
+        return m_parameterName;
+    }
+
+    public void setParameterName(final String parameterName) {
+        m_parameterName = ConfigUtils.assertNotEmpty(parameterName, "parameter-name");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_matchingGroup, m_parameterName);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ParameterAssignment) {
-            ParameterAssignment temp = (ParameterAssignment)obj;
-            boolean equals = Objects.equals(temp.matchingGroup, matchingGroup)
-                && Objects.equals(temp.parameterName, parameterName);
-            return equals;
+            final ParameterAssignment that = (ParameterAssignment)obj;
+            return Objects.equals(this.m_matchingGroup, that.m_matchingGroup)
+                    && Objects.equals(this.m_parameterName, that.m_parameterName);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'matchingGroup'. The field 'matchingGroup' has
-     * the following description: The number of the matching group from the regex
-     *  whose value will be assigned. Group 0 always refers
-     *  to the entire string matched by the expression. If
-     *  the referenced group does not exist, the empty string
-     *  will be assigned.
-     *  
-     * 
-     * @return the value of field 'MatchingGroup'.
-     */
-    public Integer getMatchingGroup() {
-        return this.matchingGroup;
-    }
-
-    /**
-     * Returns the value of field 'parameterName'. The field 'parameterName' has
-     * the following description: The name of the event parameter to which the
-     * named
-     *  matching group's value will be assigned
-     *  
-     * 
-     * @return the value of field 'ParameterName'.
-     */
-    public String getParameterName() {
-        return this.parameterName;
-    }
-
-    /**
-     * Method hasMatchingGroup.
-     * 
-     * @return true if at least one MatchingGroup has been added
-     */
-    public boolean hasMatchingGroup() {
-        return this.matchingGroup != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            matchingGroup, 
-            parameterName);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'matchingGroup'. The field 'matchingGroup' has the
-     * following description: The number of the matching group from the regex
-     *  whose value will be assigned. Group 0 always refers
-     *  to the entire string matched by the expression. If
-     *  the referenced group does not exist, the empty string
-     *  will be assigned.
-     *  
-     * 
-     * @param matchingGroup the value of field 'matchingGroup'.
-     */
-    public void setMatchingGroup(final Integer matchingGroup) {
-        this.matchingGroup = matchingGroup;
-    }
-
-    /**
-     * Sets the value of field 'parameterName'. The field 'parameterName' has the
-     * following description: The name of the event parameter to which the named
-     *  matching group's value will be assigned
-     *  
-     * 
-     * @param parameterName the value of field 'parameterName'.
-     */
-    public void setParameterName(final String parameterName) {
-        this.parameterName = parameterName;
     }
 
 }

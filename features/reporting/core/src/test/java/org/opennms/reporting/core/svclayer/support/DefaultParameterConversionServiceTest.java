@@ -63,7 +63,7 @@ public class DefaultParameterConversionServiceTest {
     @Test
     public void testGetDateParms() {
         assertNotNull(m_dao.getDateParms(ID));
-        assertEquals(1,m_dao.getDateParms(ID).length);
+        assertEquals(1,m_dao.getDateParms(ID).size());
     }
     
     @Test

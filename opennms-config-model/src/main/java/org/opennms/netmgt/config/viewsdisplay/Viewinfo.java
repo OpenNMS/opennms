@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.config.viewsdisplay;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,288 +39,83 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Top-level element for the viewsdisplay.xml configuration file.
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "viewinfo")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Viewinfo implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("viewsdisplay.xsd")
+public class Viewinfo implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_DEFAULT_VIEW = "WebConsoleView";
 
     @XmlAttribute(name = "disconnect-timeout")
-    private Integer disconnectTimeout;
+    private Integer m_disconnectTimeout;
 
     @XmlAttribute(name = "default-view")
-    private String defaultView;
+    private String m_defaultView;
 
     @XmlElement(name = "view")
-    private List<View> viewList = new ArrayList<>();
+    private List<View> m_views = new ArrayList<>();
 
-    /**
-     * 
-     * 
-     * @param vView
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addView(final View vView) throws IndexOutOfBoundsException {
-        this.viewList.add(vView);
+    public Integer getDisconnectTimeout() {
+        return m_disconnectTimeout != null ? m_disconnectTimeout : 130000;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vView
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addView(final int index, final View vView) throws IndexOutOfBoundsException {
-        this.viewList.add(index, vView);
+    public void setDisconnectTimeout(final Integer disconnectTimeout) {
+        m_disconnectTimeout = disconnectTimeout;
     }
 
-    /**
-     */
-    public void deleteDisconnectTimeout() {
-        this.disconnectTimeout= null;
+    public String getDefaultView() {
+        return m_defaultView != null ? m_defaultView : DEFAULT_DEFAULT_VIEW;
     }
 
-    /**
-     * Method enumerateView.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<View> enumerateView() {
-        return Collections.enumeration(this.viewList);
+    public void setDefaultView(final String defaultView) {
+        m_defaultView = ConfigUtils.normalizeString(defaultView);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public List<View> getViews() {
+        return m_views;
+    }
+
+    public void setViews(final List<View> views) {
+        if (views == m_views) return;
+        m_views.clear();
+        if (views != null) m_views.addAll(views);
+    }
+
+    public void addView(final View view) {
+        m_views.add(view);
+    }
+
+    public boolean removeView(final View view) {
+        return m_views.remove(view);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_disconnectTimeout, 
+                            m_defaultView, 
+                            m_views);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Viewinfo) {
-            Viewinfo temp = (Viewinfo)obj;
-            boolean equals = Objects.equals(temp.disconnectTimeout, disconnectTimeout)
-                && Objects.equals(temp.defaultView, defaultView)
-                && Objects.equals(temp.viewList, viewList);
-            return equals;
+            final Viewinfo that = (Viewinfo)obj;
+            return Objects.equals(this.m_disconnectTimeout, that.m_disconnectTimeout)
+                    && Objects.equals(this.m_defaultView, that.m_defaultView)
+                    && Objects.equals(this.m_views, that.m_views);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'defaultView'.
-     * 
-     * @return the value of field 'DefaultView'.
-     */
-    public String getDefaultView() {
-        return this.defaultView != null ? this.defaultView : DEFAULT_DEFAULT_VIEW;
-    }
-
-    /**
-     * Returns the value of field 'disconnectTimeout'.
-     * 
-     * @return the value of field 'DisconnectTimeout'.
-     */
-    public Integer getDisconnectTimeout() {
-        return this.disconnectTimeout != null ? this.disconnectTimeout : Integer.valueOf("130000");
-    }
-
-    /**
-     * Method getView.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the View at the
-     * given index
-     */
-    public View getView(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.viewList.size()) {
-            throw new IndexOutOfBoundsException("getView: Index value '" + index + "' not in range [0.." + (this.viewList.size() - 1) + "]");
-        }
-        
-        return (View) viewList.get(index);
-    }
-
-    /**
-     * Method getView.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public View[] getView() {
-        View[] array = new View[0];
-        return (View[]) this.viewList.toArray(array);
-    }
-
-    /**
-     * Method getViewCollection.Returns a reference to 'viewList'. No type
-     * checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<View> getViewCollection() {
-        return this.viewList;
-    }
-
-    /**
-     * Method getViewCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getViewCount() {
-        return this.viewList.size();
-    }
-
-    /**
-     * Method hasDisconnectTimeout.
-     * 
-     * @return true if at least one DisconnectTimeout has been added
-     */
-    public boolean hasDisconnectTimeout() {
-        return this.disconnectTimeout != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            disconnectTimeout, 
-            defaultView, 
-            viewList);
-        return hash;
-    }
-
-    /**
-     * Method iterateView.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<View> iterateView() {
-        return this.viewList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllView() {
-        this.viewList.clear();
-    }
-
-    /**
-     * Method removeView.
-     * 
-     * @param vView
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeView(final View vView) {
-        boolean removed = viewList.remove(vView);
-        return removed;
-    }
-
-    /**
-     * Method removeViewAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public View removeViewAt(final int index) {
-        Object obj = this.viewList.remove(index);
-        return (View) obj;
-    }
-
-    /**
-     * Sets the value of field 'defaultView'.
-     * 
-     * @param defaultView the value of field 'defaultView'.
-     */
-    public void setDefaultView(final String defaultView) {
-        this.defaultView = defaultView;
-    }
-
-    /**
-     * Sets the value of field 'disconnectTimeout'.
-     * 
-     * @param disconnectTimeout the value of field 'disconnectTimeout'.
-     */
-    public void setDisconnectTimeout(final Integer disconnectTimeout) {
-        this.disconnectTimeout = disconnectTimeout;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vView
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setView(final int index, final View vView) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.viewList.size()) {
-            throw new IndexOutOfBoundsException("setView: Index value '" + index + "' not in range [0.." + (this.viewList.size() - 1) + "]");
-        }
-        
-        this.viewList.set(index, vView);
-    }
-
-    /**
-     * 
-     * 
-     * @param vViewArray
-     */
-    public void setView(final View[] vViewArray) {
-        //-- copy array
-        viewList.clear();
-        
-        for (int i = 0; i < vViewArray.length; i++) {
-                this.viewList.add(vViewArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'viewList' by copying the given Vector. All elements will
-     * be checked for type safety.
-     * 
-     * @param vViewList the Vector to copy.
-     */
-    public void setView(final List<View> vViewList) {
-        // copy vector
-        this.viewList.clear();
-        
-        this.viewList.addAll(vViewList);
-    }
-
-    /**
-     * Sets the value of 'viewList' by setting it to the given Vector. No type
-     * checking is performed.
-     * @deprecated
-     * 
-     * @param viewList the Vector to set.
-     */
-    public void setViewCollection(final List<View> viewList) {
-        this.viewList = viewList;
     }
 
 }

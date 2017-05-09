@@ -30,20 +30,16 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Rgb.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "rgb")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Rgb implements java.io.Serializable {
-    private static final long serialVersionUID = -1473119657062128601L;
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "red", required = true)
     private Red red;
@@ -126,6 +122,9 @@ public class Rgb implements java.io.Serializable {
      * @param blue the value of field 'blue'.
      */
     public void setBlue(final Blue blue) {
+        if (blue == null) {
+            throw new IllegalArgumentException("'blue' is a required element!");
+        }
         this.blue = blue;
     }
 
@@ -135,6 +134,9 @@ public class Rgb implements java.io.Serializable {
      * @param green the value of field 'green'.
      */
     public void setGreen(final Green green) {
+        if (green == null) {
+            throw new IllegalArgumentException("'green' is a required element!");
+        }
         this.green = green;
     }
 
@@ -144,6 +146,9 @@ public class Rgb implements java.io.Serializable {
      * @param red the value of field 'red'.
      */
     public void setRed(final Red red) {
+        if (red == null) {
+            throw new IllegalArgumentException("'red' is a required element!");
+        }
         this.red = red;
     }
 

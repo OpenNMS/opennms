@@ -108,7 +108,7 @@ public class PollOutagesConfigManagerTest {
         w.close();
         m_manager.setConfigResource(new FileSystemResource(m_configFile));
         m_manager.afterPropertiesSet();
-        assertEquals(10003, m_manager.getOutages().length);
+        assertEquals(10003, m_manager.getOutages().size());
     }
 
     @After
