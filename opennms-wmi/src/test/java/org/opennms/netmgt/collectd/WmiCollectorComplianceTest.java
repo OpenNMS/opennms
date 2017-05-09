@@ -36,6 +36,7 @@ import java.util.Map;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.config.wmi.Rrd;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -59,6 +60,8 @@ public class WmiCollectorComplianceTest extends CollectorComplianceTest {
         WmiPeerFactory.setInstance(peerFactory);
 
         WmiCollection collection = new WmiCollection();
+        collection.setName("default");
+        collection.setRrd(new Rrd(1, "RRA:AVERAGE:0.5:1:2016"));
         dataCollectionConfigFactory = mock(WmiDataCollectionConfigFactory.class);
         when(dataCollectionConfigFactory.getWmiCollection(COLLECTION)).thenReturn(collection);
         when(dataCollectionConfigFactory.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());

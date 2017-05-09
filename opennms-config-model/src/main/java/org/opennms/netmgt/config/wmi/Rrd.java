@@ -86,6 +86,15 @@ public class Rrd implements Serializable {
     @XmlAttribute(name = "step", required = true)
     protected Integer m_step;
 
+    public Rrd() {}
+
+    public Rrd(final Integer step, final String... rras) {
+        setStep(step);
+        for (final String rra : rras) {
+            addRra(rra);
+        }
+    }
+
     public List<String> getRra() {
         return m_rras;
     }
