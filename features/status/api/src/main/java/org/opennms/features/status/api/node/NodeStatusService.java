@@ -88,7 +88,7 @@ public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery
         Status status = calculateStatus(nodeMap.keySet(), query.getStatusCalculationStrategy());
 
         // convert to wrapper
-        return nodeMap.values().stream().map(node -> {
+        return nodes.stream().map(node -> {
             OnmsSeverity nodeStatus = status.getSeverity(node.getId());
             if (nodeStatus == null) {
                 nodeStatus = OnmsSeverity.NORMAL;
