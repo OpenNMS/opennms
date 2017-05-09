@@ -276,7 +276,6 @@
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
-            <feature>opennms-elasticsearch-event-forwarder</feature>
             <feature>jira-troubleticketer</feature>
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
