@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
         m_detector.setServiceToDetect(null);
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
     }
 
     @Test(timeout=20000)

@@ -124,7 +124,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         final WebElement authenticateElement = waitForElement(By.id("authenticate"));
         if (!authenticateElement.isSelected()) {
             authenticateElement.findElement(By.tagName("input")).click();
-        };
+        }
 
         /*
          * Sometimes, Vaadin just loses input, or focus.  Or both!  I suspect it's
@@ -145,7 +145,6 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
          */
         boolean found = false;
         do {
-            setVaadinValue("port", "18980");
             setVaadinValue("authenticateUser", "admin");
             setVaadinValue("authenticatePassword", "admin");
 

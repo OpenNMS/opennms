@@ -34,15 +34,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.jivesoftware.smack.Chat;
@@ -60,6 +57,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +193,7 @@ public class XMPPNotificationManager {
 			if (Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled"))) {
 	            try {
 	                SSLContext ctx = SSLContext.getInstance("TLS");
-	                ctx.init(null, new TrustManager[] { new LocalSSLTrustManager() }, null);
+	                ctx.init(null, new TrustManager[] { new AnyServerX509TrustManager() }, null);
 	                xmppConfig.setCustomSSLContext(ctx);
 	            } catch (NoSuchAlgorithmException | KeyManagementException e) {
 	                LOG.error("Failed to create a custom SSL context", e);
@@ -369,27 +367,5 @@ public class XMPPNotificationManager {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Trusts everything.
-	 */
-	private static class LocalSSLTrustManager implements X509TrustManager {
-	    @Override
-	    public void checkClientTrusted(X509Certificate[] arg0, String arg1)
-	            throws CertificateException {
-	        // pass
-	    }
-
-	    @Override
-	    public void checkServerTrusted(X509Certificate[] arg0, String arg1)
-	            throws CertificateException {
-            // pass
-	    }
-
-	    @Override
-	    public X509Certificate[] getAcceptedIssuers() {
-	        return new X509Certificate[0];
-	    }
 	}
 }

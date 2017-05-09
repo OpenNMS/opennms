@@ -146,7 +146,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         }
 
         // Build the DetectRequest and store the runtime attributes in the DTO
-        final DetectRequest request = factory.buildRequest(location, address, port);
+        final DetectRequest request = factory.buildRequest(location, address, port, attributes);
         detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
 
         // Execute the request

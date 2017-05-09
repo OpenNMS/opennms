@@ -183,12 +183,15 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
         runtimeAttributes.put(JMX_COLLECTION_KEY, jmxCollection);
 
         // Retrieve the agent config.
-        final String port = ParameterMap.getKeyedString(parameters, ParameterName.PORT.toString(), null);
-        if (port != null) {
-            final MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(agent.getHostAddress(), port);
-            if (mBeanServer != null) {
-                runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, mBeanServer);
+        final Map<String, String> parameterStringMap = new HashMap<String, String>();
+        for (Map.Entry<String, Object> eachEntry : parameters.entrySet()) {
+            if (eachEntry.getValue() instanceof String) {
+                parameterStringMap.put(eachEntry.getKey(), (String) eachEntry.getValue());
             }
+        }
+        final MBeanServer mBeanServer = JmxUtils.getMBeanServer(m_jmxConfigDao, agent.getHostAddress(), parameterStringMap);
+        if (mBeanServer != null) {
+            runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, mBeanServer);
         }
 
         return runtimeAttributes;
