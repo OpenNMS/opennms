@@ -12,13 +12,7 @@
 
   <service id="assetGraphDefinitionRepository" ref="assetGraphDefinitionRepo" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository" />
 
-  <!-- config loading and persisting are done directly by assetGraphDefinitionRepo but this is needed to -->
-  <!-- set property felix.fileinstall.filename to allow persisting to file -->
-  <cm:property-placeholder id="assetConfig" persistent-id="org.opennms.features.topology.plugins.topo.asset" update-strategy="reload" />
-
   <bean id="assetGraphDefinitionRepo" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl">
-    <property name="configurationAdmin" ref="configurationAdmin" />
-    <property name="persistentId" value="org.opennms.features.topology.plugins.topo.asset" />
   </bean>
 
   <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">

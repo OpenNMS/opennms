@@ -31,19 +31,40 @@ package org.opennms.features.topology.plugins.topo.asset;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
+
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
+@XmlAccessorType(XmlAccessType.NONE)
 public class GeneratorConfig {
 
+    @XmlElement(name="label")
     private String label = "Asset Topology Provider";
+
+    @XmlElement(name="breadcrumb-strategy")
     private String breadcrumbStrategy = BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT.name();
+
+    @XmlID
+    @XmlElement(name="provider-id")
     private String providerId = "asset";
+
+    @XmlElement(name="preferred-layout")
     private String preferredLayout = "Grid Layout";
+
+    @XmlElement(name="filter")
+    @XmlElementWrapper(name="filters")
     private List<String> filters;
+
+    @XmlElementWrapper(name="layers")
+    @XmlElement(name="layer")
     private List<String> layerHierarchies = Lists.newArrayList(
             NodeParamLabels.ASSET_REGION,
             NodeParamLabels.ASSET_BUILDING,

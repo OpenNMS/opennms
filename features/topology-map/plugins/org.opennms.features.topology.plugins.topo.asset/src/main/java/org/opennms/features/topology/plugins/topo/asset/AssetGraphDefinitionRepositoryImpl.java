@@ -30,215 +30,65 @@ package org.opennms.features.topology.plugins.topo.asset;
 
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import javax.xml.bind.JAXB;
 
 /**
- * Persists Asset Graph Definitions using the OSGi configuration admin service
- * @author admin
+ * Persists Asset Graph Definitions in a local (xml) configuration file.
  *
+ * @author mvrueden
  */
 public class AssetGraphDefinitionRepositoryImpl implements AssetGraphDefinitionRepository {
 
-	public static final String DEFINITION_PREFIX="asset.graph.definition.";
+	private static final String FILE_NAME = "org.opennms.features.topology.plugins.topo.asset.xml";
 
-	private static final String FILEINSTALL_FILE_NAME = "felix.fileinstall.filename";
-
-	//<reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/> 
-	private ConfigurationAdmin configurationAdmin=null;
-
-	// name of config  file <persistentId>.cfg
-	private String persistentId="org.opennms.features.topology.plugins.topo.asset";
-
-	public ConfigurationAdmin getConfigurationAdmin() {
-		return configurationAdmin;
-	}
-
-	public void setConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
-		this.configurationAdmin = configurationAdmin;
-	}
-
-	public String getPersistentId() {
-		return persistentId;
-	}
-
-	public void setPersistentId(String persistentId) {
-		this.persistentId = persistentId;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository#getConfigDefinition(java.lang.String)
-	 */
 	@Override
-	public GeneratorConfig getConfigDefinition(String providerId){
-		String propId=DEFINITION_PREFIX+providerId;
-		GeneratorConfig generatorConfig=null;
-		Configuration config;
-		try {
-			config = configurationAdmin.getConfiguration(persistentId);
-			Dictionary<String, Object> props = config.getProperties();
-
-			// if null, there is no configuration
-			if (props == null) return null;
-
-			String graphDefinitionUri = (String) props.get(propId);
-			if(graphDefinitionUri == null) return null;
-
-			generatorConfig = new GeneratorConfigBuilder()
-			.withGraphDefinitionUri(graphDefinitionUri)
-			.build();
-
-		} catch (Exception e) {
-			throw new RuntimeException("problem loading graph definition "+propId+ " from "+persistentId+".cfg",e);
-		}
-		return generatorConfig;
+	public GeneratorConfig getConfigDefinition(String providerId) {
+		return readGeneratorConfigList().getConfig(providerId);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository#exists()
-	 */
 	@Override
 	public boolean exists(String providerId){
-		String propId=DEFINITION_PREFIX+providerId;
-		Configuration config;
-		try {
-			config = configurationAdmin.getConfiguration(persistentId);
-			Dictionary<String, Object> props = config.getProperties();
-
-			// if null, there is no configuration
-			if (props == null) return false;
-
-			String graphDefinitionUri = (String) props.get(propId);
-			if(graphDefinitionUri == null) return false;
-
-			return true;
-
-		} catch (Exception e) {
-			throw new RuntimeException("problem checking if definition exists  "+propId+ " from "+persistentId+".cfg",e);
-		}
-
+		return getConfigDefinition(providerId) != null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository#getAllConfigDefinitions()
-	 */
 	@Override
-	public Map<String,GeneratorConfig> getAllConfigDefinitions(){
-		Map<String,GeneratorConfig> generatorConfigs = new LinkedHashMap<String,GeneratorConfig>();
-
-		try {
-			Configuration config = configurationAdmin.getConfiguration(persistentId);
-			Dictionary<String, Object> props = config.getProperties();
-
-			// if null, there are no configurations
-			if (props == null) return generatorConfigs;
-
-			Enumeration<String> keys = props.keys();
-			while(keys.hasMoreElements()){
-				String propId = keys.nextElement();
-				if(propId.startsWith(DEFINITION_PREFIX)){
-					String providerId=propId.replace(DEFINITION_PREFIX,"");
-					String graphDefinitionUri = (String) props.get(propId);
-					GeneratorConfig generatorConfig = new GeneratorConfigBuilder()
-					.withGraphDefinitionUri(graphDefinitionUri)
-					.build();
-					generatorConfigs.put(providerId, generatorConfig);
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("problem loading all graph definitions from "+persistentId+".cfg",e);
-		}
-		return generatorConfigs;
+	public GeneratorConfigList getAllConfigDefinitions() {
+		return new GeneratorConfigList(readGeneratorConfigList().getConfigs());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository#removeConfigDefinition(java.lang.String)
-	 */
 	@Override
-	public void removeConfigDefinition(String providerId){
-		String propId=DEFINITION_PREFIX+providerId;
-
-		Configuration config;
-		try {
-			config = configurationAdmin.getConfiguration(persistentId);
-			Dictionary<String, Object> props = config.getProperties();
-
-			// if null, there is no configuration
-			if (props == null) return;
-
-			props.remove(propId);
-			config.update(props);
-			
-			// TODO WORK AROUND for KARAF 2.4 ISSUE writing directly to file instead of through ConfigAdmin service 
-			// Work around here because ConfigAdmin service can only add properties and not remove them from a cfg file
-			// This might be solvable by setting config type append=false in features.xml. 
-			// But this cannot be parsed by opennms's maven-features-plugin
-			// see line 296 org.apache.karaf.features.internal.service.FeatureConfigInstaller
-			// the FILEINSTALL_FILE_NAME is set by the <cm:property-placeholder in blueprint.xml
-
-			String cfgFile = (String) props.get(FILEINSTALL_FILE_NAME);
-			if(cfgFile!=null){
-				File cfg = new File(new URL(cfgFile).toURI());
-				
-				Properties javaProps = new Properties();
-				Enumeration<String> keys = props.keys();
-				while(keys.hasMoreElements()){
-					String propKey = keys.nextElement();
-					javaProps.put(propKey, (String) props.get(propKey));
-				}
-				
-				Writer out = new FileWriter(cfg);
-				javaProps.store(out, "# Asset Topology Configurations updated this file");
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("problem removing graph definition "+propId+ " from "+persistentId+".cfg",e);
-		}
+	public void removeConfigDefinition(String providerId) {
+		GeneratorConfigList generatorConfigList = readGeneratorConfigList();
+		generatorConfigList.removeConfig(providerId);
+		persist(generatorConfigList);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository#addConfigDefinition(org.opennms.features.topology.plugins.topo.asset.GeneratorConfig)
-	 */
 	@Override
-	public void addConfigDefinition(GeneratorConfig generatorConfig){
-
-		String propId=DEFINITION_PREFIX+generatorConfig.getProviderId();
-
-		Configuration config;
-		try {
-			config = configurationAdmin.getConfiguration(persistentId);
-			Dictionary<String, Object> props = config.getProperties();
-
-			// if null, the configuration is new
-			if (props == null) {
-				props = new Hashtable<String, Object>();
-			}
-
-			String graphDefinitionUri = (String) props.get(propId);
-			if(graphDefinitionUri != null) throw new IllegalArgumentException("A configuration for providerId "
-					+generatorConfig.getProviderId() +" already exists");
-
-			String graphDefinitionUriString = GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig);
-
-			props.put(propId,graphDefinitionUriString);
-			config.update(props);
-
-		} catch (Exception e) {
-			throw new RuntimeException("problem adding graph definition "+propId+ " to "+persistentId+".cfg",e);
-		}
+	public void addConfigDefinition(GeneratorConfig generatorConfig) {
+		GeneratorConfigList generatorConfigList = readGeneratorConfigList();
+		generatorConfigList.addConfig(generatorConfig);
+		persist(generatorConfigList);
 	}
 
+	private GeneratorConfigList readGeneratorConfigList() {
+		File configFile = getConfigFile();
+		if (configFile.exists()) {
+			return JAXB.unmarshal(configFile, GeneratorConfigList.class);
+		}
+		return new GeneratorConfigList();
+	}
+
+	private void persist(GeneratorConfigList generatorConfigList) {
+		JAXB.marshal(generatorConfigList, getConfigFile());
+	}
+
+	private File getConfigFile() {
+		final String parent = Objects.requireNonNull(System.getProperty("opennms.home"));
+		final Path configFilePath = Paths.get(parent, "etc", FILE_NAME);
+		return configFilePath.toFile();
+	}
 }

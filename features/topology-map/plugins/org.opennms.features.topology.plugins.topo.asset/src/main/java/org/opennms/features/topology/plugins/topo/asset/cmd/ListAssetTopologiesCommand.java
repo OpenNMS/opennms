@@ -30,15 +30,14 @@ package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
+import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +58,11 @@ public class ListAssetTopologiesCommand extends OsgiCommandSupport {
 	protected Object doExecute() throws Exception {
 		try{
 			StringBuffer msg = new StringBuffer("List of installed asset topology definitions");
-			Map<String, GeneratorConfig> configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
+			GeneratorConfigList configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
 
-			for(String providerId:configDefinitions.keySet()){
-				GeneratorConfig generatorConfig = configDefinitions.get(providerId);
+			for(GeneratorConfig generatorConfig : configDefinitions.getConfigs()){
 				String graphDefinitionUriString = GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig);
-				msg.append("\n --providerId:"+providerId);
+				msg.append("\n --providerId:"+generatorConfig.getProviderId());
 				msg.append("\n     --label:"+generatorConfig.getLabel());
 				
 				msg.append("\n     --assetLayers:");

@@ -27,85 +27,66 @@
  *******************************************************************************/
 package org.opennms.features.topology.plugins.topo.asset;
 
-import static org.junit.Assert.*;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+
+import java.io.StringWriter;
+import java.nio.file.Paths;
+
+import javax.xml.bind.JAXB;
+
 import org.junit.Test;
-import org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl;
 import org.opennms.features.topology.plugins.topo.asset.filter.GeneratorConfigURITest;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AssetGraphDefinitionRepositoryTest {
 	private static final Logger LOG = LoggerFactory.getLogger(GeneratorConfigURITest.class);
 
-	private final String persistentId= "org.opennms.features.topology.plugins.topo.asset";
-	private final String uriconfig1="providerId=asset1"
-			+ "&label=asset1"
-			+ "&assetLayers=asset-country,asset-city,asset-building"
-			+ "&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2"
-			+ "&preferredLayout=Grid Layout"
-			+ "&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT";
-	private final String uriconfig2="providerId=asset2"
-			+ "&label=asset2"
-			+ "&assetLayers=asset-country,asset-city,asset-building"
-			+ "&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2"
-			+ "&preferredLayout=Grid Layout"
-			+ "&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT";
-
-
 	@Test
 	public void test() {
+		System.setProperty("opennms.home", "target");
+		Paths.get("target", "etc").toFile().mkdirs();
+
 		LOG.debug("start of AssetGraphDefinitionRepositoryTest");
 		AssetGraphDefinitionRepositoryImpl assetGraphDefinitionRepository = new AssetGraphDefinitionRepositoryImpl();
 
-		ConfigurationAdmin configurationAdmin= new MockConfigurationAdmin();
-		assetGraphDefinitionRepository.setConfigurationAdmin(configurationAdmin);
-		assetGraphDefinitionRepository.setPersistentId(persistentId);
-
-		GeneratorConfig config1 = new GeneratorConfigBuilder()
-		.withGraphDefinitionUri(uriconfig1)
-		.build();
+		final GeneratorConfig config1 = new GeneratorConfigBuilder()
+				.withProviderId("asset1")
+				.withLabel("asset1")
+				.withHierarchy("asset-country,asset-city,asset-building")
+				.withFilters("asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2")
+				.withPreferredLayout("Grid Layout")
+				.withBreadcrumbStrategy("SHORTEST_PATH_TO_ROOT")
+				.build();
 		LOG.debug("config1: "+config1);
 
-		GeneratorConfig config2 = new GeneratorConfigBuilder()
-		.withGraphDefinitionUri(uriconfig2)
-		.build();
+		final GeneratorConfig config2 = new GeneratorConfigBuilder()
+				.withProviderId("asset2")
+				.withLabel("asset2")
+				.withHierarchy("asset-country,asset-city,asset-building")
+				.withFilters("asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2")
+				.withPreferredLayout("Grid Layout")
+				.withBreadcrumbStrategy("SHORTEST_PATH_TO_ROOT")
+				.build();
 		LOG.debug("config2: "+config2);
 
 		assetGraphDefinitionRepository.addConfigDefinition(config1);
 
-		// adding duplicate throws exception
-		boolean expectedException=false;
-		try {
-			assetGraphDefinitionRepository.addConfigDefinition(config1);
-		} catch ( Exception e){
-			expectedException=true;
-			LOG.debug("    expected Exception thrown="+e.getMessage());
-		}
-		assertEquals(true,expectedException);
+		assertEquals(Boolean.TRUE, assetGraphDefinitionRepository.exists(config1.getProviderId()));
 
-		assertTrue(assetGraphDefinitionRepository.exists(config1.getProviderId()));
-
-		assertFalse(assetGraphDefinitionRepository.exists(config2.getProviderId()));
+		assertEquals(Boolean. FALSE,  assetGraphDefinitionRepository.exists(config2.getProviderId()));
 
 		assetGraphDefinitionRepository.addConfigDefinition(config2);
 
-		Map<String, GeneratorConfig> configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
+		GeneratorConfigList configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
 
-		assertEquals(2,configDefinitions.size());
+		assertEquals(2, configDefinitions.size());
 
-		StringBuffer msg = new StringBuffer("List of installed asset topology definitions");
-		for(String providerId:configDefinitions.keySet()){
-			LOG.debug("help");
-			GeneratorConfig generatorConfig = configDefinitions.get(providerId);
-			String graphDefinitionUriString = GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig);
-			msg.append("\n providerId:"+providerId);
-			msg.append("\n     generatorConfig:"+generatorConfig.toString());
-			msg.append("\n     graphDefinitionUriString:"+graphDefinitionUriString);
-		}
-		LOG.debug(msg.toString());
-		LOG.debug("end of AssetGraphDefinitionRepositoryTest");
+		final StringWriter writer = new StringWriter();
+		JAXB.marshal(configDefinitions, writer);
+		LOG.debug("List of installed asset topology definitions");
+		LOG.debug("{}", writer);
+		LOG.debug("End of {}", getClass().getSimpleName());
 	}
 
 }

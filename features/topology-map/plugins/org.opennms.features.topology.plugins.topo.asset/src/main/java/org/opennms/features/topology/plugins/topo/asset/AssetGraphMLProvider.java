@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.graphdrawing.graphml.GraphmlType;
@@ -156,11 +155,12 @@ public class AssetGraphMLProvider implements EventListener {
 	 * Throws a runtime exception if all the topologies are not regenerated
 	 */
 	public synchronized void regenerateAllAssetTopologies(){
-		Map<String, GeneratorConfig> configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
+		GeneratorConfigList configList = assetGraphDefinitionRepository.getAllConfigDefinitions();
 		StringBuffer logmsg = new StringBuffer("Regenerating All Asset Topologies succeeded for providerIds: ");
 		StringBuffer errmsg = new StringBuffer("Regenerate All Asset Topologies failed for providerIds: ");
 		boolean failed=false;
-		for(String providerId:configDefinitions.keySet()){
+		for(GeneratorConfig config : configList.getConfigs()){
+			final String providerId = config.getProviderId();
 			try {
 				regenerateAssetTopology(providerId);
 				logmsg.append("["+providerId+"]");
