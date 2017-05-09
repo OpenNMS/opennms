@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.stats.AlarmStatisticsService;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -105,10 +106,12 @@ public class OutageNodeStatusCalculatorIT {
         final OnmsMonitoredService snmpService = node.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServiceByServiceType("SNMP");
         final Set<Integer> nodeIds = Sets.newHashSet(node.getId());
         final NodeStatusCalculatorConfig query = new NodeStatusCalculatorConfig();
-        query.setNodeIds(nodeIds);
 
+        // No nodeIds
+        AlarmNodeStatusCalculatorIT.verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(query));
 
         // No outage exist, status should be normal
+        query.setNodeIds(nodeIds);
         AlarmNodeStatusCalculatorIT.verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(query));
 
         // Create an alarm and verify status

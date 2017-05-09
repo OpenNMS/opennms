@@ -45,6 +45,9 @@ public class AlarmNodeStatusCalculator implements NodeStatusCalculator {
 
     @Override
     public Status calculateStatus(NodeStatusCalculatorConfig query) {
+        if (query.getNodeIds().isEmpty()) {
+            return new Status();
+        }
         final List<String> parameterNames = Lists.newArrayList("nodeIds", "severity");
         final List<Object> parameterValues = Lists.newArrayList(query.getNodeIds(), Utils.getSeverity(query));
 

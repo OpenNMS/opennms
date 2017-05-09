@@ -96,9 +96,12 @@ public class AlarmNodeStatusCalculatorIT {
     public void verifyCalculateStatus() {
         final OnmsNode node = databasePopulator.getNode1();
         final NodeStatusCalculatorConfig query = new NodeStatusCalculatorConfig();
-        query.setNodeIds(Sets.newHashSet(node.getId()));
+
+        // No nodeIds
+        verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(query));
 
         // No alarm exists, status should be normal
+        query.setNodeIds(Sets.newHashSet(node.getId()));
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(query));
 
         // Create an alarm and verify status
