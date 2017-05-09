@@ -1,0 +1,4 @@
+opennms-minion: misplaced-extra-member-in-deb
+opennms-minion: debian-revision-should-not-be-zero
+opennms-minion: debian-revision-not-well-formed
+opennms-minion: empty-binary-package
