@@ -85,7 +85,7 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
                      "<wpms>" +
                          "<wpm name=\"wmiOSMemory\" wmiClass=\"Win32_PerfFormattedData_PerfOS_Memory\" wmiNamespace=\"root/cimv2\" " +
                              " keyvalue=\"Name\" recheckInterval=\"3600000\" ifType=\"all\" resourceType=\"node\">" +
-                             "<attrib name=\"AvailableBytes\" alias=\"wmiOSMemAvailBytes\" wmiObject=\"AvailableBytes\" type=\"gauge\"/>" +
+                             "<attrib name=\"AvailableBytes\" alias=\"wmiOSMemAvailBytes\" wmiObject=\"AvailableBytes\" type=\"GAUGE\"/>" +
                          "</wpm>" +
                      "</wpms>" +
                  "</wmi-collection>" +
