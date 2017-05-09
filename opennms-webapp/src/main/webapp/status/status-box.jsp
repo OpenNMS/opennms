@@ -177,7 +177,7 @@
                         title: "Business Services",
                         url: "/opennms/api/v2/status/summary/business-services",
                         onclick: function(e) {
-                            window.location = "bsm/index.jsp?_s=severity%3D%3D" + e.id;
+                            window.location = "status/bsm/index.jsp?_s=severity%3D%3D" + e.id;
                         }
                     },
                     {
@@ -185,7 +185,7 @@
                         title: "Applications",
                         url: "/opennms/api/v2/status/summary/applications",
                         onclick: function(e) {
-                            window.location = "application/index.jsp?_s=severity%3D%3D" + e.id;
+                            window.location = "status/application/index.jsp?_s=severity%3D%3D" + e.id;
                         }
                     },
                     {
@@ -193,7 +193,7 @@
                         title: "Alarms",
                         url: "/opennms/api/v2/status/summary/nodes/alarms",
                         onclick: function(e) {
-                            window.location = "node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
+                            window.location = "status/node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
                         }
                     },
                     {
@@ -201,7 +201,7 @@
                         title: "Outages",
                         url: "/opennms/api/v2/status/summary/nodes/outages",
                         onclick: function(e) {
-                            window.location = "node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
+                            window.location = "status/node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
                         }
                     },
                 ]
