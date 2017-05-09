@@ -142,7 +142,7 @@
                 }
             };
             if (limit > 0 && count > limit) {
-                $('#dashboardlist').append('<a href="graph/grafana.jsp">&nbsp;&nbsp;View List of All Dashboards</a><br/>');
+                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
             }
         </script>
         <%

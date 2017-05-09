@@ -35,7 +35,7 @@
   <jsp:param name="headTitle" value="Grafana Dashboard List" />
 </jsp:include>
 
-<div class="row">
+<div class="panel panel-default">
 
     <% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
        if (Boolean.parseBoolean(showGrafanaBox)) { %>
