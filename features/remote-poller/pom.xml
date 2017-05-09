@@ -124,6 +124,16 @@ groovy.compiler.output.path=target/classes
           </execution>
         </executions>
       </plugin>
+      <!--
+        NMS-9333: Skip the clean phase so that the artifact can be resolved by the 
+        plugins in the remote-poller-jnlp project
+      -->
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration> 
+      </plugin>
     </plugins>
   </build>
   <dependencies>
