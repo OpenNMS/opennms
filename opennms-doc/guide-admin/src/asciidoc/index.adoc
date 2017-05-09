@@ -150,7 +150,6 @@ include::text/performance-data-collection/stress-testing.adoc[]
 [[ga-events]]
 == Events
 include::text/events/events.adoc[]
-include::text/events/forward-elasticsearch.adoc[]
 
 [[ga-notifications]]
 == Notifications
