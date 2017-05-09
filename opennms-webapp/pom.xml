@@ -725,11 +725,11 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.sf.opencsv</groupId>
+      <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
     </dependency>
     <dependency>
-      <groupId>ognl</groupId>
+      <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -793,11 +793,21 @@
     <!-- these should all be <scope>compile</scope> -->
 
     <dependency>
-      <groupId>poi</groupId>
+      <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>rome</groupId>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
       <exclusions>
         <exclusion>
