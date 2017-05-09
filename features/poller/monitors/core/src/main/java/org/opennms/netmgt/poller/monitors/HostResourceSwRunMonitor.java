@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -51,8 +52,6 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import antlr.StringUtils;
 
 /**
  * <P>
@@ -198,7 +197,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                 final SnmpValue name = nameResults.get(nameInstance);
                 final SnmpValue value = statusResults.get(nameInstance);
                 // See if the service name is in the list of running services
-                if (name != null && value != null && match(serviceName, stripExtraQuotes(name.toString()))) {
+                if (name != null && value != null && match(serviceName, StringUtils.stripExtraQuotes(name.toString()))) {
                     matches++;
                     LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={}, service-name={}, value={}", hostAddress, serviceName, nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
@@ -262,18 +261,6 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             return currentText.matches(expectedText.replaceFirst("~", ""));
         }
         return currentText.equalsIgnoreCase(expectedText);
-    }
-
-    private static String stripExtraQuotes(String string) {
-        String stripped;
-        try {
-            stripped = StringUtils.stripFrontBack(string, "\"", "\"");
-        } catch (StringIndexOutOfBoundsException e) {
-            // Sometimes these are zero-length, see NMS-5852
-            stripped = string;
-        }
-
-        return stripped;
     }
 
 }
