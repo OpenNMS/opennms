@@ -124,41 +124,25 @@
             <table class="table table-bordered severity">
                 <tbody>
                 <tr>
-                    <th class="col-md-1 text-nowrap">
-                        <a ng-click="changeOrderBy('id')">ID</a>
-                        <i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                        <i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                    </th>
                     <th class="col-md-3 text-nowrap">
                         <a ng-click="changeOrderBy('severity')">Severity</a>
                         <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                         <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-md-6 text-nowrap">
+                    <th class="col-md-9 text-nowrap">
                         <a ng-click="changeOrderBy('name')">Name</a>
                         <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                         <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                     </th>
-                    <th class="col-md-2">
-                        Actions
-                    </th>
                 </tr>
 
                 <tr ng-repeat="item in items" class="severity-{{item.severity | lowercase}}">
-                    <td class="text-nowrap" style="line-height:24px;">
-                        {{item['id']}}
-                    </td>
                     <td class="text-nowrap divider bright">
-                        {{item['severity']}}
-                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'severity',operator:'EQ',value:item['severity']})"><i class="fa fa-plus-square-o fa-lg"/></a>
-                        <a style="text-decoration: none;" ng-click="addSearchClause({property:'severity',operator:'NE',value:item['severity']})"><i class="fa fa-minus-square-o fa-lg"/></a>
+                        {{item['severity'] | severity}}
                     </td>
                     <td class="text-nowrap">
-                        {{item['name']}}
-                    </td>
-                    <td>
                         <a href="topology?provider=Business Services&focus-vertices={{item['id']}}&layout=Hierarchy Layout">
-                            <i class="fa fa-external-link-square"></i> View in Topology
+                            {{item['name']}}
                         </a>
                     </td>
                 </tr>

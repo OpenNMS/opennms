@@ -47,8 +47,10 @@
             $log.debug('BusinessServicesListCtrl initializing...');
 
             // Set the default sort and set it on $scope.$parent.query
-            $scope.$parent.defaults.orderBy = 'id';
-            $scope.$parent.query.orderBy = 'id';
+            $scope.$parent.defaults.orderBy = 'severity';
+            $scope.$parent.defaults.order = 'desc';
+            $scope.$parent.query.orderBy = 'severity';
+            $scope.$parent.query.order = 'desc';
 
             // $scope.newItem = {};
 

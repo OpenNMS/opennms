@@ -236,6 +236,19 @@ function normalizeOffset(offset, maxOffset, limit) {
 				return false;
 			}
 		}
+	})
+	.filter('severity', function() {
+		return function(input) {
+			input = input || '';
+			var out = '';
+			if (input.length > 0) {
+				out = input.charAt(0).toUpperCase();
+			}
+			if (input.length > 1) {
+				out = out + input.substr(1, input.length).toLowerCase();
+			}
+			return out;
+		}
 	});
 
 	// List module
