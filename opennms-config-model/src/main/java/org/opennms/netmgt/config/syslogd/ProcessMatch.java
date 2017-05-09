@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,85 +29,62 @@
 package org.opennms.netmgt.config.syslogd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * String against which to match the process name; interpreted
  *  as a regular expression. If no process name is present in
  *  the incoming message, any process-match elements will be
  *  considered non-matches.
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "process-match")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ProcessMatch implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("syslog.xsd")
+public class ProcessMatch implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * The regular expression
      */
     @XmlAttribute(name = "expression", required = true)
-    private String expression;
+    private String m_expression;
 
     public ProcessMatch() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getExpression() {
+        return m_expression;
+    }
+
+    public void setExpression(final String expression) {
+        m_expression = ConfigUtils.assertNotEmpty(expression, "expression");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_expression);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ProcessMatch) {
-            ProcessMatch temp = (ProcessMatch)obj;
-            boolean equals = Objects.equals(temp.expression, expression);
-            return equals;
+            final ProcessMatch that = (ProcessMatch)obj;
+            return Objects.equals(this.m_expression, that.m_expression);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'expression'. The field 'expression' has the
-     * following description: The regular expression
-     * 
-     * @return the value of field 'Expression'.
-     */
-    public String getExpression() {
-        return this.expression;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            expression);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'expression'. The field 'expression' has the
-     * following description: The regular expression
-     * 
-     * @param expression the value of field 'expression'.
-     */
-    public void setExpression(final String expression) {
-        this.expression = expression;
     }
 
 }

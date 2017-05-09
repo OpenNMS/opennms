@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
@@ -187,8 +188,8 @@ public class MicroblogClient {
         return !isEmpty(mp.getAuthenUsername()) && !isEmpty(mp.getAuthenPassword());
     }
 
-    private static boolean isEmpty(final String value) {
-        return value == null || "".equals(value);
+    private static boolean isEmpty(final Optional<String> value) {
+        return !value.isPresent() || "".equals(value.get());
     }
 
     public MicroblogAuthorization requestAuthorization(final String profile) throws MicroblogAuthorizationException {
@@ -201,12 +202,12 @@ public class MicroblogClient {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setClientURL(mp.getServiceUrl());
 
-        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey());
-        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret());
-        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken());
-        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret());
-        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername());
-        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword());
+        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey().orElse(null));
+        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret().orElse(null));
+        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken().orElse(null));
+        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret().orElse(null));
+        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername().orElse(null));
+        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword().orElse(null));
 
         return new TwitterFactory(builder.build()).getInstance();
     }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -128,7 +127,7 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
     @Override
     public Reader getReader(String readerName) {
         Reader readerByName = null;
-        List<Reader> readers = getConfig().getReaders().getReaderCollection();
+        List<Reader> readers = getConfig().getReaders();
         for (Reader reader : readers) {
             if (readerName.equals(reader.getReaderName())) {
                 readerByName = reader;
@@ -154,7 +153,7 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
         boolean enabled = false;
         Reader reader = getReader(readerName);
         if (reader != null) {
-            enabled = reader.isEnabled();
+            enabled = reader.getEnabled();
         }
         return enabled;
     }
@@ -170,29 +169,17 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
         getContainer().reload();
     }
 
-    /**
-     * <p>getEnabledReaderCount</p>
-     *
-     * @return a int.
-     */
     @Override
     public int getEnabledReaderCount() {
-        int cnt = 0;
-        Iterator<Reader> it = getConfig().getReaders().getReaderCollection().iterator();
-
-        while (it.hasNext()) {
-            Reader reader = (Reader) it.next();
-            if (reader.isEnabled()) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return Long.valueOf(getConfig().getReaders().stream().filter(r -> {
+            return r.getEnabled();
+        }).count()).intValue();
     }
 
     /** {@inheritDoc} */
     @Override
     public List<Parameter> getParametersForReader(String name) {
-        return getReader(name).getParameterCollection();
+        return getReader(name).getParameters();
     }
     
 }

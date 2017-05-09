@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.poller.outages;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,17 +38,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Defines start/end time for the outage
- * 
  */
 
 @XmlRootElement(name="time", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class Time implements Serializable {
-    private static final long serialVersionUID = -189226850513095472L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * An identifier for this event used for reference in the web-ui. If this
@@ -54,191 +56,76 @@ public class Time implements Serializable {
      *  
      */
     @XmlAttribute(name="id")
-    private String _id;
+    private String m_id;
 
-    /**
-     * Field _day.
-     */
     @XmlAttribute(name="day")
-    private String _day;
+    private String m_day;
 
     /**
      * when the outage starts
      */
-    @XmlAttribute(name="begins")
-    private String _begins;
+    @XmlAttribute(name="begins", required=true)
+    private String m_begins;
 
     /**
      * when the outage ends
      */
-    @XmlAttribute(name="ends")
-    private String _ends;
+    @XmlAttribute(name="ends", required=true)
+    private String m_ends;
 
     public Time() {
-        super();
     }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Optional<String> getId() {
+        return Optional.ofNullable(m_id);
+    }
+
+    public void setId(final String id) {
+        m_id = ConfigUtils.normalizeString(id);
+    }
+
+    public Optional<String> getDay() {
+        return Optional.ofNullable(m_day);
+    }
+
+    public void setDay(final String day) {
+        m_day = ConfigUtils.normalizeString(day);
+    }
+
+    public String getBegins() {
+        return m_begins;
+    }
+
+    public void setBegins(final String begins) {
+        m_begins = ConfigUtils.assertNotEmpty(begins, "begins");
+    }
+
+    public String getEnds() {
+        return m_ends;
+    }
+
+    public void setEnds(final String ends) {
+        m_ends = ConfigUtils.assertNotEmpty(ends, "ends");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_id, m_day, m_begins, m_ends);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj )
             return true;
 
         if (obj instanceof Time) {
-
-            Time temp = (Time)obj;
-            if (this._id != null) {
-                if (temp._id == null) return false;
-                else if (!(this._id.equals(temp._id))) 
-                    return false;
-            }
-            else if (temp._id != null)
-                return false;
-            if (this._day != null) {
-                if (temp._day == null) return false;
-                else if (!(this._day.equals(temp._day))) 
-                    return false;
-            }
-            else if (temp._day != null)
-                return false;
-            if (this._begins != null) {
-                if (temp._begins == null) return false;
-                else if (!(this._begins.equals(temp._begins))) 
-                    return false;
-            }
-            else if (temp._begins != null)
-                return false;
-            if (this._ends != null) {
-                if (temp._ends == null) return false;
-                else if (!(this._ends.equals(temp._ends))) 
-                    return false;
-            }
-            else if (temp._ends != null)
-                return false;
-            return true;
+            final Time that = (Time)obj;
+            return Objects.equals(this.m_id, that.m_id) &&
+                    Objects.equals(this.m_day, that.m_day) &&
+                    Objects.equals(this.m_begins, that.m_begins) &&
+                    Objects.equals(this.m_ends, that.m_ends);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'begins'. The field 'begins' has
-     * the following description: when the outage starts
-     * 
-     * @return the value of field 'Begins'.
-     */
-    public String getBegins() {
-        return this._begins;
-    }
-
-    /**
-     * Returns the value of field 'day'.
-     * 
-     * @return the value of field 'Day'.
-     */
-    public String getDay() {
-        return this._day;
-    }
-
-    /**
-     * Returns the value of field 'ends'. The field 'ends' has the
-     * following description: when the outage ends
-     * 
-     * @return the value of field 'Ends'.
-     */
-    public String getEnds() {
-        return this._ends;
-    }
-
-    /**
-     * Returns the value of field 'id'. The field 'id' has the
-     * following description: an identifier for this event used for
-     * reference in the web-ui. If this
-     *  identifier is not assigned it will be assigned an identifier
-     * by web-ui.
-     *  
-     * 
-     * @return the value of field 'Id'.
-     */
-    public String getId() {
-        return this._id;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int result = 17;
-
-        if (_id != null) {
-            result = 37 * result + _id.hashCode();
-        }
-        if (_day != null) {
-            result = 37 * result + _day.hashCode();
-        }
-        if (_begins != null) {
-            result = 37 * result + _begins.hashCode();
-        }
-        if (_ends != null) {
-            result = 37 * result + _ends.hashCode();
-        }
-
-        return result;
-    }
-
-    /**
-     * <p>Sets the value of field 'begins'. The field 'begins' has the
-     * following description: when the outage starts.</p>
-     * <p>Requires format of 'dd-MMM-yyyy HH:mm:ss' or 'HH:mm:ss'.</p>
-     * 
-     * @param begins the value of field 'begins'.
-     */
-    public void setBegins(final String begins) {
-        this._begins = begins;
-    }
-
-    /**
-     * Sets the value of field 'day'.
-     * 
-     * @param day the value of field 'day'.
-     */
-    public void setDay(final String day) {
-        this._day = day;
-    }
-
-    /**
-     * Sets the value of field 'ends'. The field 'ends' has the
-     * following description: when the outage ends.</p>
-     * <p>Requires format of 'dd-MMM-yyyy HH:mm:ss' or 'HH:mm:ss'.</p>
-     * 
-     * @param ends the value of field 'ends'.
-     */
-    public void setEnds(final String ends) {
-        this._ends = ends;
-    }
-
-    /**
-     * Sets the value of field 'id'. The field 'id' has the
-     * following description: an identifier for this event used for
-     * reference in the web-ui.
-     * If this identifer is not assigned it will be assigned an identifier
-     * by web-ui.
-     *  
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(final String id) {
-        this._id = id;
     }
 
 }

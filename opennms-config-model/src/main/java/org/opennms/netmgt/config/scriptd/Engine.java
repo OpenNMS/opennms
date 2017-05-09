@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,122 +29,78 @@
 package org.opennms.netmgt.config.scriptd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Engine.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "engine")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Engine implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("scriptd-configuration.xsd")
+public class Engine implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "language", required = true)
-    private String language;
+    private String m_language;
 
     @XmlAttribute(name = "className", required = true)
-    private String className;
+    private String m_className;
 
     @XmlAttribute(name = "extensions")
-    private String extensions;
+    private String m_extensions;
 
     public Engine() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getLanguage() {
+        return m_language;
+    }
+
+    public void setLanguage(final String language) {
+        m_language = ConfigUtils.assertNotEmpty(language, "language");
+    }
+
+    public String getClassName() {
+        return m_className;
+    }
+
+    public void setClassName(final String className) {
+        m_className = ConfigUtils.assertNotEmpty(className, "className");
+    }
+
+    public Optional<String> getExtensions() {
+        return Optional.ofNullable(m_extensions);
+    }
+
+    public void setExtensions(final String extensions) {
+        m_extensions = ConfigUtils.normalizeString(extensions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_language, m_className, m_extensions);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Engine) {
-            Engine temp = (Engine)obj;
-            boolean equals = Objects.equals(temp.language, language)
-                && Objects.equals(temp.className, className)
-                && Objects.equals(temp.extensions, extensions);
-            return equals;
+            final Engine that = (Engine)obj;
+            return Objects.equals(this.m_language, that.m_language)
+                    && Objects.equals(this.m_className, that.m_className)
+                    && Objects.equals(this.m_extensions, that.m_extensions);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'className'.
-     * 
-     * @return the value of field 'ClassName'.
-     */
-    public String getClassName() {
-        return this.className;
-    }
-
-    /**
-     * Returns the value of field 'extensions'.
-     * 
-     * @return the value of field 'Extensions'.
-     */
-    public String getExtensions() {
-        return this.extensions;
-    }
-
-    /**
-     * Returns the value of field 'language'.
-     * 
-     * @return the value of field 'Language'.
-     */
-    public String getLanguage() {
-        return this.language;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            language, 
-            className, 
-            extensions);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'className'.
-     * 
-     * @param className the value of field 'className'.
-     */
-    public void setClassName(final String className) {
-        this.className = className;
-    }
-
-    /**
-     * Sets the value of field 'extensions'.
-     * 
-     * @param extensions the value of field 'extensions'.
-     */
-    public void setExtensions(final String extensions) {
-        this.extensions = extensions;
-    }
-
-    /**
-     * Sets the value of field 'language'.
-     * 
-     * @param language the value of field 'language'.
-     */
-    public void setLanguage(final String language) {
-        this.language = language;
     }
 
 }

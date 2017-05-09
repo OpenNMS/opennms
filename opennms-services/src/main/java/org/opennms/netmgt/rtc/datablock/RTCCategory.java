@@ -29,10 +29,8 @@
 package org.opennms.netmgt.rtc.datablock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
@@ -65,7 +63,7 @@ public class RTCCategory extends Category {
      */
     public RTCCategory(Category cat, String commonRule) {
         setLabel(cat.getLabel());
-        setComment(cat.getComment());
+        setComment(cat.getComment().orElse(null));
         setRule(cat.getRule());
         setNormalThreshold(cat.getNormalThreshold());
         setWarningThreshold(cat.getWarningThreshold());

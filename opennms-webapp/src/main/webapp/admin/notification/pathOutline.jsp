@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -179,7 +179,7 @@
         <div class="form-group">
           <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
           <div class="col-sm-10">
-            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
+            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse(null))%>
           </div>
         </div>
         <div class="form-group">

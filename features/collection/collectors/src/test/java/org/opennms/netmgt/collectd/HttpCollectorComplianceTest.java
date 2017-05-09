@@ -36,7 +36,6 @@ import java.util.Map;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
-import org.opennms.netmgt.config.httpdatacollection.Uris;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.google.common.collect.ImmutableMap;
@@ -51,8 +50,6 @@ public class HttpCollectorComplianceTest extends CollectorComplianceTest {
         super(HttpCollector.class, true);
 
         HttpCollection collection = new HttpCollection();
-        // Use an empty list of uris
-        collection.setUris(new Uris());
         configFactory = mock(HttpCollectionConfigFactory.class);
         when(configFactory.getHttpCollection(COLLECTION)).thenReturn(collection);
         when(configFactory.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());

@@ -85,7 +85,7 @@ public class AuthenticationIT implements InitializingBean {
         MockLogAppender.setupLogging(true, "DEBUG");
         Userinfo users = JaxbUtils.unmarshal(Userinfo.class, new FileSystemResource(new File("src/test/resources/org/opennms/web/springframework/security/users.xml")));
         assertNotNull(users);
-        m_userManager.saveUsers(users.getUsers().getUsers());
+        m_userManager.saveUsers(users.getUsers());
     }
 
     @Test

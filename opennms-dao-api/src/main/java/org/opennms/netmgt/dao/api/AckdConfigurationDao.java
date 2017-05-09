@@ -123,11 +123,6 @@ public interface AckdConfigurationDao {
      */
     void reloadConfiguration() throws DataAccessResourceFailureException;
 
-    /**
-     * <p>getEnabledReaderCount</p>
-     *
-     * @return a int.
-     */
     int getEnabledReaderCount();
 
     /**

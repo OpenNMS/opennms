@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.service.types;
+package org.opennms.core.xml;
+
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class InvokeAtTypeAdapter extends XmlAdapter<String, InvokeAtType> {
+public abstract class AbstractOptionalAdapter<T> extends XmlAdapter<String, Optional<T>> {
+
+    public abstract T fromString(final String v);
 
     @Override
-    public InvokeAtType unmarshal(String val) throws Exception {
-        return InvokeAtType.valueOf(val);
+    public Optional<T> unmarshal(final String v) throws Exception {
+        return Optional.ofNullable(fromString(v));
     }
 
     @Override
-    public String marshal(InvokeAtType invokeAtType) throws Exception {
-        return invokeAtType.toString();
+    public String marshal(final Optional<T> v) throws Exception {
+        if (v.isPresent()) {
+            return v.get().toString();
+        } else {
+            return null;
+        }
     }
+
 }

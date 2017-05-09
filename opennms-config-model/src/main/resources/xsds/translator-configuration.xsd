@@ -56,7 +56,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:event-translation-spec" minOccurs="1"
+				<element ref="this:event-translation-spec" minOccurs="0"
 					maxOccurs="unbounded" />
 			</sequence>
 		</complexType>

@@ -198,7 +198,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		if (programmaticEvents == null) return false;
 
 		programmaticEvents.removeEvent(event);
-		if (programmaticEvents.getEventCount() <= 0) {
+		if (programmaticEvents.getEvents().size() <= 0) {
 			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
 		} 
 
@@ -276,11 +276,11 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
             // Hash the list of event files for efficient lookup
             Set<String> eventFiles = new HashSet<String>();
-            eventFiles.addAll(events.getEventFileCollection());
+            eventFiles.addAll(events.getEventFiles());
 
             // Copy the loaded event files from the current root to the new root
             // if and only if they exist in the new root
-            for (String eventFile : m_events.getEventFile()) {
+            for (String eventFile : m_events.getEventFiles()) {
                 if (!eventFiles.contains(eventFile)) {
                     m_lastModifiedEventFiles.remove(eventFile);
                     continue;

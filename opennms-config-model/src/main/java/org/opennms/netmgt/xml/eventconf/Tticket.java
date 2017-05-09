@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -35,66 +38,56 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The trouble ticket info with state on/off determining if
  *  action is taken on the trouble ticket
  */
 @XmlRootElement(name="tticket")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
-public class Tticket implements java.io.Serializable {
-	private static final long serialVersionUID = -2030876837447357150L;
+public class Tticket implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-	@XmlValue
+    @XmlValue
     private String m_content;
 
-	// @Pattern(regexp="(on|off)", message="'state' must be 'on' or 'off'")
-	@XmlAttribute(name="state", required=false)
-    private String m_state;
+    @XmlAttribute(name="state", required=false)
+    private StateType m_state;
 
     public String getContent() {
         return m_content;
     }
 
-    public String getState() {
-        return m_state == null? "on" : m_state; // Default state is "on" according to the XSD
-    }
-
     public void setContent(final String content) {
-        m_content = content;
+        m_content = ConfigUtils.normalizeString(content);
     }
 
-    public void setState(final String state) {
+    public StateType getState() {
+        return m_state == null? StateType.ON : m_state; // Default state is "on" according to the XSD
+    }
+
+    public void setState(final StateType state) {
         m_state = state;
     }
 
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_content == null) ? 0 : m_content.hashCode());
-		result = prime * result + ((m_state == null) ? 0 : m_state.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        return Objects.hash(m_content, m_state);
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Tticket)) return false;
-		final Tticket other = (Tticket) obj;
-		if (m_content == null) {
-			if (other.m_content != null) return false;
-		} else if (!m_content.equals(other.m_content)) {
-			return false;
-		}
-		if (m_state == null) {
-			if (other.m_state != null) return false;
-		} else if (!m_state.equals(other.m_state)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Tticket) {
+            final Tticket that = (Tticket) obj;
+            return Objects.equals(this.m_content, that.m_content) &&
+                    Objects.equals(this.m_state, that.m_state);
+        }
+        return false;
+    }
 
 }

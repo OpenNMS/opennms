@@ -57,11 +57,11 @@ public class RwsConfigurationTest extends XmlTestNoCastor<RwsConfiguration> {
         RwsConfiguration config = new RwsConfiguration();
 
         BaseUrl url = new BaseUrl();
-        url.setServer_url("http://host");
+        url.setServerUrl("http://host");
         config.setBaseUrl(url);
         
         StandbyUrl byUrl = new StandbyUrl();
-        byUrl.setServer_url("http://some-other-host");
+        byUrl.setServerUrl("http://some-other-host");
         config.addStandbyUrl(byUrl);
 
         return config;

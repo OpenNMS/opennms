@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,90 +29,63 @@
 package org.opennms.netmgt.config.threshd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Threshold definition
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "threshold")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Threshold extends Basethresholddef implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("thresholding.xsd")
+public class Threshold extends Basethresholddef implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * RRD datasource name. Mutually exclusive with expression,
      *  but one of them must be specified
-     *  
      */
     @XmlAttribute(name = "ds-name", required = true)
-    private String dsName;
+    private String m_dsName;
 
     public Threshold() { }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getDsName() {
+        return m_dsName;
+    }
+
+    public void setDsName(final String dsName) {
+        m_dsName = ConfigUtils.assertNotEmpty(dsName, "ds-name");
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(m_dsName);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (super.equals(obj)==false) {
             return false;
         }
-        
+
         if (obj instanceof Threshold) {
-            Threshold temp = (Threshold)obj;
-            boolean equals = Objects.equals(temp.dsName, dsName);
-            return equals;
+            final Threshold that = (Threshold)obj;
+            return Objects.equals(this.m_dsName, that.m_dsName);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'dsName'. The field 'dsName' has the following
-     * description: RRD datasource name. Mutually exclusive with expression,
-     *  but one of them must be specified
-     *  
-     * 
-     * @return the value of field 'DsName'.
-     */
-    public String getDsName() {
-        return this.dsName;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            dsName);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'dsName'. The field 'dsName' has the following
-     * description: RRD datasource name. Mutually exclusive with expression,
-     *  but one of them must be specified
-     *  
-     * 
-     * @param dsName the value of field 'dsName'.
-     */
-    public void setDsName(final String dsName) {
-        this.dsName = dsName;
     }
 
 }

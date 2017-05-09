@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.config.reportd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,29 +38,32 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Behavior configuration for the Enterprise Reporting Daemon
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "reportd-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ReportdConfiguration implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reportd-configuration.xsd")
+public class ReportdConfiguration implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * The base directory rendered reports are saved on the file system.
      */
     @XmlAttribute(name = "storage-location", required = true)
-    private String storageLocation;
+    private String m_storageLocation;
 
     /**
      * Should reports be kept after delivered?
      */
     @XmlAttribute(name = "persist-reports", required = true)
-    private String persistReports;
+    @XmlJavaTypeAdapter(StupidBooleanAdapter.class)
+    private Boolean m_persistReports;
 
     /**
      * Defines an report schedule with a cron expression
@@ -79,259 +80,62 @@ public class ReportdConfiguration implements java.io.Serializable {
      *  
      */
     @XmlElement(name = "report")
-    private List<Report> reportList = new ArrayList<Report>();
+    private List<Report> m_reports = new ArrayList<Report>();
 
-    /**
-     * 
-     * 
-     * @param vReport
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addReport(final Report vReport) throws IndexOutOfBoundsException {
-        this.reportList.add(vReport);
+    public void addReport(final Report report) {
+        m_reports.add(report);
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vReport
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addReport(final int index, final Report vReport) throws IndexOutOfBoundsException {
-        this.reportList.add(index, vReport);
-    }
-
-    /**
-     * Method enumerateReport.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Report> enumerateReport() {
-        return Collections.enumeration(this.reportList);
-    }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ReportdConfiguration) {
-            ReportdConfiguration temp = (ReportdConfiguration)obj;
-            boolean equals = Objects.equals(temp.storageLocation, storageLocation)
-                && Objects.equals(temp.persistReports, persistReports)
-                && Objects.equals(temp.reportList, reportList);
-            return equals;
+            final ReportdConfiguration that = (ReportdConfiguration)obj;
+            return Objects.equals(this.m_storageLocation, that.m_storageLocation)
+                    && Objects.equals(this.m_persistReports, that.m_persistReports)
+                    && Objects.equals(this.m_reports, that.m_reports);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'persistReports'. The field 'persistReports' has
-     * the following description: Should reports be kept after delivered?
-     * 
-     * @return the value of field 'PersistReports'.
-     */
-    public String getPersistReports() {
-        return this.persistReports;
+    public Boolean getPersistReports() {
+        return m_persistReports;
     }
 
-    /**
-     * Method getReport.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the Report at the
-     * given index
-     */
-    public Report getReport(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.reportList.size()) {
-            throw new IndexOutOfBoundsException("getReport: Index value '" + index + "' not in range [0.." + (this.reportList.size() - 1) + "]");
-        }
-        
-        return (Report) reportList.get(index);
+    public List<Report> getReports() {
+        return m_reports;
     }
 
-    /**
-     * Method getReport.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public Report[] getReport() {
-        Report[] array = new Report[0];
-        return (Report[]) this.reportList.toArray(array);
-    }
-
-    /**
-     * Method getReportCollection.Returns a reference to 'reportList'. No type
-     * checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Report> getReportCollection() {
-        return this.reportList;
-    }
-
-    /**
-     * Method getReportCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getReportCount() {
-        return this.reportList.size();
-    }
-
-    /**
-     * Returns the value of field 'storageLocation'. The field 'storageLocation'
-     * has the following description: The base directory rendered reports are
-     * saved on the file system.
-     * 
-     * @return the value of field 'StorageLocation'.
-     */
     public String getStorageLocation() {
-        return this.storageLocation;
+        return m_storageLocation;
     }
 
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            storageLocation, 
-            persistReports, 
-            reportList);
-        return hash;
+        return Objects.hash(m_storageLocation, 
+                            m_persistReports, 
+                            m_reports);
     }
 
-    /**
-     * Method iterateReport.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Report> iterateReport() {
-        return this.reportList.iterator();
+    public boolean removeReport(final Report report) {
+        return m_reports.remove(report);
     }
 
-    /**
-     */
-    public void removeAllReport() {
-        this.reportList.clear();
+    public void setPersistReports(final Boolean persistReports) {
+        m_persistReports = ConfigUtils.assertNotNull(persistReports, "persist-reports");
     }
 
-    /**
-     * Method removeReport.
-     * 
-     * @param vReport
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeReport(final Report vReport) {
-        boolean removed = reportList.remove(vReport);
-        return removed;
+    public void setReport(final List<Report> reports) {
+        if (reports == m_reports) return;
+        m_reports.clear();
+        if (reports != null) m_reports.addAll(reports);
     }
 
-    /**
-     * Method removeReportAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Report removeReportAt(final int index) {
-        Object obj = this.reportList.remove(index);
-        return (Report) obj;
-    }
-
-    /**
-     * Sets the value of field 'persistReports'. The field 'persistReports' has
-     * the following description: Should reports be kept after delivered?
-     * 
-     * @param persistReports the value of field 'persistReports'.
-     */
-    public void setPersistReports(final String persistReports) {
-        this.persistReports = persistReports;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vReport
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setReport(final int index, final Report vReport) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.reportList.size()) {
-            throw new IndexOutOfBoundsException("setReport: Index value '" + index + "' not in range [0.." + (this.reportList.size() - 1) + "]");
-        }
-        
-        this.reportList.set(index, vReport);
-    }
-
-    /**
-     * 
-     * 
-     * @param vReportArray
-     */
-    public void setReport(final Report[] vReportArray) {
-        //-- copy array
-        reportList.clear();
-        
-        for (int i = 0; i < vReportArray.length; i++) {
-                this.reportList.add(vReportArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'reportList' by copying the given Vector. All elements
-     * will be checked for type safety.
-     * 
-     * @param vReportList the Vector to copy.
-     */
-    public void setReport(final List<Report> vReportList) {
-        // copy vector
-        this.reportList.clear();
-        
-        this.reportList.addAll(vReportList);
-    }
-
-    /**
-     * Sets the value of 'reportList' by setting it to the given Vector. No type
-     * checking is performed.
-     * @deprecated
-     * 
-     * @param reportList the Vector to set.
-     */
-    public void setReportCollection(final List<Report> reportList) {
-        this.reportList = reportList;
-    }
-
-    /**
-     * Sets the value of field 'storageLocation'. The field 'storageLocation' has
-     * the following description: The base directory rendered reports are saved on
-     * the file system.
-     * 
-     * @param storageLocation the value of field 'storageLocation'.
-     */
     public void setStorageLocation(final String storageLocation) {
-        this.storageLocation = storageLocation;
+        m_storageLocation = ConfigUtils.assertNotEmpty(storageLocation, "storage-location");
     }
 
 }

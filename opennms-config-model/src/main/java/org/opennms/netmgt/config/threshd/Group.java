@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.config.threshd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,474 +39,119 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Grouping of related threshold definitions
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "group")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Group implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("thresholding.xsd")
+public class Group implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * Group name
      */
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
      * Full path to the RRD repository where the data is stored
      *  
      */
     @XmlAttribute(name = "rrdRepository", required = true)
-    private String rrdRepository;
+    private String m_rrdRepository;
 
     /**
      * Threshold definition
      */
     @XmlElement(name = "threshold")
-    private List<Threshold> thresholdList = new ArrayList<>();
+    private List<Threshold> m_thresholds = new ArrayList<>();
 
     /**
      * Expression definition
      */
     @XmlElement(name = "expression")
-    private List<Expression> expressionList = new ArrayList<>();
+    private List<Expression> m_expressions = new ArrayList<>();
 
     public Group() { }
 
-    /**
-     * 
-     * 
-     * @param vExpression
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addExpression(final Expression vExpression) throws IndexOutOfBoundsException {
-        this.expressionList.add(vExpression);
+    public String getName() {
+        return m_name;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vExpression
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addExpression(final int index, final Expression vExpression) throws IndexOutOfBoundsException {
-        this.expressionList.add(index, vExpression);
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * 
-     * 
-     * @param vThreshold
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addThreshold(final Threshold vThreshold) throws IndexOutOfBoundsException {
-        this.thresholdList.add(vThreshold);
+    public String getRrdRepository() {
+        return m_rrdRepository;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vThreshold
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addThreshold(final int index, final Threshold vThreshold) throws IndexOutOfBoundsException {
-        this.thresholdList.add(index, vThreshold);
+    public void setRrdRepository(final String rrdRepository) {
+        m_rrdRepository = ConfigUtils.assertNotEmpty(rrdRepository, "rrdRepository");
     }
 
-    /**
-     * Method enumerateExpression.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Expression> enumerateExpression() {
-        return Collections.enumeration(this.expressionList);
+    public List<Threshold> getThresholds() {
+        return m_thresholds;
     }
 
-    /**
-     * Method enumerateThreshold.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Threshold> enumerateThreshold() {
-        return Collections.enumeration(this.thresholdList);
+    public void setThresholds(final List<Threshold> thresholds) {
+        if (thresholds == m_thresholds) return;
+        m_thresholds.clear();
+        if (thresholds != null) m_thresholds.addAll(thresholds);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public void addThreshold(final Threshold threshold) {
+        m_thresholds.add(threshold);
+    }
+
+    public boolean removeThreshold(final Threshold threshold) {
+        return m_thresholds.remove(threshold);
+    }
+
+    public List<Expression> getExpressions() {
+        return m_expressions;
+    }
+
+    public void setExpressions(final List<Expression> expressions) {
+        if (expressions == m_expressions) return;
+        m_expressions.clear();
+        if (expressions != null) m_expressions.addAll(expressions);
+    }
+
+    public void addExpression(final Expression expression) {
+        m_expressions.add(expression);
+    }
+
+    public boolean removeExpression(final Expression expression) {
+        return m_expressions.remove(expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_rrdRepository, 
+                            m_thresholds, 
+                            m_expressions);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Group) {
-            Group temp = (Group)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.rrdRepository, rrdRepository)
-                && Objects.equals(temp.thresholdList, thresholdList)
-                && Objects.equals(temp.expressionList, expressionList);
-            return equals;
+            final Group that = (Group)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_rrdRepository, that.m_rrdRepository)
+                    && Objects.equals(this.m_thresholds, that.m_thresholds)
+                    && Objects.equals(this.m_expressions, that.m_expressions);
         }
         return false;
-    }
-
-    /**
-     * Method getExpression.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the Expression at
-     * the given index
-     */
-    public Expression getExpression(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.expressionList.size()) {
-            throw new IndexOutOfBoundsException("getExpression: Index value '" + index + "' not in range [0.." + (this.expressionList.size() - 1) + "]");
-        }
-        
-        return (Expression) expressionList.get(index);
-    }
-
-    /**
-     * Method getExpression.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public Expression[] getExpression() {
-        Expression[] array = new Expression[0];
-        return (Expression[]) this.expressionList.toArray(array);
-    }
-
-    /**
-     * Method getExpressionCollection.Returns a reference to 'expressionList'. No
-     * type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Expression> getExpressionCollection() {
-        return this.expressionList;
-    }
-
-    /**
-     * Method getExpressionCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getExpressionCount() {
-        return this.expressionList.size();
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the following
-     * description: Group name
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'rrdRepository'. The field 'rrdRepository' has
-     * the following description: Full path to the RRD repository where the data
-     * is stored
-     *  
-     * 
-     * @return the value of field 'RrdRepository'.
-     */
-    public String getRrdRepository() {
-        return this.rrdRepository;
-    }
-
-    /**
-     * Method getThreshold.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the Threshold at the
-     * given index
-     */
-    public Threshold getThreshold(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.thresholdList.size()) {
-            throw new IndexOutOfBoundsException("getThreshold: Index value '" + index + "' not in range [0.." + (this.thresholdList.size() - 1) + "]");
-        }
-        
-        return (Threshold) thresholdList.get(index);
-    }
-
-    /**
-     * Method getThreshold.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public Threshold[] getThreshold() {
-        Threshold[] array = new Threshold[0];
-        return (Threshold[]) this.thresholdList.toArray(array);
-    }
-
-    /**
-     * Method getThresholdCollection.Returns a reference to 'thresholdList'. No
-     * type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Threshold> getThresholdCollection() {
-        return this.thresholdList;
-    }
-
-    /**
-     * Method getThresholdCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getThresholdCount() {
-        return this.thresholdList.size();
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            rrdRepository, 
-            thresholdList, 
-            expressionList);
-        return hash;
-    }
-
-    /**
-     * Method iterateExpression.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Expression> iterateExpression() {
-        return this.expressionList.iterator();
-    }
-
-    /**
-     * Method iterateThreshold.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Threshold> iterateThreshold() {
-        return this.thresholdList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllExpression() {
-        this.expressionList.clear();
-    }
-
-    /**
-     */
-    public void removeAllThreshold() {
-        this.thresholdList.clear();
-    }
-
-    /**
-     * Method removeExpression.
-     * 
-     * @param vExpression
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeExpression(final Expression vExpression) {
-        boolean removed = expressionList.remove(vExpression);
-        return removed;
-    }
-
-    /**
-     * Method removeExpressionAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Expression removeExpressionAt(final int index) {
-        Object obj = this.expressionList.remove(index);
-        return (Expression) obj;
-    }
-
-    /**
-     * Method removeThreshold.
-     * 
-     * @param vThreshold
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeThreshold(final Threshold vThreshold) {
-        boolean removed = thresholdList.remove(vThreshold);
-        return removed;
-    }
-
-    /**
-     * Method removeThresholdAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Threshold removeThresholdAt(final int index) {
-        Object obj = this.thresholdList.remove(index);
-        return (Threshold) obj;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vExpression
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setExpression(final int index, final Expression vExpression) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.expressionList.size()) {
-            throw new IndexOutOfBoundsException("setExpression: Index value '" + index + "' not in range [0.." + (this.expressionList.size() - 1) + "]");
-        }
-        
-        this.expressionList.set(index, vExpression);
-    }
-
-    /**
-     * 
-     * 
-     * @param vExpressionArray
-     */
-    public void setExpression(final Expression[] vExpressionArray) {
-        //-- copy array
-        expressionList.clear();
-        
-        for (int i = 0; i < vExpressionArray.length; i++) {
-                this.expressionList.add(vExpressionArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'expressionList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     * 
-     * @param vExpressionList the Vector to copy.
-     */
-    public void setExpression(final List<Expression> vExpressionList) {
-        // copy vector
-        this.expressionList.clear();
-        
-        this.expressionList.addAll(vExpressionList);
-    }
-
-    /**
-     * Sets the value of 'expressionList' by setting it to the given Vector. No
-     * type checking is performed.
-     * @deprecated
-     * 
-     * @param expressionList the Vector to set.
-     */
-    public void setExpressionCollection(final List<Expression> expressionList) {
-        this.expressionList = expressionList;
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the following
-     * description: Group name
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'rrdRepository'. The field 'rrdRepository' has the
-     * following description: Full path to the RRD repository where the data is
-     * stored
-     *  
-     * 
-     * @param rrdRepository the value of field 'rrdRepository'.
-     */
-    public void setRrdRepository(final String rrdRepository) {
-        this.rrdRepository = rrdRepository;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vThreshold
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setThreshold(final int index, final Threshold vThreshold) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.thresholdList.size()) {
-            throw new IndexOutOfBoundsException("setThreshold: Index value '" + index + "' not in range [0.." + (this.thresholdList.size() - 1) + "]");
-        }
-        
-        this.thresholdList.set(index, vThreshold);
-    }
-
-    /**
-     * 
-     * 
-     * @param vThresholdArray
-     */
-    public void setThreshold(final Threshold[] vThresholdArray) {
-        //-- copy array
-        thresholdList.clear();
-        
-        for (int i = 0; i < vThresholdArray.length; i++) {
-                this.thresholdList.add(vThresholdArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'thresholdList' by copying the given Vector. All elements
-     * will be checked for type safety.
-     * 
-     * @param vThresholdList the Vector to copy.
-     */
-    public void setThreshold(final List<Threshold> vThresholdList) {
-        // copy vector
-        this.thresholdList.clear();
-        
-        this.thresholdList.addAll(vThresholdList);
-    }
-
-    /**
-     * Sets the value of 'thresholdList' by setting it to the given Vector. No
-     * type checking is performed.
-     * @deprecated
-     * 
-     * @param thresholdList the Vector to set.
-     */
-    public void setThresholdCollection(final List<Threshold> thresholdList) {
-        this.thresholdList = thresholdList;
     }
 
 }

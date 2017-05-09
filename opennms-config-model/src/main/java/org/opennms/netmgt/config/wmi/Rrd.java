@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,21 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -65,75 +71,65 @@ import java.util.Objects;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "", propOrder = {
-    "rra"
+        "m_rras"
 })
 @XmlRootElement(name = "rrd")
-public class Rrd {
+@ValidateUsing("wmi-datacollection.xsd")
+public class Rrd implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    @XmlElement(required = true)
-    protected List<String> rra;
+    @XmlElement(name="rra", required = true)
+    protected List<String> m_rras = new ArrayList<>();
+
     @XmlAttribute(name = "step", required = true)
-    protected int step;
+    protected Integer m_step;
 
-    /**
-     * Gets the value of the rra property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the rra property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRra().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
     public List<String> getRra() {
-        if (rra == null) {
-            rra = new ArrayList<String>();
+        return m_rras;
+    }
+
+    public void setRra(final List<String> rras) {
+        if (rras == m_rras) return;
+        m_rras.clear();
+        if (rras != null) {
+            for (final String rra : rras) {
+                addRra(rra);
+            }
         }
-        return this.rra;
     }
 
-    /**
-     * Gets the value of the step property.
-     * 
-     */
-    public int getStep() {
-        return step;
+    public void addRra(final String rra) {
+        final Pattern pattern = Pattern.compile("^RRA:(AVERAGE|MIN|MAX|LAST):.*$");
+        m_rras.add(ConfigUtils.assertMatches(ConfigUtils.assertNotNull(rra, "rra"), pattern, "rra"));
     }
 
-    /**
-     * Sets the value of the step property.
-     * 
-     */
-    public void setStep(int value) {
-        this.step = value;
+    public boolean removeRra(final String rra) {
+        return m_rras.remove(rra);
+    }
+
+    public Integer getStep() {
+        return m_step;
+    }
+
+    public void setStep(final Integer step) {
+        m_step = ConfigUtils.assertMinimumInclusive(ConfigUtils.assertNotNull(step, "step"), 1, "step");
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Rrd)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Rrd)) {
             return false;
         }
-        Rrd castOther = (Rrd) other;
-        return Objects.equals(rra, castOther.rra) && Objects.equals(step, castOther.step);
+        final Rrd that = (Rrd) obj;
+        return Objects.equals(this.m_rras, that.m_rras) &&
+                Objects.equals(this.m_step, that.m_step);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rra, step);
+        return Objects.hash(m_rras, m_step);
     }
 
 }

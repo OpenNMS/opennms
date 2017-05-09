@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "include-range")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -91,8 +92,8 @@ public class IncludeRange implements Serializable {
     }
 
     public IncludeRange(final String begin, final String end) {
-        m_begin = begin;
-        m_end = end;
+        setBegin(begin);
+        setEnd(end);
     }
 
     public Optional<String> getLocation() {
@@ -100,7 +101,7 @@ public class IncludeRange implements Serializable {
     }
 
     public void setLocation(final String location) {
-        m_location = location;
+        m_location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
@@ -127,7 +128,7 @@ public class IncludeRange implements Serializable {
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = foreignSource;
+        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     public String getBegin() {
@@ -135,10 +136,7 @@ public class IncludeRange implements Serializable {
     }
 
     public void setBegin(final String begin) {
-        if (begin == null) {
-            throw new IllegalArgumentException("Include range 'begin' cannot be null!");
-        }
-        m_begin = begin;
+        m_begin = ConfigUtils.assertNotEmpty(begin, "begin");
     }
 
     public String getEnd() {
@@ -146,10 +144,7 @@ public class IncludeRange implements Serializable {
     }
 
     public void setEnd(final String end) {
-        if (end == null) {
-            throw new IllegalArgumentException("Include range 'end' cannot be null!");
-        }
-        m_end = end;
+        m_end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
     @Override

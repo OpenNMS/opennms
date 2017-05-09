@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.config.provisiond;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,37 +39,38 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Behavior configuration for the Provisioner Daemon
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "provisiond-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ProvisiondConfiguration implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("provisiond-configuration.xsd")
+public class ProvisiondConfiguration implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_REQUISITION_DIR = "${install.dir}/etc/imports";
     private static final String DEFAULT_FOREIGN_SOURCE_DIR = "${install.dir}/etc/foreign-sources";
 
     @XmlAttribute(name = "importThreads")
-    private Long importThreads;
+    private Long m_importThreads;
 
     @XmlAttribute(name = "scanThreads")
-    private Long scanThreads;
+    private Long m_scanThreads;
 
     @XmlAttribute(name = "rescanThreads")
-    private Long rescanThreads;
+    private Long m_rescanThreads;
 
     @XmlAttribute(name = "writeThreads")
-    private Long writeThreads;
+    private Long m_writeThreads;
 
     @XmlAttribute(name = "requistion-dir")
-    private String requistionDir;
+    private String m_requistionDir;
 
     @XmlAttribute(name = "foreign-source-dir")
-    private String foreignSourceDir;
+    private String m_foreignSourceDir;
 
     /**
      * Defines an import job with a cron expression
@@ -88,230 +87,72 @@ public class ProvisiondConfiguration implements java.io.Serializable {
      *  
      */
     @XmlElement(name = "requisition-def")
-    private List<RequisitionDef> requisitionDefList = new ArrayList<>();
+    private List<RequisitionDef> m_requisitionDefs = new ArrayList<>();
 
-    /**
-     * 
-     * 
-     * @param vRequisitionDef
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addRequisitionDef(final RequisitionDef vRequisitionDef) throws IndexOutOfBoundsException {
-        this.requisitionDefList.add(vRequisitionDef);
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vRequisitionDef
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addRequisitionDef(final int index, final RequisitionDef vRequisitionDef) throws IndexOutOfBoundsException {
-        this.requisitionDefList.add(index, vRequisitionDef);
-    }
-
-    /**
-     */
-    public void deleteImportThreads() {
-        this.importThreads= null;
-    }
-
-    /**
-     */
-    public void deleteRescanThreads() {
-        this.rescanThreads= null;
-    }
-
-    /**
-     */
-    public void deleteScanThreads() {
-        this.scanThreads= null;
-    }
-
-    /**
-     */
-    public void deleteWriteThreads() {
-        this.writeThreads= null;
-    }
-
-    /**
-     * Method enumerateRequisitionDef.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<RequisitionDef> enumerateRequisitionDef() {
-        return Collections.enumeration(this.requisitionDefList);
-    }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        
-        if (obj instanceof ProvisiondConfiguration) {
-            ProvisiondConfiguration temp = (ProvisiondConfiguration)obj;
-            boolean equals = Objects.equals(temp.importThreads, importThreads)
-                && Objects.equals(temp.scanThreads, scanThreads)
-                && Objects.equals(temp.rescanThreads, rescanThreads)
-                && Objects.equals(temp.writeThreads, writeThreads)
-                && Objects.equals(temp.requistionDir, requistionDir)
-                && Objects.equals(temp.foreignSourceDir, foreignSourceDir)
-                && Objects.equals(temp.requisitionDefList, requisitionDefList);
-            return equals;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'foreignSourceDir'.
-     * 
-     * @return the value of field 'ForeignSourceDir'.
-     */
-    public String getForeignSourceDir() {
-        return this.foreignSourceDir != null ? this.foreignSourceDir : DEFAULT_FOREIGN_SOURCE_DIR;
-    }
-
-    /**
-     * Returns the value of field 'importThreads'.
-     * 
-     * @return the value of field 'ImportThreads'.
-     */
     public Long getImportThreads() {
-        return this.importThreads != null ? this.importThreads : Long.valueOf("8");
+        return m_importThreads != null ? m_importThreads : 8L;
     }
 
-    /**
-     * Method getRequisitionDef.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the
-     * RequisitionDef at the given index
-     */
-    public RequisitionDef getRequisitionDef(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.requisitionDefList.size()) {
-            throw new IndexOutOfBoundsException("getRequisitionDef: Index value '" + index + "' not in range [0.." + (this.requisitionDefList.size() - 1) + "]");
-        }
-        
-        return (RequisitionDef) requisitionDefList.get(index);
+    public void setImportThreads(final Long importThreads) {
+        m_importThreads = importThreads;
     }
 
-    /**
-     * Method getRequisitionDef.Returns the contents of the collection in an
-     * Array.  <p>Note:  Just in case the collection contents are changing in
-     * another thread, we pass a 0-length Array of the correct type into the API
-     * call.  This way we <i>know</i> that the Array returned is of exactly the
-     * correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public RequisitionDef[] getRequisitionDef() {
-        RequisitionDef[] array = new RequisitionDef[0];
-        return (RequisitionDef[]) this.requisitionDefList.toArray(array);
-    }
-
-    /**
-     * Method getRequisitionDefCollection.Returns a reference to
-     * 'requisitionDefList'. No type checking is performed on any modifications to
-     * the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<RequisitionDef> getRequisitionDefCollection() {
-        return this.requisitionDefList;
-    }
-
-    /**
-     * Method getRequisitionDefCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getRequisitionDefCount() {
-        return this.requisitionDefList.size();
-    }
-
-    /**
-     * Returns the value of field 'requistionDir'.
-     * 
-     * @return the value of field 'RequistionDir'.
-     */
-    public String getRequistionDir() {
-        return this.requistionDir != null ? this.requistionDir : DEFAULT_REQUISITION_DIR;
-    }
-
-    /**
-     * Returns the value of field 'rescanThreads'.
-     * 
-     * @return the value of field 'RescanThreads'.
-     */
-    public Long getRescanThreads() {
-        return this.rescanThreads != null ? this.rescanThreads : Long.valueOf("10");
-    }
-
-    /**
-     * Returns the value of field 'scanThreads'.
-     * 
-     * @return the value of field 'ScanThreads'.
-     */
     public Long getScanThreads() {
-        return this.scanThreads != null ? this.scanThreads : Long.valueOf("10");
+        return m_scanThreads != null ? m_scanThreads : 10L;
     }
 
-    /**
-     * Returns the value of field 'writeThreads'.
-     * 
-     * @return the value of field 'WriteThreads'.
-     */
+    public void setScanThreads(final Long scanThreads) {
+        m_scanThreads = scanThreads;
+    }
+
+    public Long getRescanThreads() {
+        return m_rescanThreads != null ? m_rescanThreads : 10L;
+    }
+
+    public void setRescanThreads(final Long rescanThreads) {
+        m_rescanThreads = rescanThreads;
+    }
+
     public Long getWriteThreads() {
-        return this.writeThreads != null ? this.writeThreads : Long.valueOf("8");
+        return m_writeThreads != null ? m_writeThreads : 8L;
     }
 
-    /**
-     * Method hasImportThreads.
-     * 
-     * @return true if at least one ImportThreads has been added
-     */
-    public boolean hasImportThreads() {
-        return this.importThreads != null;
+    public void setWriteThreads(final Long writeThreads) {
+        m_writeThreads = writeThreads;
     }
 
-    /**
-     * Method hasRescanThreads.
-     * 
-     * @return true if at least one RescanThreads has been added
-     */
-    public boolean hasRescanThreads() {
-        return this.rescanThreads != null;
+    public String getRequistionDir() {
+        return m_requistionDir != null ? m_requistionDir : DEFAULT_REQUISITION_DIR;
     }
 
-    /**
-     * Method hasScanThreads.
-     * 
-     * @return true if at least one ScanThreads has been added
-     */
-    public boolean hasScanThreads() {
-        return this.scanThreads != null;
+    public void setRequistionDir(final String requistionDir) {
+        m_requistionDir = ConfigUtils.assertNotEmpty(requistionDir, "requisition-dir");
     }
 
-    /**
-     * Method hasWriteThreads.
-     * 
-     * @return true if at least one WriteThreads has been added
-     */
-    public boolean hasWriteThreads() {
-        return this.writeThreads != null;
+    public String getForeignSourceDir() {
+        return m_foreignSourceDir != null ? m_foreignSourceDir : DEFAULT_FOREIGN_SOURCE_DIR;
+    }
+
+    public void setForeignSourceDir(final String foreignSourceDir) {
+        m_foreignSourceDir = ConfigUtils.assertNotEmpty(foreignSourceDir, "foreign-source-dir");
+    }
+
+    public List<RequisitionDef> getRequisitionDefs() {
+        return m_requisitionDefs;
+    }
+
+    public void setRequisitionDefs(final List<RequisitionDef> requisitionDefs) {
+        if (requisitionDefs == m_requisitionDefs) return;
+        m_requisitionDefs.clear();
+        if (requisitionDefs != null) m_requisitionDefs.addAll(requisitionDefs);
+    }
+
+    public void addRequisitionDef(final RequisitionDef def) {
+        m_requisitionDefs.add(def);
+    }
+
+    public boolean removeRequisitionDef(final RequisitionDef def) {
+        return m_requisitionDefs.remove(def);
     }
 
     /**
@@ -321,161 +162,32 @@ public class ProvisiondConfiguration implements java.io.Serializable {
      */
     @Override
     public int hashCode() {
-        int hash = Objects.hash(
-            importThreads, 
-            scanThreads, 
-            rescanThreads, 
-            writeThreads, 
-            requistionDir, 
-            foreignSourceDir, 
-            requisitionDefList);
-        return hash;
+        return Objects.hash(m_importThreads, 
+                            m_scanThreads, 
+                            m_rescanThreads, 
+                            m_writeThreads, 
+                            m_requistionDir, 
+                            m_foreignSourceDir, 
+                            m_requisitionDefs);
     }
 
-    /**
-     * Method iterateRequisitionDef.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<RequisitionDef> iterateRequisitionDef() {
-        return this.requisitionDefList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllRequisitionDef() {
-        this.requisitionDefList.clear();
-    }
-
-    /**
-     * Method removeRequisitionDef.
-     * 
-     * @param vRequisitionDef
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeRequisitionDef(final RequisitionDef vRequisitionDef) {
-        boolean removed = requisitionDefList.remove(vRequisitionDef);
-        return removed;
-    }
-
-    /**
-     * Method removeRequisitionDefAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public RequisitionDef removeRequisitionDefAt(final int index) {
-        Object obj = this.requisitionDefList.remove(index);
-        return (RequisitionDef) obj;
-    }
-
-    /**
-     * Sets the value of field 'foreignSourceDir'.
-     * 
-     * @param foreignSourceDir the value of field 'foreignSourceDir'.
-     */
-    public void setForeignSourceDir(final String foreignSourceDir) {
-        this.foreignSourceDir = foreignSourceDir;
-    }
-
-    /**
-     * Sets the value of field 'importThreads'.
-     * 
-     * @param importThreads the value of field 'importThreads'.
-     */
-    public void setImportThreads(final Long importThreads) {
-        this.importThreads = importThreads;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vRequisitionDef
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setRequisitionDef(final int index, final RequisitionDef vRequisitionDef) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.requisitionDefList.size()) {
-            throw new IndexOutOfBoundsException("setRequisitionDef: Index value '" + index + "' not in range [0.." + (this.requisitionDefList.size() - 1) + "]");
+    @Override
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
+            return true;
         }
-        
-        this.requisitionDefList.set(index, vRequisitionDef);
-    }
 
-    /**
-     * 
-     * 
-     * @param vRequisitionDefArray
-     */
-    public void setRequisitionDef(final RequisitionDef[] vRequisitionDefArray) {
-        //-- copy array
-        requisitionDefList.clear();
-        
-        for (int i = 0; i < vRequisitionDefArray.length; i++) {
-                this.requisitionDefList.add(vRequisitionDefArray[i]);
+        if (obj instanceof ProvisiondConfiguration) {
+            final ProvisiondConfiguration that = (ProvisiondConfiguration)obj;
+            return Objects.equals(this.m_importThreads, that.m_importThreads)
+                    && Objects.equals(this.m_scanThreads, that.m_scanThreads)
+                    && Objects.equals(this.m_rescanThreads, that.m_rescanThreads)
+                    && Objects.equals(this.m_writeThreads, that.m_writeThreads)
+                    && Objects.equals(this.m_requistionDir, that.m_requistionDir)
+                    && Objects.equals(this.m_foreignSourceDir, that.m_foreignSourceDir)
+                    && Objects.equals(this.m_requisitionDefs, that.m_requisitionDefs);
         }
-    }
-
-    /**
-     * Sets the value of 'requisitionDefList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     * 
-     * @param vRequisitionDefList the Vector to copy.
-     */
-    public void setRequisitionDef(final List<RequisitionDef> vRequisitionDefList) {
-        // copy vector
-        this.requisitionDefList.clear();
-        
-        this.requisitionDefList.addAll(vRequisitionDefList);
-    }
-
-    /**
-     * Sets the value of 'requisitionDefList' by setting it to the given Vector.
-     * No type checking is performed.
-     * @deprecated
-     * 
-     * @param requisitionDefList the Vector to set.
-     */
-    public void setRequisitionDefCollection(final List<RequisitionDef> requisitionDefList) {
-        this.requisitionDefList = requisitionDefList;
-    }
-
-    /**
-     * Sets the value of field 'requistionDir'.
-     * 
-     * @param requistionDir the value of field 'requistionDir'.
-     */
-    public void setRequistionDir(final String requistionDir) {
-        this.requistionDir = requistionDir;
-    }
-
-    /**
-     * Sets the value of field 'rescanThreads'.
-     * 
-     * @param rescanThreads the value of field 'rescanThreads'.
-     */
-    public void setRescanThreads(final Long rescanThreads) {
-        this.rescanThreads = rescanThreads;
-    }
-
-    /**
-     * Sets the value of field 'scanThreads'.
-     * 
-     * @param scanThreads the value of field 'scanThreads'.
-     */
-    public void setScanThreads(final Long scanThreads) {
-        this.scanThreads = scanThreads;
-    }
-
-    /**
-     * Sets the value of field 'writeThreads'.
-     * 
-     * @param writeThreads the value of field 'writeThreads'.
-     */
-    public void setWriteThreads(final Long writeThreads) {
-        this.writeThreads = writeThreads;
+        return false;
     }
 
 }

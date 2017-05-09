@@ -270,32 +270,26 @@ public class SnmpPoller extends AbstractServiceDaemon {
         for (String pkgInterfaceName: getPollerConfig().getInterfaceOnPackage(pkgName)) {
             LOG.debug("found package interface with name: {}", pkgInterfaceName);
             if (getPollerConfig().getStatus(pkgName, pkgInterfaceName)){
-                
-                String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName);
-                LOG.debug("package interface: criteria: {}", criteria);
-                excludingCriteria = excludingCriteria + " and not " + criteria;
+
+                final String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName).orElse(null);
+                if (getPollerConfig().getCriteria(pkgName, pkgInterfaceName).isPresent()) {
+                    LOG.debug("package interface: criteria: {}", criteria);
+                    excludingCriteria = excludingCriteria + " and not " + criteria;
+                }
                 
                 long interval = getPollerConfig().getInterval(pkgName, pkgInterfaceName);
                 LOG.debug("package interface: interval: {}", interval);
 
-                boolean hasPort = getPollerConfig().hasPort(pkgName, pkgInterfaceName);
-                int port = -1;
-                if (hasPort) port = getPollerConfig().getPort(pkgName, pkgInterfaceName);
-                
-                boolean hasTimeout = getPollerConfig().hasTimeout(pkgName, pkgInterfaceName);
-                int timeout = -1;
-                if (hasTimeout) timeout = getPollerConfig().getTimeout(pkgName, pkgInterfaceName);
-                
-                boolean hasRetries = getPollerConfig().hasRetries(pkgName, pkgInterfaceName);
-                int retries = -1;
-                if (hasRetries) retries = getPollerConfig().getRetries(pkgName, pkgInterfaceName);
+                int port = getPollerConfig().getPort(pkgName, pkgInterfaceName).orElse(-1);
+                int timeout = getPollerConfig().getTimeout(pkgName, pkgInterfaceName).orElse(-1);
+                int retries = getPollerConfig().getRetries(pkgName, pkgInterfaceName).orElse(-1);
 
                 boolean hasMaxVarsPerPdu = getPollerConfig().hasMaxVarsPerPdu(pkgName, pkgInterfaceName);
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria, 
-                   hasPort, port, hasTimeout, timeout, hasRetries, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
+                   port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 

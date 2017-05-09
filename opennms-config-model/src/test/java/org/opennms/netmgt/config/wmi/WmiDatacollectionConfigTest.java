@@ -56,9 +56,6 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
         wmiCollection.setName("not-default");
         wmiCollection.setRrd(rrd);
 
-        Wpms wpms = new Wpms();
-        wmiCollection.setWpms(wpms);
-
         Wpm wpm = new Wpm();
         wpm.setName("wmiOSMemory");
         wpm.setWmiClass("Win32_PerfFormattedData_PerfOS_Memory");
@@ -67,16 +64,16 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
         wpm.setRecheckInterval(3600000);
         wpm.setIfType("all");
         wpm.setResourceType("node");
-        wpms.getWpm().add(wpm);
+        wmiCollection.addWpm(wpm);
 
         Attrib attrib = new Attrib();
         attrib.setName("AvailableBytes");
         attrib.setAlias("wmiOSMemAvailBytes");
         attrib.setWmiObject("AvailableBytes");
         attrib.setType(AttributeType.GAUGE);
-        wpm.getAttrib().add(attrib);
+        wpm.getAttribs().add(attrib);
 
-        config.getWmiCollection().add(wmiCollection);
+        config.getWmiCollections().add(wmiCollection);
 
         return Arrays.asList(new Object[][] { {
             config,

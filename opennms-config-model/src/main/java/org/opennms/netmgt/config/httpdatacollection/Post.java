@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -57,59 +62,29 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "post")
-public class Post {
+@ValidateUsing("http-datacollection-config.xsd")
+public class Post implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "parm", required = true)
-    protected String parm;
+    protected String m_parm;
     @XmlAttribute(name = "value", required = true)
-    protected String value;
+    protected String m_value;
 
-    /**
-     * Gets the value of the parm property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getParm() {
-        return parm;
+        return m_parm;
     }
 
-    /**
-     * Sets the value of the parm property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setParm(String value) {
-        this.parm = value;
+    public void setParm(final String value) {
+        m_parm = ConfigUtils.assertNotEmpty(value, "parm");
     }
 
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getValue() {
-        return value;
+        return m_value;
     }
 
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(final String value) {
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
@@ -117,13 +92,14 @@ public class Post {
         if (!(other instanceof Post)) {
             return false;
         }
-        Post castOther = (Post) other;
-        return Objects.equals(parm, castOther.parm) && Objects.equals(value, castOther.value);
+        final Post that = (Post) other;
+        return Objects.equals(this.m_parm, that.m_parm)
+                && Objects.equals(this.m_value, that.m_value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parm, value);
+        return Objects.hash(m_parm, m_value);
     }
 
 }

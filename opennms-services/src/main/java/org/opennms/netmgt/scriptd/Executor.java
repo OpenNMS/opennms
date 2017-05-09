@@ -132,15 +132,14 @@ public class Executor {
         m_eventScripts.clear();
         m_eventScriptMap.clear();
 
-        for (EventScript script : m_config.getEventScripts()) {
-            Uei[] ueis = script.getUei();
+        for (final EventScript script : m_config.getEventScripts()) {
+            List<Uei> ueis = script.getUeis();
 
-            if (ueis.length == 0) {
+            if (ueis.isEmpty()) {
                 m_eventScripts.add(script);
             } else {
-                for (Uei uei : ueis) {
-
-                    String ueiName = uei.getName();
+                for (final Uei uei : ueis) {
+                    final String ueiName = uei.getName();
 
                     Set<EventScript> list = m_eventScriptMap.get(ueiName);
 
@@ -185,13 +184,15 @@ public class Executor {
                     m_config = ScriptdConfigFactory.getInstance();
                     loadConfig();
 
-                    ReloadScript[] reloadScripts = m_config.getReloadScripts();
-
-                    for (ReloadScript script : reloadScripts) {
-                        try {
-                            m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
-                        } catch (BSFException e) {
-                            LOG.error("Reload script[{}] failed.", script, e);
+                    for (final ReloadScript script : m_config.getReloadScripts()) {
+                        if (script.getContent().isPresent()) {
+                            try {
+                                m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent().get());
+                            } catch (BSFException e) {
+                                LOG.error("Reload script[{}] failed.", script, e);
+                            }
+                        } else {
+                            LOG.warn("Reload Script does not have script contents: " + script);
                         }
                     }
 
@@ -230,7 +231,7 @@ public class Executor {
 
                 LOG.debug("Executing attached scripts");
                 if (attachedScripts.length > 0) {
-                    for (Script script : attachedScripts) {
+                    for (final Script script : attachedScripts) {
                         try {
                             m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
                         } catch (BSFException e) {
@@ -243,11 +244,15 @@ public class Executor {
 
                 LOG.debug("Executing mapped scripts");
                 if (mapScripts != null) {
-                    for (EventScript script : mapScripts) {
-                        try {
-                            m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
-                        } catch (BSFException e) {
-                            LOG.error("UEI-specific event handler script execution failed: {}", m_event.getUei(), e);
+                    for (final EventScript script : mapScripts) {
+                        if (script.getContent().isPresent()) {
+                            try {
+                                m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent().get());
+                            } catch (BSFException e) {
+                                LOG.error("UEI-specific event handler script execution failed: {}", m_event.getUei(), e);
+                            }
+                        } else {
+                            LOG.warn("UEI-specific event handler script missing contents: {}", script);
                         }
                     }
                 }
@@ -255,11 +260,15 @@ public class Executor {
                 // execute the scripts that are not mapped to any UEI
 
                 LOG.debug("Executing global scripts");
-                for (EventScript script : m_eventScripts) {
-                    try {
-                        m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
-                    } catch (BSFException e) {
-                        LOG.error("Non-UEI-specific event handler script execution failed : " + script, e);
+                for (final EventScript script : m_eventScripts) {
+                    if (script.getContent().isPresent()) {
+                        try {
+                            m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent().get());
+                        } catch (BSFException e) {
+                            LOG.error("Non-UEI-specific event handler script execution failed : " + script, e);
+                        }
+                    } else {
+                        LOG.warn("Non-UEI-specific event handler script missing contents: {}", script);
                     }
                 }
 
@@ -296,16 +305,14 @@ public class Executor {
 
     public synchronized void start() {
 
-        for (Engine engine : m_config.getEngines()) {
+        for (final Engine engine : m_config.getEngines()) {
 
             LOG.debug("Registering engine: {}", engine.getLanguage());
 
             String[] extensions = null;
 
-            String extensionList = engine.getExtensions();
-
-            if (extensionList != null) {
-                StringTokenizer st = new StringTokenizer(extensionList);
+            if (engine.getExtensions().isPresent()) {
+                StringTokenizer st = new StringTokenizer(engine.getExtensions().get());
 
                 extensions = new String[st.countTokens()];
 
@@ -323,11 +330,15 @@ public class Executor {
         m_scriptManager.registerBean("log", LOG);
 
         // Run all start scripts
-        for (StartScript startScript : m_config.getStartScripts()) {
-            try {
-                m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent());
-            } catch (BSFException e) {
-                LOG.error("Start script failed: " + startScript, e);
+        for (final StartScript startScript : m_config.getStartScripts()) {
+            if (startScript.getContent().isPresent()) {
+                try {
+                    m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent().get());
+                } catch (BSFException e) {
+                    LOG.error("Start script failed: " + startScript, e);
+                }
+            } else {
+                LOG.warn("Start script has no script content: " + startScript);
             }
         }
 
@@ -359,11 +370,15 @@ public class Executor {
         m_executorService.shutdown();
 
         // Run all stop scripts
-        for (StopScript stopScript : m_config.getStopScripts()) {
-            try {
-                m_scriptManager.exec(stopScript.getLanguage(), "", 0, 0, stopScript.getContent());
-            } catch (BSFException e) {
-                LOG.error("Stop script failed: " + stopScript, e);
+        for (final StopScript stopScript : m_config.getStopScripts()) {
+            if (stopScript.getContent().isPresent()) {
+                try {
+                    m_scriptManager.exec(stopScript.getLanguage(), "", 0, 0, stopScript.getContent().get());
+                } catch (BSFException e) {
+                    LOG.error("Stop script failed: " + stopScript, e);
+                }
+            } else {
+                LOG.warn("Stop script has no script contents: " + stopScript);
             }
         }
 

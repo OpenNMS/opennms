@@ -36,11 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.surveillanceViews.Category;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
-import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.RowDef;
-import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.config.surveillanceViews.Views;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.svclayer.AdminCategoryService;
@@ -158,18 +155,16 @@ public class CategoryController extends AbstractController {
 
     private List<String> getAllSurveillanceViewCategories() {
         List<String> categoryNames = new ArrayList<String>();
-        Views views = getSurveillanceViewConfigDao().getViews();
+        List<View> views = getSurveillanceViewConfigDao().getViews();
         
-        for(View view : views.getViewCollection()) {
-            Rows rows = view.getRows();
-            for(RowDef row : rows.getRowDefCollection()) {
-                List<Category> categoryCollection = row.getCategoryCollection();
+        for(View view : views) {
+            for(RowDef row : view.getRows()) {
+                List<Category> categoryCollection = row.getCategories();
                 addCategoryNames(categoryNames, categoryCollection);
             }
             
-            Columns columns = view.getColumns();
-            for(ColumnDef column : columns.getColumnDefCollection()) {
-                List<Category> categoryCollection = column.getCategoryCollection();
+            for(ColumnDef column : view.getColumns()) {
+                List<Category> categoryCollection = column.getCategories();
                 addCategoryNames(categoryNames, categoryCollection);
             }
             

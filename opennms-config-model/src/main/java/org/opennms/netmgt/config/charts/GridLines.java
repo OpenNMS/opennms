@@ -30,17 +30,14 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class GridLines.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "grid-lines")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class GridLines implements java.io.Serializable {
@@ -87,8 +84,8 @@ public class GridLines implements java.io.Serializable {
      * 
      * @return the value of field 'Rgb'.
      */
-    public Rgb getRgb() {
-        return this.rgb;
+    public Optional<Rgb> getRgb() {
+        return Optional.ofNullable(this.rgb);
     }
 
     /**
@@ -146,6 +143,9 @@ public class GridLines implements java.io.Serializable {
      * @param visible the value of field 'visible'.
      */
     public void setVisible(final Boolean visible) {
+        if (visible == null) {
+            throw new IllegalArgumentException("'visible' is a required attribute!");
+        }
         this.visible = visible;
     }
 

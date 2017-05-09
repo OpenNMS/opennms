@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,22 +29,26 @@
 package org.opennms.netmgt.config.rancid.adapter;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
- * Configuration of Policy
- *  functionality
- * 
- * @version $Revision$ $Date$
+ * Configuration of Policy functionality
  */
 @XmlRootElement(name = "policies")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Policies implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("rancid-adapter-configuration.xsd")
+public class Policies implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * This represents a policy to manage a provisioned node
@@ -52,217 +56,45 @@ public class Policies implements java.io.Serializable {
      *  the element attribute definitions .
      */
     @XmlElement(name = "policy-manage", required = true)
-    private java.util.List<PolicyManage> policyManageList;
+    private List<PolicyManage> m_policyManages = new ArrayList<>();
 
     public Policies() {
-        this.policyManageList = new java.util.ArrayList<PolicyManage>();
     }
 
-    /**
-     * 
-     * 
-     * @param vPolicyManage
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addPolicyManage(final PolicyManage vPolicyManage) throws IndexOutOfBoundsException {
-        this.policyManageList.add(vPolicyManage);
+    public List<PolicyManage> getPolicyManages() {
+        return m_policyManages;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vPolicyManage
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addPolicyManage(final int index, final PolicyManage vPolicyManage) throws IndexOutOfBoundsException {
-        this.policyManageList.add(index, vPolicyManage);
+    public void setPolicyManages(final List<PolicyManage> policyManages) {
+        if (policyManages == m_policyManages) return;
+        m_policyManages.clear();
+        if (policyManages != null) m_policyManages.addAll(policyManages);
     }
 
-    /**
-     * Method enumeratePolicyManage.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public java.util.Enumeration<PolicyManage> enumeratePolicyManage() {
-        return java.util.Collections.enumeration(this.policyManageList);
+    public void addPolicyManage(final PolicyManage policyManage) {
+        m_policyManages.add(policyManage);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public boolean removePolicyManage(final PolicyManage policyManage) {
+        return m_policyManages.remove(policyManage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_policyManages);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Policies) {
-            Policies temp = (Policies)obj;
-            boolean equals = Objects.equals(temp.policyManageList, policyManageList);
-            return equals;
+            final Policies that = (Policies)obj;
+            return Objects.equals(this.m_policyManages, that.m_policyManages);
         }
         return false;
-    }
-
-    /**
-     * Method getPolicyManage.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the
-     * PolicyManage at the given index
-     */
-    public PolicyManage getPolicyManage(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.policyManageList.size()) {
-            throw new IndexOutOfBoundsException("getPolicyManage: Index value '" + index + "' not in range [0.." + (this.policyManageList.size() - 1) + "]");
-        }
-        
-        return (PolicyManage) policyManageList.get(index);
-    }
-
-    /**
-     * Method getPolicyManage.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public PolicyManage[] getPolicyManage() {
-        PolicyManage[] array = new PolicyManage[0];
-        return (PolicyManage[]) this.policyManageList.toArray(array);
-    }
-
-    /**
-     * Method getPolicyManageCollection.Returns a reference to 'policyManageList'.
-     * No type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public java.util.List<PolicyManage> getPolicyManageCollection() {
-        return this.policyManageList;
-    }
-
-    /**
-     * Method getPolicyManageCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getPolicyManageCount() {
-        return this.policyManageList.size();
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            policyManageList);
-        return hash;
-    }
-
-    /**
-     * Method iteratePolicyManage.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public java.util.Iterator<PolicyManage> iteratePolicyManage() {
-        return this.policyManageList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllPolicyManage() {
-        this.policyManageList.clear();
-    }
-
-    /**
-     * Method removePolicyManage.
-     * 
-     * @param vPolicyManage
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removePolicyManage(final PolicyManage vPolicyManage) {
-        boolean removed = policyManageList.remove(vPolicyManage);
-        return removed;
-    }
-
-    /**
-     * Method removePolicyManageAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public PolicyManage removePolicyManageAt(final int index) {
-        Object obj = this.policyManageList.remove(index);
-        return (PolicyManage) obj;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vPolicyManage
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setPolicyManage(final int index, final PolicyManage vPolicyManage) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.policyManageList.size()) {
-            throw new IndexOutOfBoundsException("setPolicyManage: Index value '" + index + "' not in range [0.." + (this.policyManageList.size() - 1) + "]");
-        }
-        
-        this.policyManageList.set(index, vPolicyManage);
-    }
-
-    /**
-     * 
-     * 
-     * @param vPolicyManageArray
-     */
-    public void setPolicyManage(final PolicyManage[] vPolicyManageArray) {
-        //-- copy array
-        policyManageList.clear();
-        
-        for (int i = 0; i < vPolicyManageArray.length; i++) {
-                this.policyManageList.add(vPolicyManageArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'policyManageList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     * 
-     * @param vPolicyManageList the Vector to copy.
-     */
-    public void setPolicyManage(final java.util.List<PolicyManage> vPolicyManageList) {
-        // copy vector
-        this.policyManageList.clear();
-        
-        this.policyManageList.addAll(vPolicyManageList);
-    }
-
-    /**
-     * Sets the value of 'policyManageList' by setting it to the given Vector. No
-     * type checking is performed.
-     * @deprecated
-     * 
-     * @param policyManageList the Vector to set.
-     */
-    public void setPolicyManageCollection(final java.util.List<PolicyManage> policyManageList) {
-        this.policyManageList = policyManageList;
     }
 
 }

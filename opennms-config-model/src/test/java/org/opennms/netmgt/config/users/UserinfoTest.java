@@ -54,8 +54,7 @@ public class UserinfoTest extends XmlTestNoCastor<Userinfo> {
         rtc.setPassword("68154466F81BFB532CD70F8C71426356", false);
         rtc.addRole("ROLE_RTC");
 
-        final Users users = new Users(admin, rtc);
-        ui.setUsers(users);
+        ui.setUsers(Arrays.asList(admin, rtc));
 
         return Arrays.asList(new Object[][] {
             {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,193 +29,139 @@
 package org.opennms.netmgt.config.siteStatusViews;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class View.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "view")
 @XmlAccessorType(XmlAccessType.FIELD)
-
-@SuppressWarnings("all") public class View implements java.io.Serializable {
+@ValidateUsing("site-status-views.xsd")
+public class View implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     private static final String DEFAULT_TABLE_NAME = "assets";
     private static final String DEFAULT_COLUMN_NAME = "building";
     private static final String DEFAULT_COLUMN_TYPE = "varchar";
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     @XmlAttribute(name = "table-name")
-    private String tableName;
+    private String m_tableName;
 
     @XmlAttribute(name = "column-name")
-    private String columnName;
+    private String m_columnName;
 
     @XmlAttribute(name = "column-type")
-    private String columnType;
+    private String m_columnType;
 
     @XmlAttribute(name = "column-value")
-    private String columnValue;
+    private String m_columnValue;
 
-    @XmlElement(name = "rows", required = true)
-    private Rows rows;
+    @XmlElementWrapper(name = "rows", required = true)
+    @XmlElement(name = "row-def", required = true)
+    private List<RowDef> m_rows = new ArrayList<>();
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getTableName() {
+        return m_tableName != null ? m_tableName : DEFAULT_TABLE_NAME;
+    }
+
+    public void setTableName(final String tableName) {
+        m_tableName = ConfigUtils.normalizeString(tableName);
+    }
+
+    public String getColumnName() {
+        return m_columnName != null ? m_columnName : DEFAULT_COLUMN_NAME;
+    }
+
+    public void setColumnName(final String columnName) {
+        m_columnName = ConfigUtils.normalizeString(columnName);
+    }
+
+    public String getColumnType() {
+        return m_columnType != null ? m_columnType : DEFAULT_COLUMN_TYPE;
+    }
+
+    public void setColumnType(final String columnType) {
+        m_columnType = ConfigUtils.normalizeString(columnType);
+    }
+
+    public Optional<String> getColumnValue() {
+        return Optional.ofNullable(m_columnValue);
+    }
+
+    public void setColumnValue(final String columnValue) {
+        m_columnValue = ConfigUtils.normalizeString(columnValue);
+    }
+
+    public List<RowDef> getRows() {
+        return m_rows;
+    }
+
+    public void setRows(final List<RowDef> rows) {
+        if (rows == m_rows) return;
+        m_rows.clear();
+        if (rows != null) m_rows.addAll(rows);
+    }
+
+    public void addRow(final RowDef row) {
+        m_rows.add(row);
+    }
+
+    public void addRow(final String rowLabel, final String... categories) {
+        m_rows.add(new RowDef(rowLabel, categories));
+    }
+
+    public boolean removeRow(final RowDef row) {
+        return m_rows.remove(row);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_tableName, 
+                            m_columnName, 
+                            m_columnType, 
+                            m_columnValue, 
+                            m_rows);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof View) {
-            View temp = (View)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.tableName, tableName)
-                && Objects.equals(temp.columnName, columnName)
-                && Objects.equals(temp.columnType, columnType)
-                && Objects.equals(temp.columnValue, columnValue)
-                && Objects.equals(temp.rows, rows);
-            return equals;
+            final View that = (View)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_tableName, that.m_tableName)
+                    && Objects.equals(this.m_columnName, that.m_columnName)
+                    && Objects.equals(this.m_columnType, that.m_columnType)
+                    && Objects.equals(this.m_columnValue, that.m_columnValue)
+                    && Objects.equals(this.m_rows, that.m_rows);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'columnName'.
-     * 
-     * @return the value of field 'ColumnName'.
-     */
-    public String getColumnName() {
-        return this.columnName != null ? this.columnName : DEFAULT_COLUMN_NAME;
-    }
-
-    /**
-     * Returns the value of field 'columnType'.
-     * 
-     * @return the value of field 'ColumnType'.
-     */
-    public String getColumnType() {
-        return this.columnType != null ? this.columnType : DEFAULT_COLUMN_TYPE;
-    }
-
-    /**
-     * Returns the value of field 'columnValue'.
-     * 
-     * @return the value of field 'ColumnValue'.
-     */
-    public String getColumnValue() {
-        return this.columnValue;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'rows'.
-     * 
-     * @return the value of field 'Rows'.
-     */
-    public Rows getRows() {
-        return this.rows;
-    }
-
-    /**
-     * Returns the value of field 'tableName'.
-     * 
-     * @return the value of field 'TableName'.
-     */
-    public String getTableName() {
-        return this.tableName != null ? this.tableName : DEFAULT_TABLE_NAME;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            tableName, 
-            columnName, 
-            columnType, 
-            columnValue, 
-            rows);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'columnName'.
-     * 
-     * @param columnName the value of field 'columnName'.
-     */
-    public void setColumnName(final String columnName) {
-        this.columnName = columnName;
-    }
-
-    /**
-     * Sets the value of field 'columnType'.
-     * 
-     * @param columnType the value of field 'columnType'.
-     */
-    public void setColumnType(final String columnType) {
-        this.columnType = columnType;
-    }
-
-    /**
-     * Sets the value of field 'columnValue'.
-     * 
-     * @param columnValue the value of field 'columnValue'.
-     */
-    public void setColumnValue(final String columnValue) {
-        this.columnValue = columnValue;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'rows'.
-     * 
-     * @param rows the value of field 'rows'.
-     */
-    public void setRows(final Rows rows) {
-        this.rows = rows;
-    }
-
-    /**
-     * Sets the value of field 'tableName'.
-     * 
-     * @param tableName the value of field 'tableName'.
-     */
-    public void setTableName(final String tableName) {
-        this.tableName = tableName;
     }
 
 }

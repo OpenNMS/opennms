@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,16 +31,14 @@ package org.opennms.netmgt.xml.eventconf;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,6 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -67,290 +67,127 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
 @XmlRootElement(name="events")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={})
 public class Events implements Serializable {
+    private static final DefaultResourceLoader RESOURCE_LOADER = new DefaultResourceLoader();
+
     public interface EventCallback<T> {
-		
-		public T process(T accum, Event event);
+        public T process(T accum, Event event);
+    }
 
-	}
+    public interface EventCriteria {
+        public boolean matches(Event e);
+    }
 
-	public interface EventCriteria {
-		
-		public boolean matches(Event e);
+    private static final long serialVersionUID = 2L;
 
-	}
-
-	private static final long serialVersionUID = -3725006529763434264L;
-
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
-	private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
-
-	/**
+    /**
      * Global settings for this configuration
      */
-	@XmlElement(name="global", required=false)
+    @XmlElement(name="global", required=false)
     private Global m_global;
 
-	// @Size(min=1)
-	@XmlElement(name="event", required=false)
-    private List<Event> m_events = new ArrayList<Event>();
+    @XmlElement(name="event", required=false)
+    private List<Event> m_events = new ArrayList<>();
 
-	// @Size(min=0)
-	@XmlElement(name="event-file", required=false)
-    private List<String> m_eventFiles = new ArrayList<String>();
-	
-	@XmlTransient
-	private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<String, Events>();
+    @XmlElement(name="event-file", required=false)
+    private List<String> m_eventFiles = new ArrayList<>();
 
-	@XmlTransient
-	private Partition m_partition;
-	
-	@XmlTransient
-	private Map<String, List<Event>> m_partitionedEvents;
-	
-	@XmlTransient
-	private List<Event> m_nullPartitionedEvents;
+    @XmlTransient
+    private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<>();
 
-	@XmlTransient
-	private Map<String, Event> m_eventsByUei = new HashMap<String, Event>();
+    @XmlTransient
+    private Partition m_partition;
 
-        @XmlTransient
-        private List<Event> m_wildcardEvents;
-        
-	@XmlTransient
-	private EventOrdering m_ordering;
-	
-	public EventOrdering getOrdering() {
-	    return m_ordering;
-	}
-	
-    public void addEvent(final Event event) throws IndexOutOfBoundsException {
-        m_events.add(event);
-    }
+    @XmlTransient
+    private Map<String, List<Event>> m_partitionedEvents;
 
-    public void addEvent(final int index, final Event event) throws IndexOutOfBoundsException {
-        m_events.add(index, event);
-    }
+    @XmlTransient
+    private List<Event> m_nullPartitionedEvents;
 
-    public void addEventFile(final String eventFile) throws IndexOutOfBoundsException {
-        m_eventFiles.add(eventFile.intern());
-    }
+    @XmlTransient
+    private Map<String, Event> m_eventsByUei = new HashMap<>();
 
-    public void addEventFile(final int index, final String eventFile) throws IndexOutOfBoundsException {
-        m_eventFiles.add(index, eventFile.intern());
-    }
+    @XmlTransient
+    private List<Event> m_wildcardEvents;
 
-    public Enumeration<Event> enumerateEvent() {
-        return Collections.enumeration(m_events);
-    }
-
-    public Enumeration<String> enumerateEventFile() {
-        return Collections.enumeration(m_eventFiles);
-    }
-
-    public Event getEvent(final int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_events.size()) {
-            throw new IndexOutOfBoundsException("getEvent: Index value '" + index + "' not in range [0.." + (m_events.size() - 1) + "]");
-        }
-        return m_events.get(index);
-    }
-
-    public Event[] getEvent() {
-        return m_events.toArray(EMPTY_EVENT_ARRAY);
-    }
-
-    public List<Event> getEventCollection() {
-        return m_events;
-    }
-
-    public int getEventCount() {
-        return m_events.size();
-    }
-
-    public String getEventFile(final int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_eventFiles.size()) {
-            throw new IndexOutOfBoundsException("getEventFile: Index value '" + index + "' not in range [0.." + (m_eventFiles.size() - 1) + "]");
-        }
-        return m_eventFiles.get(index);
-    }
-
-    public String[] getEventFile() {
-        return m_eventFiles.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public List<String> getEventFileCollection() {
-        return m_eventFiles;
-    }
-
-    public int getEventFileCount() {
-        return m_eventFiles.size();
-    }
+    @XmlTransient
+    private EventOrdering m_ordering;
 
     public Global getGlobal() {
         return m_global;
-    }
-
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        return true;
-    }
-
-    public Iterator<Event> iterateEvent() {
-        return m_events.iterator();
-    }
-
-    public Iterator<String> iterateEventFile() {
-        return m_eventFiles.iterator();
-    }
-
-    public void marshal(final Writer out) {
-        JaxbUtils.marshal(this, out);
-    }
-
-    public void removeAllEvent() {
-        m_events.clear();
-    }
-
-    public void removeAllEventFile() {
-        m_eventFiles.clear();
-    }
-
-    public boolean removeEvent(final Event event) {
-        return m_events.remove(event);
-    }
-
-    public Event removeEventAt(final int index) {
-        return m_events.remove(index);
-    }
-
-    public boolean removeEventFile(final String eventFile) {
-        return m_eventFiles.remove(eventFile);
-    }
-
-    public String removeEventFileAt(final int index) {
-        return m_eventFiles.remove(index);
-    }
-
-    public void setEvent(final int index, final Event event) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_events.size()) {
-            throw new IndexOutOfBoundsException("setEvent: Index value '" + index + "' not in range [0.." + (m_events.size() - 1) + "]");
-        }
-        m_events.set(index, event);
-    }
-
-    public void setEvent(final Event[] events) {
-        m_events.clear();
-        for (final Event event : events) {
-        	m_events.add(event);
-        }
-    }
-
-    public void setEvent(final List<Event> events) {
-        if (m_events == events) return;
-        m_events.clear();
-        m_events.addAll(events);
-    }
-
-    public void setEventCollection(final List<Event> events) {
-        setEvent(events);
-    }
-
-    public void setEventFile(final int index, final String eventFile) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_eventFiles.size()) {
-            throw new IndexOutOfBoundsException("setEventFile: Index value '" + index + "' not in range [0.." + (m_eventFiles.size() - 1) + "]");
-        }
-        m_eventFiles.set(index, eventFile.intern());
-    }
-
-    public void setEventFile(final String[] eventFiles) {
-        m_eventFiles.clear();
-        for (final String eventFile : eventFiles) {
-        	m_eventFiles.add(eventFile.intern());
-        }
-    }
-
-    public void setEventFile(final List<String> eventFiles) {
-        if (m_eventFiles == eventFiles) return;
-        m_eventFiles.clear();
-        m_eventFiles.addAll(eventFiles);
-    }
-
-    public void setEventFileCollection(final List<String> eventFiles) {
-    	setEventFile(eventFiles);
     }
 
     public void setGlobal(final Global global) {
         m_global = global;
     }
 
-    public static Events unmarshal(final Reader reader) {
-        return JaxbUtils.unmarshal(Events.class, reader);
+    public List<Event> getEvents() {
+        return m_events;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_eventFiles == null) ? 0 : m_eventFiles.hashCode());
-		result = prime * result + ((m_events == null) ? 0 : m_events.hashCode());
-		result = prime * result + ((m_global == null) ? 0 : m_global.hashCode());
-		return result;
-	}
+    public void setEvents(final List<Event> events) {
+        if (m_events == events) return;
+        m_events.clear();
+        if (events != null) m_events.addAll(events);
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Events)) return false;
-		final Events other = (Events) obj;
-		if (m_eventFiles == null) {
-			if (other.m_eventFiles != null) return false;
-		} else if (!m_eventFiles.equals(other.m_eventFiles)) {
-			return false;
-		}
-		if (m_events == null) {
-			if (other.m_events != null) return false;
-		} else if (!m_events.equals(other.m_events)) {
-			return false;
-		}
-		if (m_global == null) {
-			if (other.m_global != null) return false;
-		} else if (!m_global.equals(other.m_global)) {
-			return false;
-		}
-		return true;
-	}
-	
-	Resource getRelative(Resource baseRef, String relative) {
+    public void addEvent(final Event event) {
+        m_events.add(event);
+    }
+
+    public boolean removeEvent(final Event event) {
+        return m_events.remove(event);
+    }
+
+    public List<String> getEventFiles() {
+        return m_eventFiles;
+    }
+
+    public void setEventFiles(final List<String> eventFiles) {
+        if (m_eventFiles == eventFiles) return;
+        m_eventFiles.clear();
+        if (eventFiles != null) m_eventFiles.addAll(eventFiles);
+    }
+
+    public void addEventFile(final String eventFile) {
+        m_eventFiles.add(ConfigUtils.normalizeAndInternString(eventFile));
+    }
+
+    public boolean removeEventFile(final String eventFile) {
+        return m_eventFiles.remove(eventFile);
+    }
+
+    public EventOrdering getOrdering() {
+        return m_ordering;
+    }
+
+    Resource getRelative(final Resource baseRef, final String relative) {
         try {
-        	if (relative.startsWith("classpath:")) {
-        		DefaultResourceLoader loader = new DefaultResourceLoader();
-        		return loader.getResource(relative);
-        	} else {
-        		return baseRef.createRelative(relative);
-        	}
+            if (relative.startsWith("classpath:")) {
+                return RESOURCE_LOADER.getResource(relative);
+            } else {
+                return baseRef.createRelative(relative);
+            }
         } catch (final IOException e) {
             throw new ObjectRetrievalFailureException(Resource.class, baseRef, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + relative, null);
         }
 
-	}
+    }
 
-    public Map<String, Long> loadEventFiles(Resource configResource) throws IOException {
-        Map<String, Long> lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+    public Map<String, Long> loadEventFiles(final Resource configResource) throws IOException {
+        final Map<String, Long> lastModifiedEventFiles = new LinkedHashMap<String, Long>();
         loadEventFilesIfModified(configResource, lastModifiedEventFiles);
         return lastModifiedEventFiles;
     }
 
-    public void loadEventFilesIfModified(Resource configResource, Map<String, Long> lastModifiedEventFiles) throws IOException {
+    public void loadEventFilesIfModified(final Resource configResource, final Map<String, Long> lastModifiedEventFiles) throws IOException {
         // Remove any event files that we're previously loaded, and no
         // longer appear in the list of event files
         for(Iterator<Map.Entry<String, Events>> it = m_loadedEventFiles.entrySet().iterator(); it.hasNext(); ) {
-            String eventFile = it.next().getKey();
+            final String eventFile = it.next().getKey();
             if(!m_eventFiles.contains(eventFile)) {
                 // The event file was previously loaded and has been removed
                 // from the list of event files
@@ -359,9 +196,9 @@ public class Events implements Serializable {
         }
 
         // Conditionally load or reload the event files
-        for(String eventFile : m_eventFiles) {
-            Resource eventResource = getRelative(configResource, eventFile);
-            long lastModified = eventResource.lastModified();
+        for(final String eventFile : m_eventFiles) {
+            final Resource eventResource = getRelative(configResource, eventFile);
+            final long lastModified = eventResource.lastModified();
 
             // Determine whether or not the file should be loaded
             boolean shouldLoadFile = true;
@@ -380,232 +217,232 @@ public class Events implements Serializable {
 
             lastModifiedEventFiles.put(eventFile, lastModified);
 
-            Events events = JaxbUtils.unmarshal(Events.class, eventResource);
-            if (events.getEventCount() <= 0) {
+            final Events events = JaxbUtils.unmarshal(Events.class, eventResource);
+            if (events.getEvents().isEmpty()) {
                 throw new IllegalStateException("Uh oh! An event file "+eventResource.getFile()+" with no events has been laoded!");
             }
             if (events.getGlobal() != null) {
                 throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot have a 'global' element", null);
             }
-            if (events.getEventFileCollection().size() > 0) {
-                throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
+            if (!events.getEventFiles().isEmpty()) {
+                throw new ObjectRetrievalFailureException(Resource.class, eventResource, "The event resource " + eventResource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFiles()), null);
             }
 
             m_loadedEventFiles.put(eventFile, events);
         }
     }
 
-	public boolean isSecureTag(String tag) {
-		return m_global == null ? false : m_global.isSecureTag(tag);
-	}
-	
-	private void partitionEvents(Partition partition) {
-		m_partition = partition;
+    public boolean isSecureTag(final String tag) {
+        return m_global == null ? false : m_global.isSecureTag(tag);
+    }
 
-		m_partitionedEvents = new LinkedHashMap<String, List<Event>>();
-		m_nullPartitionedEvents = new ArrayList<Event>();
-		
-		for(Event event : m_events) {
-			List<String> keys = partition.group(event);
-			if (keys == null) {
-				m_nullPartitionedEvents.add(event);
-			} else {
-				for(String key : keys) {
-					List<Event> events = m_partitionedEvents.get(key);
-					if (events == null) {
-						events = new ArrayList<Event>(1);
-						m_partitionedEvents.put(key, events);
-					}
-					events.add(event);
-				}
-			}
-		}
-	}
+    private void partitionEvents(final Partition partition) {
+        m_partition = partition;
+
+        m_partitionedEvents = new LinkedHashMap<String, List<Event>>();
+        m_nullPartitionedEvents = new ArrayList<Event>();
+
+        for(final Event event : m_events) {
+            final List<String> keys = partition.group(event);
+            if (keys == null) {
+                m_nullPartitionedEvents.add(event);
+            } else {
+                for(final String key : keys) {
+                    List<Event> events = m_partitionedEvents.get(key);
+                    if (events == null) {
+                        events = new ArrayList<Event>(1);
+                        m_partitionedEvents.put(key, events);
+                    }
+                    events.add(event);
+                }
+            }
+        }
+    }
 
 
 
-	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
-		// Atempt to match the event definition by UEI
-		final String ueiToMatch = matchingEvent.getUei();
-		if (ueiToMatch != null) {
-			final Event matchedEvent = m_eventsByUei.get(ueiToMatch);
-			if (matchedEvent != null) {
-				return matchedEvent;
-			}
-		}
+    public Event findFirstMatchingEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
+        // Atempt to match the event definition by UEI
+        final String ueiToMatch = matchingEvent.getUei();
+        if (ueiToMatch != null) {
+            final Event matchedEvent = m_eventsByUei.get(ueiToMatch);
+            if (matchedEvent != null) {
+                return matchedEvent;
+            }
+        }
 
-		// If the UEI match failed, fallback to searching with the matchers through the partitions
-		String key = m_partition.group(matchingEvent);
-		Collection<Event> potentialMatches = m_nullPartitionedEvents;
-		if (key != null) {
-			List<Event> events = m_partitionedEvents.get(key);
-			if (events != null) {
-			    potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
-			    potentialMatches.addAll(events);
-			}
-		}
+        // If the UEI match failed, fallback to searching with the matchers through the partitions
+        final String key = m_partition.group(matchingEvent);
+        Collection<Event> potentialMatches = m_nullPartitionedEvents;
+        if (key != null) {
+            final List<Event> events = m_partitionedEvents.get(key);
+            if (events != null) {
+                potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
+                potentialMatches.addAll(events);
+            }
+        }
 
-		for(Event event : potentialMatches) {
-			if (event.matches(matchingEvent)) {
-				return event;
-			}
-		}
+        for(final Event event : potentialMatches) {
+            if (event.matches(matchingEvent)) {
+                return event;
+            }
+        }
 
-		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			Events subEvents = loadedEvents.getValue();
-			Event event = subEvents.findFirstMatchingEvent(matchingEvent);
-			if (event != null) {
-				return event;
-			}
-		}
+        for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            final Events subEvents = loadedEvents.getValue();
+            final Event event = subEvents.findFirstMatchingEvent(matchingEvent);
+            if (event != null) {
+                return event;
+            }
+        }
 
-		return null;
-	}
-	
-	public Event findFirstMatchingEvent(EventCriteria criteria) {
-		for(Event event : m_events) {
-			if (criteria.matches(event)) {
-				return event;
-			}
-		}
-		
-		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			Events events = loadedEvents.getValue();
-			Event result = events.findFirstMatchingEvent(criteria);
-			if (result != null) {
-				return result;
-			}
-		}
-		
-		
-		return null;
-		
-	}
+        return null;
+    }
 
-	public <T> T forEachEvent(T initial, EventCallback<T> callback) {
-		T result = initial;
-		for(Event event : m_events) {
-			result = callback.process(result, event);
-		}
-		
-		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			Events events = loadedEvents.getValue();
-			result = events.forEachEvent(result, callback);
-		}
-		
-		
-		return result;
-	}
-	
-	public void initialize(Partition partition, EventOrdering eventOrdering) {
-	    
-		m_ordering = eventOrdering;
-	    
-		for(Event event : m_events) {
-			event.initialize(m_ordering.next());
-		}
-		
-		partitionEvents(partition);
-		
-		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			Events events = loadedEvents.getValue();
-			events.initialize(partition, m_ordering.subsequence());
-		}
+    public Event findFirstMatchingEvent(final EventCriteria criteria) {
+        for(final Event event : m_events) {
+            if (criteria.matches(event)) {
+                return event;
+            }
+        }
 
-		indexEventsByUei();
-	}
+        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            final Events events = loadedEvents.getValue();
+            final Event result = events.findFirstMatchingEvent(criteria);
+            if (result != null) {
+                return result;
+            }
+        }
 
-	private void indexEventsByUei() {
-		m_eventsByUei.clear();
-		final Set<String> filesProcessed = new HashSet<>();
-		indexEventsByUei(this, filesProcessed);
-	}
 
-	private void indexEventsByUei(Events eventFile, Set<String> filesProcessed) {
-		for(Event event : eventFile.m_events) {
-			final String uei = event.getUei();
-			if (uei == null) {
-				// Skip events with no UEI
-				continue;
-			}
-			// Don't overwrite existing keys, first one wins
-			m_eventsByUei.putIfAbsent(uei, event);
-		}
+        return null;
 
-		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			if (filesProcessed.contains(loadedEvents.getKey())) {
-				// We already processed this file, don't recurse - avoid stack overflows
-				continue;
-			}
-			filesProcessed.add(loadedEvents.getKey());
-			indexEventsByUei(loadedEvents.getValue(), filesProcessed);
-		}
-	}
+    }
 
-	public Events getLoadEventsByFile(String relativePath) {
-		return m_loadedEventFiles.get(relativePath);
-	}
+    public <T> T forEachEvent(final T initial, final EventCallback<T> callback) {
+        T result = initial;
+        for(final Event event : m_events) {
+            result = callback.process(result, event);
+        }
 
-    public void addLoadedEventFile(String relativePath, Events events) {
+        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            final Events events = loadedEvents.getValue();
+            result = events.forEachEvent(result, callback);
+        }
+
+
+        return result;
+    }
+
+    public void initialize(final Partition partition, final EventOrdering eventOrdering) {
+        m_ordering = eventOrdering;
+
+        for (final Event event : m_events) {
+            event.initialize(m_ordering.next());
+        }
+
+        partitionEvents(partition);
+
+        for(final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            final Events events = loadedEvents.getValue();
+            events.initialize(partition, m_ordering.subsequence());
+        }
+
+        indexEventsByUei();
+    }
+
+    private void indexEventsByUei() {
+        m_eventsByUei.clear();
+        final Set<String> filesProcessed = new HashSet<>();
+        indexEventsByUei(this, filesProcessed);
+    }
+
+    private void indexEventsByUei(final Events eventFile, final Set<String> filesProcessed) {
+        for (final Event event : eventFile.m_events) {
+            final String uei = event.getUei();
+            if (uei == null) {
+                // Skip events with no UEI
+                continue;
+            }
+            // Don't overwrite existing keys, first one wins
+            m_eventsByUei.putIfAbsent(uei, event);
+        }
+
+        for (final Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+            if (filesProcessed.contains(loadedEvents.getKey())) {
+                // We already processed this file, don't recurse - avoid stack overflows
+                continue;
+            }
+            filesProcessed.add(loadedEvents.getKey());
+            indexEventsByUei(loadedEvents.getValue(), filesProcessed);
+        }
+    }
+
+    public Events getLoadEventsByFile(final String relativePath) {
+        return m_loadedEventFiles.get(relativePath);
+    }
+
+    public void addLoadedEventFile(final String relativePath, final Events events) {
         if (!m_eventFiles.contains(relativePath)) {
             m_eventFiles.add(relativePath);
         }
         m_loadedEventFiles.put(relativePath, events);
     }
 
-	public void removeLoadedEventFile(String relativePath) {
-		m_eventFiles.remove(relativePath);
-		m_loadedEventFiles.remove(relativePath);
-	}
+    public void removeLoadedEventFile(final String relativePath) {
+        m_eventFiles.remove(relativePath);
+        m_loadedEventFiles.remove(relativePath);
+    }
 
-	public void saveEvents(Resource resource) {
-		final StringWriter stringWriter = new StringWriter();
-		JaxbUtils.marshal(this, stringWriter);
+    public void saveEvents(final Resource resource) {
+        final StringWriter stringWriter = new StringWriter();
+        JaxbUtils.marshal(this, stringWriter);
 
-		if (stringWriter.toString() != null) {
-			File file;
-			try {
-				file = resource.getFile();
-			} catch (final IOException e) {
-				throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
-			}
+        if (stringWriter.toString() != null) {
+            File file;
+            try {
+                file = resource.getFile();
+            } catch (final IOException e) {
+                throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
+            }
+            try (final OutputStream fos = new FileOutputStream(file);
+                    final Writer fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);) {
+                fileWriter.write(stringWriter.toString());
+            } catch (final Exception e) {
+                throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
+            }
+        }
+    }
 
-			Writer fileWriter = null;
-			try {
-				try {
-					fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-				} catch (final IOException e) {
-					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
-				}
+    public void save(final Resource resource) {
+        for(final Entry<String, Events> entry : m_loadedEventFiles.entrySet()) {
+            final String eventFile = entry.getKey();
+            final Events events = entry.getValue();
 
-				try {
-					fileWriter.write(stringWriter.toString());
-				} catch (final IOException e) {
-					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be written to.  Nested exception: " + e, e);
-				}
+            final Resource eventResource = getRelative(resource, eventFile);
+            events.save(eventResource);
 
-				try {
-					fileWriter.close();
-				} catch (final IOException e) {
-					throw new DataAccessResourceFailureException("Event file '" + file + "' could not be closed.  Nested exception: " + e, e);
-				}
-			} finally {
-				if (fileWriter != null) try { fileWriter.close(); } catch(Exception e) {}
-			}
-		}
+        }
 
-	}
-	
-	public void save(Resource resource) {
-		for(Entry<String, Events> entry : m_loadedEventFiles.entrySet()) {
-			String eventFile = entry.getKey();
-			Events events = entry.getValue();
-			
-			Resource eventResource = getRelative(resource, eventFile);
-			events.save(eventResource);
-			
-		}
-		
-		saveEvents(resource);
-	}
+        saveEvents(resource);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_global, m_events, m_eventFiles);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Events) {
+            final Events that = (Events) obj;
+            return Objects.equals(this.m_global, that.m_global) &&
+                    Objects.equals(this.m_events, that.m_events) &&
+                    Objects.equals(this.m_eventFiles, that.m_eventFiles);
+        }
+        return false;
+    }
 }

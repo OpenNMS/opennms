@@ -146,7 +146,7 @@ public class ViewsDisplayFactory {
     private void updateViewsMap() {
         Map<String, View> viewsMap = new HashMap<String,View>();
 
-        for (View view : m_viewInfo.getViewCollection()) {
+        for (View view : m_viewInfo.getViews()) {
             viewsMap.put(view.getViewName(), view);
         }
         

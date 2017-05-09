@@ -39,7 +39,7 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -284,9 +284,9 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
  
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
-        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
         
-        for (IncludeRange rng : pkg.getIncludeRange()) {
+        for (final IncludeRange rng : pkg.getIncludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
@@ -295,7 +295,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
 
         byte[] addr = toIpAddrBytes(iface);
 
-        for (String spec : pkg.getSpecific()) {
+        for (final String spec : pkg.getSpecifics()) {
             byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
@@ -303,12 +303,12 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
             }
         }
 
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, eurl.nextElement());
+        Iterator<String> eurl = pkg.getIncludeUrls().iterator();
+        while (!has_specific && eurl.hasNext()) {
+            has_specific = interfaceInUrl(iface, eurl.next());
         }
     
-        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+        for (final ExcludeRange rng : pkg.getExcludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
@@ -388,8 +388,8 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public long getDelay(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).hasDelay()) {
-                return getPolicyManageWithoutTesting(ipaddr).getDelay();
+            if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).getDelay().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getDelay().get();
             }
             return getConfiguration().getDelay();
         } finally {
@@ -402,8 +402,8 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public int getRetries(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetries()) {
-                return getPolicyManageWithoutTesting(ipaddr).getRetries();
+            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getRetries().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getRetries().get();
             }
             return getConfiguration().getRetries();
         } finally {
@@ -416,8 +416,8 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public boolean useCategories(final String ipaddr) {
         try {
             getReadLock().lock();
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasUseCategories()) {
-                return getPolicyManageWithoutTesting(ipaddr).getUseCategories();
+            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getUseCategories().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getUseCategories().get();
             }
             return getConfiguration().getUseCategories();
         } finally {
@@ -439,8 +439,8 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
                                     map.getSysoidMask(),
                                     map.getSysdescrMatch());
                     if (sysoid.startsWith(map.getSysoidMask())) {
-                        if (map.getSysdescrMatch() != null
-                                && sysdescr.matches(map.getSysdescrMatch())) {
+                        if (map.getSysdescrMatch().isPresent()
+                                && sysdescr.matches(map.getSysdescrMatch().get())) {
                             LOG.debug("getType: matched type: {}",
                                             map.getType());
                             return map.getType();
@@ -544,7 +544,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
         try {
             getReadLock().lock();
             if (hasPolicyManage(ipaddress)) {
-                return (getPolicyManageWithoutTesting(ipaddress).getScheduleCount() > 0);
+                return (getPolicyManageWithoutTesting(ipaddress).getSchedules().size() > 0);
             }
             return false;
         } finally {
@@ -563,7 +563,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
         try {
             getReadLock().lock();
             if (hasPolicyManage(ipaddress)) {
-                return getPolicyManageWithoutTesting(ipaddress).getScheduleCollection();
+                return getPolicyManageWithoutTesting(ipaddress).getSchedules();
             }
             return new ArrayList<Schedule>();
         } finally {
@@ -600,7 +600,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public Iterable<Mapping> mappings() {
         try {
             getReadLock().lock();
-            return getConfiguration().getMappingCollection();
+            return getConfiguration().getMappings();
         } finally {
             getReadLock().unlock();
         }
@@ -614,7 +614,11 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public Iterable<PolicyManage> policies() {
         try {
             getReadLock().lock();
-            return getConfiguration().getPolicies().getPolicyManageCollection();
+            if (getConfiguration().getPolicies().isPresent()) {
+                return getConfiguration().getPolicies().get().getPolicyManages();
+            } else {
+                return Collections.emptyList();
+            }
         } finally {
             getReadLock().unlock();
         }
@@ -629,7 +633,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     public Iterable<String> includeURLs(final Package pkg) {
         try {
             getReadLock().lock();
-            return pkg.getIncludeUrlCollection();
+            return pkg.getIncludeUrls();
         } finally {
             getReadLock().unlock();
         }

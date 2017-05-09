@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
@@ -56,6 +54,8 @@ import org.opennms.web.svclayer.catstatus.model.StatusNode;
 import org.opennms.web.svclayer.catstatus.model.StatusSection;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.dao.ViewDisplayDao;
+
+import junit.framework.TestCase;
 
 
 public class DefaultCategoryStatusServiceTest extends TestCase {
@@ -146,7 +146,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		verify(categoryDao);
 		verify(outageDao);
 		
-		assertEquals("Wrong Number of StatusSections",view.getSectionCount(),statusSections.size());
+		assertEquals("Wrong Number of StatusSections",view.getSections().size(),statusSections.size());
 		
 		
 		for (StatusSection statusSection : statusSections) {

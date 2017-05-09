@@ -188,7 +188,7 @@ public class Category {
      */
     @XmlElement(name="comment")
     public String getComment() {
-        return m_categoryDef == null? null : m_categoryDef.getComment();
+        return m_categoryDef == null? null : m_categoryDef.getComment().orElse(null);
     }
 
     /**

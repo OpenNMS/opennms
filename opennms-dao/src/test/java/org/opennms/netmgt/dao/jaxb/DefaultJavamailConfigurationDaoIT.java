@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.jaxb;
 import java.util.Properties;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +84,7 @@ public class DefaultJavamailConfigurationDaoIT implements InitializingBean {
     public void testMarshalling() {
         Assert.assertEquals("localhost", m_jmcDao.getDefaultReadmailConfig().getName());
         Assert.assertEquals("localhost", m_jmcDao.getDefaultSendmailConfig().getName());
-        Assert.assertEquals("false", m_jmcDao.getDefaultReadmailConfig().getJavamailProperty(0).getValue());
+        Assert.assertEquals("false", m_jmcDao.getDefaultReadmailConfig().getJavamailProperties().get(0).getValue());
         Assert.assertNotNull(m_jmcDao.getEnd2endConfig("default"));
         Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getReadmailConfigName());
         Assert.assertEquals("localhost", m_jmcDao.getEnd2endConfig("default").getSendmailConfigName());

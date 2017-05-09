@@ -30,20 +30,16 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class ImageSize.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "image-size")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ImageSize implements java.io.Serializable {
-    private static final long serialVersionUID = -2790338578671750191L;
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "hz-size", required = true)
     private HzSize hzSize;
@@ -112,6 +108,9 @@ public class ImageSize implements java.io.Serializable {
      * @param hzSize the value of field 'hzSize'.
      */
     public void setHzSize(final HzSize hzSize) {
+        if (hzSize == null) {
+            throw new IllegalArgumentException("'hz-size' is a required attribute!");
+        }
         this.hzSize = hzSize;
     }
 
@@ -121,6 +120,9 @@ public class ImageSize implements java.io.Serializable {
      * @param vtSize the value of field 'vtSize'.
      */
     public void setVtSize(final VtSize vtSize) {
+        if (vtSize == null) {
+            throw new IllegalArgumentException("'vt-size' is a required attribute!");
+        }
         this.vtSize = vtSize;
     }
 

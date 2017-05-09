@@ -171,16 +171,16 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     		}
     
     		final List<AssetField> retval = new ArrayList<AssetField>();
-    		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackageCollection()) {
+    		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackages()) {
     		    final String pkgSysoid = pkg.getSysoid();
     			final String pkgSysoidMask = pkg.getSysoidMask();
     			if (pkgSysoid != null) {
     				if (pkgSysoid.equals(sysoid)) {
-    					retval.addAll(pkg.getAssetFieldCollection());
+    					retval.addAll(pkg.getAssetFields());
     				}
     			} else if (pkgSysoidMask != null) {
     				if (sysoid.startsWith(pkgSysoidMask)) {
-    					retval.addAll(pkg.getAssetFieldCollection());
+    					retval.addAll(pkg.getAssetFields());
     				}
     			} else {
     			    LOG.warn("getAssetFieldsForAddress: Unexpected condition: both sysoid and sysoidMask are null on package {}", pkg.getName());

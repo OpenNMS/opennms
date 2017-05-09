@@ -38,7 +38,6 @@ import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
-import org.opennms.netmgt.config.wmi.Wpms;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
@@ -60,7 +59,6 @@ public class WmiCollectorComplianceTest extends CollectorComplianceTest {
         WmiPeerFactory.setInstance(peerFactory);
 
         WmiCollection collection = new WmiCollection();
-        collection.setWpms(new Wpms());
         dataCollectionConfigFactory = mock(WmiDataCollectionConfigFactory.class);
         when(dataCollectionConfigFactory.getWmiCollection(COLLECTION)).thenReturn(collection);
         when(dataCollectionConfigFactory.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());

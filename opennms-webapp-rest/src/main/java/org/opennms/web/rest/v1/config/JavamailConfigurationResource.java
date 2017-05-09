@@ -55,7 +55,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.OnmsRestService;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,7 +95,11 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          * @param sendmailConfigs the sendmail configurations
          */
         public SendmailConfigList(List<SendmailConfig> sendmailConfigs) {
-            sendmailConfigs.forEach(d -> add(d.getName()));
+            sendmailConfigs.forEach(d -> {
+                if (d.getName() != null) {
+                    add(d.getName());
+                }
+            });
         }
 
         /**
@@ -128,7 +131,11 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          * @param sendmailConfigs the sendmail configurations
          */
         public ReadmailConfigList(List<ReadmailConfig> sendmailConfigs) {
-            sendmailConfigs.forEach(d -> add(d.getName()));
+            sendmailConfigs.forEach(d -> {
+                if (d.getName() != null) {
+                    add(d.getName());
+                }
+            });
         }
 
         /**
@@ -160,7 +167,11 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          * @param end2endConfigs the end2end configurations
          */
         public End2endConfigList(List<End2endMailConfig> end2endConfigs) {
-            end2endConfigs.forEach(d -> add(d.getName()));
+            end2endConfigs.forEach(d -> {
+                if (d.getName() != null) {
+                    add(d.getName());
+                }
+            });
         }
 
         /**

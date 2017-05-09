@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,202 +28,90 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * Define the to, from, subject, and body of a message. If not
- * defined, one will be defined
- *  for your benefit (or confusion ;-)
+ * defined, one will be defined for your benefit (or confusion ;-)
  */
 
 @XmlRootElement(name="sendmail-message")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class SendmailMessage implements Serializable {
-    private static final long serialVersionUID = -7401307903017394619L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_to.
-     */
     @XmlAttribute(name="to")
     private String m_to;
 
-    /**
-     * Field m_from.
-     */
     @XmlAttribute(name="from")
     private String m_from;
 
-    /**
-     * Field m_subject.
-     */
     @XmlAttribute(name="subject")
     private String m_subject;
 
-    /**
-     * Field m_body.
-     */
     @XmlAttribute(name="body")
     private String m_body;
 
     public SendmailMessage() {
-        super();
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj ) return true;
-        
-        if (obj instanceof SendmailMessage) {
-            final SendmailMessage temp = (SendmailMessage)obj;
-            if (m_to != null) {
-                if (temp.m_to == null) {
-                    return false;
-                } else if (!(m_to.equals(temp.m_to))) {
-                    return false;
-                }
-            } else if (temp.m_to != null) {
-                return false;
-            }
-            if (m_from != null) {
-                if (temp.m_from == null) {
-                    return false;
-                } else if (!(m_from.equals(temp.m_from))) {
-                    return false;
-                }
-            } else if (temp.m_from != null) {
-                return false;
-            }
-            if (m_subject != null) {
-                if (temp.m_subject == null) {
-                    return false;
-                } else if (!(m_subject.equals(temp.m_subject))) {
-                    return false;
-                }
-            } else if (temp.m_subject != null) {
-                return false;
-            }
-            if (m_body != null) {
-                if (temp.m_body == null) {
-                    return false;
-                } else if (!(m_body.equals(temp.m_body))) {
-                    return false;
-                }
-            } else if (temp.m_body != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'body'.
-     * 
-     * @return the value of field 'Body'.
-     */
-    public String getBody() {
-        return m_body == null? "This is an OpenNMS test message." : m_body;
-    }
-
-    /**
-     * Returns the value of field 'from'.
-     * 
-     * @return the value of field 'From'.
-     */
-    public String getFrom() {
-        return m_from == null? "root@[127.0.0.1]" : m_from;
-    }
-
-    /**
-     * Returns the value of field 'subject'.
-     * 
-     * @return the value of field 'Subject'.
-     */
-    public String getSubject() {
-        return m_subject == null? "OpenNMS Test Message" : m_subject;
-    }
-
-    /**
-     * Returns the value of field 'to'.
-     * 
-     * @return the value of field 'To'.
-     */
     public String getTo() {
         return m_to == null? "root@localhost" : m_to;
     }
 
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode() {
-        int result = 17;
-        
-        if (m_to != null) {
-           result = 37 * result + m_to.hashCode();
-        }
-        if (m_from != null) {
-           result = 37 * result + m_from.hashCode();
-        }
-        if (m_subject != null) {
-           result = 37 * result + m_subject.hashCode();
-        }
-        if (m_body != null) {
-           result = 37 * result + m_body.hashCode();
-        }
-        
-        return result;
+    public void setTo(final String to) {
+        m_to = to;
     }
 
-    /**
-     * Sets the value of field 'body'.
-     * 
-     * @param body the value of field 'body'.
-     */
-    public void setBody(final String body) {
-        m_body = body;
+    public String getFrom() {
+        return m_from == null? "root@[127.0.0.1]" : m_from;
     }
 
-    /**
-     * Sets the value of field 'from'.
-     * 
-     * @param from the value of field 'from'.
-     */
     public void setFrom(final String from) {
         m_from = from;
     }
 
-    /**
-     * Sets the value of field 'subject'.
-     * 
-     * @param subject the value of field 'subject'.
-     */
+    public String getSubject() {
+        return m_subject == null? "OpenNMS Test Message" : m_subject;
+    }
+
     public void setSubject(final String subject) {
         m_subject = subject;
     }
 
-    /**
-     * Sets the value of field 'to'.
-     * 
-     * @param to the value of field 'to'.
-     */
-    public void setTo(final String to) {
-        m_to = to;
+    public String getBody() {
+        return m_body == null? "This is an OpenNMS test message." : m_body;
+    }
+
+    public void setBody(final String body) {
+        m_body = body;
+    }
+
+    public int hashCode() {
+        return Objects.hash(m_to, m_from, m_subject, m_body);
+    }
+
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) return true;
+
+        if (obj instanceof SendmailMessage) {
+            final SendmailMessage that = (SendmailMessage)obj;
+            return Objects.equals(this.m_to, that.m_to) &&
+                    Objects.equals(this.m_from, that.m_from) &&
+                    Objects.equals(this.m_subject, that.m_subject) &&
+                    Objects.equals(this.m_body, that.m_body);
+        }
+        return false;
     }
 
 }

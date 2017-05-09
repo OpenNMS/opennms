@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.users;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,12 +39,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "contact")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("users.xsd")
 public class Contact implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "type", required = true)
     private String m_type;
@@ -66,31 +68,32 @@ public class Contact implements Serializable {
     }
 
     public void setType(final String type) {
+        ConfigUtils.assertNotEmpty(type, "type");
         m_type = type;
     }
 
-    public String getInfo() {
-        return m_info;
+    public Optional<String> getInfo() {
+        return Optional.ofNullable(m_info);
     }
 
     public void setInfo(final String info) {
-        m_info = info;
+        m_info = ConfigUtils.normalizeString(info);
     }
 
-    public String getServiceProvider() {
-        return m_serviceProvider;
+    public Optional<String> getServiceProvider() {
+        return Optional.ofNullable(m_serviceProvider);
     }
 
     public void setServiceProvider(final String serviceProvider) {
-        m_serviceProvider = serviceProvider;
+        m_serviceProvider = ConfigUtils.normalizeString(serviceProvider);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_type, 
-            m_info, 
-            m_serviceProvider);
+                            m_type, 
+                            m_info, 
+                            m_serviceProvider);
     }
 
     @Override
@@ -102,8 +105,8 @@ public class Contact implements Serializable {
         if (obj instanceof Contact) {
             final Contact temp = (Contact)obj;
             return Objects.equals(temp.m_type, m_type)
-                && Objects.equals(temp.m_info, m_info)
-                && Objects.equals(temp.m_serviceProvider, m_serviceProvider);
+                    && Objects.equals(temp.m_info, m_info)
+                    && Objects.equals(temp.m_serviceProvider, m_serviceProvider);
         }
         return false;
     }

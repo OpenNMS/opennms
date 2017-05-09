@@ -29,110 +29,74 @@
 package org.opennms.netmgt.config.rancid.adapter;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
- * Range of addresses to be excluded from this
- *  package.
- * 
- * @version $Revision$ $Date$
+ * Range of addresses to be excluded from this package.
  */
 @XmlRootElement(name = "exclude-range")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExcludeRange implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("rancid-adapter-configuration.xsd")
+public class ExcludeRange implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * Starting address of the range.
      */
     @XmlAttribute(name = "begin", required = true)
-    private String begin;
+    private String m_begin;
 
     /**
      * Ending address of the range.
      */
     @XmlAttribute(name = "end", required = true)
-    private String end;
+    private String m_end;
 
     public ExcludeRange() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getBegin() {
+        return m_begin;
+    }
+
+    public void setBegin(final String begin) {
+        m_begin = ConfigUtils.assertNotEmpty(begin, "begin");
+    }
+
+    public String getEnd() {
+        return m_end;
+    }
+
+    public void setEnd(final String end) {
+        m_end = ConfigUtils.assertNotEmpty(end, "end");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_begin, m_end);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ExcludeRange) {
-            ExcludeRange temp = (ExcludeRange)obj;
-            boolean equals = Objects.equals(temp.begin, begin)
-                && Objects.equals(temp.end, end);
-            return equals;
+            final ExcludeRange that = (ExcludeRange)obj;
+            return Objects.equals(this.m_begin, that.m_begin)
+                    && Objects.equals(this.m_end, that.m_end);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'begin'. The field 'begin' has the following
-     * description: Starting address of the range.
-     * 
-     * @return the value of field 'Begin'.
-     */
-    public String getBegin() {
-        return this.begin;
-    }
-
-    /**
-     * Returns the value of field 'end'. The field 'end' has the following
-     * description: Ending address of the range.
-     * 
-     * @return the value of field 'End'.
-     */
-    public String getEnd() {
-        return this.end;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            begin, 
-            end);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'begin'. The field 'begin' has the following
-     * description: Starting address of the range.
-     * 
-     * @param begin the value of field 'begin'.
-     */
-    public void setBegin(final String begin) {
-        this.begin = begin;
-    }
-
-    /**
-     * Sets the value of field 'end'. The field 'end' has the following
-     * description: Ending address of the range.
-     * 
-     * @param end the value of field 'end'.
-     */
-    public void setEnd(final String end) {
-        this.end = end;
     }
 
 }

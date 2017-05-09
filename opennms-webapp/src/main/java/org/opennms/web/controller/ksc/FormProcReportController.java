@@ -129,7 +129,8 @@ public class FormProcReportController extends AbstractController implements Init
                 editor.loadWorkingGraph(graph_index);
             } else {
                 if (Actions.DelGraph.toString().equals(action)) { 
-                    report.removeGraph(report.getGraph(graph_index));
+                    final int index = graph_index;
+                    report.removeGraph(report.getGraphs().get(index));
                 } else {
                     throw new ServletException("Invalid Argument for Customize Form Action.");
                 }

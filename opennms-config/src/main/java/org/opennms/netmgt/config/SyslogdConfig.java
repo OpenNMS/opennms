@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.config;
 
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
+import java.util.List;
+
+import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
 
 /**
  * <p>SyslogdConfig interface.</p>
@@ -72,14 +74,14 @@ public interface SyslogdConfig {
      *
      * @return a int.
      */
-    int getMatchingGroupHost();
+    Integer getMatchingGroupHost();
 
     /**
      * <p>getMatchingGroupMessage</p>
      *
      * @return a int.
      */
-    int getMatchingGroupMessage();
+    Integer getMatchingGroupMessage();
 
     /**
      * <p>getParser</p>
@@ -90,17 +92,13 @@ public interface SyslogdConfig {
 
     /**
      * A collection of Strings->UEI's
-     * 
-     * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
      */
-    UeiList getUeiList();
+    List<UeiMatch> getUeiList();
 
     /**
      * A collection of Strings we do not want to attach to the event.
-     *
-     * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      */
-    HideMessage getHideMessages();
+    List<HideMatch> getHideMessages();
     
     /**
      * <p>getDiscardUei</p>

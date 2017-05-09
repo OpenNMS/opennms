@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +49,7 @@ import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.groups.Time;
 import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
@@ -227,6 +229,16 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
+        assertEquals("simple", simpleSchedule.getName());
+        assertEquals("daily", simpleSchedule.getType());
+        assertEquals(1, simpleSchedule.getTimes().size());
+
+        final Time simpleScheduleTime = simpleSchedule.getTimes().get(0);
+        assertEquals("11:00:00", simpleScheduleTime.getBegins());
+        assertEquals("14:00:00", simpleScheduleTime.getEnds());
+        assertEquals(false, simpleScheduleTime.getDay().isPresent());
+        assertEquals(false, simpleScheduleTime.getId().isPresent());
+
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);

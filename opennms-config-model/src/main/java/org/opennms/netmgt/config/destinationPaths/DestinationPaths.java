@@ -73,8 +73,9 @@ public class DestinationPaths implements Serializable {
     }
 
     public void setPaths(final List<Path> paths) {
+        if (paths == m_paths) return;
         m_paths.clear();
-        m_paths.addAll(paths);
+        if (paths != null) m_paths.addAll(paths);
     }
 
     public void addPath(final Path path) {
