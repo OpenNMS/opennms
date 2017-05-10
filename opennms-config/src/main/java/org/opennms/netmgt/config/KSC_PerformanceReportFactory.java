@@ -398,7 +398,8 @@ public class KSC_PerformanceReportFactory {
                 end_time.set(Calendar.HOUR_OF_DAY, 22);
             } else if (interval.equals("This Week") || interval.equals("Last Week")) {
                 begin_time.set(Calendar.DAY_OF_WEEK, begin_time.getFirstDayOfWeek());
-                end_time.set(Calendar.DAY_OF_WEEK, 7);
+                end_time.set(Calendar.DAY_OF_WEEK, end_time.getFirstDayOfWeek());
+                end_time.add(Calendar.DATE, 6);
                 end_time.set(Calendar.HOUR_OF_DAY, 23);
                 end_time.set(Calendar.MINUTE, 59);
                 if (interval.equals("Last Week")) {

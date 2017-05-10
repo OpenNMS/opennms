@@ -1,0 +1,2 @@
+The usage of distinct on the criteria (which is required to avoid duplicates),
+breaks the ability to order by nested elements.
