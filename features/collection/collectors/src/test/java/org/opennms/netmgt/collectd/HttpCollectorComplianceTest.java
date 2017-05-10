@@ -36,6 +36,7 @@ import java.util.Map;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
+import org.opennms.netmgt.config.httpdatacollection.Rrd;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.google.common.collect.ImmutableMap;
@@ -50,6 +51,8 @@ public class HttpCollectorComplianceTest extends CollectorComplianceTest {
         super(HttpCollector.class, true);
 
         HttpCollection collection = new HttpCollection();
+        collection.setName(COLLECTION);
+        collection.setRrd(new Rrd(1, "RRA:AVERAGE:0.5:1:2016"));
         configFactory = mock(HttpCollectionConfigFactory.class);
         when(configFactory.getHttpCollection(COLLECTION)).thenReturn(collection);
         when(configFactory.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());
