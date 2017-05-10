@@ -256,6 +256,10 @@ public abstract class StringUtils {
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
+    public static String stripExtraQuotes(String string) {
+        return string.replaceAll("^\"(.*)\"$", "$1");
+    }
+
     /**
      * This is an optimized version of:
      *    return a != null && a.trim().equals(b)
