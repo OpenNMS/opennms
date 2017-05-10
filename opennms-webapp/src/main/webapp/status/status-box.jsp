@@ -29,16 +29,26 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@ page language="java" contentType="text/html" session="true" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.List" %>
+
+<%
+    final String graphs = System.getProperty("org.opennms.statusbox.elements", "business-services,nodes-by-alarms,nodes-by-outages");
+    final String[] graphKeys = graphs.split(",");
+    final List<String> graphKeyList = new ArrayList<>();
+    for (String eachGraphKey : graphKeys) {
+        if (eachGraphKey != null && !eachGraphKey.isEmpty()) {
+            graphKeyList.add("'" + eachGraphKey + "'");
+        }
+    }
+    String javaScriptArrayContent = String.join(", ", graphKeyList);
+%>
 
 <link href="/opennms/lib/c3/c3.css" rel="stylesheet" type="text/css">
 <style>
 
     #chart-content {
-    }
-
-    .no-padding {
-        padding: 0px;
     }
 
     .c3 .c3-chart-arc path {
@@ -123,7 +133,7 @@
                 // create container for graphif it does not exist yet
                 if ($("#" + graph.id).length == 0) {
                     var graphContainer = $('<div/>', {
-                        class: 'no-padding col-lg-3 col-md-4 col-xs-6',
+                        class: 'no-padding col-xs-12 col-sm-6 col-md-6 col-lg-4',
                     });
                     graphContainer.append($("<div></div>", {
                         id: graph.id
@@ -135,8 +145,8 @@
                     var chart = c3.generate({
                         bindto: "#" + graph.id,
                         size: {
-                            width: 250,
-                            height: 250
+                            width: 230,
+                            height: 230
                         },
                         data: {
                             order: null,
@@ -169,45 +179,62 @@
         };
 
         $("#footer").ready(function() {
-            render({
-                parentContainer: '#chart-content',
-                graphs: [
-                    {
-                        id: "businessServiceProblemChart",
-                        title: "Business Services",
-                        url: "/opennms/api/v2/status/summary/business-services",
-                        onclick: function(e) {
-                            window.location = "status/bsm/index.jsp?_s=severity%3D%3D" + e.id;
-                        }
-                    },
-                    {
-                        id: "applicationProblemChart",
-                        title: "Applications",
-                        url: "/opennms/api/v2/status/summary/applications",
-                        onclick: function(e) {
-                            window.location = "status/application/index.jsp?_s=severity%3D%3D" + e.id;
-                        }
-                    },
-                    {
-                        id: "nodeProblemChartsByAlarms",
-                        title: "Alarms",
-                        url: "/opennms/api/v2/status/summary/nodes/alarms",
-                        onclick: function(e) {
-                            window.location = "status/node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
-                        }
-                    },
-                    {
-                        id: "nodeProblemChartByOutages",
-                        title: "Outages",
-                        url: "/opennms/api/v2/status/summary/nodes/outages",
-                        onclick: function(e) {
-                            window.location = "status/node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
-                        }
-                    },
-                ]
-            })
-        });
+            // all supported graphs
+            var graphDefinitions = {
+                'business-services': {
+                    id: "businessServiceProblemChart",
+                    title: "Business Services",
+                    url: "/opennms/api/v2/status/summary/business-services",
+                    onclick: function (e) {
+                        window.location = "status/bsm/index.jsp?_s=severity%3D%3D" + e.id;
+                    }
+                },
 
+                'applications': {
+                    id: "applicationProblemChart",
+                    title: "Applications",
+                    url: "/opennms/api/v2/status/summary/applications",
+                    onclick: function (e) {
+                        window.location = "status/application/index.jsp?_s=severity%3D%3D" + e.id;
+                    }
+                },
+
+                'nodes-by-alarms': {
+                    id: "nodeProblemChartsByAlarms",
+                    title: "Alarms",
+                    url: "/opennms/api/v2/status/summary/nodes/alarms",
+                    onclick: function (e) {
+                        window.location = "status/node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
+                    }
+                },
+                'nodes-by-outages': {
+                    id: "nodeProblemChartByOutages",
+                    title: "Outages",
+                    url: "/opennms/api/v2/status/summary/nodes/outages",
+                    onclick: function (e) {
+                        window.location = "status/node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
+                    }
+                }
+            };
+
+            // the graphs to render
+            var graphKeys = [ <%= javaScriptArrayContent %> ];
+            var graphs = [];
+            for (var i=0; i<graphKeys.length; i++) {
+                var graphKey = graphKeys[i];
+                if (graphKey != undefined && graphKey in graphDefinitions) {
+                    graphs.push(graphDefinitions[graphKey]);
+                }
+            }
+
+            // only render if something is configured to show
+            if (graphs.length != 0) {
+                render({
+                    parentContainer: '#chart-content',
+                    graphs: graphs
+                })
+            }
+        });
     });
 
 </script>
