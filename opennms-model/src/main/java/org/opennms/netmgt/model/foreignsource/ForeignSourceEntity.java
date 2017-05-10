@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -229,5 +230,15 @@ public class ForeignSourceEntity implements Serializable {
             return getName().equals(other.getName());
         }
         return super.equals(obj);
+    }
+
+    // Required to keep the positions/indices of policies/detectors in sync
+    private void updatePositions(List<? extends PluginConfigEntity> entities) {
+        IntStream.range(0, entities.size()).forEach(index -> entities.get(index).setPosition(index));
+    }
+
+    public void updatePositions() {
+        updatePositions(getDetectors());
+        updatePositions(getPolicies());
     }
 }

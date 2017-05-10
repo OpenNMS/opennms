@@ -2499,6 +2499,7 @@ CREATE TABLE foreignsource_plugins (
 	type text NOT NULL,
 	class text NOT NULL,
 	foreignsource text NOT NULL,
+	position integer,
 	CONSTRAINT foreignsource_plugins_pkey PRIMARY KEY (id),
 	CONSTRAINT fk_foreignsource_foreignsource_plugins FOREIGN KEY (foreignsource)
 	REFERENCES foreignsource (name) ON DELETE CASCADE

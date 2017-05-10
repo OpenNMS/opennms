@@ -33,6 +33,7 @@ import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMa
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -107,11 +108,12 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
     @Override
     public void saveForeignSource(ForeignSourceEntity foreignSource) {
-        validate(foreignSource);
         normalizePluginConfigs(foreignSource);
         boolean isDefault = DEFAULT_FOREIGNSOURCE_NAME.equals(foreignSource.getName());
         foreignSource.updateDateStamp();
         foreignSource.setDefault(isDefault);
+        foreignSource.updatePositions();
+        validate(foreignSource);
         foreignSourceDao.saveOrUpdate(foreignSource);
     }
 
@@ -245,8 +247,24 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     private void validate(ForeignSourceEntity foreignSource) {
         final String name = foreignSource.getName();
         if (name.contains("/")) {
-            throw new IllegalStateException("Foreign Source (" + name + ") contains invalid characters. ('/' is forbidden.)");
+            throw new IllegalStateException("Foreign Source '" + name + "' contains invalid characters: '/' is not allowed.");
         }
+
+        // Ensure that the positions of policies and detectors are initialized properly
+        long duplicatePolicyPositionCount = countDuplicatePositions(foreignSource.getPolicies());
+        if (duplicatePolicyPositionCount > 0) {
+            throw new IllegalStateException("Foreign Source '" + name + "' contains policies with duplicate (or not initialized ?) positions.");
+        }
+        long duplicateDetectorPositionCount = countDuplicatePositions(foreignSource.getDetectors());
+        if (duplicateDetectorPositionCount > 0) {
+            throw new IllegalStateException("Foreign Source '" + name + "' contains detectors with duplicate (or not initialized ?) positions.");
+        }
+    }
+
+    private long countDuplicatePositions(List<? extends PluginConfigEntity> configEntities) {
+        return configEntities
+                .stream().collect(Collectors.groupingBy(e -> e.getPosition(), Collectors.counting()))
+                .entrySet().stream().filter(e -> e.getValue() > 1).count();
     }
 
 }

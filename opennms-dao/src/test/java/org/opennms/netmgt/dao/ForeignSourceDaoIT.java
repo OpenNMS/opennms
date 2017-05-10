@@ -72,8 +72,8 @@ public class ForeignSourceDaoIT {
         foreignSource.setScanInterval(1234);
         foreignSource.setDate(date);
 
-        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginConfigType.Detector, "name", "class", null));
-        foreignSource.addPlugin(createPluginConfig(foreignSource, PluginConfigType.Policy, "name", "class", null));
+        foreignSource.addDetector(createPluginConfig(foreignSource, PluginConfigType.Detector, "name", "class", null));
+        foreignSource.addPolicy(createPluginConfig(foreignSource, PluginConfigType.Policy, "name", "class", null));
         foreignSourceDao.save(foreignSource);
         foreignSourceDao.flush();
 
@@ -87,7 +87,7 @@ public class ForeignSourceDaoIT {
         Assert.assertEquals(1, received.getPolicies().size());
     }
 
-    private static PluginConfigEntity createPluginConfig(ForeignSourceEntity parent, PluginConfigType pluginConfigType, String name, String pluginClass, Map<String, String> parameters) {
+    private static <T extends PluginConfigEntity> T createPluginConfig(ForeignSourceEntity parent, PluginConfigType pluginConfigType, String name, String pluginClass, Map<String, String> parameters) {
         PluginConfigEntity pc = pluginConfigType.newInstance();
         pc.setForeignSource(parent);
         pc.setName(name);
@@ -95,6 +95,6 @@ public class ForeignSourceDaoIT {
         if (parameters != null) {
             pc.setParameters(new HashMap<>(parameters));
         }
-        return pc;
+        return (T) pc;
     }
 }

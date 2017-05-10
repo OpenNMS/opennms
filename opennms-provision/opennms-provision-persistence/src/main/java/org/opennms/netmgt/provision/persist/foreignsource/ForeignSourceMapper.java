@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist.foreignsource;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,11 +60,11 @@ public class ForeignSourceMapper {
                 .stream()
                 .map(d -> (DetectorPluginConfigEntity) toPersistenceModel(d, PluginConfigType.Detector))
                 .collect(Collectors.toList())
-                .forEach(p -> output.addPlugin(p));
+                .forEach(p -> output.addDetector(p));
         input.getPolicies()
                 .stream()
                 .map(d -> (PolicyPluginConfigEntity) toPersistenceModel(d, PluginConfigType.Policy))
-                .forEach(p -> output.addPlugin(p));
+                .forEach(p -> output.addPolicy(p));
         return output;
     }
 
@@ -95,8 +96,14 @@ public class ForeignSourceMapper {
         output.setDefault(input.isDefault());
         output.setScanInterval(Duration.millis(input.getScanInterval()));
         output.setDate(input.getDate());
-        output.setDetectors(input.getDetectors().stream().map(d -> toRestModel(d)).collect(Collectors.toList()));
-        output.setPolicies(input.getPolicies().stream().map(p -> toRestModel(p)).collect(Collectors.toList()));
+        output.setDetectors(input.getDetectors().stream()
+                .sorted(Comparator.comparing(PluginConfigEntity::getPosition))
+                .map(d -> toRestModel(d))
+                .collect(Collectors.toList()));
+        output.setPolicies(input.getPolicies().stream()
+                .sorted(Comparator.comparing(PluginConfigEntity::getPosition))
+                .map(p -> toRestModel(p))
+                .collect(Collectors.toList()));
         return output;
     }
 

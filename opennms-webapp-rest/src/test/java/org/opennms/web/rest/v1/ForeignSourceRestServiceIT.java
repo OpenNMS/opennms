@@ -36,7 +36,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 
@@ -48,6 +50,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
@@ -57,6 +60,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.google.common.collect.Lists;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -212,6 +217,33 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         delete("test");
         Assert.assertEquals(0, findPlugins().size());
         Assert.assertEquals(0, findPluginParameters().size());
+    }
+
+    @Test
+    public void verifyOrder() throws Exception {
+        createForeignSource();
+        ForeignSource foreignSource = get("test");
+
+        // Change order
+        foreignSource.setDetectors(foreignSource.getDetectors().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        foreignSource.setPolicies(foreignSource.getPolicies().stream().sorted(Comparator.comparing(PluginConfig::getPluginClass)).collect(Collectors.toList()));
+        post(foreignSource);
+
+        // Verify change
+        foreignSource = get("test");
+        Assert.assertEquals(
+                Lists.newArrayList("ICMP", "HTTPS", "HTTP", "DNS"),
+                foreignSource.getDetectors().stream().map(d -> d.getName()).collect(Collectors.toList()));
+        Assert.assertEquals(
+                Lists.newArrayList("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy"),
+                foreignSource.getPolicies().stream().map(p -> p.getPluginClass()).collect(Collectors.toList()));
+
+        // Verify again and see it is updated as well
+        foreignSource.setDetectors(foreignSource.getDetectors().stream().sorted(Comparator.comparing(PluginConfig::getName)).collect(Collectors.toList()));
+        post(foreignSource);
+        Assert.assertEquals(
+                Lists.newArrayList("DNS", "HTTP", "HTTPS", "ICMP"),
+                foreignSource.getDetectors().stream().map(d -> d.getName()).collect(Collectors.toList()));
     }
 
     private void createForeignSource() throws Exception {

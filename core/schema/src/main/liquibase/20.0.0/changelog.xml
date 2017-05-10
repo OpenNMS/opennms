@@ -33,6 +33,7 @@
             <column name="class" type="text">
                 <constraints nullable="false"/>
             </column>
+            <column name="position" type="integer"/>
             <column name="foreignsource" type="text">
                 <constraints nullable="false"/>
             </column>

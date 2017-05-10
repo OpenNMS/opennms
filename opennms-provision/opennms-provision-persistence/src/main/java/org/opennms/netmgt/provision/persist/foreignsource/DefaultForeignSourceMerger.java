@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.provision.persist.foreignsource;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.ForeignSourceDao;
+import org.opennms.netmgt.model.foreignsource.DetectorPluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.ForeignSourceEntity;
 import org.opennms.netmgt.model.foreignsource.PluginConfigEntity;
 import org.opennms.netmgt.model.foreignsource.PluginConfigType;
+import org.opennms.netmgt.model.foreignsource.PolicyPluginConfigEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -53,6 +56,7 @@ public class DefaultForeignSourceMerger implements ForeignSourceMerger {
         persistedEntity.setDefault(input.isDefault());
         persistedEntity.setScanInterval(input.getScanInterval().getMillis());
 
+        // Note: In order to help hibernate to keep track of new and updated objects, objects must be merged with existing objects
         // update existing or add new policies
         input.getPolicies().forEach(p -> createOrMerge(persistedEntity, PluginConfigType.Policy, p));
         input.getDetectors().forEach(d -> createOrMerge(persistedEntity, PluginConfigType.Detector, d));
@@ -69,17 +73,24 @@ public class DefaultForeignSourceMerger implements ForeignSourceMerger {
                 .collect(Collectors.toList())
                 .forEach(d -> persistedEntity.removeDetector(d)); // and remove
 
+        // The order of policies/detectors is automatically set when persisting the entity and it is
+        // based on the index of the list they are in, therefore the order is applied manually here
+        final List<DetectorPluginConfigEntity> detectors = input.getDetectors().stream().map(d -> persistedEntity.getDetector(d.getName())).collect(Collectors.toList());
+        final List<PolicyPluginConfigEntity> policies = input.getPolicies().stream().map(p -> persistedEntity.getPolicy(p.getName())).collect(Collectors.toList());
+        persistedEntity.setDetectors(detectors);
+        persistedEntity.setPolicies(policies);
+
         return persistedEntity;
     }
 
     private PluginConfigEntity createOrMerge(ForeignSourceEntity parent, PluginConfigType pluginType, PluginConfig input) {
-        final PluginConfigEntity persistedPolicy = getOrCreatePluginConfig(parent, pluginType, input.getName());
-        persistedPolicy.setName(input.getName());
-        persistedPolicy.setPluginClass(input.getPluginClass());
-        persistedPolicy.setParameters(
+        final PluginConfigEntity persistedPluginConfig = getOrCreatePluginConfig(parent, pluginType, input.getName());
+        persistedPluginConfig.setName(input.getName());
+        persistedPluginConfig.setPluginClass(input.getPluginClass());
+        persistedPluginConfig.setParameters(
                 input.getParameters().stream()
                         .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue())));
-        return persistedPolicy;
+        return persistedPluginConfig;
     }
 
     private ForeignSourceEntity getOrCreateForeignSource(String name) {

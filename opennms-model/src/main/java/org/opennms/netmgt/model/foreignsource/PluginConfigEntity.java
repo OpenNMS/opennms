@@ -89,6 +89,14 @@ public abstract class PluginConfigEntity implements Serializable {
     @JoinColumn(name="foreignsource")
     private ForeignSourceEntity foreignSource;
 
+    /**
+     * The position of the plugin config as the order matters.
+     *
+     * @see #setPosition(int)
+     */
+    @Column(name="position")
+    private int position;
+
     protected PluginConfigEntity() {
     }
 
@@ -107,6 +115,7 @@ public abstract class PluginConfigEntity implements Serializable {
         setName(pluginConfig.getName());
         setPluginClass(pluginConfig.getPluginClass());
         setParameters(pluginConfig.getParameters());
+        setPosition(pluginConfig.getPosition());
     }
 
     public Long getId() {
@@ -155,6 +164,21 @@ public abstract class PluginConfigEntity implements Serializable {
 
     public ForeignSourceEntity getForeignSource() {
         return foreignSource;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * Sets the position of this {@link PluginConfigEntity}.
+     * It should be initialized according to their position of the policies/detectors
+     * list in {@link ForeignSourceEntity#getDetectors()}/{@link ForeignSourceEntity#getPolicies()}.
+     *
+     * @param position
+     */
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public abstract PluginConfigType getType();
