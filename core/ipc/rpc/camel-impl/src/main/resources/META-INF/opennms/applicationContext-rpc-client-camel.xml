@@ -30,6 +30,8 @@
      <property name="location" ref="location"/>
   </bean>
 
+  <onmsgi:service ref="camelRpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" />
+
   <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
 
    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->

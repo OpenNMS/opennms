@@ -35,27 +35,41 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.rpc.api.RemoteExecutionException;
-import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.rpc.api.RpcRequest;
 
-@XmlRootElement(name="echo-response")
+@XmlRootElement(name="echo-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class EchoResponse implements RpcResponse {
+public class EchoRequest implements RpcRequest {
 
-    @XmlAttribute(name="error")
-    private String error;
+    @XmlAttribute(name="id")
+    private Long id;
 
     @XmlAttribute(name="message")
     private String message;
 
-    public EchoResponse() { }
+    @XmlAttribute(name="location")
+    private String location;
 
-    public EchoResponse(String message) {
+    @XmlAttribute(name="delay")
+    private Long delay;
+
+    @XmlAttribute(name="throw")
+    private boolean shouldThrow;
+
+    private Long timeToLiveMs;
+
+    public EchoRequest() { }
+
+    public EchoRequest(String message) {
         this.message = message;
     }
 
-    public EchoResponse(Throwable t) {
-        this.error = RemoteExecutionException.toErrorMessage(t);
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setMessage(String message) {
@@ -66,14 +80,43 @@ public class EchoResponse implements RpcResponse {
         return message;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     @Override
-    public String getErrorMessage() {
-        return error;
+    public String getLocation() {
+        return location;
+    }
+
+    public void setTimeToLiveMs(Long timeToLiveMs) {
+        this.timeToLiveMs = timeToLiveMs;
+    }
+
+    @Override
+    public Long getTimeToLiveMs() {
+        return timeToLiveMs;
+    }
+
+    public void setDelay(Long delay) {
+        this.delay = delay;
+    }
+
+    public Long getDelay() {
+        return delay;
+    }
+
+    public void shouldThrow(boolean shouldThrow) {
+        this.shouldThrow = shouldThrow;
+    }
+
+    public boolean shouldThrow() {
+        return shouldThrow;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(message, error);
+        return Objects.hash(id, message, location, delay, shouldThrow);
     }
 
     @Override
@@ -84,13 +127,17 @@ public class EchoResponse implements RpcResponse {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final EchoResponse other = (EchoResponse) obj;
-        return Objects.equals(this.message, other.message) &&
-                Objects.equals(this.error, other.error);
+        final EchoRequest other = (EchoRequest) obj;
+        return Objects.equals(this.id, other.id) &&
+                Objects.equals(this.message, other.message) &&
+                Objects.equals(this.location, other.location) &&
+                Objects.equals(this.delay, other.delay) &&
+                Objects.equals(this.shouldThrow, other.shouldThrow);
     }
 
     @Override
     public String toString() {
-        return String.format("EchoResponse[message=%s, error=%s]", message, error);
+        return String.format("EchoRequest[id=%d, message=%s, location=%s, delay=%s, shouldThrow=%s]",
+                id, message, location, delay, shouldThrow);
     }
 }
