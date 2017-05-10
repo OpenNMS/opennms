@@ -29,14 +29,11 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import java.util.List;
+import javax.xml.bind.JAXB;
 
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository;
-import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
-import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,47 +48,12 @@ public class ListAssetTopologiesCommand extends OsgiCommandSupport {
 		this.assetGraphDefinitionRepository = assetGraphDefinitionRepository;
 	}
 
-	@Argument(name = "detail", description = "if 'all' command will display all fields including --uriParams string", required = false, multiValued = false)
-	String detail="";
-
 	@Override
 	protected Object doExecute() throws Exception {
-		try{
-			StringBuffer msg = new StringBuffer("List of installed asset topology definitions");
-			GeneratorConfigList configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
+		GeneratorConfigList configDefinitions = assetGraphDefinitionRepository.getAllConfigDefinitions();
 
-			for(GeneratorConfig generatorConfig : configDefinitions.getConfigs()){
-				String graphDefinitionUriString = GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig);
-				msg.append("\n --providerId:"+generatorConfig.getProviderId());
-				msg.append("\n     --label:"+generatorConfig.getLabel());
-				
-				msg.append("\n     --assetLayers:");
-				List<String> l = generatorConfig.getLayerHierarchies();
-				if (l!=null) for(int i=0; i<l.size(); i++){
-					msg.append(l.get(i));
-					if(i+1<l.size()) msg.append(",");
-				}
-
-				msg.append("\n     --filter:");
-				List<String> f = generatorConfig.getFilters();
-				if (f!=null)for(int i=0; i<f.size(); i++){
-					msg.append(f.get(i));
-					if(i+1<f.size()) msg.append(";");
-				}
-				
-				msg.append("\n     --preferredLayout:"+generatorConfig.getPreferredLayout());
-				msg.append("\n     --breadcrumbStrategy:"+generatorConfig.getBreadcrumbStrategy());
-				if("all".equals(detail.trim())){
-					msg.append("\n     --uriParams:"+graphDefinitionUriString);
-				}
-			}
-			System.out.println(msg.toString());
-			LOG.debug(msg.toString());
-
-		} catch (Exception e) {
-			LOG.error("Error listing installed asset topology definitions Exception=",e);
-			System.out.println("Error listing installed asset topology definitions Exception="+e);
-		}
+		System.out.println("List of installed asset topology definitions:");
+		JAXB.marshal(configDefinitions, System.out);
 		return null;
 	}
 }

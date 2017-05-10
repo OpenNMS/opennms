@@ -35,12 +35,11 @@ import java.nio.file.Paths;
 import javax.xml.bind.JAXB;
 
 import org.junit.Test;
-import org.opennms.features.topology.plugins.topo.asset.filter.GeneratorConfigURITest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AssetGraphDefinitionRepositoryTest {
-	private static final Logger LOG = LoggerFactory.getLogger(GeneratorConfigURITest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AssetGraphDefinitionRepositoryTest.class);
 
 	@Test
 	public void test() {

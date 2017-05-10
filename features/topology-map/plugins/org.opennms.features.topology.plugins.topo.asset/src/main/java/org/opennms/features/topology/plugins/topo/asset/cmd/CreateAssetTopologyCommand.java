@@ -29,7 +29,9 @@
 package org.opennms.features.topology.plugins.topo.asset.cmd;
 
 
-import java.util.List;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXB;
 
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
@@ -37,7 +39,6 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigBuilder;
-import org.opennms.features.topology.plugins.topo.asset.layers.NodeParamLabels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,60 +72,27 @@ public class CreateAssetTopologyCommand extends OsgiCommandSupport {
 	@Option(name = "-p", aliases = "--preferredLayout", description = "Preferred Layout", required = false, multiValued = false)
 	String preferredLayout;
 
-	@Option(name = "-u", aliases = "--uriParams", description = "Configuration as URI parameter string. Using this option will override all other options.", required = false, multiValued = false)
-	String uriParams;
-
 	@Override
 	protected Object doExecute() throws Exception {
-		try{
-			GeneratorConfig generatorConfig=null;
+		final GeneratorConfig generatorConfig = new GeneratorConfigBuilder()
+			.withProviderId(providerId)
+			.withHierarchy(hierarchy)
+			.withLabel(label)
+			.withBreadcrumbStrategy(breadcrumbStrategy)
+			.withPreferredLayout(preferredLayout)
+			.withFilters(filter)
+			.build();
 
-			if( uriParams!=null && ! uriParams.trim().isEmpty() ){
-				generatorConfig = new GeneratorConfigBuilder()
-				.withGraphDefinitionUri(uriParams)
-				.build();
-			}
-			else{
-				generatorConfig = new GeneratorConfigBuilder()
-				.withProviderId(providerId)
-				.withHierarchy(hierarchy)
-				.withLabel(label)
-				.withBreadcrumbStrategy(breadcrumbStrategy)
-				.withPreferredLayout(preferredLayout)
-				.withFilters(filter)
-				.build();
-			}
+		// Build output
+		StringWriter generatorConfigString = new StringWriter();
+		JAXB.marshal(generatorConfig, generatorConfigString);
 
-			StringBuffer msg = new StringBuffer("Creating Asset Topology from configuration:");
-			msg.append("\n --providerId:"+providerId);
-			msg.append("\n     --label:"+generatorConfig.getLabel());
+		StringBuffer msg = new StringBuffer("Creating Asset Topology from configuration:");
+		msg.append(generatorConfigString.toString());
+		System.out.println(msg.toString());
 
-			msg.append("\n     --assetLayers:");
-			List<String> l = generatorConfig.getLayerHierarchies();
-			if (l!=null) for(int i=0; i<l.size(); i++){
-				msg.append(l.get(i));
-				if(i+1<l.size()) msg.append(",");
-			}
-
-			msg.append("\n     --filter:");
-			List<String> f = generatorConfig.getFilters();
-			if (f!=null)for(int i=0; i<f.size(); i++){
-				msg.append(f.get(i));
-				if(i+1<f.size()) msg.append(";");
-			}
-
-			msg.append("\n     --preferredLayout:"+generatorConfig.getPreferredLayout());
-			msg.append("\n     --breadcrumbStrategy:"+generatorConfig.getBreadcrumbStrategy());
-			msg.append("\n       equivilent --uriParams:"+GeneratorConfigBuilder.toGraphDefinitionUriString(generatorConfig)+"\n");
-
-			System.out.println(msg.toString());
-
-			assetGraphMLProvider.createAssetTopology(generatorConfig);
-			System.out.println("Asset Topology created");
-		} catch (Exception e) {
-			System.out.println("Error Creating Asset Topology. Exception="+e);
-			LOG.error("Error Creating Asset Topology",e);
-		}
+		assetGraphMLProvider.createAssetTopology(generatorConfig);
+		System.out.println("Asset Topology created");
 		return null;
 	}
 }

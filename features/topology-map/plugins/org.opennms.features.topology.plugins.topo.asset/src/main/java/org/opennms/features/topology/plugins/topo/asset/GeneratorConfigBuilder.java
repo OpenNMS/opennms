@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.asset;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,45 +79,6 @@ public class GeneratorConfigBuilder {
 		return this;
 	}
 
-	// interprets each separate parameter name=value in list of name value pairs
-	public GeneratorConfigBuilder withParameters(List<String> parameters){
-		for(String param : parameters){
-			int split=param.indexOf("=");
-			if(split==-1)throw new IllegalArgumentException("Cannot parse parameter. No '=' in expression:"+param);
-			String paramLabel=param.substring(0, split);
-			String paramValue=param.substring(split+1);
-			switch (paramLabel) {
-			case UriParameters.PROVIDER_ID:  withProviderId(paramValue);
-			break;
-			case UriParameters.ASSET_LAYERS:  withHierarchy(paramValue);;
-            break;
-			case UriParameters.FILTER:  withFilters(paramValue);
-			break;
-			case UriParameters.LABEL:  withLabel(paramValue);
-			break;
-			case UriParameters.BREADCRUMB_STRATEGY:  withBreadcrumbStrategy(paramValue);
-			break;
-			case UriParameters.PREFFERED_LAYOUT:  withPreferredLayout(paramValue);
-			break;
-			default: throw new IllegalArgumentException("Cannot parse parameter. Unknown parameter label '"+paramLabel
-					+ "' in:"+param);
-			}
-		}
-		return this;
-	}
-
-	// interprets each name=value&name=value pair in graphDefinitionUri string
-	public GeneratorConfigBuilder withGraphDefinitionUri(String graphDefinitionUri){
-		if(graphDefinitionUri != null && !graphDefinitionUri.trim().isEmpty()) {
-			final List<String> parameters = Arrays.asList(graphDefinitionUri.split("&")).stream()
-					.filter(h -> h != null && !h.trim().isEmpty())
-					.map(h -> h.trim())
-					.collect(Collectors.toList());
-			withParameters(parameters);
-		}
-		return this;
-	}
-
 	public GeneratorConfig build() {
 		final GeneratorConfig config = new GeneratorConfig();
 		if (label != null) {
@@ -157,45 +117,6 @@ public class GeneratorConfigBuilder {
 			}
 		}
 		return config;
-	}
-	
-	public static String toGraphDefinitionUriString(GeneratorConfig config){
-		StringBuilder sb= new StringBuilder();
-		if (config.getProviderId() != null) {
-			sb.append(UriParameters.PROVIDER_ID+"="+config.getProviderId());
-		};
-		if (config.getLabel() != null) {
-			if(sb.length()!=0) sb.append("&");
-			sb.append(UriParameters.LABEL+"="+config.getLabel());
-		};
-		if (config.getLayerHierarchies() != null && ! config.getLayerHierarchies().isEmpty() ){
-			if(sb.length()!=0) sb.append("&");
-			sb.append(UriParameters.ASSET_LAYERS+"=");
-			Iterator<String> it = config.getLayerHierarchies().iterator();
-			do {
-			     sb.append(it.next());
-			     if (it.hasNext())sb.append(",");
-			} while (it.hasNext());
-		};
-		if (config.getFilters() != null && ! config.getFilters().isEmpty()){
-			if(sb.length()!=0) sb.append("&");
-			sb.append(UriParameters.FILTER+"=");
-			Iterator<String> it = config.getFilters().iterator();
-			do {
-			     sb.append(it.next());
-			     if (it.hasNext())sb.append(";");
-			} while (it.hasNext());
-		};
-		if (config.getPreferredLayout() != null){
-			if(sb.length()!=0) sb.append("&");
-			sb.append(UriParameters.PREFFERED_LAYOUT+"="+config.getPreferredLayout());
-		};
-		if (config.getBreadcrumbStrategy() != null){
-			if(sb.length()!=0) sb.append("&");
-			sb.append(UriParameters.BREADCRUMB_STRATEGY+"="+config.getBreadcrumbStrategy());
-		};
-		return sb.toString();
-		
 	}
 
 	public static GeneratorConfig buildFrom(Event e) {
