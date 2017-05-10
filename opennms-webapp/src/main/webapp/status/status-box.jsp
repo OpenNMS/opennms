@@ -73,7 +73,21 @@
 
     require(["d3", "c3", "jquery"], function(d3, c3, $) {
 
-        var chartMapping = [];
+        // the color palette to map each severity to
+        var colorPalette = {
+            'Normal': '#336600',
+            'Warning': '#ffcc00',
+            'Minor': '#ff9900',
+            'Major': '#ff3300',
+            'Critical': '#cc0000'
+        };
+
+        // the size of each donut
+        var donutSize = {
+            // Don't set size to allow resizing automatically based on space available
+            width: 0,
+            height: 0
+        };
 
         var loadChartData = function(graph) {
             $.getJSON(graph.url, function (data) {
@@ -88,20 +102,37 @@
                     }
                 }
 
-                // Reload graph
-                chartMapping[graph.id].unload();
-                chartMapping[graph.id].load({columns: columns});
-
-                // Decide wether to show or hide the graph
+                // Decide to show or hide the graph
                 var sum = 0;
                 for (var i=0; i<data.length; i++) {
                     sum += data[i][1];
                 }
-                if (sum == 0) {
-                    $("#" + graph.id).parent().hide();
-                } else {
+                if (sum > 0) {
+                    // The first chart with data shows the box
+                    $("#status-overview-box").show();
                     $("#" + graph.id).parent().show();
-                    $("#status-overview-box").show(); // the first chart with data shows the box
+
+                    // Generate graph
+                    var chart = c3.generate({
+                        bindto: "#" + graph.id,
+                        size: donutSize,
+                        data: {
+                            order: null,
+                            columns: [],
+                            colors: colorPalette,
+                            type : 'donut',
+                            onclick: graph.onclick
+                        },
+                        donut: {
+                            title: graph.title,
+                            label: {
+                                format: function(value, id, ratio) {
+                                    return value;
+                                }
+                            }
+                        }
+                    });
+                    chart.load({columns: columns});
                 }
             });
         };
@@ -130,47 +161,16 @@
                     return;
                 }
 
-                // create container for graphif it does not exist yet
+                // create container for graph if it does not exist yet
                 if ($("#" + graph.id).length == 0) {
                     var graphContainer = $('<div/>', {
-                        class: 'no-padding col-xs-12 col-sm-6 col-md-6 col-lg-4',
+                        class: 'no-padding col-xs-12 col-sm-6 col-md-6 col-lg-4'
                     });
                     graphContainer.append($("<div></div>", {
                         id: graph.id
                     }));
+                    graphContainer.hide();
                     $(options.parentContainer).append(graphContainer);
-                    $("#" + graph.id).parent().hide();
-
-                    // Generate graph
-                    var chart = c3.generate({
-                        bindto: "#" + graph.id,
-                        size: {
-                            width: 230,
-                            height: 230
-                        },
-                        data: {
-                            order: null,
-                            columns: [],
-                            colors: {
-                                'Normal': '#336600',
-                                'Warning': '#ffcc00',
-                                'Minor': '#ff9900',
-                                'Major': '#ff3300',
-                                'Critical': '#cc0000'
-                            },
-                            type : 'donut',
-                            onclick: graph.onclick
-                        },
-                        donut: {
-                            title: graph.title,
-                            label: {
-                                format: function(value, id, ratio) {
-                                    return value;
-                                }
-                            }
-                        }
-                    });
-                    chartMapping[graph.id] = chart;
                 }
 
                 // load data and populate graph
@@ -178,7 +178,7 @@
             };
         };
 
-        $("#footer").ready(function() {
+        $("document").ready(function() {
             // all supported graphs
             var graphDefinitions = {
                 'business-services': {
