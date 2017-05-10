@@ -5,7 +5,7 @@
 ~~~~
 project groupId: org.opennms.plugins
 project name:    alarm-change-notifier
-version:         19.1.0
+version:         19.1.1-SNAPSHOT
 ~~~~
 
 ## Description
@@ -77,10 +77,10 @@ ssh -p 8101 admin@localhost
 to install the feature in karaf use
 
 ~~~~
-karaf@root> features:addurl mvn:org.opennms.plugins/alarm-change-notifier/19.1.0/xml/features
+karaf@root> features:addurl mvn:org.opennms.plugins/alarm-change-notifier/19.1.1-SNAPSHOT/xml/features
 karaf@root> features:install alarm-change-notifier
 
-(or features:install alarm-change-notifier/19.1.0 for a specific version of the feature)
+(or features:install alarm-change-notifier/19.1.1-SNAPSHOT for a specific version of the feature)
 ~~~~
 
 
