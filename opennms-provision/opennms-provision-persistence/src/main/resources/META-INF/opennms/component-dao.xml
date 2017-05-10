@@ -37,8 +37,4 @@
 		<qualifier value="default"/>
 	</bean>
 	<osgi:service ref="defaultForeignSourceService" interface="org.opennms.netmgt.provision.persist.ForeignSourceService"/>
-
-	<bean id="legacyForeignSourceService" class="org.opennms.netmgt.provision.persist.LegacyForeignSourceServiceImpl">
-		<qualifier value="legacy"/>
-	</bean>
 </beans>
