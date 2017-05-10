@@ -200,12 +200,12 @@ public class AssetGraphMLProvider implements EventListener {
 				createAssetTopology(config);
 			} else if (REMOVE_ASSET_TOPOLOGY.equals(e.getUei())) {
 				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
-				this.removeAssetTopology(providerId);
-			} else if (REGENERATE_ASSET_TOPOLOGY.equals(e.getUei())){
+				removeAssetTopology(providerId);
+			} else if (REGENERATE_ASSET_TOPOLOGY.equals(e.getUei())) {
 				final String providerId = EventUtils.getParm(e, EventParameterNames.PROVIDER_ID);
-				this.regenerateAssetTopology(providerId);
+				regenerateAssetTopology(providerId);
 			} else if (REGENERATE_ALL_ASSET_TOPOLOGIES.equals(e.getUei())){
-				this.regenerateAllAssetTopologies();
+				regenerateAllAssetTopologies();
 			}
 		} catch (Exception ex) {
 			LOG.error("asset topology provider problem processing event " +e.getUei(), ex);
