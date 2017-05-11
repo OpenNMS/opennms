@@ -617,6 +617,11 @@ for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; f
 # NOTE: We can't do this because the JARs in webstart are signed
 #for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
 
+# Generate SHA-1 checksums for the JAR and XML artifacts in the feature repositories
+for FILE in `find %{buildroot}%{instprefix}/system ! -type d -name "*.xml" -or -name "*.jar"`; do
+  sha1sum $FILE | cut -d ' ' -f 1 > $FILE.sha1
+done
+
 cd %{buildroot}
 
 # core package files
@@ -833,7 +838,9 @@ rm -rf %{buildroot}
 %files plugin-ticketer-jira
 %defattr(664 root root 775)
 %{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar.sha1
 %{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar.sha1
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 

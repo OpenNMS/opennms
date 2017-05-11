@@ -162,6 +162,11 @@ rm -rf %{buildroot}%{minioninstprefix}/data
 # Remove the demos directory
 rm -rf %{buildroot}%{minioninstprefix}/demos
 
+# Generate SHA-1 checksums for the JAR and XML artifacts in the feature repositories
+for FILE in `find %{buildroot}%{minioninstprefix}/{repositories,system} ! -type d -name "*.xml" -or -name "*.jar"`; do
+  sha1sum $FILE | cut -d ' ' -f 1 > $FILE.sha1
+done
+
 # Create a default org.opennms.minion.controller.cfg file
 echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
