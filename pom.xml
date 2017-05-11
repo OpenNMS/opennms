@@ -1372,9 +1372,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- moved here from opennms-pluginmanger -->
-    <pluginmanagerVersion>1.0.3</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.3</licencemanagerVersion>
-    <featuremanagerVersion>1.0.3</featuremanagerVersion>
+    <pluginmanagerVersion>1.0.4</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.4</licencemanagerVersion>
+    <featuremanagerVersion>1.0.4</featuremanagerVersion>
   </properties>
 
   <profiles>
