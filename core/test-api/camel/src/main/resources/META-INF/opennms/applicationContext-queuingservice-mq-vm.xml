@@ -17,7 +17,7 @@
   <context:annotation-config />
 
   <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="vm://localhost?create=false" />
+    <property name="brokerURL" value="vm://localhost?create=false&amp;jms.useAsyncSend=true" />
   </bean>
 
   <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
