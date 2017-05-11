@@ -40,13 +40,36 @@ import org.opennms.netmgt.model.ResourcePath;
 public class NodeLevelResource extends AbstractResource {
 
     private final int m_nodeId;
+    private final String m_path;
 
     public NodeLevelResource(int nodeId) {
+        this(nodeId, null);
+    }
+
+    /**
+     * Allows node level resources to live in a sub-directory
+     * of the node directory when the path is set to a non-null
+     * value.
+     *
+     * This is generally not recommend, and these cases should be
+     * modeled using {@link GenericTypeResource}s instead, however
+     * it exists for backwards compatibility with the JMX collector.
+     *
+     * @deprecated use a {@link GenericTypeResource} instead
+     * @param nodeId the node id
+     * @param path sub-directory of the node directory
+     */
+    public NodeLevelResource(int nodeId, String path) {
         m_nodeId = nodeId;
+        m_path = path;
     }
 
     public int getNodeId() {
         return m_nodeId;
+    }
+
+    public String getPath() {
+        return m_path;
     }
 
     @Override
@@ -64,7 +87,7 @@ public class NodeLevelResource extends AbstractResource {
 
     @Override
     public ResourcePath getPath(CollectionResource resource) {
-        return ResourcePath.get();
+        return m_path == null ? ResourcePath.get() : ResourcePath.get(m_path);
     }
 
     @Override
@@ -74,12 +97,12 @@ public class NodeLevelResource extends AbstractResource {
 
     @Override
     public String toString() {
-        return String.format("NodeLevelResource[nodeId=%d]", m_nodeId);
+        return String.format("NodeLevelResource[nodeId=%d, path=%s]", m_nodeId, m_path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_nodeId, getTimestamp());
+        return Objects.hash(m_nodeId, m_path, getTimestamp());
     }
 
     @Override
@@ -93,6 +116,7 @@ public class NodeLevelResource extends AbstractResource {
         }
         NodeLevelResource other = (NodeLevelResource) obj;
         return Objects.equals(this.m_nodeId, other.m_nodeId)
+                && Objects.equals(this.getPath(), other.getPath())
                 && Objects.equals(this.getTimestamp(), other.getTimestamp());
     }
 

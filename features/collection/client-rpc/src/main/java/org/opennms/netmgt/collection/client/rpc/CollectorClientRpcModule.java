@@ -36,7 +36,6 @@ import java.util.function.Supplier;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +80,7 @@ public class CollectorClientRpcModule extends AbstractXmlRpcModule<CollectorRequ
                 Logging.putPrefix("collectd");
                 final CollectionAgent agent = request.getAgent();
                 final Map<String, Object> parameters = request.getParameters(collector);
-                try {
-                    return new CollectorResponseDTO(collector.collect(agent, parameters));
-                } catch (CollectionException e) {
-                    throw new RuntimeException(e);
-                }
+                return new CollectorResponseDTO(collector.collect(agent, parameters));
             }
         }, executor);
     }

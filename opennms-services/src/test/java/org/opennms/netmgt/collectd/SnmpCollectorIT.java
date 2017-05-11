@@ -133,6 +133,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
     @Before
     public void setUp() throws Exception {
+        MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
         m_rrdStrategy = new JRobinRrdStrategy();
@@ -172,7 +173,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         SnmpCollector collector = new SnmpCollector();
-        collector.initialize(null);
+        collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);

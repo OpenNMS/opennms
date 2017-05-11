@@ -36,9 +36,9 @@ package org.opennms.netmgt.collection.api;
  * @author ranger
  * @version $Id: $
  */
-public class CollectionException extends Exception {
+public class CollectionException extends RuntimeException {
 
-    private static final long serialVersionUID = -5320471220430637301L;
+    private static final long serialVersionUID = 9078646183081279767L;
 
     private CollectionStatus m_status = CollectionStatus.FAILED;
 
