@@ -5,8 +5,8 @@
         <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
         <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
         <descr>
-            &lt;p&gt;The administrator has changed the ScriptDuei.opennms.org/internal/reloadDaemonConfigFaileduei.opennms.org/internal/reloadDaemonConfigFaile
-            configuration. ScriptD will load the new configuration.&lt;/p&gt;
+            &lt;p&gt;The administrator has changed the ScriptD configuration.
+            ScriptD will load the new configuration.&lt;/p&gt;
         </descr>
         <logmsg dest="logndisplay">
             &lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
