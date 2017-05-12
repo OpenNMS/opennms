@@ -61,9 +61,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 
-public class DetectorsOnMinionTest {
+public class DetectorsOnMinionIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DetectorsOnMinionTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DetectorsOnMinionIT.class);
 
     private static TestEnvironment m_testEnvironment;
 

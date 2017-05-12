@@ -32,6 +32,8 @@ import org.junit.Ignore;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This test starts up Minion with the Apache Kafka sink and makes sure
@@ -40,8 +42,7 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  * 
  * @author Seth
  */
-@Ignore
-public class MinionHeartbeatOutageKafkaTest extends MinionHeartbeatOutageTest {
+public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
 
     /**
      * Override this method to customize the test environment.
@@ -53,11 +54,15 @@ public class MinionHeartbeatOutageKafkaTest extends MinionHeartbeatOutageTest {
                 .kafka();
         builder.withOpenNMSEnvironment()
                 // Switch sink impl to Kafka using opennms-properties.d file
-                .addFile(MinionHeartbeatOutageKafkaTest.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
+                .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
         builder.withMinionEnvironment()
                 // Switch sink impl to Kafka using features.boot file
-                .addFile(MinionHeartbeatOutageKafkaTest.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
+                .addFile(MinionHeartbeatOutageKafkaIT.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
         OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
         return builder;
+    }
+
+    protected static Logger getLogger() {
+        return LoggerFactory.getLogger(MinionHeartbeatOutageKafkaIT.class);
     }
 }

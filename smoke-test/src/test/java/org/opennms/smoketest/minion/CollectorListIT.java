@@ -58,9 +58,9 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Verifies the output of "collection:list-collectors" on both OpenNMS and Minion. 
  */
-public class CollectorListTest {
+public class CollectorListIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CollectorListTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorListIT.class);
 
     private static TestEnvironment m_testEnvironment;
 

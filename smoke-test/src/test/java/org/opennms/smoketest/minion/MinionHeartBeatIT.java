@@ -55,7 +55,7 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
-public class MinionHeartBeatTest {
+public class MinionHeartBeatIT {
 	private static TestEnvironment m_testEnvironment;
 
 	@ClassRule
