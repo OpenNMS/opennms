@@ -75,17 +75,14 @@ import com.spotify.docker.client.exceptions.DockerException;
  * 
  * @author Seth
  */
-public class MinionHeartbeatOutageTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MinionHeartbeatOutageKafkaTest.class);
-
+public class MinionHeartbeatOutageIT {
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    protected HibernateDaoFactory daoFactory;
+    private HibernateDaoFactory m_daoFactory;
 
     public final TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
@@ -112,11 +109,13 @@ public class MinionHeartbeatOutageTest {
         Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
     }
 
-    @Before
-    public void setup() {
-        // Connect to the postgresql container
-        final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        this.daoFactory = new HibernateDaoFactory(pgsql);
+    protected HibernateDaoFactory getDaoFactory() {
+        if (m_daoFactory == null) {
+            // Connect to the postgresql container
+            final InetSocketAddress pgsql = testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
+            m_daoFactory = new HibernateDaoFactory(pgsql);
+        }
+        return m_daoFactory;
     }
 
     /**
@@ -137,7 +136,7 @@ public class MinionHeartbeatOutageTest {
             try {
                 await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
             } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
+                getLogger().info("Karaf output:\n{}", sshClient.getStdout());
             }
         }
     }
@@ -153,7 +152,7 @@ public class MinionHeartbeatOutageTest {
             try {
                 await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
             } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
+                getLogger().info("Karaf output:\n{}", sshClient.getStdout());
             }
         }
     }
@@ -172,7 +171,7 @@ public class MinionHeartbeatOutageTest {
         // Wait for the Minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")
@@ -184,7 +183,7 @@ public class MinionHeartbeatOutageTest {
         // Make sure that the node is available
         await().atMost(180, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                this.daoFactory.getDao(NodeDaoHibernate.class),
+                getDaoFactory().getDao(NodeDaoHibernate.class),
                 new CriteriaBuilder(OnmsNode.class)
                 .eq("foreignSource", "Minions")
                 .eq("foreignId", "00000000-0000-0000-0000-000000ddba11")
@@ -195,7 +194,7 @@ public class MinionHeartbeatOutageTest {
 
         // Make sure that the expected events are present
         assertEquals(1, DaoUtils.countMatchingCallable(
-            this.daoFactory.getDao(EventDaoHibernate.class),
+            getDaoFactory().getDao(EventDaoHibernate.class),
             new CriteriaBuilder(OnmsEvent.class)
             .eq("eventUei", EventConstants.MONITORING_SYSTEM_ADDED_UEI)
             .like("eventParms", String.format("%%%s=%s%%", EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION))
@@ -206,7 +205,7 @@ public class MinionHeartbeatOutageTest {
         );
 
         assertEquals(0, DaoUtils.countMatchingCallable(
-            this.daoFactory.getDao(EventDaoHibernate.class),
+            getDaoFactory().getDao(EventDaoHibernate.class),
             new CriteriaBuilder(OnmsEvent.class)
             .eq("eventUei", EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI)
             .toCriteria()
@@ -221,7 +220,7 @@ public class MinionHeartbeatOutageTest {
 
             await().atMost(90, SECONDS).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
+                     getDaoFactory().getDao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
                          .eq("location", "MINION")
@@ -239,7 +238,7 @@ public class MinionHeartbeatOutageTest {
 
             await().atMost(240, SECONDS).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
+                     getDaoFactory().getDao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
                          .eq("location", "MINION")
@@ -257,7 +256,7 @@ public class MinionHeartbeatOutageTest {
 
             await().atMost(90, SECONDS).pollInterval(5, SECONDS)
                 .until(DaoUtils.countMatchingCallable(
-                     this.daoFactory.getDao(MinionDaoHibernate.class),
+                     getDaoFactory().getDao(MinionDaoHibernate.class),
                      new CriteriaBuilder(OnmsMinion.class)
                          .gt("lastUpdated", startOfTest)
                          .eq("location", "MINION")
@@ -271,12 +270,17 @@ public class MinionHeartbeatOutageTest {
     private void restartContainer(ContainerAlias alias) {
         final DockerClient docker = ((AbstractTestEnvironment)testEnvironment).getDockerClient();
         final String id = testEnvironment.getContainerInfo(alias).id();
+        final Logger logger = getLogger();
         try {
-            LOG.info("Restarting container: {} -> {}", alias, id);
+            logger.info("Restarting container: {} -> {}", alias, id);
             docker.restartContainer(id);
-            LOG.info("Container restarted: {} -> {}", alias, id);
+            logger.info("Container restarted: {} -> {}", alias, id);
         } catch (DockerException | InterruptedException e) {
-            LOG.warn("Unexpected exception while restarting container {}", id, e);
+            logger.warn("Unexpected exception while restarting container {}", id, e);
         }
+    }
+
+    protected static Logger getLogger() {
+        return LoggerFactory.getLogger(MinionHeartbeatOutageIT.class);
     }
 }

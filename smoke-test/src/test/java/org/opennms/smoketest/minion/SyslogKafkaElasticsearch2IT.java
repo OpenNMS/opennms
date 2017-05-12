@@ -49,19 +49,19 @@ import com.google.common.util.concurrent.RateLimiter;
 /**
  * This test will send syslog messages over the following message bus:
  * 
- * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 5
+ * Minion -> Kafka -> OpenNMS Eventd -> Elasticsearch REST -> Elasticsearch 2
  * 
  * @author Seth
  */
-public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearch2IT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch2IT.class);
 
     @Override
     protected TestEnvironmentBuilder getEnvironmentBuilder() {
         TestEnvironmentBuilder builder = super.getEnvironmentBuilder();
-        // Enable Elasticsearch 5
-        return builder.es5();
+        // Enable Elasticsearch 2
+        return builder.es2();
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
         int packetsPerSecond = 500;
 
         InetSocketAddress minionSshAddr = testEnvironment.getServiceAddress(ContainerAlias.MINION, 8201);
-        InetSocketAddress esRestAddr = testEnvironment.getServiceAddress(ContainerAlias.ELASTICSEARCH_5, 9200);
+        InetSocketAddress esRestAddr = testEnvironment.getServiceAddress(ContainerAlias.ELASTICSEARCH_2, 9200);
         InetSocketAddress opennmsSshAddr = testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8101);
         InetSocketAddress kafkaAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 9092);
         InetSocketAddress zookeeperAddress = testEnvironment.getServiceAddress(ContainerAlias.KAFKA, 2181);
@@ -87,7 +87,7 @@ public class SyslogKafkaElasticsearch5Test extends AbstractSyslogTest {
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")

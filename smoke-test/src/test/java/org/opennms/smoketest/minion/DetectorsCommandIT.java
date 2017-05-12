@@ -67,11 +67,11 @@ import com.google.common.collect.ImmutableMap;
  * @author jwhite
  * @author chandrag
  */
-public class DetectorsCommandTest {
+public class DetectorsCommandIT {
 
     private static TestEnvironment m_testEnvironment;
 
-    private static final Logger LOG = LoggerFactory.getLogger(DetectorsCommandTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DetectorsCommandIT.class);
 
     private ImmutableMap<String, String> expectedDetectors = ImmutableMap.<String, String> builder()
             .put("BGP_Session", "org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector")

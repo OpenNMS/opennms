@@ -13,7 +13,7 @@ import org.opennms.smoketest.utils.RestClient;
 
 import static org.junit.Assert.assertEquals;
 
-public class MinionRestServiceTest {
+public class MinionRestServiceIT {
 
     private static final String MINION_ID = "0001-1234";
     
