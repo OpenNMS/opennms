@@ -36,8 +36,6 @@ import java.sql.Statement;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
-import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.slf4j.Logger;
