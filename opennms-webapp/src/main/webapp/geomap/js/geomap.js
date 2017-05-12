@@ -1,4 +1,4 @@
-Geomap = function() {
+define(['jquery', 'leaflet', 'markercluster'], function($, L) {
     "use strict";
 
     var retries = 3; // the number of retries for each delay
@@ -493,4 +493,4 @@ Geomap = function() {
     return {
         render: render
     }
-}();
+});

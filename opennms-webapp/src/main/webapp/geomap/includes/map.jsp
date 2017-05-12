@@ -52,6 +52,11 @@
   final String mapId = getParameter(request, "mapId", "map");
 %>
 
+<link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
+<link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+
 <div class="geomap" style="height: <%= getParameter(request, "height", "400px")%>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
 
@@ -98,15 +103,16 @@
     </table>
 
     <script type="text/javascript">
-        $("<%= mapId%>").ready(function() {
-            Geomap.render({
-                baseHref: "<%= baseHref %>",
-                mapId: "<%= mapId %>",
-                hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
-                strategy: "<%= getParameter(request, "strategy") %>" ,
-                severity: "<%= getParameter(request, "severity") %>",
-                resolveCoordinatesFromAddressString: false,
-            })
+        require(['jquery', 'geomap'], function($, Geomap) {
+            $("<%= mapId%>").ready(function () {
+                Geomap.render({
+                    baseHref: "<%= baseHref %>",
+                    mapId: "<%= mapId %>",
+                    hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %>,
+                    strategy: "<%= getParameter(request, "strategy") %>",
+                    severity: "<%= getParameter(request, "severity") %>"
+                })
+            });
         });
     </script>
   </div>

@@ -33,7 +33,7 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
-	<jsp:param name="usegeomap" value="true" />
+	<jsp:param name="useionicons" value="true" />
 </jsp:include>
 
 <div class="row">
