@@ -63,9 +63,9 @@ import com.spotify.docker.client.messages.ContainerInfo;
  * 
  * @author Seth
  */
-public class SyslogKafkaElasticsearchBufferingTest extends AbstractSyslogTest {
+public class SyslogKafkaElasticsearchBufferingIT extends AbstractSyslogTestCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchBufferingTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchBufferingIT.class);
 
     /**
      * Override this method to customize the test environment.
@@ -82,26 +82,26 @@ public class SyslogKafkaElasticsearchBufferingTest extends AbstractSyslogTest {
         builder.withOpenNMSEnvironment()
 
             // Add opennms-es-rest to the featuresBoot list
-            .addFile(AbstractSyslogTest.class.getResource("/org.apache.karaf.features.cfg"), "etc/org.apache.karaf.features.cfg")
+            .addFile(AbstractSyslogTestCase.class.getResource("/org.apache.karaf.features.cfg"), "etc/org.apache.karaf.features.cfg")
 
             // Set logging to INFO level
-            .addFile(AbstractSyslogTest.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
-            .addFile(AbstractSyslogTest.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
-            .addFile(AbstractSyslogTest.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/log4j2-info.xml"), "etc/log4j2.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/eventconf.xml"), "etc/eventconf.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/events/Cisco.syslog.events.xml"), "etc/events/Cisco.syslog.events.xml")
             // Disable Alarmd, enable Syslogd
-            .addFile(AbstractSyslogTest.class.getResource("/service-configuration-disable-alarmd.xml"), "etc/service-configuration.xml")
-            .addFile(AbstractSyslogTest.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
-            .addFile(AbstractSyslogTest.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/service-configuration-disable-alarmd.xml"), "etc/service-configuration.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/syslogd-configuration.xml"), "etc/syslogd-configuration.xml")
+            .addFile(AbstractSyslogTestCase.class.getResource("/syslog/Cisco.syslog.xml"), "etc/syslog/Cisco.syslog.xml")
 
             // Add a 60-second delay to the sink consumer startup to give 
             // opennms-es-rest time to start up before consuming from Kafka
-            .addFile(AbstractSyslogTest.class.getResource("/opennms.properties.d/sink-initial-sleep-time.properties"), "etc/opennms.properties.d/sink-initial-sleep-time.properties")
+            .addFile(AbstractSyslogTestCase.class.getResource("/opennms.properties.d/sink-initial-sleep-time.properties"), "etc/opennms.properties.d/sink-initial-sleep-time.properties")
 
             // Switch sink impl to Kafka using opennms-properties.d file
-            .addFile(AbstractSyslogTest.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
+            .addFile(AbstractSyslogTestCase.class.getResource("/opennms.properties.d/kafka-sink.properties"), "etc/opennms.properties.d/kafka-sink.properties");
         builder.withMinionEnvironment()
             // Switch sink impl to Kafka using features.boot file
-            .addFile(AbstractSyslogTest.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
+            .addFile(AbstractSyslogTestCase.class.getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
         OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
         return builder;
     }
@@ -128,7 +128,7 @@ public class SyslogKafkaElasticsearchBufferingTest extends AbstractSyslogTest {
         // Wait for the minion to show up
         await().atMost(90, SECONDS).pollInterval(5, SECONDS)
             .until(DaoUtils.countMatchingCallable(
-                 this.daoFactory.getDao(MinionDaoHibernate.class),
+                 getDaoFactory().getDao(MinionDaoHibernate.class),
                  new CriteriaBuilder(OnmsMinion.class)
                      .gt("lastUpdated", startOfTest)
                      .eq("location", "MINION")

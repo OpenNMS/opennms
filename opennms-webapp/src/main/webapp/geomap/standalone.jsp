@@ -37,7 +37,7 @@
     <jsp:param name="title" value="Geographcial Map" />
     <jsp:param name="nobreadcrumbs" value="true" />
     <jsp:param name="norequirejs" value="true"/>
-    <jsp:param name="usegeomap" value="true" />
+    <jsp:param name="useionicons" value="true" />
 </jsp:include>
 
 <div id="map-container">
