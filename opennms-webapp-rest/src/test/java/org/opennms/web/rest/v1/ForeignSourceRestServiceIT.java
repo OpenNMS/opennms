@@ -93,16 +93,15 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("ICMP"));
 
         sendRequest(DELETE, url, 202);
-        sendRequest(DELETE, "/foreignSources/deployed/default", 202);
     }
     
     @Test
     public void testGetDeployedForeignSources() throws Exception {
-        String url = "/foreignSources/deployed";
-        String xml = sendRequest(GET, url, 200);
+        String url = "/foreignSources";
+        sendRequest(GET, url, 200);
 
-        url = "/foreignSources/deployed/count";
-        xml = sendRequest(GET, url, 200);
+        url = "/foreignSources/count";
+        String xml = sendRequest(GET, url, 200);
         assertEquals(xml, "0", xml);
     }
     
@@ -244,6 +243,14 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         Assert.assertEquals(
                 Lists.newArrayList("DNS", "HTTP", "HTTPS", "ICMP"),
                 foreignSource.getDetectors().stream().map(d -> d.getName()).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void verifyMoved() throws Exception {
+        // Deployed
+        sendRequest(GET, "/foreignSources/deployed", 301);
+        sendRequest(GET, "/foreignSources/deployed/count", 301);
+        sendRequest(DELETE, "/foreignSources/deployed/some-foreign-source", 301);
     }
 
     private void createForeignSource() throws Exception {

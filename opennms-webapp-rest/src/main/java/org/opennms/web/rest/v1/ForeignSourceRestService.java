@@ -30,7 +30,9 @@ package org.opennms.web.rest.v1;
 
 import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toPersistenceModel;
 import static org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMapper.toRestModel;
+import static org.opennms.web.rest.v1.RequisitionRestService.DEPLOYED_NO_LONGER_EXISTS;
 
+import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceMerger;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -161,21 +164,24 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     @GET
     @Path("deployed")
-    @Transactional(readOnly = true)
-    // There is no difference between deployd and pending anymore.
-    // Keep this for backwards compatibility for now.
-    public ForeignSourceCollection getDeployedForeignSources() {
-        return getForeignSources();
+    @Produces({MediaType.TEXT_PLAIN})
+    @Deprecated
+    public Response getDeployedForeignSources(@Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                .location(buildLocation(uriInfo))
+                .entity(DEPLOYED_NO_LONGER_EXISTS)
+                .build();
     }
 
     @GET
     @Path("deployed/count")
     @Produces(MediaType.TEXT_PLAIN)
-    @Transactional(readOnly = true)
-    // There is no difference between deployd and pending anymore.
-    // Keep this for backwards compatibility for now.
-    public String getDeployedCount() {
-        return getTotalCount();
+    @Deprecated
+    public Response getDeployedCount(@Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                .location(buildLocation(uriInfo, "count"))
+                .entity(DEPLOYED_NO_LONGER_EXISTS)
+                .build();
     }
 
     /**
@@ -344,7 +350,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
             foreignSourceService.saveForeignSource(foreignSourceMerger.createOrMerge(foreignSource));
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
+            return Response.accepted().location(getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -368,7 +374,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             final ForeignSourceEntity fs = loadForeignSource(foreignSource);
             fs.addDetector(toPersistenceModel(detector, PluginConfigType.Detector));
             foreignSourceService.saveForeignSource(fs);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, detector.getName())).build();
+            return Response.accepted().location(getRedirectUri(uriInfo, detector.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -392,7 +398,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             final ForeignSourceEntity fs = loadForeignSource(foreignSource);
             fs.addPolicy(toPersistenceModel(policy, PluginConfigType.Policy));
             foreignSourceService.saveForeignSource(fs);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo, policy.getName())).build();
+            return Response.accepted().location(getRedirectUri(uriInfo, policy.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -436,7 +442,7 @@ public class ForeignSourceRestService extends OnmsRestService {
 
                 LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
                 foreignSourceService.saveForeignSource(fsEntity);
-                return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
+                return Response.accepted().location(getRedirectUri(uriInfo)).build();
             } else {
                 return Response.notModified().build();
             }
@@ -467,10 +473,13 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     @DELETE
     @Path("deployed/{foreignSource}")
-    @Transactional
-    // there is no difference between deployed and pending anymore. Keep this for backwards compatibility for now
-    public Response deleteDeployedForeignSource(@PathParam("foreignSource") final String foreignSource) {
-        return deletePendingForeignSource(foreignSource);
+    @Produces({MediaType.TEXT_PLAIN})
+    @Deprecated
+    public Response deleteDeployedForeignSource(@PathParam("foreignSource") final String foreignSource, @Context UriInfo uriInfo) {
+        return Response.status(Status.MOVED_PERMANENTLY)
+                    .location(buildLocation(uriInfo, foreignSource))
+                    .entity(DEPLOYED_NO_LONGER_EXISTS)
+                    .build();
     }
 
     /**
@@ -529,5 +538,9 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     private ForeignSourceEntity loadForeignSource(final String foreignSourceName) {
         return foreignSourceService.getForeignSource(foreignSourceName);
+    }
+
+    private static URI buildLocation(UriInfo uriInfo, String... segments) {
+        return RedirectHelper.getRedirectUriFromBaseUri(uriInfo, "foreignSources", segments);
     }
 }

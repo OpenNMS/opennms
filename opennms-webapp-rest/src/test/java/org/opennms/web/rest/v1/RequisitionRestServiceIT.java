@@ -373,11 +373,24 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testDeployedStats() throws Exception {
+    public void testStats() throws Exception {
         createRequisition();
 
-        String xml = sendRequest(GET, "/requisitions/deployed/stats", 200);
+        String xml = sendRequest(GET, "/requisitions/stats", 200);
         assertTrue(xml.contains("deployed-stats"));
+    }
+
+    @Test
+    public void verifyMovedAndGone() throws Exception {
+        // Deployed
+        sendRequest(GET, "/requisitions/deployed", 301);
+        sendRequest(GET, "/requisitions/deployed/count", 301);
+        sendRequest(GET, "/requisitions/deployed/stats", 301);
+        sendRequest(GET, "/requisitions/deployed/stats/some-foreign-source", 301);
+        sendRequest(DELETE, "/requisitions/deployed/some-foreign-source", 301);
+
+        // Repository Strategy
+        sendRequest(GET, "/requisitions/repositoryStrategy", 410);
     }
 
     private void createRequisition() throws Exception {
