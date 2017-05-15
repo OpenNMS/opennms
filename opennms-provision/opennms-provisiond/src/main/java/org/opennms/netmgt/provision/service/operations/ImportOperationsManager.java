@@ -153,9 +153,6 @@ public class ImportOperationsManager {
         operations.addAll(m_inserts);
 
         return operations;
-
-        // TODO MVR verify that the new way (Above) still works
-//        return Collections.list(new OperationIterator());
     }
     
     @SuppressWarnings("unused")

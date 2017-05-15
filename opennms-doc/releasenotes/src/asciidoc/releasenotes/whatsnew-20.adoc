@@ -1,5 +1,5 @@
 [[releasenotes-20]]
-== OpenNMS 20
+== What's New in OpenNMS Horizon 20
 
 === System Requirements
 
@@ -10,7 +10,7 @@
 
 === Important Upgrade Notes
 * The Foreign Sources and Requisitions have been moved to the database. All files from `$OPENNMS_HOME/etc` must be migrated manually.
-  See TODO MVR for upgrade instructions
+  Refer to the link:upgrade/upgrade-19-20.adoc[upgrade instructions] for more details.
 
 
 === New Features
