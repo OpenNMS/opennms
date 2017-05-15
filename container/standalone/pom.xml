@@ -113,7 +113,7 @@
                 <!-- Add http-whiteboard to the default list of features -->
                 <feature>http-whiteboard</feature>
               </features>
-              <repository>target/features-repo</repository>
+              <repository>${project.build.directory}/features-repo</repository>
            </configuration>
           </execution>
         </executions>
@@ -145,7 +145,7 @@
                     <groupId>org.opennms.container</groupId>
                     <artifactId>org.opennms.container.branding</artifactId>
                     <version>${project.version}</version>
-                    <outputDirectory>target/dependencies</outputDirectory>
+                    <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
                     <destFileName>opennms-branding.jar</destFileName>
                  </artifactItem>
                </artifactItems>
@@ -164,7 +164,12 @@
                   <groupId>org.apache.karaf</groupId>
                   <artifactId>apache-karaf</artifactId>
                   <type>tar.gz</type>
-                  <outputDirectory>target/dependencies</outputDirectory>
+                  <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                  <!--
+                    NMS-9332: Always unpack this artifact even if was deleted 
+                    at some point during the build
+                  -->
+                  <overWrite>true</overWrite>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -187,6 +192,29 @@
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>posix</tarLongFileMode>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase> 
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/dependencies</directory>
+                </fileset>
+                <fileset>
+                  <directory>${project.build.directory}/features-repo</directory>
+                </fileset>
+              </filesets>
             </configuration>
           </execution>
         </executions>
