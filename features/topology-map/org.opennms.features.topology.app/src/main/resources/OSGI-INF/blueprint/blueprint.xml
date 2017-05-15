@@ -11,7 +11,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <cm:property name="autoRefresh.enabled" value="false" />
             <cm:property name="autoRefresh.interval" value="60" />
             <cm:property name="hiddenCategoryPrefix" value="" />
-            <cm:property name="resolveCoordinatesFromAddressString" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -454,7 +453,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
             <argument ref="geolocationService" />
             <argument ref="geolocationConfiguration" />
-            <argument value="${resolveCoordinatesFromAddressString}" />
         </bean>
     </service>
 </blueprint>

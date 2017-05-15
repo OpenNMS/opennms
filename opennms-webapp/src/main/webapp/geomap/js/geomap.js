@@ -24,7 +24,6 @@ define(['jquery', 'leaflet', 'markercluster'], function($, L) {
         var hideControlsOnStartup = isUndefinedOrNull(options.hideControlsOnStartup) ? false : options.hideControlsOnStartup;
         var mapId = isUndefinedOrNull(options.mapId) ? "map" : options.mapId;
         var query = {
-            resolveMissingCoordinatesFromAddressString: isUndefinedOrNull(options.resolveCoordinatesFromAddressString) ? false : options.resolveCoordinatesFromAddressString,
             strategy: isUndefinedOrNull(options.strategy) ? "Alarms" : options.strategy,
             severityFilter: isUndefinedOrNull(options.severity) ?  "Normal" : options.severity,
             includeAcknowledgedAlarms: isUndefinedOrNull(options.includeAcknowledgedAlarms) ? false : options.includeAcknowledgedAlarms
