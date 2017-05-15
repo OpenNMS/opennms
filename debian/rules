@@ -263,6 +263,10 @@ install: build
 	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
 	find debian/opennms-common/usr/share/opennms/{data,deploy,system} ! -type d -execdir chmod 644 {} \;
 	find debian/opennms-common/usr/share/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
+	# Generate SHA-1 checksums for the JAR and XML artifacts in the feature repositories
+	for FILE in `find debian/opennms-common/usr/share/opennms/system ! -type d -name "*.xml" -or -name "*.jar"`; do \
+		sha1sum $$FILE | cut -d ' ' -f 1 > $$FILE.sha1; \
+	done
 	
 	# move SNMP MIB files
 	install -d -m 755 debian/opennms-common/var/lib/opennms/mibs/compiled
