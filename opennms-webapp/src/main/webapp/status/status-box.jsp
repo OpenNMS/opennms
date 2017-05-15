@@ -54,6 +54,19 @@
     .c3 .c3-chart-arc path {
         stroke-width: 0px;
     }
+
+    .row-centered {
+        text-align:center;
+    }
+    .col-centered {
+        display:inline-block;
+        float:none;
+        /* reset the text-align */
+        text-align:left;
+        /* inline-block space fix */
+        margin-right:-4px;
+    }
+
 </style>
 
 
@@ -62,9 +75,7 @@
         <h3 class="panel-title">Status Overview</h3>
     </div>
     <div class="panel-body">
-        <div>
-            <div id="chart-content" class="row" stlye="display:flex; justify-content: space-around">
-            </div>
+        <div id="chart-content" class="row row-centered">
         </div>
     </div>
 </div>
@@ -173,7 +184,7 @@
                 // create container for graph if it does not exist yet
                 if ($("#" + graph.id).length == 0) {
                     var graphContainer = $('<div/>', {
-                        class: 'no-padding col-xs-12 col-sm-6 col-md-6 col-lg-4'
+                        class: 'col-centered col-xs-12 col-sm-6 col-md-6 col-lg-4'
                     });
                     graphContainer.append($("<div></div>", {
                         id: graph.id
