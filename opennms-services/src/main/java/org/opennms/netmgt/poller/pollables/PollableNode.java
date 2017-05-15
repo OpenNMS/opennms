@@ -32,12 +32,14 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a PollableNode
@@ -47,71 +49,10 @@ import org.opennms.netmgt.xml.event.Event;
 public class PollableNode extends PollableContainer {
     private static final Logger LOG = LoggerFactory.getLogger(PollableNode.class);
 
-    /**
-     * Represents a Lock 
-     *
-     * @author brozow
-     */
-    public class Lock {
-        private Thread m_owner = null;
-        private int m_obtainCount = 0;
-        
-        public synchronized void obtain() {
-            
-            if (m_owner != Thread.currentThread()) {
-                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
-                while (m_owner != null) {
-                    try { wait();} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
-                }
-                m_owner = Thread.currentThread();
-                LOG.debug("Obtained lock for {}", PollableNode.this);
-            }
-            m_obtainCount++;
-        }
-        
-        public synchronized void obtain(long timeout) {
-            
-            if (m_owner != Thread.currentThread()) {
-                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
-                long now = System.currentTimeMillis();
-                long endTime = (timeout == 0 ? Long.MAX_VALUE : now+timeout);
-                while (m_owner != null) {
-                    try { wait(endTime-now);} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
-                    now = System.currentTimeMillis();
-                    if (m_owner != null && now >= endTime) {
-                        throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
-                    }
-                }
-                m_owner = Thread.currentThread();
-                LOG.debug("Obtained lock for {}", PollableNode.this);
-            }
-            m_obtainCount++;
-        }
-        
-        public synchronized void release() {
-            if (m_owner == Thread.currentThread()) {
-                m_obtainCount--;
-                if (m_obtainCount == 0) {
-                    LOG.debug("Releasing lock for {}", PollableNode.this);
-                    m_owner = null;
-                    notifyAll();
-                }
-            }
-        }
-
-        /**
-         * @return
-         */
-        public synchronized boolean isLockAvailable() {
-            return m_owner == null;
-        }
-
-    }
-
     private final int m_nodeId;
     private String m_nodeLabel;
     private final String m_nodeLocation;
-    private final Lock m_lock = new Lock();
+    private final ReentrantLock m_lock = new ReentrantLock(true);
 
     /**
      * <p>Constructor for PollableNode.</p>
@@ -293,23 +234,25 @@ public class PollableNode extends PollableContainer {
         return this;
     }
     
-    /**
-     * <p>isTreeLockAvailable</p>
-     *
-     * @return a boolean.
-     */
-    @Override
-    public boolean isTreeLockAvailable() {
-        return m_lock.isLockAvailable();
-    }
-    
     /** {@inheritDoc} */
     @Override
     public void obtainTreeLock(long timeout) {
-        if (timeout == 0)
-            m_lock.obtain();
-        else
-            m_lock.obtain(timeout);
+        if (timeout < 1) {
+            // Block until the lock is obtained
+            m_lock.lock();
+        } else {
+            try {
+                if (m_lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
+                    // Lock was successful
+                    return;
+                } else {
+                    // Lock was unsuccessful
+                    throw new LockUnavailable("Unable to obtain lock for " + PollableNode.this + " within " + timeout + " milliseconds");
+                }
+            } catch (InterruptedException e) {
+                throw new LockUnavailable("Interrupted while waiting " + timeout + " milliseconds to obtain lock for " + PollableNode.this);
+            }
+        }
     }
     
     /**
@@ -317,7 +260,7 @@ public class PollableNode extends PollableContainer {
      */
     @Override
     public void releaseTreeLock() {
-        m_lock.release();
+        m_lock.unlock();
     }
     
     /** {@inheritDoc} */
