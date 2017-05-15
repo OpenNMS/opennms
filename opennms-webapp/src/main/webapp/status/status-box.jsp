@@ -133,6 +133,15 @@
                         }
                     });
                     chart.load({columns: columns});
+
+                    // Add graph tooltip
+                    var description = graph.description || graph.title || '';
+                    if (description !== '') {
+                        d3.select("#" + graph.id)
+                            .select(".c3-chart")
+                            .append("svg:title")
+                            .text(description);
+                    }
                 }
             });
         };
@@ -184,6 +193,7 @@
                 'business-services': {
                     id: "businessServiceProblemChart",
                     title: "Business Services",
+                    description: "Business Services Status Overview",
                     url: "/opennms/api/v2/status/summary/business-services",
                     onclick: function (e) {
                         window.location = "status/bsm/index.jsp?_s=severity%3D%3D" + e.id;
@@ -193,6 +203,7 @@
                 'applications': {
                     id: "applicationProblemChart",
                     title: "Applications",
+                    description: "Applications Status Overview",
                     url: "/opennms/api/v2/status/summary/applications",
                     onclick: function (e) {
                         window.location = "status/application/index.jsp?_s=severity%3D%3D" + e.id;
@@ -202,6 +213,7 @@
                 'nodes-by-alarms': {
                     id: "nodeProblemChartsByAlarms",
                     title: "Alarms",
+                    description: "Nodes grouped by unacknowledged Alarms",
                     url: "/opennms/api/v2/status/summary/nodes/alarms",
                     onclick: function (e) {
                         window.location = "status/node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
@@ -210,6 +222,7 @@
                 'nodes-by-outages': {
                     id: "nodeProblemChartByOutages",
                     title: "Outages",
+                    description: "Nodes grouped by current Outages",
                     url: "/opennms/api/v2/status/summary/nodes/outages",
                     onclick: function (e) {
                         window.location = "status/node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
