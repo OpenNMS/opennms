@@ -58,7 +58,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         try {
             pinger = pingerClass.newInstance();
         } catch (final Throwable t) {
-            LOG.info("Failed to get instance of {}.", pingerClass, t);
+            LOG.info("Failed to get instance of {}: {}", pingerClass, t.getMessage());
+            LOG.trace("Failed to get instance of {}.", pingerClass, t);
             return PingerMatch.NONE;
         }
 
@@ -68,7 +69,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 v4 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4.", pingerClass, t);
+            LOG.info("Failed to initialize {} for IPv4: ", pingerClass, t.getMessage());
+            LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
         }
 
         try {
@@ -77,7 +79,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 v6 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4.", pingerClass, t);
+            LOG.info("Failed to initialize {} for IPv4: {}", pingerClass, t.getMessage());
+            LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
         }
 
         try {
@@ -87,7 +90,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 throw new IllegalStateException("No result pinging localhost.");
             }
         } catch (final Throwable t) {
-            LOG.info("Found pinger {}, but it was unable to ping localhost.", pingerClass, t);
+            LOG.info("Found pinger {}, but it was unable to ping localhost: {}", pingerClass, t.getMessage());
+            LOG.trace("Found pinger {}, but it was unable to ping localhost.", pingerClass, t);
             return PingerMatch.NONE;
         }
 
