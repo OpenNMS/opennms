@@ -64,6 +64,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
         try {
             if (pinger.isV4Available()) {
+                pinger.initialize4();
                 v4 = true;
             }
         } catch (final Throwable t) {
@@ -72,6 +73,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
         try {
             if (pinger.isV6Available()) {
+                pinger.initialize6();
                 v6 = true;
             }
         } catch (final Throwable t) {
@@ -117,7 +119,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         Class<? extends Pinger> pinger = NullPinger.class;
 
         LOG.info("Searching for best available pinger...");
-        for (final Class<? extends Pinger> pingerClass : Arrays.asList(Jni6Pinger.class, JniPinger.class, JnaPinger.class)) {
+        for (final Class<? extends Pinger> pingerClass : Arrays.asList(JniPinger.class, Jni6Pinger.class, JnaPinger.class)) {
             final PingerMatch tried = tryPinger(pingerClass);
             if (tried.compareTo(match) > 0) {
                 match = tried;
