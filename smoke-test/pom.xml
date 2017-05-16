@@ -9,7 +9,7 @@
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>interval:60</updatePolicy>
-    <camelVersion>2.14.4</camelVersion>
+    <camelVersion>2.16.5</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <nodeVersion>v6.10.2</nodeVersion>
     <npmVersion>3.10.10</npmVersion>
