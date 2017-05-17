@@ -274,7 +274,7 @@ public class DefaultCollectionJob implements CollectionJob {
             }
         }
 
-        return m_allMetrics.get(metricId).get(1);
+        return m_allMetrics.get(metricId) == null ? null : m_allMetrics.get(metricId).get(1);
     }
 
     @Override
@@ -291,7 +291,7 @@ public class DefaultCollectionJob implements CollectionJob {
             }
         }
 
-        return m_allMetrics.get(metricId).get(0);
+        return m_allMetrics.get(metricId) == null ? null : m_allMetrics.get(metricId).get(0);
     }
 
     private String getDestinationString(Set<String> destinationSet) {

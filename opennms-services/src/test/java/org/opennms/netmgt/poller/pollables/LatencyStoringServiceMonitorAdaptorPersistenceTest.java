@@ -126,7 +126,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
                 EasyMock.anyObject());
         EasyMock.expectLastCall().andReturn(null).once();
 
-        m_rrdStrategy.createFile(EasyMock.anyObject(), EasyMock.anyObject());
+        m_rrdStrategy.createFile(EasyMock.anyObject());
         EasyMock.expectLastCall().once();
 
         m_rrdStrategy.openFile(EasyMock.eq(getResponseTimeRoot().toPath()

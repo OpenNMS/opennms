@@ -205,7 +205,7 @@
         if ($scope.foreignSource == 'default') {
           $window.location.href = '#/requisitions';
         } else {
-          $window.location.href = '#/requisitions/' + $scope.foreignSource;
+          $window.location.href = '#/requisitions/' + encodeURIComponent($scope.foreignSource);
         }
       };
       $scope.goTo(doGoBack);

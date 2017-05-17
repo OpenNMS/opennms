@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,8 @@ public class SingleInstanceTracker extends CollectionTracker {
     private SnmpObjId m_base;
     private SnmpInstId m_inst;
     private SnmpObjId m_oid;
+    private int m_maxRetries;
+    private Integer m_retries;
     
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
         this(base, inst, null);
@@ -58,7 +60,16 @@ public class SingleInstanceTracker extends CollectionTracker {
         // do nothing since we are not a repeater
     }
 
-        @Override
+    public int getMaxRetries() {
+        return m_maxRetries;
+    }
+
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        m_maxRetries = maxRetries;
+    }
+
+    @Override
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
@@ -89,7 +100,8 @@ public class SingleInstanceTracker extends CollectionTracker {
 
             @Override
             public boolean processErrors(int errorStatus, int errorIndex) {
-                //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);
+                if (m_retries == null) m_retries = getMaxRetries();
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}, retries={}", errorStatus, errorIndex, m_retries);
 
                 final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
                 if (status == ErrorStatus.TOO_BIG) {
@@ -108,9 +120,20 @@ public class SingleInstanceTracker extends CollectionTracker {
                     throw ex;
                 } else if (status != ErrorStatus.NO_ERROR) {
                     LOG.warn("Non-fatal error encountered: {}. {}", status, status.retry()? "Retrying." : "Giving up.");
-                    return status.retry();
                 }
-                return false;
+
+                if (status.retry()) {
+                    if (m_retries-- <= 0) {
+                        final ErrorStatusException ex = new ErrorStatusException(status, "Non-fatal error met maximum number of retries. Aborting!");
+                        reportFatalErr(ex);
+                        throw ex;
+                    }
+                } else {
+                    // On success, reset the retries
+                    m_retries = getMaxRetries();
+                }
+
+                return status.retry();
             }
         };
         

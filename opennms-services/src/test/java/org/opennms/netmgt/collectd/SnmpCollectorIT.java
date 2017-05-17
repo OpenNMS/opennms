@@ -305,7 +305,8 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
                     datacollectionType = "snmp",
-                    anticipateRrds = { "test" }
+                    anticipateRrds = { "test" },
+                    anticipateMetaFiles = false
             )
     public void testUsingFetch() throws Exception {
         System.err.println("=== testUsingFetch ===");
@@ -327,7 +328,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def, attributeMappings);
+        m_rrdStrategy.createFile(def);
 
         RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
