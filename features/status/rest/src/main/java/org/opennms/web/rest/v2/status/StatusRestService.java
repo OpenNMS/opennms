@@ -43,8 +43,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.cxf.jaxrs.ext.search.SearchCondition;
-import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.features.status.api.Query;
 import org.opennms.features.status.api.SeverityFilter;
@@ -116,10 +114,10 @@ public class StatusRestService {
 
     @GET
     @Path("/applications")
-    public Response getApplications(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    public Response getApplications(@Context final UriInfo uriInfo) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
-        final Query query = new Query(queryParameters, searchCondition);
+        final SeverityFilter severityFilter = getSeverityFilter(uriInfo);
+        final Query query = new Query(queryParameters, severityFilter);
 
         final List<StatusEntity<OnmsApplication>> applications = applicationStatusService.getStatus(query);
         final int totalCount = applicationStatusService.count(query);
@@ -141,10 +139,10 @@ public class StatusRestService {
 
     @GET
     @Path("/business-services")
-    public Response getBusinessServices(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    public Response getBusinessServices(@Context final UriInfo uriInfo) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
-        final Query query = new Query(queryParameters, searchCondition);
+        final SeverityFilter severityFilter = getSeverityFilter(uriInfo);
+        final Query query = new Query(queryParameters, severityFilter);
 
         final List<StatusEntity<BusinessService>> services = businessServiceStatusService.getStatus(query);
         final int totalCount = businessServiceStatusService.count(query);
@@ -166,7 +164,7 @@ public class StatusRestService {
 
     @GET
     @Path("/nodes/{type}")
-    public Response getNodes(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, @PathParam("type") String type) {
+    public Response getNodes(@Context final UriInfo uriInfo, @PathParam("type") String type) {
         final NodeStatusCalculationStrategy strategy = NodeStatusCalculationStrategy.createFrom(type);
         if (strategy == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -175,8 +173,8 @@ public class StatusRestService {
         }
 
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SearchCondition<SeverityFilter> searchCondition = getSearchCondition(searchContext);
-        final NodeQuery query = new NodeQuery(queryParameters, searchCondition);
+        final SeverityFilter severityFilter = getSeverityFilter(uriInfo);
+        final NodeQuery query = new NodeQuery(queryParameters, severityFilter);
         query.setStatusCalculationStrategy(strategy);
 
         final List<StatusEntity<OnmsNode>> nodes = nodeStatusService.getStatus(query);
@@ -208,9 +206,25 @@ public class StatusRestService {
                 .collect(Collectors.toList());
     }
 
-    private static SearchCondition<SeverityFilter> getSearchCondition(SearchContext searchContext) {
-        if (!Strings.isNullOrEmpty(searchContext.getSearchExpression())) {
-            return searchContext.getCondition(SeverityFilter.class);
+    private static SeverityFilter getSeverityFilter(UriInfo uriInfo) {
+        final SeverityFilter severityFilter = new SeverityFilter();
+        final List<String> severityFilterList = uriInfo.getQueryParameters().get("severityFilter");
+        if (severityFilterList != null) {
+            for (String eachSeverity : severityFilterList) {
+                OnmsSeverity severity = getSeverity(eachSeverity);
+                severityFilter.add(severity);
+            }
+        }
+        return severityFilter;
+    }
+
+    private static OnmsSeverity getSeverity(String severityString) {
+        if (!Strings.isNullOrEmpty(severityString)) {
+            for (OnmsSeverity eachSeverity : OnmsSeverity.values()) {
+                if (eachSeverity.getLabel().equalsIgnoreCase(severityString)) {
+                    return eachSeverity;
+                }
+            }
         }
         return null;
     }

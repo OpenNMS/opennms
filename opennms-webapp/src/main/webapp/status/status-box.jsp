@@ -45,7 +45,7 @@
     String javaScriptArrayContent = String.join(", ", graphKeyList);
 %>
 
-<link href="/opennms/lib/c3/c3.css" rel="stylesheet" type="text/css">
+<link href="lib/c3/c3.css" rel="stylesheet" type="text/css">
 <style>
 
     #chart-content {
@@ -205,9 +205,9 @@
                     id: "businessServiceProblemChart",
                     title: "Business Services",
                     description: "Business Services Status Overview",
-                    url: "/opennms/api/v2/status/summary/business-services",
+                    url: "api/v2/status/summary/business-services",
                     onclick: function (e) {
-                        window.location = "status/bsm/index.jsp?_s=severity%3D%3D" + e.id;
+                        window.location = "status/index.jsp?title=Business Service List&type=business-services&severityFilter=" + e.id;
                     }
                 },
 
@@ -215,9 +215,9 @@
                     id: "applicationProblemChart",
                     title: "Applications",
                     description: "Applications Status Overview",
-                    url: "/opennms/api/v2/status/summary/applications",
+                    url: "api/v2/status/summary/applications",
                     onclick: function (e) {
-                        window.location = "status/application/index.jsp?_s=severity%3D%3D" + e.id;
+                        window.location = "status/index.jsp?title=Application List&type=applications&severityFilter=" + e.id;
                     }
                 },
 
@@ -225,18 +225,18 @@
                     id: "nodeProblemChartsByAlarms",
                     title: "Alarms",
                     description: "Nodes grouped by unacknowledged Alarms",
-                    url: "/opennms/api/v2/status/summary/nodes/alarms",
+                    url: "api/v2/status/summary/nodes/alarms",
                     onclick: function (e) {
-                        window.location = "status/node/index.jsp?type=alarms&_s=severity%3D%3D" + e.id;
+                        window.location = "status/index.jsp?title=Node List&type=nodes&strategy=alarms&severityFilter=" + e.id;
                     }
                 },
                 'nodes-by-outages': {
                     id: "nodeProblemChartByOutages",
                     title: "Outages",
                     description: "Nodes grouped by current Outages",
-                    url: "/opennms/api/v2/status/summary/nodes/outages",
+                    url: "api/v2/status/summary/nodes/outages",
                     onclick: function (e) {
-                        window.location = "status/node/index.jsp?type=outages&_s=severity%3D%3D" + e.id;
+                        window.location = "status/index.jsp?title=Node List&type=nodes&strategy=outages&severityFilter=" + e.id;
                     }
                 }
             };

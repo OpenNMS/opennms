@@ -36,18 +36,18 @@ import org.opennms.web.utils.QueryParameters;
 public class Query {
 
     private final QueryParameters parameters;
-    private final SearchCondition<SeverityFilter> searchCondition;
+    private final SeverityFilter severityFilter;
 
-    public Query(QueryParameters parameters, SearchCondition<SeverityFilter> searchCondition) {
+    public Query(QueryParameters parameters, SeverityFilter severityFilter) {
         this.parameters = Objects.requireNonNull(parameters);
-        this.searchCondition = searchCondition;
+        this.severityFilter = severityFilter;
     }
 
     public QueryParameters getParameters() {
         return parameters;
     }
 
-    public SearchCondition<SeverityFilter> getSearchCondition() {
-        return searchCondition;
+    public SeverityFilter getSeverityFilter() {
+        return severityFilter;
     }
 }

@@ -1,0 +1,19 @@
+.severity .normal {
+    background-color: #336600;
+}
+
+.severity .warning {
+    background-color: #ffcc00;
+}
+
+.severity .minor {
+    background-color: #ff9900;
+}
+
+.severity .major {
+    background-color: #ff3300;
+}
+
+.severity .critical {
+    background-color: #cc0000;
+}

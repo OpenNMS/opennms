@@ -30,22 +30,17 @@ package org.opennms.features.status.api;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.utils.QueryParameters;
-
-import com.google.common.base.Strings;
 
 public abstract class AbstractStatusService<T, Q extends Query> {
 
     public List<StatusEntity<T>> getStatus(Q query) {
         final QueryParameters queryParameters = query.getParameters();
-        final SearchCondition<SeverityFilter> filter = query.getSearchCondition();
+        final SeverityFilter filter = query.getSeverityFilter();
         final CriteriaBuilder criteriaBuilder = getCriteriaBuilder(queryParameters);
 
         // The implementors do not know anything about status/severity, therefore it is not supported to order by severity
@@ -79,7 +74,7 @@ public abstract class AbstractStatusService<T, Q extends Query> {
 
     public int count(Q query) {
         final QueryParameters queryParameters = query.getParameters();
-        final SearchCondition<SeverityFilter> filter = query.getSearchCondition();
+        final SeverityFilter filter = query.getSeverityFilter();
         final CriteriaBuilder builder = getCriteriaBuilder(queryParameters);
 
         // Remove limit, offset and ordering to fetch count
@@ -88,7 +83,7 @@ public abstract class AbstractStatusService<T, Q extends Query> {
         builder.clearOrder();
 
         // If a severity is given, we must count manually!
-        if (filter != null && filter.getCondition() != null && filter.getCondition().getSeverity() != null) {
+        if (filter != null && filter.getSeverities() != null && !filter.getSeverities().isEmpty()) {
             List<StatusEntity<T>> collect = findMatching(query, builder);
             collect = apply(collect, filter);
             return collect.size();
@@ -103,45 +98,13 @@ public abstract class AbstractStatusService<T, Q extends Query> {
 
     protected abstract CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters);
 
-    private Predicate<StatusEntity<T>> getSeverityFilterPredicate(final SearchCondition<SeverityFilter> searchCondition) {
-        final OnmsSeverity searchSeverity = getSeverity(searchCondition);
-        if (searchSeverity != null) {
-            switch (searchCondition.getConditionType()) {
-                case EQUALS:
-                    return statusEntity -> statusEntity.getStatus().equals(searchSeverity);
-                case NOT_EQUALS:
-                    return statusEntity -> !statusEntity.getStatus().equals(searchSeverity);
-                case GREATER_OR_EQUALS:
-                    return statusEntity -> statusEntity.getStatus().isGreaterThanOrEqual(searchSeverity);
-                case LESS_OR_EQUALS:
-                    return statusEntity -> statusEntity.getStatus().isLessThanOrEqual(searchSeverity);
-                case GREATER_THAN:
-                    return statusEntity -> statusEntity.getStatus().isGreaterThan(searchSeverity);
-                case LESS_THAN:
-                    return statusEntity -> statusEntity.getStatus().isLessThan(searchSeverity);
-            }
-        }
-        // Include all
-        return status -> true;
-    }
 
-    private List<StatusEntity<T>> apply(List<StatusEntity<T>> statusList, SearchCondition<SeverityFilter> searchCondition) {
-        if (!statusList.isEmpty() && searchCondition != null) {
-            final Predicate<StatusEntity<T>> filter = getSeverityFilterPredicate(searchCondition);
-            return statusList.stream().filter(filter).collect(Collectors.toList());
+    private List<StatusEntity<T>> apply(List<StatusEntity<T>> statusList, SeverityFilter severityFilter) {
+        if (!statusList.isEmpty() && severityFilter != null && !severityFilter.getSeverities().isEmpty()) {
+            return statusList.stream()
+                    .filter(statusEntity -> severityFilter.getSeverities().contains(statusEntity.getStatus()))
+                    .collect(Collectors.toList());
         }
         return statusList; // don't filter
-    }
-
-    private static OnmsSeverity getSeverity(SearchCondition<SeverityFilter> searchCondition) {
-        if (searchCondition != null && searchCondition.getCondition() != null && !Strings.isNullOrEmpty(searchCondition.getCondition().getSeverity())) {
-            final String severityString = searchCondition.getCondition().getSeverity();
-            for (OnmsSeverity eachSeverity : OnmsSeverity.values()) {
-                if (eachSeverity.getLabel().equalsIgnoreCase(severityString)) {
-                    return eachSeverity;
-                }
-            }
-        }
-        return null;
     }
 }

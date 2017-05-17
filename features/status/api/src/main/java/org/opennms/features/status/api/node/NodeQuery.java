@@ -28,9 +28,8 @@
 
 package org.opennms.features.status.api.node;
 
-import org.apache.cxf.jaxrs.ext.search.SearchCondition;
-import org.opennms.features.status.api.SeverityFilter;
 import org.opennms.features.status.api.Query;
+import org.opennms.features.status.api.SeverityFilter;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.web.utils.QueryParameters;
 
@@ -38,8 +37,8 @@ public class NodeQuery extends Query {
 
     private NodeStatusCalculationStrategy statusCalculationStrategy;
 
-    public NodeQuery(QueryParameters parameters, SearchCondition<SeverityFilter> searchCondition) {
-        super(parameters, searchCondition);
+    public NodeQuery(QueryParameters parameters, SeverityFilter severityFilter) {
+        super(parameters, severityFilter);
     }
 
     public NodeStatusCalculationStrategy getStatusCalculationStrategy() {

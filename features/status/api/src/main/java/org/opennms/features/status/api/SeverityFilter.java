@@ -28,15 +28,24 @@
 
 package org.opennms.features.status.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.model.OnmsSeverity;
+
 public class SeverityFilter {
 
-    private String severity;
+    private List<OnmsSeverity> severities = new ArrayList<>();
 
-    public String getSeverity() {
-        return severity;
+    public List<OnmsSeverity> getSeverities() {
+        return severities;
     }
 
-    public void setSeverity(String severity) {
-        this.severity = severity;
+    public void setSeverities(List<OnmsSeverity> severities) {
+        this.severities = severities;
+    }
+
+    public void add(OnmsSeverity severity) {
+        severities.add(severity);
     }
 }

@@ -28,18 +28,24 @@
  *******************************************************************************/
 
 --%>
+<%
+    String title = org.opennms.web.api.Util.getParameter(request, "title", "Undefined");
+    String type = org.opennms.web.api.Util.getParameter(request, "type");
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Business Service List" />
-    <jsp:param name="headTitle" value="Business Service List" />
-    <jsp:param name="breadcrumb" value="Business Service List" />
+    <jsp:param name="title" value="<%= title %>" />
+    <jsp:param name="headTitle" value="<%= title %>" />
+    <jsp:param name="breadcrumb" value="<%= title %>" />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-bsm.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="status/js/angular-status.js"></script>' />
 </jsp:include>
 
-<ng-include src="'status/bsm/main.html'"></ng-include>
+<link rel="stylesheet" type="text/css" href="status/css/style.css"/>
+<ng-include src="'status/views/<%= type %>.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
