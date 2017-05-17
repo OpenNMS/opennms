@@ -30,6 +30,15 @@ admin@minion()> scv:set opennms.http minion minion
 admin@minion()> scv:set opennms.broker minion minion
 ----
 
+Another way to configure credentials is to use the `scvcli` utility in your _Minion_ `bin` directory.
+
+.Configure the credentials by using the command line utility `scvcli`
+[source]
+----
+[root@localhost /usr/share/minion]# $ ./bin/scvcli --keystore etc/scv.jce set opennms.http minion minion
+[root@localhost /usr/share/minion]# $ ./bin/scvcli --keystore etc/scv.jce set opennms.broker minion minion
+----
+
 .Restart the _Minion_ after updating the credentials
 [source]
 ----
