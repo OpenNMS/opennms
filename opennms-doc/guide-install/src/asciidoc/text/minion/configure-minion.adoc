@@ -35,8 +35,8 @@ Another way to configure credentials is to use the `scvcli` utility in your _Min
 .Configure the credentials by using the command line utility `scvcli`
 [source]
 ----
-[root@localhost /usr/share/minion]# $ ./bin/scvcli --keystore etc/scv.jce set opennms.http minion minion
-[root@localhost /usr/share/minion]# $ ./bin/scvcli --keystore etc/scv.jce set opennms.broker minion minion
+[root@localhost /usr/share/minion]# $ ./bin/scvcli set opennms.http minion minion
+[root@localhost /usr/share/minion]# $ ./bin/scvcli set opennms.broker minion minion
 ----
 
 .Restart the _Minion_ after updating the credentials

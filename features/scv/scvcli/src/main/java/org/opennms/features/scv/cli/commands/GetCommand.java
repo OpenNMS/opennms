@@ -51,7 +51,7 @@ public class GetCommand implements Function<ScvCli, Integer> {
         } else {
             System.out.printf("Credentials for %s:\n", alias);
             System.out.printf("\tUsername: %s\n", credentials.getUsername());
-            System.out.printf("\tPassword: %s\n", credentials.getPassword());
+            System.out.printf("\tPassword: *********\n");
             for (String attributeKey : credentials.getAttributeKeys()) {
                 System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
             }
