@@ -33,7 +33,7 @@
   <bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/>
 
   <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false')}" />
+    <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false&amp;jms.useAsyncSend=true')}" />
     <property name="userName" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.username', '')}" />
     <property name="password" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.password', '')}" />
   </bean>

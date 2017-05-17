@@ -53,7 +53,6 @@
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring</artifactId>
-      <version>${camelVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -119,6 +118,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -202,6 +202,7 @@
             <feature>opennms-config-jaxb</feature>
             <feature>opennms-core-daemon</feature>
             <feature>opennms-core-db</feature>
+            <feature>opennms-core-ipc-rpc-commands</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
@@ -676,6 +677,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.eif-adapter</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

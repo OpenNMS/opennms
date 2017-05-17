@@ -28,13 +28,22 @@
 
 package org.opennms.core.rpc.echo;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+
 public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoResponse> {
 
+    public static final EchoRpcModule INSTANCE = new EchoRpcModule();
+
     public static final String RPC_MODULE_ID = "Echo";
+
+    private static final Supplier<Timer> TIMER_SUPPLIER = Suppliers.memoize(() -> new Timer("EchoRpcModule"));
 
     public EchoRpcModule() {
         super(EchoRequest.class, EchoResponse.class);
@@ -43,28 +52,31 @@ public class EchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoRespons
     public void beforeRun() { }
 
     @Override
-    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+    public CompletableFuture<EchoResponse> execute(final EchoRequest request) {
         final CompletableFuture<EchoResponse> future = new CompletableFuture<>();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                beforeRun();
-                if (request.getDelay() != null) {
-                    try {
-                        Thread.sleep(request.getDelay());
-                    } catch (InterruptedException e) {
-                        future.completeExceptionally(e);
-                        return;
-                    }
+        if (request.getDelay() != null) {
+            TIMER_SUPPLIER.get().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    processRequest(request, future);
                 }
-                if (request.shouldThrow()) {
-                    future.completeExceptionally(new MyEchoException(request.getMessage()));
-                } else {
-                    future.complete(new EchoResponse(request.getMessage()));
-                }
-            }
-        }).start();
+            }, request.getDelay());
+        } else {
+            processRequest(request, future);
+        }
         return future;
+    }
+
+    public void processRequest(EchoRequest request, CompletableFuture<EchoResponse> future) {
+        beforeRun();
+        if (request.shouldThrow()) {
+            future.completeExceptionally(new MyEchoException(request.getMessage()));
+        } else {
+            EchoResponse response = new EchoResponse();
+            response.setId(request.getId());
+            response.setMessage(request.getMessage());
+            future.complete(response);
+        }
     }
 
     @Override
