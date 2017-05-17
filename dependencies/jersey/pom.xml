@@ -81,6 +81,10 @@
       <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -162,6 +166,13 @@
     </dependency>
   </dependencies>
   <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jboss-repo</id>
+      <name>JBoss Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
+    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
