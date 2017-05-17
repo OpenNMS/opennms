@@ -46,6 +46,28 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>copy-dependencies</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <stripVersion>true</stripVersion>
+              <stripClassifier>true</stripClassifier>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.scv</groupId>
+                  <artifactId>org.opennms.features.scv.cli</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>jar-with-dependencies</classifier>
+                  <type>jar</type>
+                  <outputDirectory>${project.build.directory}/base-assembly/bin</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
             <id>unpack-dependencies</id>
             <phase>process-resources</phase>
             <goals>

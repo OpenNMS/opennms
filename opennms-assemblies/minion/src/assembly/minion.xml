@@ -16,6 +16,7 @@
         <include>debian/opennms-minion.minion.init</include>
         <include>debian/rules</include>
         <include>etc/minion.init</include>
+        <include>bin/scvcli</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>

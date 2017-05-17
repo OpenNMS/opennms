@@ -14,5 +14,6 @@
     <module>api</module>
     <module>jceks-impl</module>
     <module>shell</module>
+    <module>scvcli</module>
   </modules>
 </project>
