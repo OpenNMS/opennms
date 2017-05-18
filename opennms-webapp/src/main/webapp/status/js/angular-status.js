@@ -123,6 +123,14 @@
                 }
             };
 
+            $scope.updateLocation = function() {
+                // Update URL parameters to make refresh work
+                var location = $location.search();
+                location['severityFilter'] =  $scope.query.severityFilter;
+                location['strategy'] = $scope.query.strategy;
+                $location.search(location);
+            };
+
             $scope.loadData = function(itemTransformer) {
                 var parameters = $scope.query || {};
 
@@ -137,6 +145,8 @@
                     }
                 }
                 $scope.query.severityFilter = parameters.severityFilter;
+
+                $scope.updateLocation();
 
                 StatusService.query(
                     {
