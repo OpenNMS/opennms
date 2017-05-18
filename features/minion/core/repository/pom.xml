@@ -26,8 +26,8 @@
                         <configuration>
                             <descriptors>
                                 <!-- Default repositories -->
-                                <descriptor>mvn:org.apache.karaf.features/standard/${minionKarafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${minionKarafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.features.minion/core-features/${project.version}/xml</descriptor>
                             </descriptors>

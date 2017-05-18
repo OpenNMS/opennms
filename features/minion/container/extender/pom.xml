@@ -39,12 +39,12 @@
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>org.apache.karaf.features.core</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.config</groupId>
             <artifactId>org.apache.karaf.config.core</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
