@@ -12,7 +12,7 @@
     <camelVersion>2.19.1</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
-    <karafVersion>4.0.8</karafVersion>
+    <karafVersion>4.1.1</karafVersion>
     <nodeVersion>v6.10.2</nodeVersion>
     <npmVersion>3.10.10</npmVersion>
     <test.fork.count>1</test.fork.count>

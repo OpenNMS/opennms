@@ -76,10 +76,12 @@
                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf Spring features -->
                 <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
+                <!-- Karaf Spring legacy features -->
+                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features</descriptor>
               </descriptors>
               <features>
                 <!--
@@ -94,7 +96,6 @@
                 <feature>framework</feature>
 
                 <!-- Karaf standard features -->
-                <feature>aries-annotation</feature>
                 <feature>aries-blueprint</feature>
                 <feature>aries-proxy</feature>
                 <feature>blueprint-web</feature>
@@ -105,14 +106,16 @@
                 <feature>eventadmin</feature>
                 <feature>feature</feature>
                 <feature>framework-security</feature>
+                <feature>httplite</feature>
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
                 <feature>jaas-boot</feature>
                 <feature>jaas</feature>
                 <feature>jasypt-encryption</feature>
-                <!-- TODO: Figure out how to import 2 versions of Jetty? -->
-                <feature>jetty</feature>
+                <!-- TODO: Should we import both versions of Jetty? -->
+                <feature>jetty/8.1.14.v20131031</feature>
+                <feature>jetty/9.3.9.v20160517</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -120,6 +123,8 @@
                 <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>package</feature>
+                <!-- Replaced by opennms-bridge-http-service -->
+                <!-- <feature>pax-http-service</feature> -->
                 <feature>profile</feature>
                 <feature>scheduler</feature>
                 <feature>scr</feature>
@@ -142,11 +147,13 @@
                 <feature>spring-instrument/${springVersion}</feature>
                 <feature>spring-jdbc/${springVersion}</feature>
                 <feature>spring-jms/${springVersion}</feature>
-                <feature>spring-test/${springVersion}</feature>
                 <feature>spring-orm/${springVersion}</feature>
                 <feature>spring-oxm/${springVersion}</feature>
+                <feature>spring-test/${springVersion}</feature>
                 <feature>spring-tx/${springVersion}</feature>
                 <feature>spring-web/${springVersion}</feature>
+                <feature>spring-web-portlet/${springVersion}</feature>
+                <feature>spring-websocket/${springVersion}</feature>
 
               </features>
               <repository>${project.build.directory}/paxexam/test-repo</repository>
@@ -268,6 +275,16 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- Karaf Spring legacy features artifact -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>spring-legacy</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Pax Exam features artifact -->
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -281,7 +298,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>4.3.0</version>
+      <version>6.0.3</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>compile</scope>
