@@ -65,7 +65,6 @@
 
                         if ($scope.query.offset !== offset) {
                             $scope.query.offset = offset;
-                            $scope.refresh();
                         }
                     }
                 }
@@ -100,6 +99,20 @@
                 $scope.severityFilter = {};
             };
 
+            $scope.changeOrderBy = function(newOrderBy) {
+                if ($scope.query.orderBy == newOrderBy) {
+                    if ($scope.query.order == "asc") {
+                        $scope.query.order = "desc";
+                    } else {
+                        $scope.query.order = "asc";
+                    }
+                } else {
+                    $scope.query.orderBy = newOrderBy;
+                    $scope.query.order = "asc";
+                }
+                $scope.refresh();
+            };
+
             $scope.updateFilterAndRefreshIfNecessary = function() {
                 var newList = toList($scope.severityFilter);
                 var oldList = $scope.query.severityFilter;
@@ -113,6 +126,7 @@
             $scope.loadData = function(itemTransformer) {
                 var parameters = $scope.query || {};
 
+                // update severity filter
                 parameters.severityFilter = [];
                 for (var property in $scope.severityFilter) {
                     if ($scope.severityFilter.hasOwnProperty(property)) {
@@ -189,6 +203,10 @@
             $scope.$watch('severityFilter', function() {
                 $scope.updateFilterAndRefreshIfNecessary();
             }, true);
+
+            $scope.$watch('query.page', function(newOffset, oldOffset) {
+                $scope.refresh();
+            });
         }])
 
         .controller('BusinessServiceStatusController', ['$scope', '$controller', '$log', function($scope, $controller, $log) {
