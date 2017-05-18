@@ -75,7 +75,7 @@
                     </bootFeatures>
                     <installedFeatures>
                         <!-- These versions match the versions shipped with Apache Karaf 4.0.8 -->
-                        <feature>spring/3.2.17.RELEASE_1</feature>
+                        <feature>spring/3.2.18.RELEASE_1</feature>
                         <feature>spring/4.0.7.RELEASE_3</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
@@ -170,6 +170,17 @@
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>spring</artifactId>
+            <version>${minionKarafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specify in 
+                the plugin configuration -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>spring-legacy</artifactId>
             <version>${minionKarafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>

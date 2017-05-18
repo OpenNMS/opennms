@@ -167,6 +167,11 @@
                       <type>xml</type>
                       <classifier>spring</classifier>
                     </artifact>
+                    <artifact>
+                      <file>target/filtered-resources/features/spring-legacy.xml</file>
+                      <type>xml</type>
+                      <classifier>spring-legacy</classifier>
+                    </artifact>
                   </artifacts>
                 </configuration>
               </execution>

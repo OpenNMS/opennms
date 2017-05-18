@@ -1321,7 +1321,7 @@
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
-    <karafVersion>4.0.8</karafVersion>
+    <karafVersion>4.1.1</karafVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
@@ -1355,7 +1355,7 @@
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.2</wsmanVersion>
 
-    <springVersion>4.2.8.RELEASE_1</springVersion>
+    <springVersion>4.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.8.6</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
