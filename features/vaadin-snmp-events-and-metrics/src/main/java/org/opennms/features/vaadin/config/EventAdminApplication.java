@@ -185,7 +185,7 @@ public class EventAdminApplication extends UI {
                                     boolean modified = false;
                                     File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
                                     Events config = JaxbUtils.unmarshal(Events.class, configFile);
-                                    for (Iterator<String> it = config.getEventFileCollection().iterator(); it.hasNext();) {
+                                    for (Iterator<String> it = config.getEventFiles().iterator(); it.hasNext();) {
                                         String fileName = it.next();
                                         if (file.getAbsolutePath().contains(fileName)) {
                                             it.remove();

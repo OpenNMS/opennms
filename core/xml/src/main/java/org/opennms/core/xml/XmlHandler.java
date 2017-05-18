@@ -62,6 +62,12 @@ public class XmlHandler<U> {
         }
         this.marshaller = JaxbUtils.getMarshallerFor(clazz, context);
         this.unmarshaller = JaxbUtils.getUnmarshallerFor(clazz, context, false);
+        // Use the same event handler that we use in JaxbUtils
+        try {
+            unmarshaller.setEventHandler(new JaxbUtils.LoggingValidationEventHandler());
+        } catch (JAXBException e) {
+            throw new RuntimeException("An error was encountered while setting the event handler", e);
+        }
     }
 
     public String marshal(U obj) {

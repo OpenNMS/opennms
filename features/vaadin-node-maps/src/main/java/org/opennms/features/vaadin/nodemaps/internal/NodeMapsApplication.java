@@ -34,10 +34,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
@@ -59,8 +55,6 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.Page;
-import com.vaadin.server.SessionDestroyEvent;
-import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -131,7 +125,7 @@ public class NodeMapsApplication extends UI {
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
-    private MapWidgetComponent m_mapWidgetComponent;
+    private NodeMapComponent m_nodeMapComponent;
     private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
     private VaadinRequest m_request;
@@ -139,18 +133,12 @@ public class NodeMapsApplication extends UI {
     private NodeTable m_nodeTable;
     private NodeMapConfiguration configuration;
 
-    private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-        @Override public Thread newThread(final Runnable runnable) {
-            return new Thread(runnable, "NodeMapUpdater-Thread");
-        }
-    });
-
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
     }
 
-    public void setMapWidgetComponent(final MapWidgetComponent mapWidgetComponent) {
-        m_mapWidgetComponent = mapWidgetComponent;
+    public void setNodeMapComponent(final NodeMapComponent nodeMapComponent) {
+        m_nodeMapComponent = nodeMapComponent;
     }
 
     public void setHeaderHtml(final String headerHtml) {
@@ -167,7 +155,7 @@ public class NodeMapsApplication extends UI {
 
     private void updateWidgetView() {
         final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-        bottomLayoutBar.setFirstComponent(m_mapWidgetComponent);
+        bottomLayoutBar.setFirstComponent(m_nodeMapComponent);
 
         // Split the screen 70% top, 30% bottom
         bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
@@ -273,7 +261,7 @@ public class NodeMapsApplication extends UI {
                             nodeIds.add(Integer.valueOf(ref.getId()));
                         }
                     }
-                    m_mapWidgetComponent.setSelectedNodes(nodeIds);
+                    m_nodeMapComponent.setSelectedNodes(nodeIds);
                     return;
                 }
                 LOG.warn("Unsure how to deal with event: {}", eventObject);
@@ -295,18 +283,6 @@ public class NodeMapsApplication extends UI {
         if (!configuration.isValid()) {
             new InvalidConfigurationWindow(configuration).open();
         }
-
-        // Schedule refresh of node data
-        m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
-
-        // If we do not shutdown the executor, the scheduler keeps refreshing the node data, even if the
-        // UI may already been detached, resulting at one point in a OutOfMemory. See NMS-8589.
-        vaadinRequest.getService().addSessionDestroyListener(new SessionDestroyListener() {
-            @Override
-            public void sessionDestroy(SessionDestroyEvent event) {
-                m_executor.shutdown();
-            }
-        });
     }
 
     public void setConfiguration(NodeMapConfiguration configuration) {
@@ -314,9 +290,9 @@ public class NodeMapsApplication extends UI {
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {
-        m_mapWidgetComponent.setSearchString(searchString);
-        m_mapWidgetComponent.setSizeFull();
-        m_mapWidgetComponent.setMaxClusterRadius(maxClusterRadius);
+        m_nodeMapComponent.setSearchString(searchString);
+        m_nodeMapComponent.setSizeFull();
+        m_nodeMapComponent.setMaxClusterRadius(maxClusterRadius);
     }
 
     private void createRootLayout() {
@@ -375,12 +351,12 @@ public class NodeMapsApplication extends UI {
     private void addRefresher() {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
-        refresher.addListener((theRefresher) -> m_mapWidgetComponent.refresh());
+        refresher.addListener((theRefresher) -> m_nodeMapComponent.refresh());
         addExtension(refresher);
     }
 
     public void refresh() {
-        m_mapWidgetComponent.refresh();
+        m_nodeMapComponent.refresh();
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {

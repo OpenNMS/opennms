@@ -210,7 +210,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     public Table getPrimaryTable() {
         getReadLock().lock();
         try {
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
                     if (t.getKey() != null && t.getKey().equals("primary")) {
                         return t;
@@ -235,9 +235,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
             final Set<String> newSet = new HashSet<String>(joinableSet);
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (!joinableSet.contains(t.getName()) && (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true"))) {
-                    for (final Join j : t.getJoinCollection()) {
+                    for (final Join j : t.getJoins()) {
                         if (joinableSet.contains(j.getTable())) {
                             newSet.add(t.getName());
                             primaryJoins.put(t.getName(), j);
@@ -260,7 +260,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     public Table getTableByName(final String name) {
         getReadLock().lock();
         try {
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
                     if (t.getName() != null && t.getName().equals(name)) {
                         return t;
@@ -284,8 +284,8 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         Table table = null;
         getReadLock().lock();
         try {
-            OUTER: for (final Table t : getDatabaseSchema().getTableCollection()) {
-                for (final Column col : t.getColumnCollection()) {
+            OUTER: for (final Table t : getDatabaseSchema().getTables()) {
+                for (final Column col : t.getColumns()) {
                     if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
                         if (col.getName().equalsIgnoreCase(colName)) {
                             table = t;
@@ -309,7 +309,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
         final Lock lock = getReadLock();
 		lock.lock();
         try {
-            return getDatabaseSchema().getTableCount();
+            return getDatabaseSchema().getTables().size();
         } finally {
             lock.unlock();
         }

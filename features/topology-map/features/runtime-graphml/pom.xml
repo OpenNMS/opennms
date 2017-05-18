@@ -41,12 +41,11 @@
       <artifactId>graphml</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- At the moment this is provided by the system bundle -->
-    <!--<dependency>-->
-      <!--<groupId>org.opennms.features</groupId>-->
-      <!--<artifactId>org.opennms.features.graphml</artifactId>-->
-      <!--<version>${project.version}</version>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.graphml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>

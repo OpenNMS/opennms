@@ -177,15 +177,8 @@ public class MagicUsersMigratorOfflineIT {
         Assert.assertTrue(manager.getRoles().contains(Authentication.ROLE_READONLY));
     }
 
-    /**
-     * Gets the user.
-     *
-     * @param userInfo the user info
-     * @param username the user name
-     * @return the user
-     */
-    private User getUser(Userinfo userInfo, String username) {
-        for (final User user : userInfo.getUsers().getUsers()) {
+    private User getUser(final Userinfo userInfo, final String username) {
+        for (final User user : userInfo.getUsers()) {
             if (user.getUserId().equals(username)) {
                 return user;
             }

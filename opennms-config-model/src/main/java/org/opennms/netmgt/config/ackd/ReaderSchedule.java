@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,148 +28,74 @@
 
 package org.opennms.netmgt.config.ackd;
 
-//---------------------------------/
-//- Imported classes and packages -/
-//---------------------------------/
-
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * A very basic configuration for defining simple input to a schedule
- * (java.lang.concurrent)
- * 
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "reader-schedule")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("ackd-configuration.xsd")
 public class ReaderSchedule implements Serializable {
-    private static final long serialVersionUID = 3113838261541036911L;
+    private static final long serialVersionUID = 1L;
 
     public static final long DEFAULT_INTERVAL = 1L;
 
     public static final String DEFAULT_UNIT = "m";
 
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
-
-    /**
-     * Field _interval.
-     */
     @XmlAttribute(name = "interval")
-    private Long _interval;
+    private Long m_interval;
 
-    /**
-     * Field _unit.
-     */
     @XmlAttribute(name = "unit")
-    private String _unit;
-
-    // ----------------/
-    // - Constructors -/
-    // ----------------/
+    private String m_unit;
 
     public ReaderSchedule() {
-        super();
     }
 
     public ReaderSchedule(final Long interval, final String unit) {
-        super();
         setInterval(interval);
         setUnit(unit);
     }
 
-    // -----------/
-    // - Methods -/
-    // -----------/
-
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ReaderSchedule other = (ReaderSchedule) obj;
-        if (_interval == null) {
-            if (other._interval != null)
-                return false;
-        } else if (!_interval.equals(other._interval))
-            return false;
-        if (_unit == null) {
-            if (other._unit != null)
-                return false;
-        } else if (!_unit.equals(other._unit))
-            return false;
-        return true;
-    }
-
-    /**
-     * Returns the value of field 'interval'.
-     * 
-     * @return the value of field 'Interval'.
-     */
     public long getInterval() {
-        return _interval == null ? DEFAULT_INTERVAL : _interval;
+        return m_interval == null ? DEFAULT_INTERVAL : m_interval;
     }
 
-    /**
-     * Returns the value of field 'unit'.
-     * 
-     * @return the value of field 'Unit'.
-     */
+    public void setInterval(final long interval) {
+        m_interval = interval;
+    }
+
     public java.lang.String getUnit() {
-        return _unit == null ? DEFAULT_UNIT : _unit;
+        return m_unit == null ? DEFAULT_UNIT : m_unit;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming Language
-     * Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
+    public void setUnit(final String unit) {
+        m_unit = unit;
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((_interval == null) ? 0 : _interval.hashCode());
-        result = prime * result + ((_unit == null) ? 0 : _unit.hashCode());
-        return result;
+        return Objects.hash(m_interval, m_unit);
     }
 
-    /**
-     * Sets the value of field 'interval'.
-     * 
-     * @param interval
-     *            the value of field 'interval'.
-     */
-    public void setInterval(final long interval) {
-        this._interval = interval;
-    }
-
-    /**
-     * Sets the value of field 'unit'.
-     * 
-     * @param unit
-     *            the value of field 'unit'.
-     */
-    public void setUnit(final String unit) {
-        this._unit = unit;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof ReaderSchedule) {
+            final ReaderSchedule that = (ReaderSchedule) obj;
+            return Objects.equals(this.m_interval, that.m_interval) &&
+                    Objects.equals(this.m_unit, that.m_unit);
+        }
+        return false;
     }
 }

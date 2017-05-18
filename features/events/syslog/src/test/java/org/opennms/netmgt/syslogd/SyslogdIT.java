@@ -55,6 +55,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -133,11 +134,12 @@ public class SyslogdIT implements InitializingBean {
         boolean foundBeer = false;
         boolean foundMalt = false;
         assertEquals(10514, m_config.getSyslogPort());
-        for (final UeiMatch match : m_config.getUeiList().getUeiMatch()) {
-            if (match.getProcessMatch() != null) {
-                if (!foundBeer && "beerd".equals(match.getProcessMatch().getExpression())) {
+        for (final UeiMatch match : m_config.getUeiList()) {
+            if (match.getProcessMatch().isPresent()) {
+                final ProcessMatch processMatch = match.getProcessMatch().get();
+                if (!foundBeer && "beerd".equals(processMatch.getExpression())) {
                     foundBeer = true;
-                } else if (!foundMalt && "maltd".equals(match.getProcessMatch().getExpression())) {
+                } else if (!foundMalt && "maltd".equals(processMatch.getExpression())) {
                     foundMalt = true;
                 }
             }

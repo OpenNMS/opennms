@@ -69,7 +69,7 @@ public class SyslogdConfigFactoryIT {
     @Test
     public void testMyHostNameGrouping() {
         Assert.assertEquals(
-                6,
+                Integer.valueOf(6),
                 m_factory.getMatchingGroupHost());
 
     }
@@ -77,7 +77,7 @@ public class SyslogdConfigFactoryIT {
     @Test
     public void testMyMessageGroup() {
         Assert.assertEquals(
-                8,
+                Integer.valueOf(8),
                 m_factory.getMatchingGroupMessage());
 
     }
@@ -91,7 +91,7 @@ public class SyslogdConfigFactoryIT {
 
     @Test
     public void testUEI() {
-        List<UeiMatch> ueiList = m_factory.getUeiList().getUeiMatchCollection();
+        List<UeiMatch> ueiList = m_factory.getUeiList();
         UeiMatch uei = ueiList.get(0);
         Assert.assertEquals("substr", uei.getMatch().getType());
         Assert.assertEquals("CRISCO", uei.getMatch().getExpression());
@@ -105,7 +105,7 @@ public class SyslogdConfigFactoryIT {
 
     @Test
     public void testHideTheseMessages() {
-        for (HideMatch hide : m_factory.getHideMessages().getHideMatchCollection()) {
+        for (final HideMatch hide : m_factory.getHideMessages()) {
             boolean typeOk = ( hide.getMatch().getType().equals("substr") || hide.getMatch().getType().equals("regex") );
             Assert.assertTrue(typeOk);
             if (hide.getMatch().getType().equals("substr")) {
@@ -119,17 +119,17 @@ public class SyslogdConfigFactoryIT {
     @Test
     public void testImportFiles() throws Exception {
         SyslogdConfigFactory factory = new SyslogdConfigFactory(this.getClass().getResourceAsStream("syslogd-configuration-with-imports.xml"));
-        Assert.assertEquals(22, factory.getUeiList().getUeiMatchCount());
-        Assert.assertEquals(4, factory.getHideMessages().getHideMatchCount());
+        Assert.assertEquals(22, factory.getUeiList().size());
+        Assert.assertEquals(4, factory.getHideMessages().size());
         int countMatch = 0;
-        for (HideMatch hide : factory.getHideMessages().getHideMatchCollection()) {
+        for (final HideMatch hide : factory.getHideMessages()) {
             if (hide.getMatch().getExpression().startsWith("bad"))
                 countMatch++;
         }
         Assert.assertEquals(2, countMatch);
         countMatch = 0;
-        for (UeiMatch ueiMatch : factory.getUeiList().getUeiMatchCollection()) {
-            if (ueiMatch.getProcessMatch() != null && ueiMatch.getProcessMatch().getExpression().startsWith("agalue"))
+        for (UeiMatch ueiMatch : factory.getUeiList()) {
+            if (ueiMatch.getProcessMatch().isPresent() && ueiMatch.getProcessMatch().get().getExpression().startsWith("agalue"))
                 countMatch++;
         }
         Assert.assertEquals(8, countMatch);

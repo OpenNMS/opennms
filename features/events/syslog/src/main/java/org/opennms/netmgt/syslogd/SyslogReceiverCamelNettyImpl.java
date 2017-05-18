@@ -69,14 +69,14 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
     public SyslogReceiverCamelNettyImpl(final SyslogdConfig config) {
         super(config);
-        m_host = config.getListenAddress() == null ? addr("0.0.0.0"): addr(config.getListenAddress());
+        m_host = addr(config.getListenAddress() == null? "0.0.0.0" : config.getListenAddress());
         m_port = config.getSyslogPort();
         m_config = config;
     }
 
     @Override
     public String getName() {
-        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        String listenAddress = m_config.getListenAddress() == null? "0.0.0.0" : m_config.getListenAddress();
         return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 

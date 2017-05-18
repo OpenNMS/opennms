@@ -89,6 +89,9 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.datacollection.MibObject;
+import org.opennms.netmgt.config.threshd.Package;
+import org.opennms.netmgt.config.threshd.Parameter;
+import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -984,13 +987,16 @@ public class ThresholdingVisitorIT {
         
         // Validating threshd-configuration.xml
         ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
-        assertEquals(1, configManager.getConfiguration().getPackageCount());
-        org.opennms.netmgt.config.threshd.Package pkg = configManager.getConfiguration().getPackage(0);
-        assertEquals(1, pkg.getServiceCount());
-        org.opennms.netmgt.config.threshd.Service svc = pkg.getService(0);
-        assertEquals(5, svc.getParameterCount());
+        final List<Package> packages = configManager.getConfiguration().getPackages();
+        assertEquals(1, packages.size());
+        org.opennms.netmgt.config.threshd.Package pkg = packages.get(0);
+        final List<Service> services = pkg.getServices();
+        assertEquals(1, services.size());
+        org.opennms.netmgt.config.threshd.Service svc = services.get(0);
+        final List<Parameter> parameters = svc.getParameters();
+        assertEquals(5, parameters.size());
         int count = 0;
-        for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameter()) {
+        for (org.opennms.netmgt.config.threshd.Parameter parameter : parameters) {
             if (parameter.getKey().equals("thresholding-group"))
                 count++;
         }
@@ -1061,8 +1067,8 @@ public class ThresholdingVisitorIT {
         
         // Validate FavoriteFilterDao Calls
         HashSet<String> filters = new HashSet<String>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
-            filters.add(pkg.getFilter().getContent());
+        for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+            filters.add(pkg.getFilter().getContent().orElse(null));
         }
 
 

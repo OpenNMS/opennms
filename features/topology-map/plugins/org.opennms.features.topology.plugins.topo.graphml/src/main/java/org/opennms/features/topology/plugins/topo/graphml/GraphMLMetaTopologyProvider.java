@@ -83,7 +83,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
             .findFirst().orElse(null);
     }
 
-    public void load() throws IOException, InvalidGraphException {
+    public void load() {
         graphsByNamespace.clear();
         oppositeVertices.clear();
         if (graphMLFile == null) {
@@ -120,6 +120,8 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 }
             }
             this.breadcrumbStrategy = getBreadcrumbStrategy(graphML);
+        } catch (InvalidGraphException | IOException e) {
+            LOG.error(e.getMessage(), e);
         }
     }
 

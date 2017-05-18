@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -60,6 +61,8 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class VacuumdConfigFactory {
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
     /**
      * The singleton instance of this factory
      */
@@ -170,7 +173,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<Automation> getAutomations() {
-        return m_config.getAutomations().getAutomationCollection();
+        return m_config.getAutomations();
     }
     
 	/**
@@ -179,7 +182,7 @@ public final class VacuumdConfigFactory {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public synchronized Collection<Trigger> getTriggers() {
-        return m_config.getTriggers().getTriggerCollection();
+        return m_config.getTriggers();
     }
 
     /**
@@ -188,7 +191,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<Action> getActions() {
-        return m_config.getActions().getActionCollection();
+        return m_config.getActions();
     }
 
     /**
@@ -198,7 +201,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<AutoEvent> getAutoEvents() {
-        return m_config.getAutoEvents().getAutoEventCollection();
+        return m_config.getAutoEvents();
     }
 
     /**
@@ -207,7 +210,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<ActionEvent> getActionEvents() {
-        return m_config.getActionEvents().getActionEventCollection();
+        return m_config.getActionEvents();
     }
 
     /**
@@ -286,12 +289,9 @@ public final class VacuumdConfigFactory {
      * @return an array of {@link java.lang.String} objects.
      */
     public synchronized String[] getSqlStatements() {
-        Statement[] stmts = m_config.getStatement();
-        String[] sql = new String[stmts.length];
-        for (int i = 0; i < stmts.length; i++) {
-            sql[i] = stmts[i].getContent();
-        }
-        return sql;
+        return m_config.getStatements().parallelStream().map(st -> {
+            return st.getContent();
+        }).collect(Collectors.toList()).toArray(EMPTY_STRING_ARRAY);
     }
     
     /**
@@ -300,7 +300,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.List} object.
      */
     public synchronized List<Statement> getStatements() {
-    	return m_config.getStatementCollection();
+    	return m_config.getStatements();
     }
 
     /**

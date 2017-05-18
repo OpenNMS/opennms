@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.groups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,10 +54,11 @@ public class Groupinfo implements Serializable {
 
     @XmlElementWrapper(name = "groups")
     @XmlElement(name = "group")
-    private List<Group> m_groups = new ArrayList<>();
+    private List<Group> m_groups;
 
-    @XmlElement(name = "roles")
-    private Roles m_roles;
+    @XmlElementWrapper(name = "roles")
+    @XmlElement(name = "role")
+    private List<Role> m_roles;
 
     public Groupinfo() {
     }
@@ -70,7 +72,7 @@ public class Groupinfo implements Serializable {
     }
 
     public List<Group> getGroups() {
-        return m_groups;
+        return m_groups == null? Collections.emptyList() : m_groups;
     }
 
     public void setGroups(final List<Group> groups) {
@@ -78,23 +80,26 @@ public class Groupinfo implements Serializable {
     }
 
     public void addGroup(final Group group) {
+        if (m_groups == null && group != null) {
+            m_groups = new ArrayList<>();
+        }
         m_groups.add(group);
     }
 
-    public Roles getRoles() {
-        return m_roles;
+    public List<Role> getRoles() {
+        return m_roles == null? Collections.emptyList() : m_roles;
     }
 
-    public void setRoles(final Roles roles) {
+    public void setRoles(final List<Role> roles) {
         m_roles = roles;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_header, 
-            m_groups, 
-            m_roles);
+                            m_header, 
+                            m_groups, 
+                            m_roles);
     }
 
     @Override
@@ -102,12 +107,12 @@ public class Groupinfo implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Groupinfo) {
-            final Groupinfo temp = (Groupinfo)obj;
-            return Objects.equals(temp.m_header, m_header)
-                && Objects.equals(temp.m_groups, m_groups)
-                && Objects.equals(temp.m_roles, m_roles);
+            final Groupinfo that = (Groupinfo)obj;
+            return Objects.equals(this.m_header, that.m_header)
+                    && Objects.equals(this.m_groups, that.m_groups)
+                    && Objects.equals(this.m_roles, that.m_roles);
         }
         return false;
     }

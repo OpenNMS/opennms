@@ -93,16 +93,27 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
         nodeIdAddressMap.entrySet().stream()
                 .forEach(entry -> {
                     final String addressString = entry.getValue();
-                    try {
-                        org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
-                        if (coordinates != null) {
-                            resultMap.put(entry.getKey(), new Coordinates(coordinates.getLongitude(), coordinates.getLatitude()));
-                        }
-                    } catch (GeocoderException e) {
-                        LOG.warn("Couldn't resolve address '%s'", addressString);
+                    final Coordinates coordinates = resolve(addressString);
+                    if (coordinates != null) {
+                        resultMap.put(entry.getKey(), coordinates);
                     }
                 });
         return resultMap;
+    }
+
+    @Override
+    public Coordinates resolve(String addressString) {
+        try {
+            org.opennms.features.geocoder.Coordinates coordinates = geocoderService.getCoordinates(addressString);
+            if (coordinates != null) {
+                return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
+            } else {
+                LOG.warn("Couldn't resolve address '%s'", addressString);
+            }
+        } catch (GeocoderException e) {
+            LOG.warn("Couldn't resolve address '%s'", addressString, e);
+        }
+        return null;
     }
 
     private static OnmsGeolocation getGeoLocation(OnmsNode node) {

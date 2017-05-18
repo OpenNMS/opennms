@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "basicSchedule")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -64,10 +65,9 @@ public class BasicSchedule implements Serializable {
      * defines start/end time for the outage
      */
     @XmlElement(name = "time", required = true)
-    private List<Time> m_times;
+    private List<Time> m_times = new ArrayList<>();
 
     public BasicSchedule() {
-        m_times = new ArrayList<Time>();
     }
 
     public String getName() {
@@ -75,7 +75,7 @@ public class BasicSchedule implements Serializable {
     }
 
     public void setName(final String name) {
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getType() {
@@ -83,7 +83,7 @@ public class BasicSchedule implements Serializable {
     }
 
     public void setType(final String type) {
-        m_type = type;
+        m_type = ConfigUtils.assertNotEmpty(type, "type");
     }
 
     public List<Time> getTimes() {
@@ -91,8 +91,9 @@ public class BasicSchedule implements Serializable {
     }
 
     public void setTimes(final List<Time> times) {
+        if (times == m_times) return;
         m_times.clear();
-        m_times.addAll(times);
+        if (times != null) m_times.addAll(times);
     }
 
     public void addTime(final Time time) {
@@ -107,10 +108,9 @@ public class BasicSchedule implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_name, 
-            m_type, 
-            m_times);
+        return Objects.hash(m_name, 
+                            m_type, 
+                            m_times);
     }
 
     @Override
@@ -118,12 +118,12 @@ public class BasicSchedule implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof BasicSchedule) {
-            final BasicSchedule temp = (BasicSchedule)obj;
-            return Objects.equals(temp.m_name, m_name)
-                && Objects.equals(temp.m_type, m_type)
-                && Objects.equals(temp.m_times, m_times);
+            final BasicSchedule that = (BasicSchedule)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_type, that.m_type)
+                    && Objects.equals(this.m_times, that.m_times);
         }
         return false;
     }

@@ -114,7 +114,7 @@ public class WmiCollector implements ServiceCollector {
         final WmiSingleInstanceCollectionResource nodeResource = new WmiSingleInstanceCollectionResource(agent);
 
         // Iterate through the WMI collection groups.
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 if (!isGroupAvailable(agentState, wpm)) {
@@ -162,7 +162,7 @@ public class WmiCollector implements ServiceCollector {
                             }
 
 
-                            for (final Attrib attrib : wpm.getAttrib()) {
+                            for (final Attrib attrib : wpm.getAttribs()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
                                 resource.setAttributeValue(attribType, prop.getWmiValue());
@@ -188,15 +188,15 @@ public class WmiCollector implements ServiceCollector {
     }
     
     private void loadAttributeGroupList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             final AttributeGroupType attribGroupType1 = new AttributeGroupType(wpm.getName(), wpm.getIfType());
             m_groupTypeList.put(wpm.getName(), attribGroupType1);
         }
     }
 
     private void loadAttributeTypeList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
-            for (final Attrib attrib : wpm.getAttrib()) {
+        for (final Wpm wpm : collection.getWpms()) {
+            for (final Attrib attrib : wpm.getAttribs()) {
                 final AttributeGroupType attribGroupType = m_groupTypeList.get(wpm.getName());
                 final WmiCollectionAttributeType attribType = new WmiCollectionAttributeType(attrib, attribGroupType);
                 m_attribTypeList.put(attrib.getName(), attribType);

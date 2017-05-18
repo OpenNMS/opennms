@@ -235,7 +235,7 @@ public abstract class NotifdConfigManager {
      * @throws java.io.IOException if any.
      */
     public Collection<AutoAcknowledge> getAutoAcknowledges() throws IOException {
-        return getConfiguration().getAutoAcknowledgeCollection();
+        return getConfiguration().getAutoAcknowledges();
     }
 
     /**
@@ -245,6 +245,6 @@ public abstract class NotifdConfigManager {
      * @throws java.io.IOException if any.
      */
     public Collection<String> getOutageCalendarNames() throws IOException {
-        return getConfiguration().getOutageCalendarCollection();
+        return getConfiguration().getOutageCalendars();
     }
 }

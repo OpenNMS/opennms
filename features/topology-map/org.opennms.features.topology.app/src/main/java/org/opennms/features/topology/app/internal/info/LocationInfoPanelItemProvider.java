@@ -59,12 +59,9 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final GeolocationConfiguration geolocationConfiguration;
 
-    private final boolean resolveCoordinatesFromAddressString;
-
-    public LocationInfoPanelItemProvider(GeolocationService geolocationService, GeolocationConfiguration geolocationConfiguration, boolean resolveCoordinatesFromAddressString) {
+    public LocationInfoPanelItemProvider(GeolocationService geolocationService, GeolocationConfiguration geolocationConfiguration) {
         this.geolocationService = geolocationService;
         this.geolocationConfiguration = geolocationConfiguration;
-        this.resolveCoordinatesFromAddressString = resolveCoordinatesFromAddressString;
     }
 
     @Override
@@ -78,7 +75,6 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
             return Collections.emptyList();
         }
         final List<GeolocationInfo> locations = geolocationService.getLocations(new GeolocationQueryBuilder()
-                .withResolveMissingCoordinatesFromAddressString(resolveCoordinatesFromAddressString)
                 .withNodeIds(nodeIds)
                 .withStatusCalculationStrategy(StatusCalculationStrategy.None)
                 .build());

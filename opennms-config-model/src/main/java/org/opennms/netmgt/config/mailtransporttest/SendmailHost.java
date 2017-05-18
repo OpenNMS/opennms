@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,33 +28,31 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Define the host and port of the sendmail server. If you don't,
- * defaults will be used and
- *  ${ipaddr} is replaced with the IP address of the service.
+ * defaults will be used and ${ipaddr} is replaced with the IP address of the service.
  */
 
 @XmlRootElement(name="sendmail-host")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class SendmailHost implements Serializable {
-    private static final long serialVersionUID = -871055181275069836L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_host.
-     */
     @XmlAttribute(name="host")
     private String m_host;
 
-    /**
-     * Field m_port.
-     */
     @XmlAttribute(name="port")
     private Long m_port;
 
@@ -63,66 +61,29 @@ public class SendmailHost implements Serializable {
     }
 
     public SendmailHost(final String host, final Long port) {
-        m_host = host;
-        m_port = port;
+        setHost(host);
+        setPort(port);
     }
 
-    public void deletePort() {
-        m_port = null;
-    }
-
-    /**
-     * Returns the value of field 'host'.
-     * 
-     * @return the value of field 'Host'.
-     */
     public String getHost() {
         return m_host == null? "${ipaddr}" : m_host;
     }
 
-    /**
-     * Returns the value of field 'port'.
-     * 
-     * @return the value of field 'Port'.
-     */
+    public void setHost(final String host) {
+        m_host = ConfigUtils.normalizeString(host);
+    }
+
     public Long getPort() {
         return m_port == null? 25L : m_port;
     }
 
-    /**
-     * Method hasPort.
-     * 
-     * @return true if at least one Port has been added
-     */
-    public boolean hasPort() {
-        return m_port != null;
-    }
-
-    /**
-     * Sets the value of field 'host'.
-     * 
-     * @param host the value of field 'host'.
-     */
-    public void setHost(final String host) {
-        m_host = host;
-    }
-
-    /**
-     * Sets the value of field 'port'.
-     * 
-     * @param port the value of field 'port'.
-     */
     public void setPort(final Long port) {
         m_port = port;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_host == null) ? 0 : m_host.hashCode());
-        result = prime * result + ((m_port == null) ? 0 : m_port.hashCode());
-        return result;
+        return Objects.hash(m_host, m_port);
     }
 
     @Override
@@ -130,28 +91,12 @@ public class SendmailHost implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof SendmailHost) {
+            final SendmailHost that = (SendmailHost) obj;
+            return Objects.equals(this.m_host, that.m_host) &&
+                    Objects.equals(this.m_port, that.m_port);
         }
-        if (!(obj instanceof SendmailHost)) {
-            return false;
-        }
-        final SendmailHost other = (SendmailHost) obj;
-        if (m_host == null) {
-            if (other.m_host != null) {
-                return false;
-            }
-        } else if (!m_host.equals(other.m_host)) {
-            return false;
-        }
-        if (m_port == null) {
-            if (other.m_port != null) {
-                return false;
-            }
-        } else if (!m_port.equals(other.m_port)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

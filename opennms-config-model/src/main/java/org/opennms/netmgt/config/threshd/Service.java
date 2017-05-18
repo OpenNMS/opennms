@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,12 +29,11 @@
 package org.opennms.netmgt.config.threshd;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,43 +41,45 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * Service for which thresholding is to be performed for
  *  addresses in this package
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "service")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Service implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("thresholding.xsd")
+public class Service implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * Service name
      */
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
      * Interval at which the service is to be threshold
      *  checked
      */
     @XmlAttribute(name = "interval", required = true)
-    private Long interval;
+    private Long m_interval;
 
     /**
      * Specifies if this is a user-defined service. Used
      *  specifically for UI purposes.
      */
     @XmlAttribute(name = "user-defined")
-    private String userDefined;
+    private Boolean m_userDefined;
 
     /**
      * Thresholding status for this service. Service is
      *  checked against thresholds only if set to 'on'.
      */
     @XmlAttribute(name = "status")
-    private String status;
+    private ServiceStatus m_status;
 
     /**
      * Parameters to be used for threshold checking this
@@ -86,326 +87,85 @@ public class Service implements java.io.Serializable {
      *  thresholder.
      */
     @XmlElement(name = "parameter")
-    private List<Parameter> parameterList;
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Service() {
-        this.parameterList = new ArrayList<Parameter>();
     }
 
-    /**
-     * 
-     * 
-     * @param vParameter
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addParameter(final Parameter vParameter) throws IndexOutOfBoundsException {
-        this.parameterList.add(vParameter);
+    public String getName() {
+        return m_name;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vParameter
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addParameter(final int index, final Parameter vParameter) throws IndexOutOfBoundsException {
-        this.parameterList.add(index, vParameter);
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     */
-    public void deleteInterval() {
-        this.interval= null;
+    public Long getInterval() {
+        return m_interval;
     }
 
-    /**
-     * Method enumerateParameter.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Parameter> enumerateParameter() {
-        return Collections.enumeration(this.parameterList);
+    public void setInterval(final Long interval) {
+        m_interval = ConfigUtils.assertNotNull(interval, "interval");
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Boolean getUserDefined() {
+        return m_userDefined;
+    }
+
+    public void setUserDefined(final Boolean userDefined) {
+        m_userDefined = userDefined;
+    }
+
+    public Optional<ServiceStatus> getStatus() {
+        return Optional.ofNullable(m_status);
+    }
+
+    public void setStatus(final ServiceStatus status) {
+        m_status = status;
+    }
+
+    public List<Parameter> getParameters() {
+        return m_parameters;
+    }
+
+    public void setParameters(final List<Parameter> parameters) {
+        if (parameters == m_parameters) return;
+        m_parameters.clear();
+        if (parameters != null) m_parameters.addAll(parameters);
+    }
+
+    public void addParameter(final Parameter parameter) {
+        m_parameters.add(parameter);
+    }
+
+    public boolean removeParameter(final Parameter parameter) {
+        return m_parameters.remove(parameter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_interval, 
+                            m_userDefined, 
+                            m_status, 
+                            m_parameters);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Service) {
-            Service temp = (Service)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.interval, interval)
-                && Objects.equals(temp.userDefined, userDefined)
-                && Objects.equals(temp.status, status)
-                && Objects.equals(temp.parameterList, parameterList);
-            return equals;
+            final Service that = (Service)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(that.m_interval, that.m_interval)
+                    && Objects.equals(that.m_userDefined, that.m_userDefined)
+                    && Objects.equals(that.m_status, that.m_status)
+                    && Objects.equals(that.m_parameters, that.m_parameters);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'interval'. The field 'interval' has the
-     * following description: Interval at which the service is to be threshold
-     *  checked
-     * 
-     * @return the value of field 'Interval'.
-     */
-    public Long getInterval() {
-        return this.interval;
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the following
-     * description: Service name
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Method getParameter.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the Parameter at the
-     * given index
-     */
-    public Parameter getParameter(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.parameterList.size()) {
-            throw new IndexOutOfBoundsException("getParameter: Index value '" + index + "' not in range [0.." + (this.parameterList.size() - 1) + "]");
-        }
-        
-        return (Parameter) parameterList.get(index);
-    }
-
-    /**
-     * Method getParameter.Returns the contents of the collection in an Array. 
-     * <p>Note:  Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call. 
-     * This way we <i>know</i> that the Array returned is of exactly the correct
-     * length.
-     * 
-     * @return this collection as an Array
-     */
-    public Parameter[] getParameter() {
-        Parameter[] array = new Parameter[0];
-        return (Parameter[]) this.parameterList.toArray(array);
-    }
-
-    /**
-     * Method getParameterCollection.Returns a reference to 'parameterList'. No
-     * type checking is performed on any modifications to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public List<Parameter> getParameterCollection() {
-        return this.parameterList;
-    }
-
-    /**
-     * Method getParameterCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getParameterCount() {
-        return this.parameterList.size();
-    }
-
-    /**
-     * Returns the value of field 'status'. The field 'status' has the following
-     * description: Thresholding status for this service. Service is
-     *  checked against thresholds only if set to 'on'.
-     * 
-     * @return the value of field 'Status'.
-     */
-    public String getStatus() {
-        return this.status;
-    }
-
-    /**
-     * Returns the value of field 'userDefined'. The field 'userDefined' has the
-     * following description: Specifies if this is a user-defined service. Used
-     *  specifically for UI purposes.
-     * 
-     * @return the value of field 'UserDefined'.
-     */
-    public String getUserDefined() {
-        return this.userDefined;
-    }
-
-    /**
-     * Method hasInterval.
-     * 
-     * @return true if at least one Interval has been added
-     */
-    public boolean hasInterval() {
-        return this.interval != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            interval, 
-            userDefined, 
-            status, 
-            parameterList);
-        return hash;
-    }
-
-    /**
-     * Method iterateParameter.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Parameter> iterateParameter() {
-        return this.parameterList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllParameter() {
-        this.parameterList.clear();
-    }
-
-    /**
-     * Method removeParameter.
-     * 
-     * @param vParameter
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeParameter(final Parameter vParameter) {
-        boolean removed = parameterList.remove(vParameter);
-        return removed;
-    }
-
-    /**
-     * Method removeParameterAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Parameter removeParameterAt(final int index) {
-        Object obj = this.parameterList.remove(index);
-        return (Parameter) obj;
-    }
-
-    /**
-     * Sets the value of field 'interval'. The field 'interval' has the following
-     * description: Interval at which the service is to be threshold
-     *  checked
-     * 
-     * @param interval the value of field 'interval'.
-     */
-    public void setInterval(final Long interval) {
-        this.interval = interval;
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the following
-     * description: Service name
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vParameter
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setParameter(final int index, final Parameter vParameter) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.parameterList.size()) {
-            throw new IndexOutOfBoundsException("setParameter: Index value '" + index + "' not in range [0.." + (this.parameterList.size() - 1) + "]");
-        }
-        
-        this.parameterList.set(index, vParameter);
-    }
-
-    /**
-     * 
-     * 
-     * @param vParameterArray
-     */
-    public void setParameter(final Parameter[] vParameterArray) {
-        //-- copy array
-        parameterList.clear();
-        
-        for (int i = 0; i < vParameterArray.length; i++) {
-                this.parameterList.add(vParameterArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'parameterList' by copying the given Vector. All elements
-     * will be checked for type safety.
-     * 
-     * @param vParameterList the Vector to copy.
-     */
-    public void setParameter(final List<Parameter> vParameterList) {
-        // copy vector
-        this.parameterList.clear();
-        
-        this.parameterList.addAll(vParameterList);
-    }
-
-    /**
-     * Sets the value of 'parameterList' by setting it to the given Vector. No
-     * type checking is performed.
-     * @deprecated
-     * 
-     * @param parameterList the Vector to set.
-     */
-    public void setParameterCollection(final List<Parameter> parameterList) {
-        this.parameterList = parameterList;
-    }
-
-    /**
-     * Sets the value of field 'status'. The field 'status' has the following
-     * description: Thresholding status for this service. Service is
-     *  checked against thresholds only if set to 'on'.
-     * 
-     * @param status the value of field 'status'.
-     */
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-
-    /**
-     * Sets the value of field 'userDefined'. The field 'userDefined' has the
-     * following description: Specifies if this is a user-defined service. Used
-     *  specifically for UI purposes.
-     * 
-     * @param userDefined the value of field 'userDefined'.
-     */
-    public void setUserDefined(final String userDefined) {
-        this.userDefined = userDefined;
     }
 
 }

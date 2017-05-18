@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -59,84 +64,60 @@ import java.util.Objects;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "", propOrder = {
-    "wmiCollection"
+        "m_wmiCollections"
 })
 @XmlRootElement(name = "wmi-datacollection-config")
-public class WmiDatacollectionConfig {
+@ValidateUsing("wmi-datacollection.xsd")
+public class WmiDatacollectionConfig implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlElement(name = "wmi-collection", required = true)
-    protected List<WmiCollection> wmiCollection;
+    protected List<WmiCollection> m_wmiCollections = new ArrayList<>();
+
     @XmlAttribute(name = "rrdRepository", required = true)
-    protected String rrdRepository;
+    protected String m_rrdRepository;
 
-    /**
-     * Gets the value of the wmiCollection property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the wmiCollection property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getWmiCollection().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link WmiCollection }
-     * 
-     * 
-     */
-    public List<WmiCollection> getWmiCollection() {
-        if (wmiCollection == null) {
-            wmiCollection = new ArrayList<WmiCollection>();
-        }
-        return this.wmiCollection;
+    public List<WmiCollection> getWmiCollections() {
+        return m_wmiCollections;
     }
 
-    /**
-     * Gets the value of the rrdRepository property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
+    public void setWmiCollections(final List<WmiCollection> wmiCollections) {
+        if (wmiCollections == m_wmiCollections) return;
+        m_wmiCollections.clear();
+        if (wmiCollections != null) m_wmiCollections.addAll(wmiCollections);
+    }
+
+    public void addWmiCollection(final WmiCollection wmiCollection) {
+        m_wmiCollections.add(wmiCollection);
+    }
+
+    public boolean removeWmiCollection(final WmiCollection wmiCollection) {
+        return m_wmiCollections.remove(wmiCollection);
+    }
+
     public String getRrdRepository() {
-        return rrdRepository;
+        return m_rrdRepository;
     }
 
-    /**
-     * Sets the value of the rrdRepository property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setRrdRepository(String value) {
-        this.rrdRepository = value;
+    public void setRrdRepository(final String rrdRepository) {
+        m_rrdRepository = ConfigUtils.assertNotEmpty(rrdRepository, "rrdRepository");
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof WmiDatacollectionConfig)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof WmiDatacollectionConfig)) {
             return false;
         }
-        WmiDatacollectionConfig castOther = (WmiDatacollectionConfig) other;
-        return Objects.equals(wmiCollection, castOther.wmiCollection)
-                && Objects.equals(rrdRepository, castOther.rrdRepository);
+        final WmiDatacollectionConfig that = (WmiDatacollectionConfig) obj;
+        return Objects.equals(this.m_wmiCollections, that.m_wmiCollections)
+                && Objects.equals(this.m_rrdRepository, that.m_rrdRepository);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(wmiCollection, rrdRepository);
+        return Objects.hash(m_wmiCollections, m_rrdRepository);
     }
 
 }

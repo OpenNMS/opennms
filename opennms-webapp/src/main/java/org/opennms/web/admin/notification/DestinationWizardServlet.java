@@ -403,7 +403,7 @@ public class DestinationWizardServlet extends HttpServlet {
         Path newPath = new Path();
 
         newPath.setName(oldPath.getName());
-        newPath.setInitialDelay(oldPath.getInitialDelay());
+        newPath.setInitialDelay(oldPath.getInitialDelay().orElse(null));
 
         Collection<Target> targets = oldPath.getTargets();
         Iterator<Target> it = targets.iterator();
@@ -434,8 +434,8 @@ public class DestinationWizardServlet extends HttpServlet {
         Target newTarget = new Target();
 
         newTarget.setName(target.getName());
-        newTarget.setInterval(target.getInterval());
-        newTarget.setAutoNotify(target.getAutoNotify());
+        newTarget.setInterval(target.getInterval().orElse(null));
+        newTarget.setAutoNotify(target.getAutoNotify().orElse(null));
 
         for (int i = 0; i < target.getCommands().toArray(new String[0]).length; i++) {
             newTarget.addCommand(target.getCommands().toArray(new String[0])[i]);

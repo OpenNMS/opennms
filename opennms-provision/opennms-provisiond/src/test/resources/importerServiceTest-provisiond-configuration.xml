@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <provisiond-configuration 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
    
   foreign-source-dir="${install.dir}/etc/foreign-sources" 
   requistion-dir="${install.dir}/etc/imports"

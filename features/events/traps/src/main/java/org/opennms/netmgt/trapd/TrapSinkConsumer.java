@@ -47,6 +47,7 @@ import org.opennms.netmgt.trapd.jmx.TrapdInstrumentation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +160,7 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
 		org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(event);
 		if (econf != null) {
 			final Logmsg logmsg = econf.getLogmsg();
-			return logmsg != null && "discardtraps".equals(logmsg.getDest());
+			return logmsg != null && LogDestType.DISCARDTRAPS.equals(logmsg.getDest());
 		}
 		return false;
 	}

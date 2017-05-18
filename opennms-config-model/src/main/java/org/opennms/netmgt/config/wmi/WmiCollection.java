@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,21 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -58,106 +66,72 @@ import java.util.Objects;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "", propOrder = {
-    "rrd",
-    "wpms"
+        "m_rrd",
+        "m_wpms"
 })
 @XmlRootElement(name = "wmi-collection")
-public class WmiCollection {
+@ValidateUsing("wmi-datacollection.xsd")
+public class WmiCollection implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    @XmlElement(required = true)
-    protected Rrd rrd;
-    @XmlElement(required = true)
-    protected Wpms wpms;
+    @XmlElement(name="rrd", required = true)
+    protected Rrd m_rrd;
+
+    @XmlElementWrapper(name="wpms", required = true)
+    @XmlElement(name="wpm", required = true)
+    protected List<Wpm> m_wpms = new ArrayList<>();
+
     @XmlAttribute(name = "name", required = true)
-    protected String name;
+    protected String m_name;
 
-    /**
-     * Gets the value of the rrd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Rrd }
-     *     
-     */
     public Rrd getRrd() {
-        return rrd;
+        return m_rrd;
     }
 
-    /**
-     * Sets the value of the rrd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Rrd }
-     *     
-     */
-    public void setRrd(Rrd value) {
-        this.rrd = value;
+    public void setRrd(final Rrd rrd) {
+        m_rrd = ConfigUtils.assertNotNull(rrd, "rrd");
     }
 
-    /**
-     * Gets the value of the wpms property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Wpms }
-     *     
-     */
-    public Wpms getWpms() {
-        return wpms;
+    public List<Wpm> getWpms() {
+        return m_wpms;
     }
 
-    /**
-     * Sets the value of the wpms property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Wpms }
-     *     
-     */
-    public void setWpms(Wpms value) {
-        this.wpms = value;
+    public void setWpms(final List<Wpm> wpms) {
+        m_wpms = ConfigUtils.assertMinimumSize(ConfigUtils.assertNotNull(wpms, "wpms"), 1, "wpms");
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
+    public void addWpm(final Wpm wpm) {
+        m_wpms.add(wpm);
+    }
+
+    public boolean removeWpm(final Wpm wpm) {
+        return m_wpms.remove(wpm);
+    }
+
     public String getName() {
-        return name;
+        return m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof WmiCollection)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof WmiCollection)) {
             return false;
         }
-        WmiCollection castOther = (WmiCollection) other;
-        return Objects.equals(rrd, castOther.rrd) && Objects.equals(wpms, castOther.wpms)
-                && Objects.equals(name, castOther.name);
+        final WmiCollection that = (WmiCollection) obj;
+        return Objects.equals(this.m_rrd, that.m_rrd) &&
+                Objects.equals(this.m_wpms, that.m_wpms) &&
+                Objects.equals(this.m_name, that.m_name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rrd, wpms, name);
+        return Objects.hash(m_rrd, m_wpms, m_name);
     }
 
 }

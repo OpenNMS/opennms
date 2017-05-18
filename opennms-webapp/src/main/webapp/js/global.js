@@ -19,16 +19,21 @@ if (typeof requirejs === "function") {
     paths: {
       d3: 'd3/d3.min',
       backshift: '../js/backshift.onms.min',
+      geomap: '../geomap/js/geomap',
       holder: '../js/holder.min',
       jquery: 'jquery/dist/jquery',
       'jquery-ui' : 'jquery-ui/jquery-ui',
       'jquery-ui-treemap' : '../js/jquery.ui.treemap',
-      'jquery-sparkline' : '../js/jquery.sparkline.min'
+      'jquery-sparkline' : '../js/jquery.sparkline.min',
+      'leaflet' : 'leaflet/dist/leaflet-src',
+      'markercluster' : 'leaflet.markercluster/dist/leaflet.markercluster-src'
     },
       shim : {
         'jquery-ui' : { deps: ['jquery'] },
         'jquery-ui-treemap' : { deps: ['jquery-ui'] },
-        'jquery-sparkline' : { deps: ['jquery'] }
+        'jquery-sparkline' : { deps: ['jquery'] },
+        'leaflet': { exports: 'L' },
+        'markercluster': { deps: ['leaflet'] }
       }
   });
 }

@@ -89,7 +89,7 @@
     <element name="roles">
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:role"/>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:role"/>
       </sequence>
     </complexType>
   </element>

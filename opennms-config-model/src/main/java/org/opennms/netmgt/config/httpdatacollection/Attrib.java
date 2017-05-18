@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -64,77 +69,39 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "attrib")
-public class Attrib {
+@ValidateUsing("http-datacollection-config.xsd")
+public class Attrib implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "alias", required = true)
-    protected String alias;
+    protected String m_alias;
     @XmlAttribute(name = "match-group", required = true)
-    protected int matchGroup;
+    protected int m_matchGroup;
     @XmlAttribute(name = "type", required = true)
-    protected String type;
+    protected String m_type;
 
-    /**
-     * Gets the value of the alias property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getAlias() {
-        return alias;
+        return m_alias;
     }
 
-    /**
-     * Sets the value of the alias property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAlias(String value) {
-        this.alias = value;
+    public void setAlias(final String value) {
+        m_alias = ConfigUtils.assertNotEmpty(value, "alias");
     }
 
-    /**
-     * Gets the value of the matchGroup property.
-     * 
-     */
     public int getMatchGroup() {
-        return matchGroup;
+        return m_matchGroup;
     }
 
-    /**
-     * Sets the value of the matchGroup property.
-     * 
-     */
-    public void setMatchGroup(int value) {
-        this.matchGroup = value;
+    public void setMatchGroup(final int value) {
+        m_matchGroup = value;
     }
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getType() {
-        return type;
+        return m_type;
     }
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
+    public void setType(final String value) {
+        m_type = ConfigUtils.assertNotEmpty(value, "type");
     }
 
     @Override
@@ -142,13 +109,14 @@ public class Attrib {
         if (!(other instanceof Attrib)) {
             return false;
         }
-        Attrib castOther = (Attrib) other;
-        return Objects.equals(alias, castOther.alias) && Objects.equals(matchGroup, castOther.matchGroup)
-                && Objects.equals(type, castOther.type);
+        final Attrib that = (Attrib) other;
+        return Objects.equals(this.m_alias, that.m_alias)
+                && Objects.equals(this.m_matchGroup, that.m_matchGroup)
+                && Objects.equals(this.m_type, that.m_type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(alias, matchGroup, type);
+        return Objects.hash(m_alias, m_matchGroup, m_type);
     }
 }

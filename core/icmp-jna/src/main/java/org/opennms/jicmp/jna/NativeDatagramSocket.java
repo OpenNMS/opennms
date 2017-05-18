@@ -89,7 +89,8 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         try {
             return constructor.newInstance(family, SOCK_DGRAM, protocol, listenPort);
         } catch (final Exception e) {
-            LOG.warn("Failed to create {} SOCK_DGRAM socket.  Trying with SOCK_RAW.", implementationClass, e);
+            LOG.debug("Failed to create {} SOCK_DGRAM socket ({}).  Trying with SOCK_RAW.", implementationClass, e.getMessage());
+            LOG.trace("Failed to create {} SOCK_DGRAM socket.  Trying with SOCK_RAW.", implementationClass, e);
             return constructor.newInstance(family, SOCK_RAW, protocol, listenPort);
         }
     }

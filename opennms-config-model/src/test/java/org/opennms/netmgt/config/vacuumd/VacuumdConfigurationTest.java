@@ -59,35 +59,23 @@ public class VacuumdConfigurationTest extends
                                             false);
         statements.add(statement);
 
-        Automations automations = new Automations();
-        Automation automation = new Automation("testAutomation", 3000,
+        List<Automation> automations = Arrays.asList(new Automation("testAutomation", 3000,
                                                "testTrigger", "testAction",
                                                "testAutoEvent",
-                                               "testActionEvent", false);
-        automations.addAutomation(automation);
+                                               "testActionEvent", false));
 
-        Triggers triggers = new Triggers();
-        Trigger trigger = new Trigger("testTrigger", "testDataSource", ">=",
-                                      0, statement);
-        triggers.addTrigger(trigger);
+        List<Trigger> triggers = Arrays.asList(new Trigger("testTrigger", "testDataSource", ">=",
+                                      0, statement));
 
-        Actions actions = new Actions();
-        Action action = new Action("testTrigger", "testDataSource", statement);
-        actions.addAction(action);
+        List<Action> actions = Arrays.asList(new Action("testTrigger", "testDataSource", statement));
 
-        AutoEvents autoEvents = new AutoEvents();
-        AutoEvent autoEvent = new AutoEvent("testAutoEvent", "testField",
-                                            new Uei("testUei"));
-        autoEvents.addAutoEvent(autoEvent);
+        List<AutoEvent> autoEvents = Arrays.asList(new AutoEvent("testAutoEvent", "testField",
+                                            new Uei("testUei")));
 
-        List<Assignment> assignments = new ArrayList<Assignment>();
-        Assignment assignment = new Assignment("field", "uei", "testUei");
-        assignments.add(assignment);
+        List<Assignment> assignments = Arrays.asList(new Assignment("field", "uei", "testUei"));
 
-        ActionEvents actionEvents = new ActionEvents();
-        ActionEvent actionEvent = new ActionEvent("testActionEvent", true,
-                                                  true, assignments);
-        actionEvents.addActionEvent(actionEvent);
+        List<ActionEvent> actionEvents = Arrays.asList(new ActionEvent("testActionEvent", true,
+                                                  true, assignments));
 
         vacuumdConfig = new VacuumdConfiguration(1, statements, automations,
                                                  triggers, actions,

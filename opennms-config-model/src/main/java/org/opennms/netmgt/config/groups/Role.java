@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,7 +73,7 @@ public class Role implements Serializable {
     }
 
     public void setName(final String name) {
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
     public String getMembershipGroup() {
@@ -79,7 +81,7 @@ public class Role implements Serializable {
     }
 
     public void setMembershipGroup(final String membershipGroup) {
-        m_membershipGroup = membershipGroup;
+        m_membershipGroup = ConfigUtils.assertNotEmpty(membershipGroup, "membership-group");
     }
 
     public String getSupervisor() {
@@ -87,15 +89,15 @@ public class Role implements Serializable {
     }
 
     public void setSupervisor(final String supervisor) {
-        m_supervisor = supervisor;
+        m_supervisor = ConfigUtils.assertNotEmpty(supervisor, "supervisor");
     }
 
-    public String getDescription() {
-        return m_description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(m_description);
     }
 
     public void setDescription(final String description) {
-        m_description = description;
+        m_description = ConfigUtils.normalizeString(description);
     }
 
     public List<Schedule> getSchedules() {
@@ -103,8 +105,9 @@ public class Role implements Serializable {
     }
 
     public void setSchedules(final List<Schedule> schedules) {
+        if (schedules == m_schedules) return;
         m_schedules.clear();
-        m_schedules.addAll(schedules);
+        if (schedules != null) m_schedules.addAll(schedules);
     }
 
     public void addSchedule(final Schedule schedule) {
@@ -117,12 +120,11 @@ public class Role implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            m_name, 
-            m_membershipGroup, 
-            m_supervisor, 
-            m_description, 
-            m_schedules);
+        return Objects.hash(m_name, 
+                            m_membershipGroup, 
+                            m_supervisor, 
+                            m_description, 
+                            m_schedules);
     }
 
     @Override
@@ -130,14 +132,14 @@ public class Role implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Role) {
-            final Role temp = (Role)obj;
-            return Objects.equals(temp.m_name, m_name)
-                && Objects.equals(temp.m_membershipGroup, m_membershipGroup)
-                && Objects.equals(temp.m_supervisor, m_supervisor)
-                && Objects.equals(temp.m_description, m_description)
-                && Objects.equals(temp.m_schedules, m_schedules);
+            final Role that = (Role)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_membershipGroup, that.m_membershipGroup)
+                    && Objects.equals(this.m_supervisor, that.m_supervisor)
+                    && Objects.equals(this.m_description, that.m_description)
+                    && Objects.equals(this.m_schedules, that.m_schedules);
         }
         return false;
     }

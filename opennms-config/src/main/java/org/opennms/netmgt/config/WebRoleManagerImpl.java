@@ -204,7 +204,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         ManagedRole(Role role) {
            super(role.getName());
            m_role = role;
-           super.setDescription(role.getDescription());
+           super.setDescription(role.getDescription().orElse(null));
            super.setDefaultUser(getWebUser(role.getSupervisor()));
            super.setMembershipGroup(getWebGroup(role.getMembershipGroup()));
         }

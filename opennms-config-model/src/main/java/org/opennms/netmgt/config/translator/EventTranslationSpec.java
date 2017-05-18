@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,27 +29,33 @@
 package org.opennms.netmgt.config.translator;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * This defines the allowable translations for a given
  *  event uei
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "event-translation-spec")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EventTranslationSpec implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("translator-configuration.xsd")
+public class EventTranslationSpec implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "uei", required = true)
-    private String uei;
+    private String m_uei;
 
     /**
      * The list of event mappings for this event. The first
@@ -57,88 +63,56 @@ public class EventTranslationSpec implements java.io.Serializable {
      *  event into a new event.
      *  
      */
-    @XmlElement(name = "mappings", required = true)
-    private Mappings mappings;
+    @XmlElementWrapper(name = "mappings", required = true)
+    @XmlElement(name = "mapping")
+    private List<Mapping> m_mappings = new ArrayList<>();
 
     public EventTranslationSpec() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getUei() {
+        return m_uei;
+    }
+
+    public void setUei(final String uei) {
+        m_uei = ConfigUtils.assertNotEmpty(uei, "uei");
+    }
+
+    public List<Mapping> getMappings() {
+        return m_mappings;
+    }
+
+    public void setMappings(final List<Mapping> mappings) {
+        if (mappings == m_mappings) return;
+        m_mappings.clear();
+        if (mappings != null) m_mappings.addAll(mappings);
+    }
+
+    public void addMapping(final Mapping mapping) {
+        m_mappings.add(mapping);
+    }
+
+    public boolean removeMapping(final Mapping mapping) {
+        return m_mappings.remove(mapping);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_uei, m_mappings);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof EventTranslationSpec) {
-            EventTranslationSpec temp = (EventTranslationSpec)obj;
-            boolean equals = Objects.equals(temp.uei, uei)
-                && Objects.equals(temp.mappings, mappings);
-            return equals;
+            final EventTranslationSpec that = (EventTranslationSpec)obj;
+            return Objects.equals(this.m_uei, that.m_uei)
+                    && Objects.equals(this.m_mappings, that.m_mappings);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'mappings'. The field 'mappings' has the
-     * following description: The list of event mappings for this event. The first
-     *  mapping that matches the event is used to translate the
-     *  event into a new event.
-     *  
-     * 
-     * @return the value of field 'Mappings'.
-     */
-    public Mappings getMappings() {
-        return this.mappings;
-    }
-
-    /**
-     * Returns the value of field 'uei'.
-     * 
-     * @return the value of field 'Uei'.
-     */
-    public String getUei() {
-        return this.uei;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            uei, 
-            mappings);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'mappings'. The field 'mappings' has the following
-     * description: The list of event mappings for this event. The first
-     *  mapping that matches the event is used to translate the
-     *  event into a new event.
-     *  
-     * 
-     * @param mappings the value of field 'mappings'.
-     */
-    public void setMappings(final Mappings mappings) {
-        this.mappings = mappings;
-    }
-
-    /**
-     * Sets the value of field 'uei'.
-     * 
-     * @param uei the value of field 'uei'.
-     */
-    public void setUei(final String uei) {
-        this.uei = uei;
     }
 
 }

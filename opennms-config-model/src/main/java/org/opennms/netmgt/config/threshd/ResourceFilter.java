@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,106 +29,69 @@
 package org.opennms.netmgt.config.threshd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-/**
- * Class ResourceFilter.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "resource-filter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ResourceFilter implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private static final String DEFAULT_CONTENT = "";
+@ValidateUsing("thresholding.xsd")
+public class ResourceFilter implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * internal content storage
      */
     @XmlValue
-    private String _content;
+    private String m_content;
 
     @XmlAttribute(name = "field", required = true)
-    private String field;
+    private String m_field;
 
     public ResourceFilter() { }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Optional<String> getContent() {
+        return Optional.ofNullable(m_content);
+    }
+
+    public void setContent(final String content) {
+        m_content = ConfigUtils.normalizeString(content);
+    }
+
+    public String getField() {
+        return m_field;
+    }
+
+    public void setField(final String field) {
+        m_field = ConfigUtils.assertNotEmpty(field, "field");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_content, m_field);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ResourceFilter) {
-            ResourceFilter temp = (ResourceFilter)obj;
-            boolean equals = Objects.equals(temp._content, _content)
-                && Objects.equals(temp.field, field);
-            return equals;
+            final ResourceFilter that = (ResourceFilter)obj;
+            return Objects.equals(this.m_content, that.m_content)
+                    && Objects.equals(this.m_field, that.m_field);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'content'. The field 'content' has the following
-     * description: internal content storage
-     * 
-     * @return the value of field 'Content'.
-     */
-    public String getContent() {
-        return this._content != null ? this._content : DEFAULT_CONTENT;
-    }
-
-    /**
-     * Returns the value of field 'field'.
-     * 
-     * @return the value of field 'Field'.
-     */
-    public String getField() {
-        return this.field;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            _content, 
-            field);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'content'. The field 'content' has the following
-     * description: internal content storage
-     * 
-     * @param content the value of field 'content'.
-     */
-    public void setContent(final String content) {
-        this._content = content;
-    }
-
-    /**
-     * Sets the value of field 'field'.
-     * 
-     * @param field the value of field 'field'.
-     */
-    public void setField(final String field) {
-        this.field = field;
     }
 
 }

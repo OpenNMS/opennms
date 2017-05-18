@@ -85,7 +85,7 @@ public abstract class NotificationCommandManager {
             LOG.warn("no notification commands found");
             return Collections.emptyList();
         }
-        return config.getCommandCollection();
+        return config.getCommands();
     }
     
     /**

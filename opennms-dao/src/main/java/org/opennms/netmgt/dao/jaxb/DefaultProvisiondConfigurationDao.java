@@ -100,7 +100,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      */
     @Override
     public List<RequisitionDef> getDefs() {
-        return getConfig().getRequisitionDefCollection();
+        return getConfig().getRequisitionDefs();
     }
 
     /**

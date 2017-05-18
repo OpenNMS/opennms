@@ -130,7 +130,8 @@ public class BestMatchPinger implements Pinger {
             try {
                 m_pinger = pinger.newInstance();
             } catch (final Throwable t) {
-                LOG.error("Failed to initialize best match pinger ({}).  Falling back to the null pinger.", pinger, t);
+                LOG.error("Failed to initialize best match pinger ({}): {}  Falling back to the null pinger.", pinger, t.getMessage());
+                LOG.trace("Failed to initialize best match pinger ({}).  Falling back to the null pinger.", pinger, t);
                 m_pinger = new NullPinger();
             }
 
@@ -139,7 +140,8 @@ public class BestMatchPinger implements Pinger {
                     m_pinger.setAllowFragmentation(m_allowFragmentation);
                 }
             } catch (final Throwable t) {
-                LOG.debug("Failed to set 'allow fragmentation' flag on pinger {}", pinger, t);
+                LOG.debug("Failed to set 'allow fragmentation' flag on pinger {}: {}", pinger, t.getMessage());
+                LOG.trace("Failed to set 'allow fragmentation' flag on pinger {}.", pinger, t);
             }
 
             try {

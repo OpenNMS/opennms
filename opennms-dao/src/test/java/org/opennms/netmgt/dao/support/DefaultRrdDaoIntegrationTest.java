@@ -117,7 +117,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         
         RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), "GAUGE", 600, "U", "U");
         RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def, null);
+        m_rrdStrategy.createFile(def);
         File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + m_rrdStrategy.getDefaultFileExtension());
         
         RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());

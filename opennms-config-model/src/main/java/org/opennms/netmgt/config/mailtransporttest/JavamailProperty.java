@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,15 @@
 package org.opennms.netmgt.config.mailtransporttest;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Use these name value pairs to configure freeform properties from
@@ -42,102 +46,55 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="javamail-property")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class JavamailProperty implements Serializable {
-    private static final long serialVersionUID = -3716889757544640520L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_name.
-     */
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
     private String m_name;
 
-    /**
-     * Field m_value.
-     */
-    @XmlAttribute(name="value")
+    @XmlAttribute(name="value", required=true)
     private String m_value;
 
     public JavamailProperty() {
-        super();
     }
 
     public JavamailProperty(final String name, final String value) {
-        m_name = name;
-        m_value = value;
+        setName(name);
+        setValue(value);
     }
 
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
         return m_name;
     }
 
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
     public String getValue() {
         return m_value;
     }
 
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        m_name = name;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
     public void setValue(final String value) {
-        m_value = value;
+        m_value = ConfigUtils.assertNotEmpty(value, "value");
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-        result = prime * result + ((m_value == null) ? 0 : m_value.hashCode());
-        return result;
+        return Objects.hash(m_name, m_value);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+        if (this == obj) return true;
+
+        if (obj instanceof JavamailProperty) {
+            final JavamailProperty that = (JavamailProperty) obj;
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_value, that.m_value);
         }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof JavamailProperty)) {
-            return false;
-        }
-        final JavamailProperty other = (JavamailProperty) obj;
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        if (m_value == null) {
-            if (other.m_value != null) {
-                return false;
-            }
-        } else if (!m_value.equals(other.m_value)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }

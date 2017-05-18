@@ -293,12 +293,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	@Ignore("OSGi dependency problems: org.opennms.netmgt.alarmd.api")
-	public void testInstallFeatureOpennmsElasticsearchEventForwarder() {
-		installFeature("opennms-elasticsearch-event-forwarder");
-		System.out.println(executeCommand("features:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsEventsApi() {
 		installFeature("opennms-events-api");
 		System.out.println(executeCommand("features:list -i"));
@@ -471,12 +465,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureSpringWebflow() {
 		installFeature("spring-webflow");
-		System.out.println(executeCommand("features:list -i"));
-	}
-	@Test
-	@Ignore("OSGi dependency problems: org.opennms.netmgt.alarmd.api")
-	public void testInstallFeatureElasticsearchEventForwarder() {
-		installFeature("opennms-elasticsearch-event-forwarder");
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test

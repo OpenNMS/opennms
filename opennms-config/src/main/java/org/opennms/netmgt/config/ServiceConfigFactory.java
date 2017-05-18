@@ -101,7 +101,7 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
     @Override
     public Service[] getServices() {
         final List<Service> services = new ArrayList<Service>();
-        for (Service s : m_config.getServiceCollection()) {
+        for (Service s : m_config.getServices()) {
             if (s.isEnabled())
                 services.add(s);
         }

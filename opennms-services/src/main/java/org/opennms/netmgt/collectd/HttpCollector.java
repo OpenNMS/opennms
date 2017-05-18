@@ -93,6 +93,7 @@ import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
+import org.opennms.netmgt.config.httpdatacollection.Url;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -171,7 +172,7 @@ public class HttpCollector implements ServiceCollector {
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             m_collectionResourceList = new ArrayList<HttpCollectionResource>();
-            List<Uri> uriDefs = collection.getUris().getUri();
+            List<Uri> uriDefs = collection.getUris();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
                 HttpCollectionResource collectionResource = new HttpCollectionResource(m_agent, uriDef);
@@ -283,8 +284,8 @@ public class HttpCollector implements ServiceCollector {
             }
             final HttpClientWrapper wrapper = clientWrapper;
 
-            if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
-                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
+            if (collectionSet.getUriDef().getUrl().getUserInfo().isPresent()) {
+                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo().get();
                 final String[] streetCred = userInfo.split(":", 2);
                 if (streetCred.length == 2) {
                     wrapper.addBasicCredentials(streetCred[0], streetCred[1]);
@@ -419,7 +420,7 @@ public class HttpCollector implements ServiceCollector {
         final boolean matches = m.matches();
         if (matches) {
             LOG.debug("processResponse: found matching attributes: {}", matches);
-            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttrib();
+            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes();
             final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(), AttributeGroupType.IF_TYPE_ALL);
 
             final List<Locale> locales = new ArrayList<Locale>();
@@ -546,8 +547,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     private static String determineUserAgent(final HttpCollectionSet collectionSet) {
-        String userAgent = collectionSet.getUriDef().getUrl().getUserAgent();
-        return (String) (userAgent == null ? null : userAgent);
+        return collectionSet.getUriDef().getUrl().getUserAgent().orElse(null);
     }
 
     private static HttpVersion computeVersion(final Uri uri) {
@@ -558,15 +558,16 @@ public class HttpCollector implements ServiceCollector {
     private static HttpRequestBase buildHttpMethod(final HttpCollectionSet collectionSet) throws URISyntaxException {
         HttpRequestBase method;
         URI uri = buildUri(collectionSet);
-        if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
+        final Url url = collectionSet.getUriDef().getUrl();
+
+        if ("GET".equals(url.getMethod())) {
             method = buildGetMethod(uri, collectionSet);
         } else {
             method = buildPostMethod(uri, collectionSet);
         }
 
-        final String virtualHost = collectionSet.getUriDef().getUrl().getVirtualHost();
-        if (virtualHost != null && !virtualHost.trim().isEmpty()) {
-            method.setHeader(HTTP.TARGET_HOST, virtualHost);
+        if (url.getVirtualHost().isPresent() && !url.getVirtualHost().get().trim().isEmpty()) {
+            method.setHeader(HTTP.TARGET_HOST, url.getVirtualHost().get());
         }
         return method;
     }
@@ -611,8 +612,7 @@ public class HttpCollector implements ServiceCollector {
         if (collectionSet.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }
-        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameter();
-        for (Parameter p : parameters) {
+        for (Parameter p : collectionSet.getUriDef().getUrl().getParameters()) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
         }
         return retval;
@@ -629,11 +629,11 @@ public class HttpCollector implements ServiceCollector {
         ub.setPort(collectionSet.getPort());
         ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
 
-        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery");
+        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery().orElse(null), "getQuery");
         final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
         ub.setParameters(params);
 
-        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
+        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment().orElse(null), "getFragment"));
         return ub.build();
     }
 

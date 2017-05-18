@@ -103,6 +103,7 @@ include::text/service-assurance/monitors/JCifsMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCQueryMonitor.adoc[]
+include::text/service-assurance/monitors/JmxMonitor.adoc[]
 include::text/service-assurance/monitors/JolokiaBeanMonitor.adoc[]
 include::text/service-assurance/monitors/LdapMonitor.adoc[]
 include::text/service-assurance/monitors/LdapsMonitor.adoc[]
@@ -150,7 +151,6 @@ include::text/performance-data-collection/stress-testing.adoc[]
 [[ga-events]]
 == Events
 include::text/events/events.adoc[]
-include::text/events/forward-elasticsearch.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -192,9 +192,6 @@ include::text/bsm/bsmd.adoc[]
 [[ga-topology]]
 == Topology Map
 include::text/topology/topology.adoc[]
-
-== Asset Topology Provider
-include::text/asset-topology/graphml-asset-topology-provider.adoc[]
 
 [[ga-database-reports]]
 == Database Reports

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,51 +29,18 @@
 package org.opennms.netmgt.config.reporting;
 
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class DefaultTime.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "default-time")
 @XmlAccessorType(XmlAccessType.FIELD)
-
-@SuppressWarnings("all") public class DefaultTime extends Time 
-implements java.io.Serializable
-{
-
-    public DefaultTime() {
-    }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        
-        if (super.equals(obj)==false) {
-            return false;
-        }
-        return false;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        return 1;
-    }
+@ValidateUsing("reporting.xsd")
+public class DefaultTime extends Time implements Serializable {
+    private static final long serialVersionUID = 2L;
 
 }
