@@ -1,59 +1,26 @@
 <div>
     <!-- Paging controls -->
-    <div class="btn-toolbar">
-        <div class="btn-group">
-            <a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
-                <i class="fa fa-backward"></i>&nbsp;&nbsp;First
-            </a>
-        </div>
-        <div class="btn-group">
-            <a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
-                <i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
-            </a>
-        </div>
 
-        <div class="btn-group">
-            <a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
-                {{(query.offset/query.limit) - 2}}
-            </a>
-            <a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
-                {{(query.offset/query.limit) - 1}}
-            </a>
-            <a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
-                {{query.offset/query.limit}}
-            </a>
-            <a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
-                {{(query.offset/query.limit) + 1}}
-            </a>
-            <a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
-                {{(query.offset/query.limit) + 2}}
-            </a>
-            <a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
-                {{(query.offset/query.limit) + 3}}
-            </a>
-            <a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
-                {{(query.offset/query.limit) + 4}}
-            </a>
-        </div>
-
-        <div class="pull-right">
-            <div class="btn-group" style="margin-left:5px;">
-                <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
-                    Next&nbsp;&nbsp;<i class="fa fa-play"></i>
-                </a>
-            </div>
-
-            <div class="btn-group" style="margin-left:5px;">
-                <a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.maxOffset - query.limit)">
-                    Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
-                </a>
+    <div class="row">
+        <div class="col-md-6 col-lg-6 col-sm-8" ng-show="(query.totalItems / query.limit) > 1">
+            <div style="margin: 0px;" uib-pagination
+                 ng-model="query.page"
+                 total-items="query.totalItems"
+                 items-per-page="query.limit"
+                 rotate="true"
+                 boundary-links="true"
+                 max-size="5"
+                 boundary-link-numbers="true">
             </div>
         </div>
-
-        <h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
-        <h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+        <div class="col-md-6 col-lg-6 col-sm-4">
+            <pre class="pull-right" ng-show="query.totalItems == 0">No items found.</pre>
+            <pre class="pull-right" ng-show="query.totalItems > 0">{{query.totalItems / query.page === 1
+            ? "Item " + (query.offset + 1)
+            : "Items " + ((query.page - 1) * query.limit + 1) + " - " + (query.page * query.limit > query.totalItems ? query.totalItems : query.page * query.limit)}} ({{query.totalItems}} total)</pre>
+        </div>
     </div>
-    <br/>
+
     <!-- Content for pagination -->
     <div ng-transclude></div>
 </div>

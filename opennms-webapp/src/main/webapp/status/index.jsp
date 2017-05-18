@@ -40,6 +40,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-route/angular-route.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap-checkbox/angular-bootstrap-checkbox.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="status/js/angular-status.js"></script>' />

@@ -16,7 +16,7 @@
         return list;
     };
 
-    angular.module(MODULE_NAME, [ 'ngRoute', 'ngResource', 'ui.checkbox', 'onmsList' ])
+    angular.module(MODULE_NAME, [ 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onmsList' ])
         .filter('severity', function() {
             return function(input) {
                 input = input || '';
@@ -128,7 +128,7 @@
                     {
                         severityFilter: parameters.severityFilter || [],
                         limit: parameters.limit || 20,
-                        offset: parameters.offset || 0,
+                        offset: (parameters.page -1) * parameters.limit || 0,
                         orderBy: parameters.orderBy,
                         order: parameters.order,
                         type: parameters.type,
@@ -142,10 +142,7 @@
                         }
 
                         var contentRange = parseContentRange(headers('Content-Range'));
-                        $scope.query.lastOffset = contentRange.end;
-                        // Subtract 1 from the value since offsets are zero-based
-                        $scope.query.maxOffset = contentRange.total - 1;
-                        $scope.query.offset = normalizeOffset(contentRange.start, $scope.query.maxOffset, $scope.query.limit);
+                        $scope.query.totalItems = contentRange.total;
                     },
                     function(response) {
                         switch(response.status) {
@@ -174,10 +171,9 @@
             $scope.items = [];
             $scope.query = {
                 severityFilter: [],
+                page: 1,
                 limit: 20,
-                offset: 0,
-                lastOffset: 0,
-                maxOffset: 0,
+                totalItems: 0,
                 orderBy: 'severity',
                 order: 'desc'
             };
