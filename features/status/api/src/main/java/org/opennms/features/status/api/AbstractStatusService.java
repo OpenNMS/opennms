@@ -43,12 +43,16 @@ public abstract class AbstractStatusService<T, Q extends Query> {
         final SeverityFilter filter = query.getSeverityFilter();
         final CriteriaBuilder criteriaBuilder = getCriteriaBuilder(queryParameters);
 
-        // The implementors do not know anything about status/severity, therefore it is not supported to order by severity
-        // on dao level.
-        if (queryParameters.getOrder().getColumn().equals("severity")) {
-            criteriaBuilder.clearOrder();
+        // The implementors do not know anything about status/severity,
+        // therefore it is not supported to order by severityon dao level.
+        if (isSeverityRelatedQuery(query)) {
             criteriaBuilder.offset(null);
             criteriaBuilder.limit(null);
+
+            // no column "severity" exists, clear it to avoid hibernate complaining about it
+            if (queryParameters.getOrder().getColumn().equals("severity")) {
+                criteriaBuilder.clearOrder();
+            }
         }
 
         // Query and apply filters
@@ -98,7 +102,6 @@ public abstract class AbstractStatusService<T, Q extends Query> {
 
     protected abstract CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters);
 
-
     private List<StatusEntity<T>> apply(List<StatusEntity<T>> statusList, SeverityFilter severityFilter) {
         if (!statusList.isEmpty() && severityFilter != null && !severityFilter.getSeverities().isEmpty()) {
             return statusList.stream()
@@ -106,5 +109,12 @@ public abstract class AbstractStatusService<T, Q extends Query> {
                     .collect(Collectors.toList());
         }
         return statusList; // don't filter
+    }
+
+    // A severity related query is a query having a order column set to severity or a severity filter of any kind
+    private boolean isSeverityRelatedQuery(Q query) {
+        boolean severityRelatedQuery = query.getSeverityFilter() != null && !query.getSeverityFilter().getSeverities().isEmpty()
+                || (query.getParameters().getOrder().getColumn().equals("severity"));
+        return severityRelatedQuery;
     }
 }
