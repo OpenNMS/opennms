@@ -150,7 +150,7 @@
                 in etc/org.apache.karaf.features.cfg file -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>framework</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
             <type>kar</type>
         </dependency>
         <dependency>
@@ -159,7 +159,7 @@
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>standard</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
@@ -170,7 +170,7 @@
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>spring</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
@@ -181,7 +181,7 @@
                 the plugin configuration -->
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>spring-legacy</artifactId>
-            <version>${minionKarafVersion}</version>
+            <version>${karafVersion}</version>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
