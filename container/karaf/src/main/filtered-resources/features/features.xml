@@ -18,7 +18,7 @@
 -->
 <features name="standard-4.1.1" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
-	<repository>mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features</repository>
+	<repository>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</repository>
 
     <feature version="4.1.1" description="OSGi Security for Karaf" name="framework-security">
         <bundle start="false" start-level="1">mvn:org.apache.felix/org.apache.felix.framework.security/2.6.0</bundle>
@@ -577,7 +577,7 @@
         <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/4.1.1</bundle>
     </feature>
 
-    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features -->
+    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features -->
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <!-- <feature version="[6.0,6.1)">pax-http</feature> -->
         <feature>opennms-bridge-http-service</feature>
@@ -586,18 +586,18 @@
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.1</bundle>
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.1</bundle>
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.1</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/6.0.3</bundle>
-        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/6.0.3</bundle> -->
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/${paxWebVersion}</bundle>
+        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/${paxWebVersion}</bundle> -->
 
         <bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.4</bundle>
         <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/6.0.3</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
     </feature>
 
-    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features -->
+    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features -->
     <feature name="opennms-war" description="Provide support of a full WebContainer" version="${opennms.osgi.version}">
         <config name="org.ops4j.pax.url.war">
             org.ops4j.pax.url.war.importPaxLoggingPackages=true
@@ -605,11 +605,11 @@
         <!-- <feature version="[6.0,6.1)">pax-http-whiteboard</feature> -->
         <feature>opennms-http-whiteboard</feature>
         <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-descriptor/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/6.0.3</bundle>
-        <bundle start-level="30"> mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/6.0.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/6.0.3</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-descriptor/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/${paxWebVersion}</bundle>
+        <bundle start-level="30"> mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.5.0/jar/uber</bundle>
     </feature>
 

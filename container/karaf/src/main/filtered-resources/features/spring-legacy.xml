@@ -18,7 +18,7 @@
 -->
 <features name="spring-legacy-4.1.1" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
-    <repository>mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features</repository>
+    <repository>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</repository>
 
     <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
     <!-- Import the OpenNMS-modified standard features instead of the unmodified Karaf version -->

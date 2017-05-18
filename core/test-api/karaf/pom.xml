@@ -81,7 +81,7 @@
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
-                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/6.0.3/xml/features</descriptor>
+                <descriptor>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</descriptor>
               </descriptors>
               <features>
                 <!--
@@ -298,7 +298,7 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-features</artifactId>
-      <version>6.0.3</version>
+      <version>${paxWebVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
       <scope>compile</scope>
