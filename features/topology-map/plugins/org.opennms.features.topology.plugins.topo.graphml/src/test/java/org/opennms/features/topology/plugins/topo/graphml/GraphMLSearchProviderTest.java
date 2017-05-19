@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -62,7 +64,7 @@ public class GraphMLSearchProviderTest {
     }
 
     @Test
-    public void canSearchAllSearchProviders() {
+    public void canSearchAllSearchProviders() throws IOException, InvalidGraphException {
         final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider(new GraphMLServiceAccessor());
         metaTopologyProvider.setTopologyLocation("target/test-classes/test-graph.xml");
         metaTopologyProvider.load();

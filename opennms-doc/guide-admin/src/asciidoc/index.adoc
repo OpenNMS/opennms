@@ -193,6 +193,9 @@ include::text/bsm/bsmd.adoc[]
 == Topology Map
 include::text/topology/topology.adoc[]
 
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
+
 [[ga-database-reports]]
 == Database Reports
 include::text/database-reports/database.adoc[]
