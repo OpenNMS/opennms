@@ -1518,10 +1518,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         node = nodeDao.findByForeignId("empty", "4243");
         geolocation = node.getAssetRecord().getGeolocation();
 
-        assertNotNull(geolocation.getLatitude());
-        assertNotNull(geolocation.getLongitude());
-        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
-        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+        // Ensure it is reset
+        assertNull(geolocation.asAddressString());
+        assertNull(geolocation.getLatitude());
+        assertNull(geolocation.getLongitude());
     }
 
     @Test(timeout=300000)

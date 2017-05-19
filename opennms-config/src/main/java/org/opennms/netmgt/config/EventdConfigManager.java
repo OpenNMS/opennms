@@ -95,7 +95,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getTCPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getTCPAddress();
+            return m_config.getTCPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -123,7 +123,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getUDPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getUDPAddress();
+            return m_config.getUDPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -165,7 +165,7 @@ public class EventdConfigManager implements EventdConfig {
     public int getQueueLength() {
         getReadLock().lock();
         try {
-            return m_config.getQueueLength() == null? Integer.MAX_VALUE : m_config.getQueueLength();
+            return m_config.getQueueLength().orElse(Integer.MAX_VALUE);
         } finally {
             getReadLock().unlock();
         }
@@ -193,7 +193,7 @@ public class EventdConfigManager implements EventdConfig {
     public int getSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.getSocketSoTimeoutPeriod();
+            return m_config.getSocketSoTimeoutPeriod().orElse(0);
         } finally {
             getReadLock().unlock();
         }
@@ -207,7 +207,7 @@ public class EventdConfigManager implements EventdConfig {
     public boolean hasSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.getSocketSoTimeoutPeriod() != null;
+            return m_config.getSocketSoTimeoutPeriod().isPresent();
         } finally {
             getReadLock().unlock();
         }
@@ -237,7 +237,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getGetNextEventID() {
         getReadLock().lock();
         try {
-            return m_config.getGetNextEventID();
+            return m_config.getGetNextEventID().orElse(null);
         } finally {
             getReadLock().unlock();
         }

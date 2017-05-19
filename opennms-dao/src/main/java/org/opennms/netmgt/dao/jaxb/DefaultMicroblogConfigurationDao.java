@@ -105,7 +105,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<Micr
     public MicroblogProfile getProfile(String name) {
         if (name == null)
             return null;
-        for (MicroblogProfile profile : getContainer().getObject().getMicroblogProfileCollection()) {
+        for (MicroblogProfile profile : getContainer().getObject().getMicroblogProfiles()) {
             if (name.equals(profile.getName()))
                 return profile;
         }
@@ -117,7 +117,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<Micr
         final MicroblogConfiguration config = getContainer().getObject();
 
         boolean found = false;
-        final ListIterator<MicroblogProfile> it = config.getMicroblogProfileCollection().listIterator();
+        final ListIterator<MicroblogProfile> it = config.getMicroblogProfiles().listIterator();
         while (it.hasNext()) {
             final MicroblogProfile existing = it.next();
             if (existing.getName().equals(profile.getName())) {

@@ -46,6 +46,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
@@ -171,8 +172,8 @@ public class ChooseUeisController extends AbstractController {
         return excludes;
     }
 
-    public boolean isDisappearingEvent(Event e) {
-        if (e.getLogmsg() != null && "donotpersist".equalsIgnoreCase(e.getLogmsg().getDest())) {
+    public boolean isDisappearingEvent(final Event e) {
+        if (e.getLogmsg() != null && LogDestType.DONOTPERSIST == e.getLogmsg().getDest()) {
             return true;
         }
         if (e.getAlarmData() != null && e.getAlarmData().getAutoClean() == true) {

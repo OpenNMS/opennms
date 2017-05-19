@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,89 +29,69 @@
 package org.opennms.netmgt.config.translator;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class EventTranslatorConfiguration.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+
 @XmlRootElement(name = "event-translator-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EventTranslatorConfiguration implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("translator-configuration.xsd")
+public class EventTranslatorConfiguration implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * List of OpenNMS events for which the Event Translator 
      *  will subscribe for translation.
-     *  
      */
-    @XmlElement(name = "translation")
-    private Translation translation;
+    @XmlElementWrapper(name = "translation", required=false)
+    @XmlElement(name="event-translation-spec", required=true)
+    private List<EventTranslationSpec> m_eventTranslationSpecs = new ArrayList<>();
 
     public EventTranslatorConfiguration() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public List<EventTranslationSpec> getEventTranslationSpecs() {
+        return m_eventTranslationSpecs;
+    }
+
+    public void setEventTranslationSpecs(final List<EventTranslationSpec> eventTranslationSpecs) {
+        if (eventTranslationSpecs == m_eventTranslationSpecs) return;
+        m_eventTranslationSpecs.clear();
+        if (eventTranslationSpecs != null) m_eventTranslationSpecs.addAll(eventTranslationSpecs);
+    }
+
+    public void addEventTranslationSpec(final EventTranslationSpec spec) {
+        m_eventTranslationSpecs.add(spec);
+    }
+
+    public boolean removeEventTranslationSpec(final EventTranslationSpec spec) {
+        return m_eventTranslationSpecs.remove(spec);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_eventTranslationSpecs);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof EventTranslatorConfiguration) {
-            EventTranslatorConfiguration temp = (EventTranslatorConfiguration)obj;
-            boolean equals = Objects.equals(temp.translation, translation);
-            return equals;
+            final EventTranslatorConfiguration that = (EventTranslatorConfiguration)obj;
+            return Objects.equals(this.m_eventTranslationSpecs, that.m_eventTranslationSpecs);
         }
         return false;
     }
-
-    /**
-     * Returns the value of field 'translation'. The field 'translation' has the
-     * following description: List of OpenNMS events for which the Event
-     * Translator 
-     *  will subscribe for translation.
-     *  
-     * 
-     * @return the value of field 'Translation'.
-     */
-    public Translation getTranslation() {
-        return this.translation;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            translation);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'translation'. The field 'translation' has the
-     * following description: List of OpenNMS events for which the Event
-     * Translator 
-     *  will subscribe for translation.
-     *  
-     * 
-     * @param translation the value of field 'translation'.
-     */
-    public void setTranslation(final Translation translation) {
-        this.translation = translation;
-    }
-
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,255 +29,133 @@
 package org.opennms.netmgt.config.reporting;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * An offset period used as a base to determine a real
  *  date when running the report
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "date-parm")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DateParm implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reporting.xsd")
+public class DateParm implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
-     * the name of this parameter as passed to the report
-     *  engine
+     * the name of this parameter as passed to the report engine
      */
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
-     * the name of this parameter as displayed in the
-     *  webui
+     * the name of this parameter as displayed in the webui
      */
     @XmlAttribute(name = "display-name", required = true)
-    private String displayName;
+    private String m_displayName;
 
     /**
      * flag to use absolute date if possible
      */
     @XmlAttribute(name = "use-absolute-date")
-    private Boolean useAbsoluteDate;
+    private Boolean m_useAbsoluteDate;
 
     @XmlElement(name = "default-interval", required = true)
-    private String defaultInterval;
+    private String m_defaultInterval;
 
     @XmlElement(name = "default-count", required = true)
-    private Integer defaultCount;
+    private Integer m_defaultCount;
 
     @XmlElement(name = "default-time")
-    private DefaultTime defaultTime;
+    private DefaultTime m_defaultTime;
 
     public DateParm() {
     }
 
-    /**
-     */
-    public void deleteDefaultCount() {
-        this.defaultCount= null;
+    public String getName() {
+        return m_name;
     }
 
-    /**
-     */
-    public void deleteUseAbsoluteDate() {
-        this.useAbsoluteDate= null;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getDisplayName() {
+        return m_displayName;
+    }
+
+    public void setDisplayName(final String displayName) {
+        m_displayName = ConfigUtils.assertNotEmpty(displayName, "display-name");
+    }
+
+    public Optional<Boolean> getUseAbsoluteDate() {
+        return Optional.ofNullable(m_useAbsoluteDate);
+    }
+
+    public void setUseAbsoluteDate(final Boolean useAbsoluteDate) {
+        m_useAbsoluteDate = useAbsoluteDate;
+    }
+
+    public String getDefaultInterval() {
+        return m_defaultInterval;
+    }
+
+    public void setDefaultInterval(final String defaultInterval) {
+        m_defaultInterval = ConfigUtils.assertNotEmpty(defaultInterval, "default-interval");
+    }
+
+    public Integer getDefaultCount() {
+        return m_defaultCount;
+    }
+
+    public void setDefaultCount(final Integer defaultCount) {
+        m_defaultCount = ConfigUtils.assertNotNull(defaultCount, "default-count");
+    }
+
+    public Optional<DefaultTime> getDefaultTime() {
+        return Optional.ofNullable(m_defaultTime);
+    }
+
+    public void setDefaultTime(final DefaultTime defaultTime) {
+        m_defaultTime = defaultTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_displayName, 
+                            m_useAbsoluteDate, 
+                            m_defaultInterval, 
+                            m_defaultCount, 
+                            m_defaultTime);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof DateParm) {
-            DateParm temp = (DateParm)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.displayName, displayName)
-                && Objects.equals(temp.useAbsoluteDate, useAbsoluteDate)
-                && Objects.equals(temp.defaultInterval, defaultInterval)
-                && Objects.equals(temp.defaultCount, defaultCount)
-                && Objects.equals(temp.defaultTime, defaultTime);
-            return equals;
+            final DateParm that = (DateParm)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_displayName, that.m_displayName)
+                    && Objects.equals(this.m_useAbsoluteDate, that.m_useAbsoluteDate)
+                    && Objects.equals(this.m_defaultInterval, that.m_defaultInterval)
+                    && Objects.equals(this.m_defaultCount, that.m_defaultCount)
+                    && Objects.equals(this.m_defaultTime, that.m_defaultTime);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'defaultCount'.
-     * 
-     * @return the value of field 'DefaultCount'.
-     */
-    public Integer getDefaultCount() {
-        return this.defaultCount;
-    }
-
-    /**
-     * Returns the value of field 'defaultInterval'.
-     * 
-     * @return the value of field 'DefaultInterval'.
-     */
-    public String getDefaultInterval() {
-        return this.defaultInterval;
-    }
-
-    /**
-     * Returns the value of field 'defaultTime'.
-     * 
-     * @return the value of field 'DefaultTime'.
-     */
-    public DefaultTime getDefaultTime() {
-        return this.defaultTime;
-    }
-
-    /**
-     * Returns the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @return the value of field 'DisplayName'.
-     */
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'useAbsoluteDate'. The field 'useAbsoluteDate'
-     * has the following description: flag to use absolute date if possible
-     * 
-     * @return the value of field 'UseAbsoluteDate'.
-     */
-    public Boolean getUseAbsoluteDate() {
-        return this.useAbsoluteDate;
-    }
-
-    /**
-     * Method hasDefaultCount.
-     * 
-     * @return true if at least one DefaultCount has been added
-     */
-    public boolean hasDefaultCount() {
-        return this.defaultCount != null;
-    }
-
-    /**
-     * Method hasUseAbsoluteDate.
-     * 
-     * @return true if at least one UseAbsoluteDate has been added
-     */
-    public boolean hasUseAbsoluteDate() {
-        return this.useAbsoluteDate != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            displayName, 
-            useAbsoluteDate, 
-            defaultInterval, 
-            defaultCount, 
-            defaultTime);
-        return hash;
-    }
-
-    /**
-     * Returns the value of field 'useAbsoluteDate'. The field 'useAbsoluteDate'
-     * has the following description: flag to use absolute date if possible
-     * 
-     * @return the value of field 'UseAbsoluteDate'.
-     */
-    public Boolean isUseAbsoluteDate() {
-        return this.useAbsoluteDate;
-    }
-
-    /**
-     * Sets the value of field 'defaultCount'.
-     * 
-     * @param defaultCount the value of field 'defaultCount'.
-     */
-    public void setDefaultCount(final Integer defaultCount) {
-        this.defaultCount = defaultCount;
-    }
-
-    /**
-     * Sets the value of field 'defaultInterval'.
-     * 
-     * @param defaultInterval the value of field 'defaultInterval'.
-     */
-    public void setDefaultInterval(final String defaultInterval) {
-        this.defaultInterval = defaultInterval;
-    }
-
-    /**
-     * Sets the value of field 'defaultTime'.
-     * 
-     * @param defaultTime the value of field 'defaultTime'.
-     */
-    public void setDefaultTime(final DefaultTime defaultTime) {
-        this.defaultTime = defaultTime;
-    }
-
-    /**
-     * Sets the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @param displayName the value of field 'displayName'.
-     */
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'useAbsoluteDate'. The field 'useAbsoluteDate' has
-     * the following description: flag to use absolute date if possible
-     * 
-     * @param useAbsoluteDate the value of field 'useAbsoluteDate'.
-     */
-    public void setUseAbsoluteDate(final Boolean useAbsoluteDate) {
-        this.useAbsoluteDate = useAbsoluteDate;
     }
 
 }

@@ -162,7 +162,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
             int index = 0;
-            for (Service baseSvc : baseConfig.getServiceCollection()) {
+            for (Service baseSvc : baseConfig.getServices()) {
                 Service localSvc = getService(currentCfg, baseSvc.getName());
                 if (localSvc == null) {
                     if (baseSvc.isEnabled()) {
@@ -170,7 +170,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
                     } else {
                         log("Marking service %s as disabled\n", baseSvc.getName());
                     }
-                    currentCfg.getServiceCollection().add(index, baseSvc);
+                    currentCfg.getServices().add(index, baseSvc);
                     continue;
                 }
                 if (!baseSvc.isEnabled()) {
@@ -222,7 +222,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service
      */
     private static Service getService(ServiceConfiguration svcConfig, String serviceName) {
-        for(Service s : svcConfig.getServiceCollection()) {
+        for(Service s : svcConfig.getServices()) {
             if (s.getName().equals(serviceName)) {
                 return s;
             }
@@ -237,7 +237,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      * @return the logging prefix attribute
      */
     private static Attribute getLoggingPrefix(Service svc) {
-        for (Attribute a : svc.getAttributeCollection()) {
+        for (Attribute a : svc.getAttributes()) {
             if (a.getName().equals("LoggingPrefix")) {
                 return a;
             }

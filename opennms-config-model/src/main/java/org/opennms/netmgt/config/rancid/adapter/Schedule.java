@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,50 +29,24 @@
 package org.opennms.netmgt.config.rancid.adapter;
 
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * This is a time when you can schedule set up/down
  *  to rancid
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "schedule")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Schedule extends BasicSchedule implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("rancid-adapter-configuration.xsd")
+public class Schedule extends BasicSchedule implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     public Schedule() {
     }
-
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        
-        if (super.equals(obj)==false) {
-            return false;
-        }
-        return false;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        return 1;
-    }
-
 }

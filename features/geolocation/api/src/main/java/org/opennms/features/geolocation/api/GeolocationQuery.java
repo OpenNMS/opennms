@@ -67,11 +67,6 @@ public class GeolocationQuery {
      */
     private List<Integer> nodeIds = new ArrayList<>();
 
-    /**
-     * Define weather to resolve missing longitude/latitude coordinates based on a given address string.
-     */
-    private boolean resolveCoordinatesFromAddressString = true;
-
     public StatusCalculationStrategy getStatusCalculationStrategy() {
         return statusCalculationStrategy;
     }
@@ -102,14 +97,6 @@ public class GeolocationQuery {
 
     public void setSeverity(GeolocationSeverity severity) {
         this.severity = severity;
-    }
-
-    public boolean isResolveCoordinatesFromAddressString() {
-        return resolveCoordinatesFromAddressString;
-    }
-
-    public void setResolveCoordinatesFromAddressString(boolean resolveCoordinatesFromAddressString) {
-        this.resolveCoordinatesFromAddressString = resolveCoordinatesFromAddressString;
     }
 
     public List<Integer> getNodeIds() {

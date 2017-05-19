@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.groups;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,6 +39,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "time")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,16 +73,16 @@ public class Time implements Serializable {
     public Time() {
     }
 
-    public String getId() {
-        return m_id;
+    public Optional<String> getId() {
+        return Optional.ofNullable(m_id);
     }
 
     public void setId(final String id) {
         m_id = id;
     }
 
-    public String getDay() {
-        return m_day;
+    public Optional<String> getDay() {
+        return Optional.ofNullable(m_day);
     }
 
     public void setDay(final String day) {
@@ -92,7 +94,7 @@ public class Time implements Serializable {
     }
 
     public void setBegins(final String begins) {
-        m_begins = begins;
+        m_begins = ConfigUtils.assertNotEmpty(begins, "begins");
     }
 
     public String getEnds() {
@@ -100,16 +102,16 @@ public class Time implements Serializable {
     }
 
     public void setEnds(final String ends) {
-        m_ends = ends;
+        m_ends = ConfigUtils.assertNotEmpty(ends, "ends");
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_id, 
-            m_day, 
-            m_begins, 
-            m_ends);
+                            m_id, 
+                            m_day, 
+                            m_begins, 
+                            m_ends);
     }
 
     @Override
@@ -117,13 +119,13 @@ public class Time implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Time) {
-            final Time temp = (Time)obj;
-            return Objects.equals(temp.m_id, m_id)
-                && Objects.equals(temp.m_day, m_day)
-                && Objects.equals(temp.m_begins, m_begins)
-                && Objects.equals(temp.m_ends, m_ends);
+            final Time that = (Time)obj;
+            return Objects.equals(this.m_id, that.m_id)
+                    && Objects.equals(this.m_day, that.m_day)
+                    && Objects.equals(this.m_begins, that.m_begins)
+                    && Objects.equals(this.m_ends, that.m_ends);
         }
         return false;
     }

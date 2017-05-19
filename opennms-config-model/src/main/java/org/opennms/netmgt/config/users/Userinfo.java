@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,11 +30,14 @@ package org.opennms.netmgt.config.users;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
@@ -56,13 +59,14 @@ public class Userinfo implements Serializable {
     @XmlElement(name = "header")
     private Header m_header;
 
-    @XmlElement(name = "users")
-    private Users m_users;
+    @XmlElementWrapper(name = "users")
+    @XmlElement(name = "user")
+    private List<User> m_users = new ArrayList<>();
 
     public Userinfo() {
     }
 
-    public Userinfo(final Users users) {
+    public Userinfo(final List<User> users) {
         m_users = users;
     }
 
@@ -74,29 +78,32 @@ public class Userinfo implements Serializable {
         m_header = header;
     }
 
-    public Users getUsers() {
+    public List<User> getUsers() {
         return m_users;
     }
 
-    public void setUsers(final Users users) {
-        m_users = users;
+    public void setUsers(final List<User> users) {
+        if (users == m_users) return;
+        m_users.clear();
+        if (users != null) m_users = users;
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_header, 
-            m_users);
+                            m_header, 
+                            m_users);
     }
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Userinfo) {
             final Userinfo temp = (Userinfo)obj;
             return Objects.equals(temp.m_header, m_header)
-                && Objects.equals(temp.m_users, m_users);
+                    && Objects.equals(temp.m_users, m_users);
         }
         return false;
     }

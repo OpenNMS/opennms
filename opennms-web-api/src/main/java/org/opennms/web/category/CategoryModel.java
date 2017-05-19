@@ -166,7 +166,7 @@ public class CategoryModel extends Object {
             org.opennms.netmgt.config.categories.Category category = m_factory.getCategory(categoryName);
     
             if (category != null) {
-                comment = category.getComment();
+                comment = category.getComment().orElse(null);
             }
         } finally {
             m_factory.getReadLock().unlock();

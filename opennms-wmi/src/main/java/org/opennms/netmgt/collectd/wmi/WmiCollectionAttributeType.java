@@ -33,6 +33,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.wmi.Attrib;
+import org.opennms.netmgt.config.wmi.WmiType;
 
 /**
  * <p>WmiCollectionAttributeType class.</p>
@@ -57,7 +58,7 @@ public class WmiCollectionAttributeType extends AbstractCollectionAttributeType 
         /** {@inheritDoc} */
         @Override
         public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
-            if ("string".equalsIgnoreCase(m_attribute.getType())) {
+            if (m_attribute.getType() == WmiType.STRING) {
                 persister.persistStringAttribute(attribute);
             } else {
                 persister.persistNumericAttribute(attribute);
@@ -74,14 +75,9 @@ public class WmiCollectionAttributeType extends AbstractCollectionAttributeType 
             return m_attribute.getAlias();
         }
 
-        /**
-         * <p>getType</p>
-         *
-         * @return a {@link java.lang.String} object.
-         */
         @Override
         public String getType() {
-            return m_attribute.getType();
+            return m_attribute.getType().toString();
         }
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.xml.eventconf;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,133 +40,74 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * This element is used for converting event 
  *  varbind value in static decoded string.
  */
 @XmlRootElement(name="varbindsdecode")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={"m_parmid", "m_decodes"})
 public class Varbindsdecode implements Serializable {
-	private static final long serialVersionUID = -6483547334892439888L;
-	private static final Decode[] EMPTY_DECODE_ARRAY = new Decode[0];
+    private static final long serialVersionUID = 2L;
 
-	/**
+    /**
      * The identifier of the parameters to be decoded
      */
-	// @NotNull
-	@XmlElement(name="parmid", required=true)
+    @XmlElement(name="parmid", required=true)
     private String m_parmid;
 
     /**
      * The value to string decoding map
      */
-	// @Size(min=1)
-	// @NotNull
-	@XmlElement(name="decode", required=true)
-    private List<Decode> m_decodes = new ArrayList<Decode>();
+    @XmlElement(name="decode", required=true)
+    private List<Decode> m_decodes = new ArrayList<>();
 
     public String getParmid() {
         return m_parmid;
     }
 
     public void setParmid(final String parmid) {
-        m_parmid = parmid == null? null : parmid.intern();
+        m_parmid = ConfigUtils.assertNotEmpty(parmid, "parmid").intern();
     }
 
-    public Decode[] getDecode() {
-        return m_decodes.toArray(EMPTY_DECODE_ARRAY);
-    }
-
-    public Decode getDecode(final int index) throws IndexOutOfBoundsException {
-        return m_decodes.get(index);
-    }
-
-    public java.util.List<Decode> getDecodeCollection() {
+    public List<Decode> getDecodes() {
         return m_decodes;
     }
 
-    public int getDecodeCount() {
-        return m_decodes.size();
-    }
-
-    public java.util.Enumeration<Decode> enumerateDecode() {
-        return java.util.Collections.enumeration(m_decodes);
-    }
-
-    public java.util.Iterator<Decode> iterateDecode() {
-        return m_decodes.iterator();
-    }
-
-    public void setDecode(final List<Decode> decodes) {
+    public void setDecodes(final List<Decode> decodes) {
+        ConfigUtils.assertMinimumSize(decodes, 1, "decode");
         if (m_decodes == decodes) return;
         m_decodes.clear();
-        m_decodes.addAll(decodes);
+        if (decodes != null) m_decodes.addAll(decodes);
     }
 
-    public void setDecode(final int index, final Decode decode) throws IndexOutOfBoundsException {
-        m_decodes.set(index, decode);
-    }
-
-    public void setDecode(final Decode[] decodes) {
-        m_decodes.clear();
-        for (final Decode decode : decodes) {
-        	m_decodes.add(decode);
-        }
-    }
-
-    public void setDecodeCollection(final List<Decode> decodes) {
-        setDecode(decodes);
-    }
-
-	public void addDecode(final Decode decode) throws IndexOutOfBoundsException {
+    public void addDecode(final Decode decode) {
         m_decodes.add(decode);
-    }
-
-    public void addDecode(final int index, final Decode decode) throws IndexOutOfBoundsException {
-        m_decodes.add(index, decode);
-    }
-
-    public void removeAllDecode() {
-        m_decodes.clear();
     }
 
     public boolean removeDecode(final Decode decode) {
         return m_decodes.remove(decode);
     }
 
-    public Decode removeDecodeAt(final int index) {
-        return m_decodes.remove(index);
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_parmid, m_decodes);
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_decodes == null) ? 0 : m_decodes.hashCode());
-		result = prime * result + ((m_parmid == null) ? 0 : m_parmid.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Varbindsdecode)) return false;
-		final Varbindsdecode other = (Varbindsdecode) obj;
-		if (m_decodes == null) {
-			if (other.m_decodes != null) return false;
-		} else if (!m_decodes.equals(other.m_decodes)) {
-			return false;
-		}
-		if (m_parmid == null) {
-			if (other.m_parmid != null) return false;
-		} else if (!m_parmid.equals(other.m_parmid)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Varbindsdecode) {
+            final Varbindsdecode that = (Varbindsdecode) obj;
+            return Objects.equals(this.m_parmid, that.m_parmid) &&
+                    Objects.equals(this.m_decodes, that.m_decodes);
+        }
+        return false;
+    }
 
 }

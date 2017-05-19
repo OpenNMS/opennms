@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,19 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -64,182 +71,97 @@ import java.util.Objects;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "")
 @XmlRootElement(name = "attrib")
-public class Attrib {
+@ValidateUsing("wmi-datacollection.xsd")
+public class Attrib implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
-    protected String name;
+    protected String m_name;
+
     @XmlAttribute(name = "alias", required = true)
-    protected String alias;
+    protected String m_alias;
+
     @XmlAttribute(name = "wmiObject", required = true)
-    protected String wmiObject;
+    protected String m_wmiObject;
+
+    @XmlJavaTypeAdapter(WmiTypeAdapter.class)
     @XmlAttribute(name = "type", required = true)
-    protected String type;
+    protected WmiType m_type;
+
     @XmlAttribute(name = "maxval")
-    protected String maxval;
+    protected String m_maxval;
+
     @XmlAttribute(name = "minval")
-    protected String minval;
+    protected String m_minval;
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getName() {
-        return name;
+        return m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Gets the value of the alias property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getAlias() {
-        return alias;
+        return m_alias;
     }
 
-    /**
-     * Sets the value of the alias property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAlias(String value) {
-        this.alias = value;
+    public void setAlias(final String alias) {
+        m_alias = ConfigUtils.assertNotEmpty(alias, "alias");
     }
 
-    /**
-     * Gets the value of the wmiObject property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getWmiObject() {
-        return wmiObject;
+        return m_wmiObject;
     }
 
-    /**
-     * Sets the value of the wmiObject property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setWmiObject(String value) {
-        this.wmiObject = value;
+    public void setWmiObject(final String wmiObject) {
+        m_wmiObject = ConfigUtils.assertNotEmpty(wmiObject, "wmiObject");
     }
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
+    public WmiType getType() {
+        return m_type;
     }
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
+    public void setType(final WmiType type) {
+        m_type = ConfigUtils.assertNotNull(type, "type");
     }
 
-    /**
-     * Gets the value of the maxval property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMaxval() {
-        return maxval;
+    public Optional<String> getMaxval() {
+        return Optional.ofNullable(m_maxval);
     }
 
-    /**
-     * Sets the value of the maxval property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMaxval(String value) {
-        this.maxval = value;
+    public void setMaxval(final String maxval) {
+        m_maxval = ConfigUtils.normalizeString(maxval);
     }
 
-    /**
-     * Gets the value of the minval property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMinval() {
-        return minval;
+    public Optional<String> getMinval() {
+        return Optional.ofNullable(m_minval);
     }
 
-    /**
-     * Sets the value of the minval property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMinval(String value) {
-        this.minval = value;
+    public void setMinval(final String minval) {
+        m_minval = ConfigUtils.normalizeString(minval);
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Attrib)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Attrib)) {
             return false;
         }
-        Attrib castOther = (Attrib) other;
-        return Objects.equals(name, castOther.name) && Objects.equals(alias, castOther.alias)
-                && Objects.equals(wmiObject, castOther.wmiObject) && Objects.equals(type, castOther.type)
-                && Objects.equals(maxval, castOther.maxval) && Objects.equals(minval, castOther.minval);
+        final Attrib that = (Attrib) obj;
+        return Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_alias, that.m_alias) &&
+                Objects.equals(this.m_wmiObject, that.m_wmiObject) &&
+                Objects.equals(this.m_type, that.m_type) &&
+                Objects.equals(this.m_maxval, that.m_maxval) &&
+                Objects.equals(this.m_minval, that.m_minval);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, alias, wmiObject, type, maxval, minval);
+        return Objects.hash(m_name, m_alias, m_wmiObject, m_type, m_maxval, m_minval);
     }
 
 }

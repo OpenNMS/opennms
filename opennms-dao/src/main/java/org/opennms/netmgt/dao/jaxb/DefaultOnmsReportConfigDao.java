@@ -55,7 +55,7 @@ implements OnmsReportConfigDao {
     public String getHtmlStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
-            return report.getHtmlTemplate();
+            return report.getHtmlTemplate().orElse(null);
         }
         return null;
     }
@@ -65,7 +65,7 @@ implements OnmsReportConfigDao {
     public String getPdfStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
-            return report.getPdfTemplate();
+            return report.getPdfTemplate().orElse(null);
         }
         return null;
     }
@@ -75,7 +75,7 @@ implements OnmsReportConfigDao {
     public String getSvgStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
-            return report.getSvgTemplate();
+            return report.getSvgTemplate().orElse(null);
         }
         return null;
     }
@@ -114,63 +114,55 @@ implements OnmsReportConfigDao {
     /** {@inheritDoc} */
     @Override
     public Parameters getParameters(String id) {
-        
-        Parameters parameters = null;
-        Report report = getReport(id);
+        final Report report = getReport(id);
         if (report != null) {
-            parameters = report.getParameters();
+            return report.getParameters().orElse(null);
         }
         
-        return parameters;
+        return null;
         
     }
     
     /** {@inheritDoc} */
     @Override
-    public DateParm[] getDateParms(String id) {
-        
-        DateParm[] dateParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            dateParms = report.getParameters().getDateParm();
+    public List<DateParm> getDateParms(String id) {
+        final Report report = getReport(id);
+        if (report != null && report.getParameters().isPresent()) {
+            return report.getParameters().get().getDateParms();
         }
         
-        return dateParms;
+        return null;
         
     }
     
     /** {@inheritDoc} */
     @Override
-    public StringParm[] getStringParms(String id) {
-        
-        StringParm[] stringParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            stringParms = report.getParameters().getStringParm();
+    public List<StringParm> getStringParms(String id) {
+        final Report report = getReport(id);
+        if (report != null && report.getParameters().isPresent()) {
+            return report.getParameters().get().getStringParms();
         }
         
-        return stringParms;
+        return null;
         
     }
     
     /** {@inheritDoc} */
     @Override
-    public IntParm[] getIntParms(String id) {
-        
-        IntParm[] intParms = null;
-        Report report = getReport(id);
-        if (report != null) {
-            intParms = report.getParameters().getIntParm();
+    public List<IntParm> getIntParms(String id) {
+        final Report report = getReport(id);
+        if (report != null && report.getParameters().isPresent()) {
+            return report.getParameters().get().getIntParms();
         }
         
-        return intParms;
+        return null;
         
     }
 
     /** {@inheritDoc} */
     @Override
     public List<Report> translateConfig(OpennmsReports config) {
-        return Collections.unmodifiableList(config.getReportCollection());
+        return Collections.unmodifiableList(config.getReports());
     }
     
 }

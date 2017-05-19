@@ -31,10 +31,10 @@ package org.opennms.netmgt.dao.jaxb;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.config.siteStatusViews.Views;
 import org.opennms.netmgt.dao.api.SiteStatusViewConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
@@ -78,7 +78,7 @@ public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
      * @return a {@link org.opennms.netmgt.config.siteStatusViews.Views} object.
      */
     @Override
-    public Views getViews() {
+    public List<View> getViews() {
         return SiteStatusViewsFactory.getConfig().getViews();
     }
     

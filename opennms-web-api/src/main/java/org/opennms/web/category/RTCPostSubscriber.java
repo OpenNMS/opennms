@@ -224,8 +224,8 @@ public class RTCPostSubscriber {
                         // create a JMS connection to subscribe
                         final RTCPostSubscriber subscriber = new RTCPostSubscriber();
 
-                        for (final Section section : view.getSectionCollection()) {
-                            for (final String categoryName : section.getCategoryCollection()) {
+                        for (final Section section : view.getSections()) {
+                            for (final String categoryName : section.getCategories()) {
                                 subscriber.subscribe(categoryName);
                                 LOG.info("Sent subscription event to RTC for category: {}",  categoryName);
                             }

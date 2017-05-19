@@ -49,7 +49,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
-import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -300,10 +299,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
 
-    private static RowDef getRowDef(View view, String rowLabel) {
-        Rows rows = view.getRows();
-        Collection<RowDef> rowDefs = rows.getRowDefCollection();
-        for (RowDef rowDef : rowDefs) {
+    private static RowDef getRowDef(final View view, final String rowLabel) {
+        for (final RowDef rowDef : view.getRows()) {
             if (rowDef.getLabel().equals(rowLabel)) {
                 return rowDef;
             }
@@ -315,7 +312,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private static Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
         Set<String> categories = new LinkedHashSet<String>();
         
-        List<Category> cats = rowDef.getCategoryCollection();
+        List<Category> cats = rowDef.getCategories();
         for (Category cat : cats) {
             categories.add(cat.getName());
         }

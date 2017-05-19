@@ -30,7 +30,6 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -270,13 +269,13 @@ public class ConvertToEvent {
 
         EventBuilder bldr = toEventBuilder(message, systemId, location);
 
-        final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList().getUeiMatchCollection());
+        final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList());
         for (final UeiMatch uei : ueiMatch) {
-            final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
-                                              containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
-                                              matchProcess(uei.getProcessMatch(), message.getProcessName()) &&
-                                              matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
-                                              matchHostAddr(uei.getHostaddrMatch(), str(message.getHostAddress()));
+            final boolean messageMatchesUeiListEntry = containsIgnoreCase(uei.getFacilities(), facilityTxt) &&
+                                              containsIgnoreCase(uei.getSeverities(), priorityTxt) &&
+                                              matchProcess(uei.getProcessMatch().orElse(null), message.getProcessName()) &&
+                                              matchHostname(uei.getHostnameMatch().orElse(null), message.getHostName()) &&
+                                              matchHostAddr(uei.getHostaddrMatch().orElse(null), str(message.getHostAddress()));
 
             if (messageMatchesUeiListEntry) {
                 if (uei.getMatch().getType().equals("substr")) {
@@ -292,7 +291,7 @@ public class ConvertToEvent {
         }
 
         // Time to verify if we need to hide the message
-        final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages().getHideMatchCollection());
+        final List<HideMatch> hideMatch = (config.getHideMessages() == null ? Collections.emptyList() : config.getHideMessages());
         boolean doHide = false;
         if (hideMatch.size() > 0) {
             // Match this regex against the full string of the message
@@ -442,7 +441,7 @@ public class ConvertToEvent {
 
             if (msgMat.groupCount() > 0) {
                 // Perform default parameter mapping
-                if (uei.getMatch().isDefaultParameterMapping()) {
+                if (uei.getMatch().getDefaultParameterMapping()) {
                     if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
                     for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
                         if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
@@ -451,9 +450,9 @@ public class ConvertToEvent {
                 }
 
                 // If there are specific parameter mappings as well, perform those mappings
-                if (uei.getParameterAssignmentCount() > 0) {
+                if (uei.getParameterAssignments().size() > 0) {
                     if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
-                    for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
+                    for (ParameterAssignment assignment : uei.getParameterAssignments()) {
                         String parmName = assignment.getParameterName();
                         String parmValue = msgMat.group(assignment.getMatchingGroup());
                         parmValue = parmValue == null ? "" : parmValue;

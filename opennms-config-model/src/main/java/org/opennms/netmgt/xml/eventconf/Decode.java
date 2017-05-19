@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.xml.eventconf;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,68 +37,57 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * This element is used for converting event 
  *  varbind value in static decoded string.
  */
 @XmlRootElement(name="decode")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 public class Decode implements Serializable {
-	private static final long serialVersionUID = 3617401172106159899L;
+    private static final long serialVersionUID = 2L;
 
-	// @NotNull
-	@XmlAttribute(name="varbindvalue", required=true)
+    @XmlAttribute(name="varbindvalue", required=true)
     private String m_varbindvalue;
 
-	// @NotNull
-	@XmlAttribute(name="varbinddecodedstring",required=true)
+    @XmlAttribute(name="varbinddecodedstring",required=true)
     private String m_varbinddecodedstring;
-
-    public String getVarbinddecodedstring() {
-        return m_varbinddecodedstring;
-    }
 
     public String getVarbindvalue() {
         return m_varbindvalue;
     }
 
-    public void setVarbinddecodedstring(final String varbinddecodedstring) {
-        m_varbinddecodedstring = varbinddecodedstring.intern();
-    }
-
     public void setVarbindvalue(final String varbindvalue) {
-        m_varbindvalue = varbindvalue.intern();
+        m_varbindvalue = ConfigUtils.assertNotNull(varbindvalue, "varbindvalue").intern();
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_varbinddecodedstring == null) ? 0 : m_varbinddecodedstring.hashCode());
-		result = prime * result + ((m_varbindvalue == null) ? 0 : m_varbindvalue.hashCode());
-		return result;
-	}
+    public String getVarbinddecodedstring() {
+        return m_varbinddecodedstring;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Decode)) return false;
-		final Decode other = (Decode) obj;
-		if (m_varbinddecodedstring == null) {
-			if (other.m_varbinddecodedstring != null) return false;
-		} else if (!m_varbinddecodedstring.equals(other.m_varbinddecodedstring)) {
-			return false;
-		}
-		if (m_varbindvalue == null) {
-			if (other.m_varbindvalue != null) return false;
-		} else if (!m_varbindvalue.equals(other.m_varbindvalue)) {
-			return false;
-		}
-		return true;
-	}
+    public void setVarbinddecodedstring(final String varbinddecodedstring) {
+        m_varbinddecodedstring = ConfigUtils.assertNotNull(varbinddecodedstring, "varbinddecodedstring").intern();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_varbindvalue, m_varbinddecodedstring);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Decode) {
+            final Decode that = (Decode) obj;
+            return Objects.equals(this.m_varbindvalue, that.m_varbindvalue) &&
+                    Objects.equals(this.m_varbinddecodedstring, that.m_varbinddecodedstring);
+        }
+        return false;
+    }
 
     @Override
     public String toString() {

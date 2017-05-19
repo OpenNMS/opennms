@@ -83,8 +83,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jrobin");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
-        // Causes the test to die?
-        //installFeature("onms-camel-elasticsearch");
         //installFeature("opennms-activemq-config");
         //installFeature("opennms-activemq");
         //installFeature("opennms-activemq-dispatcher-config");
@@ -114,7 +112,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-discovery");
         // Minion-only feature
         //installFeature("opennms-discovery-distPollerDaoMinion");
-        //installFeature("opennms-elasticsearch-event-forwarder");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
         installFeature("opennms-icmp-api");

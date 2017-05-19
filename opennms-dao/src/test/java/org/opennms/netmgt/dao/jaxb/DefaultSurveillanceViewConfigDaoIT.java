@@ -29,20 +29,20 @@
 package org.opennms.netmgt.dao.jaxb;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.config.surveillanceViews.Columns;
-import org.opennms.netmgt.config.surveillanceViews.Rows;
+import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
+import org.opennms.netmgt.config.surveillanceViews.RowDef;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.config.surveillanceViews.Views;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import junit.framework.TestCase;
 
 /**
  * Takes too long to run, so it's an IT test now.
@@ -78,13 +78,11 @@ public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
         assertNotNull("default view should not be null", view);
         assertEquals("default view name", "default", view.getName());
         
-        Columns columns = view.getColumns();
-        assertNotNull("default view columns should not be null", columns);
-        assertEquals("default view column count", 3, columns.getColumnDefCount());
+        assertNotNull("default view columns should not be null", view.getColumns());
+        assertEquals("default view column count", 3, view.getColumns().size());
         
-        Rows rows = view.getRows();
-        assertNotNull("default view rows should not be null", rows);
-        assertEquals("default view row count", 3, rows.getRowDefCount());
+        assertNotNull("default view rows should not be null", view.getRows());
+        assertEquals("default view row count", 3, view.getRows().size());
     }
     
     public void testViewByName() {
@@ -92,31 +90,29 @@ public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
         assertNotNull("default view should not be null", view);
         assertEquals("default view name", "default", view.getName());
         
-        Columns columns = view.getColumns();
-        assertNotNull("default view columns should not be null", columns);
-        assertEquals("default view column count", 3, columns.getColumnDefCount());
+        assertNotNull("default view columns should not be null", view.getColumns());
+        assertEquals("default view column count", 3, view.getColumns().size());
         
-        Rows rows = view.getRows();
-        assertNotNull("default view rows should not be null", rows);
-        assertEquals("default view row count", 3, rows.getRowDefCount());
+        assertNotNull("default view rows should not be null", view.getRows());
+        assertEquals("default view row count", 3, view.getRows().size());
     }
     
     public void testGetViews() {
-        Views views = m_dao.getViews();
+        List<View> views = m_dao.getViews();
         assertNotNull("views should not be null", views);
-        assertEquals("view count", 1, views.getViewCount());
+        assertEquals("view count", 1, views.size());
         
-        View view = views.getView(0);
+        View view = views.get(0);
         assertNotNull("first view should not be null", view);
         assertEquals("first view name", "default", view.getName());
         
-        Columns columns = view.getColumns();
+        List<ColumnDef> columns = view.getColumns();
         assertNotNull("first view columns should not be null", columns);
-        assertEquals("first view column count", 3, columns.getColumnDefCount());
+        assertEquals("first view column count", 3, columns.size());
         
-        Rows rows = view.getRows();
+        List<RowDef> rows = view.getRows();
         assertNotNull("first view rows should not be null", rows);
-        assertEquals("first view row count", 3, rows.getRowDefCount());
+        assertEquals("first view row count", 3, rows.size());
     }
     
     public void testGetViewMap() {
@@ -131,13 +127,13 @@ public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
         assertNotNull("first view should not be null", view);
         assertEquals("first view name", "default", view.getName());
         
-        Columns columns = view.getColumns();
+        List<ColumnDef> columns = view.getColumns();
         assertNotNull("first view columns should not be null", columns);
-        assertEquals("first view column count", 3, columns.getColumnDefCount());
+        assertEquals("first view column count", 3, columns.size());
         
-        Rows rows = view.getRows();
+        List<RowDef> rows = view.getRows();
         assertNotNull("first view rows should not be null", rows);
-        assertEquals("first view row count", 3, rows.getRowDefCount());
+        assertEquals("first view row count", 3, rows.size());
     }
     
     public void testInitNoViews() throws IOException {
@@ -161,9 +157,9 @@ public class DefaultSurveillanceViewConfigDaoIT extends TestCase {
     public void testGetViewsNoViews() throws IOException {
         createDaoWithResource(CONFIG_NO_VIEWS_RESOURCE);
         
-        Views views = m_dao.getViews();
+        List<View> views = m_dao.getViews();
         assertNotNull("views should not be null", views);
-        assertEquals("view count", 0, views.getViewCount());
+        assertEquals("view count", 0, views.size());
     }
     
     public void testGetViewMapNoViews() throws IOException {

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -143,7 +143,7 @@
             <label>Description:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="description" value='<%=(newNotice.getDescription()!=null ? newNotice.getDescription() : "")%>'/>
+            <input type="text" class="form-control" name="description" value='<%=newNotice.getDescription().orElse("")%>'/>
           </td>
         </tr>
         <tr>
@@ -182,7 +182,7 @@
             <label>Short Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="1" class="form-control" name="numMsg"><%=(newNotice.getNumericMessage()!=null ? newNotice.getNumericMessage() : "")%></textarea>
+            <textarea rows="1" class="form-control" name="numMsg"><%=newNotice.getNumericMessage().orElse("")%></textarea>
           </td>
          </tr>
          <tr>
@@ -190,7 +190,7 @@
             <label>Email Subject:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="subject" value='<%=(newNotice.getSubject()!=null ? newNotice.getSubject() : "")%>'/>
+            <input type="text" class="form-control" name="subject" value='<%=newNotice.getSubject().orElse("")%>'/>
           </td>
          </tr>
          <tr>

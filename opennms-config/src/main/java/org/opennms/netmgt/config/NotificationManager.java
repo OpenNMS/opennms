@@ -215,7 +215,7 @@ public abstract class NotificationManager {
     public boolean hasUei(final String uei) throws IOException {
         update();
 
-        for (Notification notif : m_notifications.getNotificationCollection()) {
+        for (Notification notif : m_notifications.getNotifications()) {
             if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
                 return true;
             } else if (notif.getUei().charAt(0) == '~') {
@@ -252,7 +252,7 @@ public abstract class NotificationManager {
             return null;
         }
 
-        for (Notification curNotif : m_notifications.getNotificationCollection()) {
+        for (Notification curNotif : m_notifications.getNotifications()) {
 
             LOG.trace("Checking notification {} against event {} with UEI {}", curNotif.getUei(), event.getDbid(), event.getUei());
 
@@ -280,9 +280,9 @@ public abstract class NotificationManager {
 
             LOG.trace("Checking event severity: {} against notification severity: {}", curNotif.getEventSeverity(), event.getSeverity());
             // parameter is optional, return true if not set
-            if (curNotif.getEventSeverity() == null) {
+            if (!curNotif.getEventSeverity().isPresent()) {
                 // Skip matching on severity
-            } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
+            } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().get().toLowerCase())) {
                 // Severities match
             } else {
 
@@ -922,9 +922,8 @@ public abstract class NotificationManager {
 
         Map<String, Notification> newMap = new HashMap<String, Notification>();
 
-        Notification[] notices = m_notifications.getNotification();
-        for (int i = 0; i < notices.length; i++) {
-            newMap.put(notices[i].getName(), notices[i]);
+        for (final Notification notif : m_notifications.getNotifications()) {
+            newMap.put(notif.getName(), notif);
         }
 
         return Collections.unmodifiableMap(newMap);
@@ -971,7 +970,7 @@ public abstract class NotificationManager {
 
         List<String> notificationNames = new ArrayList<String>();
 
-        for (Notification curNotif : m_notifications.getNotificationCollection()) {
+        for (Notification curNotif : m_notifications.getNotifications()) {
             notificationNames.add(curNotif.getName());
         }
 
@@ -1021,18 +1020,18 @@ public abstract class NotificationManager {
         if (notice != null) {
             notice.setWriteable(newNotice.getWriteable());
             notice.setName(newNotice.getName());
-            notice.setDescription(newNotice.getDescription());
+            notice.setDescription(newNotice.getDescription().orElse(null));
             notice.setUei(newNotice.getUei());
             notice.setRule(newNotice.getRule());
             notice.setDestinationPath(newNotice.getDestinationPath());
-            notice.setNoticeQueue(newNotice.getNoticeQueue());
+            notice.setNoticeQueue(newNotice.getNoticeQueue().orElse(null));
             notice.setTextMessage(newNotice.getTextMessage());
-            notice.setSubject(newNotice.getSubject());
-            notice.setNumericMessage(newNotice.getNumericMessage());
+            notice.setSubject(newNotice.getSubject().orElse(null));
+            notice.setNumericMessage(newNotice.getNumericMessage().orElse(null));
             notice.setStatus(newNotice.getStatus());
             notice.setVarbind(newNotice.getVarbind());
-            notice.getParameterCollection().clear(); // Required to avoid NMS-5948
-            for (Parameter parameter : newNotice.getParameterCollection()) {
+            notice.getParameters().clear(); // Required to avoid NMS-5948
+            for (Parameter parameter : newNotice.getParameters()) {
                 Parameter newParam = new Parameter();
                 newParam.setName(parameter.getName());
                 newParam.setValue(parameter.getValue());
@@ -1187,7 +1186,7 @@ public abstract class NotificationManager {
      * @param notification a {@link org.opennms.netmgt.config.notifications.Notification} object.
      */
     public static void addNotificationParams(final Map<String, String> paramMap, final Notification notification) {
-        Collection<Parameter> parameters = notification.getParameterCollection();
+        Collection<Parameter> parameters = notification.getParameters();
 
         for (Parameter parameter : parameters) {
             paramMap.put(parameter.getName(), parameter.getValue());

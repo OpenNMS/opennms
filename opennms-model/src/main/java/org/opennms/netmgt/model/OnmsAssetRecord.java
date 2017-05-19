@@ -30,7 +30,9 @@ package org.opennms.netmgt.model;
 
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -51,7 +53,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -1924,10 +1925,21 @@ public class OnmsAssetRecord implements Serializable {
         final BeanWrapper newBean = PropertyAccessorFactory.forBeanPropertyAccess(newRecord);
         final PropertyDescriptor[] pds = newBean.getPropertyDescriptors();
 
+        // Don't update these properties
+        final List<String> blackListedProperties = new ArrayList<>();
+        blackListedProperties.add("class");
+        blackListedProperties.add("city");
+        blackListedProperties.add("zip");
+        blackListedProperties.add("state");
+        blackListedProperties.add("country");
+        blackListedProperties.add("longitude");
+        blackListedProperties.add("latitude");
+        blackListedProperties.add("address1");
+        blackListedProperties.add("address2");
+
         for (final PropertyDescriptor pd : pds) {
             final String propertyName = pd.getName();
-
-            if (propertyName.equals("class")) {
+            if (blackListedProperties.contains(propertyName)) {
                 continue;
             }
 

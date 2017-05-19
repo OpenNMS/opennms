@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.eventd;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "EventdConfiguration")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -129,12 +131,12 @@ public class EventdConfiguration implements Serializable {
     public EventdConfiguration() {
     }
 
-    public String getTCPAddress() {
-        return m_tcpAddress;
+    public Optional<String> getTCPAddress() {
+        return Optional.ofNullable(m_tcpAddress);
     }
 
     public void setTCPAddress(final String TCPAddress) {
-        m_tcpAddress = TCPAddress;
+        m_tcpAddress = ConfigUtils.normalizeString(TCPAddress);
     }
 
     public Integer getTCPPort() {
@@ -142,15 +144,15 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setTCPPort(final Integer TCPPort) {
-        m_tcpPort = TCPPort;
+        m_tcpPort = ConfigUtils.assertNotNull(TCPPort, "TCPPort");
     }
 
-    public String getUDPAddress() {
-        return m_udpAddress;
+    public Optional<String> getUDPAddress() {
+        return Optional.ofNullable(m_udpAddress);
     }
 
     public void setUDPAddress(final String UDPAddress) {
-        m_udpAddress = UDPAddress;
+        m_udpAddress = ConfigUtils.normalizeString(UDPAddress);
     }
 
     public Integer getUDPPort() {
@@ -158,7 +160,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setUDPPort(final Integer UDPPort) {
-        m_udpPort = UDPPort;
+        m_udpPort = ConfigUtils.assertNotNull(UDPPort, "UDPPort");
     }
 
     public Integer getReceivers() {
@@ -166,23 +168,23 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setReceivers(final Integer receivers) {
-        m_receivers = receivers;
+        m_receivers = ConfigUtils.assertNotNull(receivers, "receivers");
     }
 
-    public Integer getQueueLength() {
-        return m_queueLength;
+    public Optional<Integer> getQueueLength() {
+        return Optional.ofNullable(m_queueLength);
     }
 
     public void setQueueLength(final Integer queueLength) {
         m_queueLength = queueLength;
     }
 
-    public String getGetNextEventID() {
-        return m_getNextEventID;
+    public Optional<String> getGetNextEventID() {
+        return Optional.ofNullable(m_getNextEventID);
     }
 
     public void setGetNextEventID(final String getNextEventID) {
-        m_getNextEventID = getNextEventID;
+        m_getNextEventID = ConfigUtils.normalizeString(getNextEventID);
     }
 
     public String getSocketSoTimeoutRequired() {
@@ -190,11 +192,11 @@ public class EventdConfiguration implements Serializable {
     }
 
     public void setSocketSoTimeoutRequired(final String socketSoTimeoutRequired) {
-        m_socketSoTimeoutRequired = socketSoTimeoutRequired;
+        m_socketSoTimeoutRequired = ConfigUtils.assertNotNull(socketSoTimeoutRequired, "socketSoTimeoutRequired");
     }
 
-    public Integer getSocketSoTimeoutPeriod() {
-        return m_socketSoTimeoutPeriod;
+    public Optional<Integer> getSocketSoTimeoutPeriod() {
+        return Optional.ofNullable(m_socketSoTimeoutPeriod);
     }
 
     public void setSocketSoTimeoutPeriod(final Integer socketSoTimeoutPeriod) {
@@ -202,11 +204,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public Boolean getLogEventSummaries() {
-        return m_logEventSummaries != null ? m_logEventSummaries : Boolean.valueOf("true");
-    }
-
-    public boolean hasLogEventSummaries() {
-        return m_logEventSummaries != null;
+        return m_logEventSummaries != null ? m_logEventSummaries : true;
     }
 
     public void setLogEventSummaries(final Boolean logEventSummaries) {
@@ -235,17 +233,17 @@ public class EventdConfiguration implements Serializable {
         }
 
         if (obj instanceof EventdConfiguration) {
-            final EventdConfiguration temp = (EventdConfiguration)obj;
-            return Objects.equals(temp.m_tcpAddress, m_tcpAddress)
-                    && Objects.equals(temp.m_tcpPort, m_tcpPort)
-                    && Objects.equals(temp.m_udpAddress, m_udpAddress)
-                    && Objects.equals(temp.m_udpPort, m_udpPort)
-                    && Objects.equals(temp.m_receivers, m_receivers)
-                    && Objects.equals(temp.m_queueLength, m_queueLength)
-                    && Objects.equals(temp.m_getNextEventID, m_getNextEventID)
-                    && Objects.equals(temp.m_socketSoTimeoutRequired, m_socketSoTimeoutRequired)
-                    && Objects.equals(temp.m_socketSoTimeoutPeriod, m_socketSoTimeoutPeriod)
-                    && Objects.equals(temp.m_logEventSummaries, m_logEventSummaries);
+            final EventdConfiguration that = (EventdConfiguration)obj;
+            return Objects.equals(this.m_tcpAddress, that.m_tcpAddress)
+                    && Objects.equals(this.m_tcpPort, that.m_tcpPort)
+                    && Objects.equals(this.m_udpAddress, that.m_udpAddress)
+                    && Objects.equals(this.m_udpPort, that.m_udpPort)
+                    && Objects.equals(this.m_receivers, that.m_receivers)
+                    && Objects.equals(this.m_queueLength, that.m_queueLength)
+                    && Objects.equals(this.m_getNextEventID, that.m_getNextEventID)
+                    && Objects.equals(this.m_socketSoTimeoutRequired, that.m_socketSoTimeoutRequired)
+                    && Objects.equals(this.m_socketSoTimeoutPeriod, that.m_socketSoTimeoutPeriod)
+                    && Objects.equals(this.m_logEventSummaries, that.m_logEventSummaries);
         }
         return false;
     }

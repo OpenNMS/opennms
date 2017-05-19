@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,135 +29,85 @@
 package org.opennms.netmgt.config.translator;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
- * An element representing an assignement to an attribute of the event
- *  
- * 
- * @version $Revision$ $Date$
+ * An element representing an assignment to an attribute of the event
  */
 @XmlRootElement(name = "assignment")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Assignment implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("translator-configuration.xsd")
+public class Assignment implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "type", required = true)
-    private String type;
+    private String m_type;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
      * An element representing a value to be used in a
      *  translation. 
-     *  
      */
     @XmlElement(name = "value", required = true)
-    private org.opennms.netmgt.config.translator.Value value;
+    private Value m_value;
 
     public Assignment() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getType() {
+        return m_type;
+    }
+
+    public void setType(final String type) {
+        m_type = ConfigUtils.assertNotEmpty(type, "type");
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public Value getValue() {
+        return m_value;
+    }
+
+    public void setValue(final Value value) {
+        m_value = ConfigUtils.assertNotNull(value, "value");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_type, m_name, m_value);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Assignment) {
-            Assignment temp = (Assignment)obj;
-            boolean equals = Objects.equals(temp.type, type)
-                && Objects.equals(temp.name, name)
-                && Objects.equals(temp.value, value);
-            return equals;
+            final Assignment that = (Assignment)obj;
+            return Objects.equals(this.m_type, that.m_type)
+                    && Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_value, that.m_value);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'type'.
-     * 
-     * @return the value of field 'Type'.
-     */
-    public String getType() {
-        return this.type;
-    }
-
-    /**
-     * Returns the value of field 'value'. The field 'value' has the following
-     * description: An element representing a value to be used in a
-     *  translation. 
-     *  
-     * 
-     * @return the value of field 'Value'.
-     */
-    public org.opennms.netmgt.config.translator.Value getValue() {
-        return this.value;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            type, 
-            name, 
-            value);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'type'.
-     * 
-     * @param type the value of field 'type'.
-     */
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    /**
-     * Sets the value of field 'value'. The field 'value' has the following
-     * description: An element representing a value to be used in a
-     *  translation. 
-     *  
-     * 
-     * @param value the value of field 'value'.
-     */
-    public void setValue(final org.opennms.netmgt.config.translator.Value value) {
-        this.value = value;
     }
 
 }

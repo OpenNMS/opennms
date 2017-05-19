@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,20 @@
 
 package org.opennms.netmgt.config.wmi;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
 /**
@@ -64,240 +70,131 @@ import java.util.Objects;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "", propOrder = {
-    "attrib"
+        "m_attribs"
 })
 @XmlRootElement(name = "wpm")
-public class Wpm {
+@ValidateUsing("wmi-datacollection.xsd")
+public class Wpm implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    protected List<Attrib> attrib;
+    @XmlElement(name = "attrib")
+    protected List<Attrib> m_attribs = new ArrayList<>();
+
     @XmlAttribute(name = "name", required = true)
-    protected String name;
+    protected String m_name;
+
     @XmlAttribute(name = "wmiClass", required = true)
-    protected String wmiClass;
+    protected String m_wmiClass;
+
     @XmlAttribute(name = "keyvalue", required = true)
-    protected String keyvalue;
+    protected String m_keyvalue;
+
     @XmlAttribute(name = "recheckInterval", required = true)
-    protected int recheckInterval;
+    protected Integer m_recheckInterval;
+
     @XmlAttribute(name = "ifType", required = true)
-    protected String ifType;
+    protected String m_ifType;
+
     @XmlAttribute(name = "resourceType", required = true)
-    protected String resourceType;
+    protected String m_resourceType;
+
     @XmlAttribute(name = "wmiNamespace")
-    protected String wmiNamespace;
+    protected String m_wmiNamespace;
 
-    /**
-     * 
-     * 							An WMI Object
-     * 						Gets the value of the attrib property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attrib property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAttrib().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Attrib }
-     * 
-     * 
-     */
-    public List<Attrib> getAttrib() {
-        if (attrib == null) {
-            attrib = new ArrayList<Attrib>();
-        }
-        return this.attrib;
+    public List<Attrib> getAttribs() {
+        return m_attribs;
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
+    public void setAttribs(final List<Attrib> attribs) {
+        if (attribs == m_attribs) return;
+        m_attribs.clear();
+        if (attribs != null) m_attribs.addAll(attribs);
+    }
+
     public String getName() {
-        return name;
+        return m_name;
     }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Gets the value of the wmiClass property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getWmiClass() {
-        return wmiClass;
+        return m_wmiClass;
     }
 
-    /**
-     * Sets the value of the wmiClass property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setWmiClass(String value) {
-        this.wmiClass = value;
+    public void setWmiClass(final String wmiClass) {
+        m_wmiClass = ConfigUtils.assertNotEmpty(wmiClass, "wmiClass");
     }
 
-    /**
-     * Gets the value of the keyvalue property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getKeyvalue() {
-        return keyvalue;
+        return m_keyvalue;
     }
 
-    /**
-     * Sets the value of the keyvalue property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKeyvalue(String value) {
-        this.keyvalue = value;
+    public void setKeyvalue(final String keyvalue) {
+        m_keyvalue = ConfigUtils.assertNotEmpty(keyvalue, "keyvalue");
     }
 
-    /**
-     * Gets the value of the recheckInterval property.
-     * 
-     */
-    public int getRecheckInterval() {
-        return recheckInterval;
+    public Integer getRecheckInterval() {
+        return m_recheckInterval;
     }
 
-    /**
-     * Sets the value of the recheckInterval property.
-     * 
-     */
-    public void setRecheckInterval(int value) {
-        this.recheckInterval = value;
+    public void setRecheckInterval(final Integer recheckInterval) {
+        m_recheckInterval = ConfigUtils.assertNotNull(recheckInterval, "recheckInterval");
     }
 
-    /**
-     * Gets the value of the ifType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getIfType() {
-        return ifType;
+        return m_ifType;
     }
 
-    /**
-     * Sets the value of the ifType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setIfType(String value) {
-        this.ifType = value;
+    public void setIfType(final String ifType) {
+        m_ifType = ConfigUtils.assertNotEmpty(ifType, "ifType");
     }
 
-    /**
-     * Gets the value of the resourceType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getResourceType() {
-        return resourceType;
+        return m_resourceType;
     }
 
-    /**
-     * Sets the value of the resourceType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setResourceType(String value) {
-        this.resourceType = value;
+    public void setResourceType(final String resourceType) {
+        m_resourceType = ConfigUtils.assertNotEmpty(resourceType, "resourceType");
     }
 
-    /**
-     * Gets the value of the wmiNamespace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
     public String getWmiNamespace() {
-        if (wmiNamespace == null) {
-            return "root/cimv2";
-        } else {
-            return wmiNamespace;
-        }
+        return m_wmiNamespace == null? "root/cimv2" : m_wmiNamespace;
     }
 
-    /**
-     * Sets the value of the wmiNamespace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setWmiNamespace(String value) {
-        this.wmiNamespace = value;
+    public void setWmiNamespace(final String wmiNamespace) {
+        m_wmiNamespace = ConfigUtils.normalizeString(wmiNamespace);
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Wpm)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Wpm)) {
             return false;
         }
-        Wpm castOther = (Wpm) other;
-        return Objects.equals(attrib, castOther.attrib) && Objects.equals(name, castOther.name)
-                && Objects.equals(wmiClass, castOther.wmiClass) && Objects.equals(keyvalue, castOther.keyvalue)
-                && Objects.equals(recheckInterval, castOther.recheckInterval)
-                && Objects.equals(ifType, castOther.ifType) && Objects.equals(resourceType, castOther.resourceType)
-                && Objects.equals(wmiNamespace, castOther.wmiNamespace);
+        final Wpm that = (Wpm) obj;
+        return Objects.equals(this.m_attribs, that.m_attribs) &&
+                Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_wmiClass, that.m_wmiClass) &&
+                Objects.equals(this.m_keyvalue, that.m_keyvalue) &&
+                Objects.equals(this.m_recheckInterval, that.m_recheckInterval) &&
+                Objects.equals(this.m_ifType, that.m_ifType) &&
+                Objects.equals(this.m_resourceType, that.m_resourceType) &&
+                Objects.equals(this.m_wmiNamespace, that.m_wmiNamespace);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(attrib, name, wmiClass, keyvalue, recheckInterval, ifType, resourceType, wmiNamespace);
+        return Objects.hash(m_attribs,
+                            m_name,
+                            m_wmiClass,
+                            m_keyvalue,
+                            m_recheckInterval,
+                            m_ifType,
+                            m_resourceType,
+                            m_wmiNamespace);
     }
 
 }

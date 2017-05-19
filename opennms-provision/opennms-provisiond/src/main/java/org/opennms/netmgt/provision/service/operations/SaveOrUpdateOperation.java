@@ -155,7 +155,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         if (m_currentInterface != null) {
             OnmsServiceType svcType = getProvisionService().createServiceTypeIfNecessary(serviceName);
             OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
-            service.setStatus("A"); // DbIfServiceEntry.STATUS_ACTIVE
+            service.setStatus("A");
             m_currentInterface.getMonitoredServices().add(service);
         }
     

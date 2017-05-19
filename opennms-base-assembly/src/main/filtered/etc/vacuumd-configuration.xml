@@ -108,13 +108,13 @@
   </automations>
   
   <triggers>
-    <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
+    <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet. State 5 is closed. -->
     <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
       <statement>
           SELECT a.alarmid AS _alarmid, a.eventuei AS _eventUei, e.eventseverity AS _sev, now() AS _ts
                  now() AS _ts
             FROM alarms a
-           WHERE a.tticketstate = 3
+           WHERE a.tticketstate = 5
              AND a.severity &gt; 2
              AND ( a.alarmType = 1 OR a.alarmType = 3 )
       </statement>
@@ -350,13 +350,13 @@
     </action>
     -->
     
-    <!--  ticket state of 3 is closed -->
+    <!--  ticket state of 5 is closed, 11 is canceled -->
     <action name="deletePastClearedAlarms" >
       <statement>
         DELETE FROM alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
-           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 3))
+           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 5  OR tticketState = 11))
       </statement>
     </action>
 
@@ -367,7 +367,7 @@
         DELETE from alarms
          WHERE severity &lt;= 3
            AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
-           AND (tticketState IS NULL OR tticketState = 3)
+           AND (tticketState IS NULL OR tticketState = 5 OR tticketState = 11)
       </statement>
     </action>
   

@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "target")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,8 +73,8 @@ public class Target implements Serializable {
         }
     }
 
-    public String getInterval() {
-        return m_interval;
+    public Optional<String> getInterval() {
+        return Optional.ofNullable(m_interval);
     }
 
     public void setInterval(final String interval) {
@@ -84,11 +86,11 @@ public class Target implements Serializable {
     }
 
     public void setName(final String name) {
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    public String getAutoNotify() {
-        return m_autoNotify;
+    public Optional<String> getAutoNotify() {
+        return Optional.ofNullable(m_autoNotify);
     }
 
     public void setAutoNotify(final String autoNotify) {
@@ -100,16 +102,15 @@ public class Target implements Serializable {
     }
 
     public void setCommands(final List<String> commands) {
-        m_commands.clear();       
-        m_commands.addAll(commands);
+        if (commands == m_commands) return;
+        m_commands.clear();
+        if (commands != null) m_commands.addAll(commands);
     }
 
     public void addCommand(final String command) {
         m_commands.add(command);
     }
 
-    /**
-     */
     public void clearCommands() {
         m_commands.clear();
     }

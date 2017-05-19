@@ -39,8 +39,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -111,7 +111,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outages getOutages() {
         Outages outages = new Outages();
-        outages.setOutage(m_pollOutagesConfigFactory.getOutages());
+        outages.setOutages(m_pollOutagesConfigFactory.getOutages());
         return outages;
     }
 
@@ -396,7 +396,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
-            if (!pkg.getOutageCalendarCollection().contains(outageName))
+            if (!pkg.getOutageCalendars().contains(outageName))
                 pkg.addOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE)) {
@@ -404,7 +404,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackage()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }

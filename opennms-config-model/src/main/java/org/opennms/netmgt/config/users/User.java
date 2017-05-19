@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -78,9 +80,9 @@ public class User implements Serializable {
     }
 
     public User(final String userId, final String fullName, final String userComments) {
-        m_userId = userId;
-        m_fullName = fullName;
-        m_userComments = userComments;
+        setUserId(userId);
+        setFullName(fullName);
+        setUserComments(userComments);
     }
 
     public String getUserId() {
@@ -88,23 +90,24 @@ public class User implements Serializable {
     }
 
     public void setUserId(final String userId) {
+        ConfigUtils.assertNotEmpty(userId, "user-id");
         m_userId = userId;
     }
 
-    public String getFullName() {
-        return m_fullName;
+    public Optional<String> getFullName() {
+        return Optional.ofNullable(m_fullName);
     }
 
     public void setFullName(final String fullName) {
-        m_fullName = fullName;
+        m_fullName = ConfigUtils.normalizeString(fullName);
     }
 
-    public String getUserComments() {
-        return m_userComments;
+    public Optional<String> getUserComments() {
+        return Optional.ofNullable(m_userComments);
     }
 
     public void setUserComments(final String userComments) {
-        m_userComments = userComments;
+        m_userComments = ConfigUtils.normalizeString(userComments);
     }
 
     public Password getPassword() {
@@ -112,6 +115,7 @@ public class User implements Serializable {
     }
 
     public void setPassword(final Password password) {
+        ConfigUtils.assertNotNull(password, "password");
         m_password = password;
     }
 
@@ -123,14 +127,14 @@ public class User implements Serializable {
         return m_contacts;
     }
 
-    public void addContact(final Contact contact)
-            throws IndexOutOfBoundsException {
+    public void addContact(final Contact contact) {
         m_contacts.add(contact);
     }
 
     public void setContacts(final List<Contact> contacts) {
+        if (m_contacts == contacts) return;
         m_contacts.clear();
-        m_contacts.addAll(contacts);
+        if (contacts != null) m_contacts.addAll(contacts);
     }
 
     public void clearContacts() {
@@ -142,8 +146,9 @@ public class User implements Serializable {
     }
 
     public void setDutySchedules(final List<String> dutySchedules) {
+        if (m_dutySchedules == dutySchedules) return;
         m_dutySchedules.clear();
-        m_dutySchedules.addAll(dutySchedules);
+        if (dutySchedules != null) m_dutySchedules.addAll(dutySchedules);
     }
 
     public void addDutySchedule(final String dutySchedule) {
@@ -159,8 +164,9 @@ public class User implements Serializable {
     }
 
     public void setRoles(final List<String> roles) {
+        if (roles == m_roles) return;
         m_roles.clear();
-        m_roles.addAll(roles);
+        if (roles != null) m_roles.addAll(roles);
     }
 
     public void addRole(final String role) {
@@ -171,8 +177,8 @@ public class User implements Serializable {
         m_roles.clear();
     }
 
-    public String getTuiPin() {
-        return m_tuiPin;
+    public Optional<String> getTuiPin() {
+        return Optional.ofNullable(m_tuiPin);
     }
 
     public void setTuiPin(final String tuiPin) {

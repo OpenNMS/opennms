@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -39,12 +39,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "password")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("users.xsd")
 public class Password implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "salt", required = false)
     private Boolean m_salt;
@@ -78,14 +79,15 @@ public class Password implements Serializable {
     }
 
     public void setEncryptedPassword(final String password) {
+        ConfigUtils.assertNotNull(password, "password");
         m_password = password;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_password, 
-            m_salt);
+                            m_password, 
+                            m_salt);
     }
 
     @Override
@@ -93,11 +95,11 @@ public class Password implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Password) {
             final Password temp = (Password)obj;
             return Objects.equals(temp.m_password, m_password)
-                && Objects.equals(temp.m_salt, m_salt);
+                    && Objects.equals(temp.m_salt, m_salt);
         }
         return false;
     }

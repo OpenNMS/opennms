@@ -30,20 +30,17 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class PlotBackgroundColor.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "plot-background-color")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PlotBackgroundColor implements java.io.Serializable {
-    private static final long serialVersionUID = -3946455662124798725L;
+    private static final long serialVersionUID = 1L;
  
     @XmlElement(name = "rgb")
     private Rgb rgb;
@@ -76,8 +73,8 @@ public class PlotBackgroundColor implements java.io.Serializable {
      * 
      * @return the value of field 'Rgb'.
      */
-    public Rgb getRgb() {
-        return this.rgb;
+    public Optional<Rgb> getRgb() {
+        return Optional.ofNullable(this.rgb);
     }
 
     /**

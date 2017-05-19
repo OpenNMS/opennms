@@ -15,7 +15,6 @@
     <module>camel</module>
     <module>db</module>
     <module>dns</module>
-    <module>elasticsearch</module>
     <module>http</module>
     <module>kafka</module>
     <module>karaf</module>

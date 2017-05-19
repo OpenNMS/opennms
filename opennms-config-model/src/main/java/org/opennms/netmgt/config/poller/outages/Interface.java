@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,98 +29,79 @@
 package org.opennms.netmgt.config.poller.outages;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.ValidateUsing;
 
 /**
  * Interface to which the outage applies.
- * 
  */
 
 @XmlRootElement(name="interface", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class Interface implements Serializable {
-    private static final long serialVersionUID = -90255076329128075L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * IP address
      */
     @XmlAttribute(name="address")
-    private String _address;
+    private String m_address;
 
     public Interface() {
-        super();
     }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getAddress() {
+        return m_address;
+    }
+
+    public void setAddress(final String address) {
+        if (!isValidAddress(address)) {
+            throw new IllegalArgumentException("'address' is a required field and must be either a valid IP address, or 'match-any'!");
+        }
+        m_address = address;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_address);
+    }
+
     @Override
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
 
         if (obj instanceof Interface) {
-
-            Interface temp = (Interface)obj;
-            if (this._address != null) {
-                if (temp._address == null) return false;
-                else if (!(this._address.equals(temp._address))) 
-                    return false;
-            }
-            else if (temp._address != null)
-                return false;
-            return true;
+            final Interface that = (Interface)obj;
+            return Objects.equals(this.m_address, that.m_address);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'address'. The field 'address'
-     * has the following description: IP address
-     * 
-     * @return the value of field 'Address'.
-     */
-    public String getAddress() {
-        return this._address;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int result = 17;
-
-        if (_address != null) {
-            result = 37 * result + _address.hashCode();
+    private boolean isValidAddress(final String addr) {
+        if (addr == null) return false;
+        if ("match-any".equals(addr)) {
+            return true;
+        }
+        try {
+            final InetAddress inetAddr = InetAddressUtils.addr(addr);
+            if (inetAddr == null) {
+                return false;
+            }
+        } catch (final Exception e) {
+            return false;
         }
 
-        return result;
+        return true;
     }
-
-    /**
-     * Sets the value of field 'address'. The field 'address' has
-     * the following description: IP address
-     * 
-     * @param address the value of field 'address'.
-     */
-    public void setAddress(final String address) {
-        this._address = address;
-    }
-
 }

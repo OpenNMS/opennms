@@ -114,6 +114,20 @@ public class StringUtilsTest {
         assertEquals(StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), null), StringUtils.iso8601LocalOffsetString(new Date(0)));
     }
 
+    /**
+     * Verify that {@link StringUtils#stripExtraQuotes(String)} strips
+     * a single pair of matching double quotes from a string.
+     */
+    @Test
+    public void testStripExtraQuotes() {
+        assertEquals("\"", StringUtils.stripExtraQuotes("\""));
+        assertEquals("", StringUtils.stripExtraQuotes("\"\""));
+        assertEquals("\"", StringUtils.stripExtraQuotes("\"\"\""));
+        assertEquals("\"\"", StringUtils.stripExtraQuotes("\"\"\"\""));
+        assertEquals("abc", StringUtils.stripExtraQuotes("\"abc\""));
+        assertEquals("\"abc\"", StringUtils.stripExtraQuotes("\"\"abc\"\""));
+    }
+
     private static interface EqualsTrimmingMatcher {
         boolean equalsTrimmed(String a, String b);
     }

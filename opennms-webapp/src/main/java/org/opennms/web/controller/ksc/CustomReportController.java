@@ -72,9 +72,10 @@ public class CustomReportController extends AbstractController implements Initia
 //        int report_index = getReportFactory().getWorkingReportIndex();      
 //        String number_graphs[] = {"1", "2", "3", "4", "5", "6"};
         
-        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
-        for (int i = 0; i < report.getGraphCount(); i++) { 
-            Graph current_graph = report.getGraph(i); 
+        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphs().size());
+        for (int i = 0; i < report.getGraphs().size(); i++) { 
+            final int index = i;
+            Graph current_graph = report.getGraphs().get(index); 
             PrefabGraph display_graph = getResourceService().getPrefabGraph(current_graph.getGraphtype());
             
             OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);

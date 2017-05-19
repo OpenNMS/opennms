@@ -47,6 +47,7 @@ import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.springframework.core.io.FileSystemResource;
 
@@ -334,8 +335,8 @@ public class EventConfDataTest {
 
                 Logmsg logmsg = econf.getLogmsg();
                 if (logmsg != null) {
-                    String dest = logmsg.getDest();
-                    if ("discardtraps".equals(dest)) {
+                    LogDestType dest = logmsg.getDest();
+                    if (LogDestType.DISCARDTRAPS.equals(dest)) {
                         complain = false;
                     }
                 }

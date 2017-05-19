@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,151 +28,71 @@
 
 package org.opennms.netmgt.config.ackd;
 
-//---------------------------------/
-//- Imported classes and packages -/
-//---------------------------------/
-
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
- * Parameters to be used for collecting this service. Parameters are specfic
+ * Parameters to be used for collecting this service. Parameters are specific
  * to the service monitor.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("ackd-configuration.xsd")
 public class Parameter implements Serializable {
-    private static final long serialVersionUID = -6535297763331028940L;
+    private static final long serialVersionUID = 1L;
 
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
-
-    /**
-     * Field _key.
-     */
     @XmlAttribute(name = "key")
-    private String _key;
+    private String m_key;
 
-    /**
-     * Field _value.
-     */
     @XmlAttribute(name = "value")
-    private String _value;
-
-    // ----------------/
-    // - Constructors -/
-    // ----------------/
+    private String m_value;
 
     public Parameter() {
-        super();
     }
 
     public Parameter(final String key, final String value) {
-        super();
         setKey(key);
         setValue(value);
     }
 
-    // -----------/
-    // - Methods -/
-    // -----------/
+    public String getKey() {
+        return this.m_key;
+    }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public void setKey(final String key) {
+        m_key = key;
+    }
+
+    public String getValue() {
+        return this.m_value;
+    }
+
+    public void setValue(final String value) {
+        m_value = value;
+    }
+
+    public int hashCode() {
+        return Objects.hash(m_key, m_value);
+    }
+
     @Override()
     public boolean equals(final Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
+        }
 
         if (obj instanceof Parameter) {
-
-            Parameter temp = (Parameter) obj;
-            if (this._key != null) {
-                if (temp._key == null)
-                    return false;
-                else if (!(this._key.equals(temp._key)))
-                    return false;
-            } else if (temp._key != null)
-                return false;
-            if (this._value != null) {
-                if (temp._value == null)
-                    return false;
-                else if (!(this._value.equals(temp._value)))
-                    return false;
-            } else if (temp._value != null)
-                return false;
-            return true;
+            final Parameter that = (Parameter) obj;
+            return Objects.equals(this.m_key, that.m_key) &&
+                    Objects.equals(this.m_value, that.m_value);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'key'.
-     * 
-     * @return the value of field 'Key'.
-     */
-    public String getKey() {
-        return this._key;
-    }
-
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
-    public String getValue() {
-        return this._value;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming Language
-     * Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    public int hashCode() {
-        int result = 17;
-
-        if (_key != null) {
-            result = 37 * result + _key.hashCode();
-        }
-        if (_value != null) {
-            result = 37 * result + _value.hashCode();
-        }
-
-        return result;
-    }
-
-    /**
-     * Sets the value of field 'key'.
-     * 
-     * @param key
-     *            the value of field 'key'.
-     */
-    public void setKey(final String key) {
-        this._key = key;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value
-     *            the value of field 'value'.
-     */
-    public void setValue(final String value) {
-        this._value = value;
     }
 }

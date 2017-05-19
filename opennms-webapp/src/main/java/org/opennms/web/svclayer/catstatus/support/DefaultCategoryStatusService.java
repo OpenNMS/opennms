@@ -162,11 +162,11 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 	}
 
     private List<Section> getSectionsForView(View view) {
-        return view.getSectionCollection();
+        return view.getSections();
     }
 
     private List<String> getCategoriesForSection(Section section) {
-        return section.getCategoryCollection();
+        return section.getCategories();
     }
 
     private List<String> getServicesForCategory(Category categoryDetail) {

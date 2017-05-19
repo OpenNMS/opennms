@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,8 @@ package org.opennms.netmgt.xml.eventconf;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,121 +39,62 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Security settings for this configuration
  */
 @XmlRootElement(name="security")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 public class Security implements Serializable {
-	private static final long serialVersionUID = -3138224695711877257L;
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final long serialVersionUID = 2L;
 
-	/**
+    /**
      * Event element whose value cannot be overridden by a
      *  value in an incoming event
      */
-	// @NotNull
-	// @Size(min=1)
-	@XmlElement(name="doNotOverride", required=true)
-    private List<String> m_doNotOverride = new ArrayList<String>();
+    @XmlElement(name="doNotOverride", required=true)
+    private List<String> m_doNotOverride = new ArrayList<>();
 
-    public void addDoNotOverride(final String doNotOverride) throws IndexOutOfBoundsException {
-        m_doNotOverride.add(doNotOverride);
-    }
-
-    public void addDoNotOverride(final int index, final String doNotOverride) throws IndexOutOfBoundsException {
-        m_doNotOverride.add(index, doNotOverride);
-    }
-
-    public Enumeration<String> enumerateDoNotOverride() {
-        return Collections.enumeration(m_doNotOverride);
-    }
-
-    public String getDoNotOverride(final int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_doNotOverride.size()) {
-            throw new IndexOutOfBoundsException("getDoNotOverride: Index value '" + index + "' not in range [0.." + (m_doNotOverride.size() - 1) + "]");
-        }
-        return m_doNotOverride.get(index);
-    }
-
-    public String[] getDoNotOverride() {
-        return m_doNotOverride.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public List<String> getDoNotOverrideCollection() {
+    public List<String> getDoNotOverrides() {
         return m_doNotOverride;
     }
 
-    public int getDoNotOverrideCount() {
-        return m_doNotOverride.size();
-    }
-
-    public Iterator<String> iterateDoNotOverride() {
-        return m_doNotOverride.iterator();
-    }
-
-    public void removeAllDoNotOverride() {
+    public void setDoNotOverride(final List<String> doNotOverride) {
+        ConfigUtils.assertMinimumSize(doNotOverride, 1, "doNotOverride");
+        if (m_doNotOverride == doNotOverride) return;
         m_doNotOverride.clear();
+        if (doNotOverride != null) m_doNotOverride.addAll(doNotOverride);
+    }
+
+    public void addDoNotOverride(final String doNotOverride) {
+        m_doNotOverride.add(doNotOverride);
     }
 
     public boolean removeDoNotOverride(final String doNotOverride) {
         return m_doNotOverride.remove(doNotOverride);
     }
 
-    public String removeDoNotOverrideAt(final int index) {
-        return m_doNotOverride.remove(index);
+    public boolean isSecureTag(final String tag) {
+        return m_doNotOverride == null ? false : m_doNotOverride.contains(tag);
     }
 
-    public void setDoNotOverride(final int index, final String doNotOverride) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_doNotOverride.size()) {
-            throw new IndexOutOfBoundsException("setDoNotOverride: Index value '" + index + "' not in range [0.." + (m_doNotOverride.size() - 1) + "]");
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_doNotOverride);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-        m_doNotOverride.set(index, doNotOverride);
-    }
-
-    public void setDoNotOverride(final String[] doNotOverride) {
-        m_doNotOverride.clear();
-        for (final String dno : doNotOverride) {
-        	m_doNotOverride.add(dno);
+        if (obj instanceof Security) {
+            final Security that = (Security) obj;
+            return Objects.equals(this.m_doNotOverride, that.m_doNotOverride);
         }
+        return false;
     }
-
-    public void setDoNotOverride(final List<String> doNotOverride) {
-        if (m_doNotOverride == doNotOverride) return;
-        m_doNotOverride.clear();
-        m_doNotOverride.addAll(doNotOverride);
-    }
-
-    public void setDoNotOverrideCollection(final List<String> doNotOverride) {
-        setDoNotOverride(doNotOverride);
-    }
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_doNotOverride == null) ? 0 : m_doNotOverride.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Security)) return false;
-		final Security other = (Security) obj;
-		if (m_doNotOverride == null) {
-			if (other.m_doNotOverride != null) return false;
-		} else if (!m_doNotOverride.equals(other.m_doNotOverride)) {
-			return false;
-		}
-		return true;
-	}
-
-	public boolean isSecureTag(String tag) {
-		return m_doNotOverride == null ? false : m_doNotOverride.contains(tag);
-	}
 
 }

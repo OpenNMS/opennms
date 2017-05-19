@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.Optional;
+
 /* wrapper object to deal with old XML resources */
 public class Time {
 
@@ -46,16 +48,16 @@ public class Time {
 		m_ends = ends;
 	}
 
-	public String getId() {
-		return m_id;
+	public Optional<String> getId() {
+		return Optional.ofNullable(m_id);
 	}
 	
 	public void setId(final String id) {
 		m_id = id;
 	}
 	
-	public String getDay() {
-		return m_day;
+	public Optional<String> getDay() {
+		return Optional.ofNullable(m_day);
 	}
 
 	public void setDay(final String day) {

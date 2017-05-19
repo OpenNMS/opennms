@@ -226,7 +226,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
             for (int j = 0; j < contacts.length; j++) {
                 Contact contact = contacts[j];
                 if ("email".equals(contact.getType())) {
-                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo()));
+                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo().orElse(null)));
                 }
             }
             expectedTime += interval;
@@ -267,8 +267,8 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     }
 
     protected long computeInterval() throws IOException {
-        String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval();
-        return TimeConverter.convertToMillis(interval == null? Target.DEFAULT_INTERVAL : interval);
+        final String interval = m_destinationPathManager.getPath("Intervals").getTargets().get(0).getInterval().orElse(Target.DEFAULT_INTERVAL);
+        return TimeConverter.convertToMillis(interval);
     }
 
     @Override
