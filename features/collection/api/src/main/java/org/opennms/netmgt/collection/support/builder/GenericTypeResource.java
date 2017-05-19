@@ -66,6 +66,11 @@ public class GenericTypeResource implements Resource {
     }
 
     @Override
+    public String getLabel() {
+        return m_instance;
+    }
+
+    @Override
     public Path getPath(CollectionResource resource) {
         return getStorageStrategy().getRelativePathForAttribute("", getStorageStrategy().getResourceNameFromIndex(resource));
     }
@@ -123,6 +128,5 @@ public class GenericTypeResource implements Resource {
                 + "storageStrategy=%s, persistenceSelectorStrategy=%s",
                 m_node, m_resourceType, m_storageStrategy, m_persistenceSelectorStrategy);
     }
-
 
 }
