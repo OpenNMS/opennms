@@ -173,6 +173,16 @@ public class Starter {
         } else {
             java.security.Security.setProperty("networkaddress.cache.ttl", "120");
         }
+
+        // NMS-9261: Make org.opennms.newts.nan_on_counter_wrap=true by default
+        // without requiring any changes to opennms.properties
+        // This will code block will be reverted in foundation-2017, and
+        // the relevant entry will be placed in opennms.properties instead
+        final String newtsNaNOnCounterWrapSysProp = "org.opennms.newts.nan_on_counter_wrap";
+        if (System.getProperty(newtsNaNOnCounterWrapSysProp) == null) {
+            // The property was not set by the user
+            System.setProperty(newtsNaNOnCounterWrapSysProp, Boolean.TRUE.toString());
+        }
     }
 
     /**
