@@ -1259,11 +1259,11 @@
     <asciidoctorVersion>1.5.3</asciidoctorVersion>
     <asciidoctorjVersion>1.5.4</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.11</asciidoctorjPdfVersion>
-    <activemqVersion>5.10.0</activemqVersion>
+    <activemqVersion>5.13.3</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.7</batikVersion>
     <bsfVersion>2.4.0</bsfVersion>
-    <camelVersion>2.14.4</camelVersion>
+    <camelVersion>2.16.5</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
