@@ -176,35 +176,29 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
         m_hashCode = 1;
 
-        org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
-        if ((mask == null) || mask.getMaskelementCount() == 0) {
+        final org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
+        if ((mask == null) || mask.getMaskelements().size() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, new EventMaskValueList(uei));
             }
         } else {
-            for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelementCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelements()) {
                 String name = maskelement.getMename();
 
                 EventMaskValueList value = new EventMaskValueList();
-                String[] mevalues = maskelement.getMevalue();
-                for (int index = 0; index < mevalues.length; index++) {
-                    value.add(mevalues[index]);
+                for (final String mevalue : maskelement.getMevalues()) {
+                    value.add(mevalue);
                 }
 
                 put(name, value);
             }
-            if (mask != null && mask.getVarbindCount() != 0) {
-                for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbindCollection()) {
-                    EventMaskValueList vbvalues = new EventMaskValueList();
-                    int vbint = varbind.getVbnumber();
-                    String vbnumber = Integer.toString(vbint);
-                    String[] vbvaluelist = varbind.getVbvalue();
-                    for (int index = 0; index < vbvaluelist.length; index++) {
-                        vbvalues.add(vbvaluelist[index]);
-                    }
+            if (mask != null && mask.getVarbinds().size() != 0) {
+                for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbinds()) {
+                    final EventMaskValueList vbvalues = new EventMaskValueList();
+                    vbvalues.addAll(varbind.getVbvalues());
 
-                    put(vbnumber, vbvalues);
+                    put(varbind.getVbnumber().toString(), vbvalues);
                 }
             }
         }

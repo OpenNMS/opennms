@@ -30,7 +30,7 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.databaseReports.Report;
+import org.opennms.features.reporting.model.Report;
 
 /**
  * <p>DatabaseReportConfigDao interface.</p>

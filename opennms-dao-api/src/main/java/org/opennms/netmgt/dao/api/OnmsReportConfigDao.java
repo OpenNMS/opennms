@@ -29,6 +29,8 @@
 package org.opennms.netmgt.dao.api;
 
 
+import java.util.List;
+
 import org.opennms.netmgt.config.reporting.DateParm;
 import org.opennms.netmgt.config.reporting.IntParm;
 import org.opennms.netmgt.config.reporting.Parameters;
@@ -53,7 +55,7 @@ public interface OnmsReportConfigDao {
      * @param id a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.reporting.DateParm} objects.
      */
-    DateParm[] getDateParms(String id);
+    List<DateParm> getDateParms(String id);
     
     /**
      * <p>getStringParms</p>
@@ -61,7 +63,7 @@ public interface OnmsReportConfigDao {
      * @param id a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.reporting.StringParm} objects.
      */
-    StringParm[] getStringParms(String id);
+    List<StringParm> getStringParms(String id);
     
     /**
      * <p>getIntParms</p>
@@ -69,7 +71,7 @@ public interface OnmsReportConfigDao {
      * @param id a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.reporting.IntParm} objects.
      */
-    IntParm[] getIntParms(String id);
+    List<IntParm> getIntParms(String id);
     
     /**
      * <p>getPdfStylesheetLocation</p>

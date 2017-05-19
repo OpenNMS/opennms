@@ -125,8 +125,9 @@ public class FormProcViewController extends AbstractController implements Initia
                 
                 // Now inject any override characteristics into the working report model
                 Report working_report = editor.getWorkingReport();
-                for (int i=0; i<working_report.getGraphCount(); i++) {
-                    Graph working_graph = working_report.getGraph(i);
+                for (int i=0; i<working_report.getGraphs().size(); i++) {
+                    final int index = i;
+                    Graph working_graph = working_report.getGraphs().get(index);
                     if (!overrideTimespan.equals("none")) { 
                         working_graph.setTimespan(overrideTimespan); 
                     }
@@ -159,7 +160,7 @@ public class FormProcViewController extends AbstractController implements Initia
         } else if (Actions.Customize.toString().equals(reportAction)) { 
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.Exit.toString().equals(reportAction)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else {
             throw new IllegalArgumentException("Parameter action of '" + reportAction + "' is not supported.  Must be one of: Update, Customize, or Exit");
         }

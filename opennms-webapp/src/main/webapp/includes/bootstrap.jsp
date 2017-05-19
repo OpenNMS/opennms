@@ -88,7 +88,7 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
@@ -97,21 +97,18 @@
   </c:forEach>
 
   <c:if test="${param.norequirejs != 'true' && param.usebackshift != 'true' }">
-    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.min.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.js"></script>
   </c:if>
 
     <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
     <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
-    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
-        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
-    </c:if>
     <c:if test="${param.storageAdmin == 'true'}">
       <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
     </c:if>
 
-    <c:if test="${param.enableSpringDojo == 'true'}">	
+    <c:if test="${param.enableSpringDojo == 'true'}">
       <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
@@ -131,18 +128,22 @@
 
 <c:if test="${param.usebackshift == 'true'}">
   <%-- This allows pages to explicitely use Backshift instead of relying on graph.js (which may not use Backshift) --%>
-  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.min.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/d3/d3.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.time.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot/jquery.flot.canvas.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-legend/jquery.flot.legend.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-axislabels/jquery.flot.axislabels.js"></script>
-  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.min.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>lib/flot.tooltip/js/jquery.flot.tooltip.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-saveas/jquery.flot.saveas.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-navigate/jquery.flot.navigate.js"></script>
   <script type="text/javascript" src="<%= baseHref %>lib/flot-datatable/jquery.flot.datatable.min.js"></script>
   <script type="text/javascript" src="<%= baseHref %>js/backshift.onms.min.js"></script>
 </c:if>
+
+  <c:if test="${param.useionicons == 'true'}">
+    <link rel="stylesheet" href="<%= baseHref %>lib/ionicons/css/ionicons.css"/>
+  </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />

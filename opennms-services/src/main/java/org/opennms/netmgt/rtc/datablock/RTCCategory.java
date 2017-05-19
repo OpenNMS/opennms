@@ -31,7 +31,6 @@ package org.opennms.netmgt.rtc.datablock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
@@ -64,11 +63,11 @@ public class RTCCategory extends Category {
      */
     public RTCCategory(Category cat, String commonRule) {
         setLabel(cat.getLabel());
-        setComment(cat.getComment());
+        setComment(cat.getComment().orElse(null));
         setRule(cat.getRule());
-        setNormal(cat.getNormal());
-        setWarning(cat.getWarning());
-        setService(cat.getService());
+        setNormalThreshold(cat.getNormalThreshold());
+        setWarningThreshold(cat.getWarningThreshold());
+        setServices(cat.getServices());
 
         m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
     }
@@ -131,23 +130,13 @@ public class RTCCategory extends Category {
      * @param svcname a {@link java.lang.String} object.
      */
     public boolean containsService(String svcname) {
-        if (getServiceCount() <= 0) {
-            // service list is null - so include all services
+        final List<String> services = getServices();
+
+        // if there are no services listed, include all services
+        if (services.size() == 0) {
             return true;
         }
-
-        boolean found = false;
-
-        Enumeration<String> en = enumerateService();
-        while (en.hasMoreElements()) {
-            String svc = en.nextElement();
-            if (svc.equals(svcname)) {
-                found = true;
-                break;
-            }
-        }
-
-        return found;
+        return services.contains(svcname);
     }
 
     /**

@@ -41,6 +41,9 @@
     <jsp:param name="headTitle" value="Reports" />
     <jsp:param name="location" value="report" />
     <jsp:param name="breadcrumb" value="Reports" />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-search/app.js"></script>' />
 </jsp:include>
 
 <div class="row">
@@ -49,46 +52,43 @@
         <div class="panel-heading">
             <h3 class="panel-title">Reports</h3>
         </div>
-
-        <div class="panel-body">
+        <div class="panel-body" id="onms-search">
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-right">
-                        <form class="form-inline" role="form" name="resourceGraphs" action="graph/index.jsp" method="get">
+                        <form class="form-inline" role="form" name="resourceGraphs">
                             <div class="form-group">
-                                <label for="resourceName" class="sr-only" >Name contains</label>
-                                <p class="form-control-static">Name Contains</p>
+                                <label class="sr-only">Resource Graphs for Node</label>
+                                <p class="form-control-static">Resource Graphs for Node</p>
                             </div>
-                            <div class="form-group">
-                                <input class="form-control" id="resourceName" type="text" name="match" size="16" />
-                            </div>
-                            <div class="form-group">
-                                <input class="btn btn-default" type="submit" value="Resource Graphs"/>
-                            </div>
-                        </form>
-
-                        <form class="form-inline" name="kscReports" action="KSC/index.htm" method="get">
-                            <div class="form-group">
-                                <p class="form-control-static">Name Contains</p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="text" id="kscName" name="match" />
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" type="submit" value="KSC Reports"/>
-                            </div>
-
+                            <onms-search-nodes />
                         </form>
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-md-12">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <form class="form-inline" role="form" name="kscReports">
+                            <div class="form-group">
+                                <label class="sr-only">KSC Reports</label>
+                                <p class="form-control-static">KSC Reports</p>
+                            </div>
+                            <onms-search-ksc />
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-12">
                     <ul class="list-unstyled">
                         <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
-                        <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
+                        <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
                         <li><a href="report/database/index.htm">Database Reports</a></li>
                         <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
                         <li><a href="inventory/rancidReport.htm">Inventory</a></li>

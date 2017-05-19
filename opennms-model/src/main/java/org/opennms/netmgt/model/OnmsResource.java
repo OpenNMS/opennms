@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -327,7 +328,7 @@ public class OnmsResource implements Comparable<OnmsResource> {
     private static String encode(String string) {
         if (string == null) return null;
         try {
-            return URLEncoder.encode(string, "UTF-8");
+            return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);

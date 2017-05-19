@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>servlet-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Servlet</name>
+  <name>OpenNMS :: Dependencies :: Servlet</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use servlets
@@ -17,19 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-jsp</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty.orbit</groupId>
-          <artifactId>org.eclipse.jdt.core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- Use the ECJ compiler instead of the JDT dependency of Jetty -->
-    <dependency>
-      <groupId>org.eclipse.jdt.core.compiler</groupId>
-      <artifactId>ecj</artifactId>
-      <scope>compile</scope>
+      <artifactId>apache-jsp</artifactId>
     </dependency>
   </dependencies>
 </project>

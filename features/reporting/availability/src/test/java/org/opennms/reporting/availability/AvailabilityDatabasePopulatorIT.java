@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-availabilityDatabasePopulator.xml",
-        "classpath:META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
@@ -109,6 +109,8 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 		List<OnmsNode> nodes = m_nodeDao.findAll();
 		for (OnmsNode node : nodes) {
 			m_nodeDao.initialize(node);
+			// TODO: Is this necessary?
+			m_nodeDao.initialize(node.getLocation());
 		}
 		for (OnmsNode node : nodes) {
 			System.err.println("NODE "+ node.toString());

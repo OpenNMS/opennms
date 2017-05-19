@@ -31,6 +31,7 @@ package org.opennms.features.poller.remote.gwt.server.geocoding;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
@@ -149,7 +150,7 @@ public class MapquestGeocoder implements Geocoder {
 
 	private String getUrl(String geolocation) throws GeocoderException {
 		try {
-			return GEOCODE_URL + "&key=" + m_apiKey + "&location=" + URLEncoder.encode(geolocation, "UTF-8");
+			return GEOCODE_URL + "&key=" + m_apiKey + "&location=" + URLEncoder.encode(geolocation, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new GeocoderException("unable to URL-encode query string", e);
 		}

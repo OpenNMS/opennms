@@ -40,8 +40,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +100,7 @@ public class PollOutagesConfigManagerTest {
 
         m_manager = new PollOutagesConfigManager() {
             @Override
-            public void update() throws IOException, MarshalException, ValidationException {}
+            public void update() throws IOException {}
         };
 
         FileWriter w = new FileWriter(m_configFile);
@@ -110,7 +108,7 @@ public class PollOutagesConfigManagerTest {
         w.close();
         m_manager.setConfigResource(new FileSystemResource(m_configFile));
         m_manager.afterPropertiesSet();
-        assertEquals(10003, m_manager.getOutages().length);
+        assertEquals(10003, m_manager.getOutages().size());
     }
 
     @After

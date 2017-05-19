@@ -5,12 +5,12 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>widgetset</artifactId>
+  <artifactId>org.opennms.features.topology.widgetset</artifactId>
 
   <name>${bundle.symbolicName}</name>
 
@@ -83,26 +83,26 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <type>pom</type>
     </dependency>
     
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>app</artifactId>
+      <artifactId>org.opennms.features.topology.app</artifactId>
       <version>${project.version}</version>
     </dependency>
 <!--     <dependency> -->
 <!--         <groupId>org.opennms.features.topology</groupId> -->
-<!--         <artifactId>ssh</artifactId> -->
+<!--         <artifactId>org.opennms.features.topology.ssh</artifactId> -->
 <!--         <version>${project.version}</version> -->
 <!--     </dependency> -->
     
     <!-- these are required in order to ensure that the TopologyComponent class can load to it can be checked for annotations -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

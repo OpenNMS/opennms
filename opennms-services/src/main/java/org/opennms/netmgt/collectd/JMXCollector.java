@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -53,7 +53,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
-import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
+import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
@@ -125,6 +125,8 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     protected JmxConfigDao m_jmxConfigDao = null;
 
+    private JMXDataCollectionConfigDao m_jmxDataCollectionConfigDao;
+
     /**
      * Interface attribute key used to store a JMXNodeInfo object which holds
      * data about the node being polled.
@@ -157,54 +159,12 @@ public abstract class JMXCollector implements ServiceCollector {
         serviceName = name;
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * <p>
-     * Initialize the service collector.
-     * </p>
-     * <p>
-     * During initialization the JMX collector: - Initializes various
-     * configuration factories. - Verifies access to the database - Verifies
-     * access to RRD file repository - Verifies access to JNI RRD shared
-     * library - Determines if JMX to be stored for only the node's primary
-     * interface or for all interfaces.
-     * </p>
-     *
-     * @throws RuntimeException Thrown if an unrecoverable error occurs that prevents
-     *                          the plug-in from functioning.
-     */
     @Override
     public void initialize(Map<String, String> parameters) {
-        // Initialize the JMXDataCollectionConfigFactory
-        try {
-            // XXX was reload(), which isn't test-friendly
-            JMXDataCollectionConfigFactory.init();
-        } catch (Throwable e) {
-            LOG.error("initialize: Failed to load data collection configuration", e);
-            throw new UndeclaredThrowableException(e);
+        // Retrieve the configuration DAOs
+        if (m_jmxDataCollectionConfigDao == null) {
+            m_jmxDataCollectionConfigDao = BeanUtils.getBean("daoContext", "jmxDataCollectionConfigDao", JMXDataCollectionConfigDao.class);
         }
-
-        // Make sure we can connect to the database
-        java.sql.Connection ctest = null;
-        try {
-            ctest = DataSourceFactory.getInstance().getConnection();
-        } catch (final Exception e) {
-            LOG.error("initialize: failed to get a database connection", e);
-            throw new UndeclaredThrowableException(e);
-        } finally {
-            if (ctest != null) {
-                try {
-                    ctest.close();
-                } catch (final Throwable t) {
-                    LOG.debug("initialize: an exception occurred while closing the JDBC connection");
-                }
-            }
-        }
-
-        // Save local reference to singleton instance
-
-        LOG.debug("initialize: successfully instantiated JNI interface to RRD.");
     }
 
     /**
@@ -241,12 +201,12 @@ public abstract class JMXCollector implements ServiceCollector {
          * These objects pertain to the node itself not any individual
          * interfaces.
          */
-        Map<String, List<Attrib>> attrMap = JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, serviceName, hostAddress);
+        Map<String, List<Attrib>> attrMap = m_jmxDataCollectionConfigDao.getAttributeMap(collectionName, serviceName, hostAddress);
         nodeInfo.setAttributeMap(attrMap);
 
-        Map<String, JMXDataSource> dsList = buildDataSourceList(collectionName, attrMap);
+        Map<String, JMXDataSource> dsList = buildDataSourceList(m_jmxDataCollectionConfigDao, collectionName, attrMap);
         nodeInfo.setDsMap(dsList);
-        nodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
+        nodeInfo.setMBeans(m_jmxDataCollectionConfigDao.getMBeanInfo(collectionName));
 
         // Add the JMXNodeInfo object as an attribute of the interface
         agent.setAttribute(NODE_INFO_KEY, nodeInfo);
@@ -297,7 +257,7 @@ public abstract class JMXCollector implements ServiceCollector {
             config.setConnectionName(getConnectionName());
             config.setRetries(retries);
             config.setServiceProperties(stringMap);
-            config.setJmxCollection(JMXDataCollectionConfigFactory.getInstance().getJmxCollection(collectionName));
+            config.setJmxCollection(m_jmxDataCollectionConfigDao.getJmxCollection(collectionName));
 
             final JmxCollector jmxCollector = new DefaultJmxCollector();
             ((DefaultJmxCollector) jmxCollector).setJmxConfigDao(m_jmxConfigDao);
@@ -379,7 +339,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * @param attributeMap   List of MBeanObject objects defining the attributes to be collected via JMX.
      * @return list of RRDDataSource objects
      */
-    protected static Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
+    protected static Map<String, JMXDataSource> buildDataSourceList(JMXDataCollectionConfigDao jmxDataCollectionConfigDao, String collectionName, Map<String, List<Attrib>> attributeMap) {
         LOG.debug("buildDataSourceList - ***");
 
         /*
@@ -417,7 +377,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      * min & max values to "U" ("unknown").
                      */
                     JMXDataSource ds = new JMXDataSource();
-                    ds.setHeartbeat(2 * JMXDataCollectionConfigFactory.getInstance().getStep(
+                    ds.setHeartbeat(2 * jmxDataCollectionConfigDao.getStep(
                             collectionName));
                     // For completeness, adding a minval option to the variable.
                     String ds_minval = attr.getMinval();
@@ -572,7 +532,14 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
+        return m_jmxDataCollectionConfigDao.getRrdRepository(collectionName);
     }
 
+    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
+        m_jmxConfigDao = Objects.requireNonNull(jmxConfigDao);
+    }
+
+    public void setJmxDataCollectionConfigDao(JMXDataCollectionConfigDao jmxDataCollectionConfigDao) {
+        m_jmxDataCollectionConfigDao = Objects.requireNonNull(jmxDataCollectionConfigDao);
+    }
 }

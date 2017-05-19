@@ -39,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -165,7 +166,7 @@ public final class TcpEventProxy implements EventProxy {
             m_sock.setSoTimeout(500);
             LOG.debug("Default Charset: {}", Charset.defaultCharset().displayName());
             LOG.debug("Setting Charset: UTF-8");
-            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.forName("UTF-8"));
+            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), StandardCharsets.UTF_8);
             m_input = m_sock.getInputStream();
             m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
                 @Override

@@ -33,26 +33,30 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
+import org.quartz.JobBuilder;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.util.Assert;
 
 /**
- * <p>Poller class.</p>
+ * <p>This {@link Poller} class listens for changes to the polling configuration
+ * of a {@link PollerFrontEnd} and reacts by rescheduling the Quartz polling tasks
+ * if necessary.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
-public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener, PropertyChangeListener {
+public class Poller implements InitializingBean, ConfigurationChangedListener, PropertyChangeListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(Poller.class);
 
-    private final static String LOG4J_CATEGORY = "poller";
+    public final static String LOG4J_CATEGORY = "poller";
 
     private PollerFrontEnd m_pollerFrontEnd;
     private Scheduler m_scheduler;
@@ -112,8 +116,8 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
             // no need to unschedule in this case
             return;
         }
-        for (String jobName : m_scheduler.getJobNames(PollJobDetail.GROUP)) {
-            m_scheduler.deleteJob(jobName, PollJobDetail.GROUP);
+        for (JobKey jobKey : m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(PollJobDetail.GROUP))) {
+            m_scheduler.deleteJob(jobKey);
         }
     }
 
@@ -137,7 +141,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
             String jobName = polledService.toString();
 
             // remove any currently scheduled job
-            if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
+            if (m_scheduler.deleteJob(new JobKey(jobName, PollJobDetail.GROUP))) {
                 LOG.debug("Job for {} already scheduled.  Rescheduling", polledService);
             } else {
                 LOG.debug("Scheduling job for {}", polledService);
@@ -147,13 +151,20 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
             m_pollerFrontEnd.setInitialPollTime(polledService.getServiceId(), initialPollTime);
 
-            Trigger pollTrigger = new PolledServiceTrigger(polledService);
-            pollTrigger.setStartTime(initialPollTime);
+            /*
+            JobBuilder.newJob(PollJob.class)
+                .withIdentity(jobName)
+                .usingJobData(PollJobDetail.JOB_DATA_MAP_KEY_POLLEDSERVICE, polledService)
+                .usingJobData(PollJobDetail.JOB_DATA_MAP_KEY_POLLERFRONTEND, m_pollerFrontEnd);
+            */
 
             PollJobDetail jobDetail = new PollJobDetail(jobName, PollJob.class);
             jobDetail.setPolledService(polledService);
             jobDetail.setPollerFrontEnd(m_pollerFrontEnd);
 
+            SimpleTriggerFactoryBean triggerFactory = new PolledServiceTrigger(jobDetail); 
+            triggerFactory.setStartTime(initialPollTime);
+            Trigger pollTrigger = triggerFactory.getObject();
 
             m_scheduler.scheduleJob(jobDetail, pollTrigger);
 
@@ -164,21 +175,8 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 
     }
 
-    private void assertNotNull(Object propertyValue, String propertyName) {
+    private static void assertNotNull(Object propertyValue, String propertyName) {
         Assert.state(propertyValue != null, propertyName+" must be set for instances of "+Poller.class);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void pollCompleted(String pollId, PollStatus pollStatus) {
-        LOG.info("Complete Poll for {} status = {}", pollId, pollStatus);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void pollStarted(String pollId) {
-        LOG.info("Begin Poll for {}", pollId);
-
     }
 
     /** {@inheritDoc} */
@@ -221,9 +219,4 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
             throw new RuntimeException("Unable to schedule polls!");
         }
     }
-
-    public static String getLoggingCategory() {
-        return LOG4J_CATEGORY;
-    }
-
 }

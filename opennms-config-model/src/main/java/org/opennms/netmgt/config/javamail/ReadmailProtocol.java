@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,15 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class ReadmailProtocol.
@@ -42,133 +46,64 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="readmail-protocol", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class ReadmailProtocol implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 8487366539846091236L;
-
-    /** The transport. */
     @XmlAttribute(name="transport")
-    private String _transport;
+    private String m_transport;
 
-    /** The SSL enable flag. */
     @XmlAttribute(name="ssl-enable")
-    private Boolean _sslEnable;
+    private Boolean m_sslEnable;
 
-    /** The start TLS flag. */
     @XmlAttribute(name="start-tls")
-    private Boolean _startTls;
+    private Boolean m_startTls;
 
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new readmail protocol.
-     */
     public ReadmailProtocol() {
-        super();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj )
-            return true;
-        if (obj instanceof ReadmailProtocol) {
-            ReadmailProtocol temp = (ReadmailProtocol)obj;
-            if (this._transport != null) {
-                if (temp._transport == null) return false;
-                else if (!(this._transport.equals(temp._transport))) 
-                    return false;
-            }
-            else if (temp._transport != null)
-                return false;
-            if (this._sslEnable != temp._sslEnable)
-                return false;
-            if (this._startTls != temp._startTls)
-                return false;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public Boolean isSslEnable() {
-        return this._sslEnable == null ? Boolean.FALSE : this._sslEnable;
-    }
-
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public Boolean isStartTls() {
-        return this._startTls == null ? Boolean.FALSE : this._startTls;
-    }
-
-    /**
-     * Returns the value of field 'transport'.
-     * 
-     * @return the value of field 'Transport'.
-     */
     public String getTransport() {
-        return this._transport == null ? "pop3" : this._transport;
+        return m_transport == null ? "pop3" : m_transport;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    public void setTransport(final String transport) {
+        m_transport = ConfigUtils.normalizeString(transport);
+    }
+
+    public Boolean isSslEnable() {
+        return m_sslEnable == null ? Boolean.FALSE : m_sslEnable;
+    }
+
+    public void setSslEnable(final Boolean sslEnable) {
+        m_sslEnable = sslEnable;
+    }
+
+    public Boolean isStartTls() {
+        return m_startTls == null ? Boolean.FALSE : m_startTls;
+    }
+
+    public void setStartTls(final Boolean startTls) {
+        m_startTls = startTls;
+    }
+
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_transport != null) {
-            result = 37 * result + _transport.hashCode();
+        return Objects.hash(m_transport, m_sslEnable, m_startTls);
+    }
+
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
+            return true;
         }
-        result = 37 * result + (_sslEnable?0:1);
-        result = 37 * result + (_startTls?0:1);
-        return result;
-    }
 
-    /**
-     * Sets the value of field 'sslEnable'.
-     * 
-     * @param sslEnable the value of field 'sslEnable'.
-     */
-    public void setSslEnable(final Boolean sslEnable) {
-        this._sslEnable = sslEnable;
-    }
-
-    /**
-     * Sets the value of field 'startTls'.
-     * 
-     * @param startTls the value of field 'startTls'.
-     */
-    public void setStartTls(final Boolean startTls) {
-        this._startTls = startTls;
-    }
-
-    /**
-     * Sets the value of field 'transport'.
-     * 
-     * @param transport the value of field 'transport'.
-     */
-    public void setTransport(final String transport) {
-        this._transport = transport;
+        if (obj instanceof ReadmailProtocol) {
+            final ReadmailProtocol that = (ReadmailProtocol)obj;
+            return Objects.equals(this.m_transport, that.m_transport)
+                    && Objects.equals(this.m_sslEnable, that.m_sslEnable)
+                    && Objects.equals(this.m_startTls, that.m_startTls);
+        }
+        return false;
     }
 
 }

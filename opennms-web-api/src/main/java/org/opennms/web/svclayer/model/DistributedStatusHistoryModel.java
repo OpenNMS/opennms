@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>DistributedStatusHistoryModel class.</p>
@@ -44,9 +44,9 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DistributedStatusHistoryModel {
-    private List<LocationDef> m_locations;
+    private List<OnmsMonitoringLocation> m_locations;
     private List<OnmsApplication> m_applications;
-    private LocationDef m_chosenLocation;
+    private OnmsMonitoringLocation m_chosenLocation;
     private OnmsApplication m_chosenApplication;
     private Collection<OnmsMonitoredService> m_chosenApplicationMemberServices;
     private List<String> m_errors;
@@ -71,11 +71,11 @@ public class DistributedStatusHistoryModel {
      * @param errors a {@link java.util.List} object.
      */
     public DistributedStatusHistoryModel(
-            List<LocationDef> locations,
+            List<OnmsMonitoringLocation> locations,
             List<OnmsApplication> applications,
             List<OnmsLocationMonitor> monitors,
             List<RelativeTimePeriod> periods,
-            LocationDef chosenLocation,
+            OnmsMonitoringLocation chosenLocation,
             OnmsApplication chosenApplication,
             Collection<OnmsMonitoredService> chosenApplicationMemberServices,
             OnmsLocationMonitor chosenMonitor,
@@ -108,7 +108,7 @@ public class DistributedStatusHistoryModel {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<LocationDef> getLocations() {
+    public List<OnmsMonitoringLocation> getLocations() {
         return m_locations;
     }
 
@@ -130,7 +130,7 @@ public class DistributedStatusHistoryModel {
         return m_chosenApplicationMemberServices;
     }
 
-    public LocationDef getChosenLocation() {
+    public OnmsMonitoringLocation getChosenLocation() {
         return m_chosenLocation;
     }
     

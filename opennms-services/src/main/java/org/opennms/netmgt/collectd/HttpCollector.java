@@ -36,6 +36,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -67,8 +68,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -94,6 +93,7 @@ import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
+import org.opennms.netmgt.config.httpdatacollection.Url;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -172,7 +172,7 @@ public class HttpCollector implements ServiceCollector {
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
             m_collectionResourceList = new ArrayList<HttpCollectionResource>();
-            List<Uri> uriDefs = collection.getUris().getUriCollection();
+            List<Uri> uriDefs = collection.getUris();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
                 HttpCollectionResource collectionResource = new HttpCollectionResource(m_agent, uriDef);
@@ -284,8 +284,8 @@ public class HttpCollector implements ServiceCollector {
             }
             final HttpClientWrapper wrapper = clientWrapper;
 
-            if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
-                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
+            if (collectionSet.getUriDef().getUrl().getUserInfo().isPresent()) {
+                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo().get();
                 final String[] streetCred = userInfo.split(":", 2);
                 if (streetCred.length == 2) {
                     wrapper.addBasicCredentials(streetCred[0], streetCred[1]);
@@ -389,28 +389,28 @@ public class HttpCollector implements ServiceCollector {
         LOG.debug("getmatches = {}", collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         int flags = 0;
-        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence()) {
+        if (collectionSet.getUriDef().getUrl().isCanonicalEquivalence()) {
             flags |= Pattern.CANON_EQ;
         }
-        if (collectionSet.getUriDef().getUrl().getCaseInsensitive()) {
+        if (collectionSet.getUriDef().getUrl().isCaseInsensitive()) {
             flags |= Pattern.CASE_INSENSITIVE;
         }
-        if (collectionSet.getUriDef().getUrl().getComments()) {
+        if (collectionSet.getUriDef().getUrl().isComments()) {
             flags |= Pattern.COMMENTS;
         }
-        if (collectionSet.getUriDef().getUrl().getDotall()) {
+        if (collectionSet.getUriDef().getUrl().isDotall()) {
             flags |= Pattern.DOTALL;
         }
-        if (collectionSet.getUriDef().getUrl().getLiteral()) {
+        if (collectionSet.getUriDef().getUrl().isLiteral()) {
             flags |= Pattern.LITERAL;
         }
-        if (collectionSet.getUriDef().getUrl().getMultiline()) {
+        if (collectionSet.getUriDef().getUrl().isMultiline()) {
             flags |= Pattern.MULTILINE;
         }
-        if (collectionSet.getUriDef().getUrl().getUnicodeCase()) {
+        if (collectionSet.getUriDef().getUrl().isUnicodeCase()) {
             flags |= Pattern.UNICODE_CASE;
         }
-        if (collectionSet.getUriDef().getUrl().getUnixLines()) {
+        if (collectionSet.getUriDef().getUrl().isUnixLines()) {
             flags |= Pattern.UNIX_LINES;
         }
         LOG.debug("flags = {}", flags);
@@ -420,7 +420,7 @@ public class HttpCollector implements ServiceCollector {
         final boolean matches = m.matches();
         if (matches) {
             LOG.debug("processResponse: found matching attributes: {}", matches);
-            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes();
             final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(), AttributeGroupType.IF_TYPE_ALL);
 
             final List<Locale> locales = new ArrayList<Locale>();
@@ -547,8 +547,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     private static String determineUserAgent(final HttpCollectionSet collectionSet) {
-        String userAgent = collectionSet.getUriDef().getUrl().getUserAgent();
-        return (String) (userAgent == null ? null : userAgent);
+        return collectionSet.getUriDef().getUrl().getUserAgent().orElse(null);
     }
 
     private static HttpVersion computeVersion(final Uri uri) {
@@ -559,15 +558,16 @@ public class HttpCollector implements ServiceCollector {
     private static HttpRequestBase buildHttpMethod(final HttpCollectionSet collectionSet) throws URISyntaxException {
         HttpRequestBase method;
         URI uri = buildUri(collectionSet);
-        if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
+        final Url url = collectionSet.getUriDef().getUrl();
+
+        if ("GET".equals(url.getMethod())) {
             method = buildGetMethod(uri, collectionSet);
         } else {
             method = buildPostMethod(uri, collectionSet);
         }
 
-        final String virtualHost = collectionSet.getUriDef().getUrl().getVirtualHost();
-        if (virtualHost != null && !virtualHost.trim().isEmpty()) {
-            method.setHeader(HTTP.TARGET_HOST, virtualHost);
+        if (url.getVirtualHost().isPresent() && !url.getVirtualHost().get().trim().isEmpty()) {
+            method.setHeader(HTTP.TARGET_HOST, url.getVirtualHost().get());
         }
         return method;
     }
@@ -575,12 +575,8 @@ public class HttpCollector implements ServiceCollector {
     private static HttpPost buildPostMethod(final URI uri, final HttpCollectionSet collectionSet) {
         HttpPost method = new HttpPost(uri);
         List<NameValuePair> postParams = buildRequestParameters(collectionSet);
-        try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, "UTF-8");
-            method.setEntity(entity);
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
-        }
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, StandardCharsets.UTF_8);
+        method.setEntity(entity);
         return method;
     }
 
@@ -589,7 +585,7 @@ public class HttpCollector implements ServiceCollector {
         List<NameValuePair> queryParams = buildRequestParameters(collectionSet);
         try {
             StringBuffer query = new StringBuffer();
-            query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
+            query.append(URLEncodedUtils.format(queryParams, StandardCharsets.UTF_8));
             if (uri.getQuery() != null && !uri.getQuery().trim().isEmpty()) {
                 if (query.length() > 0) {
                     query.append("&");
@@ -598,7 +594,7 @@ public class HttpCollector implements ServiceCollector {
             }
             final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
-                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
+                final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), StandardCharsets.UTF_8);
                 if (!params.isEmpty()) {
                     ub.setParameters(params);
                 }
@@ -616,8 +612,7 @@ public class HttpCollector implements ServiceCollector {
         if (collectionSet.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }
-        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
-        for (Parameter p : parameters) {
+        for (Parameter p : collectionSet.getUriDef().getUrl().getParameters()) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
         }
         return retval;
@@ -634,11 +629,11 @@ public class HttpCollector implements ServiceCollector {
         ub.setPort(collectionSet.getPort());
         ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
 
-        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery");
-        final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery().orElse(null), "getQuery");
+        final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
         ub.setParameters(params);
 
-        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
+        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment().orElse(null), "getFragment"));
         return ub.build();
     }
 
@@ -673,12 +668,6 @@ public class HttpCollector implements ServiceCollector {
         try {
             LOG.debug("initialize: Initializing collector: {}", HttpCollector.class.getSimpleName());
             HttpCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);

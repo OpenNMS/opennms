@@ -171,29 +171,21 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     @Override
     public InputStream getTemplateStream(String id) {
-        InputStream reportTemplateStream = null;
-
         try {
             String reportTemplateFolder = m_jrTemplateResource.getFile().getPath();
-
             for (JasperReportDefinition report : m_LocalJasperReports.getReportList()) {
                 if (id.equals(report.getId())) {
                     try {
-                        reportTemplateStream = new FileInputStream(
-                                new File(
-                                        reportTemplateFolder + "/" + report.getTemplate()));
+                        return new FileInputStream(new File(reportTemplateFolder + "/" + report.getTemplate()));
                     } catch (FileNotFoundException e) {
-                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder);
-
-                        //TODO indigo: Add e.message to error message
-                        e.printStackTrace();
+                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder, e);
                     }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage(), e);
         }
-        return reportTemplateStream;
+        return null;
     }
 
     /**

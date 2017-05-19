@@ -1,0 +1,76 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-minion]]
+== Minion
+
+_Minion_ gives the ability to monitor devices and applications which are in isolated networks and hard to reach from a central _{opennms-product-name}_ instance.
+Maintaining a large set of _Firewall_ rules to allow a variety of management protocols is sometimes tedious and hard to set up.
+Communicating with managed devices over unreliable networks and the use of _UDP_ based management protocols can also be difficult to maintain.
+Deploying a _Minion_ can be used to address these issues.
+
+A _Minion_ can be used when a central _{opennms-product-name}_ can't reach all devices and _Management Agents_ for monitoring.
+Furthermore it simplifies the network communication by using _TCP_-based _ActiveMQ_ and _ReST_ communication.
+
+The network area where access to managed network devices and applications is allowed can be modeled in a _Location_.
+Monitored _Nodes_ and _IP Services_ are associated to _Locations_ and are defined during _Provisioning_.
+Each _Minion_ is configured with a _Location_ and all _Nodes_ and _IP Services_ in the same _Location_ are monitored through this _Minion_.
+
+NOTE: The _Minion_ is currently not designed to be a replacement for the _Remote Poller_.
+      By using the _Remote Poller_ a service can be tested from several remote sites, whereas a _Minion_ extends network reachability for a central _{opennms-product-name}_ instance.
+
+[[gi-install-minion-location]]
+._Nodes_ with _Minions_ in _Locations_
+image::minion/01_minion-location.png[]
+
+The figure <<gi-install-minion-location, _Nodes_ with _Minions_ in _Locations_>> illustrates a _Minion_ deployment in isolated branch offices.
+
+Every _Node_ created in _{opennms-product-name}_ is by default created in the _Location_ named _Default_.
+All _Nodes_ and _Services_ in the _Default Location_ are handled by the central _{opennms-product-name}_ instance itself.
+For each branch office in an isolated network, a _Location_ is defined.
+The _Minion_ has a configuration property for the _Location_ and will register itself to the {opennms-product-name} instance on startup.
+
+The _Provisioning System_ allows to associate _Nodes_ to a _Location_.
+_{opennms-product-name}_ will delegate monitoring requests for _Nodes_ in the specified _Locations_ to the registered _Minions_ and uses them as a proxy.
+
+Figure <<gi-install-minion-communication, Minion communication>> gives a more detailed overview about the communication between an _{opennms-product-name}_ instance and a _Minion_.
+
+[[gi-install-minion-scenario]]
+.Minion communication
+image::minion/02_minion-communication.png[]
+
+The _Minion_ needs a configuration which requires at minimum the following information:
+
+* An unique identifier (`id`) for this specific _Minion_
+* Monitoring _Location_ name (`location`) this _Minion_ is responsible
+* The communication endpoints (`broker-url` and `http-url`) for the central _{opennms-product-name}_ instance
+
+The configuration resides in a property file in `${MINION_HOME}/etc/org.opennms.minion.controller.cfg`.
+When the minimal configuration is set up the _Minion_ can be started and initially connects to the central _{opennms-product-name}_ instance and identifies itself with his unique _ID_.
+
+NOTE: The unique _ID_ is generated when the packages get installed `/usr/bin/uuidgen -t` and is used if no _ID_ is set manually.
+On upgrade the _ID_ is not updated.
+
+
+By default the _Minion_ will be automatically provisioned as a _Node_ in the _{opennms-product-name}_ instance and get automatically monitored with the _Minion-Heartbeat_ service.
+The _Minion_ sends heart beat messages to ensure it is running and functioning properly in this network area.
+
+The specific management protocol messages, e.g. _SNMP_, _ICMP_, are piped through an _ActiveMQ_ messaging communication channel and are executed by a _Minion_.
+Responses are forwarded to the central _{opennms-product-name}_ instance and are processed accordingly.
+
+_Minions_ can be installed on every system that is able to communicate with these two endpoints:
+
+* The _OpenNMS ReST Interface_, by default _TCP_ port 8980
+* The _ActiveMQ_ broker used by _{opennms-product-name}_, by default _TCP_ port 61616
+
+The following management protocols are currently supported in a _Minion_ proxy scenario:
+
+* Receive _Syslog_ messages and forward them through _ActiveMQ_ to a central _{opennms-product-name}_ instance
+* Receive _SNMP Traps_ and forward them through _ActiveMQ_ to a central _{opennms-product-name}_ instance
+* Act as a proxy for _SNMP_ performance data collections
+* Act as a proxy for _Service Monitors_ to test availability and measure response times from applications
+
+IMPORTANT: Packages are only available for _RHEL_-based systems (_RPMS_).
+
+WARNING: To avoid issues, make sure the _Minion_ and the instance of _{opennms-product-name}_ have the same version.

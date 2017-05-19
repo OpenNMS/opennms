@@ -39,9 +39,9 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class PollerConfigurationResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getPollerConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
 
-        final LocationDef def = m_monitoringLocationDao.get(location);
+        final OnmsMonitoringLocation def = m_monitoringLocationDao.get(location);
         if (def == null) {
             LOG.warn("Unable to find monitoring location {}", location);
             return Response.status(Response.Status.NOT_FOUND).build();

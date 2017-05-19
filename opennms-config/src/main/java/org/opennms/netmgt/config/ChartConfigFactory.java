@@ -36,10 +36,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -58,28 +57,24 @@ public class ChartConfigFactory extends ChartConfigManager {
     /**
      * <p>init</p>
      *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static synchronized void init() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public static synchronized void init() throws FileNotFoundException, IOException {
         if (!m_initialized) {
             m_instance = new ChartConfigFactory();
             reload();
             m_initialized = true;
         }   
     }
-    
+
     /**
      * <p>reload</p>
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException, FileNotFoundException {
         m_chartConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.CHART_CONFIG_FILE_NAME);
 
         InputStream configIn = null;
@@ -98,7 +93,7 @@ public class ChartConfigFactory extends ChartConfigManager {
     @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), StandardCharsets.UTF_8);
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
@@ -109,13 +104,11 @@ public class ChartConfigFactory extends ChartConfigManager {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException {
         if (m_lastModified != m_chartConfigFile.lastModified()) {
-            ChartConfigFactory.getInstance().reload();
+            ChartConfigFactory.reload();
         }
     }
 

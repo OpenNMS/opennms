@@ -35,6 +35,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Date;
 import java.util.List;
 
@@ -48,12 +50,13 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.PathOutageManager;
-import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
@@ -63,6 +66,7 @@ import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +102,6 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     private PollableNetwork m_pNetwork;
     private PollableService m_pSvc;
     private MockService m_mSvc;
-    private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
     
@@ -113,6 +116,8 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     PathOutageManager m_pathOutageManager;
+
+    LocationAwarePingClient m_locationAwarePingClient;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -161,23 +166,24 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addService(m_mNetwork.getService(2, "192.168.1.3", "HTTP"));
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         
-        m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
         
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
-        
+
+        m_locationAwarePingClient = mock(LocationAwarePingClient.class);
+
         m_pollContext = new DefaultPollContext();
         m_pollContext.setEventManager(m_eventMgr);
         m_pollContext.setLocalHostName("localhost");
         m_pollContext.setName("PollContextTest.DefaultPollContext");
         m_pollContext.setPollerConfig(m_pollerConfig);
         m_pollContext.setQueryManager(m_queryManager);
-        
+        m_pollContext.setLocationAwarePingClient(m_locationAwarePingClient);
+
        m_pNetwork = new PollableNetwork(m_pollContext);
-       m_pSvc = m_pNetwork.createService(1, "Router", InetAddressUtils.addr("192.168.1.1"), "ICMP");
+       m_pSvc = m_pNetwork.createService(1, "Router", null, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
     }
 
@@ -212,7 +218,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
     @Test
     public void testSendEvent() {
        
-        m_anticipator.anticipateEvent(m_mSvc.createDownEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(m_mSvc.createDownEvent());
         
         PollEvent e = m_pollContext.sendEvent(m_mSvc.createDownEvent());
         
@@ -220,8 +226,8 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         assertNotNull(e);
         assertTrue("Invalid Event Id", e.getEventId() > 0);
         
-        assertEquals(0, m_anticipator.waitForAnticipated(0).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        assertEquals(0, m_eventMgr.getEventAnticipator().waitForAnticipated(0).size());
+        assertEquals(0, m_eventMgr.getEventAnticipator().getUnanticipatedEvents().size());
         
         
     }
@@ -384,8 +390,8 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pathOutageDao.save(pathOutage);
         m_pathOutageDao.flush();
         m_pollerConfig.setPathOutageEnabled(true);
-        String[] paths = m_pathOutageManager.getCriticalPath(1);
-        Assert.assertEquals("169.254.0.1", paths[0]);
+        CriticalPath path = m_pathOutageManager.getCriticalPath(1);
+        Assert.assertEquals(InetAddrUtils.addr("169.254.0.1"), path.getIpAddress());
 
         Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, new Date(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
         Assert.assertNotNull(nodeEvent);

@@ -3,18 +3,19 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.reporting</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features Reporting</name>
+  <name>OpenNMS :: Features :: Reporting</name>
   <modules>
     <module>api</module>
     <module>core</module>
     <module>availability</module>
     <module>jasper-reports</module>
+    <module>jasper-reports-compiler</module>
     <module>jasper-reports-filter</module>
     <module>repository</module>
     <module>model</module>

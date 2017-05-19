@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
@@ -61,21 +61,22 @@ public class EventdConfigManager implements EventdConfig {
      * <p>Constructor for EventdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public EventdConfigManager() throws MarshalException, ValidationException, IOException {
+    public EventdConfigManager() throws IOException {
         reload();
     }
     
-    EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+    EventdConfigManager(final InputStream stream) throws IOException {
+        try (final InputStreamReader isr = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(EventdConfiguration.class, isr);
         }
+    }
     
-    private void reload() throws MarshalException, ValidationException, IOException {
-    	InputStream stream = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.EVENTD_CONFIG_FILE_NAME));
-    	m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);		
+    private void reload() throws IOException {
+        try (final Reader r = new FileReader(ConfigFileConstants.getFile(ConfigFileConstants.EVENTD_CONFIG_FILE_NAME))) {
+            m_config = JaxbUtils.unmarshal(EventdConfiguration.class, r);           
+        }
     }
 
     public Lock getReadLock() {
@@ -94,7 +95,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getTCPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getTCPAddress();
+            return m_config.getTCPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -122,7 +123,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getUDPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getUDPAddress();
+            return m_config.getUDPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -164,7 +165,7 @@ public class EventdConfigManager implements EventdConfig {
     public int getQueueLength() {
         getReadLock().lock();
         try {
-            return m_config.hasQueueLength() ? m_config.getQueueLength() : Integer.MAX_VALUE;
+            return m_config.getQueueLength().orElse(Integer.MAX_VALUE);
         } finally {
             getReadLock().unlock();
         }
@@ -192,7 +193,7 @@ public class EventdConfigManager implements EventdConfig {
     public int getSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.getSocketSoTimeoutPeriod();
+            return m_config.getSocketSoTimeoutPeriod().orElse(0);
         } finally {
             getReadLock().unlock();
         }
@@ -206,7 +207,7 @@ public class EventdConfigManager implements EventdConfig {
     public boolean hasSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.hasSocketSoTimeoutPeriod();
+            return m_config.getSocketSoTimeoutPeriod().isPresent();
         } finally {
             getReadLock().unlock();
         }
@@ -218,7 +219,7 @@ public class EventdConfigManager implements EventdConfig {
     public boolean shouldLogEventSummaries() {
         getReadLock().lock();
         try {
-            return m_config.hasLogEventSummaries() ? m_config.getLogEventSummaries() : false;
+            return m_config.getLogEventSummaries() == null? false : m_config.getLogEventSummaries();
         } finally {
             getReadLock().unlock();
         }
@@ -236,7 +237,7 @@ public class EventdConfigManager implements EventdConfig {
     public String getGetNextEventID() {
         getReadLock().lock();
         try {
-            return m_config.getGetNextEventID();
+            return m_config.getGetNextEventID().orElse(null);
         } finally {
             getReadLock().unlock();
         }

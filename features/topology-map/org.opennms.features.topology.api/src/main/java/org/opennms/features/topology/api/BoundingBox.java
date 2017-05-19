@@ -88,7 +88,7 @@ public class BoundingBox{
     }
     
     public void setCenter(Point center) {
-        //TODO cast to in for now
+        //TODO cast to int for now
         m_left = (int)center.getX() - getWidth()/2;
         m_top = (int)center.getY() - getHeight()/2;
     }

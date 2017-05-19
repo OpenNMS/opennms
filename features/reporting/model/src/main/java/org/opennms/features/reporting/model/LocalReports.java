@@ -28,10 +28,13 @@
 
 package org.opennms.features.reporting.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Report Configuration for local reports
@@ -39,16 +42,31 @@ import java.util.List;
  * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "database-reports")
+@XmlAccessorType(XmlAccessType.NONE)
 public class LocalReports {
 
+    @XmlElement(name = "report")
     private List<Report> m_reportList = new ArrayList<Report>();
 
-    @XmlElement(name = "report")
     public List<Report> getReportList() {
         return m_reportList;
     }
 
     public void setReportList(List<Report> reportList) {
         this.m_reportList = reportList;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof LocalReports)) {
+            return false;
+        }
+        LocalReports castOther = (LocalReports) other;
+        return Objects.equals(m_reportList, castOther.m_reportList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_reportList);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -83,10 +84,12 @@ public class AbstractXmlCollectionHandlerTest {
         OnmsAssetRecord asset = new OnmsAssetRecord();
         asset.setSerialNumber("1001");
         node.setAssetRecord(asset);
-        String url = handler.parseString("URL", "http://{nodeLabel}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300);
-        Assert.assertEquals("http://mynode.local/127.0.0.1/serial/1001/300", url);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("port", "80");
+        String url = handler.parseString("URL", "http://{nodeLabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
+        Assert.assertEquals("http://mynode.local:80/127.0.0.1/serial/1001/300", url);
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
-        String xml = handler.parseString("Content", multiline, node, "127.0.0.1", 300);
+        String xml = handler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
     }
 

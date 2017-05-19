@@ -88,7 +88,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
             
             int serviceId;
             try {
-                serviceId = new JdbcTemplate(m_dataSource).queryForInt("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName });
+                serviceId = new JdbcTemplate(m_dataSource).queryForObject("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName }, Integer.class);
             } catch (IncorrectResultSizeDataAccessException e) {
                 if (e.getActualSize() == 0) {
                     LOG.debug("Did not find entry for '{}' in database.", serviceName);

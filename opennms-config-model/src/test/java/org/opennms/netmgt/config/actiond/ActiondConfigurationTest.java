@@ -43,7 +43,7 @@ public class ActiondConfigurationTest extends XmlTestNoCastor<ActiondConfigurati
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000);
+        final ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000l);
 
         return Arrays.asList(new Object[][] {
             {

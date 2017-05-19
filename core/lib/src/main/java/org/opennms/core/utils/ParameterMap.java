@@ -44,19 +44,19 @@ public abstract class ParameterMap {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ParameterMap.class);
 	
-	/**
-	 * This method is used to lookup a specific key in the map. If the mapped
-	 * value is a string it is converted to a long and the original string
-	 * value is replaced in the map. The converted value is returned to the
-	 * caller. If the value cannot be converted then the default value is stored
-	 * in the map. If the specified key does not exist in the map then the
-	 * default value is returned.
-	 *
-	 * @return The long value associated with the key.
-	 * @param map a {@link java.util.Map} object.
-	 * @param key a {@link java.lang.String} object.
-	 * @param defValue a long.
-	 */
+    	/**
+    	 * This method is used to lookup a specific key in the map. If the mapped
+    	 * value is a string it is converted to a long and the original string
+    	 * value is replaced in the map. The converted value is returned to the
+    	 * caller. If the value cannot be converted then the default value is stored
+    	 * in the map. If the specified key does not exist in the map then the
+    	 * default value is returned.
+    	 *
+    	 * @return The long value associated with the key.
+    	 * @param map a {@link java.util.Map} object.
+    	 * @param key a {@link java.lang.String} object.
+    	 * @param defValue a long.
+    	 */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static long getKeyedLong(final Map map, final String key, final long defValue) {
 	    
@@ -77,8 +77,43 @@ public abstract class ParameterMap {
             value = ((Number) oValue).longValue();
         }
         return value;
-	}
+    }
 	
+    /**
+     * This method is used to lookup a specific key in the map. If the mapped
+     * value is a string it is converted to a long and the original string
+     * value is replaced in the map. The converted value is returned to the
+     * caller. If the value cannot be converted then the default value is stored
+     * in the map. If the specified key does not exist in the map then the
+     * default value is returned.
+     *
+     * @return The long value associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a long.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static long getKeyedDecodedLong(final Map map, final String key, final long defValue) {
+            
+            if (map == null) return defValue;
+            
+        long value = defValue;
+        Object oValue = map.get(key);
+    
+        if (oValue != null && oValue instanceof String) {
+            try {
+                value = Long.decode((String) oValue);
+            } catch (final NumberFormatException ne) {
+                value = defValue;
+                LOG.info("getKeyedDecodedLong: Failed to convert value {} for key {}", oValue , key, ne);
+            }
+            map.put(key, new Long(value));
+        } else if (oValue != null) {
+            value = ((Number) oValue).longValue();
+        }
+        return value;
+    }
+        
     /**
      * This method is used to lookup a specific key in the map. If the mapped
      * value is a string it is converted to an integer and the original string
@@ -93,7 +128,7 @@ public abstract class ParameterMap {
      * @param defValue a int.
      */
     public static int getKeyedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
-    	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
+        return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
     }
 
     /**
@@ -140,6 +175,23 @@ public abstract class ParameterMap {
             map.put(key, result);
         }
         return result;
+    }
+
+    /**
+     * This method is used to lookup a specific key in the map. If the mapped
+     * value is a string it is converted to an integer and the original string
+     * value is replaced in the map. The converted value is returned to the
+     * caller. If the value cannot be converted then the default value is stored
+     * in the map. If the specified key does not exist in the map then the
+     * default value is returned.
+     *
+     * @return The int value associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a int.
+     */
+    public static int getKeyedDecodedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
+        return new Long(ParameterMap.getKeyedDecodedLong(map, key, new Long(defValue))).intValue();
     }
 
     /**

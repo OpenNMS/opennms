@@ -30,9 +30,20 @@ package org.opennms.features.topology.api.topo;
 
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 public interface Status {
 
     String computeStatus();
     Map<String, String> getStatusProperties();
+
+    /**
+     * Defines a CSS-Property to Value mapping, where the key defines the CSS-Property and the value the according value.
+     * Each entry is applied to the GWTEdge style attribute.
+     * If no style should be applied in addition, return an empty map.
+     *
+     * @return CSS-Property to Value-Mapping for each GWTEdge. Must NOT be null
+     */
+    Map<String, String> getStyleProperties();
 
 }

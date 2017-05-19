@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,8 +29,6 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -94,13 +92,6 @@ public class XmlCollector implements ServiceCollector {
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
         LOG.debug("initialize: initializing XML collector");
 
-        try {
-            // This is not strictly required but added just in case (see NMS-7963)
-            Charset.forName("UTF-8");
-        } catch (UnsupportedCharsetException e) {
-            throw new CollectionInitializationException("Can't initialize charset UTF-8: " + e.getMessage());
-        }
-
         // Retrieve the DAO for our configuration file.
         if (m_xmlCollectionDao == null)
             m_xmlCollectionDao = BeanUtils.getBean("daoContext", "xmlDataCollectionConfigDao", XmlDataCollectionConfigDao.class);
@@ -155,7 +146,7 @@ public class XmlCollector implements ServiceCollector {
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
         if (parameters == null) {
-            throw new CollectionException("Null parameters is now allowed in XML Collector!");
+            throw new CollectionException("Null parameters is not allowed in XML Collector!");
         }
         try {
             // Getting XML Collection

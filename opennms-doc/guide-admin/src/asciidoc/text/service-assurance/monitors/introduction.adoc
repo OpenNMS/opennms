@@ -1,0 +1,7 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+To support several specific applications and management agents, _Pollerd_ executes _Service Monitors_.
+This section describes all available built-in _Service Monitors_ which are available and can be configured to allow complex monitoring.
+For information how these can be extended, see _Development Guide_ of the _OpenNMS_ documentation.

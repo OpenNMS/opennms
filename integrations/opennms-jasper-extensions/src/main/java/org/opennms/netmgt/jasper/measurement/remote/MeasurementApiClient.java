@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
@@ -118,7 +119,7 @@ class MeasurementApiClient {
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept", "application/xml");
-        connection.setRequestProperty("Accept-Charset", "UTF-8");
+        connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
         connection.setRequestProperty("Content-Type", "application/xml");
         connection.setInstanceFollowRedirects(false); // we do not want to follow redirects, otherwise 200 OK might be returned
         connection.connect();

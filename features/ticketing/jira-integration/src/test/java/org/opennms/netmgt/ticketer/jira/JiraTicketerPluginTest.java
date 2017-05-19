@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 
+@Ignore("These tests rely on the Jira system to be configured correctly (see jira.properties in src/test/resources/opennms-home/etc/jira.properties)")
 public class JiraTicketerPluginTest {
 
     JiraTicketerPlugin m_ticketer;
@@ -56,7 +57,18 @@ public class JiraTicketerPluginTest {
     }
 
     @Test
-    @Ignore("This rely on the JIRA system configured in src/test/resources/opennms-home/etc/jira.properties")
+    @Ignore
+    public void verifyTooManyFiles() throws PluginException {
+        JiraTicketerPlugin plugin = new JiraTicketerPlugin();
+        for (int i=0; i<500; i++) {
+            System.out.print(i + ": ");
+            Ticket ticket = plugin.get("NMS-8947");
+            System.out.print(ticket.getSummary() + "\n");
+        }
+    }
+
+    @Test
+    @Ignore
     public void canSaveGetAndUpdate() throws Exception {
         String ticketId = save();
         get(ticketId);

@@ -38,7 +38,7 @@ import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +55,30 @@ public final class EventParmRegexFilterProcessor implements EventProcessor, Init
     private EventConfDao m_eventConfDao;
     private Map<String, org.opennms.netmgt.xml.eventconf.Filter> m_filterMap = new HashMap<String, org.opennms.netmgt.xml.eventconf.Filter>();
 
+    /**
+     * This processor is always synchronous so this method just 
+     * delegates to {@link #process(Log)}.
+     */
     @Override
-    public void process(Header eventHeader, Event event) throws EventProcessorException {
+    public void process(Log eventLog, boolean synchronous) throws EventProcessorException {
+        process(eventLog);
+    }
+
+    @Override
+    public void process(Log eventLog) throws EventProcessorException {
+        if (eventLog != null && eventLog.getEvents() != null && eventLog.getEvents().getEvent() != null) {
+            for (Event eachEvent : eventLog.getEvents().getEvent()) {
+                process(eachEvent);
+            }
+        }
+    }
+
+    private void process(Event event) throws EventProcessorException {
 
         org.opennms.netmgt.xml.eventconf.Event econf = EventExpander.lookup(m_eventConfDao, event);
         if (econf.getFilters() != null) {
 
-            for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters().getFilterCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Filter fConf : econf.getFilters()) {
                 if (!m_filterMap.containsKey(fConf.getEventparm() + "|" + event.getUei())) {
                     m_filterMap.put(fConf.getEventparm() + "|" + event.getUei(), fConf);
                     LOG.debug("adding [{}|{}] to filter map", fConf.getEventparm(), event.getUei());

@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.measurements</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.measurements</groupId>
   <artifactId>org.opennms.features.measurements.api</artifactId>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Measurements :: API</name>
   <build>
     <!-- We need to be JDK 6 compliant, because we rely on an old jasper-reports version -->
@@ -21,9 +21,26 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+ 
     <!-- Third party -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -31,18 +48,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-
-    <!-- RRD -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-api</artifactId>
     </dependency>
 
     <!-- Testing -->

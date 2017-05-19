@@ -44,7 +44,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 
 public class MergingGraphProviderTest {
 
@@ -80,7 +80,8 @@ public class MergingGraphProviderTest {
 		ProviderManager providerManager = new ProviderManager();
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 		
-		m_mergedProvider = new MergingGraphProvider(m_graphProvider, providerManager);
+		m_mergedProvider = new MergingGraphProvider(providerManager);
+		m_mergedProvider.setBaseGraphProvider(m_graphProvider);
 	}
 	
 	@Test

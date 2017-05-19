@@ -29,6 +29,9 @@ Each plugin has metadata associated with it which is used to identify and descri
 
 image::plugin-manager/05_installedPlugins.png[]
 
+NOTE: The installed plugins tab shows the data retrieved the last time the `Reload Karaf Instance` data button was pressed. (This allow us to maintain a record of offline 
+_Karaf_ instances). However it also means that the localhost data may not be up to date with the local _Karaf_ instance. You should always reload to get the accurate picture of what is currently installed.
+
 === Available Plugins Server
 
 The _Plugin Manager_ obtains a list of available plugins from the _Available Plugin's server_.

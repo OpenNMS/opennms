@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.nsclient</artifactId>
-  <name>OpenNMS Protocols NSClient Monitoring</name>
+  <name>OpenNMS :: Protocols :: NSClient</name>
   <description>
     This module provides NSClient discovery and monitoring to opennms.
   </description>
@@ -72,13 +72,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.lib</artifactId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

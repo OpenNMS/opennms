@@ -121,6 +121,23 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
         }
     }
 
+    @Override
+    public long getTaskQueuePendingCount() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().size();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
+    public long getTaskQueueRemainingCapacity() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().remainingCapacity();
+        } else {
+            return 0L;
+        }
+    }
     
     private ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();

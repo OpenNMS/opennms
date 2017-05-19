@@ -5,12 +5,12 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features JMX Config Generator Web UI</name>
+    <name>OpenNMS :: Features :: JMX Config Generator :: Web UI</name>
     <url>http://www.opennms.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +25,6 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Include-Resource>{maven-resources}</Include-Resource>
-                        <Import-Package>*;com.vaadin.data.util.converter;</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -35,128 +34,27 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
                     </bundles>
                     <features>
                         <feature>vaadin</feature>
                         <feature>jmxconfiggenerator</feature>
-                        <feature>opennms-config-jaxb</feature>
+                        <!-- These classes are exposed via the system classpath (for now) -->
+                        <!-- <feature>opennms-config-jaxb</feature> -->
                     </features>
                 </configuration>
             </plugin>
-            <!-- Compiles your custom GWT components with the GWT compiler -->
-            <!-- A hosted mode browser for client-side widget debugging can be run with the goal gwt:run after uncommenting the 
-            correct line below. A remote debugger can then be connected to port 8998. Note that e.g. a Jetty server should be running 
-            with the server side parts - use the goal jetty:run . -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwtPluginVersion}</version>
-                <configuration>
-                    <!-- if you don't specify any modules, the plugin will find them -->
-                    <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-                    <!--extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998</extraJvmArgs -->
-                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
-                    <runTarget>vaadin-prototype</runTarget>
-                    <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
-                    <noServer>true</noServer>
-                    <port>8080</port>
-                    <draftCompile>false</draftCompile>
-                    <compileReport>false</compileReport>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>resources</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-dev</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-user</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.plugin.version}</version>
-                <configuration>
-                    <draftCompile>false</draftCompile>
-                    <compileReport>false</compileReport>
-                </configuration>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <!-- if you don't specify any modules, the plugin will find them -->
-                            <!-- <modules> <module>your.company.gwt.ColorPickerWidgetSet</module> </modules> -->
-                        </configuration>
-                        <goals>
-                            <goal>update-widgetset</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-dev</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-user</artifactId>
-                        <version>${gwtVersion}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>vaadin-snapshots</id>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-        </repository>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>codehaus-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <url>http://maven.opennms.org/content/repositories/codehaus-snapshots/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>vaadin-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
     <dependencies>
        <dependency>
-			<groupId>org.opennms.osgi.features.topology</groupId>
+			<groupId>org.opennms.features</groupId>
 	      	<artifactId>vaadin</artifactId>
 	      	<type>pom</type>
 	    </dependency>
-        <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
         <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <scope>provided</scope>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -169,20 +67,16 @@
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
+       <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>jmxconfiggenerator</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
@@ -202,11 +96,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config-jaxb</artifactId>
             <scope>provided</scope>
@@ -219,7 +108,7 @@
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
-            <version>2.0.16</version>
+            <version>2.32</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

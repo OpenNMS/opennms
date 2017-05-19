@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
+ * Wraps the XML created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
  *
  * @author ranger
@@ -123,7 +123,7 @@ public final class ThresholdEntity implements Cloneable {
      */
     public String getDatasourceLabel() {
         if (hasThresholds()) {
-            return getThresholdConfig().getDsLabel();
+            return getThresholdConfig().getDsLabel().orElse(null);
         } else {
             return null;
         }
@@ -149,7 +149,7 @@ public final class ThresholdEntity implements Cloneable {
      *
      * NOTE: The m_lowThreshold and m_highThreshold member variables are not
      * actually cloned...the returned ThresholdEntity object will simply contain
-     * references to the same castor Threshold objects as the original
+     * references to the same Threshold objects as the original
      * ThresholdEntity object.
      *
      * All state will be lost, particularly instances, so it's not a true clone by any stretch of the imagination

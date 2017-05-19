@@ -1,0 +1,14 @@
+[[compatibility_matrix]]
+== Compatibility Matrix
+
+[options="header, autowidth"]
+|===
+| OpenNMS       | Java | PostgreSQL | Newts        | Cassandra              | Grafana           | Elasticsearch     | Kafka
+| Horizon 19    | 8    | 9.2+       | [green]*Yes* | [green]*1.2, 2.X, 3.0* | [green]*3.X, 4.X* | [green]*2.X, 5.X* | [green]*0.10*
+| Horizon 18    | 8    | 9.1+       | [green]*Yes* | [green]*1.2, 2.X, 3.0* | [green]*3.X, 4.X* | [green]*1.0*      | [red]#No#
+| Meridian 2016 | 8    | 9.1+       | [green]*Yes* | [green]*1.2, 2.X, 3.0* | [green]*3.X, 4.X* | [red]#No#         | [red]#No#
+| Horizon 17    | 8    | 9.1+       | [green]*Yes* | [green]*1.2, 2.X*      | [green]*3.X, 4.X* | [red]#No#         | [red]#No#
+| Horizon 16    | 8    | 9.0+       | [red]#No#    | [red]#No#              | [green]*3.X, 4.X* | [red]#No#         | [red]#No#
+| Horizon 15    | 7    | 9.0+       | [red]#No#    | [red]#No#              | [red]#No#         | [red]#No#         | [red]#No#
+| Meridian 2015 | 7    | 9.0+       | [red]#No#    | [red]#No#              | [red]#No#         | [red]#No#         | [red]#No#
+|===

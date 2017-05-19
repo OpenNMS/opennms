@@ -1,0 +1,254 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Info Panel Items
+
+WARNING: This section is under development.
+All provided examples or code snippet may not fully work.
+However they are conceptionally correct and should point in the right direction.
+
+Each element in the _Info Panel_ is defined by an `InfoPanelItem` object.
+
+All available `InfoPanelItem` objects are sorted by the order.
+This allows to arrange the items in a custom order.
+After the elements are ordered, they are put below the _SearchBox_ and the _Vertices in Focus_ list.
+
+==== Programmatic
+
+It is possible to add items to the _Info Panel_ in the _Topology UI_ by simply implementing the interface `InfoPanelItemProvider` and expose its implementation via OSGi.
+
+.Simple Java InfoPanelItemProvider
+[source, java]
+----
+public class ExampleInfoPanelItemProvider implements InfoPanelItemProvider {
+    @Override
+    public Collection<? extends InfoPanelItem> getContributions(GraphContainer container) {
+        return Collections.singleton(
+                new DefaultInfoPanelItem() <1>
+                    .withTitle("Static information") <2>
+                    .withOrder(0) <3>
+                    .withComponent(
+                        new com.vaadin.ui.Label("I am a static component") <4>
+                    )
+        );
+    }
+}
+----
+<1> The default implementation of `InfoPanelItem`.
+You may use `InfoPanelItem` instead if the default implementation is not sufficient.
+<2> The title of the `InfoPanelItem`.
+It is shown above the component.
+<3> The order.
+<4> A Vaadin component which actually describes the custom component.
+
+In order to show information based on a selected vertex or edge, one must inherit the classes `EdgeInfoPanelItemProvider` or `VertexInfoPanelItemProvider`.
+The following example shows a custom `EdgeInfoPanelItemProvider`.
+
+.Simple Java EdgeInfoPanelItemProvider
+[source, java]
+----
+public class ExampleEdgeInfoPanelItemProvider extends EdgeInfoPanelItemProvider {
+    @Override
+    protected boolean contributeTo(EdgeRef ref, GraphContainer graphContainer) { <1>
+        return "custom-namespace".equals(ref.getNamespace()); // only show if of certain namespace
+    }
+
+    @Override
+    protected InfoPanelItem createInfoPanelItem(EdgeRef ref, GraphContainer graphContainer) { <2>
+        return new DefaultInfoPanelItem()
+                .withTitle(ref.getLabel() + " Info")
+                .withOrder(0)
+                .withComponent(
+                        new com.vaadin.ui.Label("Id: " + ref.getId() + ", Namespace: " + ref.getNamespace())
+                );
+    }
+}
+----
+<1> Is invoked if one and only one edge is selected.
+It determines if the current edge should provide the _InfoPanelItem_ created by _createInfoPanelItem_.
+<2> Is invoked if one and only one edge is selected.
+It creates the _InfoPanelItem_ to show for the selected edge.
+
+Implementing the provided interfaces/classes, is not enough to have it show up.
+It must also be exposed via a `blueprint.xml` to the OSGi service registry.
+The following `blueprint.xml` snippet describes how to expose any custom _InfoPanelItemProvider_ implementation to the OSGi service registry and have the _Topology UI_ pick it up.
+
+.blueprint.xml snippet
+[source, xml]
+----
+<service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider"> <1>
+    <bean class="ExampleInfoPanelItemProvider" /> <2>
+</service>
+----
+
+<1> The service definition must always point to _InfoPanelItemProvider_.
+<2> The bean implementing the defined interface.
+
+==== Scriptable
+
+By simply dropping JinJava templates (with file extension .html) to `$OPENNMS_HOME/etc/infopanel` a more scriptable approach is available.
+For more information on JinJava refer to https://github.com/HubSpot/jinjava.
+
+The following example describes a very simple JinJava template which is always visible.
+
+.Static scriptable template
+[source, html]
+----
+{% set visible = true %}  <1>
+{% set title = "Static information" %} <2>
+{% set order = -700 %} <3>
+
+This information is always visible <4>
+----
+<1> Makes this always visible
+<2> Defines the title
+<3> Each info panel item is ordered at the end.
+Making it -700 makes it very likely to pin this to the top of the info panel item.
+
+A template showing custom information may look as following:
+
+.Vertex specific template
+[source, html]
+----
+{% set visible = vertex != null && vertex.namespace == "custom" && vertex.customProperty is defined %} <1>
+{% set title = "Custom Information" %}
+
+<table width="100%" border="0">
+    <tr>
+        <td colspan="3">This information is only visible if a vertex with namespace "custom" is selected</td>
+    </tr>
+    <tr>
+        <td align="right" width="80">Custom Property</td>
+        <td width="14"></td>
+        <td align="left">{{ vertex.customProperty }}</td>
+    </tr>
+</table>
+----
+<1> This template is only shown if a vertex is selected and the selected namespace is "custom".
+
+It is also possible to show performance data.
+
+.Including resource graphs
+One can include resource graphs into the info panel by using the following HTML element:
+[source, html]
+----
+<div class="graph-container" data-resource-id="RESOURCE_ID" data-graph-name="GRAPH_NAME"></div>
+----
+
+Optional attributes `data-graph-start` and `data-graph-end` can be used to specify the displayed time range in seconds since epoch.
+
+.Measurements API template (memory usage)
+[source, html]
+----
+{# Example template for a simple memory statistic provided by the netsnmp agent #}
+{% set visible = node != null && node.sysObjectId == ".1.3.6.1.4.1.8072.3.2.10" %}
+{% set order = 110 %}
+
+{# Setting the title #}
+{% set title = "System Memory" %}
+
+{# Define resource Id to be used #}
+{% set resourceId = "node[" + node.id + "].nodeSnmp[]" %}
+
+{# Define attribute Id to be used #}
+{% set attributeId = "hrSystemUptime" %}
+
+{% set total = measurements.getLastValue(resourceId, "memTotalReal")/1000/1024 %}
+{% set avail = measurements.getLastValue(resourceId, "memAvailReal")/1000/1024 %}
+
+<table border="0" width="100%">
+    <tr>
+        <td width="80" align="right" valign="top">Total</td>
+        <td width="14"></td>
+        <td align="left" valign="top" colspan="2">
+            {{ total|round(2) }} GB(s)
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">Used</td>
+        <td width="14"></td>
+        <td align="left" valign="top" colspan="2">
+            {{ (total-avail)|round(2) }} GB(s)
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">Available</td>
+        <td width="14"></td>
+        <td align="left" valign="top" colspan="2">
+            {{ avail|round(2) }} GB(s)
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">Usage</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            <meter style="width:100%" min="0" max="{{ total }}" low="{{ 0.5*total }}" high="{{ 0.8*total }}" value="{{ total-avail }}" optimum="0"/>
+        </td>
+        <td width="1">
+            &nbsp;{{ ((total-avail)/total*100)|round(2) }}%
+        </td>
+    </tr>
+</table>
+----
+
+.Measurements API template (uptime)
+[source, html]
+----
+{# Example template for the system uptime provided by the netsnmp agent #}
+{% set visible = node != null && node.sysObjectId == ".1.3.6.1.4.1.8072.3.2.10" %}
+{% set order = 100 %}
+
+{# Setting the title #}
+{% set title = "System Uptime" %}
+
+{# Define resource Id to be used #}
+{% set resourceId = "node[" + node.id + "].nodeSnmp[]" %}
+
+{# Define attribute Id to be used #}
+{% set attributeId = "hrSystemUptime" %}
+
+<table border="0" width="100%">
+    <tr>
+        <td width="80" align="right" valign="top">getLastValue()</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            {# Querying the last value via the getLastValue() method: #}
+
+            {% set last = measurements.getLastValue(resourceId, attributeId)/100.0/60.0/60.0/24.0 %}
+            {{ last|round(2) }} day(s)
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">query()</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            {# Querying the last value via the query() method. A custom function 'currentTimeMillis()' in
+            the namespace 'System' is used to get the timestamps for the query: #}
+
+            {% set end = System:currentTimeMillis() %}
+            {% set start = end - (15 * 60 * 1000) %}
+
+            {% set values = measurements.query(resourceId, attributeId, start, end, 300000, "AVERAGE") %}
+
+            {# Iterating over the values in reverse order and grab the first value which is not NaN #}
+            {% set last = "NaN" %}
+            {% for value in values|reverse %}
+                {%- if value != "NaN" && last == "NaN" %}
+                    {{ (value/100.0/60.0/60.0/24.0)|round(2) }} day(s)
+                    {% set last = value %}
+                {% endif %}
+            {%- endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">Graph</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            {# We use the start and end variable here to construct the graph's Url: #}
+
+            <img src="/opennms/graph/graph.png?resourceId=node[{{ node.id }}].nodeSnmp[]&report=netsnmp.hrSystemUptime&start={{ start }}&end={{ end }}&width=170&height=30"/>
+        </td>
+    </tr>
+</table>
+
+----

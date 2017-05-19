@@ -8,6 +8,7 @@
     <dependencySet>
       <unpack>false</unpack>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>lib</outputDirectory>
       <includes>
@@ -19,6 +20,7 @@
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <!-- Output to the root directory -->
       <outputDirectory></outputDirectory>

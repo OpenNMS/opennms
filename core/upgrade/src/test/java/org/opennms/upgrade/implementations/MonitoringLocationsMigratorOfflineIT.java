@@ -33,8 +33,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -44,7 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.DBUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -53,7 +51,6 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitTemporaryDatabase
 public class MonitoringLocationsMigratorOfflineIT {
-
     /**
      * Sets up the test.
      *
@@ -91,44 +88,19 @@ public class MonitoringLocationsMigratorOfflineIT {
         assertTrue(new File("target/home/etc/monitoring-locations.xml.zip").exists());
         assertTrue(new File("target/home/etc/monitoring-locations.xml.zip").isFile());
 
-        Connection connection = null;
-        final DBUtils dbUtils = new DBUtils(getClass());
-        try {
-            connection = DataSourceFactory.getInstance().getConnection();
-            dbUtils.watch(connection);
+        final JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSourceFactory.getInstance());
 
-            ResultSet rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocations").executeQuery();
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(2864, rs.getInt(1));
+        // this first one has been a little persnickity for unknown reasons so we log some more information
+        String first = jdbcTemplate.queryForObject("SELECT monitoringarea FROM monitoringlocations ORDER BY id LIMIT 1", String.class);
+        String last = jdbcTemplate.queryForObject("SELECT monitoringarea FROM monitoringlocations ORDER BY id DESC LIMIT 1", String.class);
+        // 2864 from our file, plus 1 that comes in create.sql for localhost
+        assertEquals("count of monitoringlocations; first: " + first + "; last: " + last, 2864 + 1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocations", Integer.class).intValue());
 
-            rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisbileBy3'").executeQuery(); // sic
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(954, rs.getInt(1));
-
-            rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisibleBy5'").executeQuery();
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(572, rs.getInt(1));
-
-            rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisibleBy7'").executeQuery();
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(409, rs.getInt(1));
-
-            rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'odd'").executeQuery();
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(1432, rs.getInt(1));
-
-            rs = connection.prepareStatement("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'even'").executeQuery();
-            dbUtils.watch(rs);
-            rs.next();
-            assertEquals(1432, rs.getInt(1));
-        } finally {
-            dbUtils.cleanUp();
-        }
+        assertEquals("count of monitoringlocations WHERE tag = 'divisbileBy3'", 954, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisbileBy3'", Integer.class).intValue());
+        assertEquals("count of monitoringlocations WHERE tag = 'divisibleBy5'", 572, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisibleBy5'", Integer.class).intValue());
+        assertEquals("count of monitoringlocations WHERE tag = 'divisibleBy7'", 409, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisibleBy7'", Integer.class).intValue());
+        assertEquals("count of monitoringlocations WHERE tag = 'odd'", 1432, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'odd'", Integer.class).intValue());
+        assertEquals("count of monitoringlocations WHERE tag = 'even'", 1432, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'even'", Integer.class).intValue());
     }
 
     /**

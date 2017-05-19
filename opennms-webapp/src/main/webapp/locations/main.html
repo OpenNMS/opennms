@@ -28,8 +28,8 @@
 						</select>
 						<input name="clause-value-text"      class="form-control" type="text"   ng-model="clause.value" ng-if="clause.property !== 'latitude' &amp;&amp; clause.property !== 'longitude' &amp;&amp; clause.property !== 'priority'" />
 						<input name="clause-value-number"    class="form-control" type="number" ng-model="clause.value" min="{{clause.property === 'priority' ? '0' : ''}}" ng-if="clause.property === 'priority'" />
-						<input name="clause-value-latitude"  class="form-control" type="number" step="any" ng-model="clause.value" min="{{clause.property === 'latitude' ? '-90.0' : ''}}" max= "{{clause.property === 'latitude' ? '90.0' : ''}}" ng-if="clause.property === 'latitude'" />
-						<input name="clause-value-longitude" class="form-control" type="number" step="any" ng-model="clause.value" min="-180.0" max= "180.0" ng-if="clause.property === 'longitude'" />
+						<input name="clause-value-latitude"  class="form-control" type="number" step="any" ng-model="clause.value" min="{{clause.property === 'latitude' ? '-90.0' : ''}}" max="{{clause.property === 'latitude' ? '90.0' : ''}}" ng-if="clause.property === 'latitude'" />
+						<input name="clause-value-longitude" class="form-control" type="number" step="any" ng-model="clause.value" min="-180.0" max="180.0" ng-if="clause.property === 'longitude'" />
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -50,11 +50,11 @@
 					<form onSubmit="$('#addLocationModal').modal('hide')" ng-submit="update(newItem)">
 						<div class="form-group">
 							<label for="locationName">Location Name</label>
-							<input class="form-control" type="text" ng-model="newItem['location-name']"/>
+							<input class="form-control" type="text" ng-model="newItem['location-name']" required/>
 						</div>
 						<div class="form-group">
 							<label for="monitoringArea">Monitoring Area</label>
-							<input class="form-control" type="text" ng-model="newItem['monitoring-area']"/>
+							<input class="form-control" type="text" ng-model="newItem['monitoring-area']" required/>
 						</div>
 						<div class="form-group">
 							<label for="geolocation">Geolocation</label>
@@ -62,11 +62,11 @@
 						</div>
 						<div class="form-group">
 							<label for="latitude">Latitude</label>
-							<input class="form-control" type="number" ng-model="newItem.latitude"/>
+							<input class="form-control" type="number" step="any" ng-model="newItem.latitude" min="-90.0" max="90.0"/>
 						</div>
 						<div class="form-group">
 							<label for="longitude">Longitude</label>
-							<input class="form-control" type="number" ng-model="newItem.longitude"/>
+							<input class="form-control" type="number" step="any" ng-model="newItem.longitude" min="-180.0" max="180.0"/>
 						</div>
 						<div class="form-group">
 							<label for="priority">Priority</label>
@@ -212,33 +212,33 @@
 				<tr>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('locationName')">Location Name</a>
-						<i ng-show="query.orderBy === 'locationName' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'locationName' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'locationName' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('monitoringArea')">Monitoring Area</a>
-						<i ng-show="query.orderBy === 'monitoringArea' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'monitoringArea' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'monitoringArea' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('geolocation')">Geolocation</a>
-						<i ng-show="query.orderBy === 'geolocation' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'geolocation' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'geolocation' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('latitude')">Latitude</a>
-						<i ng-show="query.orderBy === 'latitude' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'latitude' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'latitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('longitude')">Longitude</a>
-						<i ng-show="query.orderBy === 'longitude' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'longitude' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'longitude' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('priority')">Priority</a>
-						<i ng-show="query.orderBy === 'priority' && query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'priority' && query.order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'priority' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
 						Polling Packages

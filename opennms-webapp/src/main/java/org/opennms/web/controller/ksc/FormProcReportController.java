@@ -94,21 +94,21 @@ public class FormProcReportController extends AbstractController implements Init
         // Save the global variables into the working report
         report.setTitle(report_title);
         if (show_graphtype == null) {
-            report.setShow_graphtype_button(false);
+            report.setShowGraphtypeButton(false);
         } else {
-            report.setShow_graphtype_button(true);
+            report.setShowGraphtypeButton(true);
         }
         
         if (show_timespan == null) {
-            report.setShow_timespan_button(false);
+            report.setShowTimespanButton(false);
         } else {
-            report.setShow_timespan_button(true);
+            report.setShowTimespanButton(true);
         } 
         
         if (graphs_per_line > 0) {
-            report.setGraphs_per_line(graphs_per_line);
+            report.setGraphsPerLine(graphs_per_line);
         } else {
-            report.setGraphs_per_line(0);
+            report.setGraphsPerLine(0);
         } 
 
         if (Actions.Save.toString().equals(action)) {
@@ -129,7 +129,8 @@ public class FormProcReportController extends AbstractController implements Init
                 editor.loadWorkingGraph(graph_index);
             } else {
                 if (Actions.DelGraph.toString().equals(action)) { 
-                    report.removeGraph(report.getGraph(graph_index));
+                    final int index = graph_index;
+                    report.removeGraph(report.getGraphs().get(index));
                 } else {
                     throw new ServletException("Invalid Argument for Customize Form Action.");
                 }
@@ -137,11 +138,11 @@ public class FormProcReportController extends AbstractController implements Init
         }
         
         if (Actions.Save.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/index.htm");
+            return new ModelAndView("redirect:/KSC/index.jsp");
         } else if (Actions.DelGraph.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/customReport.htm");
         } else if (Actions.AddGraph.toString().equals(action)) {
-            return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
+            return new ModelAndView("redirect:/KSC/customGraphChooseResource.jsp");
         } else if (Actions.ModGraph.toString().equals(action)) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);

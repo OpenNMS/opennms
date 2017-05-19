@@ -57,6 +57,10 @@ var expected = {
 				href: '/distributedStatusSummary.htm',
 				linkPageSelector: 'h3.panel-title',
 				linkPageText: 'Distributed Status Summary Error: No Applications Defined'
+			},
+			'Scan Reports': {
+				href: '/scanreports/index.jsp',
+				linkPageSelector: 'table.table.table-bordered.severity'
 			}
 			*/
 		}

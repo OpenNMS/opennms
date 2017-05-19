@@ -35,18 +35,15 @@ package org.opennms.netmgt.mock;
  * 
  */
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.config.categories.CategoryGroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 
 public class MockCategoryFactory implements CatFactory {
@@ -92,12 +89,12 @@ public class MockCategoryFactory implements CatFactory {
 		" </categorygroup>" +
 		"</catinfo>";
 	
-	public MockCategoryFactory() throws MarshalException, ValidationException, IOException {
+	public MockCategoryFactory() throws IOException {
         this(CATEGORY_CONFIG);
     }
 	
-	public MockCategoryFactory(String config) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()));
+	public MockCategoryFactory(final String config) throws IOException {
+        m_config = JaxbUtils.unmarshal(Catinfo.class, config);
     }
 
     @Override
@@ -122,8 +119,8 @@ public class MockCategoryFactory implements CatFactory {
 	
     @Override
 	   public synchronized Category getCategory(final String name) {
-	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
-	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
+	       for (final CategoryGroup cg : m_config.getCategoryGroups()) {
+	           for (final Category cat : cg.getCategories()) {
 	                if (cat.getLabel().equals(name)) {
 	                    return cat;
 	                }
@@ -135,8 +132,8 @@ public class MockCategoryFactory implements CatFactory {
 	   
     @Override
 	   public synchronized String getEffectiveRule(final String catlabel) {
-	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
-	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
+	       for (final CategoryGroup cg : m_config.getCategoryGroups()) {
+	           for (final Category cat : cg.getCategories()) {
 	                if (cat.getLabel().equals(catlabel)) {
 	                    return "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
 	                }

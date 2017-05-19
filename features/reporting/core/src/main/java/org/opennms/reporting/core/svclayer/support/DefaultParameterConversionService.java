@@ -28,16 +28,14 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
-import org.opennms.netmgt.config.reporting.DateParm;
-import org.opennms.netmgt.config.reporting.IntParm;
-import org.opennms.netmgt.config.reporting.StringParm;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
 
@@ -58,75 +56,60 @@ public class DefaultParameterConversionService implements
         }
         
         // add date parms to criteria
-        
-        ArrayList<ReportDateParm> dateParms = new ArrayList<ReportDateParm>();
-        DateParm[] dates = configParameters.getDateParm();
-        if (dates.length > 0) {
-            for (int i = 0 ; i < dates.length ; i++ ) {
-                ReportDateParm dateParm = new ReportDateParm();
-                dateParm.setUseAbsoluteDate(dates[i].getUseAbsoluteDate());
-                dateParm.setDisplayName(dates[i].getDisplayName());
-                dateParm.setName(dates[i].getName());
-                dateParm.setCount(new Integer((int) dates[i].getDefaultCount()));
-                dateParm.setInterval(dates[i].getDefaultInterval());
-                Calendar cal = Calendar.getInstance();
-                if (dates[i].getDefaultTime() != null) {
-                    dateParm.setHours(dates[i].getDefaultTime().getHours());
-                    cal.set(Calendar.HOUR_OF_DAY, dateParm.getHours());
-                    dateParm.setMinutes(dates[i].getDefaultTime().getMinutes());
-                    cal.set(Calendar.MINUTE, dateParm.getMinutes());
-                } else {
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                }
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND,0);
-                int amount = 0 - dates[i].getDefaultCount();
-                if (dates[i].getDefaultInterval().equals("year")) {
-                    cal.add(Calendar.YEAR, amount);
-                } else { 
-                    if (dates[i].getDefaultInterval().equals("month")) {
-                        cal.add(Calendar.MONTH, amount);
-                    } else {
-                        cal.add(Calendar.DATE, amount);
-                    }
-                }
-                dateParm.setDate(cal.getTime());
-                dateParms.add(dateParm);
+        final List<ReportDateParm> dateParms = configParameters.getDateParms().stream().map(dp -> {
+            final ReportDateParm dateParm = new ReportDateParm();
+            dateParm.setUseAbsoluteDate(dp.getUseAbsoluteDate().orElse(null));
+            dateParm.setDisplayName(dp.getDisplayName());
+            dateParm.setName(dp.getName());
+            dateParm.setCount(new Integer((int) dp.getDefaultCount()));
+            dateParm.setInterval(dp.getDefaultInterval());
+            Calendar cal = Calendar.getInstance();
+            if (dp.getDefaultTime().isPresent()) {
+                dateParm.setHours(dp.getDefaultTime().get().getHours());
+                cal.set(Calendar.HOUR_OF_DAY, dateParm.getHours());
+                dateParm.setMinutes(dp.getDefaultTime().get().getMinutes());
+                cal.set(Calendar.MINUTE, dateParm.getMinutes());
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
             }
-        }
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND,0);
+            int amount = 0 - dp.getDefaultCount();
+            if (dp.getDefaultInterval().equals("year")) {
+                cal.add(Calendar.YEAR, amount);
+            } else { 
+                if (dp.getDefaultInterval().equals("month")) {
+                    cal.add(Calendar.MONTH, amount);
+                } else {
+                    cal.add(Calendar.DATE, amount);
+                }
+            }
+            dateParm.setDate(cal.getTime());
+            return dateParm;
+        }).collect(Collectors.toList());
         reportParameters.setDateParms(dateParms);
         
         // add string parms to criteria
-        
-        ArrayList<ReportStringParm> stringParms = new ArrayList<ReportStringParm>();
-        StringParm[] strings = configParameters.getStringParm();
-        if (strings.length > 0) {
-            for (int i = 0 ; i < strings.length ; i++ ) {
-                ReportStringParm stringParm = new ReportStringParm();
-                stringParm.setDisplayName(strings[i].getDisplayName());
-                stringParm.setName(strings[i].getName());
-                stringParm.setInputType(strings[i].getInputType());
-                stringParm.setValue(strings[i].getDefault());
-                stringParms.add(stringParm);
-            }
-        }
+        final List<ReportStringParm> stringParms = configParameters.getStringParms().stream().map(sp -> {
+            final ReportStringParm stringParm = new ReportStringParm();
+            stringParm.setDisplayName(sp.getDisplayName());
+            stringParm.setName(sp.getName());
+            stringParm.setInputType(sp.getInputType());
+            stringParm.setValue(sp.getDefault());
+            return stringParm;
+        }).collect(Collectors.toList());
         reportParameters.setStringParms(stringParms);
         
         // add int parms to criteria
-        
-        ArrayList<ReportIntParm> intParms = new ArrayList<ReportIntParm>();
-        IntParm[] integers = configParameters.getIntParm();
-        if (integers.length > 0) {
-            for (int i = 0 ; i < integers.length ; i++ ) {
-                ReportIntParm intParm = new ReportIntParm();
-                intParm.setDisplayName(integers[i].getDisplayName());
-                intParm.setName(integers[i].getName());
-                intParm.setInputType(integers[i].getInputType());
-                intParm.setValue(integers[i].getDefault());
-                intParms.add(intParm);
-            }
-        }
+        final List<ReportIntParm> intParms = configParameters.getIntParms().stream().map(ip -> {
+            final ReportIntParm intParm = new ReportIntParm();
+            intParm.setDisplayName(ip.getDisplayName());
+            intParm.setName(ip.getName());
+            intParm.setInputType(ip.getInputType());
+            intParm.setValue(ip.getDefault());
+            return intParm;
+        }).collect(Collectors.toList());
         reportParameters.setIntParms(intParms);
 
         return reportParameters;

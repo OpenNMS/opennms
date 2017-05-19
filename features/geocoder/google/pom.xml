@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.google</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features Google Geocoder</name>
+  <name>OpenNMS :: Features :: Geocoder :: Google</name>
 
   <description>Google Geocoder implementation</description>
   <properties>

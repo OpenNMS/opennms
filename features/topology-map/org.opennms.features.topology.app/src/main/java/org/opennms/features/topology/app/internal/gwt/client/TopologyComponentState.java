@@ -39,6 +39,8 @@ public class TopologyComponentState extends AbstractComponentState implements Se
     private int m_boundY;
     private int m_boundWidth;
     private int m_boundHeight;
+    private int m_physicalWidth;
+    private int m_physicalHeight;
     private String m_activeTool;
     private List<SharedVertex> m_vertices;
     private List<SharedEdge> m_edges;
@@ -124,5 +126,26 @@ public class TopologyComponentState extends AbstractComponentState implements Se
 
     public String getLastUpdateTime() {
         return m_lastUpdateTime;
+    }
+
+    public int getPhysicalWidth() {
+        return m_physicalWidth;
+    }
+
+    public int getPhysicalHeight() {
+        return m_physicalHeight;
+    }
+
+    public void setPhysicalWidth(int width) {
+        m_physicalWidth = width;
+    }
+
+    public void setPhysicalHeight(int height) {
+        m_physicalHeight = height;
+    }
+
+    public void setPhysicalDimensions(int width, int height) {
+        setPhysicalHeight(height);
+        setPhysicalWidth(width);
     }
 }

@@ -54,7 +54,7 @@ public class TaskBuilder<T extends ContainerTask<?>> {
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
     public TaskBuilder<SequenceTask> createSequence() {
-        return m_task.getCoordinator().createSequence(m_task); 
+        return m_task.getCoordinator().createSequence(m_task);
     }
     
     /**
@@ -63,7 +63,7 @@ public class TaskBuilder<T extends ContainerTask<?>> {
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
     public TaskBuilder<BatchTask> createBatch() {
-        return m_task.getCoordinator().createBatch(m_task); 
+        return m_task.getCoordinator().createBatch(m_task);
     }
     
     /**

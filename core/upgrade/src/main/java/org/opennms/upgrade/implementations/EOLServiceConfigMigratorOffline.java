@@ -185,7 +185,7 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      * @return the service
      */
     private static Service getService(ServiceConfiguration svcConfig, String serviceName) {
-        for(Service s : svcConfig.getServiceCollection()) {
+        for(Service s : svcConfig.getServices()) {
             if (s.getName().equals(serviceName)) {
                 return s;
             }

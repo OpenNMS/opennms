@@ -33,22 +33,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
-import org.opennms.features.topology.plugins.browsers.SelectionAwareTable;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -62,8 +55,6 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.Page;
-import com.vaadin.server.SessionDestroyEvent;
-import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -73,7 +64,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -118,12 +108,13 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Theme("opennms")
 @JavaScript({
     "//maps.google.com/maps/api/js?sensor=false",
-    "gwt/public/leaflet-0.5.1/leaflet-src.js",
+    "gwt/public/leaflet/leaflet-src.js",
     "gwt/public/openlayers/OpenLayers.js",
     "gwt/public/markercluster/leaflet.markercluster-src.js"
 
 })
 @StyleSheet({
+    "gwt/public/leaflet/leaflet.css",
     "gwt/public/markercluster/MarkerCluster.css",
     "gwt/public/markercluster/MarkerCluster.Default.css",
     "gwt/public/node-maps.css"
@@ -134,25 +125,20 @@ public class NodeMapsApplication extends UI {
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
-    private MapWidgetComponent m_mapWidgetComponent;
+    private NodeMapComponent m_nodeMapComponent;
     private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
     private VaadinRequest m_request;
     private AlarmTable m_alarmTable;
     private NodeTable m_nodeTable;
-
-    private final ScheduledExecutorService m_executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-        @Override public Thread newThread(final Runnable runnable) {
-            return new Thread(runnable, "NodeMapUpdater-Thread");
-        }
-    });
+    private NodeMapConfiguration configuration;
 
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
     }
 
-    public void setMapWidgetComponent(final MapWidgetComponent mapWidgetComponent) {
-        m_mapWidgetComponent = mapWidgetComponent;
+    public void setNodeMapComponent(final NodeMapComponent nodeMapComponent) {
+        m_nodeMapComponent = nodeMapComponent;
     }
 
     public void setHeaderHtml(final String headerHtml) {
@@ -169,7 +155,7 @@ public class NodeMapsApplication extends UI {
 
     private void updateWidgetView() {
         final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-        bottomLayoutBar.setFirstComponent(m_mapWidgetComponent);
+        bottomLayoutBar.setFirstComponent(m_nodeMapComponent);
 
         // Split the screen 70% top, 30% bottom
         bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
@@ -275,7 +261,7 @@ public class NodeMapsApplication extends UI {
                             nodeIds.add(Integer.valueOf(ref.getId()));
                         }
                     }
-                    m_mapWidgetComponent.setSelectedNodes(nodeIds);
+                    m_nodeMapComponent.setSelectedNodes(nodeIds);
                     return;
                 }
                 LOG.warn("Unsure how to deal with event: {}", eventObject);
@@ -294,26 +280,19 @@ public class NodeMapsApplication extends UI {
         addRefresher();
 
         // Notify the user if no tileserver url or options are set
-        if (!NodeMapConfiguration.isValid()) {
-            new InvalidConfigurationWindow().open();
+        if (!configuration.isValid()) {
+            new InvalidConfigurationWindow(configuration).open();
         }
-        // Schedule refresh of node data
-        m_executor.scheduleWithFixedDelay(() -> m_mapWidgetComponent.refreshNodeData(), 0, 5, TimeUnit.MINUTES);
+    }
 
-        // If we do not shutdown the executor, the scheduler keeps refreshing the node data, even if the
-        // UI may already been detached, resulting at one point in a OutOfMemory. See NMS-8589.
-        vaadinRequest.getService().addSessionDestroyListener(new SessionDestroyListener() {
-            @Override
-            public void sessionDestroy(SessionDestroyEvent event) {
-                m_executor.shutdown();
-            }
-        });
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     private void createMapPanel(final String searchString, final int maxClusterRadius) {
-        m_mapWidgetComponent.setSearchString(searchString);
-        m_mapWidgetComponent.setSizeFull();
-        m_mapWidgetComponent.setMaxClusterRadius(maxClusterRadius);
+        m_nodeMapComponent.setSearchString(searchString);
+        m_nodeMapComponent.setSizeFull();
+        m_nodeMapComponent.setMaxClusterRadius(maxClusterRadius);
     }
 
     private void createRootLayout() {
@@ -372,36 +351,20 @@ public class NodeMapsApplication extends UI {
     private void addRefresher() {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
-        refresher.addListener((theRefresher) -> m_mapWidgetComponent.refresh());
+        refresher.addListener((theRefresher) -> m_nodeMapComponent.refresh());
         addExtension(refresher);
     }
 
     public void refresh() {
-        m_mapWidgetComponent.refresh();
+        m_nodeMapComponent.refresh();
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {
-        for (final SelectionAwareTable view : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
-            if (view instanceof VerticesUpdateManager.VerticesUpdateListener) {
-                final VerticesUpdateManager.VerticesUpdateListener listener = (VerticesUpdateManager.VerticesUpdateListener)view;
+        m_alarmTable.selectionChanged(new SelectionChangedListener.AlarmNodeIdSelection(nodeIds));
+        m_nodeTable.selectionChanged(new SelectionChangedListener.IdSelection<Integer>(nodeIds));
 
-                final Set<VertexRef> nodeSet = new HashSet<VertexRef>();
-                for (final Integer nodeId : nodeIds) {
-                    nodeSet.add(new DefaultVertexRef("nodes", nodeId.toString(), null));
-                }
-
-                listener.verticesUpdated(new VerticesUpdateEvent(nodeSet));
-
-                if (view instanceof Table) {
-                    final Table table = (Table)view;
-                    table.refreshRowCache();
-                } else {
-                    LOG.error("View {} is not a table!  I can't refresh it.", view);
-                }
-            } else {
-                LOG.error("View {} is not a vertices update listener!", view);
-            }
-        }
+        m_alarmTable.refreshRowCache();
+        m_nodeTable.refreshRowCache();
     }
 
     @Override

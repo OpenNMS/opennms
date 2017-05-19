@@ -43,9 +43,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -79,12 +77,6 @@ public class Spc391IT extends ProvisioningITCase {
     private ResourceLoader m_resourceLoader;
 
     @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -111,8 +103,8 @@ public class Spc391IT extends ProvisioningITCase {
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:snmpwalk-space.properties"),
-        @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:snmpwalk-space.properties")
+        @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:/snmpwalk-space.properties"),
+        @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:/snmpwalk-space.properties")
     })
     public void testScanSpaceDevice() throws Exception {
         final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI };

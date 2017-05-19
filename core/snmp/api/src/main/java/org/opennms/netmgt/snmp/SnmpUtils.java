@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,10 @@ public abstract class SnmpUtils {
         return getStrategy().get(agentConfig, oids);
     }
 
+    public static CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return getStrategy().getAsync(agentConfig, oids);
+    }
+
     public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         return getStrategy().getNext(agentConfig, oid);
     }
@@ -116,37 +121,35 @@ public abstract class SnmpUtils {
 
         final List<SnmpValue> results = new ArrayList<SnmpValue>();
         
-        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
-   
+        try(SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
             @Override
             protected void storeResult(SnmpResult res) {
                 results.add(res.getValue());
             }
-           
-        });
-        walker.start();
-        walker.waitFor();
+        })) {
+            walker.start();
+            walker.waitFor();
+        }
         return results;
     }
-    
+
     public static Map<SnmpInstId, SnmpValue> getOidValues(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
 	throws InterruptedException {
 
         final Map<SnmpInstId, SnmpValue> results = new LinkedHashMap<SnmpInstId, SnmpValue>();
         
-        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
-   
+        try(SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
             @Override
             protected void storeResult(SnmpResult res) {
                 results.put(res.getInstance(), res.getValue());
             }
-           
-        });
-	walker.start();
-	walker.waitFor();
+        })) {
+            walker.start();
+            walker.waitFor();
+        }
         return results;
     }
-    
+
     public static void setConfig(Properties config) {
         sm_config = config;
     }
@@ -163,18 +166,21 @@ public abstract class SnmpUtils {
     	s_strategyResolver = strategyResolver;
     }
 
+    public static void unsetStrategyResolver() {
+    	s_strategyResolver = null;
+    }
+
     public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
-//        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
 
-    public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
-        getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort, snmpUsers);
+    public static void registerForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpUsers) throws IOException {
+        getStrategy().registerForTraps(listener, address, snmpTrapPort, snmpUsers);
     }
 
-    public static void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
-        getStrategy().registerForTraps(listener, processorFactory, address, snmpTrapPort);
+    public static void registerForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
+        getStrategy().registerForTraps(listener, address, snmpTrapPort);
     }
     
     public static void unregisterForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort) throws IOException {
@@ -254,7 +260,7 @@ public abstract class SnmpUtils {
 	 * initialization and continue incrementing till end of 63 bits and then
 	 * wrap to zero.</p>
 	 * 
-	 * @see http://issues.opennms.org/browse/NMS-5423
+	 * @see <a href="http://issues.opennms.org/browse/NMS-5423">NMS-5423</a>
 	 */
 	public static Long getProtoCounter63Value(byte[] valBytes) {
 	    if (valBytes.length != 8) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,16 +31,20 @@ package org.opennms.netmgt.poller.remote.support;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.PollerTheme;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
@@ -109,7 +113,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<LocationDef> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         try {
             return m_delegate.getMonitoringLocations();
         } catch (Throwable t) {
@@ -123,6 +127,28 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     public PollerConfiguration getPollerConfiguration(String locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(String location) {
+        try {
+            return m_delegate.getPollerConfigurationForLocation(location);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        try {
+            return m_delegate.getApplicationsForLocation(location);
         } catch (Throwable t) {
             LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
@@ -206,4 +232,33 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        try {
+            m_delegate.reportSingleScan(report);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        try {
+            return m_delegate.getMetadataFields();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public PollerTheme getTheme() {
+        try {
+            return m_delegate.getTheme();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
 }

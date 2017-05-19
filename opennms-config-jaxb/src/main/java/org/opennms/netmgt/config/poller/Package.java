@@ -26,10 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * This class was original generated with Castor, but is no longer.
- */
-
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;

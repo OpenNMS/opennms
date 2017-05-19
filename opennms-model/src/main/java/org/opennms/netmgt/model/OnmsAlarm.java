@@ -92,7 +92,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private String m_uei;
 
     /** persistent field */
-    private OnmsDistPoller m_distPoller;
+    private OnmsMonitoringSystem m_distPoller;
 
     /** nullable persistent field */
     private OnmsNode m_node;
@@ -273,7 +273,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	@XmlTransient
     @ManyToOne
     @JoinColumn(name="systemId", nullable=false)
-    public OnmsDistPoller getDistPoller() {
+    public OnmsMonitoringSystem getDistPoller() {
         return this.m_distPoller;
     }
 
@@ -282,7 +282,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
-    public void setDistPoller(OnmsDistPoller distPoller) {
+    public void setDistPoller(OnmsMonitoringSystem distPoller) {
         this.m_distPoller = distPoller;
     }
 

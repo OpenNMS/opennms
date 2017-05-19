@@ -37,8 +37,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 import org.slf4j.Logger;
@@ -64,12 +62,10 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      * Instantiates a new HikariCP connection factory.
      *
      * @param dataSource the data source
-     * @throws MarshalException the marshal exception
-     * @throws ValidationException the validation exception
      * @throws PropertyVetoException the property veto exception
      * @throws SQLException the SQL exception
      */
-    public HikariCPConnectionFactory(final JdbcDataSource dataSource) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    public HikariCPConnectionFactory(final JdbcDataSource dataSource) throws PropertyVetoException, SQLException {
         super(dataSource);
     }
 
@@ -205,7 +201,19 @@ public class HikariCPConnectionFactory extends BaseConnectionFactory {
      */
     @Override
     public void setIdleTimeout(final int idleTimeout) {
-        m_pool.setIdleTimeout(idleTimeout);
+        m_pool.setIdleTimeout(idleTimeout * 1000L);
+    }
+
+    /**
+     * Set the maximum lifetime of the connections in the pool (in milliseconds)
+     * which forces occasional connection recycling. This will probably only be 
+     * used inside tests although it might be a good idea to do it in production
+     * as well to reset server-side query caches and metrics.
+     * 
+     * @param maxLifetimeMs
+     */
+    public void setMaxLifetime(final int maxLifetimeMs) {
+        m_pool.setMaxLifetime(maxLifetimeMs);
     }
 
     /* (non-Javadoc)

@@ -50,6 +50,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class GpDetectorTest implements InitializingBean {
 
     @Autowired
+    public GpDetectorFactory m_detectorFactory;
     public GpDetector m_detector;
 
     @Override
@@ -60,6 +61,7 @@ public class GpDetectorTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
     }
 
     @Test(timeout=20000)

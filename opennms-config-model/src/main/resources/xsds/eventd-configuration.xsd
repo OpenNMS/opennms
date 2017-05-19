@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/eventd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/eventd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the eventd-configuration.xml configuration
+    file. Version: $Id$. </documentation>
+  </annotation>
+
+  <element name="EventdConfiguration">
+    <annotation>
+      <documentation>Top-level element for the eventd-configuration.xml
+      configuration file. </documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+      <extension base="string">
+      <attribute name="TCPAddress" use="optional" type="string" default="127.0.0.1" >
+        <annotation>
+          <documentation>The IP address on which eventd listens for TCP connections.
+          If "*" is specified, eventd will bind to all addresses.  The default
+          address is 127.0.0.1.</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="TCPPort" use="required">
+        <annotation>
+          <documentation>The port on which eventd listens for TCP connections.
+          The default port is 5817.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="UDPAddress" use="optional" type="string" default="127.0.0.1" >
+        <annotation>
+          <documentation>The IP address on which eventd listens for UDP packets.
+          If "*" is specified, eventd will bind to all addresses.  The default
+          address is 127.0.0.1.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="UDPPort" use="required">
+        <annotation>
+          <documentation>The port on which eventd listens for UDP packets. The
+          default port is 5817.</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="65535"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="receivers" use="required">
+        <annotation>
+          <documentation>The maximum number of threads used for reading and
+          processing of incoming events.</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="queueLength" use="optional">
+        <annotation>
+          <documentation>The maximum number of incoming events that can be 
+          queued inside eventd for processing.</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="getNextEventID" type="string" use="optional">
+        <annotation>
+          <documentation>SQL query to get next value of the 'nodeNxtId'
+          database sequence. This is used to make the access database
+          independent.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="socketSoTimeoutRequired" type="string" use="required">
+        <annotation>
+          <documentation>Set the socket timeout value. In Linux, the close()
+          system call is not preemptive. Setting this attribute to to 'yes'
+          causes the socketSoTimeoutPeriod attribute to be set on sockets to
+          mimic non-blocking socket I/O.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="socketSoTimeoutPeriod" use="optional">
+        <annotation>
+          <documentation>Socket timeout, in milliseconds. This is only set on
+          eventd's sockets if socketSoTimeoutRequired is set to
+          'yes'.</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="logEventSummaries" type="boolean" use="optional" default="true">
+        <annotation>
+          <documentation>Whether or not to log a simple event summary.  By default, OpenNMS
+          logs detailed event information at DEBUG level.  If this option is enabled,
+          it will additionally log a simple summary of events received at INFO.</documentation>
+        </annotation>
+      </attribute>
+      </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+</schema>

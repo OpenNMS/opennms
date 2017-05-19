@@ -4,9 +4,9 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
@@ -16,13 +16,18 @@
     <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
     <context:component-scan base-package="org.opennms.web.controller"/>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-        <property name="locations">
-            <list>
-                <value>file:${opennms.home}/etc/model-importer.properties</value>
-            </list>
-        </property>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <!-- Map controllers based on their bean name -->
@@ -223,6 +228,22 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
+    <bean name="/bsm/summary-box.htm" class="org.opennms.web.controller.bsm.BusinessServicesBoxController">
+        <property name="successView" value="bsm/summary-box"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean name="/trend/trend.htm" class="org.opennms.web.controller.trend.TrendController">
+    </bean>
+
+    <bean name="/trend/trend-box.htm" class="org.opennms.web.controller.trend.TrendBoxController">
+    </bean>
+
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
+    </bean>
+
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
     </bean>
 
@@ -418,11 +439,21 @@
                                 <property name="url" value="heatmap/index.jsp"/>
                                 <property name="locationMatch" value="heatmap"/>
                             </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Trend"/>
+                                <property name="url" value="trend/index.jsp"/>
+                                <property name="locationMatch" value="trend"/>
+                            </bean>
                             <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                                 <property name="name" value="Distributed Status"/>
                                 <property name="url" value="distributedStatusSummary.htm"/>
                                 <property name="locationMatch" value="distributedstatus"/>
                                 <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Scan Reports"/>
+                                <property name="url" value="scanreports/index.jsp"/>
+                                <property name="locationMatch" value="scanReport"/>
                             </bean>
                         </list>
                     </property>
@@ -445,7 +476,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="KSC Reports"/>
-                                <property name="url" value="KSC/index.htm"/>
+                                <property name="url" value="KSC/index.jsp"/>
                                 <property name="locationMatch" value="ksc"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -501,15 +532,6 @@
         <property name="adminApplicationService" ref="adminApplicationService"/>
     </bean>
 
-    <!-- Graphing -->
-    <bean name="/graph/chooseresource.htm" class="org.opennms.web.controller.ChooseResourceController">
-        <property name="nodeDao" ref="nodeDao"/>
-        <property name="chooseResourceService" ref="chooseResourceService"/>
-        <property name="defaultEndUrl">
-            <value>graph/results.htm</value>
-        </property>
-    </bean>
-
     <!-- Database Reports -->
 
     <bean name="/report/database/index.htm"
@@ -538,14 +560,6 @@
     </bean>
 
     <!-- KSC reports -->
-    <bean name="/KSC/index.htm" class="org.opennms.web.controller.ksc.IndexController">
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/include-box.htm" class="org.opennms.web.controller.ksc.IncludeBoxController">
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
 
     <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
@@ -576,16 +590,6 @@
     <bean name="/KSC/customReport.htm" class="org.opennms.web.controller.ksc.CustomReportController">
         <property name="kscReportFactory" ref="kscReportFactory"/>
         <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphChooseParentResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseParentResourceController">
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphChooseResource.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphChooseResourceController">
         <property name="resourceService" ref="resourceService"/>
     </bean>
 

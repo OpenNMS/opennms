@@ -1,0 +1,48 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Container
+
+This section details the customizations we make to the standard _Karaf_ distribution for the _Minion_ container.
+
+==== Clean Start
+
+We clear the cache on every start by setting `karaf.clean.cache = true` in order to ensure that only the features listed in the featuresBoot (or installed by the `karaf-extender`) are installed.
+
+==== Karaf Extender
+
+The _Karaf Extender_ was developed to make it easier to manage and extend the container using existing packaging tools.
+It allows packages to register *Maven Repositories*, *Karaf Feature Repositories* and *Karaf Features to Boot* by overlaying additional files, avoiding modifying any of the existing files.
+
+Here's an overview, used for reference, of the relevant directories that are (currently) present on a default install of the `opennms-minion` package:
+[source, shell]
+----
+├── etc
+│   └── featuresBoot.d
+│       └── custom.boot
+├── repositories
+│   ├── .local
+│   ├── core
+│   │   ├── features.uris
+│   │   └── features.boot
+│   └── default
+│       ├── features.uris
+│       └── features.boot
+└── system
+----
+
+When the `karaf-extender` feature is installed it will:
+
+. Find all of the folders listed under `$karaf.home/repositories` that do not start with a '.' and sort these by name.
+. Gather the list of Karaf Feature Repository URIs from the `features.uris` files in the repositories.
+. Gather the list of Karaf Feature Names from the `features.boot` files in the repositories.
+. Gather the list of Karaf Feature Names form the files under `$karaf.etc/featuresBoot.d` that do not start with a '.' and sort these by name.
+. Register the Maven Repositories by updating the `org.ops4j.pax.url.mvn.repositories` key for the PID `org.ops4j.pax.url.mvn`.
+. Wait up to 30 seconds until all of the Karaf Feature URIs are resolvable (the Maven Repositiries may take a few moments to update after updating the configuration.)
+. Install the Karaf Feature Repository URIs.
+. Install the Karaf Features.
+
+NOTE: Features listed in the `features.boot` files of the Maven Repositiries will take precedence over those listed in `featuresBoot.d`.
+
+WARNING: Any existing repository registered in `org.ops4j.pax.url.mvn.repositories` will be overwritten.

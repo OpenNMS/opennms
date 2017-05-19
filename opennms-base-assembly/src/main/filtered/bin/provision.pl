@@ -293,6 +293,8 @@ Set a property on a node, given the foreign source and foreign id.  Valid proper
 
 =item * parent-node-label
 
+=item * location
+
 =back
 
 =back
@@ -850,6 +852,7 @@ sub dump_node {
 	push (@parent_info, "foreign ID: " . $node->{'att'}->{'parent-foreign-id'}) if $node->{'att'}->{'parent-foreign-id'};
 	push (@parent_info, "foreign Source: " . $node->{'att'}->{'parent-foreign-source'}) if $node->{'att'}->{'parent-foreign-source'};
 	print ("    * ", $node->{'att'}->{'node-label'}, " (foreign ID: ", $node->{'att'}->{'foreign-id'}, ")\n");
+	print ("      * location: ", $node->{'att'}->{'location'}, "\n") if ($node->{'att'}->{'location'});
 	print ("      * parent: (", join(", ", @parent_info), ")\n") if ($node->{'att'}->{'parent-node-label'} or $node->{'att'}->{'parent-foreign-id'});
 	print ("      * city: ", $node->{'att'}->{'city'}, "\n") if ($node->{'att'}->{'city'});
 	print ("      * building: ", $node->{'att'}->{'building'}, "\n") if ($node->{'att'}->{'building'});

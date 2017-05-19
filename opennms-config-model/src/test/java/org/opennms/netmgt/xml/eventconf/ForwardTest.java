@@ -45,8 +45,8 @@ public class ForwardTest extends XmlTestNoCastor<Forward> {
 	public static Collection<Object[]> data() throws ParseException {
 		Forward forward0 = new Forward();
 		Forward forward1 = new Forward();
-		forward1.setMechanism("snmpudp");
-		forward1.setState("on");
+		forward1.setMechanism(MechanismType.SNMPUDP);
+		forward1.setState(StateType.ON);
 		return Arrays.asList(new Object[][] {
 				{forward0,
 				"<forward/>",

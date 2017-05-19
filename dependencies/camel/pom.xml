@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>camel-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Camel</name>
+  <name>OpenNMS :: Dependencies :: Camel</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.camel</groupId>

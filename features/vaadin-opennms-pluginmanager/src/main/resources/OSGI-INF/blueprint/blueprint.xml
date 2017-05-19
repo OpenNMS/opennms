@@ -144,7 +144,7 @@
 
   <!-- Setting up link to plugin manager in admin page -->
 
-  <bean id="pluginManagerAdminUiLink" class="org.opennms.features.pluginmgr.vaadin.config.opennms.AdminPageNavEntry">
+  <bean id="pluginManagerAdminUiLink" class="org.opennms.netmgt.vaadin.core.AdminPageNavEntry">
     <!-- <property name="url" value="admin/pluginManager.jsp" /> -->
     <property name="url" value="admin/plugin-manager" />
     <property name="name" value="OpenNMS Plugin Manager" />

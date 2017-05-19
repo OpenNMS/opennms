@@ -201,7 +201,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 			localUpdateAlarmCache();
 			initialised=true;
 		} catch (Throwable ex){
-			throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
+			throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+".init() problem initialising class");
 		}
 	}
 

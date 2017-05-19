@@ -3,18 +3,18 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>tracker-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Tracker</name>
+  <name>OpenNMS :: Dependencies :: Tracker</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.7</version>
+      <version>${trackerVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>

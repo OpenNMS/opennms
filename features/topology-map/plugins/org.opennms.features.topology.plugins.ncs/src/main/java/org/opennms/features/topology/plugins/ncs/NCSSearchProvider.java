@@ -38,12 +38,12 @@ import java.util.TreeSet;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.RefComparator;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -51,7 +51,7 @@ import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceMana
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
-public class NCSSearchProvider extends AbstractSearchProvider implements SearchProvider {
+public class NCSSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
 
     public static class NCSHopCriteria extends VertexHopCriteria {
 
@@ -93,6 +93,12 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
 	private NCSEdgeProvider m_ncsEdgeProvider;
     private NCSCriteriaServiceManager m_serviceManager;
     NCSServiceContainer m_container;
+
+    @Override
+    public Criteria buildCriteriaFromQuery(SearchResult input) {
+        Criteria c = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(input.getId())));
+        return new NCSHopCriteria(input.getId(), new HashSet<VertexRef>(getVertexRefsForEdges(m_ncsEdgeProvider, c)), input.getLabel());
+    }
 
     public void setNcsComponentRepository(NCSComponentRepository ncsComponentRepository) {
 		m_ncsComponentRepository = ncsComponentRepository;
@@ -143,7 +149,8 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {
             if(searchQuery.matches(component.getName())) {
-                searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName(), searchQuery.getQueryString()));
+                searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName(),
+                        searchQuery.getQueryString(), !SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED));
             }
 
         }

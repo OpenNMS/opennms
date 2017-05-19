@@ -30,19 +30,20 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rws.StandbyUrl;
 import org.opennms.rancid.ConnectionProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract RWSConfigManager class.</p>
@@ -71,11 +72,9 @@ public abstract class RWSConfigManager implements RWSConfig {
      * <p>Constructor for RWSConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public RWSConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
+    public RWSConfigManager(final InputStream stream) throws IOException {
         reloadXML(stream);
     }
 
@@ -98,15 +97,12 @@ public abstract class RWSConfigManager implements RWSConfig {
     public ConnectionProperties getBase() {
         try {
             getReadLock().lock();
-            LOG.debug("Connections used: {}{}", getBaseUrl().getServer_url(), getBaseUrl().getDirectory());
+            LOG.debug("Connections used: {}{}", getBaseUrl().getServerUrl(), getBaseUrl().getDirectory());
             LOG.debug("RWS timeout(sec): {}", getBaseUrl().getTimeout());
-            if (getBaseUrl().getUsername() == null) {
-                return new ConnectionProperties(getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
+            if (!getBaseUrl().getUsername().isPresent()) {
+                return new ConnectionProperties(getBaseUrl().getServerUrl(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
             }
-            String password = "";
-            if (getBaseUrl().getPassword() != null)
-                password = getBaseUrl().getPassword();
-            return new ConnectionProperties(getBaseUrl().getUsername(),password,getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
+            return new ConnectionProperties(getBaseUrl().getUsername().get(),getBaseUrl().getPassword().orElse(""),getBaseUrl().getServerUrl(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
         } finally {
             getReadLock().unlock();
         }
@@ -124,16 +120,12 @@ public abstract class RWSConfigManager implements RWSConfig {
         try {
             getReadLock().lock();
             final StandbyUrl standByUrl = getNextStandbyUrl();
-            LOG.debug("Connections used: {}{}", standByUrl.getServer_url(), standByUrl.getDirectory());
+            LOG.debug("Connections used: {}{}", standByUrl.getServerUrl(), standByUrl.getDirectory());
             LOG.debug("RWS timeout(sec): {}", standByUrl.getTimeout());
-            if (standByUrl.getUsername() == null) {
-                return new ConnectionProperties(standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
+            if (!standByUrl.getUsername().isPresent()) {
+                return new ConnectionProperties(standByUrl.getServerUrl(),standByUrl.getDirectory(),standByUrl.getTimeout());
             }
-            String password = "";
-            if (standByUrl.getPassword() != null) {
-                password = standByUrl.getPassword();
-            }
-            return new ConnectionProperties(standByUrl.getUsername(),password,standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
+            return new ConnectionProperties(standByUrl.getUsername().get(),standByUrl.getPassword().orElse(""),standByUrl.getServerUrl(),standByUrl.getDirectory(),standByUrl.getTimeout());
         } finally {
             getReadLock().unlock();
         }
@@ -171,10 +163,10 @@ public abstract class RWSConfigManager implements RWSConfig {
      * @return an array of {@link org.opennms.netmgt.config.rws.StandbyUrl} objects.
      */
     @Override
-    public StandbyUrl[] getStanbyUrls() {
+    public List<StandbyUrl> getStandbyUrls() {
         try {
             getReadLock().lock();
-            return m_config.getStandbyUrl();
+            return m_config.getStandbyUrls();
         } finally {
             getReadLock().unlock();
         }
@@ -191,10 +183,10 @@ public abstract class RWSConfigManager implements RWSConfig {
             getReadLock().lock();
             StandbyUrl standbyUrl = null;
             if (hasStandbyUrl()) {
-                if (m_cursor == m_config.getStandbyUrlCount()) {
+                if (m_cursor == m_config.getStandbyUrls().size()) {
                     m_cursor = 0;
                 }
-                standbyUrl = m_config.getStandbyUrl(m_cursor++);
+                standbyUrl = m_config.getStandbyUrls().get(m_cursor++);
             }
             return standbyUrl;
         } finally {
@@ -211,7 +203,7 @@ public abstract class RWSConfigManager implements RWSConfig {
     public boolean hasStandbyUrl() {
         try {
             getReadLock().lock();
-            return (m_config.getStandbyUrlCount() > 0);
+            return (m_config.getStandbyUrls().size() > 0);
         } finally {
             getReadLock().unlock();
         }
@@ -221,14 +213,12 @@ public abstract class RWSConfigManager implements RWSConfig {
      * <p>reloadXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        try {
+    protected void reloadXML(final InputStream stream) throws IOException {
+        try (Reader reader = new InputStreamReader(stream)) {
             getWriteLock().lock();
-            m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
+            m_config = JaxbUtils.unmarshal(RwsConfiguration.class, reader);
         } finally {
             getWriteLock().unlock();
         }

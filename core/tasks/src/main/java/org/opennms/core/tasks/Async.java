@@ -29,10 +29,14 @@
 package org.opennms.core.tasks;
 
 /**
- * Async
+ * This interface is used on objects that are inherently
+ * asynchronous (like Mina or Netty library calls). The
+ * {@link #supplyAsyncThenAccept(Callback)} method will
+ * invoke an async operation that uses the {@link Callback}
+ * as the completion and exception handler for the operation.
  *
+ * @author Seth
  * @author brozow
- * @version $Id: $
  */
 public interface Async<T> {
     
@@ -42,6 +46,6 @@ public interface Async<T> {
      * @param cb a {@link org.opennms.core.tasks.Callback} object.
      * @param <T> a T object.
      */
-    void submit(Callback<T> cb);
+    void supplyAsyncThenAccept(Callback<T> cb);
 
 }

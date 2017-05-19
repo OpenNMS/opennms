@@ -16,6 +16,21 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+== Setup a development system
+include::text/dev-guide.adoc[]
+
+== Minion development
+include::text/minion/introduction.adoc[]
+include::text/minion/container.adoc[]
+include::text/minion/packaging.adoc[]
+include::text/minion/guidelines.adoc[]
+include::text/minion/testing.adoc[]
+
+== Topology
+include::text/topology/introduction.adoc[]
+include::text/topology/infopanel.adoc[]
+include::text/topology/graphml.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
@@ -50,6 +65,8 @@ include::text/rest/snmptrapnbi-config.adoc[]
 include::text/rest/emailnbi-config.adoc[]
 include::text/rest/javamail-config.adoc[]
 include::text/rest/syslognbi-config.adoc[]
+include::text/bsm/bsm-development.adoc[]
+include::text/rest/discovery.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]
@@ -67,3 +84,6 @@ include::text/amqp/event_forwarder.adoc[]
 include::text/amqp/event_receiver.adoc[]
 include::text/amqp/alarm_northbounder.adoc[]
 include::text/amqp/custom_processors.adoc[]
+
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]

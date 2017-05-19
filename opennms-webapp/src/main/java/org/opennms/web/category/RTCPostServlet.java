@@ -38,11 +38,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.web.api.Util;
-import org.opennms.web.servlet.InitializerServletContextListener.RTCPostSubscriberTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,10 +80,6 @@ public class RTCPostServlet extends HttpServlet {
             // exceptions and no RTC data.
             // 
             //new RTCPostSubscriberTimerTask().run();
-        } catch (MarshalException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        } catch (ValidationException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
         } catch (IOException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }

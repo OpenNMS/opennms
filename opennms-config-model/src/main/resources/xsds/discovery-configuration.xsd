@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/discovery"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/discovery"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the discovery-configuration.xml
+    configuration file. Version: $Id$.</documentation>
+  </annotation>
+
+  <element name="discovery-configuration">
+    <annotation>
+      <documentation>Top-level element for the discovery-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <annotation>
+          <documentation>
+            The addresses to be polled. NOTE: specifics and URLs
+            override excludes, ie. if an address is in an exclude range but
+            also either a specific address or specified in an URL, it will be
+            polled.
+          </documentation>
+        </annotation>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:specific">
+          <annotation>
+            <documentation>the specific addresses to be polled</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
+          <annotation>
+            <documentation>the range of addresses to be polled</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-range">
+          <annotation>
+            <documentation>the range of addresses to be excluded from the
+            polling</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:include-url">
+          <annotation>
+            <documentation>a file URL holding specific addresses to be
+            polled</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="location" type="string" use="optional">
+        <annotation>
+          <documentation>The monitoring location where this discovery configuration
+          will be executed.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="packets-per-second" use="required">
+        <annotation>
+          <documentation>The total number of ping packets sent per second from
+          OpenNMS for discovery</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="double">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="initial-sleep-time" type="long" use="required">
+        <annotation>
+          <documentation>The initial pause (in milliseconds) after discovery
+          starts up before discovery is started.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="restart-sleep-time" type="long" use="required">
+        <annotation>
+          <documentation>The pause (in milliseconds) between discovery passes.
+          Once the discovery process completes a sweep of all the specified
+          addresses, it sleeps for this duration before starting another
+          sweep.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="retries" type="int" use="optional">
+        <annotation>
+          <documentation>The default number of times a ping is retried for an
+          address. If there is no response after the first ping to an address,
+          it is tried again for the specified number of retries. This retry
+          count is a default and can be overridden for specific addresses or
+          sets of addresses that are configured in this file.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="timeout" type="long" use="optional">
+        <annotation>
+          <documentation>The default timeout on each poll. This timeout is a
+          default and can be overridden for specific addresses or sets of
+          addresses that are configured in this file.</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="foreign-source" type="string" use="optional" />
+
+      <attribute name="chunk-size" type="int" use="optional">
+        <annotation>
+          <documentation>The default chunk size used to divide up ranges to be discovered by minions.  This size determines the individual unit of work a particular discovery job sent to a minion will encompass.</documentation>
+        </annotation>
+      </attribute>      
+    </complexType>
+  </element>
+
+  <element name="specific">
+    <annotation>
+      <documentation>A specific addresses to be polled</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this specific address
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="retries" type="int" use="optional">
+            <annotation>
+              <documentation>The number of times a ping is retried for this
+              specific address. If there is no response after the first ping
+              to an address, it is tried again for the specified number of
+              retries. This retry count overrides the default.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="timeout" type="long" use="optional">
+            <annotation>
+              <documentation>The timeout on each poll for this specific
+              address. This timeout overrides the default.</documentation>
+            </annotation>
+          </attribute>
+          
+          <attribute name="foreign-source" type="string" use="optional" />
+          
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="include-range">
+    <annotation>
+      <documentation>A range of addresses to be polled.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="begin" type="string">
+          <annotation>
+            <documentation>Starting address of the range.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="end" type="string">
+          <annotation>
+            <documentation>Ending address of the range. If the starting
+            address is greater than the ending address, they are
+            swapped.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="location" type="string" use="optional">
+        <annotation>
+          <documentation>The monitoring location where this include range
+          will be executed.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="retries" type="int" use="optional">
+        <annotation>
+          <documentation>The number of times a ping is retried for this
+          address range. If there is no response after the first ping to an
+          address, it is tried again for the specified number of retries. This
+          retry count overrides the default.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="timeout" type="long" use="optional">
+        <annotation>
+          <documentation>The timeout on each poll for this address range. This
+          timeout overrides the default.</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="foreign-source" type="string" use="optional" />
+      
+    </complexType>
+  </element>
+
+  <element name="exclude-range">
+    <annotation>
+      <documentation>A range of addresses to be excluded from
+      polling.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="begin" type="string">
+          <annotation>
+            <documentation>Starting address of the range.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="end" type="string">
+          <annotation>
+            <documentation>Ending address of the range.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="include-url">
+    <annotation>
+      <documentation>A file URL holding specific addresses to be polled. Each
+      line in the URL file can be one of:
+      "&lt;IP&gt;&lt;space&gt;#&lt;comments&gt;", "&lt;IP&gt;", or
+      "#&lt;comments&gt;". Lines starting with a '#' are ignored and so are
+      characters after a '&lt;space&gt;#' in a line.</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="location" type="string" use="optional">
+            <annotation>
+              <documentation>The monitoring location where this include URL
+              will be executed.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="retries" type="int" use="optional">
+            <annotation>
+              <documentation>The number of times a ping is retried for
+              addresses listed in this file. If there is no response after the
+              first ping to an address, it is tried again for the specified
+              number of retries. This retry count overrides the
+              default.</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="timeout" type="long" use="optional">
+            <annotation>
+              <documentation>The timeout on each poll for addresses listed in
+              this file. This timeout overrides the default.</documentation>
+            </annotation>
+          </attribute>
+          
+          <attribute name="foreign-source" type="string" use="optional" />
+          
+        </extension>
+      </simpleContent>
+    </complexType>
+    
+  </element>
+
+  <element name="foreign-source" >
+    <simpleType>
+      <restriction base="string" />
+    </simpleType>
+  </element>
+
+</schema>

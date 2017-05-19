@@ -104,6 +104,12 @@ public class MockQueryManager implements QueryManager {
         return (node == null ? null : node.getLabel());
     }
 
+    @Override
+    public String getNodeLocation(int nodeId) {
+        MockNode node = m_network.getNode(nodeId);
+        return (node == null ? null : node.getLocation());
+    }
+
     int getServiceCountForInterface(String ipaddr) throws SQLException {
         return getActiveServiceIdsForInterface(ipaddr).size();
     }

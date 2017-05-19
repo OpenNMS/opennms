@@ -26,23 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.correlation.drools.config;
 
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,18 +45,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
-import org.xml.sax.ContentHandler;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -78,10 +62,12 @@ import com.codahale.metrics.MetricRegistry;
  * @version $Revision$ $Date$
  */
 
-@SuppressWarnings("all") 
 @XmlRootElement(name="engine-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EngineConfiguration implements Serializable {
+    private static final long serialVersionUID = 2358050053659695907L;
+
+
     private static final Logger LOG = LoggerFactory.getLogger(EngineConfiguration.class);
 
 
@@ -196,20 +182,6 @@ public class EngineConfiguration implements Serializable {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateRuleSet.
      * 
      * @return an Iterator over all possible elements in this
@@ -217,34 +189,6 @@ public class EngineConfiguration implements Serializable {
      */
     public Iterator<RuleSet> iterateRuleSet() {
         return this._ruleSetList.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws IOException if an IOException occurs during
-     * marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -321,32 +265,6 @@ public class EngineConfiguration implements Serializable {
      */
     public void setRuleSetCollection(final List<RuleSet> ruleSetList) {
         this._ruleSetList = ruleSetList;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * EngineConfiguration
-     */
-    public static EngineConfiguration unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (EngineConfiguration) Unmarshaller.unmarshal(EngineConfiguration.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate() throws ValidationException {
-        Validator validator = new Validator();
-        validator.validate(this);
     }
 
     @Override

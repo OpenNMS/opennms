@@ -6,12 +6,12 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Features JMX Config Generator</name>
+    <name>OpenNMS :: Features :: JMX Config Generator</name>
     <url>http://www.opennms.org</url>
 
     <properties>
@@ -42,12 +42,14 @@
                 <groupId>org.opennms.maven.plugins</groupId>
                 <artifactId>features-maven-plugin</artifactId>
                 <configuration>
+                    <features>
+                        <feature>guava</feature>
+                        <feature>commons-io</feature>
+                    </features>
                     <bundles>
                         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
                         <bundle>wrap:mvn:args4j/args4j/${args4jVersion}</bundle>
                         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
-                        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
                         <bundle>mvn:org.apache.velocity/velocity/${velocity.version}</bundle>
                     </bundles>
                 </configuration>
@@ -158,7 +160,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     <pluginRepositories>

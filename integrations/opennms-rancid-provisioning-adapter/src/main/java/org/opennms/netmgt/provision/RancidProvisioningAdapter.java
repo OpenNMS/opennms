@@ -852,7 +852,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
     
     private boolean isAdapterConfigured() {
-        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServer_url())) {
+        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServerUrl())) {
             LOG.debug("Not taking any action because server_url is set to http://rws-not-configured");
             return false;
         }

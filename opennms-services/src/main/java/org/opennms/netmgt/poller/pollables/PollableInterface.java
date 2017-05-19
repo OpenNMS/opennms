@@ -128,6 +128,10 @@ public class PollableInterface extends PollableContainer {
         return getNode().getNodeLabel();
     }
 
+    public String getNodeLocation() {
+        return getNode().getNodeLocation();
+    }
+
     /**
      * <p>createService</p>
      *
@@ -330,7 +334,5 @@ public class PollableInterface extends PollableContainer {
         firstNode.withTreeLock(lockSecondNodeAndRun);
         
     }
-
-
 
 }

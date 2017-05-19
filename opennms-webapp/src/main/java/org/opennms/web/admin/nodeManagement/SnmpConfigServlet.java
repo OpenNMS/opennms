@@ -29,6 +29,7 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -46,7 +47,6 @@ import org.opennms.web.svclayer.model.SnmpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -104,6 +104,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String firstIPAddress = request.getParameter("firstIPAddress");
 		String lastIPAddress = request.getParameter("lastIPAddress");
 		String ipAddress = request.getParameter("ipAddress");
+	    String location = request.getParameter("location");
 		LOG.debug("doPost: snmpInfo:{}, firstIpAddress:{}, lastIpAddress:{}", snmpInfo.toString(), firstIPAddress, lastIPAddress);
 
 		final SnmpConfigServletAction action = determineAction(request);
@@ -113,8 +114,9 @@ public class SnmpConfigServlet extends HttpServlet {
 			case GetConfigForIp:
 				request.setAttribute("snmpConfigForIp",
 						new SnmpInfo(
-								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress))));
+								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), location)));
 				request.setAttribute("firstIPAddress", ipAddress);
+				request.setAttribute("location", location);
 				break;
 			case Save:
 				boolean success = false;
@@ -133,7 +135,7 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
-		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), Charsets.UTF_8));
+		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), StandardCharsets.UTF_8));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
 		dispatcher.forward(request, response);
@@ -179,6 +181,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String maxVarsPerPdu = request.getParameter("maxVarsPerPdu");
 		String maxRepetitions = request.getParameter("maxRepetitions");
 		String proxyHost = request.getParameter("proxyHost");
+		String location = request.getParameter("location");
 		
 		// v1/v2c specifics
 		String readCommunityString = request.getParameter("readCommunityString");
@@ -217,6 +220,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		if (!Strings.isNullOrEmpty(timeout)) snmpInfo.setTimeout(Integer.parseInt(timeout));
 		if (!Strings.isNullOrEmpty(version)) snmpInfo.setVersion(version);
 		if (!Strings.isNullOrEmpty(writeCommunityString)) snmpInfo.setWriteCommunity(writeCommunityString);
+	    if (!Strings.isNullOrEmpty(location)) snmpInfo.setLocation(location);
 
 		return snmpInfo;
 	}

@@ -108,8 +108,8 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
 
         // Add threshold description
-        String descr = getThresholdConfig().getBasethresholddef().getDescription();
-        bldr.addParam("description", descr != null && !descr.trim().equals("") ? descr : getThresholdConfig().getDatasourceExpression());
+        final String descr = getThresholdConfig().getBasethresholddef().getDescription().orElse(getThresholdConfig().getDatasourceExpression());
+        bldr.addParam("description", descr);
 
         // Add last known value of the datasource fetched from its RRD file
         bldr.addParam("value", formatValue(dsValue));

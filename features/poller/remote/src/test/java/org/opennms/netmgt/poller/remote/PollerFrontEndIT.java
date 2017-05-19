@@ -32,7 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
+import java.io.IOException;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -48,21 +52,20 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.BeforeTransaction;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",
@@ -91,11 +94,10 @@ public class PollerFrontEndIT implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
-    /*
-
-    Comment this out because it triggers FileAnticipator failures if the test is
-    marked as @Ignore.
-
+    /**
+     * Use a {@link FileAnticipator} to create a temp file that will be used
+     * by {@link PollerSettings} to save the location ID to disk.
+     */
     @BeforeClass
     public static void setUpAnticipator() throws IOException {
         m_fileAnticipator = new FileAnticipator();
@@ -112,35 +114,33 @@ public class PollerFrontEndIT implements InitializingBean {
 
         m_fileAnticipator.tearDown();
     }
-    */
 
-    @BeforeTransaction
+    @Before
     public void setUp() throws Exception {
         m_populator.populateDatabase();
     }
 
     @Test
-    @Ignore
     public void testRegister() throws Exception {
         // Check preconditions
         assertFalse(m_frontEnd.isRegistered());
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from location_monitors"));
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from location_monitor_details"));
-        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+        assertEquals(new Integer(1), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(0), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes", Integer.class));
 
         // Start up the remote poller
         m_frontEnd.register("RDU");
         assertTrue(m_frontEnd.isStarted());
-        String monitorId = m_settings.getMonitorId();
+        String monitorId = m_settings.getMonitoringSystemId();
 
         assertTrue(m_frontEnd.isRegistered());
         // Make sure there is a total of one remote poller
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from location_monitors"));
-        assertEquals(5, m_jdbcTemplate.queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", monitorId));
+        assertEquals(new Integer(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems", Integer.class));
+        assertEquals(new Integer(5), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { monitorId }, Integer.class));
         // Make sure there is a total of one remote poller with the expected ID
         assertEquals(1, getMonitorCount(monitorId));
 
-        assertEquals(System.getProperty("os.name"), m_jdbcTemplate.queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
+        assertEquals(System.getProperty("os.name"), m_jdbcTemplate.queryForObject("select propertyValue from monitoringsystemsproperties where monitoringsystemid = ? and property = ?", String.class, monitorId, "os.name"));
 
         long wait = 60000L;
         while (wait > 0) {
@@ -163,14 +163,14 @@ public class PollerFrontEndIT implements InitializingBean {
     }
 
     protected int getSpecificChangesCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from location_specific_status_changes where systemid = ?", new Object[] { monitorId }, Integer.class);
     }
 
     protected int getDisconnectedCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from location_monitors where status=? and id=?", MonitorStatus.DISCONNECTED.toString(), monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where status=? and id=?", new Object[] { MonitorStatus.DISCONNECTED.toString(), monitorId}, Integer.class);
     }
 
     protected int getMonitorCount(String monitorId) {
-        return m_jdbcTemplate.queryForInt("select count(*) from location_monitors where id=?", monitorId);
+        return m_jdbcTemplate.queryForObject("select count(*) from monitoringsystems where id=?", new Object[] { monitorId }, Integer.class);
     }
 }

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -152,7 +152,7 @@
 	      String textPin = userFactory.getTextPin(userid);
          %>
          <tr id="user-<%= userid %>">
-          <% if (!curUser.getUserId().equals("admin")) { %>
+          <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
           </td>
@@ -176,9 +176,7 @@
           </td>
           <td>
            <div id="<%= "users("+curUser.getUserId()+").fullName" %>">
-	    <% if(curUser.getFullName() != null){ %>
-		    <%= (curUser.getFullName().equals("") ? "&nbsp;" : curUser.getFullName()) %>
-	    <% } %>
+		    <%= (curUser.getFullName().orElse("")) %>
 	      </div>
           </td>
           <td>
@@ -200,10 +198,7 @@
           <tr>
             <td colspan="5">
              <div id="<%= "users("+curUser.getUserId()+").userComments" %>">
-	      <% if(curUser.getUserComments() != null){ %>
-		      <%= (curUser.getUserComments().equals("") ? "No Comments" : curUser.getUserComments()) %>
-		   
-	      <% } %>
+             <%= (curUser.getUserComments().orElse("No Comments")) %>
 	        </div>
             </td>
           </tr>
