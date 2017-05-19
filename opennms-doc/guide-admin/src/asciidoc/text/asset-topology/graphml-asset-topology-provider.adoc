@@ -137,26 +137,41 @@ The _Asset Topology Provider_ persists GraphML graphs along side any other Graph
 Please note that if you are using ReST or any other means to generate other GraphML graphs, you should ensure that 
 the providerIds and labels are distinct from those used by the _Asset Topology Provider_
 
-The asset graph definitions for the Asset Topology Provider are persisted to the following karaf configuration file:
+The asset graph definitions for the Asset Topology Provider are persisted to the following xml configuration file:
 ----
-<opennms home>/etc/org.opennms.features.topology.plugins.topo.asset.cfg
+<opennms home>/etc/org.opennms.features.topology.plugins.topo.asset.xml
 ----
 Normally you should not edit this file directly but use the karaf consol or events to define new graphs.
 
 The config file will contain each of the graph definitions as properties in the form
 ----
-asset.graph.definition.<providerId>=providerId=asset&label=Asset Topology Provider&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2&preferredLayout=Grid Layout&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT'
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configs>
+    <config>
+        <label>Asset Topology Provider</label>
+        <breadcrumb-strategy>SHORTEST_PATH_TO_ROOT</breadcrumb-strategy>
+        <provider-id>asset</provider-id>
+        <preferred-layout>Grid Layout</preferred-layout>
+        <filters>
+            <filter>asset-region=South</filter>
+        </filters>
+        <layers>
+            <layer>asset-region</layer>
+            <layer>asset-building</layer>
+            <layer>asset-rack</layer>
+        </layers>
+    </config>
+</configs>
 ----
-Each of the entries are uniquely named using the <providerId> suffix to the property key. 
-The individual definition parameters are separated by the & character as described in the following table
+The individual definition parameters are described in the following table
 
 [options="header, autowidth"]
 |===
 | Parameter                 | Description
 |`providerId` | The unique name of the provider - used as handle to install and remove the topology
 |`label` | The name which shows up on the topology menu (must be unique)
-|`assetLayers`| Comma separated asset layers (in order). See separate description.
-|`filter` | Determines which nodes are included in graph.  See separate description.
+|`assetLayers`| List of asset layers (in order). See separate description.
+|`filters` | List of filters to be applied. Filters determine which nodes are included in graph.  See separate description.
 |`preferredLayout` |  Preferred layout of the nodes in generated graphs. 
 |`breadcrumbStrategy` | Breadcrumb strategy used to display breadcrumbs above each graph
 |===
@@ -187,8 +202,6 @@ The following commands are available
 
 -b, --breadcrumbStrategy : Bread Crumb Strategy (Default: SHORTEST_PATH_TO_ROOT)
 
--u, --uriParams :Configuration as URI parameter string. (Using this option will override all other options).
-
 If you simply type asset-topology:create a default topology with providerId asset will be created.
 
 | asset-topology:remove        | Removes Asset Topology.   | 
@@ -201,25 +214,6 @@ all : display detailed view including --uriParams string
 (If one graph fails, the command will try to complete the rest of the definitions definition)   | 
 |===
 
-The -u or --uriParams option allows the entire graph config to be entered as a single string containing 
-the same parameters separated by an '&' character. 
-----
---uriParams 'providerId=asset1&label=Asset Topology Provider&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory;node-foreignsource=testForeignSource1,testForeignSource2&preferredLayout=Grid Layout&breadcrumbStrategy=SHORTEST_PATH_TO_ROOT'
-----
-This is similar to the way definitions are saved in the definition config file.
-If the --uriParams option is used, all other options are ignored. 
-Any parameters not included in the --uriParams string will be set with default settings.
-
-The properties file can also be edited using the Karaf Config Admin feature but this will not trigger a regeneration of graphs.
-If you do use this method to edit the config, the config shell reacts to ! characters so you should escape any ! characters with \! as shown below.
-----
-opennms> config:edit org.opennms.features.topology.plugins.topo.asset
-opennms> config:proplist
-opennms> config:propset asset.graph.definition.test providerId=test&label=asset2&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=\!testDisplayCategory
-opennms> config:update
-opennms> config:proplist
-   asset.graph.definition.test = providerId=test&label=asset2&assetLayers=asset-country,asset-city,asset-building&filter=asset-displaycategory=!testDisplayCategory
-----
 
 === Creating Asset Based Topologies Using _{opennms-product-name}_ events
 
