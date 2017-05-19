@@ -165,16 +165,4 @@
       <artifactId>xml-apis</artifactId>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.release/</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.external/</url>
-    </repository>
-  </repositories>
 </project>
