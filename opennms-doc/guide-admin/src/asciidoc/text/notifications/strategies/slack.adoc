@@ -5,7 +5,7 @@
 [[ga-notifications-strategy-slack]]
 ==== Slack Notifications
 
-If your organization uses the Slack team communications platform, you can configure {opennms-product-name} to send notices to any Slack channel via an incoming webhook.
+If your organization uses the Slack team communications platform, you can configure {opennms-product-name} to send notices to a Slack channel via an incoming webhook.
 You must configure an incoming webhook in your Slack team and do a bit of manual configuration to your {opennms-product-name} instance.
 
 First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
@@ -30,13 +30,23 @@ Then create a new file called `slack.properties` in the `opennms.properties.d` d
 [source, properties]
 ----
 org.opennms.netmgt.notifd.slack.webhookURL= https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
-org.opennms.netmgt.notifd.slack.username=OpenNMS_Bot
-
-org.opennms.netmgt.notifd.slack.iconURL=https://assets.example.com/icons/opennmsbot.png
-# or:
-# org.opennms.netmgt.notifd.slack.iconEmoji=:metal:
-
-org.opennms.netmgt.notifd.slack.channel=NetOps
 ----
 
 Restart OpenNMS so that the `slack.properties` file will be loaded. Your new `slack` notification command is now available for use in a destination path.
+
+===== Additional Options
+The following table lists optional properties that you may use in `slack.properties` to customize your Slack notifications.
+
+IMPORTANT: To improve the layout, the property names have been shortened to their final component; you must prepend `org.opennms.netmgt.notifd.slack.` when using them.
+
+.Additional parameters for the Slack notification strategy
+[options="header, autowidth"]
+|===
+| Parameter   | Description                                                                     | Required | Default value   | Example
+| `channel`   | Specify a channel or private group other than the one targeted by the webhook   | optional | Webhook default | `NetOps`
+| `username`  | The username to associate with the notification posts                           | optional | None            | `OpenNMS_Bot`
+| `iconEmoji` | An emoji sequence to use as the icon for the notification posts                 | optional | No icon         | `:metal:`
+| `iconURL`   | The URL of an image to use as the icon for the notification posts               | optional | No icon         | `https://example.org/assets/icon.png`
+|===
+
+For more information on incoming webhooks in Slack, see link:https://api.slack.com/incoming-webhooks[Slack API].
