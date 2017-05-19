@@ -96,15 +96,13 @@
                     <vmQueueCursor/>
                   </pendingQueuePolicy>
                   -->
-                </policyEntry>
-                <!--
-                  Change the dead-letter strategy to discard messages instead 
-                  of storing them in the DLQ. You can comment out this policyEntry
-                  to reenable the DLQ for troubleshooting.
-                -->
-                <policyEntry queue=">">
+                  <!--
+                    Change the dead-letter strategy to discard messages instead 
+                    of storing them in the DLQ. You can comment out this policyEntry
+                    to reenable the DLQ for troubleshooting.
+                  -->
                   <deadLetterStrategy>
-                    <sharedDeadLetterStrategy processExpired="false" />
+                    <discarding/>
                   </deadLetterStrategy>
                 </policyEntry>
               </policyEntries>
