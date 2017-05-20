@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,7 +81,7 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/applicationContext-syslogImplementations.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdImplementationsIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdImplementationsIT.class);
@@ -124,6 +125,11 @@ public class SyslogdImplementationsIT implements InitializingBean {
         m_messageDispatcherFactory.setConsumer(consumer);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
+    }
+
     private void loadSyslogConfiguration(final String configuration) throws IOException {
         InputStream stream = null;
         try {
@@ -138,8 +144,18 @@ public class SyslogdImplementationsIT implements InitializingBean {
 
     @Test(timeout=3*60*1000)
     @Transactional
-    public void testDefaultSyslogd() throws Exception {
-        Thread listener = new Thread(m_java);
+    public void testCamelNettyReceiver() throws Exception {
+        doTestSyslogd(m_netty);
+    }
+
+    @Test(timeout=3*60*1000)
+    @Transactional
+    public void testJavaNetReceiver() throws Exception {
+        doTestSyslogd(m_java);
+    }
+
+    private void doTestSyslogd(SyslogReceiver receiver) throws Exception {
+        Thread listener = new Thread(receiver);
         listener.start();
         Thread.sleep(3000);
 

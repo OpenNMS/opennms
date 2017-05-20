@@ -149,28 +149,34 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
                     .routeId("syslogListen")
                     .process(new AsyncProcessor() {
 
-                        private SyslogConnection createSyslogConnection(Exchange exchange) {
-                            ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
-                            // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
-                            // we are listening on an InetAddress, it will always be of type InetAddressSocket
-                            InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            ByteBuffer byteBuffer = buffer.copy().nioBuffer();
-                            return new SyslogConnection(source, byteBuffer);
-                        }
-
                         @Override
                         public void process(Exchange exchange) throws Exception {
+                            final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
+
+                            // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
+                            // we are listening on an InetAddress, it will always be of type InetAddressSocket
+                            InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS);
+
                             // Synchronously invoke the dispatcher
-                            m_dispatcher.send(createSyslogConnection(exchange)).get();
+                            m_dispatcher.send(new SyslogConnection(source, buffer.nioBuffer())).get();
                         }
 
                         @Override
                         public boolean process(Exchange exchange, AsyncCallback callback) {
-                            m_dispatcher.send(createSyslogConnection(exchange)).whenComplete((r,e) -> {
+                            final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
+
+                            // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
+                            // we are listening on an InetAddress, it will always be of type InetAddressSocket
+                            InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS);
+
+                            ByteBuffer bufferCopy = ByteBuffer.allocate(buffer.readableBytes());
+                            buffer.getBytes(buffer.readerIndex(), bufferCopy);
+
+                            m_dispatcher.send(new SyslogConnection(source, bufferCopy)).whenComplete((r,e) -> {
                                 if (e != null) {
                                     exchange.setException(e);
                                 }
-                                callback.done(false); 
+                                callback.done(false);
                             });
                             return false;
                         }

@@ -42,17 +42,53 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.ipc.sink.common.ThreadLockingDispatcherFactory;
 import org.opennms.core.ipc.sink.common.ThreadLockingSyncDispatcher;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 
 import com.google.common.util.concurrent.RateLimiter;
 
+import io.netty.util.ResourceLeakDetector;
+
 public class SyslogdReceiverCamelNettyIT {
+
+    public static final String NETTY_LEAK_DETECTION_LEVEL = "io.netty.leakDetectionLevel";
+
+    private static String s_oldLeakLevel;
+
+    @BeforeClass
+    public static void setSerializablePackages() {
+        s_oldLeakLevel = System.getProperty(NETTY_LEAK_DETECTION_LEVEL);
+        System.setProperty(NETTY_LEAK_DETECTION_LEVEL, ResourceLeakDetector.Level.PARANOID.toString());
+    }
+
+    @AfterClass
+    public static void resetSerializablePackages() {
+        if (s_oldLeakLevel == null) {
+            System.clearProperty(NETTY_LEAK_DETECTION_LEVEL);
+        } else {
+            System.setProperty(NETTY_LEAK_DETECTION_LEVEL, s_oldLeakLevel);
+        }
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
+    }
 
     @Test(timeout=3 * 60 * 1000)
     public void testParallelismAndQueueing() throws UnknownHostException, InterruptedException, ExecutionException {

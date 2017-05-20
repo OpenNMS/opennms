@@ -93,7 +93,7 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/syslogdTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdLoadIT implements InitializingBean {
 
@@ -146,6 +146,7 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @After
     public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
