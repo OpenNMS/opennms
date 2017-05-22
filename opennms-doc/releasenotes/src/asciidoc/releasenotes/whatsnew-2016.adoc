@@ -142,7 +142,7 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
 [releasenotes-changelog-Meridian-2016.1.5]
-==== Release Meridian-2016.1.5
+==== Release 2016.1.5
 
 Release 2016.1.5 is an update to 2016.1.4 that provides quite a few bug fixes and a few enhancements.
 
