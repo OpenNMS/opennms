@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+
+  <!-- generic test event to generate topologies -->
+  <!-- sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'-->
+
+  <event>
+    <uei>uei.opennms.plugins/assettopology/create</uei>
+    <event-label>Asset Topology Event : Create Topology</event-label>
+    <descr>
+    &lt;p&gt;Create New Asset Topology with the following Parameters&lt;p&gt;
+    &lt;p&gt;providerId %parm[providerId]% &lt;p&gt;
+    &lt;p&gt;label %parm[label]% &lt;p&gt;
+    &lt;p&gt;assetLayers %parm[assetLayers]% &lt;p&gt;
+    &lt;p&gt;filters %parm[filters]% &lt;p&gt;
+    &lt;p&gt;preferredLayout %parm[preferredLayout]% &lt;p&gt;
+    &lt;p&gt;breadcrumbStrategy %parm[breadcrumbStrategy]% &lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Create New Asset Topology providerId=%parm[providerId]% &lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.plugins/assettopology/remove</uei>
+    <event-label>Asset Topology Event : Remove Topology</event-label>
+    <descr>
+    &lt;p&gt;Remove Asset Topology providerId %parm[providerId]&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Remove Asset Topology providerId %parm[providerId]&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.plugins/assettopology/regenerate</uei>
+    <event-label>Asset Topology Event : Regenerate Topology</event-label>
+    <descr>
+    &lt;p&gt;Regenerate Asset Topology providerId %parm[providerId]&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Regenerate Asset Topology providerId %parm[providerId]&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.plugins/assettopology/regenerateall</uei>
+    <event-label>Asset Topology Event : Regenerate All Asset Topologies</event-label>
+    <descr>
+    &lt;p&gt;Regenerate All Asset Topologies&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Regenerate All Asset Topologies&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+
+</events>

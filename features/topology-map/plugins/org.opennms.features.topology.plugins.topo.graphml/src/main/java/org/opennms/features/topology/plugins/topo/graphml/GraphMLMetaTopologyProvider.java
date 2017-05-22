@@ -93,7 +93,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 .collect(Collectors.joining(":"));
     }
 
-    public void reload() {
+    public void reload() throws IOException, InvalidGraphException {
         graphsByNamespace.clear();
         oppositeVertices.clear();
         rawGraphsByNamespace.clear();
@@ -131,8 +131,6 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
                 }
             }
             this.breadcrumbStrategy = getBreadcrumbStrategy(graphML);
-        } catch (InvalidGraphException | IOException e) {
-            LOG.error(e.getMessage(), e);
         }
     }
 
