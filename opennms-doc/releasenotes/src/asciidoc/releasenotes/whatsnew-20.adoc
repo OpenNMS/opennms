@@ -1,4 +1,4 @@
-[[releasenotes-19]]
+[[releasenotes-20]]
 == What's New in OpenNMS Horizon 20
 
 === System Requirements
