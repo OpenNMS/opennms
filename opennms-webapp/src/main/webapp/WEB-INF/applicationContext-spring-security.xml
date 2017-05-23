@@ -8,7 +8,7 @@
               http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
   
   <!-- Only use BASIC auth for the RESTful APIs -->
-  <http pattern="/rest/**" realm="OpenNMS Realm">
+  <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never">
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
@@ -67,7 +67,7 @@
   </http>
 
   <!-- Only use BASIC auth for the RESTful API v2 -->
-  <http pattern="/api/v2/**" realm="OpenNMS Realm">
+  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never">
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
