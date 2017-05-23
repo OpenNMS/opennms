@@ -89,6 +89,10 @@ Requires(pre):  %{name}-container = %{version}-%{release}
 Requires:       %{name}-container = %{version}-%{release}
 Requires(post): util-linux
 Requires:       util-linux
+Requires:       jicmp >= 2.0.0
+Requires(pre):  jicmp >= 2.0.0
+Requires:       jicmp6 >= 2.0.0
+Requires(pre):  jicmp6 >= 2.0.0
 
 %description features-core
 Minion Core Features

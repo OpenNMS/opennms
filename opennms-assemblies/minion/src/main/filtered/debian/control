@@ -16,7 +16,7 @@ Description: distributed OpenNMS monitoring client
 
 Package: opennms-minion-container
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, adduser, openssh-client, uuid-runtime, sudo
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, adduser, openssh-client, uuid-runtime, sudo, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Description: distributed OpenNMS monitoring client (main container)
  OpenNMS Minion is a container infrastructure for distributed, scalable network
  management and monitoring.
