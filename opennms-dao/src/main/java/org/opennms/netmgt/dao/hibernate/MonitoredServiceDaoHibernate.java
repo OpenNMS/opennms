@@ -136,7 +136,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 
     /** {@inheritDoc} */
     @Override
-    public List<OnmsMonitoredService> findAll() {
+    public List<OnmsMonitoredService> findAllServices() {
         return find("select distinct svc from OnmsMonitoredService as svc " +
                 "left join fetch svc.serviceType " +
                 "left join fetch svc.ipInterface as ip " +

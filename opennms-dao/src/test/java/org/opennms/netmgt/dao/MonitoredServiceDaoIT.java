@@ -93,6 +93,20 @@ public class MonitoredServiceDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testNoLazy() {
+        final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAll();
+        assertTrue(allSvcs.size() > 1);
+        for (OnmsMonitoredService ifservice: allSvcs) {
+            assertNotNull(ifservice.getIpInterface());
+            assertNotNull(ifservice.getIpInterface().getNode());
+            assertNotNull(ifservice.getIpAddress());
+            assertNotNull(ifservice.getNodeId());
+            assertNotNull(ifservice.getServiceType());
+        }
+        
+    }
+
+    @Test
     @Transactional
     public void testGetByCompositeId() {
         final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
