@@ -35,9 +35,6 @@
     <!-- <pgjdbc-ng-version>0.6.osgi</pgjdbc-ng-version> -->
     <pgjdbc-ng-version>0.6.osgi-wrap</pgjdbc-ng-version>
 
-    <!-- <nettyVersion>4.1.1.Final</nettyVersion> -->
-    <nettyVersion>4.0.32.Final</nettyVersion>
-
     <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
 

@@ -90,7 +90,7 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);

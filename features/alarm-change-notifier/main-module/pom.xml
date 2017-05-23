@@ -93,37 +93,37 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-common</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-buffer</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-handler</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <!-- <dependency> -->
     <!-- <groupId>io.netty</groupId> -->
     <!-- <artifactId>netty-resolver</artifactId> -->
-    <!-- <version>${nettyVersion}</version> -->
+    <!-- <version>${netty4Version}</version> -->
     <!-- <scope>provided</scope> -->
     <!-- </dependency> -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
 

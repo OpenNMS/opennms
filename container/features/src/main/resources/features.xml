@@ -824,7 +824,7 @@
       <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
+      <feature>camel-netty4</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>dropwizard-metrics</feature>
@@ -859,7 +859,6 @@
       <feature version="[4.1,4.2)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>opennms-core</feature>
