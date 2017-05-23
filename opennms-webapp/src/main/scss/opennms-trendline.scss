@@ -29,10 +29,10 @@
 /* Background color for trend charts */
 
 .alert-trend {
-  background-color: $color_lima_approx;
-  border-color: $color_lima_approx;
+  background-color: #eeeeee;
+  border-color: #eeeeee;
   height: 90px;
-  color: $white;
+  color: #000000;
   margin-bottom: 10px;
   margin-right: 5px;
   margin-left: 5px;
@@ -40,7 +40,7 @@
 }
 
 .alert-trend hr {
-  border-top-color: $white;
+  border-top-color: #bbbbbb;
 }
 
 .alert-trend h1 .glyphicon {
@@ -49,11 +49,11 @@
 }
 
 .alert-trend .alert-link {
-  color: $white;
+  color: $color_lima_approx;
 }
 
 .alert-trend a {
-  color: $white;
+  color: $color_lima_approx;
 }
 
 .alert {

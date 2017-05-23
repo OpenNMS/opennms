@@ -10,15 +10,15 @@
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="35"/>
             <trend-attribute key="sparkChartRangeMin" value="0"/>
-            <trend-attribute key="sparkLineColor" value="white"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#88BB55"/>
-            <trend-attribute key="sparkSpotColor" value="white"/>
-            <trend-attribute key="sparkMinSpotColor" value="white"/>
-            <trend-attribute key="sparkMaxSpotColor" value="white"/>
+            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkSpotRadius" value="3"/>
-            <trend-attribute key="sparkHighlightSpotColor" value="white"/>
-            <trend-attribute key="sparkHighlightLineColor" value="white"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
         <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
         <description>${intValue[23]} Nodes with Outage(s)</description>
@@ -64,7 +64,7 @@
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
-            <trend-attribute key="sparkBarColor" value="white"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
             <trend-attribute key="sparkHeight" value="35"/>
             <trend-attribute key="sparkBarWidth" value="4"/>
             <trend-attribute key="sparkBarSpacing" value="2"/>
@@ -91,15 +91,15 @@
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>
             <trend-attribute key="sparkChartRangeMin" value="0"/>
-            <trend-attribute key="sparkLineColor" value="white"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#88BB55"/>
-            <trend-attribute key="sparkSpotColor" value="white"/>
-            <trend-attribute key="sparkMinSpotColor" value="white"/>
-            <trend-attribute key="sparkMaxSpotColor" value="white"/>
+            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkSpotRadius" value="3"/>
-            <trend-attribute key="sparkHighlightSpotColor" value="white"/>
-            <trend-attribute key="sparkHighlightLineColor" value="white"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
         <descriptionLink>alarm/list.htm</descriptionLink>
         <description>${intValue[23]} Unacknowledged Alarm(s)</description>
@@ -122,7 +122,7 @@
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
-            <trend-attribute key="sparkBarColor" value="white"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
             <trend-attribute key="sparkHeight" value="40"/>
             <trend-attribute key="sparkBarWidth" value="4"/>
             <trend-attribute key="sparkBarSpacing" value="2"/>
@@ -149,15 +149,15 @@
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>
             <trend-attribute key="sparkChartRangeMin" value="0"/>
-            <trend-attribute key="sparkLineColor" value="white"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#88BB55"/>
-            <trend-attribute key="sparkSpotColor" value="white"/>
-            <trend-attribute key="sparkMinSpotColor" value="white"/>
-            <trend-attribute key="sparkMaxSpotColor" value="white"/>
+            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkSpotRadius" value="3"/>
-            <trend-attribute key="sparkHighlightSpotColor" value="white"/>
-            <trend-attribute key="sparkHighlightLineColor" value="white"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
         <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
         <description>${intValue[23]} Current Outage(s)</description>
@@ -180,7 +180,7 @@
         <trend-attributes>
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkType" value="bar"/>
-            <trend-attribute key="sparkBarColor" value="white"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
             <trend-attribute key="sparkHeight" value="40"/>
             <trend-attribute key="sparkBarWidth" value="4"/>
             <trend-attribute key="sparkBarSpacing" value="2"/>
@@ -207,15 +207,15 @@
             <trend-attribute key="sparkWidth" value="100%"/>
             <trend-attribute key="sparkHeight" value="40"/>
             <trend-attribute key="sparkChartRangeMin" value="0"/>
-            <trend-attribute key="sparkLineColor" value="white"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#88BB55"/>
-            <trend-attribute key="sparkSpotColor" value="white"/>
-            <trend-attribute key="sparkMinSpotColor" value="white"/>
-            <trend-attribute key="sparkMaxSpotColor" value="white"/>
+            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkSpotRadius" value="3"/>
-            <trend-attribute key="sparkHighlightSpotColor" value="white"/>
-            <trend-attribute key="sparkHighlightLineColor" value="white"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
         </trend-attributes>
         <descriptionLink>topology?szl=1amp;layout=Hierarchy+Layout&amp;provider=Business+Services</descriptionLink>
         <description>${intValue[23]} Current Problem(s)</description>
