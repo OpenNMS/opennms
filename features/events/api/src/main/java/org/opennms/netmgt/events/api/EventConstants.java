@@ -1109,6 +1109,8 @@ public abstract class EventConstants {
     public static final String ALARM_UNCLEARED_UEI = "uei.opennms.org/alarms/alarmUncleared";
     // Sent when an alarm is updated with a reduce event
     public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
+    // Sent when an alarm is deleted
+    public static final String ALARM_DELETED_EVENT_UEI = "uei.opennms.org/alarms/alarmDeleted";
 
     //
     // for Bsmd

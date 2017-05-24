@@ -2025,6 +2025,15 @@
     <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was updated by a reduced event.</logmsg>
     <severity>Normal</severity>
   </event>
+  <event>
+    <uei>uei.opennms.org/alarms/alarmDeleted</uei>
+    <event-label>OpenNMS-defined internal event: alarmDeleted</event-label>
+    <descr>
+        &lt;p&gt;Alarm with reduction key %param[reductionkey] and id: %parm[alarmId]% was deleted.
+    </descr>
+    <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was deleted.</logmsg>
+    <severity>Normal</severity>
+  </event>
 
   <event>
     <uei>uei.opennms.org/bsm/serviceOperationalStatusChanged</uei>
