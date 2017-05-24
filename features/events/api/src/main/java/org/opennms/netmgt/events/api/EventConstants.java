@@ -612,6 +612,8 @@ public abstract class EventConstants {
     public static final String PARM_ALARM_ID = "alarmId";
     /** Constant <code>PARM_ALARM_UEI="alarmUei"</code> */
     public static final String PARM_ALARM_UEI = "alarmUei";
+    /** Constant <code>PARM_ALARM_REDUCTION_KEY="alarmReductionKey"</code> */
+    public static final String PARM_ALARM_REDUCTION_KEY = "alarmReductionKey";
     /** Constant <code>PARM_TROUBLE_TICKET="troubleTicket"</code> */
     public static final String PARM_TROUBLE_TICKET = "troubleTicket";
 
