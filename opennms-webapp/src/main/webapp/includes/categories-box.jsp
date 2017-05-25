@@ -29,10 +29,10 @@
 
 --%>
 
-<%-- 
+<%--
   This page is included by other JSPs to create a box containing a
   table of categories and their outage and availability status.
-  
+
   It expects that a <base> tag has been set in the including page
   that directs all URLs to be relative to the servlet context.
 --%>
@@ -121,12 +121,12 @@
 			<%=createCategoriesOutageLink(response, category, "outages", null, category.getOutageText())%>
 		</td>
 		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toLowerCase()) %> bright divider"
-		    align="right" 
+		    align="right"
 		    title="Updated: <%= category.getLastUpdated() %>">
 			<%=createCategoriesOutageLink(response, category, "avail", null, category.getAvailText())%>
 		</td>
 	</tr>
-	
+
 <%
 	    }
 	}
@@ -134,3 +134,25 @@
 </table>
 <!-- </div> -->
 </div>
+
+<script>
+$(document).ready(function(){
+	$('table.severity tr>td.divider:last-child').each(
+		function(i,e){
+			try {
+				var td=$(e);
+				var elem=$(e).find('a')[0];
+				if( td.hasClass("severity-critical") ) {
+					elem.innerHTML=elem.innerHTML+" <img src=/opennms/images/24x24/health-00to19.gif>"
+				} else if ( td.hasClass("severity-warning") ) {
+					elem.innerHTML=elem.innerHTML+" <img src=/opennms/images/24x24/health-60to79.gif>"
+				} else {
+					elem.innerHTML=elem.innerHTML+" <img src=/opennms/images/24x24/health-80plus.gif>"
+				}
+			} catch(e) {
+				console.log("Error building weathermap", e)
+			}
+		}
+	);
+});
+</script>
