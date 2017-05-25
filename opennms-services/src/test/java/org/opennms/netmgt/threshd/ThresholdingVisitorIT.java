@@ -81,6 +81,7 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
@@ -1438,7 +1439,7 @@ public class ThresholdingVisitorIT {
      * If we forgot it, /opt01 will not pass threshold filter
      */
     @Test
-    public void testThresholsFiltersOnGenericResource() throws Exception {
+    public void testThresholdFiltersOnGenericResource() throws Exception {
         ThresholdingVisitor visitor = createVisitor();
         
         String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
@@ -1550,6 +1551,26 @@ public class ThresholdingVisitorIT {
         verifyEvents(0);
     }
 
+    /**
+     * Similar to {@link #testThresholdFiltersOnGenericResource()}, but
+     * we generate the collection set using the CollectionSetBuilder instead
+     * of using SnmpCollector specific types.
+     */
+    @Test
+    public void testThresholdFiltersOnGenericResourceWithCollectionSetBuilder() throws Exception {
+        ThresholdingVisitor visitor = createVisitor();
+
+        String highExpression = "(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
+        addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
+        addHighThresholdEvent(1, 30, 25, 60, "/opt01", "2", highExpression, null, null);
+
+        runFileSystemDataTestWithCollectionSetBuilder(visitor, 1, "/opt", 50, 100);
+        runFileSystemDataTestWithCollectionSetBuilder(visitor, 2, "/opt01", 60, 100);
+        runFileSystemDataTestWithCollectionSetBuilder(visitor, 3, "/home", 70, 100);
+
+        verifyEvents(0);
+    }
+
     private ThresholdingVisitor createVisitor() {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
@@ -1610,6 +1631,27 @@ public class ThresholdingVisitorIT {
         addAttributeToCollectionResource(resource, resourceType, "hrStorageAllocUnits", "gauge", "hrStorageIndex", 1);
         // Run Visitor
         resource.visit(visitor);
+        EasyMock.verify(agent);
+    }
+
+    private void runFileSystemDataTestWithCollectionSetBuilder(ThresholdingVisitor visitor, int resourceId, String fs, long value, long max) throws Exception {
+        SnmpCollectionAgent agent = createCollectionAgent();
+        NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+        // Creating Generic ResourceType
+        org.opennms.netmgt.config.datacollection.ResourceType indexResourceType = createIndexResourceType(agent, "hrStorageIndex");
+        GenericTypeResource genericResource = new GenericTypeResource(nodeResource, indexResourceType, Integer.toString(resourceId));
+        // Creating strings.properties file
+        ResourcePath path = ResourcePath.get("snmp", "1", "hrStorageIndex", Integer.toString(resourceId));
+        m_resourceStorageDao.setStringAttribute(path, "hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
+        m_resourceStorageDao.setStringAttribute(path, "hrStorageDescr", fs);
+        // Build the collection set
+        CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageUsed", value, AttributeType.GAUGE)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageSize", max, AttributeType.GAUGE)
+                .withNumericAttribute(genericResource, "hd-usage", "hrStorageAllocUnits", 1, AttributeType.GAUGE)
+                .build();
+        // Run Visitor
+        collectionSet.visit(visitor);
         EasyMock.verify(agent);
     }
 
@@ -1680,7 +1722,7 @@ public class ThresholdingVisitorIT {
         return new IfResourceType(agent, collection);
     }
 
-    private static GenericIndexResourceType createGenericIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
+    private static org.opennms.netmgt.config.datacollection.ResourceType createIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
         org.opennms.netmgt.config.datacollection.ResourceType type = new org.opennms.netmgt.config.datacollection.ResourceType();
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
@@ -1690,6 +1732,11 @@ public class ThresholdingVisitorIT {
         org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
         pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
+        return type;
+    }
+
+    private static GenericIndexResourceType createGenericIndexResourceType(SnmpCollectionAgent agent, String resourceTypeName) {
+        org.opennms.netmgt.config.datacollection.ResourceType type = createIndexResourceType(agent, resourceTypeName);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
         return new GenericIndexResourceType(agent, collection, type);
