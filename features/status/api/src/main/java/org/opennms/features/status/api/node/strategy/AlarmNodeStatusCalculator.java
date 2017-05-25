@@ -28,14 +28,15 @@
 
 package org.opennms.features.status.api.node.strategy;
 
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AlarmNodeStatusCalculator implements NodeStatusCalculator {
@@ -76,5 +77,45 @@ public class AlarmNodeStatusCalculator implements NodeStatusCalculator {
             status.add((int) row[0], (OnmsSeverity) row[1], (long) row[2], (long) row[3]);
         }
         return status;
+    }
+
+    @Override
+    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
+        final List<String> parameterNames = Lists.newArrayList();
+        final List<Object> parameterValues = Lists.newArrayList();
+
+        final StringBuilder hql = new StringBuilder();
+        hql.append("SELECT count(alarm), max(alarm.severity) ");
+        hql.append("FROM OnmsAlarm as alarm ");
+        hql.append("WHERE alarm.node is not null ");
+        if (!query.isIncludeAcknowledgedAlarms()) {
+            hql.append("AND alarm.alarmAckTime is null ");
+        }
+        if (query.getSeverity() != null) {
+            hql.append("AND alarm.severity >= :severity ");
+            parameterNames.add("severity");
+            parameterValues.add(query.getSeverity());
+        }
+        if (query.getLocation() != null) {
+            hql.append("AND alarm.node.location.locationName = :nodeLocation ");
+            parameterNames.add("nodeLocation");
+            parameterValues.add(query.getLocation());
+        }
+        if (!query.getNodeIds().isEmpty()) {
+            hql.append("AND alarm.node.id in (:nodeIds) ");
+            parameterNames.add("nodeIds");
+            parameterValues.add(query.getNodeIds());
+        }
+        hql.append("GROUP BY alarm.severity");
+
+        final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
+                hql.toString(),
+                parameterNames.toArray(new String[parameterNames.size()]),
+                parameterValues.toArray());
+        final Map<OnmsSeverity, Long> statusMap = new HashMap<>();
+        for(Object[] columns : rows) {
+            statusMap.put( (OnmsSeverity) columns[1], (long) columns[0]);
+        }
+        return statusMap;
     }
 }

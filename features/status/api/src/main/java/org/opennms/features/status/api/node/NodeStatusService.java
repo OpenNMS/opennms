@@ -28,20 +28,15 @@
 
 package org.opennms.features.status.api.node;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.status.api.AbstractStatusService;
 import org.opennms.features.status.api.StatusEntity;
 import org.opennms.features.status.api.StatusEntityWrapper;
 import org.opennms.features.status.api.StatusSummary;
-import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
+import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -50,6 +45,12 @@ import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery> {
 
@@ -57,7 +58,7 @@ public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery
     private NodeDao nodeDao;
 
     @Autowired
-    private NodeStatusCalculatorManager someStatusThing;
+    private NodeStatusCalculatorManager statusCalculatorManager;
 
     @Override
     protected int countMatching(Criteria criteria) {
@@ -65,18 +66,9 @@ public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery
     }
 
     public StatusSummary getSummary(NodeStatusCalculationStrategy strategy) {
-        final List<OnmsNode> nodes = nodeDao.findAll();
-        final Map<Integer, OnmsNode> nodeMap = nodes.stream().collect(Collectors.toMap(node -> node.getId(), node -> node));
-
-        // calculate status
-        final Status status = calculateStatus(nodeMap.keySet(), strategy);
+        final Map<OnmsSeverity, Long> statusOverviewMap = calculateStatusOverview(strategy);
         final long totalCount = nodeDao.countAll();
-        final List<OnmsSeverity> severityList = nodeMap.keySet()
-                .stream()
-                .map(nodeId -> status.getSeverity(nodeId))
-                .filter(s -> s != null).collect(Collectors.toList());
-
-        return new StatusSummary(severityList, totalCount);
+        return new StatusSummary(statusOverviewMap, totalCount);
     }
 
     @Override
@@ -102,13 +94,24 @@ public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery
         return CriteriaBuilderUtils.buildFrom(OnmsNode.class, queryParameters);
     }
 
-    private Status calculateStatus(Collection<Integer> nodeIds, NodeStatusCalculationStrategy strategy) {
+    private NodeStatusCalculatorConfig createConfig(Collection<Integer> nodeIds, NodeStatusCalculationStrategy strategy) {
         final NodeStatusCalculatorConfig nodeStatusCalculatorConfig = new NodeStatusCalculatorConfig();
         nodeStatusCalculatorConfig.setIncludeAcknowledgedAlarms(false);
         nodeStatusCalculatorConfig.setNodeIds(nodeIds);
         nodeStatusCalculatorConfig.setSeverity(OnmsSeverity.NORMAL);
         nodeStatusCalculatorConfig.setCalculationStrategy(strategy);
-        final Status status = someStatusThing.calculateStatus(nodeStatusCalculatorConfig);
+        return nodeStatusCalculatorConfig;
+    }
+
+    private Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculationStrategy strategy) {
+        final NodeStatusCalculatorConfig config = createConfig(new ArrayList<>(), strategy);
+        final Map<OnmsSeverity, Long> statusOverview = statusCalculatorManager.calculateStatusOverview(config);
+        return statusOverview;
+    }
+
+    private Status calculateStatus(Collection<Integer> nodeIds, NodeStatusCalculationStrategy strategy) {
+        final NodeStatusCalculatorConfig nodeStatusCalculatorConfig = createConfig(nodeIds, strategy);
+        final Status status = statusCalculatorManager.calculateStatus(nodeStatusCalculatorConfig);
         return status;
     }
 }

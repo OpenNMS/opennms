@@ -34,15 +34,29 @@ import org.opennms.features.status.api.node.strategy.NodeStatusCalculator;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.features.status.api.node.strategy.OutageNodeStatusCalculator;
 import org.opennms.features.status.api.node.strategy.Status;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class NodeStatusCalculatorManager implements NodeStatusCalculationProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeStatusService.class);
 
-    protected static final NodeStatusCalculator NULL_STATUS_CALCULATOR = (theQuery) -> new Status();
+    protected static final NodeStatusCalculator NULL_STATUS_CALCULATOR = new NodeStatusCalculator() {
+        @Override
+        public Status calculateStatus(NodeStatusCalculatorConfig query) {
+            return new Status();
+        }
+
+        @Override
+        public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
+            return new HashMap<>();
+        }
+    };
 
     @Autowired
     private AlarmNodeStatusCalculator alarmStatusCalculator;
@@ -52,8 +66,13 @@ public class NodeStatusCalculatorManager implements NodeStatusCalculationProvide
 
     @Override
     public Status calculateStatus(NodeStatusCalculatorConfig query) {
-        Status status = getStatusCalculator(query.getCalculationStrategy()).calculateStatus(query);
+        final Status status = getStatusCalculator(query.getCalculationStrategy()).calculateStatus(query);
         return status;
+    }
+
+    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
+        final Map<OnmsSeverity, Long> statusOverview = getStatusCalculator(query.getCalculationStrategy()).calculateStatusOverview(query);
+        return statusOverview;
     }
 
     protected NodeStatusCalculator getStatusCalculator(NodeStatusCalculationStrategy strategy) {

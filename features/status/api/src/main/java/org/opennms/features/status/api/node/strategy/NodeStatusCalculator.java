@@ -28,7 +28,13 @@
 
 package org.opennms.features.status.api.node.strategy;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
+import java.util.Map;
+
 public interface NodeStatusCalculator {
 
     Status calculateStatus(NodeStatusCalculatorConfig query);
+
+    Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query);
 }

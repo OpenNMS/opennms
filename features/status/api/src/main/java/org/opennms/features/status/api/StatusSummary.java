@@ -28,39 +28,45 @@
 
 package org.opennms.features.status.api;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.model.OnmsSeverity;
-
 public class StatusSummary {
-    private final List<OnmsSeverity> severityList;
-    private final long totalCount;
+    private final Map<OnmsSeverity, Long> severityMap;
 
     public StatusSummary(List<OnmsSeverity> severityList, long totalCount) {
-        this.severityList = Objects.requireNonNull(severityList);
-        this.totalCount = totalCount;
+        this.severityMap = severityList.stream().collect(
+                Collectors.groupingBy(severity -> severity, Collectors.counting()));
+
+        updateNormalSeverity(severityMap, totalCount);
+        enrich(severityMap);
+    }
+
+    public StatusSummary(Map<OnmsSeverity, Long> severityMap, long totalCount) {
+        this.severityMap = Objects.requireNonNull(severityMap);
+
+        updateNormalSeverity(severityMap, totalCount);
+        enrich(severityMap);
     }
 
     public Map<OnmsSeverity, Long> getSeverityMap() {
-        final Map<OnmsSeverity, Long> severityMap = severityList.stream().collect(
-                Collectors.groupingBy(severity -> severity, Collectors.counting()));
-        final long applicationWithSeverityCount = severityMap.values().stream().mapToLong(count -> count.longValue()).sum();
-
-        // update normal severity
-        final long normalCount = totalCount - applicationWithSeverityCount + severityMap.getOrDefault(OnmsSeverity.NORMAL, 0L);
-        severityMap.put(OnmsSeverity.NORMAL, normalCount);
-
-        // Enforce each severity to be present
-        enrich(severityMap);
-
         return severityMap;
     }
 
+    private static void updateNormalSeverity(Map<OnmsSeverity, Long> severityMap, long totalCount) {
+        final long severityCount = severityMap.values().stream().mapToLong(count -> count.longValue()).sum();
+
+        // update normal severity
+        final long normalCount = totalCount - severityCount + severityMap.getOrDefault(OnmsSeverity.NORMAL, 0L);
+        severityMap.put(OnmsSeverity.NORMAL, normalCount);
+    }
+
     // Ensures that each severity is present
-    public static void enrich(Map<OnmsSeverity, Long> severityMap) {
+    private static void enrich(Map<OnmsSeverity, Long> severityMap) {
         severityMap.putIfAbsent(OnmsSeverity.NORMAL, 0L);
         severityMap.putIfAbsent(OnmsSeverity.WARNING, 0L);
         severityMap.putIfAbsent(OnmsSeverity.MINOR, 0L);

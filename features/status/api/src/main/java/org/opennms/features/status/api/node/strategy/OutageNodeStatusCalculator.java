@@ -28,14 +28,15 @@
 
 package org.opennms.features.status.api.node.strategy;
 
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OutageNodeStatusCalculator implements NodeStatusCalculator {
@@ -78,5 +79,42 @@ public class OutageNodeStatusCalculator implements NodeStatusCalculator {
             status.add((int) eachRow[0], OnmsSeverity.get((int) eachRow[1]), 0, 0);
         }
         return status;
+    }
+
+    @Override
+    public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
+        final List<String> parameterNames = Lists.newArrayList();
+        final List<Object> parameterValues = Lists.newArrayList();
+
+        final StringBuilder hql = new StringBuilder();
+        hql.append("SELECT count(outage), max(outage.serviceLostEvent.eventSeverity) ");
+        hql.append("FROM OnmsOutage as outage ");
+        hql.append("WHERE outage.serviceRegainedEvent is null ");
+        if (!query.getNodeIds().isEmpty()) {
+            hql.append("AND outage.monitoredService.ipInterface.node.id in (:nodeIds) ");
+            parameterNames.add("nodeIds");
+            parameterValues.add(query.getNodeIds());
+        }
+        if (query.getLocation() != null) {
+            hql.append("AND outage.monitoredService.ipInterface.node.location.locationName = :locationName ");
+            parameterNames.add("locationName");
+            parameterValues.add(query.getLocation());
+        }
+        if (query.getSeverity() != null) {
+            hql.append("AND outage.serviceLostEvent.eventSeverity >= :severity ");
+            parameterNames.add("severity");
+            parameterValues.add(query.getSeverity().getId());
+        }
+        hql.append("GROUP BY outage.serviceLostEvent.eventSeverity");
+
+        final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
+                hql.toString(),
+                parameterNames.toArray(new String[parameterNames.size()]),
+                parameterValues.toArray());
+        final Map<OnmsSeverity, Long> severityStatusMap = new HashMap<>();
+        for (Object[] columns : rows) {
+            severityStatusMap.put(OnmsSeverity.get((int) columns[1]), (long) columns[0]);
+        }
+        return severityStatusMap;
     }
 }
