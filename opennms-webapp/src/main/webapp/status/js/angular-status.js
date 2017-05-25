@@ -215,7 +215,9 @@
             }, true);
 
             $scope.$watch('query.page', function(newOffset, oldOffset) {
-                $scope.refresh();
+                if (newOffset !== oldOffset) {
+                    $scope.refresh();
+                }
             });
         }])
 
