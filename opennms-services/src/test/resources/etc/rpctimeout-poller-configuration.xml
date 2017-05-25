@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<poller-configuration
+  threads="30" 
+  serviceUnresponsiveEnabled="false"
+> 
+  <node-outage status="off"/>
+
+  <package name="PollerRpcTimeoutIT">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="HTTP" interval="500" user-defined="false" status="on">
+      <parameter key="retry" value="0" />
+      <parameter key="timeout" value="500" />
+      <parameter key="port" value="80" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="http" />
+      <parameter key="ds-name" value="http" />
+    </service>
+
+    <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+    <downtime interval="3600000" begin="432000000" /><!-- 1h, 5d -->
+
+  </package>
+
+  <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+</poller-configuration>

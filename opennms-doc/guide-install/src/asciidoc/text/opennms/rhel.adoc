@@ -57,6 +57,26 @@ With the successful installed packages the _OpenNMS_ platform is installed in th
    └── system
 ----
 
+[[gi-install-opennms-rhel-disable-yum-repo]]
+==== Disable Automatic Updates (Optional)
+
+We recommend you disable the {opennms-product-name} Yum repository to avoid upgrades while it is running.
+
+{opennms-product-name} requires some manual steps upon upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
+For this reason, it is recommended to exclude the {opennms-product-name} packages from yum except when you are planning on performing an upgrade.
+
+To do so, edit the `/etc/yum.repos.d/opennms-*.repo` file and change `enabled=1` to `enabled=0` in each section.
+
+When you are ready to upgrade {opennms-product-name}, call yum with the `--enablerepo` option to turn the 2 repositories defined in this file back on.
+For example, if you installed the stable repository _RPM_ on a _CentOS_ or _RHEL 7_ system, you would run:
+
+[source, shell]
+----
+yum -y --enablerepo=opennms-repo-stable-common \
+  --enablerepo=opennms-repo-stable-rhel7 \
+  upgrade opennms
+----
+
 [[gi-install-opennms-rhel-prepare-pg]]
 ==== Prepare PostgreSQL
 
