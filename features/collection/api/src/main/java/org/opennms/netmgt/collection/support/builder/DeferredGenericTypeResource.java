@@ -87,6 +87,11 @@ public class DeferredGenericTypeResource extends AbstractResource {
     }
 
     @Override
+    public String getLabel() {
+        return m_instance;
+    }
+
+    @Override
     public ResourcePath getPath(CollectionResource resource) {
         throw new UnsupportedOperationException("DeferredGenericTypeResource must be converted to GenericTypeResources before being used to build resource paths.");
     }
