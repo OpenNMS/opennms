@@ -51,7 +51,7 @@ public class HeartbeatProducer {
         final MinionIdentityDTO identityDTO = new MinionIdentityDTO(identity);
         final SyncDispatcher<MinionIdentityDTO> dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
