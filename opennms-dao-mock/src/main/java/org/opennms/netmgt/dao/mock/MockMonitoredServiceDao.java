@@ -151,6 +151,11 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     }
 
     @Override
+    public List<OnmsMonitoredService> findAllServices() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public Set<OnmsMonitoredService> findByApplication(final OnmsApplication application) {
         final Set<OnmsMonitoredService> services = new HashSet<OnmsMonitoredService>();
         for (final OnmsMonitoredService svc : findAll()) {
