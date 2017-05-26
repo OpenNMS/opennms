@@ -37,6 +37,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,28 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         try {
             // Recursively propagate the status
             updateAndPropagateVertex(m_g, m_g.getVertexByReductionKey(alarm.getReductionKey()), alarm.getStatus());
+        } finally {
+            m_rwLock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public void handleAllAlarms(List<AlarmWrapper> alarms) {
+        final Set<String> reductionKeysFromGivenAlarms = new HashSet<>(alarms.size());
+        m_rwLock.writeLock().lock();
+        try {
+            for (AlarmWrapper alarm : alarms) {
+                // Recursively propagate the status for all of the given alarms
+                updateAndPropagateVertex(m_g, m_g.getVertexByReductionKey(alarm.getReductionKey()), alarm.getStatus());
+                // Keep track of the reduction keys that have been processed
+                reductionKeysFromGivenAlarms.add(alarm.getReductionKey());
+            }
+
+            for (String missingReductionKey : Sets.difference(m_g.getReductionKeys(), reductionKeysFromGivenAlarms)) {
+                // There is a vertex on the graph that corresponds to this reduction key
+                // but no alarm with this reduction key exists
+                updateAndPropagateVertex(m_g, m_g.getVertexByReductionKey(missingReductionKey), Status.INDETERMINATE);
+            }
         } finally {
             m_rwLock.writeLock().unlock();
         }
@@ -447,11 +470,6 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                         @Override
                         public Status getStatus() {
                             return reductionKeyVertex.getStatus();
-                        }
-
-                        @Override
-                        public Integer getId() {
-                            return 0;
                         }
                     });
                 }

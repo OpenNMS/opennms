@@ -34,6 +34,4 @@ public interface AlarmWrapper {
 
     Status getStatus();
 
-    Integer getId();
-
 }
