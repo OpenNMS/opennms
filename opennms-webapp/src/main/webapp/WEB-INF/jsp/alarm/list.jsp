@@ -96,19 +96,23 @@
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
     
-    // get sound constants from session or opennms.properties
-	String soundEnableStr = System.getProperty("opennms.alarmlist.sound.enable");
-	boolean soundEnable = (soundEnableStr == null) ? false : "true".equals(soundEnableStr.trim());
+    // get sound constants from session, request or opennms.properties
+	String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
+	boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
 
 	boolean soundOn = false;
 	boolean soundOnEvent = false;
 
 	String alarmSoundStatusStr = null; // newalarm,newalarmcount,off
-	if (soundEnable) {
+	if (soundEnabled) {
 		// get request parameter if present, or session parameter if present or system property
+		String sessionStatus = (String) session.getAttribute("opennms.alarmlist.STATUS");
 		alarmSoundStatusStr = request.getParameter("alarmSoundStatus");
 		if (alarmSoundStatusStr != null) {
-			session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+			if(!alarmSoundStatusStr.equals(sessionStatus)){
+			   session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+			   session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(0));
+			}
 		} else {
 			alarmSoundStatusStr = (String) session.getAttribute("opennms.alarmlist.STATUS");
 			if (alarmSoundStatusStr == null) {
@@ -287,8 +291,16 @@
             <% } %>
         <% } %>
       <% } %>
+
+      <select class="form-control pull-right" onchange="location = this.value;">
+          <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
+          <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
+      </select>
       
-<% if(soundEnable){ %>
+<% if(soundEnabled){ %>
       <select class="form-control pull-right" onchange="location = this.value;">
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm change</option>
@@ -297,13 +309,6 @@
 <% 
 }
 %>
-      <select class="form-control pull-right" onchange="location = this.value;">
-          <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
-      </select>
 
       </div>
       </div>
@@ -824,31 +829,35 @@
     public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent ){
         
         // added this section to fire when a new alarm arrives
-        // This maintains the highest alarmId received in the session variable "opennms.alarmlist.HIGHEST"
-        // and the current (row) alarmId in the session variable "opennms.alarmlist.LATEST".
+        // This maintains the highest alarmId or eventId received in the session variable "opennms.alarmlist.HIGHEST"
+        // and the current (row) alarmId pr eventId in the session variable "opennms.alarmlist.LATEST".
         // If a new alarm is recieved the variable is updated
+        String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
 
         Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
-        Integer latest = (Integer)session.getAttribute("opennms.alarmlist.LATEST");
+        // Integer latest = (Integer)session.getAttribute("opennms.alarmlist.LATEST");
+        Integer latest = 0;
         
-        String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
-    	Integer lastEventId = 0;
-    	OnmsEvent lastEvent=onmsAlarm.getLastEvent();
-    	if(lastEvent!=null && lastEvent.getId()!=null) lastEventId = lastEvent.getId();
+    	Integer lastId = 0;
+    	
+        // To have every new unique alarm trigger, use getId.  To have every new
+        // alarm and every increment of Count, use last event Id.
+        // highest = new Integer(onmsAlarm.getId());
+    	if(soundOnEvent){
+    	   OnmsEvent lastEvent=onmsAlarm.getLastEvent();
+    	   if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
+    	} else {
+    		lastId=onmsAlarm.getId();
+    	}
     	
         if(highest==null) {
-          // To have every new unique alarm trigger, use getId.  To have every new
-          // alarm and every increment of Count, use last event Id.
-          // highest = new Integer(alarms[i].getId());
-          if (lastEventId!=null) {
-        	  highest = new Integer(lastEventId);
+          if (lastId!=null) {
+        	  highest = new Integer(lastId);
         	  session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
               return soundStr;
           }
-
          } else {
-          // latest = new Integer(alarms[i].getId());
-          latest = new Integer(lastEventId);
+          latest = new Integer(lastId);
           if (latest > highest) {
             highest = latest;
             session.setAttribute("opennms.alarmlist.HIGHEST", highest);
