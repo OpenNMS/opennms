@@ -15,19 +15,4 @@
         </logmsg>
         <severity>Normal</severity>
     </event>
-    <event>
-        <uei>uei.opennms.org/ackd/acknowledgment</uei>
-        <event-label>OpenNMS-defined Acknowledgment message</event-label>
-        <descr>
-            A message from the acknowledgment service that an acknowledgment has been processed:
-            &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the
-            action:%parm[ackAction]%&lt;/p&gt;
-            Typically the result of a request via an AckReader or a generated acknowledge request event.
-        </descr>
-        <logmsg dest="logndisplay">
-            &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the
-            action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.&lt;/p&gt;
-        </logmsg>
-        <severity>Normal</severity>
-    </event>
 </events>

@@ -76,12 +76,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         public void handleAnEvent(Event e) {
             receivedEventCount++;
         }
-        
-        @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
-        public void handleAnotherEvent(Event e) {
-            throw new IllegalArgumentException("test generated exception");
-        }
-        
+
         @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
         public void handleYetAnotherEvent(Event e) {
             throw new IllegalStateException("test generated state exception");
@@ -132,8 +127,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         
         Collections.addAll(m_subscriptions, 
                 EventConstants.NODE_DOWN_EVENT_UEI, 
-                EventConstants.ADD_NODE_EVENT_UEI,
-                EventConstants.ADD_INTERFACE_EVENT_UEI
+                EventConstants.ADD_NODE_EVENT_UEI
                 );
         
         m_eventIpcMgr.addEventListener(m_adapter, m_subscriptions);
@@ -226,8 +220,6 @@ public class AnnotationBasedEventListenerAdapterTest {
         
         assertEquals(0, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);
-
-        m_adapter.onEvent(createEvent(EventConstants.ADD_INTERFACE_EVENT_UEI));
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);

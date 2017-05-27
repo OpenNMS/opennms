@@ -52,7 +52,7 @@ public class AspectJTestEventHandler {
         this.handlerCallCount = handlerCallCount;
     }
 
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+    @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
     public void handleAnEvent(Event e) throws Throwable {
         System.err.println("Received Event "+e.getUei());
         handlerCallCount++;
