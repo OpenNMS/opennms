@@ -34,6 +34,7 @@
 <%@page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
+<%@page import="org.opennms.netmgt.model.OnmsEvent" %>
 <%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
 <%@page import="org.opennms.web.alarm.SortStyle" %>
@@ -605,6 +606,46 @@
             </nobr>
 			<% }%>
           </c:if>
+
+          <%-- ****** Start of change for sound (td was here) ****** --%>
+
+          <%
+            // added this section to fire when a new alarm arrives
+            // This maintains the highest alarmId received in the session variable "HIGHEST"
+            // and the current (row) alarmId in the session variable "LATEST".
+            // If a new alarm is recieved the variable is updated
+
+            Integer highest = (Integer)session.getAttribute("HIGHEST");
+            Integer latest = (Integer)session.getAttribute("LATEST");
+        		  
+        	Integer lastEventId = 0;
+        	OnmsEvent lastEvent=alarms[i].getLastEvent();
+        	if(lastEvent!=null && lastEvent.getId()!=null) lastEventId = lastEvent.getId();
+        	
+            if(highest==null) {
+              // To have every new unique alarm trigger, use getId.  To have every new
+              // alarm and every increment of Count, use last event Id.
+              // highest = new Integer(alarms[i].getId());
+              if (lastEventId!=null)
+              highest = new Integer(lastEventId);
+              session.setAttribute("HIGHEST", new Integer(highest));
+                %>
+                <embed src="sounds/alert.wav" type="audio/wav" autostart="true" loop="0" controller="false" height="1" width="1"/>
+
+            <% } else {
+              // latest = new Integer(alarms[i].getId());
+              latest = new Integer(lastEventId);
+              if (latest > highest) {
+                highest = latest;
+                session.setAttribute("HIGHEST", highest);
+                %>
+                <embed src="sounds/alert.wav" type="audio/wav" autostart="true" loop="0" controller="false" height="1" width="1"/>
+             <% }
+            }
+          %>
+          
+          <%-- ****** End of change for sound ****** --%>
+
           </td>
           <c:if test="${param.display != 'long'}">
           <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
