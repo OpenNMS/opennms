@@ -65,16 +65,18 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
     public static final String PARM_RESOLUTION_TYPE_DEFAULT = PARM_RESOLUTION_TYPE_EITHER;
 
     public static final String PARM_NAMESERVER = "nameserver";
+    public static final String PARM_LOOKUP = "lookup";
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Get the name to query for
         final Name name;
+        final String lookup = ParameterMap.getKeyedString(parameters, PARM_LOOKUP, svc.getNodeLabel());
         try {
-            name = new Name(svc.getNodeLabel());
+            name = new Name(lookup);
 
         } catch (final TextParseException e) {
-            return PollStatus.unavailable("Invalid record name '" + svc.getNodeLabel() + "': " + e.getMessage());
+            return PollStatus.unavailable("Invalid record name '" + lookup + "': " + e.getMessage());
         }
 
         // Determine if records for IPv4 and/or IPv6 re required
