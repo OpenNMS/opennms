@@ -34,13 +34,18 @@ import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOL
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_EITHER;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V4;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V6;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_LOOKUP;
 
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
@@ -51,10 +56,20 @@ import org.opennms.netmgt.poller.mock.MockMonitoredService;
  * @author brozow
  */
 public class DNSResolutionMonitorTest {
+
+    @Rule
+    public TestName m_test = new TestName();
     
     @Before
     public void setUp() {
+        System.out.println("------------ begin test " + m_test.getMethodName() + " ------------");
         MockLogAppender.setupLogging(true);
+        System.setProperty("mock.logLevel", "DEBUG");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("------------ end test " + m_test.getMethodName() + " ------------");
     }
     
     @Test
@@ -74,7 +89,6 @@ public class DNSResolutionMonitorTest {
                                                                                  PARM_RESOLUTION_TYPE_BOTH);
         Map<String, Object> eitherParms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
                                                                                    PARM_RESOLUTION_TYPE_EITHER);
-        
         
         assertEquals(PollStatus.available(), monitor.poll(dual, v4Parms));
         assertEquals(PollStatus.available(), monitor.poll(dual, v6Parms));
@@ -96,6 +110,19 @@ public class DNSResolutionMonitorTest {
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, bothParms));
         assertEquals(PollStatus.unavailable(), monitor.poll(neither, eitherParms));
 
+    }
+
+    @Test
+    public void testLookup() throws Exception {
+        MockMonitoredService lookup = new MockMonitoredService(1, "no-such-name.example.com", InetAddress.getLocalHost(), "RESOLVE");
+
+        DNSResolutionMonitor monitor = new DNSResolutionMonitor();
+
+        Map<String, Object> parms = new HashMap<String, Object>();
+        parms.put(PARM_RESOLUTION_TYPE, PARM_RESOLUTION_TYPE_EITHER);
+        parms.put(PARM_LOOKUP, "wipv6day.opennms.org");
+
+        assertEquals(PollStatus.available(), monitor.poll(lookup, parms));
     }
 
 }
