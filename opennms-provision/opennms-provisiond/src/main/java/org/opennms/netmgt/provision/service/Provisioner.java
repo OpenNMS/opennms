@@ -34,9 +34,11 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +73,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+
+import com.codahale.metrics.Timer;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -166,8 +170,10 @@ public class Provisioner implements SpringServiceDaemon {
     public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
-    
 
+    public DefaultTaskCoordinator getTaskCoordinator() {
+        return m_taskCoordinator;
+    }
 
     /**
      * <p>setAgentConfigFactory</p>
@@ -395,6 +401,48 @@ public class Provisioner implements SpringServiceDaemon {
     public int getScheduleLength() {
         return m_scheduledNodes.size();
     }
+
+    public List<NodeScanScheduleData> getNodeScanScheduleData() {
+        final List<NodeScanScheduleData> nodeScanScheduleDataList = new ArrayList<>();
+        for (Map.Entry<Integer, ScheduledFuture<?>> entry : m_scheduledNodes.entrySet()) {
+            OnmsNode node = m_provisionService.getNode(entry.getKey());
+            NodeScanScheduleData nodeScanScheduleData = new NodeScanScheduleData();
+            nodeScanScheduleData.setNodeId(node.getId());
+            nodeScanScheduleData.setForeignSource(node.getForeignSource());
+            nodeScanScheduleData.setForeignId(node.getForeignId());
+            nodeScanScheduleData.setNodeLabel(node.getLabel());
+            nodeScanScheduleData.setDelayInMilliseconds(entry.getValue().getDelay(TimeUnit.MILLISECONDS));
+            
+            NodeScanSchedule scheduleForNode = m_provisionService.getScheduleForNode(node.getId(), false);
+            if (scheduleForNode != null) {
+                nodeScanScheduleData.setScanIntervalInSeconds(scheduleForNode.getScanInterval().getStandardSeconds());
+            }
+
+            nodeScanScheduleDataList.add(nodeScanScheduleData);
+        }
+        return nodeScanScheduleDataList;
+    }
+
+    public ScheduledExecutorService getNodeScanExecutorService() {
+        return m_scheduledExecutor;
+    }
+
+    public Map<String, List<TimerData>> getRequisitionMetrics() {
+        final SortedMap<String, Timer> requisitionTimer = m_importActivities.getRequisitionTimer();
+        final Map<String, List<TimerData>> metricMap = new HashMap<>();
+
+        for(Map.Entry<String, Timer> eachEntry : requisitionTimer.entrySet()) {
+            final String requisitionName = eachEntry.getKey().split("\\.")[0];
+            final String phaseName = eachEntry.getKey().substring(requisitionName.length() + 1);
+            metricMap.putIfAbsent(requisitionName, new ArrayList<>());
+
+            final Timer timer = eachEntry.getValue();
+            final TimerData timerData = new TimerData(phaseName, timer);
+            metricMap.get(requisitionName).add(timerData);
+        }
+        return metricMap;
+    }
+
     //^ Helper functions for the schedule
     
     /**
@@ -446,14 +494,6 @@ public class Provisioner implements SpringServiceDaemon {
         return m_eventForwarder;
     }
 
-    /**
-     * <p>doImport</p>
-     */
-    public void doImport() {
-        Event e = null;
-        doImport(e);
-    }
-    
     /**
      * Begins importing from resource specified in model-importer.properties file or
      * in event parameter: url.  Import Resources are managed with a "key" called

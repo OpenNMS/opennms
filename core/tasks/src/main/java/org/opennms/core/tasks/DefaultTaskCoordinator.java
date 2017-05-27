@@ -455,4 +455,11 @@ public class DefaultTaskCoordinator implements InitializingBean {
         }
     }
 
+    public ConcurrentHashMap<String, CompletionService<Runnable>> getTaskCompletionServices() {
+        return m_taskCompletionServices;
+    }
+
+    public String getDefaultExecutor() {
+        return m_defaultExecutor;
+    }
 }

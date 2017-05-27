@@ -73,6 +73,11 @@
       <artifactId>commons-jexl</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>${dropwizardMetricsVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>dnsjava-dependencies</artifactId>
       <type>pom</type>
