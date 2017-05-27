@@ -204,6 +204,8 @@
     }
 
   </script>
+  
+
 
 <div id="severityLegendModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
@@ -608,42 +610,8 @@
           </c:if>
 
           <%-- ****** Start of change for sound (td was here) ****** --%>
+          <%=this.alarmSound(alarms[i], session)%>
 
-          <%
-            // added this section to fire when a new alarm arrives
-            // This maintains the highest alarmId received in the session variable "HIGHEST"
-            // and the current (row) alarmId in the session variable "LATEST".
-            // If a new alarm is recieved the variable is updated
-
-            Integer highest = (Integer)session.getAttribute("HIGHEST");
-            Integer latest = (Integer)session.getAttribute("LATEST");
-        		  
-        	Integer lastEventId = 0;
-        	OnmsEvent lastEvent=alarms[i].getLastEvent();
-        	if(lastEvent!=null && lastEvent.getId()!=null) lastEventId = lastEvent.getId();
-        	
-            if(highest==null) {
-              // To have every new unique alarm trigger, use getId.  To have every new
-              // alarm and every increment of Count, use last event Id.
-              // highest = new Integer(alarms[i].getId());
-              if (lastEventId!=null)
-              highest = new Integer(lastEventId);
-              session.setAttribute("HIGHEST", new Integer(highest));
-                %>
-                <embed src="sounds/alert.wav" type="audio/wav" autostart="true" loop="0" controller="false" height="1" width="1"/>
-
-            <% } else {
-              // latest = new Integer(alarms[i].getId());
-              latest = new Integer(lastEventId);
-              if (latest > highest) {
-                highest = latest;
-                session.setAttribute("HIGHEST", highest);
-                %>
-                <embed src="sounds/alert.wav" type="audio/wav" autostart="true" loop="0" controller="false" height="1" width="1"/>
-             <% }
-            }
-          %>
-          
           <%-- ****** End of change for sound ****** --%>
 
           </td>
@@ -689,6 +657,7 @@
           </jsp:include>
         <% } %>
 
+<H1>REMOVE ME</H1>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
@@ -793,6 +762,45 @@
         }
 
         return( labels );
+    }
+    
+    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session){
+        
+        // added this section to fire when a new alarm arrives
+        // This maintains the highest alarmId received in the session variable "HIGHEST"
+        // and the current (row) alarmId in the session variable "LATEST".
+        // If a new alarm is recieved the variable is updated
+
+        Integer highest = (Integer)session.getAttribute("HIGHEST");
+        Integer latest = (Integer)session.getAttribute("LATEST");
+        String soundStr="<embed src=\"sounds/alert.wav\" type=\"audio/wav\" autostart=\"true\" loop=\"0\" controller=\"false\" height=\"1\" width=\"1\"/>";
+
+    	Integer lastEventId = 0;
+    	OnmsEvent lastEvent=onmsAlarm.getLastEvent();
+    	if(lastEvent!=null && lastEvent.getId()!=null) lastEventId = lastEvent.getId();
+    	
+        if(highest==null) {
+          // To have every new unique alarm trigger, use getId.  To have every new
+          // alarm and every increment of Count, use last event Id.
+          // highest = new Integer(alarms[i].getId());
+          if (lastEventId!=null) {
+        	  highest = new Integer(lastEventId);
+        	  session.setAttribute("HIGHEST", new Integer(highest));
+              return soundStr;
+          }
+
+         } else {
+          // latest = new Integer(alarms[i].getId());
+          latest = new Integer(lastEventId);
+          if (latest > highest) {
+            highest = latest;
+            session.setAttribute("HIGHEST", highest);
+            return soundStr;
+            }
+        }
+        
+        return "<!-- no sound -->";
+      
     }
 
 %>
