@@ -67,7 +67,7 @@
 --%>
 
 <%
-    urlBase = (String) request.getAttribute("relativeRequestPath");
+	urlBase = (String) request.getAttribute("relativeRequestPath");
 
     XssRequestWrapper req = new XssRequestWrapper(request);
 
@@ -95,6 +95,44 @@
     pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
+    
+    // get sound constants from session or opennms.properties
+	String soundEnableStr = System.getProperty("opennms.alarmlist.sound.enable");
+	boolean soundEnable = (soundEnableStr == null) ? false : "true".equals(soundEnableStr.trim());
+
+	boolean soundOn = false;
+	boolean soundOnEvent = false;
+
+	String alarmSoundStatusStr = null; // newalarm,newalarmcount,off
+	if (soundEnable) {
+		// get request parameter if present, or session parameter if present or system property
+		alarmSoundStatusStr = request.getParameter("alarmSoundStatus");
+		if (alarmSoundStatusStr != null) {
+			session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+		} else {
+			alarmSoundStatusStr = (String) session.getAttribute("opennms.alarmlist.STATUS");
+			if (alarmSoundStatusStr == null) {
+				alarmSoundStatusStr = System.getProperty("opennms.alarmlist.sound.status");
+				if (alarmSoundStatusStr == null) alarmSoundStatusStr = "off";
+				session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+			}
+		}
+		switch (alarmSoundStatusStr) {
+		case "newalarm": {
+			soundOn = true;
+			soundOnEvent = false;
+			break;
+		}
+		case "newalarmcount": {
+			soundOn = true;
+			soundOnEvent = true;
+			break;
+		}
+		default: { //off 
+			break;
+		}
+		}
+	}
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
@@ -202,11 +240,15 @@
     function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
+    
+    // function to play sound
+    var snd = new Audio("sounds/alert.wav"); // loads automatically
+    function playSound(){
+    	snd.play();
+    }
 
   </script>
   
-
-
 <div id="severityLegendModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -245,7 +287,16 @@
             <% } %>
         <% } %>
       <% } %>
-
+      
+<% if(soundEnable){ %>
+      <select class="form-control pull-right" onchange="location = this.value;">
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm change</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm count change</option>
+      </select>
+<% 
+}
+%>
       <select class="form-control pull-right" onchange="location = this.value;">
           <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
           <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
@@ -610,8 +661,9 @@
           </c:if>
 
           <%-- ****** Start of change for sound (td was here) ****** --%>
-          <%=this.alarmSound(alarms[i], session)%>
-
+          <%
+          if (soundOn) out.write(this.alarmSound(alarms[i], session, soundOnEvent));
+          %>
           <%-- ****** End of change for sound ****** --%>
 
           </td>
@@ -656,8 +708,6 @@
             <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
           </jsp:include>
         <% } %>
-
-<H1>REMOVE ME</H1>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
@@ -763,18 +813,25 @@
 
         return( labels );
     }
+
+    public String makeAlarmSoundLink(FilterCallback callback, NormalizedQueryParameters parms, OnmsFilterFavorite favorite, String alarmSoundStatus ) {
+        NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms); // clone;
+        String urlStr = this.makeLink(callback, newParms, favorite)+"alarmSoundStatus="+alarmSoundStatus;
+        return urlStr;
+    }
+
     
-    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session){
+    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent ){
         
         // added this section to fire when a new alarm arrives
-        // This maintains the highest alarmId received in the session variable "HIGHEST"
-        // and the current (row) alarmId in the session variable "LATEST".
+        // This maintains the highest alarmId received in the session variable "opennms.alarmlist.HIGHEST"
+        // and the current (row) alarmId in the session variable "opennms.alarmlist.LATEST".
         // If a new alarm is recieved the variable is updated
 
-        Integer highest = (Integer)session.getAttribute("HIGHEST");
-        Integer latest = (Integer)session.getAttribute("LATEST");
-        String soundStr="<embed src=\"sounds/alert.wav\" type=\"audio/wav\" autostart=\"true\" loop=\"0\" controller=\"false\" height=\"1\" width=\"1\"/>";
-
+        Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
+        Integer latest = (Integer)session.getAttribute("opennms.alarmlist.LATEST");
+        
+        String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
     	Integer lastEventId = 0;
     	OnmsEvent lastEvent=onmsAlarm.getLastEvent();
     	if(lastEvent!=null && lastEvent.getId()!=null) lastEventId = lastEvent.getId();
@@ -785,7 +842,7 @@
           // highest = new Integer(alarms[i].getId());
           if (lastEventId!=null) {
         	  highest = new Integer(lastEventId);
-        	  session.setAttribute("HIGHEST", new Integer(highest));
+        	  session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
               return soundStr;
           }
 
@@ -794,7 +851,7 @@
           latest = new Integer(lastEventId);
           if (latest > highest) {
             highest = latest;
-            session.setAttribute("HIGHEST", highest);
+            session.setAttribute("opennms.alarmlist.HIGHEST", highest);
             return soundStr;
             }
         }
