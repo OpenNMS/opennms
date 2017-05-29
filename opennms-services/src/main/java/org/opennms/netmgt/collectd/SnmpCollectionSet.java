@@ -38,8 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.core.rpc.api.RequestRejectedException;
-import org.opennms.core.rpc.api.RequestTimedOutException;
+import org.opennms.core.rpc.api.RpcExceptionHandler;
+import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
@@ -384,25 +384,41 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             processor.process(this, m_snmpCollection.getName(), m_agent.getSysObjectId(), m_agent.getHostAddress());
 
             m_status = ServiceCollector.COLLECTION_SUCCEEDED;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new CollectionUnknown(String.format("Collection of SNMP data for interface %s at location %s was interrupted.",
-                    getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
-        } catch (ExecutionException e) {
-            final Throwable cause = e.getCause();
-            if (cause != null && cause instanceof RequestTimedOutException) {
-                throw new CollectionUnknown(String.format("No response received when remotely collecting SNMP data"
-                        + " for interface %s at location %s interrupted.",
-                        getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
-            } else if (cause != null && cause instanceof RequestRejectedException) {
-                throw new CollectionUnknown(String.format("The request to remotely collect SNMP data"
-                        + " for interface %s at location %s was rejected.",
-                        getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
-            } else if (cause != null && cause instanceof SnmpAgentTimeoutException) {
-                throw new CollectionTimedOut(cause.getMessage());
-            }
-            throw new CollectionWarning(String.format("Unexpected exception when collecting SNMP data for interface %s at location %s.",
-                    getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), e);
+
+        } catch (InterruptedException|ExecutionException e) {
+            throw RpcExceptionUtils.handleException(e, new RpcExceptionHandler<CollectionException>() {
+                @Override
+                public CollectionException onInterrupted(Throwable t) {
+                    Thread.currentThread().interrupt();
+                    return new CollectionUnknown(String.format("Collection of SNMP data for interface %s at location %s was interrupted.",
+                            getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), t);
+                }
+
+                @Override
+                public CollectionException onTimedOut(Throwable t) {
+                    return new CollectionUnknown(String.format("No response received when remotely collecting SNMP data"
+                            + " for interface %s at location %s interrupted.",
+                            getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), t);
+                }
+
+                @Override
+                public CollectionException onRejected(Throwable t) {
+                    return new CollectionUnknown(String.format("The request to remotely collect SNMP data"
+                            + " for interface %s at location %s was rejected.",
+                            getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), t);
+                }
+
+                @Override
+                public CollectionException onUnknown(Throwable t) {
+                    if (t instanceof SnmpAgentTimeoutException) {
+                        return new CollectionTimedOut(t.getMessage());
+                    } else if (t.getCause() != null && t.getCause() instanceof SnmpAgentTimeoutException) {
+                        return new CollectionTimedOut(t.getCause().getMessage());
+                    }
+                    return new CollectionWarning(String.format("Unexpected exception when collecting SNMP data for interface %s at location %s.",
+                            getCollectionAgent().getHostAddress(), getCollectionAgent().getLocationName()), t);
+                }
+            });
         }
     }
 
