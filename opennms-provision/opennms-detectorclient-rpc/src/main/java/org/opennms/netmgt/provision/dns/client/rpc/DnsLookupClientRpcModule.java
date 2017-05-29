@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.core.utils.InetAddressUtils;
+import org.xbill.DNS.Address;
 
 public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequestDTO, DnsLookupResponseDTO> {
 
@@ -62,7 +63,9 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
             if (queryType.equals(QueryType.LOOKUP)) {
                 dto.setHostResponse(addr.getHostAddress());
             } else if (queryType.equals(QueryType.REVERSE_LOOKUP)) {
-                dto.setHostResponse(addr.getCanonicalHostName());
+                // NMS-9356: Use dnsjava instead of InetAddress#getCanonicalHostName
+                // in order to support reverse lookups without requiring an A record
+                dto.setHostResponse(Address.getHostName(addr));
             }
             future.complete(dto);
         } catch (Exception e) {
