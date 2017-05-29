@@ -303,8 +303,8 @@
 <% if(soundEnabled){ %>
       <select class="form-control pull-right" onchange="location = this.value;">
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
-          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm change</option>
-          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm count change</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
+          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
       </select>
 <% 
 }
@@ -821,7 +821,7 @@
 
     public String makeAlarmSoundLink(FilterCallback callback, NormalizedQueryParameters parms, OnmsFilterFavorite favorite, String alarmSoundStatus ) {
         NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms); // clone;
-        String urlStr = this.makeLink(callback, newParms, favorite)+"alarmSoundStatus="+alarmSoundStatus;
+        String urlStr = this.makeLink(callback, newParms, favorite)+"&alarmSoundStatus="+alarmSoundStatus;
         return urlStr;
     }
 
