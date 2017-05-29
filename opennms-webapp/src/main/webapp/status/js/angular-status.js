@@ -59,15 +59,6 @@
                 },
                 transclude: true,
                 templateUrl: 'status/template/pagination-toolbar.html',
-                link: function($scope, elem, attr, ctrl) {
-                    $scope.setOffset = function(offset) {
-                        offset = normalizeOffset(offset, $scope.query.maxOffset, $scope.query.limit);
-
-                        if ($scope.query.offset !== offset) {
-                            $scope.query.offset = offset;
-                        }
-                    }
-                }
             }
         })
 
@@ -119,6 +110,7 @@
 
                 // Otherwise only update if the severityFilter changed
                 if (angular.equals(oldList, newList) === false) {
+                    $scope.query.page = 1;
                     $scope.refresh();
                 }
             };
@@ -170,12 +162,12 @@
                     },
                     function(response) {
                         switch(response.status) {
+                            case 500:
+                                // on error, simply reset everything
                             case 404:
                                 // If we didn't find any elements, then clear the list
                                 $scope.items = [];
-                                $scope.query.lastOffset = 0;
-                                $scope.query.maxOffset = 0;
-                                $scope.query.offset = 0;
+                                $scope.query.page = 1;
                                 break;
                             case 401:
                             case 403:
