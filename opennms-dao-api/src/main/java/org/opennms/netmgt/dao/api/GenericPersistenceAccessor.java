@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.util.List;
-
 import org.opennms.core.criteria.Criteria;
+
+import java.util.List;
 
 public interface GenericPersistenceAccessor {
     <T> List<T> find(String query);
@@ -38,6 +38,8 @@ public interface GenericPersistenceAccessor {
     <T> List<T> find(String query, Object... values);
 
     <T> List<T> findUsingNamedParameters(String query, String[] paramNames, Object[] values);
+
+    <T> List<T> findUsingNamedParameters(final String query, String[] paramNames, Object[] values, Integer offset, Integer limit);
 
     <T> T get(Class<T> entityType, int entityId);
 

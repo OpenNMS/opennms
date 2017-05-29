@@ -177,6 +177,11 @@ public class StatusRestService {
         final NodeQuery query = new NodeQuery(queryParameters, severityFilter);
         query.setStatusCalculationStrategy(strategy);
 
+        // Adjust order parameters
+        if (query.getParameters().getOrder() != null && query.getParameters().getOrder().getColumn().equals("label")) {
+            query.getParameters().setOrder(new QueryParameters.Order("node.label", query.getParameters().getOrder().isDesc()));
+        }
+
         final List<StatusEntity<OnmsNode>> nodes = nodeStatusService.getStatus(query);
         final int totalCount = nodeStatusService.count(query);
         final int offset = queryParameters.getOffset();

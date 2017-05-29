@@ -28,24 +28,25 @@
 
 package org.opennms.features.status.api.node.strategy;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.google.common.collect.Maps;
-
 public class Status {
 
-    final Map<Integer, OnmsSeverity> severityMap = Maps.newHashMap();
+    final Map<Integer, OnmsSeverity> severityMap = new LinkedHashMap();
 
-    final Map<Integer, Long> alarmCountMap = Maps.newHashMap();
+    final Map<Integer, Long> alarmCountMap = new LinkedHashMap();
 
-    final Map<Integer, Long> unacknowledgedCountMap = Maps.newHashMap();
+    final Map<Integer, Long> unacknowledgedCountMap = new LinkedHashMap<>();
 
-    public void add(int nodeId, OnmsSeverity severity, long alarmCount, long unacknowledgedCount) {
-        severityMap.put(nodeId, severity);
-        alarmCountMap.put(nodeId, alarmCount);
-        unacknowledgedCountMap.put(nodeId, unacknowledgedCount);
+    public void add(int id, OnmsSeverity severity, long alarmCount, long unacknowledgedCount) {
+        severityMap.put(id, severity);
+        alarmCountMap.put(id, alarmCount);
+        unacknowledgedCountMap.put(id, unacknowledgedCount);
     }
 
     public OnmsSeverity getSeverity(int nodeId) {
@@ -58,6 +59,10 @@ public class Status {
             return value.intValue();
         }
         return 0;
+    }
+
+    public List<Integer> getIds() {
+        return new ArrayList<>(severityMap.keySet());
     }
 
     public int size() {

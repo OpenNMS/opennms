@@ -28,9 +28,12 @@
 
 package org.opennms.features.status.api.node;
 
-import org.opennms.core.criteria.Criteria;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.status.api.AbstractStatusService;
 import org.opennms.features.status.api.StatusEntity;
 import org.opennms.features.status.api.StatusEntityWrapper;
 import org.opennms.features.status.api.StatusSummary;
@@ -40,19 +43,13 @@ import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.utils.CriteriaBuilderUtils;
-import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
 
 @Service
-public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery> {
+public class NodeStatusService {
 
     @Autowired
     private NodeDao nodeDao;
@@ -60,58 +57,76 @@ public class NodeStatusService extends AbstractStatusService<OnmsNode, NodeQuery
     @Autowired
     private NodeStatusCalculatorManager statusCalculatorManager;
 
-    @Override
-    protected int countMatching(Criteria criteria) {
-        return nodeDao.countMatching(criteria);
-    }
-
     public StatusSummary getSummary(NodeStatusCalculationStrategy strategy) {
-        final Map<OnmsSeverity, Long> statusOverviewMap = calculateStatusOverview(strategy);
+        final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
+        config.setSeverities(Lists.newArrayList(
+                OnmsSeverity.NORMAL,
+                OnmsSeverity.WARNING,
+                OnmsSeverity.MINOR,
+                OnmsSeverity.MAJOR,
+                OnmsSeverity.CRITICAL));
+        config.setCalculationStrategy(strategy);
+
+        final Map<OnmsSeverity, Long> statusOverviewMap = statusCalculatorManager.calculateStatusOverview(config);
         final long totalCount = nodeDao.countAll();
         return new StatusSummary(statusOverviewMap, totalCount);
     }
 
-    @Override
-    protected List<StatusEntity<OnmsNode>> findMatching(NodeQuery query, CriteriaBuilder criteriaBuilder) {
-        final List<OnmsNode> nodes = nodeDao.findMatching(criteriaBuilder.toCriteria());
-        final Map<Integer, OnmsNode> nodeMap = nodes.stream().collect(Collectors.toMap(node -> node.getId(), node -> node));
+    public int count(NodeQuery query) {
+        NodeStatusCalculatorConfig config = buildFrom(query);
+        config.prepareForCounting();
+        return statusCalculatorManager.countStatus(config);
+    }
 
-        // calculate status
-        Status status = calculateStatus(nodeMap.keySet(), query.getStatusCalculationStrategy());
+    public List<StatusEntity<OnmsNode>> getStatus(NodeQuery query) {
+        // Build query
+        final NodeStatusCalculatorConfig config = buildFrom(query);
+
+        // Calculate Status
+        final Status status = statusCalculatorManager.calculateStatus(config);
+
+        // Find nodes for node id
+        final List<OnmsNode> nodes = getNodes(status.getIds());
+        final Map<Integer, OnmsNode> nodeIdMap = nodes.stream().collect(Collectors.toMap(n -> n.getId(), n -> n));
 
         // convert to wrapper
-        return nodes.stream().map(node -> {
-            OnmsSeverity nodeStatus = status.getSeverity(node.getId());
+        return status.getIds().stream().map(nodeId -> {
+            OnmsSeverity nodeStatus = status.getSeverity(nodeId);
+            OnmsNode node = nodeIdMap.get(nodeId);
             if (nodeStatus == null) {
-                nodeStatus = OnmsSeverity.NORMAL;
+                throw new IllegalStateException("nodeStatus should not be null");
+            }
+            if (node == null) {
+                throw new IllegalStateException("node should not be null");
             }
             return new StatusEntityWrapper<>(node, nodeStatus);
         }).collect(Collectors.toList());
     }
 
-    @Override
-    protected CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters) {
-        return CriteriaBuilderUtils.buildFrom(OnmsNode.class, queryParameters);
+    private List<OnmsNode> getNodes(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final List<OnmsNode> nodes = nodeDao.findMatching(new CriteriaBuilder(OnmsNode.class).in("id", ids).toCriteria());
+        return nodes;
     }
 
-    private NodeStatusCalculatorConfig createConfig(Collection<Integer> nodeIds, NodeStatusCalculationStrategy strategy) {
-        final NodeStatusCalculatorConfig nodeStatusCalculatorConfig = new NodeStatusCalculatorConfig();
-        nodeStatusCalculatorConfig.setIncludeAcknowledgedAlarms(false);
-        nodeStatusCalculatorConfig.setNodeIds(nodeIds);
-        nodeStatusCalculatorConfig.setSeverity(OnmsSeverity.NORMAL);
-        nodeStatusCalculatorConfig.setCalculationStrategy(strategy);
-        return nodeStatusCalculatorConfig;
-    }
+    private NodeStatusCalculatorConfig buildFrom(NodeQuery query) {
+        final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
+        config.setCalculationStrategy(query.getStatusCalculationStrategy());
 
-    private Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculationStrategy strategy) {
-        final NodeStatusCalculatorConfig config = createConfig(new ArrayList<>(), strategy);
-        final Map<OnmsSeverity, Long> statusOverview = statusCalculatorManager.calculateStatusOverview(config);
-        return statusOverview;
-    }
-
-    private Status calculateStatus(Collection<Integer> nodeIds, NodeStatusCalculationStrategy strategy) {
-        final NodeStatusCalculatorConfig nodeStatusCalculatorConfig = createConfig(nodeIds, strategy);
-        final Status status = statusCalculatorManager.calculateStatus(nodeStatusCalculatorConfig);
-        return status;
+        if (query.getSeverityFilter() != null && query.getSeverityFilter().getSeverities() != null) {
+            config.setSeverities(query.getSeverityFilter().getSeverities());
+        }
+        if (query.getParameters().getOffset() != null) {
+            config.setOffset(query.getParameters().getOffset());
+        }
+        if (query.getParameters().getLimit() != null) {
+            config.setLimit(query.getParameters().getLimit());
+        }
+        if (query.getParameters().getOrder() != null) {
+            config.setOrder(query.getParameters().getOrder());
+        }
+        return config;
     }
 }

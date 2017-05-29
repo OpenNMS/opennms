@@ -28,25 +28,23 @@
 
 package org.opennms.features.status.api.node.strategy;
 
+import com.google.common.collect.Lists;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.utils.QueryParameters;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.opennms.netmgt.model.OnmsSeverity;
+import java.util.List;
 
 public class NodeStatusCalculatorConfig {
     private boolean includeAcknowledgedAlarms;
     private String location;
     private Collection<Integer> nodeIds = new ArrayList<>();
-    private OnmsSeverity severity = OnmsSeverity.NORMAL;
     private NodeStatusCalculationStrategy calculationStrategy;
-
-    public OnmsSeverity getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(OnmsSeverity severity) {
-        this.severity = severity;
-    }
+    private List<OnmsSeverity> severities = Lists.newArrayList(OnmsSeverity.NORMAL);
+    private Integer limit;
+    private QueryParameters.Order order;
+    private Integer offset;
 
     public boolean isIncludeAcknowledgedAlarms() {
         return includeAcknowledgedAlarms;
@@ -78,5 +76,51 @@ public class NodeStatusCalculatorConfig {
 
     public NodeStatusCalculationStrategy getCalculationStrategy() {
         return calculationStrategy;
+    }
+
+    public void setSeverities(List<OnmsSeverity> severities) {
+        this.severities = severities;
+    }
+
+    public List<OnmsSeverity> getSeverities() {
+        return severities;
+    }
+
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setOrder(QueryParameters.Order order) {
+        this.order = order;
+    }
+
+    public QueryParameters.Order getOrder() {
+        return order;
+    }
+
+    public Integer getOffset() {
+        return offset;
+    }
+
+    public void prepareForCounting() {
+        this.limit = null;
+        this.order = null;
+        this.offset = null;
+    }
+
+    public void setSeverity(OnmsSeverity severity) {
+        if (severity == null) {
+            severities.clear();
+        } else {
+            setSeverities(Lists.newArrayList(severity));
+        }
     }
 }

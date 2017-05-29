@@ -28,15 +28,19 @@
 
 package org.opennms.features.status.api.node.strategy;
 
-import com.google.common.collect.Lists;
-import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.utils.QueryParameters;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 @Service
 public class OutageNodeStatusCalculator implements NodeStatusCalculator {
@@ -46,34 +50,35 @@ public class OutageNodeStatusCalculator implements NodeStatusCalculator {
 
     @Override
     public Status calculateStatus(NodeStatusCalculatorConfig query) {
-        if (query.getNodeIds().isEmpty()) {
-            return new Status();
-        }
-        final List<String> parameterNames = Lists.newArrayList("nodeIds", "severity");
-        final List<Object> parameterValues = Lists.newArrayList(query.getNodeIds(), Utils.getSeverity(query).getId());
+        final List<String> parameterNames = Lists.newArrayList();
+        final List<Object> parameterValues = Lists.newArrayList();
 
+        // Build Query
         final StringBuilder hql = new StringBuilder();
-        hql.append("SELECT node.id, max(event.eventSeverity) ");
+        hql.append("SELECT node.id, max(case when event.eventSeverity is null then 3 else event.eventSeverity end) as severity ");
         hql.append("FROM OnmsOutage as outage ");
-        hql.append("LEFT JOIN outage.monitoredService as ifservice ");
-        hql.append("LEFT JOIN ifservice.ipInterface as ipinterface ");
-        hql.append("LEFT JOIN ipinterface.node as node ");
+        hql.append("RIGHT JOIN outage.monitoredService as service ");
+        hql.append("RIGHT JOIN service.ipInterface as iface ");
+        hql.append("RIGHT JOIN iface.node as node ");
         hql.append("LEFT JOIN outage.serviceLostEvent as event ");
-        hql.append("WHERE node.id in (:nodeIds) ");
-        hql.append("AND outage.serviceRegainedEvent is null ");
-        hql.append("AND event.eventSeverity >= :severity ");
 
-        if (query.getLocation() != null) {
-            hql.append("AND node.location.locationName = :locationName ");
-            parameterNames.add("locationName");
-            parameterValues.add(query.getLocation());
+        applyRestrictions(hql, query, parameterNames, parameterValues);
+
+        hql.append("GROUP BY node.id ");
+
+        // Apply order
+        if (query.getOrder() != null && !Strings.isNullOrEmpty(query.getOrder().getColumn())) {
+            final QueryParameters.Order order = query.getOrder();
+            hql.append(String.format("ORDER BY %s %s ",  order.getColumn(), order.isDesc() ? "desc" : "asc"));
         }
-        hql.append("GROUP BY node.id");
 
+        // Execute query
         final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
                 hql.toString(),
                 parameterNames.toArray(new String[parameterNames.size()]),
-                parameterValues.toArray());
+                parameterValues.toArray(),
+                query.getOffset(),
+                query.getLimit());
         final Status status = new Status();
         for (Object[] eachRow : rows) {
             status.add((int) eachRow[0], OnmsSeverity.get((int) eachRow[1]), 0, 0);
@@ -82,39 +87,83 @@ public class OutageNodeStatusCalculator implements NodeStatusCalculator {
     }
 
     @Override
+    public int countStatus(NodeStatusCalculatorConfig query) {
+        final List<String> parameterNames = Lists.newArrayList();
+        final List<Object> parameterValues = Lists.newArrayList();
+
+        final StringBuilder hql = new StringBuilder();
+        hql.append("SELECT count(distinct node) ");
+        hql.append("FROM OnmsOutage as outage ");
+        hql.append("RIGHT JOIN outage.monitoredService as service ");
+        hql.append("RIGHT JOIN service.ipInterface as iface ");
+        hql.append("RIGHT JOIN iface.node as node ");
+        hql.append("LEFT JOIN outage.serviceLostEvent as event ");
+
+        applyRestrictions(hql, query, parameterNames, parameterValues);
+
+        final List<Object> rows = genericPersistenceAccessor.findUsingNamedParameters(
+                hql.toString(),
+                parameterNames.toArray(new String[parameterNames.size()]),
+                parameterValues.toArray());
+        if (!rows.isEmpty()) {
+            if (rows.get(0) != null && rows.get(0) != null) {
+                return ((Long) rows.get(0)).intValue();
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
         final List<String> parameterNames = Lists.newArrayList();
         final List<Object> parameterValues = Lists.newArrayList();
 
         final StringBuilder hql = new StringBuilder();
-        hql.append("SELECT count(outage), max(outage.serviceLostEvent.eventSeverity) ");
+        hql.append("SELECT count(outage), max(outage.serviceLostEvent.eventSeverity) as severity ");
         hql.append("FROM OnmsOutage as outage ");
-        hql.append("WHERE outage.serviceRegainedEvent is null ");
-        if (!query.getNodeIds().isEmpty()) {
-            hql.append("AND outage.monitoredService.ipInterface.node.id in (:nodeIds) ");
-            parameterNames.add("nodeIds");
-            parameterValues.add(query.getNodeIds());
-        }
-        if (query.getLocation() != null) {
-            hql.append("AND outage.monitoredService.ipInterface.node.location.locationName = :locationName ");
-            parameterNames.add("locationName");
-            parameterValues.add(query.getLocation());
-        }
-        if (query.getSeverity() != null) {
-            hql.append("AND outage.serviceLostEvent.eventSeverity >= :severity ");
-            parameterNames.add("severity");
-            parameterValues.add(query.getSeverity().getId());
-        }
-        hql.append("GROUP BY outage.serviceLostEvent.eventSeverity");
+        hql.append("JOIN outage.monitoredService.ipInterface.node as node ");
+        hql.append("JOIN outage.serviceLostEvent as event ");
+
+        applyRestrictions(hql, query, parameterNames, parameterValues);
+
+        hql.append("GROUP BY event.eventSeverity");
 
         final List<Object[]> rows = genericPersistenceAccessor.findUsingNamedParameters(
                 hql.toString(),
                 parameterNames.toArray(new String[parameterNames.size()]),
-                parameterValues.toArray());
+                parameterValues.toArray(),
+                query.getOffset(),
+                query.getLimit());
         final Map<OnmsSeverity, Long> severityStatusMap = new HashMap<>();
         for (Object[] columns : rows) {
             severityStatusMap.put(OnmsSeverity.get((int) columns[1]), (long) columns[0]);
         }
         return severityStatusMap;
+    }
+
+    private static void applyRestrictions(StringBuilder hql, NodeStatusCalculatorConfig query, List<String> parameterNames, List<Object> parameterValues) {
+        hql.append("WHERE outage.serviceRegainedEvent is null ");
+        if (!query.getNodeIds().isEmpty()) {
+            hql.append("AND node.id in (:nodeIds) ");
+            parameterNames.add("nodeIds");
+            parameterValues.add(query.getNodeIds());
+        }
+        if (query.getLocation() != null) {
+            hql.append("AND node.location.locationName = :locationName ");
+            parameterNames.add("locationName");
+            parameterValues.add(query.getLocation());
+        }
+        if (!query.getSeverities().isEmpty()) {
+            hql.append("AND (");
+            hql.append("event.eventSeverity in (:severities) ");
+            parameterNames.add("severities");
+            parameterValues.add(query.getSeverities().stream().map(s -> s.getId()).collect(Collectors.toList()));
+
+            // If normal, we must include null values
+            if (query.getSeverities().contains(OnmsSeverity.NORMAL)) {
+                hql.append(" OR event.eventSeverity is null");
+            }
+            hql.append(") ");
+        }
     }
 }

@@ -37,4 +37,6 @@ public interface NodeStatusCalculator {
     Status calculateStatus(NodeStatusCalculatorConfig query);
 
     Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query);
+
+    int countStatus(NodeStatusCalculatorConfig config);
 }

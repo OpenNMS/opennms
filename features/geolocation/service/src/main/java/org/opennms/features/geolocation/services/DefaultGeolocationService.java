@@ -29,6 +29,7 @@
 package org.opennms.features.geolocation.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -163,7 +164,9 @@ public class DefaultGeolocationService implements GeolocationService {
         nodeStatusCalculatorConfig.setIncludeAcknowledgedAlarms(query.isIncludeAcknowledgedAlarms());
         nodeStatusCalculatorConfig.setLocation(query.getLocation());
         if (query.getSeverity() != null) {
-            nodeStatusCalculatorConfig.setSeverity(OnmsSeverity.get(query.getSeverity().getId()));
+            final OnmsSeverity severity = OnmsSeverity.get(query.getSeverity().getId());
+            final List<OnmsSeverity> severityFilter = Arrays.stream(OnmsSeverity.values()).filter(s -> s.isGreaterThanOrEqual(severity)).collect(Collectors.toList());
+            nodeStatusCalculatorConfig.setSeverities(severityFilter);
         }
         nodeStatusCalculatorConfig.setCalculationStrategy(NodeStatusCalculationStrategy.None);
         if (query.getStatusCalculationStrategy() != null) {

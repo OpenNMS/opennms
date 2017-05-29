@@ -28,38 +28,34 @@
 
 package org.opennms.features.status.api.bsm;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.status.api.AbstractStatusService;
+import org.opennms.features.status.api.Query;
 import org.opennms.features.status.api.StatusEntity;
 import org.opennms.features.status.api.StatusEntityWrapper;
 import org.opennms.features.status.api.StatusSummary;
-import org.opennms.features.status.api.Query;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.utils.CriteriaBuilderUtils;
 import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class BusinessServiceStatusService extends AbstractStatusService<BusinessService, Query> {
+public class BusinessServiceStatusService {
 
     @Autowired
     private BusinessServiceManager businessServiceManager;
 
-    @Override
-    protected CriteriaBuilder getCriteriaBuilder(QueryParameters queryParameters) {
-        return CriteriaBuilderUtils.buildFrom(BusinessService.class, queryParameters);
-    }
+    public int count(Query query) {
+        final BusinessServiceSearchCriteriaBuilder criteria = buildFrom(query);
+        criteria.prepareForCounting();
 
-    @Override
-    protected int countMatching(Criteria criteria) {
-        return businessServiceManager.countMatching(criteria);
+        final List<BusinessService> services = criteria.apply(businessServiceManager, businessServiceManager.getAllBusinessServices());
+        return services.size();
     }
 
     public StatusSummary getSummary() {
@@ -69,13 +65,40 @@ public class BusinessServiceStatusService extends AbstractStatusService<Business
         return new StatusSummary(severityList, totalCount);
     }
 
-    @Override
-    protected List<StatusEntity<BusinessService>> findMatching(Query query, CriteriaBuilder criteriaBuilder) {
-        final List<BusinessService> services = businessServiceManager.findMatching(criteriaBuilder.toCriteria());
+    public List<StatusEntity<BusinessService>> getStatus(Query query) {
+        final BusinessServiceSearchCriteriaBuilder criteria = buildFrom(query);
+        final List<BusinessService> services = criteria.apply(businessServiceManager, businessServiceManager.getAllBusinessServices());
         final List<StatusEntity<BusinessService>> mappedServices = services
                 .stream()
                 .map(eachService -> new StatusEntityWrapper<>(eachService, OnmsSeverity.get(eachService.getOperationalStatus().getLabel())))
                 .collect(Collectors.toList());
         return mappedServices;
+    }
+
+    private BusinessServiceSearchCriteriaBuilder buildFrom(Query query) {
+        final BusinessServiceSearchCriteriaBuilder criteriaBuilder = new BusinessServiceSearchCriteriaBuilder();
+
+        if (query.getSeverityFilter() != null && !query.getSeverityFilter().getSeverities().isEmpty()) {
+            if (query.getSeverityFilter().getSeverities().size() == 1) {
+                final List<Status> statusList = query.getSeverityFilter().getSeverities().stream().map(eachSeverity -> Status.of(eachSeverity.name())).collect(Collectors.toList());
+                criteriaBuilder.inSeverity(statusList);
+            }
+        } else {
+            criteriaBuilder.greaterOrEqualSeverity(Status.NORMAL);
+        }
+
+        if (query.getParameters().getOrder() != null) {
+            final QueryParameters.Order order = query.getParameters().getOrder();
+            criteriaBuilder.order(order.getColumn(), !order.isDesc());
+        }
+
+        if (query.getParameters().getLimit() != null) {
+            criteriaBuilder.limit(query.getParameters().getLimit());
+        }
+        if (query.getParameters().getOffset() != null) {
+            criteriaBuilder.offset(query.getParameters().getOffset());
+        }
+
+        return criteriaBuilder;
     }
 }

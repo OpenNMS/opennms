@@ -28,6 +28,9 @@
 
 package org.opennms.features.status.api.node;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.features.status.api.node.strategy.AlarmNodeStatusCalculator;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculator;
@@ -38,9 +41,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class NodeStatusCalculatorManager implements NodeStatusCalculationProvider {
 
@@ -55,6 +55,11 @@ public class NodeStatusCalculatorManager implements NodeStatusCalculationProvide
         @Override
         public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
             return new HashMap<>();
+        }
+
+        @Override
+        public int countStatus(NodeStatusCalculatorConfig config) {
+            return 0;
         }
     };
 
@@ -73,6 +78,10 @@ public class NodeStatusCalculatorManager implements NodeStatusCalculationProvide
     public Map<OnmsSeverity, Long> calculateStatusOverview(NodeStatusCalculatorConfig query) {
         final Map<OnmsSeverity, Long> statusOverview = getStatusCalculator(query.getCalculationStrategy()).calculateStatusOverview(query);
         return statusOverview;
+    }
+
+    public int countStatus(NodeStatusCalculatorConfig config) {
+        return getStatusCalculator(config.getCalculationStrategy()).countStatus(config);
     }
 
     protected NodeStatusCalculator getStatusCalculator(NodeStatusCalculationStrategy strategy) {

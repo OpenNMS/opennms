@@ -60,7 +60,7 @@ public abstract class AbstractStatusService<T, Q extends Query> {
         collect = apply(collect, filter);
 
         // sort manually if required
-        if (queryParameters.getOrder().getColumn().equals("severity")) {
+        if (queryParameters.getOrder() != null && queryParameters.getOrder().getColumn().equals("severity")) {
             Comparator<StatusEntity<T>> comparator = Comparator.comparing(StatusEntity::getStatus);
             if (queryParameters.getOrder().isDesc()) {
                 comparator = comparator.reversed();
@@ -114,7 +114,7 @@ public abstract class AbstractStatusService<T, Q extends Query> {
     // A severity related query is a query having a order column set to severity or a severity filter of any kind
     private boolean isSeverityRelatedQuery(Q query) {
         boolean severityRelatedQuery = query.getSeverityFilter() != null && !query.getSeverityFilter().getSeverities().isEmpty()
-                || (query.getParameters().getOrder().getColumn().equals("severity"));
+                || (query.getParameters().getOrder() != null && query.getParameters().getOrder().getColumn().equals("severity"));
         return severityRelatedQuery;
     }
 }
