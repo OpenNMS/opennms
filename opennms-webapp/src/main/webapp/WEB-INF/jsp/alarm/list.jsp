@@ -44,6 +44,7 @@
 <%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
 <%@page import="org.opennms.web.filter.Filter"%>
 <%@page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+<%@page import="org.opennms.web.filter.NormalizedAcknowledgeType" %>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 <%@page import="org.opennms.web.tags.filters.AlarmFilterCallback" %>
 <%@page import="org.opennms.web.tags.filters.FilterCallback" %>
@@ -75,13 +76,19 @@
     OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
     long alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Long)req.getAttribute("alarmCount");
     NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+    
+    // show unacknowledged alarms as flashing alarms
+    String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
+	boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
+	if(unAckFlash) parms.setAckType(NormalizedAcknowledgeType.BOTH);
+    
     FilterCallback callback = (AlarmFilterCallback) req.getAttribute("callback");
 
     if( alarms == null || parms == null ) {
         throw new ServletException( "Missing either the alarms or parms request attribute." );
     }
-
-    // Make 'action' the opposite of the current acknowledgement state
+  
+    //Make 'action' the opposite of the current acknowledgement state
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     if (parms.getAckType() != null && parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType())) {
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
@@ -147,6 +154,31 @@
   <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.htm' title='Alarms System Page'>Alarms</a>" />
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
+
+<% if(unAckFlash){ //style to make unacknowledged alarms flash %>
+<style media="screen" type="text/css">
+.blink_text {
+    animation:1s blinker linear infinite;
+    -webkit-animation:1s blinker linear infinite;
+    -moz-animation:1s blinker linear infinite;
+    }
+    @-moz-keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+    @-webkit-keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+    @keyframes blinker {  
+     0% { opacity: 1.0; }
+     50% { opacity: 0.0; }
+     100% { opacity: 1.0; }
+     }
+</style>
+<% } %>
 
   <script type="text/javascript">
     function checkAllCheckboxes() {
@@ -284,11 +316,13 @@
               <input type="hidden" name="actionCode" value="<%=action%>" />
               <%=Util.makeHiddenTags(req)%>
             </form>
+         <% if (!unAckFlash) { // global ack or unack only displayed if flashing disabled %>
             <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
               <a class="btn btn-default" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
               <a class="btn btn-default" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
+         <% } %>
         <% } %>
       <% } %>
 
@@ -418,7 +452,7 @@
       <table class="table table-condensed severity">
 				<thead>
 					<tr>
-                                             <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+                        <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<% if ( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
 						<th width="1%">Ack</th>
 						<% } else if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
@@ -429,8 +463,6 @@
                     <% } else { %>
                         <th width="1%">&nbsp;</th>
                     <% } %>
-
-
 
 			<th width="2%">
               <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
@@ -477,9 +509,30 @@
 
       <% for( int i=0; i < alarms.length; i++ ) { 
       	pageContext.setAttribute("alarm", alarms[i]);
-      %> 
+      %>
 
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
+      <% if(unAckFlash){ // flash unacknowledged alarms %>
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> <%=alarms[i].isAcknowledged() ? "" : "blink_text"%>">
+        
+          <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+                <nobr>
+                  <input  type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
+                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+                  &#10004;
+                  <% } %>
+                </nobr>
+          <% } else { %>
+            <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">
+                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+                  &#10004;
+                  <% } %>
+          <% } %>
+          </td>
+        
+      <% } else { // normal behaviour %>
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> ">
+
           <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
               <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
                 <nobr>
@@ -494,6 +547,7 @@
             <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">&nbsp;
           <% } %>
           </td>
+      <% } %>
 
           <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
 
@@ -665,11 +719,10 @@
 			<% }%>
           </c:if>
 
-          <%-- ****** Start of change for sound (td was here) ****** --%>
+          <%-- if sound enabled, write java script to play sound --%>
           <%
           if (soundOn) out.write(this.alarmSound(alarms[i], session, soundOnEvent));
           %>
-          <%-- ****** End of change for sound ****** --%>
 
           </td>
           <c:if test="${param.display != 'long'}">
@@ -690,13 +743,18 @@
           <input class="btn btn-default" TYPE="reset" />
           <input class="btn btn-default" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select class="form-control" name="alarmAction">
-        <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-          <option value="acknowledge">Acknowledge Alarms</option>
-        <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-          <option value="unacknowledge">Unacknowledge Alarms</option>
-        <% } %>
-          <option value="clear">Clear Alarms</option>
-          <option value="escalate">Escalate Alarms</option>
+          <% if(unAckFlash){ // allow alarms to be acked and unacked %>
+              <option value="acknowledge">Acknowledge Alarms</option>
+              <option value="unacknowledge">Unacknowledge Alarms</option>
+          <% } else { // normal behaviour %>
+            <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              <option value="acknowledge">Acknowledge Alarms</option>
+            <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              <option value="unacknowledge">Unacknowledge Alarms</option>
+            <% } %>
+         <% } %>
+              <option value="clear">Clear Alarms</option>
+              <option value="escalate">Escalate Alarms</option>
           </select>
           <input class="btn btn-default" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>

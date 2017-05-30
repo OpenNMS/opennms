@@ -207,6 +207,12 @@ public class AlarmFilterController extends MultiActionController implements Init
         // handle the acknowledgment type parameter
         String ackTypeString = request.getParameter("acktype");
         AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
+        
+        // set default ack type to both if alarm flashing enabled in opennms.properties
+        String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
+    	boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
+        if (unAckFlash) ackType = AcknowledgeType.BOTH;
+        
         if (ackTypeString != null) {
             AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
             if (temp != null) {
