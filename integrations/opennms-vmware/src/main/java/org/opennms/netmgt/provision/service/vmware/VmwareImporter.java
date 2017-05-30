@@ -477,7 +477,11 @@ public class VmwareImporter {
                 }
 
                 try {
-                    vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), StandardCharsets.UTF_8.name()));
+                    if (m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()) != null) {
+                        vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), StandardCharsets.UTF_8.name()));
+                    } else {
+                        logger.warn("Problem building topology information for virtual machine '{}' with power state '{}' running on host system '{}'", virtualMachine.getMOR().getVal(), powerState, virtualMachine.getRuntime().getHost().getVal());
+                    }
                 } catch (UnsupportedEncodingException e) {
                     logger.warn("Unsupported encoding '{}'", e.getMessage());
                 }
