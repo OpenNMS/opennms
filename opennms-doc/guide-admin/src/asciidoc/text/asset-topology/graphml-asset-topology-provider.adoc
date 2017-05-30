@@ -113,7 +113,7 @@ Thus we can select based on multiple separate node categories. The following con
 ----
 filter=node-categories=routers,servers;asset-building=!23
 ----
-The filters treat all asset table entries as comma seperated variables (csv). This also means that, 
+The filters treat all asset table entries as comma separated variables (csv). This also means that, 
 for instance asset-displaycategory could also contain several values separated by commas. e.g. customer1,customer2,customer3 etc.
 
 NOTE: You should make sure asset addresses and other free format asset text fields do not contain commas if you want an exact match on the whole field
