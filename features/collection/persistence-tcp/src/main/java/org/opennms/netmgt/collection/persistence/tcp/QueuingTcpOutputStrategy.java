@@ -35,6 +35,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.MetricRegistry;
+
 import org.opennms.netmgt.rrd.tcp.RrdOutputSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +57,8 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpOutputStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue;
+    private MetricRegistry m_registry;
     private int m_skippedReadings = 0;
-    private int m_totalOffers = 0;
-    private int m_goodOffers = 0;
-    private int m_badOffers = 0;
 
     private static class PerformanceDataReading {
         private String m_filename;
@@ -93,13 +93,12 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     private static class ConsumerThread extends Thread {
         private final BlockingQueue<PerformanceDataReading> m_myQueue;
         private final SimpleTcpOutputStrategy m_strategy;
-        private long m_queueChecks = 0;
-        private long m_queueDrains = 0;
-        private long m_sentReadings = 0;
+        private final MetricRegistry m_registry;
 
-        public ConsumerThread(final SimpleTcpOutputStrategy strategy, final BlockingQueue<PerformanceDataReading> queue) {
+        public ConsumerThread(final SimpleTcpOutputStrategy strategy, final BlockingQueue<PerformanceDataReading> queue, final MetricRegistry registry) {
             m_strategy = strategy;
             m_myQueue = queue;
+            m_registry = registry;
             this.setName(this.getClass().getSimpleName());
         }
 
@@ -133,36 +132,20 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
         }
 
         public void countDrainStats(boolean drain, long readings) {
-            m_queueChecks++;
+            m_registry.counter("queueChecks").inc();
             if (drain) {
-                m_queueDrains++;
-                m_sentReadings += readings;
+                m_registry.counter("queueDrains").inc();
+                m_registry.counter("sentReadings").inc(readings);
             }
-        }
-        public void clearDrainStats() {
-            m_queueChecks = 0;
-            m_queueDrains = 0;
-            m_sentReadings = 0;
-        }
-        public long getQueueChecks() {
-            return m_queueChecks;
-        }
-        public long getQueueDrains() {
-            return m_queueDrains;
-        }
-        public long getSentReadings() {
-            return m_sentReadings;
         }
     }
 
     private static class LogThread extends Thread {
         private final BlockingQueue<PerformanceDataReading> m_myQueue;
-        private final QueuingTcpOutputStrategy m_strategy;
-        private final ConsumerThread m_consumer;
-        public LogThread(final QueuingTcpOutputStrategy strategy, final ConsumerThread consumer, final BlockingQueue<PerformanceDataReading> queue) {
-            m_strategy = strategy;
+        private final MetricRegistry m_registry;
+        public LogThread(final BlockingQueue<PerformanceDataReading> queue, final MetricRegistry registry) {
             m_myQueue = queue;
-            m_consumer = consumer;
+            m_registry = registry;
             this.setName(this.getClass().getSimpleName());
         }
 
@@ -170,17 +153,22 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
         public void run() {
             try {
                 while (true) {
-                    long totalOffers = m_strategy.getTotalOffers();
-                    long badOffers = m_strategy.getBadOffers();
-                    long goodOffers = m_strategy.getGoodOffers();
-                    long queueChecks = m_consumer.getQueueChecks();
-                    long queueDrains = m_consumer.getQueueDrains();
+                    long totalOffers = m_registry.counter("totalOffers").getCount();
+                    long goodOffers = m_registry.counter("goodOffers").getCount();
+                    long badOffers = m_registry.counter("badOffers").getCount();
+                    long queueChecks = m_registry.counter("queueChecks").getCount();
+                    long queueDrains = m_registry.counter("queueDrains").getCount();
+                    long sentReadings = m_registry.counter("sentReadings").getCount();
                     long queueSize = m_myQueue.size();
                     long queueRemaining = m_myQueue.remainingCapacity();
-                    long sentReadings = m_consumer.getSentReadings();
                     LOG.info("Queue offers: " + totalOffers + " total, " + goodOffers + " good, " + badOffers + " bad; queue drains: " + queueChecks + " checks, " + queueDrains + " drains, " + sentReadings + " readings; queue state: " + queueSize + " elements, " + queueRemaining + " remaining capacity");
-                    m_strategy.clearOfferStats();
-                    m_consumer.clearDrainStats();
+                    // We cannot clear counters, so just remove them
+                    m_registry.remove("totalOffers");
+                    m_registry.remove("goodOffers");
+                    m_registry.remove("badOffers");
+                    m_registry.remove("queueChecks");
+                    m_registry.remove("queueDrains");
+                    m_registry.remove("sentReadings");
                     Thread.sleep(LOGGING_INTERVAL);
                 }
             } catch (InterruptedException e) {
@@ -198,10 +186,11 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
      */
     public QueuingTcpOutputStrategy(SimpleTcpOutputStrategy delegate, int queueSize) {
         m_queue = new LinkedBlockingQueue<PerformanceDataReading>(queueSize);
-        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue);
+        m_registry = new MetricRegistry();
+        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue, m_registry);
         consumerThread.start();
         if (LOGGING) {
-            LogThread logThread = new LogThread(this, consumerThread, m_queue);
+            LogThread logThread = new LogThread(m_queue, m_registry);
             logThread.start();
         }
     }
@@ -225,25 +214,11 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     }
 
     public void countOfferStats(boolean goodOffer) {
-        m_totalOffers++;
+        m_registry.counter("totalOffers").inc();
         if (goodOffer) {
-            m_goodOffers++;
+            m_registry.counter("goodOffers").inc();
         } else {
-            m_badOffers++;
+            m_registry.counter("badOffers").inc();
         }
-    }
-    public void clearOfferStats() {
-        m_totalOffers = 0;
-        m_goodOffers = 0;
-        m_badOffers = 0;
-    }
-    public long getTotalOffers() {
-        return m_totalOffers;
-    }
-    public long getGoodOffers() {
-        return m_goodOffers;
-    }
-    public long getBadOffers() {
-        return m_badOffers;
     }
 }
