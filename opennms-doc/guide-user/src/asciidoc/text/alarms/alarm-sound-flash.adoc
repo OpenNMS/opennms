@@ -66,8 +66,8 @@ opennms.alarmlist.sound.status=off
 
 # By default the alarm list page displays acknowledged and unacknowledged alarms in seperate search tabs
 # Some users have asked to be able to see both on the same page. This option allows the alarm list page 
-# to display acknowleged and unacknowledged alarms on the same list but unacknowledged alarms
-# flash until they are acknowleged.
+# to display acknowledged and unacknowledged alarms on the same list but unacknowledged alarms
+# flash until they are acknowledged.
 #
 opennms.alarmlist.unackflash=true
 ----
