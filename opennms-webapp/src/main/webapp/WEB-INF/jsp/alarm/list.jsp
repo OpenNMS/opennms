@@ -888,14 +888,11 @@
         
         // added this section to fire when a new alarm arrives
         // This maintains the highest alarmId or eventId received in the session variable "opennms.alarmlist.HIGHEST"
-        // and the current (row) alarmId pr eventId in the session variable "opennms.alarmlist.LATEST".
-        // If a new alarm is recieved the variable is updated
+        // If a new alarm is received the variable is updated
         String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
 
         Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
-        // Integer latest = (Integer)session.getAttribute("opennms.alarmlist.LATEST");
         Integer latest = 0;
-        
     	Integer lastId = 0;
     	
         // To have every new unique alarm trigger, use getId.  To have every new
