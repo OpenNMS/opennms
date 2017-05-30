@@ -66,8 +66,8 @@ public class GenericTypeResource implements Resource {
     }
 
     @Override
-    public String getLabel() {
-        return m_instance;
+    public String getLabel(CollectionResource resource) {
+        return m_storageStrategy.getResourceNameFromIndex(resource);
     }
 
     @Override
