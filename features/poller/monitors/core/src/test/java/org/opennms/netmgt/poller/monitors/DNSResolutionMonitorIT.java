@@ -57,6 +57,7 @@ import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPES;
 import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RECORD_TYPE_CNAME;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -95,14 +96,13 @@ public class DNSResolutionMonitorIT {
 
     @Before
     public void setUp() {
-        System.out.println("------------ begin test " + m_test.getMethodName() + " ------------");
+        MockUtil.println("------------ begin test " + m_test.getMethodName() + " ------------");
         MockLogAppender.setupLogging(true);
-        System.setProperty("mock.logLevel", "DEBUG");
     }
 
     @After
     public void tearDown() throws Exception {
-        System.out.println("------------ end test " + m_test.getMethodName() + " ------------");
+        MockUtil.println("------------ end test " + m_test.getMethodName() + " ------------");
     }
 
     @Test
