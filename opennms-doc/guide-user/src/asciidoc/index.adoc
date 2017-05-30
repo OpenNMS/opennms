@@ -36,3 +36,4 @@ include::text/bsm/change-icons.adoc[]
 [[gu-alarms]]
 == Alarms
 include::text/alarms/alarm-notes.adoc[]
+include::text/alarms/alarm-sound-flash.adoc[]
