@@ -28,8 +28,27 @@
 
 package org.opennms.netmgt.provision.service.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
@@ -39,23 +58,31 @@ import org.opennms.core.utils.url.GenericURLConnection;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.requisition.*;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.rmi.RemoteException;
-import java.util.*;
+import com.vmware.vim25.CustomFieldDef;
+import com.vmware.vim25.CustomFieldStringValue;
+import com.vmware.vim25.CustomFieldValue;
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
+import com.vmware.vim25.VirtualMachinePowerState;
+import com.vmware.vim25.VirtualMachineRuntimeInfo;
+import com.vmware.vim25.mo.Datastore;
+import com.vmware.vim25.mo.DistributedVirtualPortgroup;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.Network;
+import com.vmware.vim25.mo.VirtualMachine;
 
 /**
  * The Class VmwareRequisitionUrlConnection
@@ -518,7 +545,11 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 }
 
                 try {
-                    vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), StandardCharsets.UTF_8.name()));
+                    if (m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()) != null) {
+                        vmwareTopologyInfo.append(virtualMachine.getRuntime().getHost().getVal() + "/" + URLEncoder.encode(m_hostSystemMap.get(virtualMachine.getRuntime().getHost().getVal()), StandardCharsets.UTF_8.name()));
+                    } else {
+                        logger.warn("Problem building topology information for virtual machine '{}' with power state '{}' running on host system '{}'", virtualMachine.getMOR().getVal(), powerState, virtualMachine.getRuntime().getHost().getVal());
+                    }
                 } catch (UnsupportedEncodingException e) {
                     logger.warn("Unsupported encoding '{}'", e.getMessage());
                 }
