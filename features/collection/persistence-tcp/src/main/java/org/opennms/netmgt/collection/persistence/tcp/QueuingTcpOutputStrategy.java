@@ -35,6 +35,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.MetricRegistry;
+
 import org.opennms.netmgt.rrd.tcp.RrdOutputSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +52,12 @@ import org.slf4j.LoggerFactory;
 public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     private static final long SLEEP_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpSleepTime", 1000);
     private static final long OFFER_WAIT_TIME = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpOfferWaitTime", 500);
+    private static final boolean LOGGING = Boolean.getBoolean("org.opennms.netmgt.persistence.tcp.queuingTcpLogging");
+    private static final long LOGGING_INTERVAL = Long.getLong("org.opennms.netmgt.persistence.tcp.queuingTcpLoggingInterval", 300000);
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpOutputStrategy.class);
 
     private final BlockingQueue<PerformanceDataReading> m_queue;
+    private MetricRegistry m_registry;
     private int m_skippedReadings = 0;
 
     private static class PerformanceDataReading {
@@ -88,9 +93,12 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
     private static class ConsumerThread extends Thread {
         private final BlockingQueue<PerformanceDataReading> m_myQueue;
         private final SimpleTcpOutputStrategy m_strategy;
-        public ConsumerThread(final SimpleTcpOutputStrategy strategy, final BlockingQueue<PerformanceDataReading> queue) {
+        private final MetricRegistry m_registry;
+
+        public ConsumerThread(final SimpleTcpOutputStrategy strategy, final BlockingQueue<PerformanceDataReading> queue, final MetricRegistry registry) {
             m_strategy = strategy;
             m_myQueue = queue;
+            m_registry = registry;
             this.setName(this.getClass().getSimpleName());
         }
 
@@ -98,8 +106,12 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
         public void run() {
             try {
                 while (true) {
+                    boolean drain = false;
+                    long sentReadings = 0;
                     Collection<PerformanceDataReading> sendMe = new ArrayList<PerformanceDataReading>();
                     if (m_myQueue.drainTo(sendMe) > 0) {
+                        drain = true;
+                        sentReadings = sendMe.size();
                         RrdOutputSocket socket = new RrdOutputSocket(m_strategy.getHost(), m_strategy.getPort());
                         for (PerformanceDataReading reading : sendMe) {
                             socket.addData(reading.getFilename(), reading.getOwner(), reading.getTimestamp(), reading.getDblValues(), reading.getStrValues());
@@ -108,6 +120,56 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
                     } else {
                         Thread.sleep(SLEEP_TIME);
                     }
+                    if (LOGGING) {
+                        countDrainStats(drain, sentReadings);
+                    }
+                }
+            } catch (InterruptedException e) {
+                LOG.warn("InterruptedException caught in QueuingTcpOutputStrategy$ConsumerThread, closing thread");
+            } catch (Throwable e) {
+                LOG.error("Unexpected exception caught in QueuingTcpOutputStrategy$ConsumerThread, closing thread", e);
+            }
+        }
+
+        public void countDrainStats(boolean drain, long readings) {
+            m_registry.counter("queueChecks").inc();
+            if (drain) {
+                m_registry.counter("queueDrains").inc();
+                m_registry.counter("sentReadings").inc(readings);
+            }
+        }
+    }
+
+    private static class LogThread extends Thread {
+        private final BlockingQueue<PerformanceDataReading> m_myQueue;
+        private final MetricRegistry m_registry;
+        public LogThread(final BlockingQueue<PerformanceDataReading> queue, final MetricRegistry registry) {
+            m_myQueue = queue;
+            m_registry = registry;
+            this.setName(this.getClass().getSimpleName());
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    long totalOffers = m_registry.counter("totalOffers").getCount();
+                    long goodOffers = m_registry.counter("goodOffers").getCount();
+                    long badOffers = m_registry.counter("badOffers").getCount();
+                    long queueChecks = m_registry.counter("queueChecks").getCount();
+                    long queueDrains = m_registry.counter("queueDrains").getCount();
+                    long sentReadings = m_registry.counter("sentReadings").getCount();
+                    long queueSize = m_myQueue.size();
+                    long queueRemaining = m_myQueue.remainingCapacity();
+                    LOG.info("Queue offers: " + totalOffers + " total, " + goodOffers + " good, " + badOffers + " bad; queue drains: " + queueChecks + " checks, " + queueDrains + " drains, " + sentReadings + " readings; queue state: " + queueSize + " elements, " + queueRemaining + " remaining capacity");
+                    // We cannot clear counters, so just remove them
+                    m_registry.remove("totalOffers");
+                    m_registry.remove("goodOffers");
+                    m_registry.remove("badOffers");
+                    m_registry.remove("queueChecks");
+                    m_registry.remove("queueDrains");
+                    m_registry.remove("sentReadings");
+                    Thread.sleep(LOGGING_INTERVAL);
                 }
             } catch (InterruptedException e) {
                 LOG.warn("InterruptedException caught in QueuingTcpOutputStrategy$ConsumerThread, closing thread");
@@ -124,20 +186,39 @@ public class QueuingTcpOutputStrategy implements TcpOutputStrategy {
      */
     public QueuingTcpOutputStrategy(SimpleTcpOutputStrategy delegate, int queueSize) {
         m_queue = new LinkedBlockingQueue<PerformanceDataReading>(queueSize);
-        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue);
+        m_registry = new MetricRegistry();
+        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue, m_registry);
         consumerThread.start();
+        if (LOGGING) {
+            LogThread logThread = new LogThread(m_queue, m_registry);
+            logThread.start();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public void updateData(String path, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) throws Exception {
+        boolean offerGood = false;
         if (m_queue.offer(new PerformanceDataReading(path, owner, timestamp, dblValues, strValues), OFFER_WAIT_TIME, TimeUnit.MILLISECONDS)) {
+            offerGood = true;
             if (m_skippedReadings > 0) {
                 LOG.warn("Skipped {} performance data message(s) because of queue overflow", m_skippedReadings);
                 m_skippedReadings = 0;
             }
         } else {
             m_skippedReadings++;
+        }
+        if (LOGGING) {
+            countOfferStats(offerGood);
+        }
+    }
+
+    public void countOfferStats(boolean goodOffer) {
+        m_registry.counter("totalOffers").inc();
+        if (goodOffer) {
+            m_registry.counter("goodOffers").inc();
+        } else {
+            m_registry.counter("badOffers").inc();
         }
     }
 }
