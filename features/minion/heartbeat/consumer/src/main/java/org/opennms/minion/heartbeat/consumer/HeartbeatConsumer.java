@@ -115,7 +115,24 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                        prevLocation,
                        nextLocation);
 
-        minion.setLastUpdated(new Date());
+        if (minionHandle.getTimestamp() == null) {
+            // The heartbeat does not contain a timestamp - use the current time
+            minion.setLastUpdated(new Date());
+            LOG.info("Received heartbeat without a timestamp: {}", minionHandle);
+        } else if (minion.getLastUpdated() == null) {
+            // The heartbeat does contain a timestamp, and we don't have
+            // one set yet, so use whatever we've been given
+            minion.setLastUpdated(minionHandle.getTimestamp());
+        } else if (minionHandle.getTimestamp().after(minion.getLastUpdated())) {
+            // The timestamp in the heartbeat is more recent than the one we
+            // have stored, so update it
+            minion.setLastUpdated(minionHandle.getTimestamp());
+        } else {
+            // The timestamp in the heartbeat is earlier than the
+            // timestamp we have stored, so ignore it
+            LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
+        }
+
         minionDao.saveOrUpdate(minion);
 
         if (prevLocation == null) {
