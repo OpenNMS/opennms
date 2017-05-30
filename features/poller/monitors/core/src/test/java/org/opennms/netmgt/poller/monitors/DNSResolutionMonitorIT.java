@@ -60,7 +60,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * DNSResolutionMonitorTest
+ * DNSResolutionMonitorIT
  *
  * @author brozow
  */
@@ -88,7 +88,7 @@ import org.springframework.test.context.ContextConfiguration;
         @DNSEntry(hostname = "web02", data = "fded:beef:cafe:1::65", type = "AAAA"),})
 })
 @JUnitConfigurationEnvironment
-public class DNSResolutionMonitorTest {
+public class DNSResolutionMonitorIT {
 
     @Rule
     public TestName m_test = new TestName();
