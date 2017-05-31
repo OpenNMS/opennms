@@ -218,6 +218,8 @@ SHARED:        for (SharedSegment segment: segments) {
             }
             domain.loadTopologyEntry(segment);
         }
+        for (BroadcastDomain domain: domains)
+            domain.loadTopologyRoot();
 
         return domains;
     }

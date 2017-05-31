@@ -302,7 +302,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertNotNull(nodeCbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertNull(nodeAbd.getRootBridgeId());
+        assertTrue(nodeAbd.hasRootBridge());
+        assertEquals(nodeAbd.getRootBridgeId().intValue(), nodeB.getId().intValue());
         assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
@@ -399,7 +400,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertNull(nodeAbd.getRootBridgeId());
+        assertTrue(nodeAbd.hasRootBridge());
+        assertEquals(nodeAbd.getRootBridge().getId().intValue(), nodeA.getId().intValue());
         assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
@@ -498,7 +500,8 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBroadcastDomain(nodeC.getId().intValue());
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
-        assertNull(nodeAbd.getRootBridgeId());
+        assertTrue(nodeAbd.hasRootBridge());
+        assertEquals(nodeAbd.getRootBridge().getId().intValue(), nodeA.getId().intValue());
         assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
         assertTrue(nodeAbd.containBridgeId(nodeC.getId()));

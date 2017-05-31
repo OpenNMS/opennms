@@ -183,7 +183,34 @@ E:    	for (BridgeElement element: bridgeelements) {
         segment.setBroadcastDomain(this);
         m_topology.add(segment);
     }
-        
+    
+    public void loadTopologyRoot() {
+        if (m_bridges.size() == 1) {
+            hierarchySetUp(m_bridges.iterator().next());
+            return;
+        }
+
+        Integer designated = null;
+        for (SharedSegment segment: m_topology) {
+            Set<Integer> children = segment.getBridgeIdsOnSegment();
+            if (children.size() == 1)
+                continue;
+            designated = segment.getDesignatedBridge();
+            loadTopologyRoot(designated);
+            return;
+        }
+    }
+    
+    private void loadTopologyRoot(Integer bridgeId) {
+        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+            if (segment.getDesignatedBridge().intValue() != bridgeId.intValue()) {
+                loadTopologyRoot(segment.getDesignatedBridge());
+                return;
+            }
+        }
+        hierarchySetUp(getBridge(bridgeId));
+    }
+
     public boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
