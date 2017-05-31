@@ -64,7 +64,7 @@
             <c:url var="nodeLink" value="element/node.jsp">
               <c:param name="node" value="${summary.nodeId}"/>
             </c:url>
-            <li><a href="${nodeLink}">${summary.nodeLabel}</a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
+            <li><a href="${nodeLink}"><c:out value="${summary.nodeLabel}"/></a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
           </c:forEach>
         </ul>
     
