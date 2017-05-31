@@ -391,7 +391,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.6</version>
+        <version>3.0.2</version>
         <configuration>
           <keystore>${webstart.keystore}</keystore>
           <keypass>${webstart.keypass}</keypass>
@@ -422,7 +422,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.5.5</version>
+        <version>3.0.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -816,7 +816,9 @@
            <goals><goal>single</goal></goals>
            <configuration>
              <finalName>${install.package.name}-${project.version}</finalName>
-             <descriptor>src/assembly/source.xml</descriptor>
+             <descriptors>
+               <descriptor>src/assembly/source.xml</descriptor>
+             </descriptors>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
              <tarLongFileMode>posix</tarLongFileMode>
@@ -899,7 +901,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <goals>
