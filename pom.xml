@@ -178,6 +178,11 @@
         <version>${asciidoctorVersion}</version>
       </plugin>
       <plugin>
+        <groupId>net.nicoulaj.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <version>1.5</version>
+      </plugin>
+      <plugin>
         <groupId>org.apache.servicemix.tooling</groupId>
         <artifactId>depends-maven-plugin</artifactId>
         <version>1.2</version>
