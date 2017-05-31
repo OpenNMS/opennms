@@ -833,7 +833,9 @@ rm -rf %{buildroot}
 %files plugin-ticketer-jira
 %defattr(664 root root 775)
 %{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar.sha1
 %{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar.sha1
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 
