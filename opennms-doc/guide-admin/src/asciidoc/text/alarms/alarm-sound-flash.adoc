@@ -1,17 +1,17 @@
 
 :imagesdir: ../../images
 
-[[gu-alarm-sounds]]
+[[ga-alarm-sounds]]
 === Alarm Sounds
 
 Often users want an audible indication of a change in alarm state. 
 The _{opennms-product-name}_ alarm list page has the optional ability to generate a sound either on each new alarm or (more annoyingly) on each change to an alarm event count on the page.
 
-The figure <<gu-alarm-sounds-ui, Alarm Sounds View>> shows the alarm list page when alarms sounds are enabled.
+The figure <<ga-alarm-sounds-ui, Alarm Sounds View>> shows the alarm list page when alarms sounds are enabled.
 
-[[gu-alarm-sounds-ui]]
+[[ga-alarm-sounds-ui]]
 .Alarm Sounds View
-image:alarms/AlarmSound.jpg[]
+image:alarms/01_alarm-sound.png[]
  
 By default the alarm sound feature is disabled. System Administrators must activate the sound feature and also set the default sound setting for all users.
 However users can modify the default sound setting for the duration of their logged-in session using a drop down menu with the following options:
@@ -26,7 +26,7 @@ By default _{opennms-product-name}_ displays the alarm list page with acknowledg
 In a number of operational environments it is useful to see all of the alarms on the same page with unacknowledged alarms flashing to indicate that they haven't yet been noticed by one of the team.
 This allows everyone to see at a glance the real time status of all alarms and which alarms still need attention.
 
-The figure <<gu-alarm-sounds-ui, Alarm Sounds View>> also shows the alarm list page when flashing unacknowledged alarms are enabled.
+The figure <<ga-alarm-sounds-ui, Alarm Sounds View>> also shows the alarm list page when flashing unacknowledged alarms are enabled.
 Alarms which are unacknowledged flash steadily.
 Alarms which have been acknowledged do not flash and also have a small tick beside the selection check box.
 All alarms can be selected to be escalated, cleared, acknowledged and unacknowledged.
