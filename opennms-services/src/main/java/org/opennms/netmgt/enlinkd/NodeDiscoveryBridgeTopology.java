@@ -605,7 +605,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         	return;        	
         }
 
-        if (m_domain.getLock(this)) {
+        if (!m_domain.getLock(this)) {
             LOG.info("run: node [{}]: broadcast domain locked. scheduling with time interval {}", 
                     getNodeId(), 
                     getInitialSleepTime());
