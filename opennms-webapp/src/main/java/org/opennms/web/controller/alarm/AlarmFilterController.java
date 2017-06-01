@@ -28,6 +28,11 @@
 
 package org.opennms.web.controller.alarm;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
@@ -54,10 +59,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * A controller that handles querying the event table by using filters to create an
@@ -207,12 +208,12 @@ public class AlarmFilterController extends MultiActionController implements Init
         // handle the acknowledgment type parameter
         String ackTypeString = request.getParameter("acktype");
         AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
-        
+
         // set default ack type to both if alarm flashing enabled in opennms.properties
         String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
-    	boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
+        boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
         if (unAckFlash) ackType = AcknowledgeType.BOTH;
-        
+
         if (ackTypeString != null) {
             AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
             if (temp != null) {
@@ -228,7 +229,7 @@ public class AlarmFilterController extends MultiActionController implements Init
         parms.display = getDisplay(request);
         parms.filters = filterList;
         parms.limit = getLimit(request);
-        parms.multiple =  getMultiple(request);
+        parms.multiple = getMultiple(request);
         parms.sortStyle = getSortStyle(request);
         return parms;
     }
@@ -252,7 +253,7 @@ public class AlarmFilterController extends MultiActionController implements Init
 
     private OnmsFilterFavorite getFavorite(String favoriteId, String username, String[] filters) {
         if (favoriteId != null) {
-        	return favoriteService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
+            return favoriteService.getFavorite(favoriteId, username, getFilterCallback().toFilterString(filters));
         }
         return null;
     }
