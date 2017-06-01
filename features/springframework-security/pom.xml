@@ -72,6 +72,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
