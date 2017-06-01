@@ -31,8 +31,13 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -78,6 +83,23 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     private transient Set<V> alreadyDone = new HashSet<V>();
 
     /**
+     * Used for sorting vertices from left to right
+     */
+    private final Comparator<V> pointBasedComparator = new Comparator<V>() {
+        @Override
+        public int compare(V v1, V v2) {
+            final Point2D p1 = locations.get(v1);
+            final Point2D p2 = locations.get(v2);
+
+            int xcomp = Double.compare(p1.getX(), p2.getX());
+            if (xcomp != 0) {
+                return xcomp;
+            }
+            return Double.compare(p1.getY(), p2.getY());
+        }
+    };
+
+    /**
      * Creates an instance for the specified graph, X distance, and Y distance.
      */
     public HierarchyLayout(Graph<V, E> g, int distx, int disty) {
@@ -92,7 +114,8 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     private Set<V> getRoots() {
         Set<V> roots = graph.getVertices().stream()
                 .filter(v -> graph.getInEdges(v).isEmpty())
-                .collect(Collectors.toSet());
+                // Preserve the order of the roots
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         return roots;
     }
 
@@ -170,6 +193,63 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
         if (y > size.height - distY)
             size.height = y + distY;
         locations.get(vertex).setLocation(m_currentPoint);
+    }
+
+    /**
+     * Shifts the vertices horizontally ensuring that there is no more
+     * than "distx" units between each column of vertices.
+     *
+     * The resulting layout is a denser visual that maintains the existing
+     * structure of the original layout.
+     *
+     * For the purposes of this algorithm, vertices with the same value
+     * of the X coordinate are deemed to be in the same "column".
+     *
+     * @param vertices list of vertices that will be displayed
+     */
+    public void horizontalSqueeze(List<V> vertices) {
+        // Determine the target distance between the column
+        final double targetDelta = this.distX;
+
+        // Order the list of vertices based on their current
+        // position in the X-Y plane, from left to right
+        final List<V> orderedVertices = new ArrayList<>(vertices);
+        Collections.sort(orderedVertices, pointBasedComparator);
+
+        Double setXTo = null;
+        Double lastX = null;
+        for (V v : orderedVertices) {
+            final Point2D currentPoint = locations.get(v);
+            final Double currentX = currentPoint.getX();
+
+            if (lastX == null) {
+                // This is the first vertex
+                // Capture the X value, and skip to the next one
+                lastX = setXTo = currentX;
+            } else if (Double.compare(lastX, currentX) == 0) {
+                // We're still in the same column as the last vertex
+                if (Double.compare(currentX, setXTo) != 0) {
+                    locations.get(v).setLocation(setXTo, currentPoint.getY());
+                }
+            } else {
+                // We've hit the first vertex in a new column
+                // Calculate the distance between the current column and the last column
+                lastX = setXTo;
+                final double actualDelta = currentX - lastX;
+                if (Double.compare(actualDelta, targetDelta) <= 0) {
+                    // The distance is <= the target delta, so we don't need to update
+                    // anything in this column
+                    setXTo = currentX;
+                } else {
+                    // The distance is > the target delta, so we need to update
+                    // all the X values for vertices in this column
+                    setXTo = lastX + targetDelta;
+                    // Update the X value for the current vertex
+                    locations.get(v).setLocation(setXTo, currentPoint.getY());
+                }
+                lastX = currentX;
+            }
+        }
     }
 
     @Override
