@@ -57,76 +57,6 @@ public abstract class EventConstants {
     //
 
     /**
-     * The status query control event.
-     */
-    public static final String STATUS_QUERY_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/status";
-
-    /**
-     * The start event.
-     */
-    public static final String START_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/start";
-
-    /**
-     * The pause event.
-     */
-    public static final String PAUSE_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/pause";
-
-    /**
-     * The resume event.
-     */
-    public static final String RESUME_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/resume";
-
-    /**
-     * The stop event.
-     */
-    public static final String STOP_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/stop";
-
-    /**
-     * The 'start pending' response event.
-     */
-    public static final String CONTROL_START_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/startPending";
-
-    /**
-     * The 'starting' response event.
-     */
-    public static final String CONTROL_STARTING_EVENT_UEI = "uei.opennms.org/internal/control/starting";
-
-    /**
-     * The 'pause pending' response event.
-     */
-    public static final String CONTROL_PAUSE_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/pausePending";
-
-    /**
-     * The 'paused' response event.
-     */
-    public static final String CONTROL_PAUSED_EVENT_UEI = "uei.opennms.org/internal/control/paused";
-
-    /**
-     * The 'resume pending' response event.
-     */
-    public static final String CONTROL_RESUME_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/resumePending";
-
-    /**
-     * The 'running' response event.
-     */
-    public static final String CONTROL_RUNNING_EVENT_UEI = "uei.opennms.org/internal/control/running";
-
-    /**
-     * The 'stop pending' response event.
-     */
-    public static final String CONTROL_STOP_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/stopPending";
-
-    /**
-     * The 'stopped' response event.
-     */
-    public static final String CONTROL_STOPPED_EVENT_UEI = "uei.opennms.org/internal/control/stopped";
-
-    /**
-     * The control error reponse event.
-     */
-    public static final String CONTROL_ERROR_EVENT_UEI = "uei.opennms.org/internal/control/error";
-
-    /**
      * The new suspect event UEI.
      */
     public static final String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
@@ -147,16 +77,6 @@ public abstract class EventConstants {
     public static final String DISCOVERYCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/discoveryConfigChange";
 
     /**
-     * The update server event UEI.
-     */
-    public static final String UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
-
-    /**
-     * The update service event UEI.
-     */
-    public static final String UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
-
-    /**
      * The add node event UEI.
      */
     public static final String ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
@@ -167,19 +87,9 @@ public abstract class EventConstants {
     public static final String DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteNode";
 
     /**
-     * The add interface event UEI.
-     */
-    public static final String ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
-
-    /**
      * The delete interface event UEI.
      */
     public static final String DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
-
-    /**
-     * The change service event UEI.
-     */
-    public static final String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
 
     /**
      * The outage created event UEI.
@@ -190,11 +100,6 @@ public abstract class EventConstants {
      * The outage Resolved event UEI.
      */
     public static final String OUTAGE_RESOLVED_EVENT_UEI = "uei.opennms.org/internal/poller/outageResolved";
-
-    /**
-     * The restart polling node event UEI.
-     */
-    public static final String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
 
     /**
      * The node added event UEI.
@@ -350,22 +255,6 @@ public abstract class EventConstants {
      * ThresholdEvaluatorRearmingAbsoluteChange exceeded UEI.
      */
     public static final String REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI = "uei.opennms.org/threshold/rearmingAbsoluteChangeRearmed";
-    
-    /**
-     * The interface index changed event.
-     */
-    public static final String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
-
-    /**
-     * The interface supports SNMP event...generated during capability rescan
-     * when an already managed interface gains SNMP support for the first time.
-     */
-    public static final String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
-
-    /**
-     * A service scan has discovered a duplicate IP address.
-     */
-    public static final String DUPLICATE_IPINTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/duplicateIPAddress";
 
     /**
      * The interface reparented event.
@@ -378,19 +267,9 @@ public abstract class EventConstants {
     public static final String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
 
     /**
-     * The interface IP host name changed event.
-     */
-    public static final String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
-
-    /**
      * The node label changed event.
      */
     public static final String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
-
-    /**
-     * The node label source changed event.
-     */
-    public static final String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
 
     /**
      * The node deleted event UEI.
@@ -423,16 +302,6 @@ public abstract class EventConstants {
     public static final String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
 
     /**
-     * Thresholding failed.
-     */
-    public static final String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
-
-    /**
-     * Thresholding succeeded.
-     */
-    public static final String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
-
-    /**
      * The force interface rescan event UEI
      */
     public static final String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
@@ -449,21 +318,10 @@ public abstract class EventConstants {
     public static final String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
 
     /**
-     * The SNMP conflicts with db UEI.
-     */
-
-    public static final String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-
-    /**
      * The rescan completed UEI.
      */
 
     public static final String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
-    
-    /**
-     * The suspect scan completed UEI.
-     */
-    public static final String SUSPECT_SCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/suspectScanCompleted";
 
     /**
      * The RTC subscribe event.
@@ -481,23 +339,10 @@ public abstract class EventConstants {
      */
     public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
 
-
-    /**
-     * A service poll returned an unknown status (due to a problem getting poll
-     * information).
-     */
-    public static final String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
-
     /**
      * Notification without users event.
      */
     public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
-
-    /**
-     * A vulnerability scan on a specific interface was initiated by the user
-     * via the web UI.
-     */
-    public static final String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
 
     /**
      * Demand poll service event ui.
@@ -579,8 +424,6 @@ public abstract class EventConstants {
     public static final String LOCATION_MONITOR_DISCONNECTED_UEI="uei.opennms.org/remote/locationMonitorDisconnected";
     /** Constant <code>LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */
     public static final String LOCATION_MONITOR_RECONNECTED_UEI="uei.opennms.org/remote/locationMonitorReconnected";
-    /** Constant <code>LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationCha"{trunked}</code> */
-    public static final String LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI="uei.opennms.org/remote/configurationChangeDetected";
     public static final String LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI="uei.opennms.org/remote/locationMonitorConnectionAddressChanged";
 
     public static final String REMOTE_SUCCESSFUL_SCAN_REPORT_UEI="uei.opennms.org/remote/successfulScanReport";
@@ -640,13 +483,6 @@ public abstract class EventConstants {
     public static final String RANCID_DOWNLOAD_FAILURE_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure";
     /** Constant <code>RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/r"{trunked}</code> */
     public static final String RANCID_GROUP_PROCESSING_COMPLETED_UEI="uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted";
-
-    /** Constant <code>DATA_LINK_FAILED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
-    public static final String DATA_LINK_FAILED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkFailed";
-    /** Constant <code>DATA_LINK_RESTORED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
-    public static final String DATA_LINK_RESTORED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkRestored";
-    /** Constant <code>DATA_LINK_UNMANAGED_EVENT_UEI="uei.opennms.org/internal/linkd/dataLink"{trunked}</code> */
-    public static final String DATA_LINK_UNMANAGED_EVENT_UEI = "uei.opennms.org/internal/linkd/dataLinkUnmanaged";
 
     /** Constant <code>TOPOLOGY_LINK_DOWN_EVENT_UEI="uei.opennms.org/internal/topology/linkDown"{trunked}</code> */
     public static final String TOPOLOGY_LINK_DOWN_EVENT_UEI = "uei.opennms.org/internal/topology/linkDown";
@@ -1078,11 +914,6 @@ public abstract class EventConstants {
      * UEI used for requesting an acknowledgment of an OnmsAcknowledgeable.
      */
     public static final String ACKNOWLEDGE_EVENT_UEI = "uei.opennms.org/ackd/acknowledge";
-
-    /**
-     * UEI used for indicating an OnmsAcknowledgeable has been acknowledged.
-     */
-    public static final String EVENT_ACKNOWLEDGED_UEI = "uei.opennms.org/ackd/acknowledgment";
 
     /**
      * UEI used for indicating a change management event.
