@@ -292,7 +292,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 	}
 
 	@Override
-	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input) {
+	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
 		IpLikeHopCriteria criteria = createCriteria(input);
 		return criteria;
 	}
