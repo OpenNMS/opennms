@@ -34,7 +34,8 @@ All alarms can be selected to be escalated, cleared, acknowledged and unacknowle
 === Configuring Alarm Sounds and Flashing
 
 By default _{opennms-product-name}_ does not enable alarm sounds or flashing alarms.
-The system administrator must enable these features by changing the following settings in `${OPENNMS_HOME}/etc/opennms.properties`.
+The system administrator must enable these features by changing the following settings in 
+`${OPENNMS_HOME}/etc/opennms.properties.d/alarm.listpage.properties`.
 
 .Configuration properties related to Alarm sound and flashing visualization
 [source]
