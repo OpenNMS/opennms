@@ -22,6 +22,20 @@ Description: Enterprise-grade Open-source Network Management Platform (Full Inst
  This package provides the components needed for a reasonable default
  installation of OpenNMS.
 
+Package: opennms-upgrade
+Architecture: all
+Depends: bash, rsync
+Description: Enterprise-grade Open-source Network Management Platform (Upgrade Tools)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides tools for cleanly handling upgrades.
+
 Package: opennms-source
 Architecture: all
 Depends: opennms-webapp-jetty (=${binary:Version})
@@ -39,7 +53,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Source)
 
 Package: opennms-db
 Architecture: all
-Depends: postgresql-9.6 | postgresql-9.5 | postgresql-9.4 | postgresql-9.3 | postgresql-9.2 | postgresql-9.1, iplike-pgsql96 | iplike-pgsql95 | iplike-pgsql94 | iplike-pgsql93 | iplike-pgsql92 | iplike-pgsql91, debconf
+Depends: postgresql-9.6 | postgresql-9.5 | postgresql-9.4 | postgresql-9.3 | postgresql-9.2 | postgresql-9.1, iplike-pgsql96 | iplike-pgsql95 | iplike-pgsql94 | iplike-pgsql93 | iplike-pgsql92 | iplike-pgsql91, debconf, opennms-upgrade (>=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Database)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -56,7 +70,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Database)
 
 Package: opennms-server
 Architecture: all
-Depends: opennms-common (=${binary:Version}), libopennms-java (=${binary:Version}), libopennmsdeps-java (=${binary:Version}), mailx
+Depends: opennms-common (=${binary:Version}), libopennms-java (=${binary:Version}), libopennmsdeps-java (=${binary:Version}), opennms-upgrade (>=${binary:Version}), mailx
 Suggests: jrrd2, rrdtool (>= 1.4.8), postgresql-client-9.6 | postgresql-client-9.5 | postgresql-client-9.4 | postgresql-client-9.3 | postgresql-client-9.2 | postgresql-client-9.1
 Description: Enterprise-grade Open-source Network Management Platform (Daemon)
  OpenNMS is an enterprise-grade network management system written in Java.
@@ -150,7 +164,7 @@ Description: Enterprise-grade Open-source Network Management Platform (NCS)
 
 Package: opennms-common
 Architecture: all
-Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl, opennms-upgrade (>=${binary:Version})
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
 Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-plugin-protocol-xml (<<${binary:Version})
@@ -168,7 +182,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0), opennms-upgrade (>=${binary:Version})
 Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0), opennms-plugin-protocol-xml (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
@@ -184,7 +198,7 @@ Description: Enterprise-grade Open-source Network Management Platform (OpenNMS L
 
 Package: libopennmsdeps-java
 Architecture: all
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, opennms-upgrade (>=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Required Libraries)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

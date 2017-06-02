@@ -122,6 +122,12 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-hardware-inventory/var/lib/opennms/etc-pristine/
 	
 	##
+	## Setup the upgrade package
+	##
+	install -d -m 755 debian/opennms-upgrade/usr/share/opennms/bin
+	mv debian/temp/bin/upgrade-precheck.sh debian/opennms-upgrade/usr/share/opennms/bin/
+	
+	##
 	## Setup the protocol packages
 	##
 	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/usr/share/java/opennms

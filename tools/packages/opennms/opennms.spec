@@ -64,9 +64,12 @@ Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 9.1
 Requires:		postgresql-server  >= 9.1
+Requires(pre):		%{name}-upgrade     = %{version}-%{release}
+Requires:		%{name}-upgrade     = %{version}-%{release}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
+#BuildRequires:		rsync
 
 Prefix: %{instprefix}
 Prefix: %{sharedir}
@@ -85,6 +88,15 @@ webapp package.
 %{extrainfo2}
 
 
+%package upgrade
+Summary: Tools necessary for OpenNMS upgrades.
+Group:		Applications/System
+Requires:	rsync
+
+%description upgrade
+This package contains some tools that can be used to be sure that
+upgrades go more cleanly.
+
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
@@ -94,6 +106,8 @@ Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 Obsoletes:	opennms < 1.3.11
 Obsoletes: opennms-plugin-protocol-xml
 
@@ -122,6 +136,8 @@ option, like so:
 %package source
 Summary:	Source for the %{_descr} network management platform
 Group:		Applications/System
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description source
 This package contains the source tarball for %{_descr}, for AGPL compliance.
@@ -133,6 +149,8 @@ This package contains the source tarball for %{_descr}, for AGPL compliance.
 %package docs
 Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
+Requires(pre):		%{name}-upgrade     = %{version}-%{release}
+Requires:		%{name}-upgrade     = %{version}-%{release}
 
 %description docs
 This package contains the API and user documentation.
@@ -160,7 +178,10 @@ Summary:	Generate JMX Configuration
 Group:		Applications/System
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
+Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description jmx-config-generator
 Generates configuration files for monitoring/collecting from
@@ -175,6 +196,8 @@ Summary:	Embedded web interface
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 Provides:	%{name}-webui = %{version}-%{release}
 Obsoletes:	opennms-webapp < 1.3.11
 
@@ -191,6 +214,8 @@ Summary:	Remote Poller webapp
 Group:		Applications/System
 Requires:	%{name}-webapp-jetty = %{version}-%{release}
 Conflicts:	%{name}-webapp-jetty < 19.0.0-0
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description webapp-remoting
 The JNLP application that provides the Remote Poller.
@@ -202,7 +227,10 @@ The JNLP application that provides the Remote Poller.
 %package ncs
 Summary:	Network Component Services
 Group:		Applications/System
+Requires(pre):	%{name}-webapp-jetty = %{version}-%{release}
 Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description ncs
 NCS provides a framework for doing correlation of service events across
@@ -215,36 +243,38 @@ disparate nodes.
 %package plugins
 Summary:	All Plugins
 Group:		Applications/System
-Requires(pre):	%{name}-plugin-northbounder-jms
-Requires:	%{name}-plugin-northbounder-jms
-Requires(pre):	%{name}-plugin-provisioning-dns
-Requires:	%{name}-plugin-provisioning-dns
-Requires(pre):	%{name}-plugin-provisioning-rancid
-Requires:	%{name}-plugin-provisioning-rancid
-Requires(pre):	%{name}-plugin-provisioning-reverse-dns
-Requires:	%{name}-plugin-provisioning-reverse-dns
-Requires(pre):	%{name}-plugin-provisioning-snmp-asset
-Requires:	%{name}-plugin-provisioning-snmp-asset
-Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
-Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
-Requires(pre):	%{name}-plugin-ticketer-jira
-Requires:	%{name}-plugin-ticketer-jira
-Requires(pre):	%{name}-plugin-ticketer-otrs
-Requires:	%{name}-plugin-ticketer-otrs
-Requires(pre):	%{name}-plugin-ticketer-rt
-Requires:	%{name}-plugin-ticketer-rt
-Requires(pre):	%{name}-plugin-protocol-cifs
-Requires:	%{name}-plugin-protocol-cifs
-Requires(pre):	%{name}-plugin-protocol-dhcp
-Requires:	%{name}-plugin-protocol-dhcp
-Requires(pre):	%{name}-plugin-protocol-nsclient
-Requires:	%{name}-plugin-protocol-nsclient
-Requires(pre):	%{name}-plugin-protocol-radius
-Requires:	%{name}-plugin-protocol-radius
-Requires(pre):	%{name}-plugin-protocol-xmp
-Requires:	%{name}-plugin-protocol-xmp
-Requires(pre):	%{name}-plugin-collector-vtdxml-handler
-Requires:	%{name}-plugin-collector-vtdxml-handler
+Requires(pre):	%{name}-plugin-northbounder-jms = %{version}-%{release}
+Requires:	%{name}-plugin-northbounder-jms = %{version}-%{release}
+Requires(pre):	%{name}-plugin-provisioning-dns = %{version}-%{release}
+Requires:	%{name}-plugin-provisioning-dns = %{version}-%{release}
+Requires(pre):	%{name}-plugin-provisioning-rancid = %{version}-%{release}
+Requires:	%{name}-plugin-provisioning-rancid = %{version}-%{release}
+Requires(pre):	%{name}-plugin-provisioning-reverse-dns = %{version}-%{release}
+Requires:	%{name}-plugin-provisioning-reverse-dns = %{version}-%{release}
+Requires(pre):	%{name}-plugin-provisioning-snmp-asset = %{version}-%{release}
+Requires:	%{name}-plugin-provisioning-snmp-asset = %{version}-%{release}
+Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory = %{version}-%{release}
+Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory = %{version}-%{release}
+Requires(pre):	%{name}-plugin-ticketer-jira = %{version}-%{release}
+Requires:	%{name}-plugin-ticketer-jira = %{version}-%{release}
+Requires(pre):	%{name}-plugin-ticketer-otrs = %{version}-%{release}
+Requires:	%{name}-plugin-ticketer-otrs = %{version}-%{release}
+Requires(pre):	%{name}-plugin-ticketer-rt = %{version}-%{release}
+Requires:	%{name}-plugin-ticketer-rt = %{version}-%{release}
+Requires(pre):	%{name}-plugin-protocol-cifs = %{version}-%{release}
+Requires:	%{name}-plugin-protocol-cifs = %{version}-%{release}
+Requires(pre):	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Requires:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Requires(pre):	%{name}-plugin-protocol-nsclient = %{version}-%{release}
+Requires:	%{name}-plugin-protocol-nsclient = %{version}-%{release}
+Requires(pre):	%{name}-plugin-protocol-radius = %{version}-%{release}
+Requires:	%{name}-plugin-protocol-radius = %{version}-%{release}
+Requires(pre):	%{name}-plugin-protocol-xmp = %{version}-%{release}
+Requires:	%{name}-plugin-protocol-xmp = %{version}-%{release}
+Requires(pre):	%{name}-plugin-collector-vtdxml-handler = %{version}-%{release}
+Requires:	%{name}-plugin-collector-vtdxml-handler = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugins
 This installs all optional plugins.
@@ -257,6 +287,8 @@ This installs all optional plugins.
 Summary:	JMS Alarm Northbounder
 Group:		Applications/System
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-northbounder-jms
 This northbounder allows you to send OpenNMS alarms to an 
@@ -271,6 +303,8 @@ Summary:	Obsolete: Map Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-map
 The map provisioning adapter is no longer part of OpenNMS.
@@ -281,6 +315,8 @@ Summary:	Obsolete: Link Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-link
 The map provisioning adapter is no longer part of OpenNMS.
@@ -291,6 +327,8 @@ Summary:	DNS Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
@@ -305,6 +343,8 @@ Summary:	Reverse DNS Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-reverse-dns
 The Reverse DNS provisioning adapter allows for updating the hostname on an
@@ -319,6 +359,8 @@ Summary:	RANCID Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
@@ -333,6 +375,8 @@ Summary:	SNMP Asset Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
@@ -347,6 +391,8 @@ Summary:	SNMP Hardware Inventory Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-provisioning-snmp-hardware-inventory
 The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
@@ -361,6 +407,8 @@ Summary:	JIRA Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-ticketer-jira
 The JIRA ticketer plugin provides the ability to automatically create JIRA
@@ -375,6 +423,8 @@ Summary:	OTRS Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-ticketer-otrs
 The OTRS ticketer plugin provides the ability to automatically create OTRS
@@ -389,6 +439,8 @@ Summary:	RT Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-ticketer-rt
 The RT ticketer plugin provides the ability to automatically create RT
@@ -403,6 +455,8 @@ Summary:	CIFS Poller Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
@@ -416,6 +470,8 @@ Summary:	DHCP Poller and Detector Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-protocol-dhcp
 The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
@@ -430,6 +486,8 @@ Summary:	NSCLIENT Plugin Support
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-protocol-nsclient
 The NSClient protocol plugin provides a capsd plugin and poller monitor for NSClient
@@ -444,6 +502,8 @@ Summary:	RADIUS Plugin Support
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
@@ -458,6 +518,8 @@ Summary:	XMP Poller
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-protocol-xmp
 The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
@@ -471,6 +533,8 @@ Summary:	Juniper TCA Collector
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-collector-juniper-tca
 The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
@@ -485,6 +549,8 @@ Group:		Applications/System
 License:	GPL
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
+Requires(pre):	%{name}-upgrade = %{version}-%{release}
+Requires:	%{name}-upgrade = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
@@ -679,6 +745,7 @@ find %{buildroot}%{sharedir} ! -type d | \
 	grep -v 'xmp-datacollection-config.xsd' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
+	grep -v '/upgrade-precheck.sh' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
@@ -745,6 +812,10 @@ rm -rf %{buildroot}
 
 %files
 %defattr(664 root root 775)
+
+%files upgrade
+%defattr(664 root root 775)
+%attr(755,root,root) %{instprefix}/bin/upgrade-precheck.sh
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
@@ -1063,6 +1134,96 @@ if [ "$1" = 0 ]; then
 		fi
 	done
 fi
+
+%pre -p /bin/bash
+if [ -x "%{instprefix}/bin/upgrade-precheck.sh" ]; then
+	"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+fi
+
+%pre -p /bin/bash core
+export OPENNMS_PRECHECK_BACK_UP_ETC=1
+"$RPM_INSTALL_PREFIX0/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash source
+if [ -x "%{instprefix}/bin/upgrade-precheck.sh" ]; then
+	"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+fi
+
+%pre -p /bin/bash docs
+if [ -x "%{instprefix}/bin/upgrade-precheck.sh" ]; then
+	"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+fi
+
+%pre -p /bin/bash jmx-config-generator
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash webapp-jetty
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash webapp-remoting
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash ncs
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugins
+if [ -x "%{instprefix}/bin/upgrade-precheck.sh" ]; then
+	"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+fi
+
+%pre -p /bin/bash plugin-northbounder-jms
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-map
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-link
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-dns
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-reverse-dns
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-rancid
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-snmp-asset
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-provisioning-snmp-hardware-inventory
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-ticketer-jira
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-ticketer-otrs
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-ticketer-rt
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-protocol-cifs
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-protocol-dhcp
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-protocol-nsclient
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-protocol-radius
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-protocol-xmp
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-collector-juniper-tca
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
+
+%pre -p /bin/bash plugin-collector-vtdxml-handler
+"%{instprefix}/bin/upgrade-precheck.sh" "$1" "%{version}-%{release}" || exit 1
 
 %changelog
 * Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>

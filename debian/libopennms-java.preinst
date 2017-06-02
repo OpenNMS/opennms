@@ -5,6 +5,8 @@
 #
 # vim:set ai et sts=4 sw=4 tw=0:
 
+/usr/share/opennms/bin/upgrade-precheck.sh "$@" || exit  1
+
 # Move the lib directory if it's not a symlink
 if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
     if [ -d "/usr/share/opennms/lib" -a ! -L "/usr/share/opennms/lib" ] ; then
