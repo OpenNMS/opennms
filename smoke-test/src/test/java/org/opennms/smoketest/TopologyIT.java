@@ -741,4 +741,23 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             throw Throwables.propagate(e);
         }
     }
+
+    /**
+     * Verifies that the ip-like search produces no duplicates
+     * (issue NMS-9265 - by typing a complete ip address in the search box IpLikeSearchProvider returned 2 identical items)
+     */
+    @Test
+    public void verifyIpLikeSearch_noDuplicates() {
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests\" node-label=\"Yahoo\">" +
+                "       <interface ip-addr=\"46.228.47.114\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+        Assert.assertEquals(1, topologyUiPage.search("46.228.47.114").countItemsThatContain("46.228.47.114"));
+        Assert.assertEquals(1, topologyUiPage.search("46.228.47.*").countItemsThatContain("46.228.47.*"));
+        Assert.assertEquals(1, topologyUiPage.search("46.228.47.*").countItemsThatContain("46.228.47.114"));
+    }
 }

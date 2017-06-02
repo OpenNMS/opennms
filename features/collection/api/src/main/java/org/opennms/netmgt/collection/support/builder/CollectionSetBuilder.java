@@ -117,6 +117,11 @@ public class CollectionSetBuilder {
                 }
 
                 @Override
+                public String getInterfaceLabel() {
+                    return resource.getLabel();
+                }
+
+                @Override
                 public Path getPath() {
                     return super.getPath().resolve(resource.getPath(this));
                 }
