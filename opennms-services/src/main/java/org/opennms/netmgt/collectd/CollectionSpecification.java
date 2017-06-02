@@ -35,8 +35,8 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
-import org.opennms.core.rpc.api.RequestRejectedException;
-import org.opennms.core.rpc.api.RequestTimedOutException;
+import org.opennms.core.rpc.api.RpcExceptionHandler;
+import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
@@ -258,22 +258,33 @@ public class CollectionSpecification {
                 m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(CollectionStatus.FAILED));
             }
             return set;
-        } catch (InterruptedException e) {
-            final CollectionException ce = new CollectionUnknown("Interrupted.", e);
-            m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, ce);
-            throw ce;
-        } catch (ExecutionException e) {
-            final Throwable cause = e.getCause();
-            final CollectionException ce;
-            if (cause != null && cause instanceof RequestTimedOutException) {
-                ce = new CollectionUnknown("Request timed out.", e);
-            } else if (cause != null && cause instanceof RequestRejectedException) {
-                ce = new CollectionUnknown("Request rejected.", e);
-            } else if (cause != null && cause instanceof CollectionException) {
-                ce = (CollectionException)cause;
-            } else {
-                ce = new CollectionException("Collection failed.", e);
-            }
+        } catch (InterruptedException|ExecutionException e) {
+            final CollectionException ce = RpcExceptionUtils.handleException(e, new RpcExceptionHandler<CollectionException>() {
+                @Override
+                public CollectionException onInterrupted(Throwable t) {
+                    return new CollectionUnknown("Interrupted.", t);
+                }
+
+                @Override
+                public CollectionException onTimedOut(Throwable t) {
+                    return new CollectionUnknown("Request timed out.", t);
+                }
+
+                @Override
+                public CollectionException onRejected(Throwable t) {
+                    return new CollectionUnknown("Request rejected.", e);
+                }
+
+                @Override
+                public CollectionException onUnknown(Throwable t) {
+                    if (t instanceof CollectionException) {
+                        return (CollectionException)t;
+                    } else if (t.getCause() != null && t.getCause() instanceof CollectionException) {
+                        return (CollectionException)t.getCause();
+                    }
+                    return new CollectionException("Collection failed.", t);
+                }
+            });
             m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, ce);
             throw ce;
         } finally {
