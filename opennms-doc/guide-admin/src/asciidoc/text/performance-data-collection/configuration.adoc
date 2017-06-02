@@ -83,8 +83,8 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 .Persistence Selector Strategies
 [options="header, autowidth"]
 |===
-| Class                                          | Description
-| org.opennms.netmgt.collectd.PersistAllSelectorStrategy | Persist All indexes
+| Class                                                    | Description
+| org.opennms.netmgt.collectd.PersistAllSelectorStrategy   | Persist All indexes
 | org.opennms.netmgt.collectd.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
 |===
 
@@ -98,12 +98,12 @@ return either true, persist index to storage, or false, discard data.
 .Storage Strategies
 [options="header, autowidth"]
 |===
-| Class                                               | Storage Path Value
-| org.opennms.netmgt.dao.support.IndexStorageStrategy | Index
-| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy | interface label + '.' + dlci
+| Class                                                        | Storage Path Value
+| org.opennms.netmgt.collection.support.IndexStorageStrategy   | Index
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy     | interface label + '.' + dlci
 | org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
-| org.opennms.protocols.xml.collector.XmlStorageStrategy | Index, but cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy  | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy       | Index, but cleaned up for unix filesystems.
 |===
 
 ====== IndexStorageStrategy
@@ -133,10 +133,10 @@ The HostFileSystemStorageStrategy takes no parameters. This class is marked as d
 
 [options="header, autowidth"]
 |===
-| Parameter | Description
+| Parameter           | Description
 | sibling-column-name | Alternate string value to use for index
-| replace-first | Regex Pattern, replaces only the first match
-| replace-all | Regex Pattern, replaces all matches
+| replace-first       | Regex Pattern, replaces only the first match
+| replace-all         | Regex Pattern, replaces all matches
 |===
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
