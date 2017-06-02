@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<datacollection-group name="SMSEagle">
+    <group name="smseagle-metrics" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.11.71.83.77.95.83.105.103.110.97.108" instance="49" alias="gsmSignal" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.18.70.111.108.100.101.114.79.117.116.98.111.120.95.84.111.116.97" instance="108" alias="outboxTotal" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.17.70.111.108.100.101.114.73.110.98.111.120.95.84.111.116.97" instance="108" alias="inboxTotal" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.18.70.111.108.100.101.114.83.101.110.116.95.76.97.115.116.50.52" instance="72" alias="sentLast24h" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.17.70.111.108.100.101.114.83.101.110.116.95.76.97.115.116.49" instance="77" alias="sentLast1m" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.3.1.2.25.70.111.108.100.101.114.83.101.110.116.95.76.97.115.116.50.52.72.83.101.110.100.69.114" instance="114" alias="sentLast24hErr" type="integer"/>
+    </group>
+
+    <systemDef name="SMSEagle">
+        <sysoid>.1.3.6.1.4.1.8072.3.2.10</sysoid>
+        <collect>
+            <includeGroup>smseagle-metrics</includeGroup>
+        </collect>
+    </systemDef>
+</datacollection-group>

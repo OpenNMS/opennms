@@ -70,6 +70,7 @@
         <include-collection dataCollectionGroup="Routers"/>
         <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
         <include-collection dataCollectionGroup="ServerTech"/>
+        <include-collection dataCollectionGroup="SMSEagle"/>
         <include-collection dataCollectionGroup="SNMP-Informant"/>
         <include-collection dataCollectionGroup="SofaWare"/>
         <include-collection dataCollectionGroup="Sonicwall"/>
