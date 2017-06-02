@@ -14,6 +14,7 @@
 | `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
 | `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
 | `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
+| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions.
 |===
 
 To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
@@ -37,3 +38,109 @@ The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is
 ----
 
 <1> Size of the _Thread Pool_ to run _Collectors_ in parallel
+
+[[ga-performance-management-collectd-resource-types]]
+==== Resource Types
+.Resource Types
+
+Resource Types are used to group sets of performance data measurements for
+persisting, indexing, and display in the _Web UI_. Each resource type has a
+unique name, label definitions for display in the _Web UI_, and strategy
+definitions for archiving the measurements for long term analysis.
+
+There are two labels for a resource type. The first, `label`, defines a string
+to display in the _Web UI_. The second, `resourceLabel`, defines the template
+used when displaying each unique group of measurements name for the resource type.
+
+There are two types of strategy definitions for resource types, persistence
+selector and storage strategies. The persistence selector strategy filters the
+group indexes down to a subset for storage on disk. The storage strategy is used
+to convert an index into a resource path label for persistence. There are two
+special resource types that do not have a resource-type definition. They are
+`node` and `ifIndex`.
+
+Resource Types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
+
+
+Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
+
+[source, xml]
+----
+<resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+    <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')" />
+  </persistenceSelectorStrategy>
+  <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+    <parameter key="sibling-column-name" value="diskIODevice" />
+    <parameter key="replace-all" value="s/^-//" />
+    <parameter key="replace-all" value="s/\s//" />
+    <parameter key="replace-all" value="s/:\\.*//" />
+  </storageStrategy>
+</resourceType>
+----
+
+===== Persistence Selector Strategies
+.Persistence Selector Strategies
+[options="header, autowidth"]
+|===
+| Class                                          | Description
+| org.opennms.netmgt.collectd.PersistAllSelectorStrategy | Persist All indexes
+| org.opennms.netmgt.collectd.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
+|===
+
+====== PersistRegexSelectorStrategy
+
+The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions. On evaulation, this expression should
+return either true, persist index to storage, or false, discard data.
+
+
+===== Storage Strategies
+.Storage Strategies
+[options="header, autowidth"]
+|===
+| Class                                               | Storage Path Value
+| org.opennms.netmgt.dao.support.IndexStorageStrategy | Index
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy | interface label + '.' + dlci
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy | Index, but cleaned up for unix filesystems.
+|===
+
+====== IndexStorageStrategy
+
+The IndexStorageStrategy takes no parameters.
+
+====== FrameRelayStorageStrategy
+
+The FrameRelayStorageStrategy takes no parameters.
+
+====== HostFileSystemStorageStrategy
+
+The HostFileSystemStorageStrategy takes no parameters. This class is marked as deprecated, and can be replaced with:
+
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+  <parameter key="sibling-column-name" value="hrStorageDescr" />
+  <parameter key="replace-first" value="s/^-$/_root_fs/" />
+  <parameter key="replace-all" value="s/^-//" />
+  <parameter key="replace-all" value="s/\\s//" />
+  <parameter key="replace-all" value="s/:\\\\.*//" />
+</storageStrategy>
+----
+
+====== SiblingColumnStorageStrategy
+
+[options="header, autowidth"]
+|===
+| Parameter | Description
+| sibling-column-name | Alternate string value to use for index
+| replace-first | Regex Pattern, replaces only the first match
+| replace-all | Regex Pattern, replaces all matches
+|===
+
+Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
+
+====== XmlStorageStrategy
+
+This XmlStorageStrategy takes no parameters. The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores. All equal signs are removed.
