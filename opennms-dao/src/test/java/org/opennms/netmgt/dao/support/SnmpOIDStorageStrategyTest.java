@@ -42,7 +42,7 @@ public class SnmpOIDStorageStrategyTest {
     @Test
     public void testStrategy() {
         // Create Strategy
-        SnmpOIDStorageStrategy strategy = new SnmpOIDStorageStrategy();
+        SnmpExtendedIndexStorageStrategy strategy = new SnmpExtendedIndexStorageStrategy();
         strategy.setResourceTypeName("ltmVSStatName");
 
         OID oid = new OID("47.67.111.109.109.111.110.47.118.115.45.119.119.119.46.101.120.97.109.112.108.101.46.99.111.109");

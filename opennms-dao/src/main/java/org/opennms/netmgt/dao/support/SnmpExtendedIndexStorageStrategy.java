@@ -41,8 +41,8 @@ import org.snmp4j.smi.OctetString;
  *
  * @author <a href="mailto:roskens@opennms.org">Ronald Roskens</a>
  */
-public class SnmpOIDStorageStrategy extends IndexStorageStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpOIDStorageStrategy.class);
+public class SnmpExtendedIndexStorageStrategy extends IndexStorageStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpExtendedIndexStorageStrategy.class);
 
 
     /** {@inheritDoc} */
