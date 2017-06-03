@@ -28,29 +28,35 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.junit.Assert;
-
-import org.junit.Test;
-import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
 
 /**
+ * This class can be used for SNMP OID indexes which return an OID string as
+ * their index.
+ *
  * @author <a href="mailto:roskens@opennms.org">Ronald Roskens</a>
  */
-public class SnmpOIDStorageStrategyTest {
+public class DisplayStringIndexStorageStrategy extends IndexStorageStrategy {
+    private static final Logger LOG = LoggerFactory.getLogger(DisplayStringIndexStorageStrategy.class);
 
-    @Test
-    public void testStrategy() {
-        // Create Strategy
-        SnmpExtendedIndexStorageStrategy strategy = new SnmpExtendedIndexStorageStrategy();
-        strategy.setResourceTypeName("ltmVSStatName");
 
-        OID oid = new OID("47.67.111.109.109.111.110.47.118.115.45.119.119.119.46.101.120.97.109.112.108.101.46.99.111.109");
-
-        ResourcePath parentResource = ResourcePath.get("1");
-
-        MockCollectionResource resource = new MockCollectionResource(parentResource, oid.toSubIndex(true).toString(), "ltmVSStatName");
-        String resourceName = strategy.getResourceNameFromIndex(resource);
-        Assert.assertEquals("Common-vs-www.example.com", resourceName);
+    /** {@inheritDoc} */
+    @Override
+    public String getResourceNameFromIndex(final CollectionResource resource) {
+        try {
+            OID oid = new OID(resource.getInstance());
+            OctetString oString = new OctetString();
+            oString.fromSubIndex(oid, true);
+            String resourceName = new String(oString.getValue());
+            return resourceName.replaceFirst("/", "").replaceAll("\\s", "").replaceAll("/", "-").replaceAll(":\\\\.*", "");
+        } catch ( RuntimeException e ) {
+            LOG.info("Unable to convert oid subindex '{}' to a text string.", resource.getInstance());
+            return resource.getInstance();
+        }
     }
 }
