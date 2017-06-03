@@ -31,6 +31,7 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -50,15 +51,13 @@ import org.snmp4j.smi.OctetString;
  */
 public class F5LTMRrdMigratorOfflineTest {
 
-    private static final List<String> s_f5Directories = new ArrayList<>();
-
-    static {
-        s_f5Directories.add("ltmPoolStatName");
-        s_f5Directories.add("ltmVSStatName");
-        s_f5Directories.add("f5ifName");
-        s_f5Directories.add("gtmWideipStatEntry");
-        s_f5Directories.add("f5trunkStat");
-    }
+    private static final List<String> s_f5Directories = Arrays.asList(
+      "ltmPoolStatName",
+      "ltmVSStatName",
+      "f5ifName",
+      "gtmWideipStatEntry",
+      "f5trunkStat"
+    );
 
     @Rule
     public TestName m_testName = new TestName();
@@ -126,22 +125,6 @@ public class F5LTMRrdMigratorOfflineTest {
         Assert.assertEquals(5, ltmMigrator.processedDirectories.size());
 
         return ltmMigrator;
-    }
-
-    /**
-     * Gets the files.
-     *
-     * @param resourceDir the resource directory
-     * @param ext the extension
-     * @return the files
-     */
-    private File[] getFiles(final File resourceDir, final String ext) {
-        return resourceDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
     }
 
 }

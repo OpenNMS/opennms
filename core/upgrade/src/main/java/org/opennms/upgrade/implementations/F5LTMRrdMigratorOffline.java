@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -66,6 +67,14 @@ public class F5LTMRrdMigratorOffline extends AbstractOnmsUpgrade {
     private static final Logger LOG = LoggerFactory.getLogger(F5LTMRrdMigratorOffline.class);
 
     private final DefaultDataCollectionConfigDao m_dataCollectionConfigDao = new DefaultDataCollectionConfigDao();
+
+    private static final List<String> f5ResourceTypeDirectories = Arrays.asList(
+      "ltmPoolStatName",
+      "ltmVSStatName",
+      "f5ifName",
+      "gtmWideipStatEntry",
+      "f5trunkStat"
+    );
 
     /** The JMX resource directories. */
     private List<File> f5ResourceDirectories;
@@ -233,7 +242,8 @@ public class F5LTMRrdMigratorOffline extends AbstractOnmsUpgrade {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                if (file.getName().matches("^\\d+(\\.\\d+)+$")) {
+                if (file.getName().matches("^\\d+(\\.\\d+)+$") && f5ResourceTypeDirectories.contains(file.getParentFile().getName())) {
+
                     try {
                         OID oid = new OID(file.getName());
                         oString.fromSubIndex(oid, false);
