@@ -166,22 +166,20 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     m_xy = condition2(commonlearnedmacs,m_yx,ymactoport,xmactoport);
                 } else if (m_yx == null && m_xy != null) {
                     m_yx = condition2(commonlearnedmacs,m_xy,xmactoport,ymactoport);
-                } 
- 
-                if (m_xy == null || m_xy == null) {
+                } else {
                     List<Integer> ports = condition3(commonlearnedmacs,xmactoport,ymactoport);
                     m_xy = ports.get(0);
                     m_yx= ports.get(1);
                 }
-                if (m_xy == null || m_xy == null) {
-                    LOG.debug("BridgeTopologyHelper: bridges: [{}, port {}] <--> [{}, port {}]. Not found exiting", 
-                              xBridge.getId(), 
-                              m_xy,
-                              yBridge.getId()
-                              , m_yx);
-                    return;
-                }
             }    
+            if (m_xy == null || m_xy == null) {
+                LOG.debug("BridgeTopologyHelper: bridges: [{}, port {}] <--> [{}, port {}]. Not found. exiting", 
+                          xBridge.getId(), 
+                          m_xy,
+                          yBridge.getId()
+                          , m_yx);
+                return;
+            }
             LOG.debug("BridgeTopologyHelper: bridges: [{}, port {}] <--> [{}, port {}]", 
             		xBridge.getId(), 
             		m_xy,
@@ -399,6 +397,10 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     p1 = ybft.get(mac).getBridgePort();
                     xy1= xbft.get(mac).getBridgePort();
                     LOG.debug("BridgeTopologyHelper: condition2: mac1: {} xy1: {} p1: {} ", mac1,xy1,p1);
+                    if (p1.intValue() != yx.intValue()) {
+                        LOG.debug("BridgeTopologyHelper: condition2: p1 is not yx: so is on the other side. xy bridge port {}",xy1);
+                        return xy1;
+                    }
                     continue;
                 }
                 if (ybft.get(mac).getBridgePort().intValue() == p1.intValue())
@@ -751,6 +753,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.debug("calculate: node: [{}], elected root bridge: [{}], has updated bft",
                     getNodeId(), 
                      electedRoot.getId());
+           m_domain.clearTopologyForBridge(electedRoot.getId());
            if (m_domain.getTopology().isEmpty()) {
                LOG.debug("calculate: node: [{}], new elected root bridge: [{}], is the first bridge in topology. Adding root shared segments",
                        getNodeId(), 
@@ -759,7 +762,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 electedRoot.setRootBridge(true);
                 electedRoot.setRootPort(null);
            } else {
-                m_domain.clearTopologyForBridge(electedRoot.getId());
                 calculate(m_domain.getRootBridge(), m_domain.calculateRootBFT(),
                                 electedRoot, rootBft);
                 m_domain.hierarchySetUp(electedRoot);

@@ -168,10 +168,6 @@ public abstract class EnLinkdTestHelper {
         System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
         System.err.println("");
     }
-
-    public static void printBridgeTopology(BroadcastDomain domain) {
-            System.err.println(domain.printTopology());
-    }
         
     public List<BridgeMacLink> addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac, List<BridgeMacLink> bft) {
         BridgeMacLink link = new BridgeMacLink();
@@ -301,7 +297,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkAC(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegms = domain.getTopology();        	
             assertEquals(3, shsegms.size());
 
@@ -357,7 +352,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkAB(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegms = domain.getTopology(); 
             assertEquals(4, shsegms.size());
             for (SharedSegment shared: shsegms) {
@@ -412,7 +406,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkBC(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegms = domain.getTopology();
             assertEquals(4, shsegms.size());
             for (SharedSegment shared: shsegms) {
@@ -467,7 +460,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegms = domain.getTopology();
             assertEquals(5, shsegms.size());
             for (SharedSegment shared: shsegms) {
@@ -721,7 +713,6 @@ public abstract class EnLinkdTestHelper {
           }
         
         public void checkDE(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
             for (SharedSegment shared: shsegs) {
@@ -778,7 +769,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkDF(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
             for (SharedSegment shared: shsegs) {
@@ -835,7 +825,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkDG(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(6, shsegs.size());
             for (SharedSegment shared: shsegs) {
@@ -919,7 +908,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkEF(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
             for (SharedSegment shared: shsegs) {
@@ -976,7 +964,6 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkDEF(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(4, shsegs.size());
             for (SharedSegment shared: shsegs) {
@@ -1045,8 +1032,7 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkDEFG(BroadcastDomain domain) {
-        	printBridgeTopology(domain);
-        	List<SharedSegment> shsegs = domain.getTopology();
+            List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(8, shsegs.size());
             for (SharedSegment shared: shsegs) {
                 System.err.println(shared.printTopology());
@@ -1404,7 +1390,6 @@ public abstract class EnLinkdTestHelper {
         }
         
     public void check2nodeTopology(BroadcastDomain domain, boolean revertedbblink) {
-    	printBridgeTopology(domain);
     	List<SharedSegment> shsegs = domain.getTopology();
         assertEquals(5, shsegs.size());
         for (SharedSegment shared: shsegs) {
@@ -1541,7 +1526,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> links = domain.getTopology();
             assertEquals(5, links.size());
             for (SharedSegment shared: links) {
@@ -1602,7 +1586,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> links = domain.getTopology();
 
             assertEquals(1, links.size());
@@ -1696,7 +1679,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> links = domain.getTopology();
             assertEquals(7, links.size());
             for (SharedSegment shared: links) {
@@ -1819,7 +1801,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain, boolean reverse) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
 
             assertEquals(10, shsegs.size());
@@ -1946,7 +1927,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
 
@@ -2067,7 +2047,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
 
@@ -2199,7 +2178,6 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void check(BroadcastDomain domain) {
-            printBridgeTopology(domain);
             List<SharedSegment> shsegs = domain.getTopology();
             assertEquals(3, shsegs.size());
 

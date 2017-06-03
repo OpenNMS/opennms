@@ -353,7 +353,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
         
-        printBridgeTopology(ndbt.getDomain());
         List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
         assertEquals(3, shsegs.size());
         
@@ -380,7 +379,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
         
-        printBridgeTopology(ndbt.getDomain());
         List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
         assertEquals(3, shsegs.size());
         
@@ -888,9 +886,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(topology.portII, ndbt.getDomain().getBridge(topology.nodeIId).getRootPort());
         assertEquals(false, ndbt.getDomain().getBridge(topology.nodeLId).isRootBridge());
         assertEquals(topology.portLL, ndbt.getDomain().getBridge(topology.nodeLId).getRootPort());
-
-        printBridgeTopology(ndbt.getDomain());
-
     }
 
 }
