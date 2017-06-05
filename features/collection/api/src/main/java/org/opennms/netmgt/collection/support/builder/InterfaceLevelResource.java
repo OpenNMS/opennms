@@ -48,7 +48,7 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel(CollectionResource resource) {
         return m_ifName;
     }
 
