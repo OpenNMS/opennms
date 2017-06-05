@@ -73,6 +73,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 
@@ -306,6 +307,7 @@ public class WSManCollectorTest {
 
         // Process the data and generate the collection set
         WsManCollector.processEnumerationResults(group, builder, resourceSupplier, nodes);
+        CollectionSet collectionSet = builder.build();
 
         // Verify the result
         assertEquals(Arrays.asList(
@@ -313,7 +315,8 @@ public class WSManCollectorTest {
                 "wsProcIndex/c0/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,95.0]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuName[c1,null]",
                 "wsProcIndex/c1/windows-os-wmi-processor/wmiOSCpuIntsPerSec[null,100.0]"),
-                flatten(builder.build()));
+                flatten(collectionSet));
+        assertEquals(Sets.newHashSet("c0", "c1"), getResourcesByLabel(collectionSet).keySet());
     }
 
     private static void addAttribute(Group group, String name, String alias, String type) {
@@ -356,5 +359,16 @@ public class WSManCollectorTest {
             }
         });
         return attributesByName;
+    }
+
+    private static Map<String, CollectionResource> getResourcesByLabel(CollectionSet collectionSet) {
+        final Map<String, CollectionResource> resourcesByLabel = Maps.newLinkedHashMap();
+        collectionSet.visit(new AbstractCollectionSetVisitor() {
+            @Override
+            public void visitResource(CollectionResource resource) {
+                resourcesByLabel.put(resource.getInterfaceLabel(), resource);
+            }
+        });
+        return resourcesByLabel;
     }
 }
