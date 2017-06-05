@@ -132,6 +132,8 @@ public class CollectionSetBuilder {
 
     public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {
         return new AbstractCollectionResource(agent) {
+            private String label;
+
             @Override
             public String getResourceTypeName() {
                 return resource.getTypeName();
@@ -143,8 +145,12 @@ public class CollectionSetBuilder {
             }
 
             @Override
-            public String getInterfaceLabel() {
-                return resource.getLabel();
+            public synchronized String getInterfaceLabel() {
+                if (label == null) {
+                    // Cache the results, since the operation may be expensive
+                    label = resource.getLabel(this);
+                }
+                return label;
             }
 
             @Override

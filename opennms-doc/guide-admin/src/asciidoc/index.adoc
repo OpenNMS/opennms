@@ -171,6 +171,10 @@ include::text/events/sources/eif-adapter.adoc[]
 include::text/events/sources/tl1.adoc[]
 include::text/events/eventbus.adoc[]
 
+[[ga-alarms]]
+== Alarms
+include::text/alarms/alarm-sound-flash.adoc[]
+
 [[ga-notifications]]
 == Notifications
 include::text/notifications/introduction.adoc[]
