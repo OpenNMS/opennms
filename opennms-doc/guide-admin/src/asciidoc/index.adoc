@@ -152,6 +152,10 @@ include::text/performance-data-collection/stress-testing.adoc[]
 == Events
 include::text/events/events.adoc[]
 
+[[ga-alarms]]
+== Alarms
+include::text/alarms/alarm-sound-flash.adoc[]
+
 [[ga-notifications]]
 == Notifications
 include::text/notifications/introduction.adoc[]
