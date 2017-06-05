@@ -888,4 +888,38 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(topology.portLL, ndbt.getDomain().getBridge(topology.nodeLId).getRootPort());
     }
 
+    @Test
+    public void testThreeSwitchTopology() {
+
+        ThreeSwitchTopology topology = new ThreeSwitchTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        domain.setBridgeElements(topology.elemlist);
+        
+        NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
+        ndbtB.setDomain(domain);
+        ndbtB.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbtB.calculate();
+        
+        NodeDiscoveryBridgeTopology ndbtC= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeCId, null, null, null,location));
+        ndbtC.setDomain(domain);
+        ndbtC.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
+        ndbtC.calculate();
+
+        NodeDiscoveryBridgeTopology ndbtA= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
+        ndbtA.setDomain(domain);
+        ndbtA.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbtA.calculate();
+        
+        topology.check(domain);
+
+        ndbtB.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbtB.calculate();
+
+        topology.check(domain);
+        
+    }
 }

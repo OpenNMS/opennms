@@ -31,6 +31,8 @@ package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.model.OspfLink;
@@ -169,16 +172,24 @@ public abstract class EnLinkdTestHelper {
         System.err.println("");
     }
         
-    public List<BridgeMacLink> addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac, List<BridgeMacLink> bft) {
+    public BridgeMacLink addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac) {
         BridgeMacLink link = new BridgeMacLink();
         link.setNode(node);
         link.setBridgePort(bridgeport);
         link.setMacAddress(mac);
         link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-        bft.add(link);
-        return bft;
+        return link;
     }
     
+    public BridgeMacLink addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, Integer ifindex,String mac) {
+        BridgeMacLink link = new BridgeMacLink();
+        link.setNode(node);
+        link.setBridgePort(bridgeport);
+        link.setBridgePortIfIndex(ifindex);
+        link.setMacAddress(mac);
+        link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+        return link;
+    }
 
 
     protected static void printBackboneBridgeMacLink(BridgeMacLink link1, BridgeMacLink link2) {
@@ -208,6 +219,174 @@ public abstract class EnLinkdTestHelper {
                    ifIndex == link.getOspfIfIndex() &&
                    parentIfIndex == link.getOspfAddressLessIndex();
         };
+    }
+    class ThreeSwitchTopology {
+        Integer nodeAId = 109101;
+        Integer nodeBId = 109102;
+        Integer nodeCId = 109103;
+        OnmsNode nodeA= new OnmsNode();
+        OnmsNode nodeB= new OnmsNode();
+        OnmsNode nodeC= new OnmsNode();
+        BridgeElement elementA = new BridgeElement();
+        BridgeElement elementB = new BridgeElement();
+        BridgeElement elementC = new BridgeElement();
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+
+        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftC = new ArrayList<BridgeMacLink>();
+        
+        public ThreeSwitchTopology() {
+            nodeA.setId(nodeAId);
+            elementA.setNode(nodeA);
+            elementA.setBaseBridgeAddress("5017ff5b2980");
+            elemlist.add(elementA);
+    
+            nodeB.setId(nodeBId);
+            elementB.setNode(nodeB);
+            elementB.setBaseBridgeAddress("00e0b1bd2f5c");
+            elemlist.add(elementB);
+    
+            nodeC.setId(nodeCId);
+            elementC.setNode(nodeC);
+            elementC.setBaseBridgeAddress("00e0b1bd2652");
+            elemlist.add(elementC);
+            
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "000c29f49b80"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "001101030104"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "d4ca6d0e9976"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001763010792"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd265e"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42ef1e02"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42f5d30a"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001d454777dc"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd2652"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0022557fd894"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0021a4357254"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f800"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6dedd059"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "c4641393f352"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "e48d8cf63372"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d954b3b"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d88234f"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f80f"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84d6"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d147c96"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf3f4ee0"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42ef1df6"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d69c484"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6df7f801"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000e83f6120a"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d82ab08"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c429e3f3d"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6da2d626"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001d71d5e4e7"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0025454ac907"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84c8"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "4c00822458d2"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 3, 1003, "001763010d4f"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "000c42f213af"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "000c427bfee3"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "00176301050f"));
+
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0022557fd894"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d71d5e4e7"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c429e3f3d"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1e02"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "00e0b1bd2f5c"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d88234f"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6df7f801"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84d6"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1df6"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84c8"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0012cf68f80f"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42f5d30a"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6dedd059"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0025454ac907"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "c4641393f352"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d454777dc"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d0e9976"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d82ab08"));            
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0021a4357254"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84d6"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d69c484"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "e48d8cf63372"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d954b3b"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001101030104"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d147c96"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c29f49b80"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6da2d626"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 19, 1019, "4c00822458d2"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 24, 1024, "000e83f6120a"));
+
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "000c29f49b80"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c427bfee3"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c429e3f3d"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42ef1df6"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42ef1e02"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f213af"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f5d30a"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000e83f6120a"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001101030104"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf3f4ee0"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf5d2120"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf68f800"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "00176301050f"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001763010792"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001763010d4f"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001d454777dc"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001d71d5e4e7"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0021a4357254"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0022557fd894"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0025454ac907"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "002584f84401"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 5, 10105, "002699b52703"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 5, 10105, "002699b52749"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 4, 10104, "00a2ee425191"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "00e0b1bd2652"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "00e0b1bd2f5c"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "4c00822458d2"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "6c9ced30816a"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "c4641393f352"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "d4ca6d0e9976"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d147c96"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d69c484"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d82ab08"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d88234f"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d954b3b"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6da2d626"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6ded84c8"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6ded84d6"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6dedd059"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6df7f801"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "e48d8cf63372"));
+
+
+        }
+        
+        public void check(BroadcastDomain domain) {
+            assertEquals(3, domain.getBridgeNodesOnDomain().size());
+            assertEquals(nodeBId.intValue(), domain.getRootBridgeId().intValue());
+            assertEquals(9, domain.getTopology().size());
+            assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeAId).size());
+            assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeBId).size());
+            assertEquals(3, domain.getSharedSegmentOnTopologyForBridge(nodeCId).size());
+            for (SharedSegment segment: domain.getTopology()) {
+                assertNotNull(segment.getDesignatedBridge());
+                assertNotNull(segment.getDesignatedPort());
+                for (BridgeMacLink bridgeMacLink :segment.getBridgeMacLinks()) {
+                    assertNotNull(bridgeMacLink.getBridgePort());
+                    assertNotNull(bridgeMacLink.getBridgePortIfIndex());
+                    assertNotNull(bridgeMacLink.getMacAddress());
+               }
+            }
+            for (Bridge bridge: domain.getBridges()) {
+                if (bridge.isRootBridge())
+                    assertNull(bridge.getRootPort());
+                else
+                    assertNotNull(bridge.getRootPort());
+            }
+        }
     }
     
     class ABCTopology {
@@ -283,17 +462,17 @@ public abstract class EnLinkdTestHelper {
             elementC.setBaseBridgeAddress("cccccccccccc");
             elemlist.add(elementC);
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA, mac1,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac2,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac3,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac3));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac1,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB, mac2,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBC, mac3,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB, mac2));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBC, mac3));
 
-            bftC =addBridgeForwardingTableEntry(nodeC,portCB, mac1,bftC);
-            bftC =addBridgeForwardingTableEntry(nodeC,portCB, mac2,bftC);
-            bftC =addBridgeForwardingTableEntry(nodeC,portC, mac3,bftC);
+            bftC.add(addBridgeForwardingTableEntry(nodeC,portCB, mac1));
+            bftC.add(addBridgeForwardingTableEntry(nodeC,portCB, mac2));
+            bftC.add(addBridgeForwardingTableEntry(nodeC,portC, mac3));
         }
 
         public void checkAC(BroadcastDomain domain) {
@@ -648,68 +827,68 @@ public abstract class EnLinkdTestHelper {
             elementL.setBaseBridgeAddress("ddddddd4dddd");
             elemlist.add(elementL);
 
-            bftD =addBridgeForwardingTableEntry(nodeD,portD,  mac1,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portD,  mac2,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac3,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac4,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac5,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac6,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac7,bftD);
-            bftD =addBridgeForwardingTableEntry(nodeD,portDD, mac8,bftD);
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portD,  mac1));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portD,  mac2));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac3));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac4));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac5));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac6));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac7));
+            bftD.add(addBridgeForwardingTableEntry(nodeD,portDD, mac8));
 
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac1,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac2,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac3,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac4,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portE,  mac5,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portE,  mac6,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac7,bftE);
-            bftE =addBridgeForwardingTableEntry(nodeE,portEE, mac8,bftE);
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac1));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac2));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac3));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac4));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portE,  mac5));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portE,  mac6));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac7));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,portEE, mac8));
 
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac1,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac2,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portF,  mac3,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portF,  mac4,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac5,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac6,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac7,bftF);
-            bftF =addBridgeForwardingTableEntry(nodeF,portFF, mac8,bftF);
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac1));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac2));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portF,  mac3));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portF,  mac4));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac5));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac6));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac7));
+            bftF.add(addBridgeForwardingTableEntry(nodeF,portFF, mac8));
 
-            bftG =addBridgeForwardingTableEntry(nodeG,portGD, mac1,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portGD, mac2,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portGF, mac3,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portGF, mac4,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portGE, mac5,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portGE, mac6,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portG7, mac7,bftG);
-            bftG =addBridgeForwardingTableEntry(nodeG,portG8, mac8,bftG);
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGD, mac1));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGD, mac2));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGF, mac3));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGF, mac4));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGE, mac5));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portGE, mac6));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portG7, mac7));
+            bftG.add(addBridgeForwardingTableEntry(nodeG,portG8, mac8));
 
-            bftH =addBridgeForwardingTableEntry(nodeH,portH1, mac1,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portH2, mac2,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac3,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac4,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac5,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac6,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac7,bftH);
-            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac8,bftH);
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portH1, mac1));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portH2, mac2));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac3));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac4));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac5));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac6));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac7));
+            bftH.add(addBridgeForwardingTableEntry(nodeH,portHH, mac8));
 
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac1,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac2,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portI3, mac3,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portI4, mac4,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac5,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac6,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac7,bftI);
-            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac8,bftI);
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac1));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac2));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portI3, mac3));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portI4, mac4));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac5));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac6));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac7));
+            bftI.add(addBridgeForwardingTableEntry(nodeI,portII, mac8));
 
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac1,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac2,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac3,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac4,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portL5, mac5,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portL6, mac6,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac7,bftL);
-            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac8,bftL);
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac1));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac2));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac3));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac4));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portL5, mac5));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portL6, mac6));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac7));
+            bftL.add(addBridgeForwardingTableEntry(nodeL,portLL, mac8));
           }
         
         public void checkDE(BroadcastDomain domain) {
@@ -1347,45 +1526,45 @@ public abstract class EnLinkdTestHelper {
             elemlist.add(elementB);
 
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA11,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA12,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA13,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA14,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA11));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA12));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA13));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA14));
             
-            bftA =addBridgeForwardingTableEntry(nodeA,portA6, macA61,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA6, macA62,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA6, macA63,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA6, macA64,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA6, macA61));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA6, macA62));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA6, macA63));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA6, macA64));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB1,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB2,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB3,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB4,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB5,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB6,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macB21,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macB22,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB4));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB5));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB6));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macB21));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macB22));
 
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA11,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA12,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA61,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA62,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA63,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macAB1,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macAB2,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macAB3,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macBA1,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macBA2,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macBA3,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA11));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA12));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA61));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA62));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA63));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macAB1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macAB2));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macAB3));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macBA1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macBA2));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macBA3));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB21,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB22,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB23,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB21));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB22));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB23));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portB7, macB71,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB7, macB72,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB7, macB73,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB7, macB71));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB7, macB72));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB7, macB73));
 
         }
         
@@ -1517,11 +1696,11 @@ public abstract class EnLinkdTestHelper {
             element.setNode(nodeA);
             element.setBaseBridgeAddress("aaaaaaaaaaaa");
             elemlist.add(element);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac1, bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA2, mac2, bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA3, mac3, bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA4, mac4, bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA5, mac5, bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA2, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA3, mac3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA4, mac4));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA5, mac5));
             
         }
         
@@ -1578,10 +1757,10 @@ public abstract class EnLinkdTestHelper {
             elemlist.add(element);
 
 
-            bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac2,bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac3,bftA);
-            bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac4,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac4));
 
         }
         
@@ -1654,25 +1833,25 @@ public abstract class EnLinkdTestHelper {
             elemlist.add(element);
 
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA2, mac2,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA3, mac3,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA4, mac4,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA2, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA3, mac3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA4, mac4));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac231,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac232,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac233,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac234,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA23, mac231));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA23, mac232));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA23, mac233));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA23, mac234));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac241,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac242,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac243,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac244,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac245,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA24, mac241));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA24, mac242));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA24, mac243));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA24, mac244));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA24, mac245));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac251,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac252,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac253,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA25, mac251));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA25, mac252));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA25, mac253));
 
 
 
@@ -1775,28 +1954,28 @@ public abstract class EnLinkdTestHelper {
             elementB.setBaseBridgeAddress("bbbbbbbbbbbb");
             elemlist.add(elementB);
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA2, mac2,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA3, mac3,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA4, mac4,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA5, mac5,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA2, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA3, mac3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA4, mac4));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA5, mac5));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac6,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac7,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac8,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac9,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac6));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac7));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac8));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac9));
 
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac1,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac2,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac3,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac4,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac5,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac2));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac3));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac4));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac5));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portB6, mac6,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB7, mac7,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB8, mac8,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB9, mac9,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB6, mac6));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB7, mac7));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB8, mac8));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB9, mac9));
 
         }
         
@@ -1900,28 +2079,28 @@ public abstract class EnLinkdTestHelper {
             elemlist.add(elementB);
 
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac1,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac2,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac3,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac4,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac5,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac2));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac3));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac4));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac5));
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac6,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac7,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA8, mac8,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac9,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac6));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac7));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA8, mac8));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac9));
 
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac1,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac2,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac3,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac4,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac5,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac2));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac3));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac4));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac5));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portB6, mac6,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac7,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac8,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac9,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB6, mac6));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac7));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac8));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac9));
 
 
         }
@@ -2030,18 +2209,18 @@ public abstract class EnLinkdTestHelper {
 
 
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA11,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA12,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macAB,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macB21,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macB22,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA11));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA12));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macAB));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macB21));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macB22));
 
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA11,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA12,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macAB,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB21,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB22,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA11));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA12));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macAB));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB21));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB22));
 
 
         }
@@ -2165,15 +2344,15 @@ public abstract class EnLinkdTestHelper {
             elementB.setBaseBridgeAddress(macB);
             elemlist.add(elementB);
 
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA11,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portA1, macA12,bftA);
-            bftA =addBridgeForwardingTableEntry(nodeA,portAB, macB,bftA);
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA11));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portA1, macA12));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macB));
 
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA11,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macA12,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portBA, macAB,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB21,bftB);
-            bftB =addBridgeForwardingTableEntry(nodeB,portB2, macB22,bftB);
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA11));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macA12));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macAB));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB21));
+            bftB.add(addBridgeForwardingTableEntry(nodeB,portB2, macB22));
             
         }
         

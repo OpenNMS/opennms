@@ -305,7 +305,7 @@ E:    	for (BridgeElement element: bridgeelements) {
         root.setRootPort(null);
         if (m_bridges.size() == 1)
             return;
-        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(root.getId())) {
+        for (SharedSegment segment : getSharedSegmentOnTopologyForBridge(root.getId())) {
             segment.setDesignatedBridge(root.getId());
             tier(segment, root.getId());
         }
@@ -341,7 +341,6 @@ E:    	for (BridgeElement element: bridgeelements) {
                 for (Bridge curBridge: getBridges()) {
                     if (curBridge.getId().intValue() == newRootId.intValue()) {
                         newRootBridge=curBridge;
-                        System.out.println("root bridge" +newRootBridge.getId());
                         break;
                     }
                 }
@@ -373,10 +372,17 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public List<BridgeMacLink> calculateBFT(Bridge bridge) {
         Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
+        Map<Integer,BridgePort> portifindexmap = new HashMap<Integer, BridgePort>();
         Integer bridgeId = bridge.getId();
         List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
         OnmsNode node=new OnmsNode();
         node.setId(bridgeId);
+        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+            Integer bridgeport =segment.getPortForBridge(bridgeId);
+            BridgePort bridgeportifIndex = segment.getBridgePort(bridgeId);
+            portifindexmap.put(bridgeport, bridgeportifIndex);
+
+        }
         for (SharedSegment segment: getTopology()) {
             
             Set<String> macs = segment.getMacsOnSegment();
@@ -394,6 +400,9 @@ E:    	for (BridgeElement element: bridgeelements) {
                 BridgeMacLink link = new BridgeMacLink();
                 link.setNode(node);
                 link.setBridgePort(bridgePort);
+                link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex());
+                link.setBridgePortIfName(portifindexmap.get(bridgePort).getBridgePortIfName());
+                link.setVlan(portifindexmap.get(bridgePort).getVlan());
                 link.setMacAddress(mac);
                 link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
                 links.add(link);
@@ -503,6 +512,8 @@ E:    	for (BridgeElement element: bridgeelements) {
             strbfr.append(link.getMacAddress());
             strbfr.append(":bridgeport:");
             strbfr.append(link.getBridgePort());
+            strbfr.append(":ifindex:");
+            strbfr.append(link.getBridgePortIfIndex());
             strbfr.append("\n");
     	}
         return strbfr.toString();

@@ -309,19 +309,26 @@ public class SharedSegment {
         return false;
     }
 
+    public BridgePort getBridgePort(Integer nodeid) {
+        if (nodeid == null)
+            return null;
+        for (BridgePort link: m_portsOnSegment) {
+                if (link.getNode().getId().intValue() == nodeid.intValue() )
+                    return link;
+        }
+        return null;        
+    }
+    
     public Integer getPortForBridge(Integer nodeid) {
         if (nodeid == null)
             return null;
-        if (m_macsOnSegment.isEmpty()) {
-            for (BridgePort link: m_portsOnSegment) {
+        for (BridgePort link: m_portsOnSegment) {
                 if (link.getNode().getId().intValue() == nodeid.intValue() )
                     return link.getBridgePort();
-            }
-            return null;
         }
         return null;
     }
-    
+
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
             strbfr.append("segment:[bridges:");
