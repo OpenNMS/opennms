@@ -885,7 +885,7 @@
 
     
     public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent ){
-        
+
         // added this section to fire when a new alarm arrives
         // This maintains the highest alarmId or eventId received in the session variable "opennms.alarmlist.HIGHEST"
         // If a new alarm is received the variable is updated
@@ -893,35 +893,34 @@
 
         Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
         Integer latest = 0;
-    	Integer lastId = 0;
-    	
+        Integer lastId = 0;
+
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
-        // highest = new Integer(onmsAlarm.getId());
-    	if(soundOnEvent){
-    	   OnmsEvent lastEvent=onmsAlarm.getLastEvent();
-    	   if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
-    	} else {
-    		lastId=onmsAlarm.getId();
-    	}
-    	
+        if(soundOnEvent){
+            OnmsEvent lastEvent=onmsAlarm.getLastEvent();
+            if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
+        } else {
+            lastId=onmsAlarm.getId();
+        }
+
         if(highest==null) {
-          if (lastId!=null) {
-        	  highest = new Integer(lastId);
-        	  session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
-              return soundStr;
-          }
-         } else {
-          latest = new Integer(lastId);
-          if (latest > highest) {
-            highest = latest;
-            session.setAttribute("opennms.alarmlist.HIGHEST", highest);
-            return soundStr;
+            if (lastId!=null) {
+                highest = new Integer(lastId);
+                session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
+                return soundStr;
+            }
+        } else {
+            latest = new Integer(lastId);
+            if (latest > highest) {
+                highest = latest;
+                session.setAttribute("opennms.alarmlist.HIGHEST", highest);
+                return soundStr;
             }
         }
-        
+
         return "<!-- no sound -->";
-      
+
     }
 
 %>
