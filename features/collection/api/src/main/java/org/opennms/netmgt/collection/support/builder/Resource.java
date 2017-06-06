@@ -60,7 +60,7 @@ public interface Resource {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getLabel();
+    public String getLabel(CollectionResource resource);
 
     /**
      * Retrieves the path of the resource, relative to the repository root.
