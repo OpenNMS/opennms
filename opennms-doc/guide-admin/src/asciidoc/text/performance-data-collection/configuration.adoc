@@ -43,21 +43,18 @@ The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is
 ==== Resource Types
 .Resource Types
 
-Resource Types are used to group sets of performance data measurements for
-persisting, indexing, and display in the _Web UI_. Each resource type has a
-unique name, label definitions for display in the _Web UI_, and strategy
-definitions for archiving the measurements for long term analysis.
+Resource Types are used to group sets of performance data measurements for persisting, indexing, and display in the _Web UI_.
+Each resource type has a unique name, label definitions for display in the _Web UI_, and strategy definitions for archiving the measurements for long term analysis.
 
-There are two labels for a resource type. The first, `label`, defines a string
-to display in the _Web UI_. The second, `resourceLabel`, defines the template
-used when displaying each unique group of measurements name for the resource type.
+There are two labels for a resource type.
+The first, `label`, defines a string to display in the _Web UI_.
+The second, `resourceLabel`, defines the template used when displaying each unique group of measurements name for the resource type.
 
-There are two types of strategy definitions for resource types, persistence
-selector and storage strategies. The persistence selector strategy filters the
-group indexes down to a subset for storage on disk. The storage strategy is used
-to convert an index into a resource path label for persistence. There are two
-special resource types that do not have a resource-type definition. They are
-`node` and `ifIndex`.
+There are two types of strategy definitions for resource types, persistence selector and storage strategies.
+The persistence selector strategy filters the group indexes down to a subset for storage on disk.
+The storage strategy is used to convert an index into a resource path label for persistence.
+There are two special resource types that do not have a resource-type definition.
+They are `node` and `ifIndex`.
 
 Resource Types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
 
@@ -90,8 +87,8 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 
 ====== PersistRegexSelectorStrategy
 
-The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions. On evaulation, this expression should
-return either true, persist index to storage, or false, discard data.
+The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
+On evaulation, this expression should return either true, persist index to storage, or false, discard data.
 
 
 ===== Storage Strategies
@@ -116,7 +113,8 @@ The FrameRelayStorageStrategy takes no parameters.
 
 ====== HostFileSystemStorageStrategy
 
-The HostFileSystemStorageStrategy takes no parameters. This class is marked as deprecated, and can be replaced with:
+The HostFileSystemStorageStrategy takes no parameters.
+This class is marked as deprecated, and can be replaced with:
 
 [source, xml]
 ----
@@ -143,4 +141,6 @@ Values for `replace-first`, and `replace-all` must match the pattern _s/regex/re
 
 ====== XmlStorageStrategy
 
-This XmlStorageStrategy takes no parameters. The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores. All equal signs are removed.
+This XmlStorageStrategy takes no parameters.
+The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.
+All equal signs are removed.
