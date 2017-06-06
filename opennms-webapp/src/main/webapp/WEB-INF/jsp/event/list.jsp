@@ -614,6 +614,7 @@
     }
 
     public String[] getNodeLabels( String nodeLabel ) {
+        nodeLabel = WebSecurityUtils.sanitizeString(nodeLabel);
         String[] labels = null;
 
         if( nodeLabel.length() > 32 ) {
