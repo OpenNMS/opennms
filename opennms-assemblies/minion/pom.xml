@@ -62,7 +62,7 @@
                   <version>${project.version}</version>
                   <classifier>jar-with-dependencies</classifier>
                   <type>jar</type>
-                  <outputDirectory>${project.build.directory}/base-assembly/bin</outputDirectory>
+                  <outputDirectory>${project.build.directory}/unpacked/base-assembly/bin</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
