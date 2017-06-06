@@ -76,6 +76,14 @@
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
 
+  <!-- Used to set the Jetty specific user identity based on the current principal authenticated by Spring Security
+       NOTE: This filter is not mapped to anything by default and should be enabled when using NCSA request logging
+       by uncommenting the corresponding <filter-mapping> section bellow. -->
+  <filter>
+    <filter-name>jettyUserIdentityFilter</filter-name>
+    <filter-class>org.opennms.web.springframework.security.JettyUserIdentityFilter</filter-class>
+  </filter>
+
   <!-- filter out invalid file:// Origin: header to avoid CORS issues with Compass -->
   <filter>
     <description>Filter out invalid file:// Origin: header to avoid CORS issues with Compass</description>
@@ -208,6 +216,13 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <!-- Enable this filter mapping when using NCSA request logging
+  <filter-mapping>
+    <filter-name>jettyUserIdentityFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  -->
 
   <filter-mapping>
     <filter-name>StoreRequestProperties</filter-name>
