@@ -1589,15 +1589,20 @@ public class ThresholdingVisitorIT {
 
     /**
      * Verifies that we are able to generate thresholds for CollectionSets
-     * using GenericTypeResourceWithoutInstance resources.
+     * using GenericTypeResource resources that use the SiblingColumnStorageStrategy.
      *
-     * These are commonly used by the WS-Man collector, where data is returned
-     * in a tabular format and the resource name is set using
+     * Resources of this type are commonly used by the WS-Man collector,
+     * where data is returned in a tabular format and the resource name is set using
      * the SiblingColumnStorageStrategy.
+     *
+     * In the case of the WS-Man collector, the instance ids are generated systematically
+     * and will differ from one collection run to another. For this reason, it's important
+     * that the thresholder keys it's state based off of the resource label, and not
+     * the instance id - this test will validate this.
      *
      */
     @Test
-    public void testThresholdFiltersOnGenericResourceWithoutInstance() throws Exception {
+    public void testThresholdFiltersOnGenericResourceWithSiblingColumnStorageStrategy() throws Exception {
         initFactories("/threshd-configuration.xml", "/test-thresholds-wsman.xml");
         ThresholdingVisitor visitor = createVisitor();
 
@@ -1605,25 +1610,6 @@ public class ThresholdingVisitorIT {
         NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
 
         org.opennms.netmgt.config.datacollection.ResourceType wmiLogicalDisk = createWmiLogicalDiskResourceType();
-        // A resource for each drive
-        GenericTypeResource volume16 = new GenericTypeResource(nodeResource, wmiLogicalDisk, "0");
-        GenericTypeResource iDrive = new GenericTypeResource(nodeResource, wmiLogicalDisk, "1");
-
-        // Create the entries in strings.properties
-        ResourcePath path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "HarddiskVolume16");
-        m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "HarddiskVolume16");
-        path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "I");
-        m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "I");
-
-        // Build a collection set containing attributes for both resources
-        CollectionSet collectionSet = new CollectionSetBuilder(agent)
-                .withStringAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDName", "HarddiskVolume16")
-                .withNumericAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeMBytes", 1.0, AttributeType.GAUGE)
-                .withNumericAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeSpace", 10, AttributeType.GAUGE)
-                .withStringAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDName", "I")
-                .withNumericAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeMBytes", 2668498.0, AttributeType.GAUGE)
-                .withNumericAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeSpace", 10, AttributeType.GAUGE)
-                .build();
 
         // Expect a low threshold event (as configured in test-thresholds-wsman.xml)
         addEvent("uei.opennms.org/threshold/lowThresholdExceededWSManLogStorage", // uei
@@ -1634,15 +1620,36 @@ public class ThresholdingVisitorIT {
                 12288.0, // rearm
                 1.0, // value
                 "HarddiskVolume16", // label
-                "0", // instance
+                "volume16-1", // instance
                 "wmiLDPctFreeMBytes", // ds
                 null, // iflabel
                 null, // ifindex
                 m_anticipator, m_anticipatedEvents);
 
         // Visit the collection set twice (the trigger is set to 2)
-        collectionSet.visit(visitor);
-        collectionSet.visit(visitor);
+        for (int i = 0; i < 2; i++) {
+            // A resource for each drive, with a unique instance on each iteration
+            GenericTypeResource volume16 = new GenericTypeResource(nodeResource, wmiLogicalDisk, "volume16-" + i);
+            GenericTypeResource iDrive = new GenericTypeResource(nodeResource, wmiLogicalDisk, "iDrive" + i);
+
+            // Create the entries in strings.properties
+            ResourcePath path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "HarddiskVolume16");
+            m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "HarddiskVolume16");
+            path = ResourcePath.get("snmp", "1", "wmiLogicalDisk", "I");
+            m_resourceStorageDao.setStringAttribute(path, "wmiLDName", "I");
+
+            // Build a collection set containing attributes for both resources
+            CollectionSet collectionSet = new CollectionSetBuilder(agent)
+                    .withStringAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDName", "HarddiskVolume16")
+                    .withNumericAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeMBytes", 1.0, AttributeType.GAUGE)
+                    .withNumericAttribute(volume16, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeSpace", 10, AttributeType.GAUGE)
+                    .withStringAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDName", "I")
+                    .withNumericAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeMBytes", 2668498.0, AttributeType.GAUGE)
+                    .withNumericAttribute(iDrive, "windows-os-wmi-LogicalDisk", "wmiLDPctFreeSpace", 10, AttributeType.GAUGE)
+                    .build();
+
+            collectionSet.visit(visitor);
+        }
 
         // Verify!
         verifyEvents(0);
