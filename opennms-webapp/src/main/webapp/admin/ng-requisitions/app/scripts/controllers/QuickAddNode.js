@@ -24,7 +24,7 @@
   *
   * @description The controller for manage the modal dialog for quick add a node to an existing requisition.
   */
-  .controller('QuickAddNodeController', ['$scope', 'foreignSources', 'RequisitionsService', 'growl', function($scope, foreignSources, RequisitionsService, growl) {
+  .controller('QuickAddNodeController', ['$scope', 'foreignSources', 'RequisitionsService', 'growl', '$sanitize', function($scope, foreignSources, RequisitionsService, growl, $sanitize) {
 
     /**
     * @description The available foreign sources
@@ -98,8 +98,8 @@
     */
     $scope.provision = function() {
       $scope.isSaving = true;
-      growl.info('The node ' + $scope.node.nodeLabel + ' is being added to requisition ' + $scope.node.foreignSource + '. Please wait...');
-      var successMessage = 'The node ' + $scope.node.nodeLabel + ' has been added to requisition ' + $scope.node.foreignSource;
+      growl.info($sanitize('The node ' + $scope.node.nodeLabel + ' is being added to requisition ' + $scope.node.foreignSource + '. Please wait...'));
+      var successMessage = $sanitize('The node ' + $scope.node.nodeLabel + ' has been added to requisition ' + $scope.node.foreignSource);
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           $scope.reset();
