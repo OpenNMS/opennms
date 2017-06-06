@@ -1464,6 +1464,13 @@
       <severity>Normal</severity>
    </event>
    <event>
+      <uei>uei.opennms.org/alarms/alarmDeleted</uei>
+      <event-label>OpenNMS-defined internal event: alarmDeleted</event-label>
+      <descr>&lt;p&gt;Alarm with reduction key %param[reductionkey] and id: %parm[alarmId]% was deleted.&lt;/p&gt;</descr>
+      <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was deleted.</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
       <uei>uei.opennms.org/bsm/serviceOperationalStatusChanged</uei>
       <event-label>Business Service Monitoring: Service Operational Status Changed</event-label>
       <descr>&lt;p>The operational status for business service '%parm[businessServiceName]%', with id=%parm[businessServiceId]%, changed from %parm[prevSeverityLabel]% to %parm[newSeverityLabel]%. args(%parm[##]%): %parm[all]%&lt;/p></descr>

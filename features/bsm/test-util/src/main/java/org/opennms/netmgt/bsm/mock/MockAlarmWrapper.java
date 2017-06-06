@@ -50,9 +50,4 @@ public class MockAlarmWrapper implements AlarmWrapper {
         return m_status;
     }
 
-    @Override
-    public Integer getId() {
-        return Integer.valueOf(0);
-    }
-
 }

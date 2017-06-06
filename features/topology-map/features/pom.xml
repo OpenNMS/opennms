@@ -19,6 +19,7 @@
   <modules>
     <module>api</module>
     <module>runtime-application</module>
+    <module>runtime-asset</module>
     <module>runtime-base</module>
     <module>runtime-browsers</module>
     <module>runtime-bsm</module>

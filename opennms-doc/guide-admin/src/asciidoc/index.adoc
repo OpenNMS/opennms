@@ -152,6 +152,10 @@ include::text/performance-data-collection/stress-testing.adoc[]
 == Events
 include::text/events/events.adoc[]
 
+[[ga-alarms]]
+== Alarms
+include::text/alarms/alarm-sound-flash.adoc[]
+
 [[ga-notifications]]
 == Notifications
 include::text/notifications/introduction.adoc[]
@@ -192,6 +196,9 @@ include::text/bsm/bsmd.adoc[]
 [[ga-topology]]
 == Topology Map
 include::text/topology/topology.adoc[]
+
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
 
 [[ga-database-reports]]
 == Database Reports

@@ -39,7 +39,7 @@
             </executions>
             <configuration>
               <descriptors>
-                <descriptor>src/assembly/default.xml</descriptor>
+                <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>posix</tarLongFileMode>
@@ -109,7 +109,7 @@
             </executions>
             <configuration>
               <descriptors>
-                <descriptor>src/assembly/dir.xml</descriptor>
+                <descriptor>src/assembly/fulldir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>posix</tarLongFileMode>
@@ -300,6 +300,31 @@
             <version>2.6</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>net.nicoulaj.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals><goal>files</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <algorithms><algorithm>SHA-1</algorithm></algorithms>
+          <fileSets>
+            <fileSet>
+              <directory>${project.build.directory}/features-repo</directory>
+              <includes>
+                <include>**/*.cfg</include>
+                <include>**/*.jar</include>
+                <include>**/*.pom</include>
+                <include>**/*.war</include>
+                <include>**/*.xml</include>
+              </includes>
+            </fileSet>
+          </fileSets>
+        </configuration>
       </plugin>
       <plugin> 
         <artifactId>maven-clean-plugin</artifactId> 
@@ -685,16 +710,6 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.release/</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://maven.opennms.org/content/repositories/com.springsource.repository.bundles.external/</url>
     </repository>
     <repository>
        <id>vaadin-addons</id>

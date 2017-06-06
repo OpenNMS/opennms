@@ -52,6 +52,17 @@ public interface Resource {
     public String getInstance();
 
     /**
+     * Returns a unique label for the instance of this resource.
+     * This label is used by threshd to generate a unique id on a per resource basis,
+     * grouped by node.
+     *
+     * See {@link org.opennms.netmgt.threshd.CollectionResourceWrapper}
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLabel(CollectionResource resource);
+
+    /**
      * Retrieves the path of the resource, relative to the repository root.
      *
      * @param resource Used by the {@link GenericTypeResource} in order to determine the instance name.

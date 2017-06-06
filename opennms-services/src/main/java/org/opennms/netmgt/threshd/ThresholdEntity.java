@@ -230,7 +230,16 @@ public final class ThresholdEntity implements Cloneable {
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
         double dsValue=0.0;
-        String instance = resource != null ? resource.getInstance() : null;
+
+        String instance = null;
+        if (resource != null) {
+            // NMS-9361: Use the instance label in conjunction with the instance
+            // as the key for the thresholder's state. This allows us to uniquely
+            // identify resources that share the same instance, but whose path
+            // on disk may differ due to the use of a StorageStrategy implementation
+            // such as the SiblingColumnStorageStrategy
+            instance = String.format("%s:%s", resource.getInstance(), resource.getInstanceLabel());
+        }
         try {
             if (getThresholdEvaluatorStates(instance).size() > 0) {
                 dsValue=getThresholdConfig().evaluate(values);
