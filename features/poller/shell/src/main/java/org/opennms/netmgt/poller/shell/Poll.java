@@ -84,7 +84,8 @@ public class Poll extends OsgiCommandSupport {
                         final Map<String, Number> properties = pollStatus.getProperties();
                         if (properties.size() > 0) {
                             properties.entrySet().stream().forEach(e -> {
-                                System.out.printf("\t%s: %.4f\n", e.getKey(), e.getValue());
+                                System.out.printf("\t%s: %.4f\n", e.getKey(),
+                                        e.getValue() != null ? e.getValue().doubleValue() : null);
                             });
                         } else {
                             System.out.printf("(No properties were returned by the monitor.\n");
