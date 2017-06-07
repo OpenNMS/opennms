@@ -220,23 +220,27 @@ public abstract class EnLinkdTestHelper {
                    parentIfIndex == link.getOspfAddressLessIndex();
         };
     }
-    class ThreeSwitchTopology {
+    class FourSwitchTopology {
         Integer nodeAId = 109101;
         Integer nodeBId = 109102;
         Integer nodeCId = 109103;
+        Integer nodeDId = 109104;
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
         OnmsNode nodeC= new OnmsNode();
+        OnmsNode nodeD= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
         BridgeElement elementB = new BridgeElement();
         BridgeElement elementC = new BridgeElement();
+        BridgeElement elementD = new BridgeElement();
         List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
 
         List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftC = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftD = new ArrayList<BridgeMacLink>();
         
-        public ThreeSwitchTopology() {
+        public FourSwitchTopology() {
             nodeA.setId(nodeAId);
             elementA.setNode(nodeA);
             elementA.setBaseBridgeAddress("5017ff5b2980");
@@ -251,7 +255,12 @@ public abstract class EnLinkdTestHelper {
             elementC.setNode(nodeC);
             elementC.setBaseBridgeAddress("00e0b1bd2652");
             elemlist.add(elementC);
-            
+
+            nodeD.setId(nodeDId);
+            elementD.setNode(nodeD);
+            elementD.setBaseBridgeAddress("0012cf5d2120");
+            elemlist.add(elementD);
+
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "000c29f49b80"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "001101030104"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "d4ca6d0e9976"));
@@ -327,7 +336,7 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f213af"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f5d30a"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000e83f6120a"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "001101030104"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025, "001101030104"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf3f4ee0"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf5d2120"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf68f800"));
@@ -360,17 +369,49 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6dedd059"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6df7f801"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "e48d8cf63372"));
-
+            
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "000c29f49b80"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c427bfee3"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c429e3f3d"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42ef1df6"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42ef1e02"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42f213af"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42f5d30a"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000e83f6120a"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "001101030104"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0012cf3f4ee0"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0012cf68f800"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00176301050f"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "001763010792"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "001763010d4f"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "001d454777dc"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "001d71d5e4e7"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0021a4357254"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0022557fd894"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0025454ac907"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00e0b1bd2652"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00e0b1bd2f5c"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00e0b1bd2f5e"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "4c00822458d2"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "c4641393f352"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "d4ca6d0e9976"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d147c96"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d69c484"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d82ab08"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d88234f"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d954b3b"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6da2d626"));
 
         }
         
         public void check(BroadcastDomain domain) {
-            assertEquals(3, domain.getBridgeNodesOnDomain().size());
+            assertEquals(4, domain.getBridgeNodesOnDomain().size());
             assertEquals(nodeBId.intValue(), domain.getRootBridgeId().intValue());
-            assertEquals(9, domain.getTopology().size());
+            assertEquals(10, domain.getTopology().size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeAId).size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeBId).size());
             assertEquals(3, domain.getSharedSegmentOnTopologyForBridge(nodeCId).size());
+            assertEquals(2, domain.getSharedSegmentOnTopologyForBridge(nodeDId).size());
             for (SharedSegment segment: domain.getTopology()) {
                 assertNotNull(segment.getDesignatedBridge());
                 assertNotNull(segment.getDesignatedPort());

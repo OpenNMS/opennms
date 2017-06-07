@@ -47,9 +47,20 @@ public class BroadcastDomain {
 
     volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
     
+    volatile Map<Integer,List<BridgeMacLink>> m_forwarding = new HashMap<Integer,List<BridgeMacLink>>();
+    
     boolean m_lock = false;
 
     Object m_locker;
+
+    public void addForwarding(BridgeMacLink forward) {
+        Integer bridgeid = forward.getNode().getId();
+        if (bridgeid == null)
+            return;
+        if (!m_forwarding.containsKey(bridgeid))
+            m_forwarding.put(bridgeid, new ArrayList<BridgeMacLink>());
+        m_forwarding.get(bridgeid).add(forward);
+    }
     
 	public Set<String> getBridgeMacAddresses(Integer bridgeid) {
 		Set<String> bridgemacaddresses = new HashSet<String>();
@@ -85,6 +96,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
 
     public void clearTopology() {
+        m_forwarding.clear();
         m_topology.clear();
     }
     
@@ -328,6 +340,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     public void clearTopologyForBridge(Integer bridgeId) {
+        m_forwarding.remove(bridgeId);
     	Bridge bridge = getBridge(bridgeId);
     	if (bridge == null)
     		return;
@@ -408,6 +421,8 @@ E:    	for (BridgeElement element: bridgeelements) {
                 links.add(link);
             }
         }
+        if (m_forwarding.containsKey(bridgeId))
+            links.addAll(m_forwarding.get(bridgeId));
         return links;
     }
     
@@ -516,6 +531,19 @@ E:    	for (BridgeElement element: bridgeelements) {
             strbfr.append(link.getBridgePortIfIndex());
             strbfr.append("\n");
     	}
+        return strbfr.toString();
+    }
+
+    public static String printTopologyLink(BridgeMacLink link) {
+        StringBuffer strbfr = new StringBuffer();
+            strbfr.append("nodeid:[");
+            strbfr.append(link.getNode().getId());
+            strbfr.append("]:");
+            strbfr.append(link.getMacAddress());
+            strbfr.append(":bridgeport:");
+            strbfr.append(link.getBridgePort());
+            strbfr.append(":ifindex:");
+            strbfr.append(link.getBridgePortIfIndex());
         return strbfr.toString();
     }
 
