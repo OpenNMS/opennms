@@ -43,7 +43,7 @@ If you use the Remote Poller, you will need to install the `opennms-webapp-remot
 * *Automatic provisioning of Minions*: Minion devices will be added to the _Minions_ requisition and monitored for connectivity with OpenNMS.
 * *GraphML Topology Provider*: A new Topology Provider is available that reads GraphML formatted graphs and displays them in the the Topology UI.
 * *OpenNMS Elasticsearch ReST Forwarder*: This Elasticsearch forwarder can store events, alarms, and alarm state changes in Elasticsearch for archival or searching. It is compatible with all currently supported versions of Elasticsearch.
-* *Drools Persistence*: Drools working memory will now be persisted to disk upon shutdown of OpenNMS. (new in 19.1)
+* *Drools Persistence*: Drools working memory can now be persisted to disk upon shutdown of OpenNMS. (new in 19.1)
 * *Unified JAAS Authentication*: The web UI, the Apache Karaf OSGi console, and the built-in ActiveMQ broker all use unified authentication.
 * *Monitoring Location Events*: Events will be sent when Monitoring Locations are added, updated, or deleted.
 * *Exponential propogation*: There is a new exponential propogation function available for Business Services.
