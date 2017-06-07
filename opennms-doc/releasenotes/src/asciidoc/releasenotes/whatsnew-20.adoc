@@ -17,6 +17,11 @@
   The script is named `NMS-9303-cleanup-deprecated-events.sh}` and executes a SQL script.
   In case you run PostgreSQL on Windows, you can use `psql.exe -d opennms -U opennms -W -a -f NMS-9303-cleanup-deprecated-events.sql` to run the maintenance script.
 
+=== Future Breaking Changes
+
+* *Configuration File Format*: In OpenNMS Horizon 21, we will (finally) be re-formatting all XML configuration files in `$OPENNMS_HOME/etc` to match the way JAXB writes them out.
+  This will likely make merging configuration changes from 20 to 21 more difficult, so we wanted to give some advanced warning.
+
 === Important Upgrade Notes
 
 === New Features
