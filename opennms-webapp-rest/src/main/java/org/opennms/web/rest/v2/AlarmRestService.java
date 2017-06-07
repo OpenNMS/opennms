@@ -103,6 +103,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
         builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
         builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "service", JoinType.LEFT_JOIN);
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
         builder.distinct();
         return builder;
@@ -117,6 +118,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     protected Map<String, String> getBeanPropertiesMapping() {
         final Map<String, String> map = new HashMap<>();
         map.put("categoryName", "node.categories.name");
+        map.put("service", "serviceType.name");
         return map;
     }
 
@@ -124,6 +126,10 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     protected Map<String, String> getCriteriaPropertiesMapping() {
         final Map<String, String> map = new HashMap<>();
         map.put("node.categories.name", "categories.name");
+        map.put("ipaddress", "ipAddr");
+        map.put("ipAddress", "ipAddr");
+        map.put("serviceType", "service");
+        map.put("serviceType.name", "service.name");
         return map;
     }
 

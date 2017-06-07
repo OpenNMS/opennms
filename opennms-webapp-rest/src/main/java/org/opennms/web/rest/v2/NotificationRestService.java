@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -66,6 +68,14 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     protected Class<OnmsNotification> getDaoClass() {
         return OnmsNotification.class;
+    }
+
+    @Override
+    protected Map<String, String> getCriteriaPropertiesMapping() {
+        Map<String, String> criteriaPropertiesMapping = new HashMap<>();
+        criteriaPropertiesMapping.put("ipAddr", "ipAddress");
+        criteriaPropertiesMapping.put("ipaddr", "ipAddress");
+        return criteriaPropertiesMapping;
     }
 
     @Override

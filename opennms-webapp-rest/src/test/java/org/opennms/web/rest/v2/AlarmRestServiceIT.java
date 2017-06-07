@@ -28,28 +28,28 @@
 
 package org.opennms.web.rest.v2;
 
+import java.net.InetAddress;
 import java.util.Date;
 
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -111,35 +111,45 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarms() throws Exception {
         String url = "/alarms";
 
-        JSONObject object = new JSONObject(sendRequest(GET, url, parseParamData("limit=0"), 200));
-        Assert.assertEquals(6, object.getInt("totalCount"));
+        executeQueryAndVerify("limit=0", 6);
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("limit=0&_s=severity==NORMAL"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        executeQueryAndVerify("limit=0&_s=severity==NORMAL", 2);
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("limit=0&_s=severity==WARNING"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        executeQueryAndVerify("limit=0&_s=severity==WARNING", 2);
 
         sendRequest(GET, url, parseParamData("limit=0&_s=severity==CRITICAL"), 204);
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("limit=0&_s=severity=gt=NORMAL"), 200));
-        Assert.assertEquals(4, object.getInt("totalCount"));
+        executeQueryAndVerify("limit=0&_s=severity=gt=NORMAL", 4);
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("limit=0&_s=severity=gt=NORMAL;node.label==server01"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
+        executeQueryAndVerify("limit=0&_s=severity=gt=NORMAL;node.label==server01", 2);
     }
 
     @Test
-    @JUnitTemporaryDatabase
     @Transactional
     public void testCollectionsAndMappings() throws Exception {
-        String url = "/alarms";
-        JSONObject object = new JSONObject(sendRequest(GET, url, parseParamData("_s=categoryName==Linux"), 200));
-        Assert.assertEquals(3, object.getInt("totalCount"));
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=uei==*somethingWentWrong"), 200));
-        Assert.assertEquals(2, object.getInt("totalCount"));
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=uei==*somethingWentWrong;categoryName==Linux"), 200));
-        Assert.assertEquals(1, object.getInt("totalCount"));
+        executeQueryAndVerify("_s=categoryName==Linux", 3);
+        executeQueryAndVerify("_s=uei==*somethingWentWrong", 2);
+        executeQueryAndVerify("_s=uei==*somethingWentWrong;categoryName==Linux", 1);
+
+        executeQueryAndVerify("_s=uei==*something*", 6);
+        executeQueryAndVerify("_s=uei!=*somethingIs*", 2);
+
+        // Verify service queries
+        executeQueryAndVerify("_s=service==ICMP", 6);
+        executeQueryAndVerify("_s=service!=ICMP", 0);
+        executeQueryAndVerify("_s=service==SNMP", 0);
+        executeQueryAndVerify("_s=service==*MP", 6);
+
+        // Verify ip address queries
+        executeQueryAndVerify("_s=ipAddr==192.168.1.1", 3);
+        executeQueryAndVerify("_s=ipAddr==192.168.1.2", 3);
+        executeQueryAndVerify("_s=ipAddr==127.0.0.1", 0);
+        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 6);
+    }
+
+    public static void main(String[] args) {
+        InetAddress inetAddress = InetAddressUtils.getInetAddress("127.0.0.*");
+        System.out.println(inetAddress);
     }
 
     private OnmsNode createNode(final NetworkBuilder builder, final String label, final String ipAddress, final OnmsCategory category) {
@@ -201,6 +211,15 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         m_databasePopulator.getAlarmDao().save(alarm);
         m_databasePopulator.getAlarmDao().flush();
+    }
+
+    private void executeQueryAndVerify(String query, int totalCount) throws Exception {
+        if (totalCount == 0) {
+            sendRequest(GET, "/alarms", parseParamData(query), 204);
+        } else {
+            JSONObject object = new JSONObject(sendRequest(GET, "/alarms", parseParamData(query), 200));
+            Assert.assertEquals(totalCount, object.getInt("totalCount"));
+        }
     }
 
 }

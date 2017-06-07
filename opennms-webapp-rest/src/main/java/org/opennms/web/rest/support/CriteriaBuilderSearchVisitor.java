@@ -29,6 +29,7 @@
 package org.opennms.web.rest.support;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,8 +44,11 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisitor<T, CriteriaBuilder> {
 
@@ -86,11 +90,11 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	/**
 	 * Constructor that specifies the target class and a list of field aliases.
 	 */
-	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> criteriaMapping) {
+	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class clazz, Map<String, String> criteriaMapping) {
 		super(null);
 		m_class = clazz;
 		m_criteriaBuilder = criteriaBuilder;
-                m_criteriaMapping = criteriaMapping;
+		m_criteriaMapping = criteriaMapping;
 		setWildcardStringMatch(true);
 	}
 
@@ -138,6 +142,8 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 							NULL_DATE_VALUE.equals(clsValue.getValue())
 						) {
 							m_criteriaBuilder.isNull(name);
+						} else if (isIpAddrAttribute(name)) {
+							applyIpLikeValue(m_criteriaBuilder, name, clsValue);
 						} else {
 							m_criteriaBuilder.eq(name, clsValue.getValue());
 						}
@@ -153,6 +159,9 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 							NULL_DATE_VALUE.equals(clsValue.getValue())
 						) {
 							m_criteriaBuilder.isNotNull(name);
+						} else if (isIpAddrAttribute(name)) {
+							m_criteriaBuilder.not();
+							applyIpLikeValue(m_criteriaBuilder, name, clsValue);
 						} else {
 							// Match any rows that do not match the value or are null
 							m_criteriaBuilder.or(
@@ -237,8 +246,24 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 		}
 	}
 
+	private void applyIpLikeValue(CriteriaBuilder criteriaBuilder, String attribute, ClassValue clsValue) {
+		if (clsValue != null && clsValue.getValue() != null) {
+			if (clsValue.getValue() instanceof InetAddress) {
+				InetAddress inetAddress = (InetAddress) clsValue.getValue();
+				criteriaBuilder.eq(attribute, InetAddressUtils.str(inetAddress));
+			} else {
+		 		criteriaBuilder.eq(attribute, clsValue.getValue().toString());
+			}
+		}
+	}
+
 	@Override
 	public CriteriaBuilder getQuery() {
 		return m_criteriaBuilder;
+	}
+
+	private static boolean isIpAddrAttribute(String name) {
+		List<String> ipAttributes = Lists.newArrayList("ipaddr", "ipaddress");
+		return ipAttributes.stream().filter(attribute -> attribute.equalsIgnoreCase(name)).findFirst().isPresent();
 	}
 }

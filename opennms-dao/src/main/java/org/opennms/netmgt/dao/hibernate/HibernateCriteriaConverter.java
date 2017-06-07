@@ -77,6 +77,8 @@ import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
 
+import com.google.common.base.Strings;
+
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
         final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor();
@@ -464,7 +466,12 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", (String) restriction.getValue(), STRING_TYPE));
+            String attribute = restriction.getAttribute();
+            if (Strings.isNullOrEmpty(attribute)) {
+                attribute = "ipAddr";
+            }
+            final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
+            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }
     }
 }
