@@ -47,11 +47,11 @@
   <div class="col-md-8">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Edit application ${model.application.name}</h3>
+        <h3 class="panel-title">Edit application ${fn:escapeXml(model.application.name)}</h3>
       </div>
       <div class="panel-body">
         <p>
-        Application '${model.application.name}' has ${fn:length(model.sortedMemberServices)} services
+        Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.sortedMemberServices)} services
         </p>
 
         <div class="row">
@@ -63,7 +63,7 @@
             <label for="input_toAdd">Available services</label>
             <select name="toAdd" id="input_toAdd" class="form-control" size="20" multiple>
               <c:forEach items="${model.monitoredServices}" var="service">
-                <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddressAsString} / ${service.serviceName}</option>
+                <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
             </select>
           </div>
@@ -77,7 +77,7 @@
             <label for="input_toDelete">Services on application</label>
             <select name="toDelete" id="input_toDelete" class="form-control" size="20" multiple>
               <c:forEach items="${model.sortedMemberServices}" var="service">
-                <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddressAsString} / ${service.serviceName}</option>
+                <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
             </select>
           </div>
