@@ -556,7 +556,7 @@
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <capability>http-service;provider:=opennms-http</capability>
-        <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.1.1</bundle>
+        <!-- <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.1.1</bundle> -->
         <bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>
         <conditional>
             <condition>webconsole</condition>
@@ -606,7 +606,7 @@
         <feature>opennms-http-whiteboard</feature>
         <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/${paxWebVersion}</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-descriptor/${paxWebVersion}</bundle>
+        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-descriptor/${paxWebVersion}</bundle> -->
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/${paxWebVersion}</bundle>
         <bundle start-level="30"> mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/${paxWebVersion}</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/${paxWebVersion}</bundle>
