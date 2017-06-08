@@ -1,7 +1,7 @@
 [[release-20-changelog]]
 === Changelog
 
-[releasenotes-changelog-20.0.0]
+[[releasenotes-changelog-20.0.0]]
 ==== Release 20.0.0
 
 Release 20.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and a few new features.
