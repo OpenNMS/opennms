@@ -1,0 +1,70 @@
+[[release-20-changelog]]
+=== Changelog
+
+[releasenotes-changelog-20.0.0]
+==== Release 20.0.0
+
+Release 20.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and a few new features.
+For a high-level overview of what's changed in OpenNMS 20, see <<whatsnew-20.adoc#releasenotes-20,What's New in OpenNMS 20>>.
+
+The codename for 20.0.0 is _link:http://fifth-element.wikia.com/wiki/Leeloo[Leeloo]_.
+
+===== Bug
+
+* Wrong ticket status ids in automation (CLOSED is 5 not 3 it seems) (Issue http://issues.opennms.org/browse/NMS-4648[NMS-4648])
+* Some resource graph work flows break when store-by-FS on, FS / FID contain + character (Issue http://issues.opennms.org/browse/NMS-7548[NMS-7548])
+* JsonCollectionHandler does not handle list responses (Issue http://issues.opennms.org/browse/NMS-7904[NMS-7904])
+* ConstraintViolationException in Enlinkd for OSPF (Issue http://issues.opennms.org/browse/NMS-8067[NMS-8067])
+* InvalidPathException on element/node.jsp with IPv6 interface on Windows (Issue http://issues.opennms.org/browse/NMS-8085[NMS-8085])
+* Privilege Escalation Bug with Grafana Plugin  (Issue http://issues.opennms.org/browse/NMS-8093[NMS-8093])
+* RWS client always uses plain HTTP, even if rws-config.html has HTTPS URL (Issue http://issues.opennms.org/browse/NMS-8441[NMS-8441])
+* Null ospfrouterid in NodeDiscoveryOspf (Issue http://issues.opennms.org/browse/NMS-8667[NMS-8667])
+* Elasticsearch event forwarding gets Hibernate lazy init exception (Issue http://issues.opennms.org/browse/NMS-8935[NMS-8935])
+* Statsd: erroneous reporting; aggregators not reset between worker's runs (Issue http://issues.opennms.org/browse/NMS-8944[NMS-8944])
+* Enlinkd fails to discovery Bridge Topology (Issue http://issues.opennms.org/browse/NMS-8973[NMS-8973])
+* osgi-pluginmanager: Include support for Karaf 4 (Issue http://issues.opennms.org/browse/NMS-9086[NMS-9086])
+* grafanaBox needs a count limiter/pager (Issue http://issues.opennms.org/browse/NMS-9089[NMS-9089])
+* It is possible to perform alarms/notifications actions through the Acks ReST end point without permissions (Issue http://issues.opennms.org/browse/NMS-9140[NMS-9140])
+* IPC Sink ERROR (Issue http://issues.opennms.org/browse/NMS-9155[NMS-9155])
+* NPE in GeolocationProvisioningAdapter (Issue http://issues.opennms.org/browse/NMS-9187[NMS-9187])
+* EIF documentation was not added to index.adoc (Issue http://issues.opennms.org/browse/NMS-9192[NMS-9192])
+* Some events have Log Messages that are more verbose than Description (Issue http://issues.opennms.org/browse/NMS-9211[NMS-9211])
+* OSPF Router Id not properly updated (Issue http://issues.opennms.org/browse/NMS-9218[NMS-9218])
+* Possible thread leak in SnmpUtils (Issue http://issues.opennms.org/browse/NMS-9233[NMS-9233])
+* XML collection configs, JAR not part of main assembly (Issue http://issues.opennms.org/browse/NMS-9266[NMS-9266])
+* Logging for TCP output queue (Issue http://issues.opennms.org/browse/NMS-9291[NMS-9291])
+* XmlCollector does not recognize all resource types (Issue http://issues.opennms.org/browse/NMS-9304[NMS-9304])
+* Installation issues with OpenJDK JRE (Issue http://issues.opennms.org/browse/NMS-9327[NMS-9327])
+* osgi-pluginmanager: Jersey REST services not loading reliably in Karaf 4 (Issue http://issues.opennms.org/browse/NMS-9343[NMS-9343])
+* XSS vulnerability on quick-add node page (Issue http://issues.opennms.org/browse/NMS-9353[NMS-9353])
+* XSS vulnerability on node error page (Issue http://issues.opennms.org/browse/NMS-9354[NMS-9354])
+* XSS vulnerability with application names (Issue http://issues.opennms.org/browse/NMS-9355[NMS-9355])
+* Thresholding on WSMan datasources appears broken (Issue http://issues.opennms.org/browse/NMS-9361[NMS-9361])
+* Increase default connection timeout for HikariCP (Issue http://issues.opennms.org/browse/NMS-9387[NMS-9387])
+* StrafePingMonitor fails on Minion (Issue http://issues.opennms.org/browse/NMS-9407[NMS-9407])
+* Can't install OpenNMS caused by libopennms-java dependency problems (Issue http://issues.opennms.org/browse/NMS-9410[NMS-9410])
+
+===== Enhancement
+
+* package hrStorage in threshold configuration should also contain linux devices (Issue http://issues.opennms.org/browse/NMS-5069[NMS-5069])
+* Add additional relative time periods for resource graphs (Issue http://issues.opennms.org/browse/NMS-6118[NMS-6118])
+* Add an Event Adapter for IBM's Event Integration Facility Events (Issue http://issues.opennms.org/browse/NMS-8704[NMS-8704])
+* ElasticSearch forwarder doesn't describe installation procedure (Issue http://issues.opennms.org/browse/NMS-8916[NMS-8916])
+* "invert-status" parameter is missing in documentation (Issue http://issues.opennms.org/browse/NMS-9000[NMS-9000])
+* Remove the opennms-elasticsearch-event-forwarder feature (Issue http://issues.opennms.org/browse/NMS-9034[NMS-9034])
+* Cleanup opennms provided default event definitions (Issue http://issues.opennms.org/browse/NMS-9093[NMS-9093])
+* update log4j2 to 2.8.1 (Issue http://issues.opennms.org/browse/NMS-9132[NMS-9132])
+* Clean up JAXB config classes (Issue http://issues.opennms.org/browse/NMS-9250[NMS-9250])
+* Update Camel code to use Netty 4 (Issue http://issues.opennms.org/browse/NMS-9319[NMS-9319])
+* Add post-integration-test cleanup to container/standalone (Issue http://issues.opennms.org/browse/NMS-9332[NMS-9332])
+* Replace Poller lock with ReentrantLock (Issue http://issues.opennms.org/browse/NMS-9347[NMS-9347])
+* Colors on trend graph differ from OpenNMS styling (Issue http://issues.opennms.org/browse/NMS-9370[NMS-9370])
+* Alarms Page Enhancements - Sound and Flashing (Issue http://issues.opennms.org/browse/NMS-9375[NMS-9375])
+* Improved visualization for large trees with the Hierarchy Layout (Issue http://issues.opennms.org/browse/NMS-9379[NMS-9379])
+
+===== Story
+
+* Remove unused events and event definitions (Issue http://issues.opennms.org/browse/NMS-9303[NMS-9303])
+* BestMatchPinger fails to initialize when IPv6 is not available (Issue http://issues.opennms.org/browse/NMS-9331[NMS-9331])
+* Warn users about upcoming configuration formatting changes in release notes for 20.0.0 (Issue http://issues.opennms.org/browse/NMS-9401[NMS-9401])
+
