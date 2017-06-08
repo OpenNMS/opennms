@@ -66,8 +66,25 @@ public class PollerResponseDTOTest extends XmlTestNoCastor<PollerResponseDTO> {
                 "      </properties>\n" +
                 "   </poll-status>\n" +
                 "</poller-response>"
+            },
+            {
+                getPollerResponseNoProperties(),
+                "<?xml version=\"1.0\"?>\n" +
+                "<poller-response>" +
+                "   <poll-status reason=\"don't ask me\" code=\"0\" name=\"Unknown\" time=\"" + StringUtils.iso8601OffsetString(new Date(0), ZoneId.systemDefault(), ChronoUnit.SECONDS) + "\">\n" +
+                "     <properties/>\n" +
+                "   </poll-status>\n" +
+                "</poller-response>"
             }
         });
+    }
+
+    public static PollerResponseDTO getPollerResponseNoProperties() throws UnknownHostException {
+        PollerResponseDTO dto = new PollerResponseDTO();
+        PollStatus pollStatus = PollStatus.unknown("don't ask me");
+        pollStatus.setTimestamp(new Date(0));
+        dto.setPollStatus(pollStatus);
+        return dto;
     }
 
     public static PollerResponseDTO getPollerResponse() throws UnknownHostException {

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,9 @@ public class PollStatusProperties {
     @XmlElement(name="property")
     private List<PollStatusProperty> properties;
 
-    public PollStatusProperties() { }
+    public PollStatusProperties() {
+        properties = new ArrayList<>(0);
+    }
 
     public PollStatusProperties(List<PollStatusProperty> properties) {
         this.properties = properties;
