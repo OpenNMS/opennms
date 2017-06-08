@@ -1332,7 +1332,7 @@
     <newtsVersion>1.4.3</newtsVersion>
     <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>6.0.3</paxWebVersion>
+    <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
