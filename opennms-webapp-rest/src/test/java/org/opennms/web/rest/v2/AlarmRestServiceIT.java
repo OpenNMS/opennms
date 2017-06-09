@@ -28,11 +28,14 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.opennms.web.svclayer.support.DefaultTroubleTicketProxy.createEventBuilder;
+
 import java.net.InetAddress;
 import java.util.Date;
 
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -41,6 +44,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -49,11 +55,15 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.svclayer.support.DefaultTroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.ImmutableMap;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -66,11 +76,13 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/applicationContext-troubleTicketer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     public AlarmRestServiceIT() {
@@ -79,6 +91,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private MockEventIpcManager m_eventMgr;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -106,8 +121,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @JUnitTemporaryDatabase
-    @Transactional
     public void testAlarms() throws Exception {
         String url = "/alarms";
 
@@ -125,7 +138,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @Transactional
     public void testCollectionsAndMappings() throws Exception {
         executeQueryAndVerify("_s=categoryName==Linux", 3);
         executeQueryAndVerify("_s=uei==*somethingWentWrong", 2);
@@ -147,9 +159,42 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 6);
     }
 
-    public static void main(String[] args) {
-        InetAddress inetAddress = InetAddressUtils.getInetAddress("127.0.0.*");
-        System.out.println(inetAddress);
+    @Test
+    @Ignore
+    public void verifyTicketerMustBeEnabled() throws Exception {
+        final OnmsAlarm alarm = m_databasePopulator.getAlarmDao().findAll().stream()
+                .filter(a -> a.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && a.getAlarmAckTime() == null)
+                .findFirst().orElseThrow(() -> new IllegalStateException("No unacknowledged alarm with severity >= Normal found"));
+        String url = "/alarms/";
+
+        // TroubleTicketerPlugin is disabled, therefore it should fail
+        sendPost(url + alarm.getId() + "/ticket/create", "", 501);
+        sendPost(url + alarm.getId() + "/ticket/update", "", 501);
+        sendPost(url + alarm.getId() + "/ticket/close", "", 501);
+
+        // enable TroubleTicketeRPlugin and try again
+        System.setProperty("opennms.alarmTroubleTicketEnabled", "true");
+        verifyAnticipatedEvents();
+
+        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, alarm, ImmutableMap.of("user", "ulf")));
+        sendPost(url + alarm.getId() + "/ticket/create", "", 202);
+        verifyAnticipatedEvents();
+
+        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_UPDATE_UEI, alarm, null));
+        sendPost(url + alarm.getId() + "/ticket/update", "", 202);
+        verifyAnticipatedEvents();
+
+        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, alarm, null));
+        sendPost(url + alarm.getId() + "/ticket/close", "", 202);
+        verifyAnticipatedEvents();
+    }
+
+    private void anticipateEvent(EventBuilder eventBuilder) {
+        m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+    }
+
+    private void verifyAnticipatedEvents() {
+        m_eventMgr.getEventAnticipator().verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     private OnmsNode createNode(final NetworkBuilder builder, final String label, final String ipAddress, final OnmsCategory category) {

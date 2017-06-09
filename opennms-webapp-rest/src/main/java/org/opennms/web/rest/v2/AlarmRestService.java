@@ -31,28 +31,33 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Fetch.FetchType;
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -60,6 +65,7 @@ import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +88,9 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
 
     @Autowired
     private AlarmRepository m_repository;
+
+    @Autowired
+    private TroubleTicketProxy m_troubleTicketProxy;
 
     @Override
     protected AlarmDao getDao() {
@@ -228,4 +237,51 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
         return Response.noContent().build();
     }
 
+    @POST
+    @Path("{id}/ticket/create")
+    public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            final Map<String, String> parameters = new HashMap<>();
+            parameters.put(EventConstants.PARM_USER, securityContext.getUserPrincipal().getName());
+            m_troubleTicketProxy.createTicket(alarmId, parameters);
+            return Response.status(Status.ACCEPTED).build();
+        });
+    }
+
+    @POST
+    @Path("{id}/ticket/update")
+    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            m_troubleTicketProxy.updateTicket(alarmId);
+            return Response.status(Status.ACCEPTED).build();
+        });
+    }
+
+    @POST
+    @Path("{id}/ticket/close")
+    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            m_troubleTicketProxy.closeTicket(alarmId);
+            return Response.status(Status.ACCEPTED).build();
+        });
+    }
+
+    private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
+        if (!isTicketerPluginEnabled()) {
+            return Response.status(Status.NOT_IMPLEMENTED).entity("AlarmTroubleTicketer is not enabled. Cannot perform operation").build();
+        }
+        Objects.requireNonNull(callable);
+        final Response response = callable.call();
+        return response;
+    }
+
+    private boolean isTicketerPluginEnabled() {
+        return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
+    }
 }
