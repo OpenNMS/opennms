@@ -30,14 +30,6 @@ package org.opennms.protocols.radius.monitor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -57,17 +49,7 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
-import org.tinyradius.attribute.RadiusAttribute;
-import org.tinyradius.dictionary.AttributeType;
-import org.tinyradius.dictionary.DefaultDictionary;
-import org.tinyradius.dictionary.Dictionary;
-import org.tinyradius.packet.AccessRequest;
-import org.tinyradius.packet.AccountingRequest;
-import org.tinyradius.packet.RadiusPacket;
-import org.tinyradius.util.RadiusException;
 import org.tinyradius.util.RadiusServer;
-
-import net.jradius.client.RadiusClient;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
@@ -140,5 +122,27 @@ public class RadiusAuthMonitorTest {
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
 		MockLogAppender.assertLogMatched(Level.DEBUG, "Error while attempting to connect to the RADIUS service on localhost");
 	}
-	
+
+	@Test
+	@Ignore("have to have a EAP-TTLS radius server set up")
+	public void testTTLSResponse() throws Exception {
+	    mockSrv.start(true,false);
+
+	    final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+	    final ServiceMonitor monitor = new RadiusAuthMonitor();
+	    final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
+
+	    m.put("user", "testing");
+	    m.put("password", "12");
+	    m.put("retry", "1");
+	    m.put("secret", "testing123");
+	    m.put("authtype", "eap-ttls");
+	    m.put("inner-user", "anonymous");
+	    final PollStatus status = monitor.poll(svc, m);
+	    MockUtil.println("Reason: "+status.getReason());
+	    System.out.println("Reason"+status.getReason());
+	    assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+	}
+
 }

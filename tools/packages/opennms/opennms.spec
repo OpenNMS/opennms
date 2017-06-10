@@ -686,7 +686,7 @@ find %{buildroot}%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
-	grep -v 'gnu-crypto' | \
+	grep -v 'bcprov-jdk15' | \
 	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
 	grep -v 'org.opennms.features.ncs.ncs-' | \
@@ -871,7 +871,7 @@ rm -rf %{buildroot}
 
 %files plugin-protocol-radius
 %defattr(664 root root 775)
-%{instprefix}/lib/gnu-crypto*.jar
+%{instprefix}/lib/bcprov-jdk15*.jar
 %{instprefix}/lib/jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 

@@ -44,11 +44,15 @@ import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
 import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.MSCHAPv1Authenticator;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.PAPAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
+//mport net.jradius.client.auth.EAPTTLSAuthenticator;
+
 import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_Password;
 import net.jradius.dictionary.Attr_UserName;
 import net.jradius.dictionary.Attr_UserPassword;
 import net.jradius.packet.AccessAccept;
@@ -56,6 +60,7 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
+import net.jradius.packet.attribute.RadiusAttribute;
 
 
 /**
@@ -168,6 +173,9 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
+        String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", "pap");
+        String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", null);
+        String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
         InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
@@ -195,7 +203,22 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                     auth = new EAPMD5Authenticator();
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
-                } else {
+                } else if (authType.equalsIgnoreCase("eap-ttls") || authType.equalsIgnoreCase("eap-ttls")) {
+                	if (innerUser == null){
+                		String reason = "Tunneling aaa type requested but no inner user defined. Authtype: '" + authType + "'";
+                		RadiusAuthMonitor.LOG.debug(reason);
+                		return PollStatus.unavailable(reason);
+                	} else {
+                		final EAPTTLSAuthenticator ttlsAuth = new EAPTTLSAuthenticator();
+                		ttlsAuth.setInnerProtocol(innerProtocol);
+                		if (certFile==null) ttlsAuth.setTrustAll(true);
+                		AttributeList attrs = new AttributeList();
+                		attrs.add(new Attr_UserName(innerUser));
+                		attrs.add(new Attr_Password(password));
+                		ttlsAuth.setTunneledAttributes(attrs);
+                		auth = ttlsAuth;
+                	}
+                } else{
                     String reason = "Unknown authenticator type '" + authType + "'";
                     RadiusAuthMonitor.LOG.debug(reason);
                     return PollStatus.unavailable(reason);
