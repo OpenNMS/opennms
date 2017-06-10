@@ -30,6 +30,7 @@ package org.opennms.protocols.radius.springsecurity;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -247,7 +248,12 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
                 "Error connecting to radius server: "+e));
-        }
+        } catch (NoSuchAlgorithmException e) {
+        	LOG.error("Error no such algorithm {} : {}",this.authTypeClass.getClass().getName(), e);
+        	throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
+                    new Object[] {e},
+                    "Error connecting to radius server: "+e));
+		}
         if (reply == null) {
             LOG.error("Timed out connecting to radius server {}", server);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusTimeout",
