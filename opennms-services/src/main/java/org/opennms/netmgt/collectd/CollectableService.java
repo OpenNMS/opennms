@@ -342,6 +342,9 @@ final class CollectableService implements ReadyRunnable {
             } catch (CollectionWarning e) {
                 LOG.warn(e.getMessage(), e);
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+            } catch (CollectionUnknown e) {
+                LOG.warn(e.getMessage(), e);
+                // Omit any status updates
             } catch (CollectionException e) {
                 LOG.error(e.getMessage(), e);
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);

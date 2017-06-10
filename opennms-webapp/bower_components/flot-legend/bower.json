@@ -1,0 +1,14 @@
+{
+  "name": "flot-legend",
+  "description": "Legend support for Flot",
+  "version": "1.0.2-SNAPSHOT",
+  "homepage": "https://github.com/OpenNMS/flot-legend",
+  "main": [
+    "jquery.flot.legend.min.js"
+  ],
+  "ignore": [],
+  "dependencies": {
+    "flot": "~0.8.3",
+    "d3": "~3.5.6"
+  }
+}

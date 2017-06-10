@@ -1,0 +1,13 @@
+{
+  "name": "flot-navigate",
+  "homepage": "https://github.com/j-white/flot-navigate",
+  "_release": "v1.3-CUSTOM",
+  "_resolution": {
+    "type": "tag",
+    "tag": "v1.3-CUSTOM",
+    "commit": "622ca1986bc1dd299666c05820291ef94daf44cc"
+  },
+  "_source": "https://github.com/j-white/flot-navigate.git",
+  "_target": "v1.3-CUSTOM",
+  "_originalSource": "https://github.com/j-white/flot-navigate.git"
+}

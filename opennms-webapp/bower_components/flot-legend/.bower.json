@@ -1,0 +1,23 @@
+{
+  "name": "flot-legend",
+  "description": "Legend support for Flot",
+  "version": "2.0.0",
+  "homepage": "https://github.com/OpenNMS/flot-legend",
+  "main": [
+    "jquery.flot.legend.min.js"
+  ],
+  "ignore": [],
+  "dependencies": {
+    "flot": "~0.8.3",
+    "d3": "~3.5.6"
+  },
+  "_release": "2.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.0",
+    "commit": "eac6eb2bf214c972cf1794173898a635b402e991"
+  },
+  "_source": "https://github.com/opennms/flot-legend.git",
+  "_target": "v2.0.0",
+  "_originalSource": "https://github.com/opennms/flot-legend.git"
+}

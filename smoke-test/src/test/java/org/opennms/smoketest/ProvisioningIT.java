@@ -30,10 +30,13 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.Callable;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -85,49 +88,59 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
             setter.setField(prefix);
         }
 
-        waitForElement(By.xpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']")).click();
+        clickElement(By.xpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']"));
         return currentNode;
     }
 
     protected String getCurrentNode() {
-        return waitForElement(By.xpath("//input[@name='currentNode']")).getAttribute("value");
+        return waitUntil(null, null, new Callable<String>() {
+            @Override public String call() throws Exception {
+                return getElementImmediately(By.xpath("//input[@name='currentNode']")).getAttribute("value");
+            }
+        });
     }
 
     @Test
     public void testRequisitionUI() throws Exception {
-        final WebElement form = waitForElement(By.xpath("//form[@name='takeAction']"));
-        form.findElement(By.cssSelector("input[type=text][name=groupName]")).click();
-        form.findElement(By.cssSelector("input[type=text][name=groupName]")).sendKeys(REQUISITION_NAME);
-        form.submit();
+        waitUntil(null, null, new Callable<Boolean>() {
+            @Override public Boolean call() throws Exception {
+                final WebElement form = waitForElement(By.xpath("//form[@name='takeAction']"));
+                form.findElement(By.cssSelector("input[type=text][name=groupName]")).click();
+                form.findElement(By.cssSelector("input[type=text][name=groupName]")).sendKeys(REQUISITION_NAME, Keys.TAB);
+                form.findElement(By.cssSelector("input[type=text][name=groupName]")).click();
+                form.submit();
+                return true;
+            }
+        });
 
         // edit the foreign source
-        findElementById("edit_fs_anchor_" + REQUISITION_NAME).click();
+        clickElement(By.id("edit_fs_anchor_" + REQUISITION_NAME));
 
         // add a detector
-        waitForElement(By.xpath("//input[@value='Add Detector']")).click();
+        clickElement(By.xpath("//input[@value='Add Detector']"));
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8980"), select("pluginClass", "HTTP"));
 
         // set the port to 8980
-        waitForElement(By.xpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']")).click();
+        clickElement(By.xpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']"));
         setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8980"));
 
-        waitForElement(By.xpath("//input[@value='Done']")).click();
+        clickElement(By.xpath("//input[@value='Done']"));
 
         // add a node
-        findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
-        waitForElement(By.xpath("//input[@value='Add Node']")).click();
+        clickElement(By.id("edit_req_anchor_" + REQUISITION_NAME));
+        clickElement(By.xpath("//input[@value='Add Node']"));
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", NODE_LABEL), type("foreignId", NODE_LABEL));
 
         // add the node interface
-        waitForElement(By.xpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']")).click();
+        clickElement(By.xpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']"));
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
 
         // add the interface service
-        waitForElement(By.xpath("//a[text() = 'Add Service']")).click();
+        clickElement(By.xpath("//a[text() = 'Add Service']"));
         setTreeFieldsAndSave("nodeEditForm", select("serviceName", "HTTP-8980"));
 
-        waitForElement(By.xpath("//input[@value='Done']")).click();
-        waitForElement(By.xpath("//input[@value='Synchronize']")).click();
+        clickElement(By.xpath("//input[@value='Done']"));
+        clickElement(By.xpath("//input[@value='Synchronize']"));
 
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");

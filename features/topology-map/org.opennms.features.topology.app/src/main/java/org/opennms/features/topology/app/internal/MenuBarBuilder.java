@@ -41,19 +41,22 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
     @SuppressWarnings("unchecked")
 	public MenuBar get() {
         MenuBar menuBar = new MenuBar();
-        
-        Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
-        for(Entry<String, Object> entry : sortedEntrySet) {
-            if(entry.getValue() instanceof Map<?,?>) {
-                MenuBar.MenuItem menuItem = menuBar.addItem(entry.getKey(), null);
-                addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
-            }else {
-                menuBar.addItem(entry.getKey(), (Command) entry.getValue());
-            }
-            
-        }
+        apply(menuBar);
         return menuBar;
     }
+
+    public void apply(MenuBar menuBar) {
+		Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
+		for(Entry<String, Object> entry : sortedEntrySet) {
+			if(entry.getValue() instanceof Map<?,?>) {
+				MenuBar.MenuItem menuItem = menuBar.addItem(entry.getKey(), null);
+				addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
+			}else {
+				menuBar.addItem(entry.getKey(), (Command) entry.getValue());
+			}
+
+		}
+	}
 
 	@SuppressWarnings("unchecked")
     @Override

@@ -1,0 +1,14 @@
+{
+  "name": "flot-saveas",
+  "homepage": "https://github.com/j-white/flot-saveas",
+  "version": "1.0.0",
+  "_release": "1.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.0",
+    "commit": "9faea2d426c78856acd0abbe9f3c095eb8822d00"
+  },
+  "_source": "https://github.com/j-white/flot-saveas.git",
+  "_target": "v1.0.0",
+  "_originalSource": "https://github.com/j-white/flot-saveas.git"
+}
