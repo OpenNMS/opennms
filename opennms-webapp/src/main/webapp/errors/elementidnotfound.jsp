@@ -35,6 +35,7 @@
 	isErrorPage="true"
 	import="org.opennms.web.element.*, org.opennms.web.utils.ExceptionUtils"
 %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
     ElementIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, ElementIdNotFoundException.class);
@@ -51,7 +52,7 @@
 <h1><%=einfe.getElemType(true)%> ID Not Found</h1>
 
 <p>
-  The <%=einfe.getElemType()%> ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
+  The <%=einfe.getElemType()%> ID <%=einfe.getBadID()%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
   <br/>
   <% if (einfe.getDetailUri() != null) { %>
   <p>

@@ -89,7 +89,7 @@ If the `assetLayers` property is defined as empty then a single graph layer will
 
 === Node filtering
 In many cases it is desirable to control which nodes are included or excluded from a topology. For instance it is
-useful to be able to generate customised topologies for specific customers which include only regions/sites etc 
+useful to be able to generate customised topologies for specific customers which include only regions/buildings etc 
 relevant to their filtered node set. To this end it is possible to define a node filter 
 which chooses which nodes are included in a generated topology.
 
@@ -99,21 +99,21 @@ Filters are defined using the same asset table keys which are available for the 
 |===
 | Operation  | Definition  | Example
 | OR | key1=value1,value2 alternatively key1=value1;key1=value2 | asset-region=north,south
-| AND | key1=val1;key2=val2 | asset-region=north;asset-site=23
-| NOT | key1=!val1 | asset-site=!23
+| AND | key1=val1;key2=val2 | asset-region=north;asset-building=23
+| NOT | key1=!val1 | asset-building=!23
 |===
 
-Thus the following configuration means include only nodes with region `north` or `south` but exclude all nodes with site `23`.
+Thus the following configuration means include only nodes with region `north` or `south` but exclude all nodes with building `23`.
 ----
-filter=asset-region=north,south;asset-site=!23
+filter=asset-region=north,south;asset-building=!23
 ----
 The filters are designed to treat all selected text key entries as comma separated values (csv). This allows OpenNMS node-categories which are
 many to many entries to be dealt with as a comma separated list of values; routers,servers,web etc. 
-Thus we can select based on multiple separate node categories. The following configuration means show routers and servers on all sites except site 23.
+Thus we can select based on multiple separate node categories. The following configuration means show routers and servers on all buildings except building 23.
 ----
-filter=node-categories=routers,servers;asset-site=!23
+filter=node-categories=routers,servers;asset-building=!23
 ----
-The filters treat all asset table entries as comma seperated variables (csv). This also means that, 
+The filters treat all asset table entries as comma separated variables (csv). This also means that, 
 for instance asset-displaycategory could also contain several values separated by commas. e.g. customer1,customer2,customer3 etc.
 
 NOTE: You should make sure asset addresses and other free format asset text fields do not contain commas if you want an exact match on the whole field
@@ -121,9 +121,9 @@ NOTE: You should make sure asset addresses and other free format asset text fiel
 Regular expressions are also allowed. Regular expressions start with the ~ character. 
 You can also negate a regular expression by preceding it with !~.
 
-The following example will match against regions 'Stuttgart' and 'Isengard' and any site name which ends in 4
+The following example will match against regions 'Stuttgart' and 'Isengard' and any building name which ends in 4
 ----
-filter=asset-region=~.*gar(t|d);asset-site=~.*4
+filter=asset-region=~.*gar(t|d);asset-building=~.*4
 ----
 
 === Configuration

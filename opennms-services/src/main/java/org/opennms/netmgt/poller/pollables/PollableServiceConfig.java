@@ -33,8 +33,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.rpc.api.RequestRejectedException;
-import org.opennms.core.rpc.api.RequestTimedOutException;
+import org.opennms.core.rpc.api.RpcExceptionHandler;
+import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -133,23 +133,35 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .get().getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
             return result;
-        } catch (InterruptedException e) {
-            LOG.warn("Interrupted while invoking the poll for {}."
-                    + " Marking the service as UNKNOWN.", m_service);
-            return PollStatus.unknown("Interrupted while invoking the poll for"+m_service+". "+e);
         } catch (Throwable e) {
-            final Throwable cause = e.getCause();
-            if (cause != null && cause instanceof RequestTimedOutException) {
-                LOG.warn("No response was received when remotely invoking the poll for {}."
-                        + " Marking the service as UNKNOWN.", m_service);
-                return PollStatus.unknown(String.format("No response received for %s. %s", m_service, cause));
-            } else if (cause != null && cause instanceof RequestRejectedException) {
-                LOG.warn("The request to remotely invoke the poll for {} was rejected."
-                        + " Marking the service as UNKNOWN.", m_service);
-                return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", m_service, cause));
-            }
-            LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
-            return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
+            return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
+                @Override
+                public PollStatus onInterrupted(Throwable cause) {
+                    LOG.warn("Interrupted while invoking the poll for {}."
+                            + " Marking the service as UNKNOWN.", m_service);
+                    return PollStatus.unknown("Interrupted while invoking the poll for"+m_service+". "+e);
+                }
+
+                @Override
+                public PollStatus onTimedOut(Throwable cause) {
+                    LOG.warn("No response was received when remotely invoking the poll for {}."
+                            + " Marking the service as UNKNOWN.", m_service);
+                    return PollStatus.unknown(String.format("No response received for %s. %s", m_service, cause));
+                }
+
+                @Override
+                public PollStatus onRejected(Throwable cause) {
+                    LOG.warn("The request to remotely invoke the poll for {} was rejected."
+                            + " Marking the service as UNKNOWN.", m_service);
+                    return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", m_service, cause));
+                }
+
+                @Override
+                public PollStatus onUnknown(Throwable cause) {
+                    LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
+                    return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
+                }
+            });
         }
     }
 
