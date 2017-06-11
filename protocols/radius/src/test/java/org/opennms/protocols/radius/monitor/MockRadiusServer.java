@@ -29,4 +29,11 @@ public class MockRadiusServer extends RadiusServer {
 			MockUtil.println("Mock radius server starting");
 			super.start(hasAuth, hasAcct);
 		}
+		@Override
+		public void stop(){
+			MockUtil.println("Stopping Radius server");
+			super.stop();
+			
+		}
+		
 }
