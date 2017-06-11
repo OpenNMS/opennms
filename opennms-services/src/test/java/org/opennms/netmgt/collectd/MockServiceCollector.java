@@ -83,6 +83,12 @@ public class MockServiceCollector implements ServiceCollector {
     }
 
     @Override
+    public void validateAgent(CollectionAgent agent, Map<String, Object> parameters)
+            throws CollectionInitializationException {
+        if (s_delegate != null) s_delegate.validateAgent(agent, parameters);
+    }
+
+    @Override
     public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
         if (s_delegate != null) return s_delegate.getRuntimeAttributes(agent, parameters);
         return Collections.emptyMap();

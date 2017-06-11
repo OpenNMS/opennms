@@ -169,6 +169,8 @@ final class CollectableService implements ReadyRunnable {
 
         m_lastScheduledCollectionTime = 0L;
 
+        m_spec.initialize(m_agent);
+
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
@@ -618,10 +620,12 @@ final class CollectableService implements ReadyRunnable {
 
         return !ABORT_COLLECTION;
     }
-    
+
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
+        m_spec.release(m_agent);
         m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
+        m_spec.initialize(m_agent);
     }
 
     /**
