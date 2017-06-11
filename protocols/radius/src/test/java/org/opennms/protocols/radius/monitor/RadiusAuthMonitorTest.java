@@ -30,9 +30,18 @@ package org.opennms.protocols.radius.monitor;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,34 +56,50 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
+import org.tinyradius.attribute.RadiusAttribute;
+import org.tinyradius.dictionary.AttributeType;
+import org.tinyradius.dictionary.DefaultDictionary;
+import org.tinyradius.dictionary.Dictionary;
+import org.tinyradius.packet.AccessRequest;
+import org.tinyradius.packet.AccountingRequest;
+import org.tinyradius.packet.RadiusPacket;
+import org.tinyradius.util.RadiusException;
+import org.tinyradius.util.RadiusServer;
+
+import net.jradius.client.RadiusClient;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
 public class RadiusAuthMonitorTest {
-
+	RadiusServer mockSrv = null;
 	@Before
 	public void setup() throws Exception {
 	    MockLogAppender.setupLogging();
+		mockSrv = new MockRadiusServer();
+		mockSrv.start(true,false);
+	    
 	}
-
+	@After
+	public void tearDown() {
+		mockSrv.stop();
+	}
+	
 	@Test
-	@Ignore("have to have a radius server set up")
-	public void testResponse() throws Exception {
+	public void testResponses() throws Exception {
+		
 		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
-		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
 
         m.put("user", "testing");
         m.put("password", "password");
         m.put("retry", "1");
         m.put("secret", "testing123");
         m.put("authtype", "chap");
-
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
 	}
-
 }
