@@ -44,10 +44,12 @@ import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
 import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.EAPTLSAuthenticator;
 import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.MSCHAPv1Authenticator;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 //mport net.jradius.client.auth.EAPTTLSAuthenticator;
 
@@ -203,21 +205,29 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                     auth = new EAPMD5Authenticator();
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
-                } else if (authType.equalsIgnoreCase("eap-ttls") || authType.equalsIgnoreCase("eap-ttls")) {
-                	if (innerUser == null){
-                		String reason = "Tunneling aaa type requested but no inner user defined. Authtype: '" + authType + "'";
-                		RadiusAuthMonitor.LOG.debug(reason);
-                		return PollStatus.unavailable(reason);
-                	} else {
-                		final EAPTTLSAuthenticator ttlsAuth = new EAPTTLSAuthenticator();
+                } else if (isTunneling(authType)) {
+                	EAPTLSAuthenticator tlsAuth = null;
+                	if (authType.equalsIgnoreCase("eap-ttls") || authType.equalsIgnoreCase("eap-ttls")){
+                    	if (innerUser == null){
+                    		String reason = "TTLS AAA type requested but no inner user defined. Authtype: '" + authType + "'";
+                    		RadiusAuthMonitor.LOG.debug(reason);
+                    		return PollStatus.unavailable(reason);
+                    	}
+                		tlsAuth = new EAPTTLSAuthenticator();
+                		final EAPTTLSAuthenticator ttlsAuth = (EAPTTLSAuthenticator) tlsAuth;
                 		ttlsAuth.setInnerProtocol(innerProtocol);
-                		if (certFile==null) ttlsAuth.setTrustAll(true);
                 		AttributeList attrs = new AttributeList();
                 		attrs.add(new Attr_UserName(innerUser));
                 		attrs.add(new Attr_Password(password));
                 		ttlsAuth.setTunneledAttributes(attrs);
-                		auth = ttlsAuth;
+                	} else if (authType.equalsIgnoreCase("peap")){
+                		tlsAuth = new PEAPAuthenticator();
+                		final PEAPAuthenticator peapAuth = (PEAPAuthenticator) tlsAuth;
                 	}
+                	/* Cert. processing is common to EAPTLS protocols */
+                	/* We trust all certificates for now */
+            		if (certFile==null) tlsAuth.setTrustAll(true);
+            		auth = tlsAuth;
                 } else{
                     String reason = "Unknown authenticator type '" + authType + "'";
                     RadiusAuthMonitor.LOG.debug(reason);
@@ -249,6 +259,13 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 
         return status;
     }
+
+
+	private boolean isTunneling(String authType) {
+		return authType.equalsIgnoreCase("eap-ttls") || 
+				authType.equalsIgnoreCase("eap-tls") || 
+				authType.equalsIgnoreCase("peap");
+	}
 
 	private int convertTimeoutToSeconds(int timeout) {
 		return timeout/1000 > 0 ? timeout/1000 : 1;
