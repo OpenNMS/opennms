@@ -53,5 +53,18 @@
       <artifactId>org.opennms.core.test-api.services</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.hynnet/tinyradius -->
+	<dependency>
+    <groupId>com.hynnet</groupId>
+    <artifactId>tinyradius</artifactId>
+    <version>1.0.1</version>
+     <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+	</dependency>
   </dependencies>
 </project>
