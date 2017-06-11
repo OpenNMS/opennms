@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.protocols.radius.monitor.MockRadiusServer;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 
     @Autowired
     public RadiusAuthDetector m_detector;
+	private MockRadiusServer mockSrv = null;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -63,8 +66,15 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
+         mockSrv = new MockRadiusServer();
+         mockSrv.start(true,false);
     }
-
+    @After
+    public void tearDown(){
+        mockSrv.stop();
+    }
+    
+    
     @Test(timeout=90000)
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setTimeout(1);
@@ -74,11 +84,10 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
         m_detector.setSecret("service");
         m_detector.setUser("1273849127348917234891720348901234789012374");
         m_detector.onInit();
-        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
     @Test(timeout=90000)
-    @Ignore
     public void testRunDetectorInTempThread() throws InterruptedException {
         for(int i = 0; i < 1000; i++) {
             Thread t = new Thread() {
@@ -98,16 +107,16 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     }
 
     @Test(timeout=90000)
-    @Ignore("have to have a radius server set up")
     public void testDetectorPass() throws UnknownHostException{
         m_detector.setTimeout(1);
         m_detector.setNasID("0");
-        m_detector.setAuthType("mschapv2");
+        //mschapv2 i sunsupported by tinyradius, use chap
+        m_detector.setAuthType("chap");
         m_detector.setPassword("password");
         m_detector.setSecret("testing123");
         m_detector.setUser("testing");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11")));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
 
