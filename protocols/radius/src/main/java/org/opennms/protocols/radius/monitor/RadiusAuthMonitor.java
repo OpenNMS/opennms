@@ -42,7 +42,6 @@ import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.PAPAuthenticator;
 import net.jradius.client.auth.PEAPAuthenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
-//mport net.jradius.client.auth.EAPTTLSAuthenticator;
 
 import net.jradius.dictionary.Attr_NASIdentifier;
 import net.jradius.dictionary.Attr_Password;
@@ -53,7 +52,6 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
-import net.jradius.packet.attribute.RadiusAttribute;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -62,6 +60,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,6 +128,16 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
     public static final String DEFAULT_NASID ="opennms";
 
     /**
+     * Default inner user identity (ttls / peap)
+     */
+    public static final String DEFAULT_INNER_USER= "Inner-OpenNMS";
+
+    /**
+     * Default Inner Auth Type (ttls)
+     */
+    public static final String DEFAULT_TTLS_INNER_AUTH_TYPE= "pap";
+
+    /**
      * Class constructor.
      *
      * @throws java.lang.ClassNotFoundException if any.
@@ -179,8 +188,8 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
         String nasid = ParameterMap.getKeyedString(parameters, "nasid", DEFAULT_NASID);
-        String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", "pap");
-        String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", null);
+        String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
+        String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
         String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
         InetAddress addr = iface.getAddress();
 
@@ -209,27 +218,35 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                     auth = new EAPMD5Authenticator();
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
-                } else if (isTunneling(authType)) {
-                	EAPTLSAuthenticator tlsAuth = null;
-                	if (authType.equalsIgnoreCase("eap-ttls") || authType.equalsIgnoreCase("eap-ttls")){
-                    	if (innerUser == null){
-                    		String reason = "TTLS AAA type requested but no inner user defined. Authtype: '" + authType + "'";
-                    		RadiusAuthMonitor.LOG.debug(reason);
-                    		return PollStatus.unavailable(reason);
-                    	}
-                		tlsAuth = new EAPTTLSAuthenticator();
-                		final EAPTTLSAuthenticator ttlsAuth = (EAPTTLSAuthenticator) tlsAuth;
-                		ttlsAuth.setInnerProtocol(innerProtocol);
-                		AttributeList attrs = new AttributeList();
-                		attrs.add(new Attr_UserName(innerUser));
-                		attrs.add(new Attr_Password(password));
+                } else if (RadiusUtils.isTunneling(authType)) { 
+                    if (innerUser == null){
+                        String reason = "TLS AAA type requested but no inner user defined. Authtype: '" + authType + "'";
+                    	RadiusAuthMonitor.LOG.debug(reason);
+                    	return PollStatus.unavailable(reason);
+                    }
+                    EAPTLSAuthenticator tlsAuth = null;
+                    if (RadiusUtils.isEAPTTLS(authType)){
+                        tlsAuth = new EAPTTLSAuthenticator();
+                        final EAPTTLSAuthenticator ttlsAuth = (EAPTTLSAuthenticator) tlsAuth;
+                        if (innerProtocol != DEFAULT_TTLS_INNER_AUTH_TYPE){
+                            String reason = "RadiusMonitor can only use 'pap' as inner auth protocol, not " + innerProtocol;
+                            LOG.debug(reason);
+                            return PollStatus.unavailable(reason);
+                        } else {
+                            ttlsAuth.setInnerProtocol(innerProtocol);
+                        }
+                        AttributeList attrs = new AttributeList();
+                        attrs.add(new Attr_UserName(innerUser));
+                        attrs.add(new Attr_Password(password));
                 		ttlsAuth.setTunneledAttributes(attrs);
                 	} else if (authType.equalsIgnoreCase("peap")){
-                		tlsAuth = new PEAPAuthenticator();
-                		final PEAPAuthenticator peapAuth = (PEAPAuthenticator) tlsAuth;
+                        String reason = "Support for eap peap is not ready yet";
+                        LOG.debug(reason);
+                        return PollStatus.unavailable(reason);
                 	}
                 	/* Cert. processing is common to EAPTLS protocols */
-                	/* We trust all certificates for now */
+                	/* We trust any certificate for now */
+                    LOG.warn("Server certificate will be trusted");
             		if (certFile==null) tlsAuth.setTrustAll(true);
             		auth = tlsAuth;
                 } else{
@@ -263,13 +280,6 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 
         return status;
     }
-
-
-	private boolean isTunneling(String authType) {
-		return authType.equalsIgnoreCase("eap-ttls") || 
-				authType.equalsIgnoreCase("eap-tls") || 
-				authType.equalsIgnoreCase("peap");
-	}
 
 	private int convertTimeoutToSeconds(int timeout) {
 		return timeout/1000 > 0 ? timeout/1000 : 1;
