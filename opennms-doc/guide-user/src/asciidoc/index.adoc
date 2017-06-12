@@ -9,7 +9,7 @@
 
 [[gu]]
 = Users Guide
-:author: Copyright (c) 2014-2016 The OpenNMS Group, Inc.
+:author: Copyright (c) 2017 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
