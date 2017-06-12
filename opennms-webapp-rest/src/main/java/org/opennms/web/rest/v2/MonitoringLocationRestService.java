@@ -51,28 +51,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,String> {
 
-	@Autowired
-	private MonitoringLocationDao m_dao;
+    @Autowired
+    private MonitoringLocationDao m_dao;
 
-	protected MonitoringLocationDao getDao() {
-		return m_dao;
-	}
+    protected MonitoringLocationDao getDao() {
+        return m_dao;
+    }
 
-	protected Class<OnmsMonitoringLocation> getDaoClass() {
-		return OnmsMonitoringLocation.class;
-	}
+    protected Class<OnmsMonitoringLocation> getDaoClass() {
+        return OnmsMonitoringLocation.class;
+    }
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
+    protected CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoringLocation.class);
 
-		// Order by location name by default
-		builder.orderBy("locationName").asc();
+        // Order by location name by default
+        builder.orderBy("locationName").asc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
-		return new OnmsMonitoringLocationDefinitionList(list);
-	}
+    @Override
+    protected JaxbListWrapper<OnmsMonitoringLocation> createListWrapper(Collection<OnmsMonitoringLocation> list) {
+        return new OnmsMonitoringLocationDefinitionList(list);
+    }
 }

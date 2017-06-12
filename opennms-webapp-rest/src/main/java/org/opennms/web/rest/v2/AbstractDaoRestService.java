@@ -72,265 +72,265 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 @Transactional
 public abstract class AbstractDaoRestService<T,K extends Serializable> {
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
-	private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-	private final Lock m_writeLock = m_globalLock.writeLock();
+    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
 
-	protected static final int DEFAULT_LIMIT = 10;
+    protected static final int DEFAULT_LIMIT = 10;
 
-	protected abstract OnmsDao<T,K> getDao();
-	protected abstract Class<T> getDaoClass();
-	protected abstract CriteriaBuilder getCriteriaBuilder();
-	protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
+    protected abstract OnmsDao<T,K> getDao();
+    protected abstract Class<T> getDaoClass();
+    protected abstract CriteriaBuilder getCriteriaBuilder();
+    protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
 
-	protected final void writeLock() {
-		m_writeLock.lock();
-	}
+    protected final void writeLock() {
+        m_writeLock.lock();
+    }
 
-	protected final void writeUnlock() {
-		m_writeLock.unlock();
-	}
+    protected final void writeUnlock() {
+        m_writeLock.unlock();
+    }
 
-	protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
-		final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+    protected Criteria getCriteria(UriInfo uriInfo, SearchContext searchContext) {
+        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
-		final CriteriaBuilder builder = getCriteriaBuilder();
+        final CriteriaBuilder builder = getCriteriaBuilder();
 
-		if (searchContext != null) {
-			try {
-				SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
-				if (condition != null) {
-					SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
-					condition.accept(visitor);
-				}
-			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
-				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
-			}
-		}
+        if (searchContext != null) {
+            try {
+                SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
+                if (condition != null) {
+                    SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
+                    condition.accept(visitor);
+                }
+            } catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
+                LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage(), e);
+            }
+        }
 
-		// Apply limit, offset, orderBy, order params
-		applyLimitOffsetOrderBy(params, builder);
+        // Apply limit, offset, orderBy, order params
+        applyLimitOffsetOrderBy(params, builder);
 
-		Criteria crit = builder.toCriteria();
+        Criteria crit = builder.toCriteria();
 
-		/*
-		TODO: Figure out how to do stuff like this
+        /*
+        TODO: Figure out how to do stuff like this
 
-		// Don't include deleted nodes by default
-		final String type = params.getFirst("type");
-		if (type == null) {
-			final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-			restrictions.add(Restrictions.ne("type", "D"));
-			crit.setRestrictions(restrictions);
-		}
-		 */
-		
-		return crit;
-	}
+        // Don't include deleted nodes by default
+        final String type = params.getFirst("type");
+        if (type == null) {
+            final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+            restrictions.add(Restrictions.ne("type", "D"));
+            crit.setRestrictions(restrictions);
+        }
+         */
+        
+        return crit;
+    }
 
-	@GET
-	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-	public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+    @GET
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
 
-		Criteria crit = getCriteria(uriInfo, searchContext);
+        Criteria crit = getCriteria(uriInfo, searchContext);
 
-		final List<T> coll = getDao().findMatching(crit);
+        final List<T> coll = getDao().findMatching(crit);
 
-		if (coll == null || coll.size() < 1) {
-			return Response.status(Status.NO_CONTENT).build();
-		} else {
-			Integer offset = crit.getOffset();
+        if (coll == null || coll.size() < 1) {
+            return Response.status(Status.NO_CONTENT).build();
+        } else {
+            Integer offset = crit.getOffset();
 
-			// Remove limit, offset and ordering when fetching count
-			crit.setLimit(null);
-			crit.setOffset(null);
-			crit.setOrders(new ArrayList<Order>());
-			int totalCount = getDao().countMatching(crit);
+            // Remove limit, offset and ordering when fetching count
+            crit.setLimit(null);
+            crit.setOffset(null);
+            crit.setOrders(new ArrayList<Order>());
+            int totalCount = getDao().countMatching(crit);
 
-			JaxbListWrapper<T> list = createListWrapper(coll);
-			list.setTotalCount(totalCount);
-			list.setOffset(offset);
+            JaxbListWrapper<T> list = createListWrapper(coll);
+            list.setTotalCount(totalCount);
+            list.setOffset(offset);
 
-			// Make sure that offset is set to a numeric value when setting the Content-Range header
-			offset = (offset == null ? 0 : offset);
-			return Response.ok(list).header("Content-Range", String.format("items %d-%d/%d", offset, offset + coll.size() - 1, totalCount)).build();
-		}
-	}
+            // Make sure that offset is set to a numeric value when setting the Content-Range header
+            offset = (offset == null ? 0 : offset);
+            return Response.ok(list).header("Content-Range", String.format("items %d-%d/%d", offset, offset + coll.size() - 1, totalCount)).build();
+        }
+    }
 
-	@GET
-	@Path("count")
-	@Produces({MediaType.TEXT_PLAIN})
-	public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-		return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
-	}
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return Response.ok(String.valueOf(getDao().countMatching(getCriteria(uriInfo, searchContext)))).build();
+    }
 
-	@GET
-	@Path("{id}")
-	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-	public Response get(@PathParam("id") final K id) {
-		T retval = getDao().get(id);
-		if (retval == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		} else {
-			return Response.ok(retval).build();
-		}
-	}
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response get(@PathParam("id") final K id) {
+        T retval = getDao().get(id);
+        if (retval == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(retval).build();
+        }
+    }
 
-	@POST
-	@Path("{id}")
-	public Response createSpecific() {
-		// Return a 404 if somebody tries to create with a specific ID
-		return Response.status(Status.NOT_FOUND).build();
-	}
+    @POST
+    @Path("{id}")
+    public Response createSpecific() {
+        // Return a 404 if somebody tries to create with a specific ID
+        return Response.status(Status.NOT_FOUND).build();
+    }
 
-	@POST
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response create(@Context final UriInfo uriInfo, T object) {
-		return doCreate(uriInfo, object);
-	}
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response create(@Context final UriInfo uriInfo, T object) {
+        return doCreate(uriInfo, object);
+    }
 
-	protected Response doCreate(UriInfo uriInfo, T object) {
-		K id = getDao().save(object);
-		return Response.created(getRedirectUri(uriInfo, id)).build();
-	}
+    protected Response doCreate(UriInfo uriInfo, T object) {
+        K id = getDao().save(object);
+        return Response.created(getRedirectUri(uriInfo, id)).build();
+    }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
-		// TODO: Implement me
-		return Response.status(Status.NOT_IMPLEMENTED).build();
-	}
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response updateMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        // TODO: Implement me
+        return Response.status(Status.NOT_IMPLEMENTED).build();
+    }
 
-	@PUT
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	@Path("{id}")
-	public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
-		writeLock();
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("{id}")
+    public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
+        writeLock();
 
-		try {
-			// TODO: Assert that the ID of the path equals the ID of the object
+        try {
+            // TODO: Assert that the ID of the path equals the ID of the object
 
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
 
-			LOG.debug("update: updating object {}", object);
+            LOG.debug("update: updating object {}", object);
 
-			getDao().saveOrUpdate(object);
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
+            getDao().saveOrUpdate(object);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Path("{id}")
-	public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
-		writeLock();
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("{id}")
+    public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
+        writeLock();
 
-		try {
-			final T object = getDao().get(id);
+        try {
+            final T object = getDao().get(id);
 
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
 
-			LOG.debug("update: updating object {}", object);
+            LOG.debug("update: updating object {}", object);
 
-			RestUtils.setBeanProperties(object, params);
+            RestUtils.setBeanProperties(object, params);
 
-			LOG.debug("update: object {} updated", object);
-			getDao().saveOrUpdate(object);
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
+            LOG.debug("update: object {} updated", object);
+            getDao().saveOrUpdate(object);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	@DELETE
-	public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-		writeLock();
+    @DELETE
+    public Response deleteMany(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        writeLock();
 
-		try {
-			Criteria crit = getCriteria(uriInfo, searchContext);
+        try {
+            Criteria crit = getCriteria(uriInfo, searchContext);
 
-			final List<T> objects = getDao().findMatching(crit);
+            final List<T> objects = getDao().findMatching(crit);
 
-			if (objects == null || objects.size() == 0) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
+            if (objects == null || objects.size() == 0) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
 
-			for (T object : objects) {
-				LOG.debug("delete: deleting object {}", object);
-				getDao().delete(object);
-			}
-			return Response.noContent().build();
-		} finally {
-			writeUnlock();
-		}
-	}
+            for (T object : objects) {
+                LOG.debug("delete: deleting object {}", object);
+                getDao().delete(object);
+            }
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	@DELETE
-	@Path("{id}")
-	public Response delete(@PathParam("id") final K criteria) {
-		writeLock();
+    @DELETE
+    @Path("{id}")
+    public Response delete(@PathParam("id") final K criteria) {
+        writeLock();
 
-		try {
-			final T object = getDao().get(criteria);
+        try {
+            final T object = getDao().get(criteria);
 
-			if (object == null) {
-				return Response.status(Status.NOT_FOUND).build();
-			}
+            if (object == null) {
+                return Response.status(Status.NOT_FOUND).build();
+            }
 
-			LOG.debug("delete: deleting object {}", criteria);
-			getDao().delete(object);
-			return Response.ok().build();
-		} finally {
-			writeUnlock();
-		}
-	}
+            LOG.debug("delete: deleting object {}", criteria);
+            getDao().delete(object);
+            return Response.ok().build();
+        } finally {
+            writeUnlock();
+        }
+    }
 
-	private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
-		applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
-	}
+    private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+        applyLimitOffsetOrderBy(p, builder, DEFAULT_LIMIT);
+    }
 
-	private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
+    private static void applyLimitOffsetOrderBy(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
 
-		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		params.putAll(p);
+        final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        params.putAll(p);
 
-		builder.limit(defaultLimit);
+        builder.limit(defaultLimit);
 
-		if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
-			builder.limit(Integer.valueOf(params.getFirst("limit").trim()));
-			params.remove("limit");
-		}
+        if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
+            builder.limit(Integer.valueOf(params.getFirst("limit").trim()));
+            params.remove("limit");
+        }
 
-		if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
-			builder.offset(Integer.valueOf(params.getFirst("offset").trim()));
-			params.remove("offset");
-		}
+        if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
+            builder.offset(Integer.valueOf(params.getFirst("offset").trim()));
+            params.remove("offset");
+        }
 
-		if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
-			builder.clearOrder();
+        if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
+            builder.clearOrder();
 
-			builder.orderBy(params.getFirst("orderBy").trim());
-			params.remove("orderBy");
+            builder.orderBy(params.getFirst("orderBy").trim());
+            params.remove("orderBy");
 
-			if (params.containsKey("order") && params.getFirst("order") != null && !"".equals(params.getFirst("order").trim())) {
-				if("desc".equalsIgnoreCase(params.getFirst("order").trim())) {
-					builder.desc();
-				} else {
-					builder.asc();
-				}
-				params.remove("order");
-			}
-		}
-	}
+            if (params.containsKey("order") && params.getFirst("order") != null && !"".equals(params.getFirst("order").trim())) {
+                if("desc".equalsIgnoreCase(params.getFirst("order").trim())) {
+                    builder.desc();
+                } else {
+                    builder.asc();
+                }
+                params.remove("order");
+            }
+        }
+    }
 
-	private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
-		return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
-	}
+    private static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
+        return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
+    }
 }

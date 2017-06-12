@@ -75,23 +75,23 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String>
         return m_dao;
     }
 
-	protected Class<OnmsMinion> getDaoClass() {
-		return OnmsMinion.class;
-	}
+    protected Class<OnmsMinion> getDaoClass() {
+        return OnmsMinion.class;
+    }
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
+    protected CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
 
-		// Order by label by default
-		builder.orderBy("label").desc();
+        // Order by label by default
+        builder.orderBy("label").desc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
-		return new OnmsMinionCollection(list);
-	}
+    @Override
+    protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
+        return new OnmsMinionCollection(list);
+    }
 
     @DELETE
     @Path("{id}")

@@ -59,49 +59,49 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ScanReportRestService extends AbstractDaoRestService<ScanReport,String> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScanReportRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ScanReportRestService.class);
 
-	@Autowired
-	private ScanReportDao m_dao;
+    @Autowired
+    private ScanReportDao m_dao;
 
-	@Override
-	protected ScanReportDao getDao() {
-		return m_dao;
-	}
+    @Override
+    protected ScanReportDao getDao() {
+        return m_dao;
+    }
 
-	@Override
-	protected Class<ScanReport> getDaoClass() {
-		return ScanReport.class;
-	}
+    @Override
+    protected Class<ScanReport> getDaoClass() {
+        return ScanReport.class;
+    }
 
-	@Override
-	public CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(ScanReport.class);
+    @Override
+    public CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(ScanReport.class);
 
-		// Order by date (descending) by default
-		builder.orderBy("timestamp").desc();
+        // Order by date (descending) by default
+        builder.orderBy("timestamp").desc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<ScanReport> createListWrapper(Collection<ScanReport> list) {
-		return new ScanReportList(list);
-	}
+    @Override
+    protected JaxbListWrapper<ScanReport> createListWrapper(Collection<ScanReport> list) {
+        return new ScanReportList(list);
+    }
 
-	@GET
-	@Path("{id}/logs")
-	@Produces({MediaType.TEXT_PLAIN})
-	public Response getLogs(@PathParam("id") final String id) {
-		final ScanReport report = getDao().get(id);
-		if (report == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		} else {
-			if (report.getLog() == null || report.getLog().getLogText() == null) {
-				return Response.status(Status.NO_CONTENT).build();
-			} else {
-				return Response.ok(report.getLog().getLogText()).build();
-			}
-		}
-	}
+    @GET
+    @Path("{id}/logs")
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getLogs(@PathParam("id") final String id) {
+        final ScanReport report = getDao().get(id);
+        if (report == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            if (report.getLog() == null || report.getLog().getLogText() == null) {
+                return Response.status(Status.NO_CONTENT).build();
+            } else {
+                return Response.ok(report.getLog().getLogText()).build();
+            }
+        }
+    }
 }

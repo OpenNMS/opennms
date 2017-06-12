@@ -52,40 +52,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer> {
 
-	@Autowired
-	private OutageDao m_dao;
+    @Autowired
+    private OutageDao m_dao;
 
-	@Override
-	protected OutageDao getDao() {
-		return m_dao;
-	}
+    @Override
+    protected OutageDao getDao() {
+        return m_dao;
+    }
 
-	@Override
-	protected Class<OnmsOutage> getDaoClass() {
-		return OnmsOutage.class;
-	}
+    @Override
+    protected Class<OnmsOutage> getDaoClass() {
+        return OnmsOutage.class;
+    }
 
-	@Override
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-		builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
-		builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-		builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
-		builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-		builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
-		builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
-		builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
+        builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
 
-		// NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
+        // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
 
-		// Order by ID by default
-		builder.orderBy("id").desc();
+        // Order by ID by default
+        builder.orderBy("id").desc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
-		return new OnmsOutageCollection(list);
-	}
+    @Override
+    protected JaxbListWrapper<OnmsOutage> createListWrapper(Collection<OnmsOutage> list) {
+        return new OnmsOutageCollection(list);
+    }
 }
