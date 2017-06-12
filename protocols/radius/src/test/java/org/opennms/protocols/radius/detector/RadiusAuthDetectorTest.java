@@ -56,7 +56,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 
     @Autowired
     public RadiusAuthDetector m_detector;
-	private MockRadiusServer mockSrv = null;
+    	private MockRadiusServer mockSrv = null;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -66,8 +66,8 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
-         mockSrv = new MockRadiusServer();
-         mockSrv.start(true,false);
+        mockSrv = new MockRadiusServer();
+        mockSrv.start(true,false);
     }
     @After
     public void tearDown(){
