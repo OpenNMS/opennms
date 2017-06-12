@@ -45,6 +45,9 @@ public class DnsLookup extends OsgiCommandSupport {
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
     @Argument(index = 0, name = "host", description = "Hostname", required = true, multiValued = false)
     String m_host;
 
@@ -53,7 +56,7 @@ public class DnsLookup extends OsgiCommandSupport {
     @Override
     protected Object doExecute() throws Exception {
 
-        final CompletableFuture<String> future = client.lookup(m_host, m_location);
+        final CompletableFuture<String> future = client.lookup(m_host, m_location, m_systemId);
         while (true) {
             try {
                 try {

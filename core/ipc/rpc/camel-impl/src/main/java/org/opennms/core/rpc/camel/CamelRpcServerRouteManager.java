@@ -36,6 +36,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.Route;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jms.JmsEndpoint;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
@@ -66,11 +67,13 @@ public class CamelRpcServerRouteManager {
     }
 
     private static final class DynamicRpcRouteBuilder extends RouteBuilder {
+        private final MinionIdentity identity;
         private final RpcModule<RpcRequest,RpcResponse> module;
         private final JmsQueueNameFactory queueNameFactory;
 
         private DynamicRpcRouteBuilder(CamelContext context, MinionIdentity identity, RpcModule<RpcRequest,RpcResponse> module) {
             super(context);
+            this.identity = identity;
             this.module = module;
             this.queueNameFactory = new JmsQueueNameFactory(CamelRpcConstants.JMS_QUEUE_PREFIX,
                     module.getId(), identity.getLocation());
@@ -82,8 +85,14 @@ public class CamelRpcServerRouteManager {
 
         @Override
         public void configure() throws Exception {
-            from(String.format("queuingservice:%s?asyncConsumer=true", queueNameFactory.getName()))
-                .setExchangePattern(ExchangePattern.InOut)
+            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s?asyncConsumer=true",
+                    queueNameFactory.getName()), JmsEndpoint.class);
+
+            final String selector = getJmsSelector(identity.getId());
+            LOG.trace("Using JMS selector: {} for module: {} on: {}", selector, module, identity);
+            endpoint.setSelector(selector);
+
+            from(endpoint).setExchangePattern(ExchangePattern.InOut)
                 .process(new CamelRpcServerProcessor(module))
                 .routeId(getRouteId(module));
         }
@@ -150,5 +159,15 @@ public class CamelRpcServerRouteManager {
                 LOG.warn("Could not determine route ID for RpcModule {} ({})", rpcModule.getId(), Integer.toHexString(rpcModule.hashCode()));
             }
         }
+    }
+
+    static String getJmsSelector(String systemId) {
+        if (systemId == null) {
+            return String.format("%s IS NULL", CamelRpcConstants.JMS_SYSTEM_ID_HEADER);
+        }
+        return String.format("%s='%s' OR %s IS NULL",
+                CamelRpcConstants.JMS_SYSTEM_ID_HEADER,
+                systemId.replace("'", "\\'"),
+                CamelRpcConstants.JMS_SYSTEM_ID_HEADER);
     }
 }

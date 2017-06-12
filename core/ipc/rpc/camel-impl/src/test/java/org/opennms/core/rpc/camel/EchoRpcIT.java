@@ -30,6 +30,7 @@ package org.opennms.core.rpc.camel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -57,6 +58,7 @@ import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
+import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +129,69 @@ public class EchoRpcIT {
         EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
+
+        routeManager.unbind(echoRpcModule);
+        context.stop();
+    }
+
+    @Test(timeout=60000)
+    public void canExecuteRpcViaAnotherLocationWithSystemId() throws Exception {
+        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+        EchoRpcModule echoRpcModule = new EchoRpcModule();
+
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+        context.start();
+
+        MinionIdentity minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
+        CamelRpcServerRouteManager routeManager = new CamelRpcServerRouteManager(context,
+                new MockMinionIdentity(REMOTE_LOCATION_NAME));
+        routeManager.bind(echoRpcModule);
+        EchoRequest request = new EchoRequest("HELLO!!!");
+        // Specify the system id
+        assertNotNull(minionIdentity.getId());
+        request.setSystemId(minionIdentity.getId());
+        request.setLocation(REMOTE_LOCATION_NAME);
+        EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
+        EchoResponse actualResponse = echoClient.execute(request).get();
+        assertEquals(expectedResponse, actualResponse);
+
+        routeManager.unbind(echoRpcModule);
+        context.stop();
+    }
+
+    /**
+     * Issues a RPC to a location at which a listener is registered,
+     * but specifies a system id that is not equal to the listener's.
+     * Since no matching system can process the request, the request
+     * should time out.
+     */
+    @Test(timeout=60000)
+    public void failsWithTimeoutWhenSystemIdDoesNotExist() throws Exception {
+        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+        EchoRpcModule echoRpcModule = new EchoRpcModule();
+
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext context = new DefaultCamelContext(registry);
+        context.addComponent("queuingservice", queuingservice);
+        context.start();
+
+        MinionIdentity minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
+        CamelRpcServerRouteManager routeManager = new CamelRpcServerRouteManager(context,
+                new MockMinionIdentity(REMOTE_LOCATION_NAME));
+        routeManager.bind(echoRpcModule);
+        EchoRequest request = new EchoRequest("HELLO!!!");
+        // Use a different system id, other than the one that's actually listening
+        request.setSystemId(minionIdentity.getId() + "!");
+        request.setLocation(REMOTE_LOCATION_NAME);
+
+        try {
+            echoClient.execute(request).get();
+            fail("Did not get ExecutionException");
+        } catch (ExecutionException e) {
+            assertTrue("Cause is not of type RequestTimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);
+        }
 
         routeManager.unbind(echoRpcModule);
         context.stop();

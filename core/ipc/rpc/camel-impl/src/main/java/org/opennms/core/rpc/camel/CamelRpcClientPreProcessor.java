@@ -65,6 +65,9 @@ public class CamelRpcClientPreProcessor implements Processor {
                 wrapper.getModule().getId(), wrapper.getRequest().getLocation());
         exchange.getIn().setHeader(CamelRpcConstants.JMS_QUEUE_NAME_HEADER, queueNameFactory.getName());
         exchange.getIn().setHeader(CamelRpcConstants.CAMEL_JMS_REQUEST_TIMEOUT_HEADER, wrapper.getRequest().getTimeToLiveMs() != null ? wrapper.getRequest().getTimeToLiveMs() : CAMEL_JMS_REQUEST_TIMEOUT);
+        if (wrapper.getRequest().getSystemId() != null) {
+            exchange.getIn().setHeader(CamelRpcConstants.JMS_SYSTEM_ID_HEADER, wrapper.getRequest().getSystemId());
+        }
         final String request = wrapper.getModule().marshalRequest((RpcRequest)wrapper.getRequest());
         exchange.getIn().setBody(request);
     }

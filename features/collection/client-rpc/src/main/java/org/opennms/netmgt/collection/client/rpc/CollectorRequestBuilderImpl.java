@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.collection.client.rpc;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-
+import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectorRequestBuilder;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
@@ -47,6 +48,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     private final Map<String, Object> attributes = new HashMap<>();
 
     private CollectionAgent agent;
+
+    private String systemId;
 
     private ServiceCollector serviceCollector;
 
@@ -59,6 +62,12 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
     @Override
     public CollectorRequestBuilder withAgent(CollectionAgent agent) {
         this.agent = agent;
+        return this;
+    }
+
+    @Override
+    public CollectorRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
         return this;
     }
 
@@ -100,8 +109,17 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             throw new IllegalArgumentException("Agent is required.");
         }
 
+        final RpcTarget target = client.getRpcTargetHelper().target()
+                .withNodeId(agent.getNodeId())
+                .withLocation(agent.getLocationName())
+                .withSystemId(systemId)
+                .withServiceAttributes(attributes)
+                .withLocationOverride((s) -> serviceCollector.getEffectiveLocation(s))
+                .build();
+
         CollectorRequestDTO request = new CollectorRequestDTO();
-        request.setLocation(serviceCollector.getEffectiveLocation(agent.getLocationName()));
+        request.setLocation(target.getLocation());
+        request.setSystemId(target.getSystemId());
         request.setClassName(serviceCollector.getClass().getCanonicalName());
         request.setTimeToLiveMs(ttlInMs);
 
@@ -123,16 +141,12 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             // Marshal
             request.setAgent(new CollectionAgentDTO(agent));
             final Map<String, String> marshaledParms = serviceCollector.marshalParameters(allAttributes);
-            marshaledParms.forEach((k,v) -> {
-                request.addAttribute(k, v);
-            });
+            marshaledParms.forEach(request::addAttribute);
             request.setAttributesNeedUnmarshaling(true);
         }
 
         // Execute the request
-        return client.getDelegate().execute(request).thenApply(results -> {
-            return results.getCollectionSet();
-        });
+        return client.getDelegate().execute(request).thenApply(CollectorResponseDTO::getCollectionSet);
     }
 
 }
