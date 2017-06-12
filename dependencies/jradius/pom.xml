@@ -108,7 +108,6 @@
       <groupId>net.jradius</groupId>
       <artifactId>jradius-extended</artifactId>
       <version>1.1.5</version>
-      
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
