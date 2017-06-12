@@ -65,9 +65,9 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 
     @Before
     public void setUp(){
-        MockLogAppender.setupLogging();
         mockSrv = new MockRadiusServer();
         mockSrv.start(true,false);
+        MockLogAppender.setupLogging();
     }
     @After
     public void tearDown(){
