@@ -220,27 +220,113 @@ public abstract class EnLinkdTestHelper {
                    parentIfIndex == link.getOspfAddressLessIndex();
         };
     }
-    class FourSwitchTopology {
+    
+    /*
+     *         /////////////////////////////////////////////////////////////////////////////
+     *         //                               switch B                                   //
+     *         //       1                              2                          3     4  //         
+     *         //////////////////////////////////////////////////////////////////////////////
+     *                  |                              |
+     *         //////////////////////    /////////////////////////////////
+     *         //      50          //    //      wirelesse net          //
+     *         //     switch D     //    /////////////////////////////////
+     *         //      49          //         |                      |
+     *         //////////////////////         |                      |
+     *                  |                     |                      |
+     *         //////////////////////    ////////////////////    /////////////////////
+     *         //      24          //    //   11           //    //  3              //
+     *         //     switch A     //    //  switch C      //    //   switch E      //
+     *         //  4   5   52      //    //  19      24    //    //       23        //
+     *         //////////////////////    ////////////////////    /////////////////////
+     */
+    class FiveSwitchTopology {
         Integer nodeAId = 109101;
         Integer nodeBId = 109102;
         Integer nodeCId = 109103;
         Integer nodeDId = 109104;
+        Integer nodeEId = 109108;
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
         OnmsNode nodeC= new OnmsNode();
         OnmsNode nodeD= new OnmsNode();
+        OnmsNode nodeE= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
         BridgeElement elementB = new BridgeElement();
         BridgeElement elementC = new BridgeElement();
         BridgeElement elementD = new BridgeElement();
+        BridgeElement elementE = new BridgeElement();
         List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
 
         List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftC = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftD = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftE = new ArrayList<BridgeMacLink>();
+
+        String[] macsonAport4= {
+                "00a2ee425191"
+                
+        };
+
+        String[] macsonAport5= {
+                "002699b52703",
+                "002699b52749"
+        };
+
+        String[] macsonAport52= {
+                "001101030104",
+                "002584f84401",
+                "000c29f49b80",
+                "6c9ced30816a",
+                "d4ca6d0e9976"
+        };
+
+        String[] macsonBport3= {
+                "001763010d4f"
+        };
+
+        String[] macsonBport4= {
+                "000c427bfee3",
+                "000c42f213af",
+                "00176301050f"
+        };
         
-        public FourSwitchTopology() {
+        String[] macsonCport19 = {
+                "4c00822458d2"
+        };
+
+        String[] macsonCport24 = {
+                "000e83f6120a"
+        };
+
+        String[] macsonEport23 = {
+                "0025454ac907"
+        };
+
+        String[] macsOnWirelessSegment = {
+                "000c429e3f3d",
+                "000c42ef1df6",
+                "000c42ef1e02",
+                "000c42f5d30a",
+                "0012cf68f80f",
+                "001d454777dc",
+                "001d71d5e4e7",
+                "0021a4357254",
+                "c4641393f352",
+                "d4ca6d147c96",
+                "d4ca6d69c484",
+                "d4ca6d82ab08",
+                "d4ca6d88234f",
+                "d4ca6d954b3b",
+                "d4ca6da2d626",
+                "d4ca6ded84c8",
+                "d4ca6ded84d6",
+                "d4ca6dedd059",
+                "d4ca6df7f801",
+                "e48d8cf63372"
+        };
+
+        public FiveSwitchTopology() {
             nodeA.setId(nodeAId);
             elementA.setNode(nodeA);
             elementA.setBaseBridgeAddress("5017ff5b2980");
@@ -261,74 +347,80 @@ public abstract class EnLinkdTestHelper {
             elementD.setBaseBridgeAddress("0012cf5d2120");
             elemlist.add(elementD);
 
+            nodeE.setId(nodeEId);
+            elementE.setNode(nodeE);
+            elementE.setBaseBridgeAddress("0012cf3f4ee0");
+            elemlist.add(elementE);
+
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "000c29f49b80"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "001101030104"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 1, 1001, "d4ca6d0e9976"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001763010792"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd265e"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c429e3f3d"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42ef1df6"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42ef1e02"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42f5d30a"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001d454777dc"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd2652"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0022557fd894"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0021a4357254"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f800"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6dedd059"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "c4641393f352"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "e48d8cf63372"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d954b3b"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d88234f"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f80f"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84d6"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d147c96"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf3f4ee0"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c42ef1df6"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d69c484"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6df7f801"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000e83f6120a"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d82ab08"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "000c429e3f3d"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6da2d626"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf3f4ee0"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f800"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0012cf68f80f"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001763010792"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001d454777dc"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "001d71d5e4e7"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0021a4357254"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0022557fd894"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "0025454ac907"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84c8"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd2652"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "00e0b1bd265e"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "4c00822458d2"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "c4641393f352"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d147c96"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d69c484"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d82ab08"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d88234f"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6d954b3b"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6da2d626"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84c8"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6ded84d6"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6dedd059"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "d4ca6df7f801"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 2, 1002, "e48d8cf63372"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 3, 1003, "001763010d4f"));
-            bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "000c42f213af"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "000c427bfee3"));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "000c42f213af"));
             bftB.add(addBridgeForwardingTableEntry(nodeB, 4, 1004, "00176301050f"));
-
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0022557fd894"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d71d5e4e7"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c429e3f3d"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1e02"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "00e0b1bd2f5c"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d88234f"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6df7f801"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84d6"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1df6"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84c8"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0012cf68f80f"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42f5d30a"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6dedd059"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0025454ac907"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "c4641393f352"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d454777dc"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d0e9976"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d82ab08"));            
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0021a4357254"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84d6"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d69c484"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "e48d8cf63372"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d954b3b"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001101030104"));
-            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d147c96"));
+            
             bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c29f49b80"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c429e3f3d"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1df6"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42ef1e02"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "000c42f5d30a"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001101030104"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0012cf68f80f"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d454777dc"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "001d71d5e4e7"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0021a4357254"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0022557fd894"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "0025454ac907"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "00e0b1bd2f5c"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "c4641393f352"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d0e9976"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d147c96"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d69c484"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d82ab08"));            
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d88234f"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6d954b3b"));
             bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6da2d626"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84c8"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6ded84d6"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6dedd059"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "d4ca6df7f801"));
+            bftC.add(addBridgeForwardingTableEntry(nodeC, 11, 1011, "e48d8cf63372"));
             bftC.add(addBridgeForwardingTableEntry(nodeC, 19, 1019, "4c00822458d2"));
             bftC.add(addBridgeForwardingTableEntry(nodeC, 24, 1024, "000e83f6120a"));
-
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "000c29f49b80"));
+            
+            bftA.add(addBridgeForwardingTableEntry(nodeA,  4, 10104, "00a2ee425191"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,  5, 10105, "002699b52703"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA,  5, 10105, "002699b52749"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c427bfee3"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c429e3f3d"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42ef1df6"));
@@ -336,7 +428,6 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f213af"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000c42f5d30a"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "000e83f6120a"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025, "001101030104"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf3f4ee0"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf5d2120"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0012cf68f800"));
@@ -348,16 +439,10 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0021a4357254"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0022557fd894"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "0025454ac907"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "002584f84401"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 5, 10105, "002699b52703"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 5, 10105, "002699b52749"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 4, 10104, "00a2ee425191"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "00e0b1bd2652"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "00e0b1bd2f5c"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "4c00822458d2"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "6c9ced30816a"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "c4641393f352"));
-            bftA.add(addBridgeForwardingTableEntry(nodeA, 52, 5025,  "d4ca6d0e9976"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d147c96"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d69c484"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6d82ab08"));
@@ -369,8 +454,15 @@ public abstract class EnLinkdTestHelper {
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6dedd059"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "d4ca6df7f801"));
             bftA.add(addBridgeForwardingTableEntry(nodeA, 24, 10124, "e48d8cf63372"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52,  5025, "001101030104"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52,  5025, "002584f84401"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52,  5025, "000c29f49b80"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52,  5025, "6c9ced30816a"));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 52,  5025, "d4ca6d0e9976"));
             
             bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "000c29f49b80"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "001101030104"));
+            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "d4ca6d0e9976"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c427bfee3"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c429e3f3d"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42ef1df6"));
@@ -378,7 +470,6 @@ public abstract class EnLinkdTestHelper {
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42f213af"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000c42f5d30a"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "000e83f6120a"));
-            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "001101030104"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0012cf3f4ee0"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "0012cf68f800"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00176301050f"));
@@ -394,24 +485,59 @@ public abstract class EnLinkdTestHelper {
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "00e0b1bd2f5e"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "4c00822458d2"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "c4641393f352"));
-            bftD.add(addBridgeForwardingTableEntry(nodeD, 49, 49, "d4ca6d0e9976"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d147c96"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d69c484"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d82ab08"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d88234f"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6d954b3b"));
             bftD.add(addBridgeForwardingTableEntry(nodeD, 50, 50, "d4ca6da2d626"));
-
+            
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "000c429e3f3d"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "000c42db4e11"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "000c42ef1df6"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "000c42ef1e02"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "000c42f5d30a"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "001101030104"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "0012cf68f80f"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "001d454777dc"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "001d71d5e4e7"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "0021a4357254"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "00e0b1bd2652"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "00e0b1bd265e"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "00e0b1bd2f5c"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "00e0b1bd2f5f"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "4c00822458d2"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "c4641393f352"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d0e9976"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d147c96"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d69c484"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d82ab08"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d88234f"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6d954b3b"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6da2d626"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6ded84c8"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6ded84d6"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6dedd059"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "d4ca6df7f801"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE,  3,  3, "e48d8cf63372"));
+            bftE.add(addBridgeForwardingTableEntry(nodeE, 23, 23, "0025454ac907"));
         }
         
         public void check(BroadcastDomain domain) {
-            assertEquals(4, domain.getBridgeNodesOnDomain().size());
+            assertEquals(5, domain.getBridgeNodesOnDomain().size());
             assertEquals(nodeBId.intValue(), domain.getRootBridgeId().intValue());
-            assertEquals(10, domain.getTopology().size());
+            assertEquals(11, domain.getTopology().size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeAId).size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeBId).size());
             assertEquals(3, domain.getSharedSegmentOnTopologyForBridge(nodeCId).size());
             assertEquals(2, domain.getSharedSegmentOnTopologyForBridge(nodeDId).size());
+            assertEquals(2, domain.getSharedSegmentOnTopologyForBridge(nodeEId).size());
+            for (Bridge bridge: domain.getBridges()) {
+                if (bridge.isRootBridge())
+                    assertNull(bridge.getRootPort());
+                else
+                    assertNotNull(bridge.getRootPort());
+            }
             for (SharedSegment segment: domain.getTopology()) {
                 assertNotNull(segment.getDesignatedBridge());
                 assertNotNull(segment.getDesignatedPort());
@@ -421,13 +547,182 @@ public abstract class EnLinkdTestHelper {
                     assertNotNull(bridgeMacLink.getMacAddress());
                }
             }
-            for (Bridge bridge: domain.getBridges()) {
-                if (bridge.isRootBridge())
-                    assertNull(bridge.getRootPort());
-                else
-                    assertNotNull(bridge.getRootPort());
+            for (SharedSegment segment: domain.getTopology()) {
+                assertNotNull(segment.getDesignatedBridge());
+                assertNotNull(segment.getDesignatedPort());
+                switch (segment.getDesignatedBridge().intValue()) {
+                case 109101:
+                    checkA(segment);
+                    break;
+                case 109102:
+                    checkB(segment);
+                    break;
+                case 109103:
+                    checkC(segment);
+                    break;
+                case 109104:
+                    checkD(segment);
+                    break;
+                case 109108:
+                    checkE(segment);
+                    break;
+
+                default:
+                    break;
+                }
+                for (BridgeMacLink bridgeMacLink :segment.getBridgeMacLinks()) {
+                    assertNotNull(bridgeMacLink.getBridgePort());
+                    assertNotNull(bridgeMacLink.getBridgePortIfIndex());
+                    assertNotNull(bridgeMacLink.getMacAddress());
+               }
+            }
+
+        }
+        
+        public void checkA(SharedSegment segment) {
+            assertEquals(109101, segment.getDesignatedBridge().intValue());
+            assertEquals(1, segment.getBridgePortsOnSegment().size());
+            switch (segment.getDesignatedPort().intValue()) {
+            case 4:
+                assertEquals(macsonAport4.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonAport4) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+            case 5:
+                assertEquals(macsonAport5.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonAport5) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+            case 52:
+                assertEquals(macsonAport52.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonAport52) {
+                    assertTrue(segment.containsMac(mac));
+                }
+
+             break;
+
+            default:
+                break;
             }
         }
+        public void checkE(SharedSegment segment) {
+            assertEquals(109108, segment.getDesignatedBridge().intValue());
+            assertEquals(1, segment.getBridgePortsOnSegment().size());
+            switch (segment.getDesignatedPort().intValue()) {
+            case 23:
+                assertEquals(macsonEport23.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonEport23) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+
+            default:
+                break;
+            }
+            
+        }
+        
+        public void checkC(SharedSegment segment) {
+            assertEquals(109103, segment.getDesignatedBridge().intValue());
+            assertEquals(1, segment.getBridgePortsOnSegment().size());
+            switch (segment.getDesignatedPort().intValue()) {
+            case 19:
+                assertEquals(macsonCport19.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonCport19) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+            case 24:
+                assertEquals(macsonCport24.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonCport24) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+
+            default:
+                break;
+            }
+
+        }
+        public void checkB(SharedSegment segment) {
+            assertEquals(109102, segment.getDesignatedBridge().intValue());
+            switch (segment.getDesignatedPort().intValue()) {
+            case 1:
+                assertEquals(2, segment.getBridgePortsOnSegment().size());
+                assertEquals(1, segment.getBridgeBridgeLinks().size());
+                assertEquals(0, segment.getMacsOnSegment().size());
+                assertEquals(0, segment.getBridgeMacLinks().size());
+                BridgeBridgeLink link = segment.getBridgeBridgeLinks().iterator().next();
+                assertEquals(109104, link.getNode().getId().intValue());
+                assertEquals(50, link.getBridgePort().intValue());
+                assertEquals(109102, link.getDesignatedNode().getId().intValue());
+                assertEquals(1, link.getDesignatedPort().intValue());
+                break;
+            case 2:
+                assertEquals(3, segment.getBridgePortsOnSegment().size());
+                assertEquals(2, segment.getBridgePort(nodeBId).getBridgePort().intValue());
+                assertEquals(3, segment.getBridgePort(nodeEId).getBridgePort().intValue());
+                assertEquals(11, segment.getBridgePort(nodeCId).getBridgePort().intValue());
+                assertEquals(macsOnWirelessSegment.length, segment.getMacsOnSegment().size());
+                for (String mac: macsOnWirelessSegment) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                assertEquals(3*macsOnWirelessSegment.length, segment.getBridgeMacLinks().size());
+                assertEquals(2, segment.getBridgeBridgeLinks().size());
+                for (BridgeBridgeLink blink: segment.getBridgeBridgeLinks())  {
+                    assertEquals(109102, blink.getDesignatedNode().getId().intValue());
+                    assertEquals(2, blink.getDesignatedPort().intValue());
+                    
+                    switch (blink.getNode().getId().intValue()) {
+                    case 109108:
+                        assertEquals(3, blink.getBridgePort().intValue());
+                        break;
+                    case 109103:
+                        assertEquals(11, blink.getBridgePort().intValue());
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+                break;
+            case 3:
+                assertEquals(1, segment.getBridgePortsOnSegment().size());
+                assertEquals(macsonBport3.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonBport3) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+            case 4:
+                assertEquals(1, segment.getBridgePortsOnSegment().size());
+                assertEquals(macsonBport4.length, segment.getMacsOnSegment().size());
+                for (String mac: macsonBport4) {
+                    assertTrue(segment.containsMac(mac));
+                }
+                break;
+
+            default:
+                break;
+            }
+            
+        }
+
+        public void checkD(SharedSegment segment) {
+            assertEquals(109104, segment.getDesignatedBridge().intValue());
+            assertEquals(2, segment.getBridgePortsOnSegment().size());
+            assertEquals(1, segment.getBridgeBridgeLinks().size());
+            assertEquals(0, segment.getMacsOnSegment().size());
+            assertEquals(0, segment.getBridgeMacLinks().size());
+            assertEquals(49, segment.getDesignatedPort().intValue());
+            BridgeBridgeLink link = segment.getBridgeBridgeLinks().iterator().next();
+            assertEquals(109101, link.getNode().getId().intValue());
+            assertEquals(24, link.getBridgePort().intValue());
+            assertEquals(109104, link.getDesignatedNode().getId().intValue());
+            assertEquals(49, link.getDesignatedPort().intValue());
+        }
+
     }
     
     class ABCTopology {

@@ -889,15 +889,16 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
-    public void testFourSwitchTopology() {
+    public void testFiveSwitchTopology() {
 
-        FourSwitchTopology topology = new FourSwitchTopology();
+        FiveSwitchTopology topology = new FiveSwitchTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
         domain.addBridge(new Bridge(topology.nodeAId));
         domain.addBridge(new Bridge(topology.nodeBId));
         domain.addBridge(new Bridge(topology.nodeCId));
         domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
         domain.setBridgeElements(topology.elemlist);
         
         NodeDiscoveryBridgeTopology ndbtB= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeBId, null, null, null,location));
@@ -919,6 +920,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtD.setDomain(domain);
         ndbtD.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
         ndbtD.calculate();
+
+        NodeDiscoveryBridgeTopology ndbtE= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeEId, null, null, null,location));
+        ndbtE.setDomain(domain);
+        ndbtE.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbtE.calculate();
 
         topology.check(domain);
 
