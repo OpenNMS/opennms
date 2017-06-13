@@ -50,6 +50,7 @@ import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -108,6 +109,29 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+            } finally {
+                ui.testCase.setImplicitWait();
+            }
+            waitForTransition();
+        }
+
+        public void expand() {
+            try {
+                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
+            } catch (NoSuchElementException e) {
+            } finally {
+                ui.testCase.setImplicitWait();
+            }
+            waitForTransition();
+        }
+
+        public void collapse() {
+            try {
+                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
+            } catch (NoSuchElementException e) {
+
             } finally {
                 ui.testCase.setImplicitWait();
             }
