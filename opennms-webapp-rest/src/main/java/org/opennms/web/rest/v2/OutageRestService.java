@@ -72,15 +72,23 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        // 1st level JOINs
         builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
         builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
+
+        // 2nd level JOINs
+        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        // 3rd level JOINs
+        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+
+        // 4th level JOINs
+        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by category so that we can specify a join condition
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
 
         // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
 

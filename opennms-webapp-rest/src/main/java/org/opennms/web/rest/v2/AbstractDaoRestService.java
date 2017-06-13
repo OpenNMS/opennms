@@ -133,12 +133,26 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I extends 
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
 
-    // To add filter aliases to simplify API queries
+    /**
+     * <p>To add filter aliases to simplify API queries.</p>
+     * <ul>
+     * <li>Key: User-friendly value</li>
+     * <li>Value: CXF property name</li>
+     * </ul>
+     * @return
+     */
     protected Map<String,String> getBeanPropertiesMapping() {
         return null;
     }
 
-    // To translate CXF mappings to HQL/Criteria mappings.
+    /**
+     * <p>To translate CXF mappings to HQL/Criteria mappings.</p>
+     * <ul>
+     * <li>Key: CXF property name</li>
+     * <li>Value: HQL property name</li>
+     * </ul>
+     * @return
+     */
     protected Map<String,String> getCriteriaPropertiesMapping() {
         return null;
     }

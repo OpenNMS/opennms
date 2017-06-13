@@ -80,9 +80,20 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
+
+        // 1st level JOINs
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("monitoredServices", "monitoredServices", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
+        // TODO: Only add this alias when filtering so that we can specify a join condition
         builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        // TODO: Remove this once the join conditions are in place
         builder.distinct();
+
         updateCriteria(uriInfo, builder);
+
         return builder;
     }
 

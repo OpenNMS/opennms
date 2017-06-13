@@ -81,12 +81,16 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class, "notification");
-        builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipInterface.ipAddress", "notification.ipAddress"), Restrictions.isNull("ipInterface.ipAddress")));
+        // 1st level JOINs
         builder.alias("event", "event", JoinType.LEFT_JOIN);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
+        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipInterfaces.ipAddress", "notification.ipAddress"), Restrictions.isNull("ipInterfaces.ipAddress")));
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
 
         // Order by ID by default
         builder.orderBy("notifyId").desc();

@@ -122,6 +122,8 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					}
 				}
 
+				// TODO: Change this so that it remaps prefixes so that we don't have to put
+				// every joined property into m_criteriaMapping
 				if (m_criteriaMapping != null && m_criteriaMapping.containsKey(name)) {
 					name = m_criteriaMapping.get(name);
 				}
@@ -263,7 +265,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	}
 
 	private static boolean isIpAddrAttribute(String name) {
-		List<String> ipAttributes = Lists.newArrayList("ipaddr", "ipaddress");
+		List<String> ipAttributes = Lists.newArrayList("ipaddr", "ipaddress", "netmask");
 		return ipAttributes.stream().filter(attribute -> attribute.equalsIgnoreCase(name)).findFirst().isPresent();
 	}
 }

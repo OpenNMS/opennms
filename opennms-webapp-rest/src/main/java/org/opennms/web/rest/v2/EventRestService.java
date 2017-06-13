@@ -81,17 +81,24 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), "event");
+
+        // 1st level JOINs
         builder.alias("alarm", "alarm", JoinType.LEFT_JOIN);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterface.ifIndex", "event.ifIndex"), Restrictions.isNull("snmpInterface.ifIndex")));
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterface.ipAddress", "event.ipAddr"), Restrictions.isNull("ipInterface.ipAddress")));
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
+        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterfaces.ipAddress", "event.ipAddr"), Restrictions.isNull("ipInterfaces.ipAddress")));
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterfaces.ifIndex", "event.ifIndex"), Restrictions.isNull("snmpInterfaces.ifIndex")));
+
         builder.orderBy("eventTime").desc(); // order by event time by default
+
         return builder;
     }
 

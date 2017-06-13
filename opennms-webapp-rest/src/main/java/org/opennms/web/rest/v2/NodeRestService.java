@@ -100,15 +100,23 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
 
-        // TODO: Only add this alias when filtering by snmpInterface fields so that we can specify a join condition
-        builder.alias("snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering by ipInterface fields so that we can specify a join condition
-        builder.alias("ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("categories", "categories", JoinType.LEFT_JOIN);
+        // 1st level JOINs
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-        // TODO: Only add this alias when filtering by serviceType so that we can specify a join condition
-        builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("categories", "categories", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("location", "location", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("ipInterfaces.monitoredServices", "monitoredServices", JoinType.LEFT_JOIN);
+
+        // 3rd level JOINs
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
         // Order by label by default
         builder.orderBy("label").desc();

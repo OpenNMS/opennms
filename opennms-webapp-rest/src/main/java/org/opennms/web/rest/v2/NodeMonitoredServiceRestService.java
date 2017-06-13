@@ -98,14 +98,25 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
+
+        // 1st level JOINs
         builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+
+        // 3rd level JOINs
+        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
         builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
-        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+
         builder.orderBy("id");
+
         updateCriteria(uriInfo, builder);
+
         return builder;
     }
 

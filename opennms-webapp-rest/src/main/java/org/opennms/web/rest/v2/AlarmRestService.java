@@ -106,18 +106,26 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), "alarm");
+
         builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
+
+        // 1st level JOINs
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterface.ifIndex", "alarm.ifIndex"), Restrictions.isNull("snmpInterface.ifIndex")));
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterface.ipAddress", "alarm.ipAddr"), Restrictions.isNull("ipInterface.ipAddress")));
-        // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "service", JoinType.LEFT_JOIN);
+
+        // 2nd level JOINs
+        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterfaces.ipAddress", "alarm.ipAddr"), Restrictions.isNull("ipInterfaces.ipAddress")));
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterfaces.ifIndex", "alarm.ifIndex"), Restrictions.isNull("snmpInterfaces.ifIndex")));
+
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
+
         return builder;
     }
 
@@ -137,10 +145,10 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     @Override
     protected Map<String, String> getCriteriaPropertiesMapping() {
         final Map<String, String> map = new HashMap<>();
+        map.put("node.assetRecord.description", "assetRecord.description");
         map.put("node.categories.name", "categories.name");
-        map.put("ipaddress", "ipAddr");
-        map.put("ipAddress", "ipAddr");
-        map.put("serviceType", "service");
+        map.put("node.ipInterfaces.ipAddress", "ipInterfaces.ipAddress");
+        map.put("node.snmpInterfaces.netMask", "snmpInterfaces.netMask");
         map.put("serviceType.name", "service.name");
         return map;
     }
