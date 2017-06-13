@@ -84,7 +84,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipAddress", "ipInterface.ipAddress"), Restrictions.isNull("ipAddress")));
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipInterface.ipAddress", "ipAddress"), Restrictions.isNull("ipInterface.ipAddress")));
         builder.alias("event", "event", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
 

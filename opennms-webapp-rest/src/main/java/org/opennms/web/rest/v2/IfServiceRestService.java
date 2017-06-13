@@ -85,14 +85,14 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
-        builder.alias("ipInterface.snmpInterface", "snmpInterfaces", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface", "ipInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by category so that we can specify a join condition
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.orderBy("id");
-        builder.distinct();
         return builder;
     }
 

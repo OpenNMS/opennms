@@ -76,7 +76,6 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
         updateCriteria(uriInfo, builder);
-        builder.distinct();
         return builder;
     }
 

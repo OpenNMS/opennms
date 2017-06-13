@@ -76,8 +76,9 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
         builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.location", "location", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.node.categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by category so that we can specify a join condition
+        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
         builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
 
@@ -85,7 +86,6 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
 
         // Order by ID by default
         builder.orderBy("id").desc();
-        builder.distinct();
 
         return builder;
     }

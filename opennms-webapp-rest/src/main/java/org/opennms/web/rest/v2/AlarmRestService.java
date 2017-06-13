@@ -53,6 +53,7 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch.FetchType;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -89,7 +90,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     @Autowired
     private AlarmRepository m_repository;
 
-    @Autowired
+//    @Autowired
     private TroubleTicketProxy m_troubleTicketProxy;
 
     @Override
@@ -108,13 +109,15 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
         builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
-        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        //builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("snmpInterface.ifIndex", "ifIndex"), Restrictions.isNull("snmpInterface.ifIndex")));
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipInterface.ipAddress", "ipAddr"), Restrictions.isNull("ipInterface.ipAddress")));
+        // TODO: Only add this alias when filtering by category so that we can specify a join condition
         builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("node.location", "location", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "service", JoinType.LEFT_JOIN);
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
-        builder.distinct();
         return builder;
     }
 

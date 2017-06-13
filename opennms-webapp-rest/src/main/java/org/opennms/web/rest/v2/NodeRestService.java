@@ -101,13 +101,18 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
 
         builder.alias("snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by ipInterface fields so that we can specify a join condition
         builder.alias("ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by category so that we can specify a join condition
         builder.alias("categories", "categories", JoinType.LEFT_JOIN);
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        // TODO: Only add this alias when filtering by serviceType so that we can specify a join condition
         builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
         // Order by label by default
         builder.orderBy("label").desc();
+
+        // TODO: Remove this once the join conditions are in place
         builder.distinct();
 
         return builder;
