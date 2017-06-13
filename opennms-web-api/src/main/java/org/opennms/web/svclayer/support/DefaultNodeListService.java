@@ -63,6 +63,7 @@ import org.opennms.web.svclayer.model.AggregateStatus;
 import org.opennms.web.svclayer.model.NodeListCommand;
 import org.opennms.web.svclayer.model.NodeListModel;
 import org.opennms.web.svclayer.model.NodeListModel.NodeModel;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -210,8 +211,18 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ilike("node.label", nodeName, MatchMode.ANYWHERE));
     }
     
-    private static void addCriteriaForNodeId(OnmsCriteria criteria, int nodeId) {
+    private static void addCriteriaForNodeId(OnmsCriteria criteria, String nodeIdString) {
+        int nodeId = parseNodeId(nodeIdString);
         criteria.add(Restrictions.idEq(nodeId));
+    }
+
+    private static int parseNodeId(String nodeIdString) {
+        try {
+            return Integer.parseInt(nodeIdString);
+        } catch (NumberFormatException nfe) {
+            LoggerFactory.getLogger(DefaultNodeListService.class).warn("{} is not a valid node id, falling back to -1.", nodeIdString);
+            return -1;
+        }
     }
     
     private static void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {

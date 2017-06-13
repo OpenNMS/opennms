@@ -53,6 +53,16 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexPageIT.class);
 
+    // Verifies that one can use the node id input as node label input.
+    // The result should be empty, and not BAD REQUEST. See NMS-9419
+    @Test
+    public void canSearchForNodeLabelInNodeId() {
+        // Verify search. Should not result in 400 BAD REQUEST
+        m_driver.findElement(By.name("nodeId")).sendKeys("192.0.2.1");
+        m_driver.findElement(By.name("nodeIdSearchButton")).click();
+        wait.until(pageContainsText("None found."));
+    }
+
     /**
      * Can render search boxes.
      *
