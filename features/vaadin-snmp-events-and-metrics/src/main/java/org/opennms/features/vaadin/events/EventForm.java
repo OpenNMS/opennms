@@ -29,10 +29,10 @@
 package org.opennms.features.vaadin.events;
 
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CheckBox;
@@ -67,6 +67,9 @@ public class EventForm extends CustomComponent {
 
     /** The event severity. */
     final ComboBox eventSeverity = new ComboBox("Severity");
+
+    /** The has alarm data field. */
+    final CheckBox hasAlarmData = new CheckBox("Add Alarm Data");
 
     /** The alarm data type. */
     final ComboBox alarmDataAlarmType = new ComboBox("Alarm Type");
@@ -135,22 +138,35 @@ public class EventForm extends CustomComponent {
         logMsgContent.setNullRepresentation("");
         eventLayout.addComponent(logMsgContent);
 
+        hasAlarmData.setWidth("100%");
+        hasAlarmData.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                enableAlarmData(hasAlarmData.getValue());
+            }
+        });
+        eventLayout.addComponent(hasAlarmData);
+
         alarmDataAlarmType.addItem(Integer.valueOf(1));
         alarmDataAlarmType.addItem(Integer.valueOf(2));
         alarmDataAlarmType.addItem(Integer.valueOf(3));
         alarmDataAlarmType.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
         alarmDataAlarmType.setNullSelectionAllowed(false);
+        alarmDataAlarmType.setVisible(false);
         eventLayout.addComponent(alarmDataAlarmType);
 
         alarmDataAutoClean.setWidth("100%");
+        alarmDataAutoClean.setVisible(false);
         eventLayout.addComponent(alarmDataAutoClean);
 
         alarmDataReductionKey.setWidth("100%");
         alarmDataReductionKey.setNullRepresentation("");
+        alarmDataReductionKey.setVisible(false);
         eventLayout.addComponent(alarmDataReductionKey);
 
         alarmDataClearKey.setWidth("100%");
         alarmDataClearKey.setNullRepresentation("");
+        alarmDataClearKey.setVisible(false);
         eventLayout.addComponent(alarmDataClearKey);
 
         for (String sev : OnmsSeverity.names()) {
@@ -183,16 +199,42 @@ public class EventForm extends CustomComponent {
         eventEditor.bind(logMsgDest, "logmsg.dest");
         eventEditor.bind(logMsgContent, "logmsg.content");
         eventEditor.bind(eventSeverity, "severity");
-        eventEditor.bind(alarmDataAlarmType, "alarmData.alarmType");
-        eventEditor.bind(alarmDataAutoClean, "alarmData.autoClean");
-        eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
-        eventEditor.bind(alarmDataClearKey, "alarmData.clearKey");
         eventEditor.bind(eventOperInstruct, "operinstruct");
         eventEditor.bind(maskElements, "mask.maskelementCollection");
         eventEditor.bind(maskVarbinds, "mask.varbindCollection");
         eventEditor.bind(varbindsDecodes, "varbindsdecodeCollection");
 
         setCompositionRoot(eventLayout);
+    }
+
+    /**
+     * Enable alarm data.
+     *
+     * @param enable the enable
+     */
+    public void enableAlarmData(boolean enable) {
+        if (hasAlarmData.getValue() != enable) {
+            hasAlarmData.setValue(enable);
+        }
+        alarmDataAlarmType.setVisible(enable);
+        alarmDataAutoClean.setVisible(enable);
+        alarmDataReductionKey.setVisible(enable);
+        alarmDataClearKey.setVisible(enable);
+        if (enable) {
+            eventEditor.bind(alarmDataAlarmType, "alarmData.alarmType");
+            eventEditor.bind(alarmDataAutoClean, "alarmData.autoClean");
+            eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
+            eventEditor.bind(alarmDataClearKey, "alarmData.clearKey");
+        } else {
+            if (eventEditor.getPropertyId(alarmDataAlarmType) != null)
+                eventEditor.unbind(alarmDataAlarmType);
+            if (eventEditor.getPropertyId(alarmDataAutoClean) != null)
+                eventEditor.unbind(alarmDataAutoClean);
+            if (eventEditor.getPropertyId(alarmDataReductionKey) != null)
+                eventEditor.unbind(alarmDataReductionKey);
+            if (eventEditor.getPropertyId(alarmDataClearKey) != null)
+                eventEditor.unbind(alarmDataClearKey);
+        }
     }
 
     /**
@@ -214,9 +256,7 @@ public class EventForm extends CustomComponent {
         if (event.getMask() == null) {
             event.setMask(new Mask());
         }
-        if (event.getAlarmData() == null) {
-            event.setAlarmData(new AlarmData());
-        }
+        enableAlarmData(event.getAlarmData() != null);
         eventEditor.setItemDataSource(event);
     }
 
@@ -235,7 +275,6 @@ public class EventForm extends CustomComponent {
         e.getLogmsg().setDest("logndisplay");
         e.setSeverity("Indeterminate");
         e.setMask(new Mask());
-        e.setAlarmData(new AlarmData());
         return e;
     }
 
@@ -262,6 +301,7 @@ public class EventForm extends CustomComponent {
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
         eventEditor.setReadOnly(readOnly);
+        hasAlarmData.setVisible(!readOnly);
     }
 
     /* (non-Javadoc)
