@@ -90,7 +90,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	/**
 	 * Constructor that specifies the target class and a list of field aliases.
 	 */
-	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class clazz, Map<String, String> criteriaMapping) {
+	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> criteriaMapping) {
 		super(null);
 		m_class = clazz;
 		m_criteriaBuilder = criteriaBuilder;
@@ -122,14 +122,14 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					}
 				}
 
+				if (m_criteriaMapping != null && m_criteriaMapping.containsKey(name)) {
+					name = m_criteriaMapping.get(name);
+				}
+
 				// TODO: Should we get the condition off of the statement instead??
 				// I think they're always identical if the PrimitiveStatement has a
 				// statement.
 				//switch(statement.getCondition()) {
-
-				if (m_criteriaMapping != null && m_criteriaMapping.containsKey(name)) {
-				    name = m_criteriaMapping.get(name);
-				}
 
 				switch(sc.getConditionType()) {
 				case EQUALS:
@@ -246,13 +246,13 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 		}
 	}
 
-	private void applyIpLikeValue(CriteriaBuilder criteriaBuilder, String attribute, ClassValue clsValue) {
+	private static void applyIpLikeValue(CriteriaBuilder criteriaBuilder, String attribute, org.apache.cxf.jaxrs.ext.search.visitor.AbstractSearchConditionVisitor<?,?>.ClassValue clsValue) {
 		if (clsValue != null && clsValue.getValue() != null) {
 			if (clsValue.getValue() instanceof InetAddress) {
 				InetAddress inetAddress = (InetAddress) clsValue.getValue();
 				criteriaBuilder.eq(attribute, InetAddressUtils.str(inetAddress));
 			} else {
-		 		criteriaBuilder.eq(attribute, clsValue.getValue().toString());
+				criteriaBuilder.eq(attribute, clsValue.getValue().toString());
 			}
 		}
 	}

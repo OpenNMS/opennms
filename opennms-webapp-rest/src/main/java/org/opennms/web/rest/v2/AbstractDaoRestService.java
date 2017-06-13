@@ -81,7 +81,7 @@ import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
 /**
- * Abstract class for easily implement V2 end-points
+ * Abstract class for easily implemented V2 endpoints.
  * 
  *  T ~ Object (ex. OnmsNode)
  *  K ~ Type of the PK of the entity on the database (ex. Integer)
@@ -91,7 +91,7 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Transactional
-public abstract class AbstractDaoRestService<T,K extends Serializable,I> {
+public abstract class AbstractDaoRestService<T,K extends Serializable,I extends Serializable> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
