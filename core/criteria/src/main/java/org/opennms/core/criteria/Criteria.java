@@ -67,7 +67,7 @@ public class Criteria implements Cloneable {
 	}
 
     public static interface CriteriaVisitor {
-        public void visitClass(final Class<?> clazz);
+        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias);
 
         public void visitOrder(final Order order);
 
@@ -95,7 +95,7 @@ public class Criteria implements Cloneable {
     }
 
     public void visit(final CriteriaVisitor visitor) {
-        visitor.visitClass(getCriteriaClass());
+        visitor.visitClassAndRootAlias(getCriteriaClass(), getRootAlias());
 
         for (final Order order : getOrders()) {
             visitor.visitOrder(order);
@@ -126,6 +126,8 @@ public class Criteria implements Cloneable {
 
     private Class<?> m_class;
 
+    private final String m_rootAlias;
+
     private List<Order> m_orders = new ArrayList<Order>();
 
     private List<Alias> m_aliases = new ArrayList<Alias>();
@@ -143,7 +145,12 @@ public class Criteria implements Cloneable {
     private LockType m_lockType = null;
 
     public Criteria(final Class<?> clazz) {
+        this(clazz, null);
+    }
+
+    public Criteria(final Class<?> clazz, String rootAlias) {
         m_class = clazz;
+        m_rootAlias = rootAlias;
     }
 
     public void setClass(Class<?> m_class) {
@@ -152,6 +159,10 @@ public class Criteria implements Cloneable {
 
     public final Class<?> getCriteriaClass() {
         return m_class;
+    }
+
+    public final String getRootAlias() {
+        return m_rootAlias;
     }
 
     public final Collection<Order> getOrders() {

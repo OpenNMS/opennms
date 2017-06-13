@@ -36,6 +36,8 @@ public class BaseRestrictionVisitor implements RestrictionVisitor {
     @Override public void visitNotNullComplete(final NotNullRestriction restriction) {}
     @Override public void visitEq(final EqRestriction restriction) {}
     @Override public void visitEqComplete(final EqRestriction restriction) {}
+    @Override public void visitEqProperty(final EqPropertyRestriction restriction) {}
+    @Override public void visitEqPropertyComplete(final EqPropertyRestriction restriction) {}
     @Override public void visitNe(final NeRestriction restriction) {}
     @Override public void visitNeComplete(final NeRestriction restriction) {}
     @Override public void visitGt(final GtRestriction restriction) {}
