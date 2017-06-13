@@ -240,11 +240,11 @@ public abstract class EnLinkdTestHelper {
      *         //////////////////////    ////////////////////    /////////////////////
      */
     class FiveSwitchTopology {
-        Integer nodeAId = 109101;
-        Integer nodeBId = 109102;
-        Integer nodeCId = 109103;
-        Integer nodeDId = 109104;
-        Integer nodeEId = 109108;
+        final int nodeAId = 100001;
+        final int nodeBId = 100002;
+        final int nodeCId = 100003;
+        final int nodeDId = 100006;
+        final int nodeEId = 100008;
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
         OnmsNode nodeC= new OnmsNode();
@@ -525,7 +525,7 @@ public abstract class EnLinkdTestHelper {
         
         public void check(BroadcastDomain domain) {
             assertEquals(5, domain.getBridgeNodesOnDomain().size());
-            assertEquals(nodeBId.intValue(), domain.getRootBridgeId().intValue());
+            assertEquals(nodeBId, domain.getRootBridgeId().intValue());
             assertEquals(11, domain.getTopology().size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeAId).size());
             assertEquals(4, domain.getSharedSegmentOnTopologyForBridge(nodeBId).size());
@@ -551,19 +551,19 @@ public abstract class EnLinkdTestHelper {
                 assertNotNull(segment.getDesignatedBridge());
                 assertNotNull(segment.getDesignatedPort());
                 switch (segment.getDesignatedBridge().intValue()) {
-                case 109101:
+                case nodeAId:
                     checkA(segment);
                     break;
-                case 109102:
+                case nodeBId:
                     checkB(segment);
                     break;
-                case 109103:
+                case nodeCId:
                     checkC(segment);
                     break;
-                case 109104:
+                case nodeDId:
                     checkD(segment);
                     break;
-                case 109108:
+                case nodeEId:
                     checkE(segment);
                     break;
 
@@ -580,7 +580,7 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void checkA(SharedSegment segment) {
-            assertEquals(109101, segment.getDesignatedBridge().intValue());
+            assertEquals(nodeAId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
             switch (segment.getDesignatedPort().intValue()) {
             case 4:
@@ -608,7 +608,7 @@ public abstract class EnLinkdTestHelper {
             }
         }
         public void checkE(SharedSegment segment) {
-            assertEquals(109108, segment.getDesignatedBridge().intValue());
+            assertEquals(nodeEId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
             switch (segment.getDesignatedPort().intValue()) {
             case 23:
@@ -625,7 +625,7 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void checkC(SharedSegment segment) {
-            assertEquals(109103, segment.getDesignatedBridge().intValue());
+            assertEquals(nodeCId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
             switch (segment.getDesignatedPort().intValue()) {
             case 19:
@@ -647,7 +647,7 @@ public abstract class EnLinkdTestHelper {
 
         }
         public void checkB(SharedSegment segment) {
-            assertEquals(109102, segment.getDesignatedBridge().intValue());
+            assertEquals(nodeBId, segment.getDesignatedBridge().intValue());
             switch (segment.getDesignatedPort().intValue()) {
             case 1:
                 assertEquals(2, segment.getBridgePortsOnSegment().size());
@@ -655,9 +655,9 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(0, segment.getMacsOnSegment().size());
                 assertEquals(0, segment.getBridgeMacLinks().size());
                 BridgeBridgeLink link = segment.getBridgeBridgeLinks().iterator().next();
-                assertEquals(109104, link.getNode().getId().intValue());
+                assertEquals(nodeDId, link.getNode().getId().intValue());
                 assertEquals(50, link.getBridgePort().intValue());
-                assertEquals(109102, link.getDesignatedNode().getId().intValue());
+                assertEquals(nodeBId, link.getDesignatedNode().getId().intValue());
                 assertEquals(1, link.getDesignatedPort().intValue());
                 break;
             case 2:
@@ -672,14 +672,14 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(3*macsOnWirelessSegment.length, segment.getBridgeMacLinks().size());
                 assertEquals(2, segment.getBridgeBridgeLinks().size());
                 for (BridgeBridgeLink blink: segment.getBridgeBridgeLinks())  {
-                    assertEquals(109102, blink.getDesignatedNode().getId().intValue());
+                    assertEquals(nodeBId, blink.getDesignatedNode().getId().intValue());
                     assertEquals(2, blink.getDesignatedPort().intValue());
                     
                     switch (blink.getNode().getId().intValue()) {
-                    case 109108:
+                    case nodeEId:
                         assertEquals(3, blink.getBridgePort().intValue());
                         break;
-                    case 109103:
+                    case nodeCId:
                         assertEquals(11, blink.getBridgePort().intValue());
                         break;
 
@@ -710,16 +710,16 @@ public abstract class EnLinkdTestHelper {
         }
 
         public void checkD(SharedSegment segment) {
-            assertEquals(109104, segment.getDesignatedBridge().intValue());
+            assertEquals(nodeDId, segment.getDesignatedBridge().intValue());
             assertEquals(2, segment.getBridgePortsOnSegment().size());
             assertEquals(1, segment.getBridgeBridgeLinks().size());
             assertEquals(0, segment.getMacsOnSegment().size());
             assertEquals(0, segment.getBridgeMacLinks().size());
             assertEquals(49, segment.getDesignatedPort().intValue());
             BridgeBridgeLink link = segment.getBridgeBridgeLinks().iterator().next();
-            assertEquals(109101, link.getNode().getId().intValue());
+            assertEquals(nodeAId, link.getNode().getId().intValue());
             assertEquals(24, link.getBridgePort().intValue());
-            assertEquals(109104, link.getDesignatedNode().getId().intValue());
+            assertEquals(nodeDId, link.getDesignatedNode().getId().intValue());
             assertEquals(49, link.getDesignatedPort().intValue());
         }
 
