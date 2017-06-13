@@ -141,10 +141,78 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.5]
+==== Release 2016.1.5
+
+Release 2016.1.5 is an update to 2016.1.4 that provides quite a few bug fixes and a few enhancements.
+
+The codename for 2016.1.4 is _Peirce Quincuncial_.
+
+===== Bug
+
+* OpenNMS doesn't correctly support IPv6 addresses for (jasper) reporting (Issue http://issues.opennms.org/browse/NMS-5450[NMS-5450])
+* vmware urls do not support username/passwords that require URL encoding (Issue http://issues.opennms.org/browse/NMS-6530[NMS-6530])
+* If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue http://issues.opennms.org/browse/NMS-7106[NMS-7106])
+* Geo-Maps running on a server without internet connection breaks the UI for valid nodes. (Issue http://issues.opennms.org/browse/NMS-7148[NMS-7148])
+* scrollbars displayed for RrdDashlet title box (Issue http://issues.opennms.org/browse/NMS-7562[NMS-7562])
+* RWS client always uses plain HTTP, even if rws-config.html has HTTPS URL (Issue http://issues.opennms.org/browse/NMS-8441[NMS-8441])
+* Multiple smoke tests flapping inside docker (Issue http://issues.opennms.org/browse/NMS-8544[NMS-8544])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Null ospfrouterid in NodeDiscoveryOspf (Issue http://issues.opennms.org/browse/NMS-8667[NMS-8667])
+* Exception in LatencyStoringServiceMonitorAdaptor: IncorrectResultSizeDataAccessException (Issue http://issues.opennms.org/browse/NMS-8756[NMS-8756])
+* Threshold editor help text unclear about comparison operators (Issue http://issues.opennms.org/browse/NMS-8826[NMS-8826])
+* NPE in CdpLink.toString() (Issue http://issues.opennms.org/browse/NMS-8897[NMS-8897])
+* auto-acknoledge random fails (Issue http://issues.opennms.org/browse/NMS-8901[NMS-8901])
+* Near Real-Time Graphing unable to graph Cisco BDI interfaces (Issue http://issues.opennms.org/browse/NMS-8908[NMS-8908])
+* WS-Man throws event 4776 and 4625 with domain user on windows side (Issue http://issues.opennms.org/browse/NMS-8925[NMS-8925])
+* NPE in IpInterfaceScan when processing IPLike rule with IPv6 address (Issue http://issues.opennms.org/browse/NMS-8934[NMS-8934])
+* Statsd: erroneous reporting; aggregators not reset between worker's runs (Issue http://issues.opennms.org/browse/NMS-8944[NMS-8944])
+* WS_Man datacollection using WQL fails with 'unsupported element' (Issue http://issues.opennms.org/browse/NMS-8955[NMS-8955])
+* Enlinkd fails to discovery Bridge Topology (Issue http://issues.opennms.org/browse/NMS-8973[NMS-8973])
+* Typo in linkednode.jsp in panel title (Issue http://issues.opennms.org/browse/NMS-8981[NMS-8981])
+* NRT Graphing does not show SNMP counter values correctly (Issue http://issues.opennms.org/browse/NMS-9005[NMS-9005])
+* Copyright bump 2017 (Issue http://issues.opennms.org/browse/NMS-9060[NMS-9060])
+* opennms.conf can break the snmp-request command (Issue http://issues.opennms.org/browse/NMS-9068[NMS-9068])
+* Jsr160ConnectionFactory doesn't work with IPv6 address (Issue http://issues.opennms.org/browse/NMS-9071[NMS-9071])
+* WS-Man thresholding reports: No thresholds configured for resource type '*' (Issue http://issues.opennms.org/browse/NMS-9077[NMS-9077])
+* Standalone HTTPS with Jetty doesn't work with certificate alias (Issue http://issues.opennms.org/browse/NMS-9084[NMS-9084])
+* Correlation engine's cancelTimer method should be public (Issue http://issues.opennms.org/browse/NMS-9087[NMS-9087])
+* Collection timing enhancements (Issue http://issues.opennms.org/browse/NMS-9090[NMS-9090])
+* Migrate RTC related objects to JAXB instead of Castor (Issue http://issues.opennms.org/browse/NMS-9100[NMS-9100])
+* Pollerd continues to monitor deleted nodes (Issue http://issues.opennms.org/browse/NMS-9112[NMS-9112])
+* Selection of non-disk RRD strategies (Issue http://issues.opennms.org/browse/NMS-9120[NMS-9120])
+* It is possible to perform alarms/notifications actions through the Acks ReST end point without permissions (Issue http://issues.opennms.org/browse/NMS-9140[NMS-9140])
+* SNMP client code can get stuck in infinite retry loops (Issue http://issues.opennms.org/browse/NMS-9164[NMS-9164])
+* incorrect permissions on opennms.service (Issue http://issues.opennms.org/browse/NMS-9166[NMS-9166])
+* Fix the execution of Drools rules when using streaming (CEP, Temporal Reasoning) (Issue http://issues.opennms.org/browse/NMS-9172[NMS-9172])
+* Drools examples fails to load with exception (Issue http://issues.opennms.org/browse/NMS-9186[NMS-9186])
+* SyslogParser should not assume UTC timestamps (Issue http://issues.opennms.org/browse/NMS-9201[NMS-9201])
+* New resource types are not available in the Web UI until it is restarted (Issue http://issues.opennms.org/browse/NMS-9205[NMS-9205])
+* OSPF Router Id not properly updated (Issue http://issues.opennms.org/browse/NMS-9218[NMS-9218])
+* DNS Adapter on Delete Node does not delete DNS record (Issue http://issues.opennms.org/browse/NMS-9219[NMS-9219])
+* Problems associated with SNMP4J affects OpenNMS performance (contention issues) (Issue http://issues.opennms.org/browse/NMS-9223[NMS-9223])
+* Pollerd takes too much time scheduling polling when OpenNMS starts (Issue http://issues.opennms.org/browse/NMS-9247[NMS-9247])
+* Requisition UI breaks when percentage sign is used inside Foreign ID input field (Issue http://issues.opennms.org/browse/NMS-9269[NMS-9269])
+* Make TCP output queue parameters configurable (Issue http://issues.opennms.org/browse/NMS-9282[NMS-9282])
+* Calculation of KSC reports timespans "Last Week" and "This Week" broken (Issue http://issues.opennms.org/browse/NMS-9325[NMS-9325])
+
+===== Enhancement
+
+* Upgrade Drools to 6.4.0.Final (from 6.0.1.Final) (Issue http://issues.opennms.org/browse/NMS-8676[NMS-8676])
+* Node detail page is hard to use with a lot of surveillance categories (Issue http://issues.opennms.org/browse/NMS-8989[NMS-8989])
+* SNMP data collection definitions for Cisco ASA5585-SSP-60 devices (Issue http://issues.opennms.org/browse/NMS-9094[NMS-9094])
+* Persist string attributes over the TCP stream (Issue http://issues.opennms.org/browse/NMS-9126[NMS-9126])
+* Add JMX instrumentation for the Drools Correlator to understand the the working memory of each rule-set (a.k.a. engine) (Issue http://issues.opennms.org/browse/NMS-9145[NMS-9145])
+* Upgrade snmp4j to 2.5.5 (Issue http://issues.opennms.org/browse/NMS-9162[NMS-9162])
+* Enhance to MockSnmpAgent to support returning arbitrary SNMP error codes (Issue http://issues.opennms.org/browse/NMS-9163[NMS-9163])
+* Set domain level for DNS adapter (Issue http://issues.opennms.org/browse/NMS-9222[NMS-9222])
+* Allow for choosing ifDescr over ifName for interface directory name (Issue http://issues.opennms.org/browse/NMS-9240[NMS-9240])
+* Improve handling of counter wraps/reset when using Newts (Issue http://issues.opennms.org/browse/NMS-9252[NMS-9252])
+
 [releasenotes-changelog-2016.1.4]
 ==== Release 2016.1.4
 
-Release 2016.1.4 is an update to 2016.1.4 that provides a number of bug fixes and a few enhancements.
+Release 2016.1.4 is an update to 2016.1.3 that provides a number of bug fixes and a few enhancements.
 
 The codename for 2016.1.4 is _Dymaxion_.
 
