@@ -135,6 +135,129 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPost(url, event, 204);
     }
 
+    @Test
+    public void testOrderBy() throws Exception {
+        String url = "/events";
+
+        // Test orderby for properties of OnmsEvent
+        sendRequest(GET, url, parseParamData("orderBy=alarm"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=associatedServiceLostOutages"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=associatedServiceRegainedOutages"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=distPoller"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventAckTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventAckUser"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventAutoAction"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventCorrelation"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventCreateTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventDescr"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventDisplay"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventForward"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventHost"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventLog"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventLogGroup"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventLogMsg"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventMouseOverText"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventNotification"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventOperAction"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventOperActionMenuText"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventOperInstruct"), 200);
+        // TODO: Cannot sort by parms since they are all stored in one database column
+        //sendRequest(GET, url, parseParamData("orderBy=eventParameters"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventParms"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventPathOutage"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventSeverity"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventSnmp"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventSnmpHost"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventSource"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventSuppressedCount"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventTTicket"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventTTicketState"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=eventUei"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=id"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=ifIndex"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=ipAddr"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=notifications"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=serviceType"), 200);
+
+        // Test orderby for properties of OnmsAlarm
+        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmAckTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmAckUser"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.alarmType"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.applicationDN"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.clearKey"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.counter"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.description"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.details"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.distPoller"), 200);
+        // TODO: Cannot sort by parms since they are all stored in one database column
+        //sendRequest(GET, url, parseParamData("orderBy=alarm.eventParameters"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.eventParms"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.firstAutomationTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.firstEventTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.id"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.ifIndex"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.ipAddr"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.lastAutomationTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.lastEvent"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.lastEventTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.logMsg"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.managedObjectInstance"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.managedObjectType"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.mouseOverText"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.node"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.operInstruct"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.ossPrimaryKey"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.qosAlarmState"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.reductionKey"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.reductionKeyMemo"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.serviceType"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.severity"), 200);
+        // TODO: Figure out how to do this, OnmsSeverity is an enum
+        //sendRequest(GET, url, parseParamData("orderBy=alarm.severity.id"), 200);
+        //sendRequest(GET, url, parseParamData("orderBy=alarm.severity.label"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.stickyMemo"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedUntil"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.suppressedUser"), 200);
+        // TODO: I can't figure out the bean property name for these properties
+        //sendRequest(GET, url, parseParamData("orderBy=alarm.tticketId"), 200);
+        //sendRequest(GET, url, parseParamData("orderBy=alarm.tticketState"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.uei"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.x733AlarmType"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=alarm.x733ProbableCause"), 200);
+
+        // Test orderby for properties of OnmsNode
+        sendRequest(GET, url, parseParamData("orderBy=node.assetRecord"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.categories"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.cdpElement"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.createTime"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.foreignId"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.foreignSource"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.id"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.isisElement"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.label"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.labelSource"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.lastCapsdPoll"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.lldpElement"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.lldpLinks"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.location"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.netBiosDomain"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.netBiosName"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.operatingSystem"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.ospfElement"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.parent"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.pathElement"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.snmpInterfaces"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.sysContact"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.sysDescription"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.sysLocation"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.sysName"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.sysObjectId"), 200);
+        sendRequest(GET, url, parseParamData("orderBy=node.type"), 200);
+    }
+
     private OnmsNode createNode(final NetworkBuilder builder, final String label, final String ipAddress, final OnmsCategory category) {
         builder.addNode(label).setForeignSource("JUnit").setForeignId(label).setType(NodeType.ACTIVE);
         builder.addCategory(category);
