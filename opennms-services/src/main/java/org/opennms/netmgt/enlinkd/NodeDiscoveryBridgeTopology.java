@@ -139,7 +139,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             Integer xy = condition1(ymacs, xmactoport);
             if (xy != null) {
             	m_xy=xy;
-                LOG.debug("BridgeTopologyHelper: simple connection: [{} --> {}]: simple connection: port: {}",
+                LOG.debug("BridgeTopologyHelper: simple connection: [{} port: {}--> {}].",
                           xBridge.getId(),
                           yBridge.getId(),
                           m_xy);
@@ -149,7 +149,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             Integer yx = condition1(xmacs, ymactoport);
             if (yx != null) {
             	m_yx=yx;
-                LOG.debug("BridgeTopologyHelper: simple connection: [{} <-- {}]: simple connection: port: {}",
+                LOG.debug("BridgeTopologyHelper: simple connection: [{} <-- {} port: {}].",
                           xBridge.getId(),
                           yBridge.getId(),
                           m_yx);
@@ -611,6 +611,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         LOG.info("run: node: [{}], clean broadcast domains. Start", getNodeId());
         boolean stop = false;
+        boolean clean = false;
         for (BroadcastDomain domain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
         	if (m_domain == domain)
         		continue;
@@ -635,10 +636,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     domain.removeBridge(curNodeId);
                     m_linkd.getQueryManager().store(domain,now);
                     domain.releaseLock(this);
-                    m_linkd.getQueryManager().cleanBroadcastDomains();
+                    clean=true;
                 }
             }
         }
+        if (clean)
+            m_linkd.getQueryManager().cleanBroadcastDomains();
         LOG.info("run: node: [{}], clean broadcast domains. End", getNodeId());
         
         if (stop) {

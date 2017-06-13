@@ -298,10 +298,10 @@ public class SharedSegment {
             return false;
         }
         for (BridgePort port: m_portsOnSegment) {
-        	if (port.getNode().getId() != nodeid) {
+        	if (port.getNode().getId().intValue() != nodeid.intValue()) {
         		continue;
         	}
-        	if (port.getBridgePort() != bridgeport) {
+        	if (port.getBridgePort().intValue() != bridgeport.intValue()) {
         		continue;
         	}
         	return true;

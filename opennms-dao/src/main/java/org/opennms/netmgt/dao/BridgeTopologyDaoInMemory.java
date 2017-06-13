@@ -261,12 +261,13 @@ MAINLOOP:        for (SharedSegment parsing: segments) {
 
     @Override
     public synchronized void clean() {
-        Set<BroadcastDomain> empties = new HashSet<BroadcastDomain>();
+        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
         for (BroadcastDomain domain: m_domains) {
             if (domain.isEmpty())
-                empties.add(domain);
+                continue;
+            domains.add(domain);
         }
-        m_domains.removeAll(empties);
+        m_domains = domains;
     }
     
 
