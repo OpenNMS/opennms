@@ -76,3 +76,4 @@
 * Fix calculation of KSC report "Last Week" and "This Week" timespans.
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
+
