@@ -102,5 +102,9 @@
       <artifactId>hibernate-validator</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+      </dependency>
   </dependencies>
 </project>

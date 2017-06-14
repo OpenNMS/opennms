@@ -104,6 +104,16 @@ public class PathOutageStatusProvider implements StatusProvider {
 		return status;
 	}
 
+	/**
+	 * Auxiliary function, allowing retrieval of Status information for a single vertex
+	 * @param provider {@link PathOutageProvider} object
+	 * @param vertex {@link PathOutageVertex}
+	 * @return Resulting {@link Status} object
+	 */
+	public Status getStatusForSingleVertex(VertexProvider provider, VertexRef vertex) {
+		Map<VertexRef, Status> tempResult = this.getStatusForVertices(provider, Lists.newArrayList(vertex), null);
+		return tempResult.get(vertex);
+	}
 	@Override
 	public String getNamespace() {
 		return PathOutageProvider.NAMESPACE;

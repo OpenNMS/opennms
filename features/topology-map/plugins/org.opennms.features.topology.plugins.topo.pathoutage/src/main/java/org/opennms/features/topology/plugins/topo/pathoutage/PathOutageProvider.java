@@ -41,9 +41,12 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.collect.Lists;
 
@@ -58,11 +61,13 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 	public static final String NAMESPACE = "pathoutage";
 
 	private NodeDao nodeDao;
+	private PathOutageStatusProvider statusProvider;
 	private DirectedSparseGraph<PathOutageVertex, AbstractEdge> sparseGraph;
 
-	public PathOutageProvider(NodeDao nodeDao) {
+	public PathOutageProvider(NodeDao nodeDao, PathOutageStatusProvider pathOutageStatusProvider) {
 		super(NAMESPACE);
 		this.nodeDao = nodeDao;
+		this.statusProvider = pathOutageStatusProvider;
 		this.sparseGraph = null;
 	}
 
@@ -74,11 +79,18 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 
 	@Override
 	public Defaults getDefaults() {
+		// Current implementation of default focus strategy includes all "problematic" (state not NORMAL) nodes, semantic zoom level is 0
 		return new Defaults()
-				.withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
+				.withSemanticZoomLevel(0)
 				.withPreferredLayout("Hierarchy Layout")
 				.withCriteria(() -> {
-					List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = FocusStrategy.ALL.getFocusCriteria(PathOutageProvider.this);
+					List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = new ArrayList<>();
+					for (Vertex vertex : this.getVertices()) {
+						Status status = statusProvider.getStatusForSingleVertex(this, vertex);
+						if (!status.computeStatus().equalsIgnoreCase(OnmsSeverity.NORMAL.getLabel())) {
+							focusCriteria.addAll(FocusStrategy.SPECIFIC.getFocusCriteria(PathOutageProvider.this, vertex.getId()));
+						}
+					}
 					return Lists.newArrayList(focusCriteria);
 				});
 	}

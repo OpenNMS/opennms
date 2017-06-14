@@ -144,7 +144,7 @@ public class PathOutageStatusProviderIT {
 	 * This method tests if the {@link PathOutageStatusProvider} retrieves alarm data correctly
 	 */
 	public void verify() throws UnknownHostException {
-		this.pathOutageProvider = new PathOutageProvider(this.nodeDao);
+		this.pathOutageProvider = new PathOutageProvider(this.nodeDao, pathOutageStatusProvider);
 		this.pathOutageProvider.refresh();
 		this.pathOutageStatusProvider = new PathOutageStatusProvider(this.genericPersistenceAccessor);
 

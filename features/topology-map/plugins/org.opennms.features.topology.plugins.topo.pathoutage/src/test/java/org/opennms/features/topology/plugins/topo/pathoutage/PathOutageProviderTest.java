@@ -40,13 +40,18 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,6 +71,8 @@ public class PathOutageProviderTest {
 
 	private PathOutageProvider pathOutageProvider;
 
+	private PathOutageStatusProvider pathOutageStatusProvider;
+
 	private Map<Integer, Integer> nodesMap;
 
 	@Before
@@ -76,6 +83,8 @@ public class PathOutageProviderTest {
 			this.nodesMap.put(node.getId(), nodes.get(node));
 			this.nodeDao.save(node);
 		}
+		this.pathOutageStatusProvider = Mockito.mock(PathOutageStatusProvider.class);
+		this.setBehaviour(this.pathOutageStatusProvider);
 	}
 
 	@Test
@@ -89,7 +98,7 @@ public class PathOutageProviderTest {
 	 * </p>
 	 */
 	public void testHierarchy_GraphModification() {
-		this.pathOutageProvider = new PathOutageProvider(this.nodeDao);
+		this.pathOutageProvider = new PathOutageProvider(this.nodeDao, this.pathOutageStatusProvider);
 		this.pathOutageProvider.refresh();
 		List<VertexHopGraphProvider.VertexHopCriteria> criteria_original = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider);
 		this.checkProvider(criteria_original);
@@ -98,6 +107,26 @@ public class PathOutageProviderTest {
 		List<VertexHopGraphProvider.VertexHopCriteria> criteria_new = FocusStrategy.ALL.getFocusCriteria(this.pathOutageProvider);
 		assertThat(criteria_original, not(criteria_new));
 		this.checkProvider(criteria_new);
+	}
+
+	private void setBehaviour(PathOutageStatusProvider statusProvider) {
+		Mockito.when(statusProvider.getStatusForSingleVertex(Matchers.any(PathOutageProvider.class), Matchers.any(VertexRef.class))).
+				thenReturn(new Status() {
+					@Override
+					public String computeStatus() {
+						return OnmsSeverity.NORMAL.getLabel();
+					}
+
+					@Override
+					public Map<String, String> getStatusProperties() {
+						return null;
+					}
+
+					@Override
+					public Map<String, String> getStyleProperties() {
+						return null;
+					}
+				});
 	}
 
 	/**

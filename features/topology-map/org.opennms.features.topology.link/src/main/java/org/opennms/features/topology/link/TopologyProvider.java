@@ -38,6 +38,7 @@ public interface TopologyProvider {
     TopologyProvider BUSINESS_SERVICE = () -> "Business Services";
     TopologyProvider VMWARE = () -> "VMware";
     TopologyProvider ENLINKD = () -> "Enhanced Linkd";
+    TopologyProvider PATHOUTAGE = () -> "Path Outage";
 
     String getLabel();
 }
