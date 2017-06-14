@@ -107,10 +107,26 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
         m_detector.setSecret("testing123");
         m_detector.setUser("testing");
         m_detector.onInit();
-        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.211.11")));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
     }
 
+    //@Test(timeout=90000)
+    @Test
+    @Ignore("have to have a radius server set up")
+    public void testTTLSDetectorPass() throws UnknownHostException{
+        m_detector.setTimeout(1);
+        m_detector.setNasID("0");
+        m_detector.setAuthType("eap-ttls");
+        m_detector.setPassword("D9VvfY2MuXLu");
+        m_detector.setSecret("superV");
+        m_detector.setUser("testing@org.example");
+        m_detector.setInnerIdentity("monitoring-use@org.example");
+        m_detector.setTtlsInnerAuthType("pap");
+        m_detector.onInit();
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
+    }
 
+    
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
