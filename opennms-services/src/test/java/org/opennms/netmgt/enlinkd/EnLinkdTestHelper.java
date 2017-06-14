@@ -240,11 +240,11 @@ public abstract class EnLinkdTestHelper {
      *         //////////////////////    ////////////////////    /////////////////////
      */
     class FiveSwitchTopology {
-        final int nodeAId = 100001;
-        final int nodeBId = 100002;
-        final int nodeCId = 100003;
-        final int nodeDId = 100006;
-        final int nodeEId = 100008;
+        final int nodeAId = 1;
+        final int nodeBId = 2;
+        final int nodeCId = 3;
+        final int nodeDId = 6;
+        final int nodeEId = 8;
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
         OnmsNode nodeC= new OnmsNode();
@@ -568,6 +568,7 @@ public abstract class EnLinkdTestHelper {
                     break;
 
                 default:
+                    assertTrue(false);
                     break;
                 }
                 for (BridgeMacLink bridgeMacLink :segment.getBridgeMacLinks()) {
@@ -604,6 +605,7 @@ public abstract class EnLinkdTestHelper {
              break;
 
             default:
+                assertTrue(false);
                 break;
             }
         }
@@ -619,6 +621,7 @@ public abstract class EnLinkdTestHelper {
                 break;
 
             default:
+                assertTrue(false);
                 break;
             }
             
@@ -642,6 +645,7 @@ public abstract class EnLinkdTestHelper {
                 break;
 
             default:
+                assertTrue(false);
                 break;
             }
 
@@ -684,6 +688,7 @@ public abstract class EnLinkdTestHelper {
                         break;
 
                     default:
+                        assertTrue(false);
                         break;
                     }
                 }
@@ -704,6 +709,7 @@ public abstract class EnLinkdTestHelper {
                 break;
 
             default:
+                assertTrue(false);
                 break;
             }
             
