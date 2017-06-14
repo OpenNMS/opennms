@@ -221,8 +221,8 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                 } else if (RadiusUtils.isTunneling(authType)) { 
                     if (innerUser == null){
                         String reason = "TLS AAA type requested but no inner user defined. Authtype: '" + authType + "'";
-                    	RadiusAuthMonitor.LOG.debug(reason);
-                    	return PollStatus.unavailable(reason);
+                        RadiusAuthMonitor.LOG.debug(reason);
+                        return PollStatus.unavailable(reason);
                     }
                     EAPTLSAuthenticator tlsAuth = null;
                     if (RadiusUtils.isEAPTTLS(authType)){
@@ -238,17 +238,17 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
                         AttributeList attrs = new AttributeList();
                         attrs.add(new Attr_UserName(innerUser));
                         attrs.add(new Attr_Password(password));
-                		ttlsAuth.setTunneledAttributes(attrs);
-                	} else if (authType.equalsIgnoreCase("peap")){
+                        ttlsAuth.setTunneledAttributes(attrs);
+                    } else if (authType.equalsIgnoreCase("peap")){
                         String reason = "Support for eap peap is not ready yet";
                         LOG.debug(reason);
                         return PollStatus.unavailable(reason);
-                	}
-                	/* Cert. processing is common to EAPTLS protocols */
-                	/* We trust any certificate for now */
+                    }
+                    /* Cert. processing is common to EAPTLS protocols */
+                    /* We trust any certificate for now */
                     LOG.warn("Server certificate will be trusted");
-            		if (certFile==null) tlsAuth.setTrustAll(true);
-            		auth = tlsAuth;
+                    if (certFile==null) tlsAuth.setTrustAll(true);
+                    auth = tlsAuth;
                 } else{
                     String reason = "Unknown authenticator type '" + authType + "'";
                     RadiusAuthMonitor.LOG.debug(reason);
