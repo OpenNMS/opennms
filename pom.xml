@@ -194,6 +194,10 @@
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
+          <instructions>
+            <!-- Don't add Import-Service MANIFEST.MF headers, just rely on normal OSGi service resolution -->
+            <_removeheaders>Import-Service</_removeheaders>
+          </instructions>
         </configuration>
       </plugin>
       <plugin>
@@ -1314,23 +1318,23 @@
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
-    <karafVersion>2.4.3</karafVersion>
-    <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
+    <karafVersion>4.0.8</karafVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
     <minaVersion>2.0.13</minaVersion>
-    <minionKarafVersion>4.0.5</minionKarafVersion>
+    <minionKarafVersion>${karafVersion}</minionKarafVersion>
     <netty4Version>4.0.34.Final</netty4Version>
     <newtsVersion>1.4.3</newtsVersion>
-    <paxExamVersion>4.8.0</paxExamVersion>
+    <paxExamVersion>4.9.2</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <protobufVersion>2.6.1</protobufVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
-    <osgiVersion>5.0.0</osgiVersion>
+    <osgiVersion>6.0.0</osgiVersion>
+    <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2</owaspEncoderVersion>
     <quartzVersion>2.2.3</quartzVersion>
@@ -1348,7 +1352,7 @@
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.2</wsmanVersion>
 
-    <springVersion>4.1.6.RELEASE_1</springVersion>
+    <springVersion>4.1.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.8.5</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
@@ -1368,9 +1372,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- moved here from opennms-pluginmanger -->
-    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.1</licencemanagerVersion>
-    <featuremanagerVersion>1.0.1</featuremanagerVersion>
+    <pluginmanagerVersion>1.0.4</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.4</licencemanagerVersion>
+    <featuremanagerVersion>1.0.4</featuremanagerVersion>
   </properties>
 
   <profiles>
@@ -2188,12 +2192,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>karaf-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
@@ -3623,7 +3621,7 @@
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>${osgiVersion}</version>
+        <version>${osgiCompendiumVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>

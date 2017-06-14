@@ -178,7 +178,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>standard</artifactId>
       <version>${karafVersion}</version>
       <classifier>features</classifier>

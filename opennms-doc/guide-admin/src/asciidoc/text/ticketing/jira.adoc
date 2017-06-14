@@ -53,7 +53,7 @@ When _{opennms-product-name}_ has started again, login to the _Karaf Shell_ and 
 
 [source]
 ----
-features:install jira-troubleticketer
+feature:install jira-troubleticketer
 ----
 
 The plugin should be ready to use.

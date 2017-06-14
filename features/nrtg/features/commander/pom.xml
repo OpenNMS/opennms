@@ -31,8 +31,8 @@
           <features>
             <feature>osgi-nrtg-api</feature>
             <feature>osgi-nrtg-broker</feature>
-            <feature>spring-jms</feature>
-            <feature>spring</feature>
+            <feature>spring-jms/${springVersion}</feature>
+            <feature>spring/${springVersion}</feature>
           </features>
         </configuration>
       </plugin>

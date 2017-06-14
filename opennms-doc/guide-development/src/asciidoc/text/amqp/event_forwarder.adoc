@@ -30,9 +30,9 @@ Update the properties with your deployment specific values:
 [source]
 ----
 config:edit org.opennms.features.amqp.eventforwarder
-propset connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
-propset destination amqp:OpenNMS-Exchange/opennms-routing-key
-propset processorName default-event-forwarder-processor
+config:property-set connectionUrl amqp://guest:guest@onms/test?brokerlist=\'tcp://127.0.0.1:5672\'
+config:property-set destination amqp:OpenNMS-Exchange/opennms-routing-key
+config:property-set processorName default-event-forwarder-processor
 config:update
 ----
 
@@ -40,7 +40,7 @@ Install the feature:
 
 [source]
 ----
-features:install opennms-amqp-event-forwarder
+feature:install opennms-amqp-event-forwarder
 ----
 
 ==== Debugging

@@ -65,7 +65,7 @@
           <provision>
             <param>--platform=equinox</param>
             <param>scan-bundle:mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/${karafVersion}</param>
-            <param>scan-features:mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features!/karaf-framework,http-whiteboard</param>
+            <param>scan-features:mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features!/http-whiteboard</param>
             <param>--noConsole</param>
           </provision>
         </configuration>

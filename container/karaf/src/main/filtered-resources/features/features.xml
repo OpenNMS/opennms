@@ -1,661 +1,600 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-      Licensed to the Apache Software Foundation (ASF) under one or more
-      contributor license agreements.  See the NOTICE file distributed with
-      this work for additional information regarding copyright ownership.
-      The ASF licenses this file to You under the Apache License, Version 2.0
-      (the "License"); you may not use this file except in compliance with
-      the License.  You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-      Unless required by applicable law or agreed to in writing, software
-      distributed under the License is distributed on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-      See the License for the specific language governing permissions and
-      limitations under the License.
--->
-<features name="karaf-2.4.3" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
-
-    <repository>mvn:org.ops4j.pax.web/pax-web-features/4.2.7/xml/features</repository>
-
-    <!--
-    <feature name="framework-security" version="2.4.3" description="OSGi Security for Karaf">
-        <bundle start="false" start-level="1">mvn:org.apache.felix/org.apache.felix.framework.security/2.4.0</bundle>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="standard-4.0.8">
+    <repository>mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features</repository>
+    <feature name="framework-security" description="OSGi Security for Karaf" version="4.0.8">
+        <bundle start-level="1" start="false">mvn:org.apache.felix/org.apache.felix.framework.security/2.6.0</bundle>
     </feature>
-    -->
-
-    <feature name="service-security" version="2.4.3" description="Services Security for Karaf">
-        <feature>aries-proxy</feature>
-        <bundle start="true" start-level="10">mvn:org.apache.karaf.service/org.apache.karaf.service.guard/2.4.3</bundle>
+    <feature name="service-security" description="Services Security for Karaf" version="4.0.8">
+        <feature prerequisite="false" dependency="false">jaas-boot</feature>
+        <feature prerequisite="false" dependency="false">aries-proxy</feature>
+        <bundle start-level="10" start="true">mvn:org.apache.karaf.service/org.apache.karaf.service.guard/4.0.8</bundle>
     </feature>
-
-    <feature name="karaf-framework" description="Karaf core feature" version="2.4.3" resolver="(obr)">
-        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-aether/2.4.1</bundle>
-        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.4.1/jar/uber</bundle>
-        <bundle start-level="8">mvn:org.ops4j.pax.logging/pax-logging-api/1.8.3</bundle>
-        <bundle start-level="8">mvn:org.ops4j.pax.logging/pax-logging-service/1.8.3</bundle>
-        <bundle start-level="10">mvn:org.apache.felix/org.apache.felix.configadmin/1.8.4</bundle>
-        <bundle start-level="11">mvn:org.apache.felix/org.apache.felix.fileinstall/3.5.0</bundle>
-        <bundle start-level="25">mvn:org.apache.karaf.features/org.apache.karaf.features.core/2.4.3</bundle>
-    </feature>
-
-    <feature name="aries-proxy" description="Aries Proxy" version="2.4.3">
-        <bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.3</bundle>
-        <bundle dependency="true" start-level="20">mvn:org.apache.aries/org.apache.aries.util/1.1.0</bundle>
+    <feature name="aries-proxy" description="Aries Proxy" version="4.0.8">
+        <bundle start-level="20" dependency="true">mvn:org.ow2.asm/asm-all/5.0.4</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.apache.aries/org.apache.aries.util/1.1.1</bundle>
         <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy.api/1.0.1</bundle>
-        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy.impl/1.0.4</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy.impl/1.0.5</bundle>
+        <capability>
+            osgi.service;effective:=active;objectClass=org.apache.aries.proxy.ProxyManager
+        </capability>
     </feature>
-
-    <feature name="aries-blueprint" description="Aries Blueprint" version="2.4.3">
-        <feature>aries-proxy</feature>
+    <feature name="aries-blueprint" description="Aries Blueprint" version="4.0.8">
+        <feature prerequisite="false" dependency="false">aries-proxy</feature>
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.api/1.0.1</bundle>
-        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.cm/1.0.6</bundle>
-        <!--
-        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core.compatibility/${aries.blueprint.core.compatibility.version}</bundle>
-        -->
-        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core/1.4.3</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.cm/1.0.9</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core.compatibility/1.0.0</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core/1.7.1</bundle>
+        <conditional>
+            <condition>bundle</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.blueprintstate/4.0.8</bundle>
+        </conditional>
+        <capability>
+            osgi.service;effective:=active;objectClass=org.apache.aries.blueprint.services.ParserService,
+            osgi.extender; osgi.extender="osgi.blueprint";uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect";version:Version="1.0"
+        </capability>
     </feature>
-
-    <feature name="features" description="Karaf Features support" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <bundle start-level="25">mvn:org.apache.karaf.features/org.apache.karaf.features.core/2.4.3</bundle>
+    <feature name="aries-annotation" description="Aries Annotations" version="4.0.8">
+        <feature prerequisite="false" dependency="false">aries-blueprint</feature>
+        <bundle start-level="20" dependency="true">mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.ow2.asm/asm-all/5.0.4</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.apache.xbean/xbean-bundleutils/3.18</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.apache.xbean/xbean-asm5-shaded/3.18</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.apache.xbean/xbean-reflect/3.18</bundle>
+        <bundle start-level="20" dependency="true">mvn:org.apache.xbean/xbean-finder-shaded/3.18</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.annotation.api/1.0.1</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.annotation.impl/1.0.1</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.jexl.evaluator/1.0.0</bundle>
+    </feature>
+    <feature name="feature" description="Features Support" version="4.0.8">
+        <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.core/4.0.8</bundle>
         <conditional>
             <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.command/2.4.3</bundle>
-        </conditional>
-        <conditional>
-            <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.management/2.4.3</bundle>
-        </conditional>
-    </feature>
-
-    <feature name="admin" description="Child instance administration" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <feature>shell</feature>
-        <feature>features</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.admin/org.apache.karaf.admin.core/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.admin/org.apache.karaf.admin.command/2.4.3</bundle>
-        <conditional>
-            <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.admin/org.apache.karaf.admin.management/2.4.3</bundle>
+            <config name="org.apache.karaf.command.acl.feature" append="false">
+                #
+                # This configuration file defines the ACLs for commands in the feature subshell
+                #
+                install = admin
+                uninstall = admin
+            </config>
+            <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.command/4.0.8</bundle>
         </conditional>
     </feature>
-
-    <feature name="diagnostic" description="Diagnostic support" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.common/2.4.3</bundle>
-        <conditional>
-            <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.command/2.4.3</bundle>
-        </conditional>
-        <conditional>
-            <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.management/2.4.3</bundle>
-        </conditional>
+    <feature name="jaas-boot" hidden="true" version="0.0.0">
+        <library type="boot" export="true" delegate="true">
+            mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/4.0.8
+        </library>
     </feature>
-
-    <feature name="shell" description="Karaf Shell" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <feature>jaas</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.commands/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.osgi/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.log/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.packages/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.dev/2.4.3</bundle>
+    <feature name="shell" description="Karaf Shell" version="4.0.8">
+        <config name="org.apache.karaf.command.acl.shell" append="false">
+            #
+            # This configuration file defines the ACLs for commands in the shell subshell
+            #
+            edit = admin
+            exec = admin
+            new = admin
+            java = admin
+        </config>
+        <feature prerequisite="false" dependency="false">jaas-boot</feature>
+        <bundle start-level="30" dependency="true">mvn:jline/jline/2.14.1</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.jledit/core/0.2.1</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.commands/4.0.8</bundle>
     </feature>
-
-    <feature name="deployer" description="Karaf Deployer" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <bundle start="true" start-level="26">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.features/2.4.3</bundle>
+    <feature name="shell-compat" description="Karaf Shell Compatibility" version="4.0.8">
+        <feature prerequisite="false" dependency="false">aries-blueprint</feature>
+        <feature prerequisite="false" dependency="false">shell</feature>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.table/4.0.8</bundle>
+    </feature>
+    <feature name="deployer" description="Karaf Deployer" version="4.0.8">
+        <bundle start-level="26" start="true">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.features/4.0.8</bundle>
         <conditional>
             <condition>wrap</condition>
-            <bundle start="true" start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.wrap/2.4.3</bundle>
+            <bundle start-level="24" start="true">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.wrap/4.0.8</bundle>
         </conditional>
         <conditional>
-            <condition>aries-blueprint</condition>
-            <bundle start="true" start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.blueprint/2.4.3</bundle>
-        </conditional>
-        <conditional>
-            <condition>spring</condition>
-            <bundle start="true" start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.spring/2.4.3</bundle>
+            <condition>req:osgi.extender;filter:="(&amp;(osgi.extender=osgi.blueprint)(version&gt;=1.0))"</condition>
+            <bundle start-level="24" start="true">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.blueprint/4.0.8</bundle>
         </conditional>
         <conditional>
             <condition>kar</condition>
-            <bundle start="true" start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.kar/2.4.3</bundle>
+            <bundle start-level="24" start="true">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.kar/4.0.8</bundle>
         </conditional>
     </feature>
-
-    <feature name="wrapper" description="Provide OS integration" version="2.4.3">
-        <feature>shell</feature>
-        <bundle>mvn:org.apache.karaf.shell/org.apache.karaf.shell.wrapper/2.4.3</bundle>
+    <feature name="wrapper" description="Provide OS integration" version="4.0.8">
+        <bundle start-level="30">mvn:org.apache.karaf.wrapper/org.apache.karaf.wrapper.core/4.0.8</bundle>
     </feature>
-    <feature name="service-wrapper" description="Provide OS integration (alias to wrapper feature)" version="2.4.3">
-        <feature version="2.4.3">wrapper</feature>
+    <feature name="service-wrapper" description="Provide OS integration (alias to wrapper feature)" version="4.0.8">
+        <feature prerequisite="false" dependency="false">wrapper</feature>
     </feature>
-
-    <feature name="obr" description="Provide OSGi Bundle Repository (OBR) support" version="2.4.3">
-        <feature>shell</feature>
+    <feature name="obr" description="Provide OSGi Bundle Repository (OBR) support" version="4.0.8">
         <bundle start-level="30">mvn:org.apache.felix/org.osgi.service.obr/1.0.2</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.bundlerepository/2.0.4</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.obr/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.obr/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.4.1/jar/uber</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.bundlerepository/2.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.obr/org.apache.karaf.obr.core/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.5.2/jar/uber</bundle>
+    </feature>
+    <feature name="bundle" description="Provide Bundle support" version="4.0.8">
+        <feature prerequisite="false" dependency="false">jaas-boot</feature>
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.core/4.0.8</bundle>
         <conditional>
             <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.obr/2.4.3</bundle>
+            <config name="jmx.acl.org.apache.karaf.bundle" append="false">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=bundle,name=* MBean which maps to the Karaf MBean
+                # to control OSGi bundles.
+                #
+                install = manager
+                refresh = manager
+                resolve = manager
+                restart = manager
+                setStartLevel(java.lang.String, int)[/([1-4])?[0-9]/,/.*/] = admin
+                setStartLevel = manager
+                start(java.lang.String)[/([1-4])?[0-9]/] = admin
+                start = manager
+                stop(java.lang.String)[/([1-4])?[0-9]/] = admin
+                stop = manager
+                uninstall(java.lang.String)["0"] = #this is a comment, no roles can perform this operation
+                uninstall = admin
+                update(java.lang.String)[/([1-4])?[0-9]/] = admin
+                update(java.lang.String,java.lang.String)[/([1-4])?[0-9]/,/.*/] = admin
+                update = manager
+            </config>
+        </conditional>
+        <conditional>
+            <condition>shell</condition>
+            <config name="org.apache.karaf.command.acl.bundle" append="false">
+                #
+                # This configuration file defines the ACLs for commands in the bundle subshell
+                #
+                # For an explanation of the syntax of this file, see the file:
+                #   org.apache.karaf.command.acl.system.cfg
+                #
+                # This configuration relies on the fact that 'system' bundles need to be managed
+                # with the
+                #   -f (--force)
+                # flag. Operations with -f need admin permission. Most of these operations without
+                # the 'force' option can be done by a manager.
+                install = admin
+                refresh[/.*[-][f].*/] = admin
+                refresh = manager
+                restart[/.*[-][f].*/] = admin
+                restart = manager
+                start[/.*[-][f].*/] = admin
+                start = manager
+                stop[/.*[-][f].*/] = admin
+                stop = manager
+                uninstall[/.*[-][f].*/] = admin
+                uninstall = manager
+                update[/.*[-][f].*/] = admin
+                update = manager
+                watch = admin
+            </config>
         </conditional>
     </feature>
-
-    <feature name="config" description="Provide OSGi ConfigAdmin support" version="2.4.3">
-        <feature>shell</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.config/2.4.3</bundle>
+    <feature name="config" description="Provide OSGi ConfigAdmin support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.config/org.apache.karaf.config.core/4.0.8</bundle>
+        <conditional>
+            <condition>management</condition>
+            <config name="jmx.acl.org.apache.karaf.config" append="false">
+                #
+                # JMX ACL specific to the org.apache.karaf:type=config,name=* MBean which maps to the Karaf MBean to interact with the
+                # OSGi Config Admin service.
+                #
+                # For a description of the format of this file, see jmx.acl.cfg
+                #
+                # By default, only an admin can make changes to the JMX ACL and shell command rules, but managers can make
+                # changes to other PIDs.
+                #
+                appendProperty(java.lang.String,java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/,/.*/] = admin
+                appendProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/,/.*/] = admin
+                appendProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/,/.*/] = admin
+                appendProperty(java.lang.String,java.lang.String,java.lang.String) = manager
+                create(java.lang.String)[/jmx[.]acl.*/] = admin
+                create(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/] = admin
+                create(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/] = admin
+                create(java.lang.String) = manager
+                delete(java.lang.String)[/jmx[.]acl.*/] = admin
+                delete(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/] = admin
+                delete(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/] = admin
+                delete(java.lang.String) = manager
+                deleteProperty(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
+                deleteProperty(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/] = admin
+                deleteProperty(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/] = admin
+                deleteProperty(java.lang.String,java.lang.String) = manager
+                setProperty(java.lang.String,java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/,/.*/] = admin
+                setProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/,/.*/] = admin
+                setProperty(java.lang.String,java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/,/.*/] = admin
+                setProperty(java.lang.String,java.lang.String,java.lang.String) = manager
+                update(java.lang.String,java.util.Map)[/jmx[.]acl.*/,/.*/] = admin
+                update(java.lang.String,java.util.Map)[/org[.]apache[.]karaf[.]command[.]acl.+/,/.*/] = admin
+                update(java.lang.String,java.util.Map)[/org[.]apache[.]karaf[.]service[.]acl.+/,/.*/] = admin
+                update(java.lang.String,java.util.Map) = manager
+            </config>
+        </conditional>
+        <conditional>
+            <condition>shell</condition>
+            <config name="org.apache.karaf.command.acl.config" append="false">
+                #
+                # This configuration file defines the ACLs for various commands in the config subshell
+                #
+                # For an explanation of the syntax of this file, see the file:
+                #   org.apache.karaf.command.acl.system.cfg
+                #
+                cancel = manager
+                delete = admin
+                edit = manager
+                edit[/.*jmx[.]acl.*/] = admin
+                edit[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+                edit[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+                property-append = manager
+                property-append[/.*jmx[.]acl.*/] = admin
+                property-append[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+                property-append[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+                property-delete = manager
+                property-delete[/.*jmx[.]acl.*/] = admin
+                property-delete[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+                property-delete[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+                property-set = manager
+                property-set[/.*jmx[.]acl.*/] = admin
+                property-set[/.*org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+                property-set[/.*org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+                update = manager
+            </config>
+        </conditional>
     </feature>
-
-    <feature name="jetty" description="Provide Jetty engine support" version="8.1.15.v20140411" resolver="(obr)">
-        <feature>pax-jetty</feature>
+    <feature name="diagnostic" description="Provide Diagnostic support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.core/4.0.8</bundle>
+        <library type="boot" export="true" delegate="false">
+            mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.boot/4.0.8
+        </library>
+    </feature>
+    <feature name="instance" description="Provide Instance support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.instance/org.apache.karaf.instance.core/4.0.8</bundle>
+    </feature>
+    <feature name="jaas" description="Provide JAAS support" version="4.0.8">
+        <feature prerequisite="false" dependency="false">jaas-boot</feature>
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/4.0.8</bundle>
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/4.0.8</bundle>
+        <conditional>
+            <condition>aries-blueprint</condition>
+            <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.config/4.0.8</bundle>
+        </conditional>
+        <conditional>
+            <condition>shell</condition>
+            <config name="org.apache.karaf.command.acl.jaas" append="false">
+                #
+                # This configuration file defines the ACLs for commands in the jaas subshell
+                # Jaas commands commands have no effect until update is called.
+                update = admin
+            </config>
+            <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.command/4.0.8</bundle>
+        </conditional>
+    </feature>
+    <feature name="log" description="Provide Log support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.log/org.apache.karaf.log.core/4.0.8</bundle>
+    </feature>
+    <feature name="package" description="Package commands and mbeans" version="4.0.8">
+        <bundle start-level="30">mvn:org.apache.karaf.package/org.apache.karaf.package.core/4.0.8</bundle>
+    </feature>
+    <feature name="service" description="Provide Service support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.service/org.apache.karaf.service.core/4.0.8</bundle>
+    </feature>
+    <feature name="system" description="Provide System support" version="4.0.8">
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.system/org.apache.karaf.system.core/4.0.8</bundle>
+        <conditional>
+            <condition>shell</condition>
+            <config name="org.apache.karaf.command.acl.system" append="false">
+                #
+                # This configuration file defines the ACLs for commands in the system subshell
+                #
+                update = admin
+                property = admin
+                shutdown = admin
+                start-level[/.*[0-9][0-9][0-9]+.*/] = manager # manager can set startlevels above 100
+                start-level[/[^0-9]*/] = viewer               # viewer can obtain the current start level
+                start-level = admin                           # admin can set any start level, including &lt; 100
+            </config>
+        </conditional>
     </feature>
 
     <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
-
-    <feature name="http" description="Implementation of the OSGi HTTP service" version="2.4.3" resolver="(obr)">
-        <!-- <feature version="[3.2.4,5)">pax-http</feature> -->
-        <feature version="${opennms.osgi.version}">opennms-bridge-http</feature>
+    <feature name="http" description="Implementation of the OSGI HTTP Service" version="4.0.8">
+        <!-- <feature prerequisite="false" dependency="false">pax-http</feature> -->
+        <feature prerequisite="false" dependency="false" version="${opennms.osgi.version}">opennms-bridge-http</feature>
+        <bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.0.8</bundle>
     </feature>
-
-    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="2.4.3" resolver="(obr)">
-        <!-- <feature version="[3.2.4,5)">pax-http-whiteboard</feature> -->
-        <feature version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
+    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="4.0.8">
+        <feature prerequisite="false" dependency="false">http</feature>
+        <!-- <feature prerequisite="false" dependency="false">pax-http-whiteboard</feature> -->
+        <feature prerequisite="false" dependency="false" version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
     </feature>
-
-    <feature name="war" description="Turn Karaf as a full WebContainer" version="2.4.3" resolver="(obr)">
-        <!-- <feature version="[3.2.4,5)">pax-war</feature> -->
-        <!-- <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.web/2.4.3</bundle> -->
-        <feature version="${opennms.osgi.version}">opennms-war</feature>
+    <feature name="war" description="Turn Karaf as a full WebContainer" version="4.0.8">
+        <feature prerequisite="false" dependency="false">http</feature>
+        <!-- <feature prerequisite="false" dependency="false">pax-war</feature> -->
+        <feature prerequisite="false" dependency="false" version="${opennms.osgi.version}">opennms-war</feature>
+        <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/4.0.8</bundle>
     </feature>
-
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
-    <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="${opennms.osgi.version}" resolver="(obr)">
+    <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="${opennms.osgi.version}">
         <bundle>mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>
     </feature>
-
-    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/4.2.7/xml/features -->
+    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features -->
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
+        <!-- <feature version="[4.3,4.4)">pax-http</feature> -->
         <feature version="${opennms.osgi.version}">opennms-bridge-http</feature>
+
         <bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/4.1</bundle>
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/4.1</bundle>
         <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/4.1</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/4.2.7</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/4.3.0</bundle>
+        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/4.3.0</bundle> -->
 
         <bundle dependency="true" start-level="30">mvn:org.eclipse.jdt.core.compiler/ecj/4.4</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.2.7</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.3.0</bundle>
     </feature>
-
-    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/4.2.7/xml/features -->
+    <!-- Copied out of PAX Web features.xml at mvn:org.ops4j.pax.web/pax-web-features/4.3.0/xml/features -->
     <feature name="opennms-war" description="Provide support of a full WebContainer" version="${opennms.osgi.version}">
         <config name="org.ops4j.pax.url.war">
             org.ops4j.pax.url.war.importPaxLoggingPackages=true
         </config>
+        <!-- <feature version="[4.3,4.4)">pax-http-whiteboard</feature> -->
         <feature version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.2.7</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/4.2.7</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.3.0</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/4.3.0</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.4.7/jar/uber</bundle>
     </feature>
-
     <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
 
-    <feature name="kar" description="Provide KAR (KARaf archive) support" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.kar/2.4.3</bundle>
+    <feature name="jetty" version="9.2.15.v20160210">
+        <feature prerequisite="false" dependency="false">pax-jetty</feature>
     </feature>
-
-    <feature name="webconsole" description="Karaf WebConsole for administration and monitoring" version="2.4.3">
-        <config name="org.apache.karaf.webconsole">
-            realm=karaf
-            role=admin
-        </config>
-        <feature>http</feature>
-        <feature>aries-blueprint</feature>
-        <feature>jaas</feature>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.0.12</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.branding/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/2.4.3</bundle>
-        <conditional>
-            <condition>features</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/2.4.3</bundle>
-        </conditional>
+    <feature name="jetty" version="8.1.14.v20131031">
+        <bundle start-level="30" dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.7.0</bundle>
+        <bundle start-level="30" dependency="true">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle start-level="30" dependency="true">mvn:javax.mail/mail/1.4.5</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/1.0.1</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.aggregate/jetty-all-server/8.1.14.v20131031</bundle>
+    </feature>
+    <feature name="kar" description="Provide KAR (KARaf archive) support" version="4.0.8">
+        <bundle start-level="30">mvn:org.apache.karaf.kar/org.apache.karaf.kar.core/4.0.8</bundle>
         <conditional>
             <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/2.4.3</bundle>
+            <config name="org.apache.karaf.command.acl.kar" append="false">
+                #
+                # This configuration file defines the ACLs for commands in the kar subshell
+                #
+                # For an explanation of the syntax of this file, see the file:
+                #   org.apache.karaf.command.acl.system.cfg
+                #
+                install = admin
+                uninstall = admin
+            </config>
         </conditional>
-        <conditional>
-            <condition>eventadmin</condition>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.event/1.1.0</bundle>
-        </conditional>
-        <conditional>
-            <condition>scr</condition>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.ds/1.0.0</bundle>
-        </conditional>
+    </feature>
+    <feature name="webconsole" description="Base support of the Karaf WebConsole" version="4.0.8">
+        <config name="org.apache.karaf.webconsole" append="false">
+            realm=karaf
+        </config>
+        <feature prerequisite="false" dependency="false">jaas-boot</feature>
+        <feature prerequisite="false" dependency="false">http</feature>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.1.2</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.0.8</bundle>
         <conditional>
             <condition>instance</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.admin/2.4.3</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.instance/4.0.8</bundle>
         </conditional>
-    </feature>
-
-    <feature name="jaas" description="Provide JAAS support" version="2.4.3">
-        <feature>aries-blueprint</feature>
-        <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/2.4.3</bundle>
-        <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/2.4.3</bundle>
         <conditional>
             <condition>shell</condition>
-            <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.command/2.4.3</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/4.0.8</bundle>
+        </conditional>
+        <conditional>
+            <condition>feature</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/4.0.8</bundle>
         </conditional>
     </feature>
-
-    <feature name="ssh" description="Provide a SSHd server on Karaf" version="2.4.3">
-        <config name="org.apache.karaf.shell">
+    <feature name="ssh" description="Provide a SSHd server on Karaf" version="4.0.8">
+        <config name="org.apache.karaf.shell" append="false">
             sshPort=8101
             sshHost=127.0.0.1
             sshRealm=karaf
             hostKey=${karaf.etc}/host.key
         </config>
-        <feature>shell</feature>
-        <feature>jaas</feature>
-        <bundle start-level="30" dependency='true'>mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
-        <bundle start-level="30" dependency='true'>mvn:org.apache.sshd/sshd-core/0.14.0</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/2.4.3</bundle>
+        <feature prerequisite="false" dependency="false">shell</feature>
+        <feature prerequisite="false" dependency="false">jaas</feature>
+        <bundle start-level="30" start="true">mvn:org.apache.sshd/sshd-core/0.14.0</bundle>
+        <bundle start-level="30" start="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.not-yet-commons-ssl/0.3.11_1</bundle>
+        <bundle start-level="30" start="true">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/4.0.8</bundle>
     </feature>
-
-    <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="2.4.3">
-        <feature>jaas</feature>
-        <feature>aries-blueprint</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.management/org.apache.karaf.management.server/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.api/1.1.1</bundle>
-        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.core/1.1.3</bundle>
-        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.blueprint.api/1.1.0</bundle>
-        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.blueprint.core/1.1.0</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.system/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.bundles/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.services/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.config/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.log/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.packages/2.4.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.dev/2.4.3</bundle>
+    <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="4.0.8">
+        <config name="jmx.acl.org.apache.karaf.security.jmx" append="false">
+            #
+            # JMX ACL specific to the org.apache.karaf:type=security,area=jmx MBean which
+            # can be used to find out whether the currently logged in JMX user can invoke
+            # the requested JMX operations.
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            canInvoke = viewer
+        </config>
+        <config name="jmx.acl.java.lang.Memory" append="false">
+            #
+            # JMX ACL specific to the java.lang.Memory MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            gc = manager
+        </config>
+        <config name="jmx.acl.osgi.compendium.cm" append="false">
+            #
+            # JMX ACL specific to osgi.compendium.cm MBean
+            #
+            # For a description of the format of this file, see jmx.acl.cfg
+            #
+            # This configuration file configures the management of ConfigAdmin via the standard ConfigAdmin MBean
+            # Such that only an admin can make changes to the JMX ACL rules, but managers can make
+            # changes to other PIDs.
+            #
+            createFactoryConfiguration(java.lang.String)[/jmx[.]acl.*/] = admin
+            createFactoryConfiguration(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+            createFactoryConfiguration(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+            createFactoryConfiguration(java.lang.String) = manager
+            createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
+            createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
+            createFactoryConfigurationForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
+            createFactoryConfigurationForLocation(java.lang.String,java.lang.String) = manager
+            delete(java.lang.String)[/jmx[.]acl.*/] = admin
+            delete(java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/] = admin
+            delete(java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/] = admin
+            delete(java.lang.String) = manager
+            deleteConfigurations = admin
+            deleteForLocation(java.lang.String,java.lang.String)[/jmx[.]acl.*/,/.*/] = admin
+            deleteForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
+            deleteForLocation(java.lang.String,java.lang.String)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
+            deleteForLocation(java.lang.String,java.lang.String) = manager
+            update(java.lang.String,javax.management.openmbean.TabularData)[/jmx[.]acl.*/,/.*/] = admin
+            update(java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/] = admin
+            update(java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/] = admin
+            update(java.lang.String,javax.management.openmbean.TabularData) = manager
+            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/jmx[.]acl.*/,/.*/,/.*/] = admin
+            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]command[.]acl[.].+/,/.*/,/.*/] = admin
+            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData)[/org[.]apache[.]karaf[.]service[.]acl[.].+/,/.*/,/.*/] = admin
+            updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.TabularData) = manager
+        </config>
+        <feature prerequisite="false" dependency="false">jaas</feature>
+        <bundle start-level="20" dependency="true">mvn:org.apache.aries/org.apache.aries.util/1.1.1</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.management/org.apache.karaf.management.server/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.api/1.1.5</bundle>
+        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.core/1.1.7</bundle>
+        <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.whiteboard/1.1.5</bundle>
+        <conditional>
+            <condition>aries-blueprint</condition>
+            <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.blueprint.api/1.1.5</bundle>
+            <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.blueprint.core/1.1.5</bundle>
+        </conditional>
     </feature>
-
-    <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="2.4.3">
-        <config name="org.apache.felix.eventadmin.impl.EventAdmin">
+    <feature name="scheduler" description="Provide a scheduler service in Karaf to fire events" version="4.0.8">
+        <bundle start-level="30">mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/4.0.8</bundle>
+    </feature>
+    <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="4.0.8">
+        <config name="org.apache.felix.eventadmin.impl.EventAdmin" append="false">
             org.apache.felix.eventadmin.AddTimestamp=true
             org.apache.felix.eventadmin.AddSubject=true
         </config>
-		<bundle start-level='30'>mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/2.4.3</bundle>
-    </feature>
-
-    <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="2.4.3" resolver="(obr)">
-        <feature>aries-blueprint</feature>
-        <feature>jaas</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-codec/commons-codec/1.10</bundle>
-        <bundle dependency='true' start-level="30">mvn:commons-lang/commons-lang/2.6</bundle>
-        <bundle dependency='true' start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.9.2_1</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.jasypt/2.4.3</bundle>
-    </feature>
-
-    <feature name="blueprint-web" description="Provides an OSGi-aware Servlet ContextListener for bootstrapping blueprint inside web-bundle containers" version="2.4.3" resolver="(obr)">
-        <feature>war</feature>
-        <feature>aries-blueprint</feature>
-        <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.webosgi/1.0.1</bundle>
-    </feature>
-
-    <feature name="scr" description="Declarative Service support" version="2.4.3" resolver="(obr)">
-        <bundle dependency="true" start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.0.12</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.scr/1.8.2</bundle>
+        <bundle start-level="5">mvn:org.apache.felix/org.apache.felix.metatype/1.1.2</bundle>
+        <bundle start-level="5">mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/4.0.8</bundle>
         <conditional>
-            <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.scr/2.4.3</bundle>
+            <condition>webconsole</condition>
+            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.event/1.1.4</bundle>
         </conditional>
+    </feature>
+    <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="4.0.8">
+        <feature prerequisite="false" dependency="false">jaas</feature>
+        <bundle start-level="30" dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
+        <bundle start-level="30" dependency="true">mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle start-level="30" dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.9.2_1</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.jasypt/4.0.8</bundle>
+        <conditional>
+            <condition>aries-blueprint</condition>
+            <bundle start-level="30" start="true">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.jasypt/4.0.8</bundle>
+        </conditional>
+        <conditional>
+            <condition>spring</condition>
+            <bundle start-level="30" start="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/1.9.2_1</bundle>
+        </conditional>
+    </feature>
+    <feature name="scr" description="Declarative Service support" version="4.0.8">
+        <bundle start-level="30" dependency="true">mvn:org.apache.felix/org.apache.felix.metatype/1.1.2</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.scr/2.0.6</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.scr.compat/1.0.4</bundle>
         <conditional>
             <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.management.mbeans/org.apache.karaf.management.mbeans.scr/2.4.3</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.management/4.0.8</bundle>
         </conditional>
+        <conditional>
+            <condition>webconsole</condition>
+            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.inventory/1.0.4</bundle>
+            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.ds/2.0.2</bundle>
+        </conditional>
+        <conditional>
+            <condition>shell</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.command/4.0.8</bundle>
+        </conditional>
+        <capability>
+            osgi.service;effective:=active;objectClass=org.apache.felix.scr.ScrService,
+            osgi.extender;osgi.extender="osgi.component";uses:="org.osgi.service.component";version:Version="1.2.1"
+        </capability>
     </feature>
-
-    <feature name="wrap" description="Wrap URL handler">
-        <bundle start="true" start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.4.1/jar/uber</bundle>
+    <feature name="blueprint-web" description="Provides an OSGI-aware Servlet ContextListener for bootstrapping         blueprint inside web-bundle containers" version="4.0.8">
+        <feature prerequisite="false" dependency="false">war</feature>
+        <feature prerequisite="false" dependency="false">aries-blueprint</feature>
+        <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.webosgi/1.0.1</bundle>
     </feature>
-
-    <!-- Spring DM support -->
-    <feature name="spring-dm" description="Spring DM support" version="1.2.1">
-        <feature version="[2.5.6,4)">spring</feature>
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.cglib/3.0_1</bundle>
-        <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-io/1.2.1</bundle>
-        <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-core/1.2.1</bundle>
-        <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-extender/1.2.1</bundle>
-        <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-annotation/1.2.1</bundle>
+    <feature name="wrap" description="Wrap URL handler" version="0.0.0">
+        <bundle start-level="5" start="true">mvn:org.ops4j.pax.url/pax-url-wrap/2.5.2/jar/uber</bundle>
     </feature>
-
-    <feature name="spring-dm-web" description="Spring DM Web support" version="1.2.1">
-        <feature>spring-dm</feature>
-        <feature version="[2.5.6,4)">spring-web</feature>
-        <feature>http</feature>
-        <bundle start-level="30">mvn:org.springframework.osgi/spring-osgi-web/1.2.1</bundle>
+    <feature name="profile" description="Profiles support" version="4.0.8">
+        <config name="org.apache.karaf.profile" append="false">
+            profilesDirectory = ${karaf.home}/profiles
+        </config>
+        <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/4.0.8</bundle>
+        <bundle>mvn:org.apache.karaf.tooling/org.apache.karaf.tools.utils/4.0.8</bundle>
+        <bundle>mvn:commons-io/commons-io/2.4</bundle>
     </feature>
-
-    <!-- Spring 3.1.x support -->
-
-    <feature name="spring" description="Spring 3.1.x support" version="3.1.4.RELEASE">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-core/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-asm/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-expression/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-beans/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-aop/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-context/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-context-support/3.1.4.RELEASE</bundle>
+    <feature name="jolokia" description="Jolokia monitoring support" version="1.3.3">
+        <config name="org.jolokia.osgi" append="false">
+            org.jolokia.user=karaf
+            org.jolokia.realm=karaf
+            org.jolokia.authMode=jaas
+        </config>
+        <feature prerequisite="false" dependency="false">http</feature>
+        <bundle>mvn:org.jolokia/jolokia-osgi/1.3.3</bundle>
     </feature>
-
-    <feature name="spring-aspects" description="Spring 3.1.x AOP support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-aspects/3.1.4.RELEASE</bundle>
+    <feature name="standard" description="Wrap feature describing all features part of a standard distribution" version="4.0.8">
+        <details>Standard providing core Karaf features</details>
+        <feature prerequisite="false" dependency="false">wrap</feature>
+        <feature prerequisite="false" dependency="false">aries-blueprint</feature>
+        <feature prerequisite="false" dependency="false">shell</feature>
+        <feature prerequisite="false" dependency="false">shell-compat</feature>
+        <feature prerequisite="false" dependency="false">feature</feature>
+        <feature prerequisite="false" dependency="false">jaas</feature>
+        <feature prerequisite="false" dependency="false">ssh</feature>
+        <feature prerequisite="false" dependency="false">management</feature>
+        <feature prerequisite="false" dependency="false">bundle</feature>
+        <feature prerequisite="false" dependency="false">config</feature>
+        <feature prerequisite="false" dependency="false">deployer</feature>
+        <feature prerequisite="false" dependency="false">diagnostic</feature>
+        <feature prerequisite="false" dependency="false">feature</feature>
+        <feature prerequisite="false" dependency="false">instance</feature>
+        <feature prerequisite="false" dependency="false">kar</feature>
+        <feature prerequisite="false" dependency="false">log</feature>
+        <feature prerequisite="false" dependency="false">package</feature>
+        <feature prerequisite="false" dependency="false">service</feature>
+        <feature prerequisite="false" dependency="false">system</feature>
     </feature>
-
-    <feature name="spring-instrument" description="Spring 3.1.x Instrument support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-instrument/3.1.4.RELEASE</bundle>
+    <feature name="minimal" description="Wrap feature describing all features part of a minimal distribution" version="4.0.8">
+        <feature prerequisite="false" dependency="false">jaas</feature>
+        <feature prerequisite="false" dependency="false">shell</feature>
+        <feature prerequisite="false" dependency="false">feature</feature>
+        <feature prerequisite="false" dependency="false">ssh</feature>
+        <feature prerequisite="false" dependency="false">management</feature>
+        <feature prerequisite="false" dependency="false">bundle</feature>
+        <feature prerequisite="false" dependency="false">config</feature>
+        <feature prerequisite="false" dependency="false">deployer</feature>
+        <feature prerequisite="false" dependency="false">diagnostic</feature>
+        <feature prerequisite="false" dependency="false">instance</feature>
+        <feature prerequisite="false" dependency="false">kar</feature>
+        <feature prerequisite="false" dependency="false">log</feature>
+        <feature prerequisite="false" dependency="false">package</feature>
+        <feature prerequisite="false" dependency="false">service</feature>
+        <feature prerequisite="false" dependency="false">system</feature>
     </feature>
-
-    <feature name="spring-jdbc" description="Spring 3.1.x JDBC support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring-tx</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-jdbc/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-jms" description="Spring 3.1.x JMS support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring-tx</feature>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-jms/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-struts" description="Spring 3.1.x Struts support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
-        <feature>war</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.1</bundle>
-        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.2</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.struts/1.3.10_1</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-struts/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-test" description="Spring 3.1.x Test support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-test/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-orm" description="Spring 3.1.x ORM support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring-jdbc</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-orm/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-oxm" description="Spring 3.1.x OXM support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-oxm/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-tx" description="Spring 3.1.x Transaction (TX) support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-        <bundle start-level="30">mvn:org.springframework/spring-tx/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 3.1.x Web support" version="3.1.4.RELEASE">
-      <feature version="[3.1.4.RELEASE,3.2)">spring</feature>
-      <feature>http</feature>
-      <bundle start-level="30">mvn:org.springframework/spring-web/3.1.4.RELEASE</bundle>
-    <bundle start-level="30">mvn:org.springframework/spring-webmvc/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 3.1.x Web Portlet support" version="3.1.4.RELEASE">
-        <feature version="[3.1.4.RELEASE,3.2)">spring-web</feature>
-        <bundle dependency="true" start-level="30">wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0</bundle>
-        <bundle start-level="30">mvn:org.springframework/spring-webmvc-portlet/3.1.4.RELEASE</bundle>
-    </feature>
-
-    <!-- Spring 3.2.x support -->
-
-    <feature name="spring" description="Spring 3.2.x support" version="3.2.11.RELEASE_1">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-aspects" description="Spring 3.2.x AOP support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-instrument" description="Spring 3.2.x Instrument support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jdbc" description="Spring 3.2.x JDBC support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring-tx</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jms" description="Spring 3.2.x JMS support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring-tx</feature>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-struts" description="Spring 3.2.x Struts support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring-web</feature>
-        <feature>war</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-collections/commons-collections/3.2.1</bundle>
-        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.2</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.struts/1.3.10_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-struts/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-test" description="Spring 3.2.x Test support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-orm" description="Spring 3.2.x ORM support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring-jdbc</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-oxm" description="Spring 3.2.x OXM support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-tx" description="Spring 3.2.x Transaction (TX) support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 3.2.x Web support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring</feature>
-        <feature>http</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/3.2.11.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 3.2.x Web Portlet support" version="3.2.11.RELEASE_1">
-        <feature version="[3.2.11.RELEASE_1,3.3)">spring-web</feature>
-        <bundle dependency="true" start-level="30">wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/3.2.11.RELEASE_1</bundle>
-    </feature>
-
-    <!-- Spring 4.0.x support -->
-
-    <feature name="spring" description="Spring 4.0.x support" version="4.0.7.RELEASE_1">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-aspects" description="Spring 4.0.x AOP support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-instrument" description="Spring 4.0.x Instrument support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jdbc" description="Spring 4.0.x JDBC support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring-tx</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jms" description="Spring 4.0.x JMS support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring-tx</feature>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-test" description="Spring 4.0.x Test support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-orm" description="Spring 4.0.x ORM support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring-jdbc</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-oxm" description="Spring 4.0.x OXM support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-tx" description="Spring 4.0.x Transaction (TX) support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 4.0.x Web support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring</feature>
-        <feature>http</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/4.0.7.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 4.0.x Web Portlet support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring-web</feature>
-        <bundle dependency="true" start-level="30">wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-websocket" description="Spring 4.0.x WebSocket support" version="4.0.7.RELEASE_1">
-        <feature version="[4.0.7.RELEASE_1,4.1)">spring-web</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/4.0.7.RELEASE_1</bundle>
-    </feature>
-
-    <!-- Spring 4.1.x support -->
-
-    <feature name="spring" description="Spring 4.1.x support" version="4.1.6.RELEASE_1">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0_6</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-aspects" description="Spring 4.1.x AOP support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-instrument" description="Spring 4.1.x Instrument support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-instrument/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jdbc" description="Spring 4.1.x JDBC support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring-tx</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-jms" description="Spring 4.1.x JMS support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring-tx</feature>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle start-level="10">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-test" description="Spring 4.1.x Test support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-test/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-orm" description="Spring 4.1.x ORM support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring-jdbc</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-oxm" description="Spring 4.1.x OXM support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-oxm/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-tx" description="Spring 4.1.x Transaction (TX) support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web" description="Spring 4.1.x Web support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring</feature>
-        <feature>http</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/4.1.6.RELEASE_1</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-web-portlet" description="Spring 4.1.x Web Portlet support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring-web</feature>
-        <bundle dependency="true" start-level="30">wrap:mvn:javax.portlet/portlet-api/2.0$Export-Package=javax.portlet.*;version=2.0</bundle>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc-portlet/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <feature name="spring-websocket" description="Spring 4.1.x WebSocket support" version="4.1.6.RELEASE_1">
-        <feature version="[4.1.6.RELEASE_1,4.2)">spring-web</feature>
-        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-websocket/4.1.6.RELEASE_1</bundle>
-    </feature>
-
-    <!-- Spring Security support -->
-
-    <feature name="spring-security" description="Spring Security 3.1.x support" version="3.1.4.RELEASE">
-        <feature>war</feature>
-      <feature version="[3,4)">spring-web</feature>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aspectj/1.7.4_1</bundle>
-        <bundle start-level="30">mvn:org.springframework.security/spring-security-core/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework.security/spring-security-config/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework.security/spring-security-web/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework.security/spring-security-acl/3.1.4.RELEASE</bundle>
-        <bundle start-level="30">mvn:org.springframework.security/spring-security-taglibs/3.1.4.RELEASE</bundle>
-    </feature>
-
 </features>

@@ -20,15 +20,6 @@
 		<bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
 		<bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.opennms.features</groupId>

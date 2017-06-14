@@ -99,6 +99,6 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			System.out.println("Installed feature: " + feature);
 		}
 
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 }

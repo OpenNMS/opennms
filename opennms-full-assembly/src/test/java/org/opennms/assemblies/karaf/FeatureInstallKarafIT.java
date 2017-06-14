@@ -149,6 +149,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("spring-security32");
         installFeature("spring-webflow");
 
-        System.out.println(executeCommand("features:list -i"));
+        System.out.println(executeCommand("feature:list -i"));
     }
 }

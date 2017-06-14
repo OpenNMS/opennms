@@ -52,6 +52,9 @@
              | each module can override these defaults in their osgi.bnd file
             -->
             <_include>-osgi.bnd</_include>
+
+            <!-- bnd doesn't create valid Export-Service entries for some of our blueprint services so remove them -->
+            <_removeheaders>Export-Service</_removeheaders>
           </instructions>
         </configuration>
       </plugin>

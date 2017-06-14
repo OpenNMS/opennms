@@ -23,10 +23,6 @@
     <productName>alarm-change-notifier</productName>
     <productId>${productName}/${project.version}</productId>
 
-
-    <!-- If this pom is generated from the karaf-pluginmanager-archetype, this value initially matches the archetype's version -->
-    <!-- <licencemanagerVersion>1.0.1</licencemanagerVersion> --> <!-- defined in main pom -->
-
     <!-- <slf4jVersion>1.7.7</slf4jVersion> -->
     <!-- <karafVersion>2.4.0</karafVersion> -->
     <!-- <log4j2Version>2.1</log4j2Version> -->

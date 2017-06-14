@@ -162,6 +162,11 @@
                       <type>xml</type>
                       <classifier>features</classifier>
                     </artifact>
+                    <artifact>
+                      <file>target/filtered-resources/features/spring.xml</file>
+                      <type>xml</type>
+                      <classifier>spring</classifier>
+                    </artifact>
                   </artifacts>
                 </configuration>
               </execution>
