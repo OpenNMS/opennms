@@ -53,36 +53,36 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NotificationRestService extends AbstractDaoRestService<OnmsNotification,Integer> {
 
-	@Autowired
-	private NotificationDao m_dao;
+    @Autowired
+    private NotificationDao m_dao;
 
-	@Override
-	protected NotificationDao getDao() {
-		return m_dao;
-	}
+    @Override
+    protected NotificationDao getDao() {
+        return m_dao;
+    }
 
-	@Override
-	protected Class<OnmsNotification> getDaoClass() {
-		return OnmsNotification.class;
-	}
+    @Override
+    protected Class<OnmsNotification> getDaoClass() {
+        return OnmsNotification.class;
+    }
 
-	@Override
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-		builder.alias("node", "node", JoinType.LEFT_JOIN);
-		// Left joins on a toMany relationship need a join condition so that only one row is returned
-		builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipAddress", "ipInterface.ipAddress"), Restrictions.isNull("ipAddress")));
-		builder.alias("event", "event", JoinType.LEFT_JOIN);
-		builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+    @Override
+    protected CriteriaBuilder getCriteriaBuilder() {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipAddress", "ipInterface.ipAddress"), Restrictions.isNull("ipAddress")));
+        builder.alias("event", "event", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
 
-		// Order by ID by default
-		builder.orderBy("notifyId").desc();
+        // Order by ID by default
+        builder.orderBy("notifyId").desc();
 
-		return builder;
-	}
+        return builder;
+    }
 
-	@Override
-	protected JaxbListWrapper<OnmsNotification> createListWrapper(Collection<OnmsNotification> list) {
-		return new OnmsNotificationCollection(list);
-	}
+    @Override
+    protected JaxbListWrapper<OnmsNotification> createListWrapper(Collection<OnmsNotification> list) {
+        return new OnmsNotificationCollection(list);
+    }
 }
