@@ -78,6 +78,25 @@ public interface ServiceCollector {
    void initialize() throws CollectionInitializationException;
 
     /**
+     * Validate whether or not this collector should be scheduled
+     * to run against the given agent.
+     *
+     * If the collector cannot, or should not be a run against
+     * a given agent, a {@link CollectionInitializationException}
+     * must be thrown.
+     *
+     * In the case of the SNMP collector, this is used to prevent
+     * collect from scheduling interfaces other than the those
+     * marked as primary on a given node.
+     *
+     * @param agent
+     * @param parameters
+     * @throws CollectionInitializationException
+     */
+    void validateAgent(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException;
+
+
+    /**
      * Invokes a collection on the object.
      *
      * This call will be performed in both OpenNMS and Minion.
