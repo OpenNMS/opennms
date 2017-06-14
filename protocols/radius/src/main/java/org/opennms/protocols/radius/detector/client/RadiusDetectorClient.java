@@ -32,14 +32,24 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.EAPTTLSAuthenticator;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_EAPTypeTTLS;
+import net.jradius.dictionary.Attr_InnerTunnelUserName;
+import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_UserName;
 import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.support.Client;
+
+
+
 
 /**
  * <p>RadiusDetectorClient class.</p>
@@ -47,7 +57,9 @@ import org.opennms.netmgt.provision.support.Client;
  * @author Donald Desloge
  * @version $Id: $
  */
-public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket> {
+public class RadiusDetectorClient implements Client<CompositeAttributeLists, RadiusPacket> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusDetectorClient.class);
     /**
      * Default radius authentication port
      */
@@ -92,8 +104,8 @@ public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket>
     }
 
     @Override
-    public RadiusPacket sendRequest(final AttributeList attributes) throws Exception {
-    	final AccessRequest request = new AccessRequest(m_radiusClient, attributes);
+    public RadiusPacket sendRequest(final CompositeAttributeLists parameters) throws Exception {
+    	AccessRequest request = parameters.createRadiusRequest(getAuthenticator());
     	return m_radiusClient.authenticate(request, getAuthenticator(), 0);
     }
 
