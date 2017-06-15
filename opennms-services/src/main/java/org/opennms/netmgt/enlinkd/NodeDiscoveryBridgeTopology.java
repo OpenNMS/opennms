@@ -42,7 +42,6 @@ import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
-import org.opennms.netmgt.model.topology.SimpleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +102,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         Map<Integer, List<BridgeMacLink>> m_throughSetX= new HashMap<Integer, List<BridgeMacLink>>();
         Map<Integer, List<BridgeMacLink>> m_throughSetY= new HashMap<Integer, List<BridgeMacLink>>();
         Set<String> m_xythrowsetmacs = new HashSet<String>();
-        SimpleConnection m_simpleconnection; 
+        Set<String> m_macsOnSegment=new HashSet<String>();
+        BridgeBridgeLink m_bridgelink = new BridgeBridgeLink();
+
         public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT,Bridge yBridge, List<BridgeMacLink> yBFT) {
             super();
             Map<String,BridgeMacLink> xmactoport = new HashMap<String, BridgeMacLink>();
@@ -185,12 +186,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             
             BridgeMacLink xylink = null;
             BridgeMacLink yxlink = null;
-            Set<String> macsOnSegment=new HashSet<String>();
             for (BridgeMacLink xlink: xBFT) {
                 if (xlink.getBridgePort() == m_xy && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if (ymactoport.get(xlink.getMacAddress()) != null 
                     		&& m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
-                    	macsOnSegment.add(xlink.getMacAddress());
+                    	m_macsOnSegment.add(xlink.getMacAddress());
                         LOG.debug("BridgeTopologyHelper: simple connection: [{}, port {}] <--> [{}, port {}], forward set: mac added: [bridge:[{}],port:{},mac:{}].", 
                                   xBridge.getId(), 
                                   m_xy,
@@ -233,7 +233,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 if (ylink.getBridgePort() == m_yx && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if ( xmactoport.get(ylink.getMacAddress()) != null &&
                     		m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort()) {
-                    	macsOnSegment.add(ylink.getMacAddress());
+                    	m_macsOnSegment.add(ylink.getMacAddress());
                         LOG.debug("BridgeTopologyHelper: simple connection: [{}, port {}] <--> [{}, port {}], forward set: mac added: [bridge:[{}],port:{},mac:{}].", 
                                   xBridge.getId(), 
                                   m_xy,
@@ -274,26 +274,24 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                       m_xy,
                       yBridge.getId()
                       , m_yx,
-            		macsOnSegment.size());
+            		m_macsOnSegment.size());
     
-            BridgeBridgeLink blink = new BridgeBridgeLink();
             if (xylink != null && yxlink != null ) {
 
-                blink.setNode(yxlink.getNode());
-                blink.setBridgePort(yxlink.getBridgePort());
-                blink.setBridgePortIfIndex(yxlink.getBridgePortIfIndex());
-                blink.setBridgePortIfName(yxlink.getBridgePortIfName());
-                blink.setVlan(yxlink.getVlan());
+                m_bridgelink.setNode(yxlink.getNode());
+                m_bridgelink.setBridgePort(yxlink.getBridgePort());
+                m_bridgelink.setBridgePortIfIndex(yxlink.getBridgePortIfIndex());
+                m_bridgelink.setBridgePortIfName(yxlink.getBridgePortIfName());
+                m_bridgelink.setVlan(yxlink.getVlan());
                 
-                blink.setDesignatedNode(xylink.getNode());
-                blink.setDesignatedPort(xylink.getBridgePort());
-                blink.setDesignatedPortIfIndex(xylink.getBridgePortIfIndex());
-                blink.setDesignatedPortIfName(xylink.getBridgePortIfName());
-                blink.setDesignatedVlan(xylink.getVlan());
+                m_bridgelink.setDesignatedNode(xylink.getNode());
+                m_bridgelink.setDesignatedPort(xylink.getBridgePort());
+                m_bridgelink.setDesignatedPortIfIndex(xylink.getBridgePortIfIndex());
+                m_bridgelink.setDesignatedPortIfName(xylink.getBridgePortIfName());
+                m_bridgelink.setDesignatedVlan(xylink.getVlan());
 
 
             }
-            m_simpleconnection = new SimpleConnection(macsOnSegment, blink);
         }
 
         private List<Integer> condition3(Set<String> commonlearnedmacs,Map<String,BridgeMacLink> xbft,Map<String,BridgeMacLink> ybft) {
@@ -477,8 +475,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return m_yx;
         }
         
-        public SimpleConnection getSimpleConnection() {
-            return m_simpleconnection; 
+        public BridgeBridgeLink getSimpleConnection() {
+            return m_bridgelink; 
+        }
+
+        public Set<String> getSimpleConnectionMacs() {
+            return m_macsOnSegment; 
         }
 
         public List<BridgeMacLink> getFirstBridgeForwarders() {
@@ -933,7 +935,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
 
         Set<Integer> portsAdded=new HashSet<Integer>();
-        Set<String> macsOnSegment=rx.getSimpleConnection().getMacs();
+        Set<String> macsOnSegment=rx.getSimpleConnectionMacs();
         Map<Integer,List<BridgeMacLink>> bftSets=new HashMap<Integer,List<BridgeMacLink>>();
         for (Bridge yBridge: m_domain.getBridgeOnSharedSegment(topSegment)) {
             bftSets.put(yBridge.getId(), m_domain.calculateBFT(yBridge));
@@ -980,11 +982,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                                 yBridge.getId());
                 SharedSegment leafSegment = m_domain.getSharedSegment(xBridge.getId(), xyDesignatedPort);
                 if (leafSegment == null) {
-                    leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection().getDlink(),yx.getSimpleConnection().getMacs());
+                    leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection(),yx.getSimpleConnectionMacs());
                     leafSegment.setDesignatedBridge(xBridge.getId());
                     m_domain.add(leafSegment);
                 } else {
-                    leafSegment.assign(yx.getSimpleConnection().getMacs(),yx.getSimpleConnection().getDlink());
+                    leafSegment.assign(yx.getSimpleConnectionMacs(),yx.getSimpleConnection());
                 }
                 portsAdded.add(xyDesignatedPort);
                 
@@ -1010,7 +1012,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 		xBridge.getId());
                 return false;
             }            
-            macsOnSegment.retainAll(yx.getSimpleConnection().getMacs());
+            macsOnSegment.retainAll(yx.getSimpleConnectionMacs());
         }
         // if we are here is because X is NOT a leaf of any bridge found
         // on topSegment so X is connected to top Segment by it's root 
@@ -1021,8 +1023,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         topSegment.removeMacs(rx.getSecondBridgeTroughSet());
         LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}]. assign macs {} to top segment", 
         		getNodeId(), 
-                 level,xBridge.getId(),rx.getSimpleConnection().getMacs());
-        topSegment.assign(macsOnSegment,rx.getSimpleConnection().getDlink());
+                 level,xBridge.getId(),macsOnSegment);
+        topSegment.assign(macsOnSegment,rx.getSimpleConnection());
 //        LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}]. removing through sets {} from top segment", 
 //        		getNodeId(), 
 //                 level,xBridge.getId(),throughSets);
