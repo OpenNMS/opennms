@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -183,8 +184,8 @@ public abstract class ChartUtils {
             if (seriesColors != null) {
                 Comparable<?> cat = (Comparable<?>)((BarRenderer)barChart.getCategoryPlot().getRenderer()).getPlot().getCategories().get(i);
                 paint = seriesColors.getPaint(cat);
-            } else {
-                Rgb rgb = seriesDef.getRgb().get();
+            } else if (seriesDef.getRgb().isPresent()) {
+                final Rgb rgb = seriesDef.getRgb().get();
                 paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
             }
             ((BarRenderer)barChart.getCategoryPlot().getRenderer()).setSeriesPaint(i, paint);
@@ -320,11 +321,11 @@ public abstract class ChartUtils {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        if(chartConfig.getChartBackgroundColor() != null) {
+        if(chartConfig.getChartBackgroundColor().isPresent()) {
             setChartBackgroundColor(chartConfig, chart);
         }
         
-        if(chartConfig.getPlotBackgroundColor() !=  null) {
+        if(chartConfig.getPlotBackgroundColor().isPresent()) {
             setPlotBackgroundColor(chartConfig, chart);
         }
         ImageSize imageSize = chartConfig.getImageSize();
@@ -347,10 +348,11 @@ public abstract class ChartUtils {
             JFreeChart chart) {
         if (chartConfig.getPlotBackgroundColor().isPresent()) {
             final PlotBackgroundColor bgColor = chartConfig.getPlotBackgroundColor().get();
-            if (bgColor.getRgb().isPresent()) {
-                final Red red = bgColor.getRgb().get().getRed();
-                final Blue blue = bgColor.getRgb().get().getBlue();
-                final Green green = bgColor.getRgb().get().getGreen();
+            final Optional<Rgb> rgb = bgColor.getRgb();
+            if (rgb.isPresent()) {
+                final Red red = rgb.get().getRed();
+                final Blue blue = rgb.get().getBlue();
+                final Green green = rgb.get().getGreen();
                 
                 chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
             }

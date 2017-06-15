@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>KscReportEditor class.</p>
@@ -44,10 +46,8 @@ import org.opennms.netmgt.config.kscReports.Report;
  * @version $Id: $
  */
 public class KscReportEditor implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(KscReportEditor.class);
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 8825116321880022485L;
 
     /**
@@ -220,10 +220,17 @@ public class KscReportEditor implements Serializable {
      * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
      */
     public void unloadWorkingReport(KSC_PerformanceReportFactory factory) {
-        if (getWorkingReport().getId() != null) {
-            factory.setReport(getWorkingReport().getId().get(), getWorkingReport());
-        } else {
-            factory.addReport(getWorkingReport());
+        final Report workingReport = getWorkingReport();
+        LOG.debug("unloading working report: {}", workingReport);
+
+        if (workingReport != null) {
+            if (workingReport.getId() != null) {
+                LOG.debug("working report has id: {}", workingReport.getId());
+                factory.setReport(workingReport.getId(), workingReport);
+            } else {
+                LOG.debug("adding working report");
+                factory.addReport(workingReport);
+            }
         }
         
         // Create a new and unique instance of a report for screwing around with
