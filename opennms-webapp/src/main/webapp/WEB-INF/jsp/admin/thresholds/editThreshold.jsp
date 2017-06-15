@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,7 +70,7 @@
         			<select name="type" class="form-control">
         				<c:forEach items="${thresholdTypes}" var="thisType">
        						<c:choose>
-      							<c:when test="${threshold.type==thisType}">
+      							<c:when test="${threshold.type.enumName==thisType}">
         							<c:set var="selected">selected="selected"</c:set>
       							</c:when>
     	 						<c:otherwise>
@@ -96,7 +96,7 @@
     						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
         				</c:forEach>
         			</select></td>
-     			<td><input type="text" class="form-control" name="dsLabel" size="30" value="${threshold.dsLabel}"/></td>
+     			<td><input type="text" class="form-control" name="dsLabel" size="30" value="${threshold.dsLabel.orElse(null)}"/></td>
         		<td><input type="text" class="form-control" name="value" size="10" value="${threshold.value}"/></td>
         		<td><input type="text" class="form-control" name="rearm" size="10" value="${threshold.rearm}"/></td>
         		<td><input type="text" class="form-control" name="trigger" size="10" value="${threshold.trigger}"/></td>
@@ -109,9 +109,9 @@
                     <th>Re-armed UEI</th>
             </tr>
         	<tr>
-    			<td><input type="text" name="description" class="form-control" size="60" value="${threshold.description}"/></td>
-    			<td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${threshold.triggeredUEI}"/></td>
-    		    <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${threshold.rearmedUEI}"/></td>
+    			<td><input type="text" name="description" class="form-control" size="60" value="${threshold.description.orElse(null)}"/></td>
+    			<td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${threshold.triggeredUEI.orElse(null)}"/></td>
+    		    <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${threshold.rearmedUEI.orElse(null)}"/></td>
         	</tr>
       </table>
       <div class="panel-footer">
@@ -140,7 +140,7 @@
                   <select name="filterOperator" class="form-control">
                       <c:forEach items="${filterOperators}" var="thisOperator">
                           <c:choose>
-                              <c:when test="${threshold.filterOperator==thisOperator}">
+                              <c:when test="${threshold.filterOperator.enumName==thisOperator}">
                                   <c:set var="selected">selected="selected"</c:set>
                               </c:when>
                               <c:otherwise>
@@ -159,17 +159,17 @@
           <div class="col-md-12">
             <table class="table table-condensed">
             <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
-              <c:forEach items="${threshold.resourceFilter}" var="filter" varStatus="i">
+              <c:forEach items="${threshold.resourceFilters}" var="filter" varStatus="i">
                 <tr>
                     <c:choose>
                       <c:when test="${i.count==filterSelected}">
                         <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${filter.field}"/></td>
-                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content}"/></td>
+                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content.orElse(null)}"/></td>
                         <td><input type="submit" name="submitAction" class="btn btn-default" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
                       </c:when>
                       <c:otherwise>
                         <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.field}"/></td>
-                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.content}"/></td>
+                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.content.orElse(null)}"/></td>
                         <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
