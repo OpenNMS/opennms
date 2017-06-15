@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,8 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canSearchForNodeLabelInNodeId() {
         // Verify search. Should not result in 400 BAD REQUEST
-        m_driver.findElement(By.name("nodeId")).sendKeys("192.0.2.1");
-        m_driver.findElement(By.name("nodeIdSearchButton")).click();
+        enterText(By.name("nodeId"), "192.0.2.1");
+        clickElement(By.name("nodeIdSearchButton"));
         wait.until(pageContainsText("None found."));
     }
 
