@@ -37,6 +37,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collection.api.AbstractServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -209,6 +210,11 @@ public class SnmpCollector extends AbstractServiceCollector {
         }
     }
 
+    @Override
+    public void validateAgent(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+        ((SnmpCollectionAgent)agent).validateAgent();
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -217,8 +223,6 @@ public class SnmpCollector extends AbstractServiceCollector {
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
         try {
-            ((SnmpCollectionAgent)agent).validateAgent();
-
             final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
 

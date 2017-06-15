@@ -39,6 +39,7 @@ import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
@@ -232,6 +233,30 @@ public class CollectionSpecification {
         }
         m.put("packageName", m_package.getName());
         m_parameters = m;
+    }
+
+    /**
+     * <p>initialize</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
+     */
+    public void initialize(CollectionAgent agent) throws CollectionInitializationException {
+        m_instrumentation.beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        try {
+            m_collector.validateAgent(agent, getPropertyMap());
+        } finally {
+            m_instrumentation.endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        }
+    }
+
+    /**
+     * <p>release</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
+     */
+    public void release(CollectionAgent agent) {
+        m_instrumentation.beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        m_instrumentation.endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
     }
 
     /**
