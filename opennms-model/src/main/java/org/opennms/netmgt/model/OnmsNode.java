@@ -75,7 +75,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonValue;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -111,7 +110,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
 
     /** identifier field */
-    @JsonProperty("id")
     private Integer m_id;
 
     /** persistent field */
@@ -260,7 +258,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @XmlID
     @XmlAttribute(name="id", required=true)
     @Transient
-    @JsonIgnore
     public String getNodeId() {
         if (getId() != null) {
             return getId().toString();
