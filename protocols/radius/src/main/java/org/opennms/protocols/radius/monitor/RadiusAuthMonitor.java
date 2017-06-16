@@ -31,6 +31,17 @@ package org.opennms.protocols.radius.monitor;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.protocols.radius.utils.RadiusUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.CHAPAuthenticator;
 import net.jradius.client.auth.EAPMD5Authenticator;
@@ -52,17 +63,6 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
-
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
-import org.opennms.protocols.radius.utils.RadiusUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -191,7 +191,7 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
         String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
         String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
-        InetAddress addr = iface.getAddress();
+        InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
         int timeout = convertTimeoutToSeconds(ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT));
