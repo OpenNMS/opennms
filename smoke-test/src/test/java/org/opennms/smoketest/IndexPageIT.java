@@ -59,8 +59,18 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
     public void canSearchForNodeLabelInNodeId() {
         // Verify search. Should not result in 400 BAD REQUEST
         enterText(By.name("nodeId"), "192.0.2.1");
-        clickElement(By.name("nodeIdSearchButton"));
-        wait.until(pageContainsText("None found."));
+        try {
+            setImplicitWait(5, TimeUnit.SECONDS);
+            new WebDriverWait(m_driver, 120).until(new Predicate<WebDriver>() {
+                @Override
+                public boolean apply(@Nullable WebDriver driver) {
+                    clickElement(By.name("nodeIdSearchButton"));
+                    return wait.until(pageContainsText("None found."));
+                }
+            });
+        } finally {
+            setImplicitWait();
+        }
     }
 
     /**
