@@ -67,7 +67,6 @@ import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.hibernate.annotations.Where;
 import org.springframework.core.style.ToStringCreator;
 
@@ -78,7 +77,6 @@ import org.springframework.core.style.ToStringCreator;
 public class OnmsMonitoredService extends OnmsEntity implements Serializable, Comparable<OnmsMonitoredService> {
     private static final long serialVersionUID = 7899180234592272274L;
 
-    @JsonProperty("id")
     private Integer m_id;
 
     private Date m_lastGood;
