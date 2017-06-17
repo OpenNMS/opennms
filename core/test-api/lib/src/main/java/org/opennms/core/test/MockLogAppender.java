@@ -368,4 +368,12 @@ public class MockLogAppender {
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
     }
+
+    public static void assertNoLogMatched(final Level level, final String message) {
+        for (final LoggingEvent event : s_events) {
+            if (event.getLevel().eq(level) && event.getMessage().contains(message)) {
+                throw new AssertionFailedError("A log message matched for log level " + level + ", message '" + message + "'");
+            }
+        }
+    }
 }

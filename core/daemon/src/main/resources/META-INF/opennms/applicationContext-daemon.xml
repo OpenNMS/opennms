@@ -55,6 +55,7 @@
     init-method="start" destroy-method="stop">
     <property name="maxConnections" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.max-connections', '8')}" />
     <property name="idleTimeout" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.idle-timeout', '30000')}" />
+    <property name="reconnectOnException" value="#{T(java.lang.System).getProperty('org.opennms.activemq.client.reconnect-on-exception', 'true')}" />
     <property name="connectionFactory" ref="jmsConnectionFactory" />
   </bean>
 

@@ -134,8 +134,11 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         // Sleep slightly longer to allow the body to be logged on the sink consumer listener thread
         Thread.sleep(2000);
 
+        // Verify that the exchange error was logged
+        MockLogAppender.assertLogMatched(Level.ERROR, "Message History");
+        MockLogAppender.assertLogMatched(Level.ERROR, "queuingservice://OpenNMS.Sink.Heartbeat");
         // Verify that the message body was suppressed
-        MockLogAppender.assertLogMatched(Level.DEBUG, "[Body is not logged]");
+        MockLogAppender.assertNoLogMatched(Level.ERROR, "<heartbeat/>");
 
         consumerManager.unregisterConsumer(consumer);
     }
