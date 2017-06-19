@@ -27,7 +27,10 @@
  *******************************************************************************/
 package org.opennms.minion.core.shell;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -52,7 +55,22 @@ public class MinionPingCommand implements Action {
         System.out.println("OK");
 
         System.out.println("Connecting to Broker...");
-        brokerConnectionFactory.createConnection();
+        Connection jmsConnection = null;
+        try {
+            jmsConnection = brokerConnectionFactory.createConnection();
+            // NMS-9445: Attempt to use the connection by creating a session
+            // and immediately closing it.
+            jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE).close();
+        } finally{
+            if (jmsConnection != null) {
+                try {
+                    jmsConnection.close();
+                } catch(JMSException ex) {
+                    System.out.println("Failed to close JMSConnection: " + ex.getMessage());
+                }
+            }
+        }
+
         System.out.println("OK");
         return null;
     }
