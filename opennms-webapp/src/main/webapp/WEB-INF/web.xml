@@ -511,6 +511,11 @@
 		<url-pattern>/resources/*</url-pattern>
    </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>nodeLabelChange</servlet-name>
+    <url-pattern>/admin/nodeLabelChange</url-pattern>
+  </servlet-mapping>
+
   <!-- Servlet for modify Discovery configuration service -->
   <servlet>
     <servlet-name>actionDiscovery</servlet-name>
@@ -655,7 +660,10 @@
     <servlet-name>newPasswordAction</servlet-name>
     <url-pattern>/account/selfService/newPasswordAction</url-pattern>
   </servlet-mapping>
-
+  <servlet>
+    <servlet-name>nodeLabelChange</servlet-name>
+    <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
+  </servlet>
   <servlet>
     <!-- servlet for setting critical path -->
     <servlet-name>setCriticalPath</servlet-name>
