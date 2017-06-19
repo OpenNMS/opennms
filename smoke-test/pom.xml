@@ -9,7 +9,7 @@
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>interval:60</updatePolicy>
-    <camelVersion>2.18.4</camelVersion>
+    <camelVersion>2.19.1</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.6.6</jackson2Version>
     <karafVersion>4.0.8</karafVersion>
