@@ -35,6 +35,7 @@
 	isErrorPage="true"
 	import="org.opennms.web.element.*"
 %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
      ElementNotFoundException enfe = null;
@@ -62,7 +63,7 @@
 <h1><%=enfe.getElemType(true)%>  Not Found</h1>
 
 <p>
-  The <%=enfe.getElemType()%> is invalid. <%=enfe.getMessage()%>
+  The <%=enfe.getElemType()%> is invalid. <%=WebSecurityUtils.sanitizeString(enfe.getMessage())%>
   <br/>
   <% if (enfe.getDetailUri() != null) { %>
   <p>

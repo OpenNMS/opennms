@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,16 @@ import com.google.common.base.Predicate;
 public class IndexPageIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(IndexPageIT.class);
+
+    // Verifies that one can use the node id input as node label input.
+    // The result should be empty, and not BAD REQUEST. See NMS-9419
+    @Test
+    public void canSearchForNodeLabelInNodeId() throws InterruptedException {
+        // Verify search. Should not result in 400 BAD REQUEST
+        enterText(By.name("nodeId"), "192.0.2.1");
+        clickElement(By.name("nodeIdSearchButton"));
+        wait.until(pageContainsText("None found."));
+    }
 
     /**
      * Can render search boxes.
