@@ -918,7 +918,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     // while xBridge is to be added
     private boolean findBridgesTopo(BridgeTopologyHelper rx,SharedSegment topSegment, Bridge xBridge, List<BridgeMacLink> xBFT, int level) {
         level++;
-        LOG.debug("calculate: node: [{}], level: {}, bridge: [{}], topo top segment found: [ids {}, designated bridge [{}, port {}], macs {}",
+        LOG.debug("calculate: node: [{}], level: {}, bridge: [{}], checking if is child of segment: [ids {}, designated bridge {}, port {}, macs {}]",
         		getNodeId(),
         		level,
         		xBridge.getId(),
@@ -947,11 +947,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (yBridgeId.intValue() == topSegment.getDesignatedBridge().intValue()) {
                 continue;
             } 
-            LOG.debug("calculate: node: [{}], level: {}, bridges: [{},{}]. Searching simple connection",
-            		getNodeId(),
-                      level,
-                      xBridge.getId(), 
-                      yBridge.getId());
             Integer yrDesignatedPort = yBridge.getRootPort();
             LOG.debug("calculate: node: [{}], level: {}, bridge: [{}], bridge: [{}, designated port: {}]",
             		getNodeId(),
@@ -962,7 +957,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             BridgeTopologyHelper   yx = new BridgeTopologyHelper(yBridge,bftSets.get(yBridgeId) ,xBridge, xBFT);
             Integer  xyDesignatedPort = yx.getSecondBridgeConnectionPort();
             Integer  yxDesignatedPort = yx.getFirstBridgeConnectionPort();
-            // X is a leaf of Y then iterate
+            // if X is a leaf of Y then iterate
             if (xyDesignatedPort == rx.getSecondBridgeConnectionPort() && yxDesignatedPort != yrDesignatedPort) {
                 LOG.debug("calculate: node: [{}]: level: {}, bridge: [{}] is a leaf of bridge: [{}], going one level down",
                 		getNodeId(),
@@ -971,9 +966,19 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 	return false;
                 return true;
             }
-            // Y is a leaf of X then remove Y from topSegment
+            // Y is a leaf of X then 
+            // remove Y from topSegment
+            // Create shared Segment with X designated bridge 
+            // or if exists then retain all common macs on domain
+            // Assign Forwarders for Y
+            // Clean also topSegment macs.
             if (yxDesignatedPort == yrDesignatedPort && xyDesignatedPort != rx.getSecondBridgeConnectionPort()) {
                 //create a SharedSegment with root port
+                LOG.info("calculate: node: [{}], level: {}, bridge: [{},designated port [{}]]: found level.", 
+                          getNodeId(), 
+                          level,
+                          xBridge.getId(),
+                          xyDesignatedPort);
                 LOG.debug("calculate: node: [{}], level: {}, bridge: [{},designated port [{}]]: is 'up' for bridge: [{}].", 
                 		getNodeId(), 
                 		level,
@@ -1051,7 +1056,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                      xleafSegment.getDesignatedPort(),
                      xleafSegment.getMacsOnSegment());
         }
-        addForwarding(m_domain, rx.getFirstBridgeForwarders());
         return true;
     }
 

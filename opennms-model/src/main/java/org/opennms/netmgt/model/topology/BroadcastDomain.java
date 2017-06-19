@@ -62,7 +62,13 @@ public class BroadcastDomain {
         m_forwarding.get(bridgeid).add(forward);
     }
     
-	public Set<String> getBridgeMacAddresses(Integer bridgeid) {
+    public List<BridgeMacLink> getForwarders(Integer bridgeId) {
+        if (!m_forwarding.containsKey(bridgeId))
+            m_forwarding.put(bridgeId, new ArrayList<BridgeMacLink>());
+        return m_forwarding.get(bridgeId);
+    }
+
+    public Set<String> getBridgeMacAddresses(Integer bridgeid) {
 		Set<String> bridgemacaddresses = new HashSet<String>();
 		Bridge bridge = getBridge(bridgeid);
 		if ( bridge != null ) {
