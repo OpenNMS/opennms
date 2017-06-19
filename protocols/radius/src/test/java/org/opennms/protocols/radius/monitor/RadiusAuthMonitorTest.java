@@ -48,6 +48,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 
+import net.jradius.client.RadiusClient;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
@@ -61,6 +63,7 @@ public class RadiusAuthMonitorTest {
 	@Test
 	@Ignore("have to have a radius server set up")
 	public void testResponse() throws Exception {
+		
 		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
@@ -75,6 +78,27 @@ public class RadiusAuthMonitorTest {
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+	}
+
+	@Test
+	//@Ignore("have to have a radius server set up")
+	public void testTTLSResponse() throws Exception {
+	    final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+	    final ServiceMonitor monitor = new RadiusAuthMonitor();
+	    final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
+
+	    m.put("user", "bob");
+	    m.put("password", "hello");
+	    m.put("timeout", "10000");
+	    m.put("retry", "1");
+	    m.put("secret", "testing123");
+	    m.put("authtype", "eap-ttls");
+	    m.put("inner-user", "anonymous");
+	    final PollStatus status = monitor.poll(svc, m);
+	    MockUtil.println("Reason: "+status.getReason());
+	    System.out.println("Reason"+status.getReason());
+	    assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
 	}
 
 }
