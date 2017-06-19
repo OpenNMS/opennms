@@ -56,21 +56,11 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
     // Verifies that one can use the node id input as node label input.
     // The result should be empty, and not BAD REQUEST. See NMS-9419
     @Test
-    public void canSearchForNodeLabelInNodeId() {
+    public void canSearchForNodeLabelInNodeId() throws InterruptedException {
         // Verify search. Should not result in 400 BAD REQUEST
         enterText(By.name("nodeId"), "192.0.2.1");
-        try {
-            setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(m_driver, 120).until(new Predicate<WebDriver>() {
-                @Override
-                public boolean apply(@Nullable WebDriver driver) {
-                    clickElement(By.name("nodeIdSearchButton"));
-                    return wait.until(pageContainsText("None found."));
-                }
-            });
-        } finally {
-            setImplicitWait();
-        }
+        clickElement(By.name("nodeIdSearchButton"));
+        wait.until(pageContainsText("None found."));
     }
 
     /**
