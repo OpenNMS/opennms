@@ -59,7 +59,7 @@ public class IndexPageIT extends OpenNMSSeleniumTestCase {
     public void canSearchForNodeLabelInNodeId() throws InterruptedException {
         // Verify search. Should not result in 400 BAD REQUEST
         enterText(By.name("nodeId"), "192.0.2.1");
-        clickElement(By.name("nodeIdSearchButton"));
+        clickElement(By.cssSelector("input[name=\"nodeIdSearchButton\"]"));
         wait.until(pageContainsText("None found."));
     }
 
