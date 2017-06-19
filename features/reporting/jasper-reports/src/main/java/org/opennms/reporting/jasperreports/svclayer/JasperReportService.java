@@ -39,22 +39,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -68,9 +58,36 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.reporting.jasperreports.compiler.CustomJRJdtCompiler;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRReport;
+import net.sf.jasperreports.engine.JRSubreport;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
+import net.sf.jasperreports.engine.design.JRCompiler;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
+import net.sf.jasperreports.engine.util.JRElementsVisitor;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.engine.util.JRVisitorSupport;
+import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 /**
  * <p>
@@ -489,7 +506,6 @@ public class JasperReportService implements ReportService {
         JRCsvExporter exporter = new JRCsvExporter();
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
         exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-
         exporter.exportReport();
     }
 
@@ -561,20 +577,94 @@ public class JasperReportService implements ReportService {
         m_globalReportRepository = globalReportRepository;
     }
 
-    private JasperReport getJasperReport(String reportId) throws ReportException {
+    private JasperDesign getJasperDesign(String reportId) throws ReportException {
         try {
-            JasperReport report = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
+            JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
+            return jasperDesign;
+        } catch (JRException e) {
+            LOG.error("Unable to load report with id '{}'", reportId, e);
+            throw new ReportException("Unable to load report with id '" + reportId + "'", e);
+        }
+    }
+
+    private JasperReport getJasperReport(String reportId) throws ReportException {
+        JasperDesign jasperDesign = getJasperDesign(reportId);
+        return compileReport(jasperDesign);
+    }
+
+    /**
+     * Compiles the given {@link JasperDesign} (*.jrxml) to a {@link JasperReport} (*.jasper)
+     *
+     * @param jasperDesign The Design (*.jrxml) to compile
+     * @return The compiled report (*.jasper)
+     * @throws ReportException If the design could not be compiled.
+     */
+    private JasperReport compileReport(JasperDesign jasperDesign) throws ReportException {
+        try {
+            JasperReport report;
+
+            // If the target report is written in Java, use our custom JDT compiler
+            if (JRReport.LANGUAGE_JAVA.equals(jasperDesign.getLanguage())) {
+                JasperReportsContext reportsContext = new SimpleJasperReportsContext();
+                JRPropertiesUtil.getInstance(reportsContext).setProperty(JRCompiler.COMPILER_PREFIX + JRReport.LANGUAGE_JAVA, CustomJRJdtCompiler.class.getCanonicalName());
+                JasperCompileManager jasperCompilerManager = JasperCompileManager.getInstance(reportsContext);
+                report = jasperCompilerManager.compile(jasperDesign);
+            } else {
+                // Otherwise, use the default that Jasper providers
+                report = JasperCompileManager.compileReport(jasperDesign);
+            }
+
             for (Object eachKey : System.getProperties().keySet()) {
                 String eachStringKey = (String) eachKey;
                 if (eachStringKey.startsWith("net.sf.jasperreports")) {
                     report.setProperty(eachStringKey, System.getProperty(eachStringKey));
                 }
             }
+
+            compileSubreportsRecursively(report);
             return report;
         } catch (final JRException e) {
             LOG.error("unable to compile jasper report {}", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
+    }
+
+    /**
+     * Iterates recursively over each subreport element in the given {@link JasperReport} and compiles the referenced
+     * subreport if not already compiled.
+     *
+     * @param report The {@link JasperReport} to compile all subreports recursively if needed.
+     */
+    private void compileSubreportsRecursively(JasperReport report) {
+        JRElementsVisitor.visitReport(report, new JRVisitorSupport() {
+            @Override
+            public void visitSubreport(JRSubreport subreport) {
+                final String compiledSubreportName = evaluateToString(report, subreport.getExpression());
+                final String sourceSubreportName = compiledSubreportName.replace(".jasper", ".jrxml");
+                final File compiledSubreportFile = new File(compiledSubreportName);
+                final File sourceSubreportFile = new File(sourceSubreportName);
+                if(!compiledSubreportFile.exists() || compiledSubreportFile.lastModified() < sourceSubreportFile.lastModified()) {
+
+                    LOG.debug("Compiling Subreport '{}' ...", compiledSubreportName);
+                    try {
+                        JasperDesign subreportDesign = JRXmlLoader.load(sourceSubreportName);
+                        JasperReport subreportCompiled = compileReport(subreportDesign);
+                        JRSaver.saveObject(subreportCompiled, compiledSubreportFile);
+                        compileSubreportsRecursively(subreportCompiled); // Compile containing sub reports if needed
+                    } catch (ReportException | JRException e) {
+                        LOG.error("Could not compile Jasper Subreport. Expression: {}, Evaluated Expression: {}", subreport.getExpression(), compiledSubreportName, e);
+                    }
+                    LOG.debug("Subreport '{}' compiled", compiledSubreportName);
+                } else {
+                    // The report is already compiled, compile containing sub reports if needed
+                    try {
+                        compileSubreportsRecursively((JasperReport) JRLoader.loadObject(compiledSubreportFile));
+                    } catch (JRException e) {
+                        LOG.error("Could not load compiled Jasper Subreport. Expression: {}, Evaluated Expression: {}", subreport.getExpression(), compiledSubreportName, e);
+                    }
+                }
+            }
+        });
     }
 
     protected boolean apply(List<ParameterFilter> parameterFilters, JRParameter reportParm) {
@@ -589,5 +679,17 @@ public class JasperReportService implements ReportService {
 
     protected List<ParameterFilter> getParameterFilters() {
         return parameterFilters;
+    }
+
+    public static String evaluateToString(JasperReport report, JRExpression expression) {
+        Objects.requireNonNull(report);
+        Objects.requireNonNull(expression);
+        SubreportExpressionVisitor visitor = new SubreportExpressionVisitor(report);
+        String string = visitor.visit(expression);
+        if (string != null) {
+            JexlEngine engine = new JexlEngine();
+            return (String) engine.createExpression(string).evaluate(new MapContext());
+        }
+        return null;
     }
 }

@@ -72,8 +72,8 @@ pageContext.setAttribute("canForecast", canForecast);
   <jsp:param name="quiet" value="true" />
   <jsp:param name="nobreadcrumbs" value="true" />
   <jsp:param name="usebackshift" value="true" />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.8.min.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/underscore-min.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
+  <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore.js"></script>' />
 </jsp:include>
 
 <div class="row-fluid" ng-app="forecast" ng-controller="forecastCtrl">

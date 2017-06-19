@@ -39,23 +39,24 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.datagram.NtpDetector;
+import org.opennms.netmgt.provision.detector.datagram.NtpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleUDPServer;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class NtpDetectorTest implements ApplicationContextAware {
+public class NtpDetectorTest implements InitializingBean {
     
-    private ApplicationContext m_applicationContext;
+    @Autowired
+    public NtpDetectorFactory m_detectorFactory;
     public NtpDetector m_detector;
     private SimpleUDPServer m_server;
     
@@ -63,7 +64,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
     public void setUp(){
         MockLogAppender.setupLogging();
 
-        m_detector = getDetector(NtpDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setRetries(0);
         assertNotNull(m_detector);
         
@@ -132,16 +133,11 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
-    
-    private NtpDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (NtpDetector)bean;
-    }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+        
     }
+    
 }

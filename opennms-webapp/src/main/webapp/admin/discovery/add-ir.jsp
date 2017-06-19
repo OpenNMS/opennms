@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,7 @@
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.Map,
   java.util.TreeMap,
-  org.opennms.netmgt.config.monitoringLocations.LocationDef,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
   org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,
   org.springframework.web.context.WebApplicationContext,
@@ -68,7 +68,7 @@ if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode")
 // Map of primary key to label (which in this case are the same)
 MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
 Map<String,String> locations = new TreeMap<String,String>();
-for (LocationDef location : locationDao.findAll()) {
+for (OnmsMonitoringLocation location : locationDao.findAll()) {
 	locations.put(location.getLocationName(), location.getLocationName());
 }
 
@@ -185,22 +185,22 @@ function doAddIncludeRange(){
           <div class="form-group">
             <label for="timeout" class="control-label col-sm-2">Timeout (milliseconds):</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
+              <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
             </div>
           </div>
           <div class="form-group">
             <label for="retries" class="control-label col-sm-2">Retries:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
+              <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
             </div>
           </div>
         <div class="form-group">
           <label for="foreignsource" class="control-label col-sm-2">Foreign Source:</label>
           <div class="col-sm-10">
             <select id="foreignsource" class="form-control" name="foreignsource">
-              <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
+              <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
               <% for (String key : foreignsources.keySet()) { %>
-                <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource())) out.print("selected");%>><%=foreignsources.get(key)%></option>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource().orElse(null))) out.print("selected");%>><%=foreignsources.get(key)%></option>
               <% } %>
             </select>
           </div>
@@ -210,7 +210,7 @@ function doAddIncludeRange(){
           <div class="col-sm-10">
             <select id="location" class="form-control" name="location">
               <% for (String key : locations.keySet()) { %>
-                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation()) || (key.equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) && currConfig.getLocation() == null)) out.print("selected");%>><%=locations.get(key)%></option>
+                <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
               <% } %>
             </select>
           </div>

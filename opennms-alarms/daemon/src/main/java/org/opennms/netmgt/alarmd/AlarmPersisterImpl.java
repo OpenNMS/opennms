@@ -40,6 +40,9 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
 /**
@@ -54,6 +57,25 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
     private EventForwarder m_eventForwarder;
+    private TransactionOperations m_transactionOperations;
+
+    private static class OnmsAlarmAndLifecycleEvent {
+        private final OnmsAlarm m_alarm;
+        private final Event m_event;
+
+        public OnmsAlarmAndLifecycleEvent(OnmsAlarm alarm, Event event) {
+            m_alarm = alarm;
+            m_event = event;
+        }
+
+        public OnmsAlarm getAlarm() {
+            return m_alarm;
+        }
+
+        public Event getEvent() {
+            return m_event;
+        }
+    }
 
     /** {@inheritDoc} 
      * @return */
@@ -62,28 +84,39 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
-        LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
 
-        return addOrReduceEventAsAlarm(event);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+        }
+
+        // Process the alarm inside a transaction
+        OnmsAlarmAndLifecycleEvent alarmAndEvent = m_transactionOperations.execute(new TransactionCallback<OnmsAlarmAndLifecycleEvent>() {
+            @Override
+            public OnmsAlarmAndLifecycleEvent doInTransaction(TransactionStatus arg0) {
+                return addOrReduceEventAsAlarm(event);
+            }
+        });
+
+        // Send the event outside of the database transaction
+        m_eventForwarder.sendNow(alarmAndEvent.getEvent());
+
+        return alarmAndEvent.getAlarm();
     }
 
-    private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
-        //TODO: Understand why we use Assert
-        Assert.notNull(event, "Incoming event was null, aborting"); 
-        Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
-        
-        
-        //for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
+    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event) {
+        // 2012-03-11 pbrane: for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
         OnmsEvent e = m_eventDao.get(event.getDbid());
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
-    
+
         String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
 
         EventBuilder ebldr = null;
         if (alarm == null) {
-            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
+            }
             alarm = createNewAlarm(e, event);
             
             //FIXME: this should be a cascaded save
@@ -92,7 +125,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, Alarmd.NAME);
         } else {
-            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
+            }
             reduceEvent(e, alarm, event);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
@@ -108,13 +143,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
             alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
         }
 
-        if (ebldr != null) {
-            ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
-            ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-            m_eventForwarder.sendNow(ebldr.getEvent());
-        }
+        ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
 
-        return alarm;
+        return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
     private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
@@ -130,48 +162,48 @@ public class AlarmPersisterImpl implements AlarmPersister {
             alarm.setLogMsg(e.getEventLogMsg());
             alarm.setEventParms(e.getEventParms());
         } else {
-            
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
-                
+                String fieldName = field.getFieldName();
+
                 //Always set these, unless specified not to, in order to maintain current behavior
-                if (field.getFieldName().equalsIgnoreCase("LogMsg") && field.isUpdateOnReduction() == false) {
+                if (fieldName.equalsIgnoreCase("LogMsg") && field.isUpdateOnReduction() == false) {
                     continue;
                 } else {
                     alarm.setLogMsg(e.getEventLogMsg());
                 }
-                
-                if (field.getFieldName().equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
+
+                if (fieldName.equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
                     continue;
                 } else {
                     alarm.setEventParms(e.getEventParms());
                 }
-                
+
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
                     
-                    if (field.getFieldName().toLowerCase().startsWith("distpoller")) {
+                    if (fieldName.toLowerCase().startsWith("distpoller")) {
                         alarm.setDistPoller(e.getDistPoller());
-                    } else if (field.getFieldName().toLowerCase().startsWith("ipaddr")) {
+                    } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
                         alarm.setIpAddr(e.getIpAddr());
-                    } else if (field.getFieldName().toLowerCase().startsWith("mouseover")) {
+                    } else if (fieldName.toLowerCase().startsWith("mouseover")) {
                         alarm.setMouseOverText(e.getEventMouseOverText());
-                    } else if (field.getFieldName().toLowerCase().startsWith("operinstruct")) {
+                    } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
                         alarm.setOperInstruct(e.getEventOperInstruct());
-                    } else if (field.getFieldName().equalsIgnoreCase("severity")) {
+                    } else if (fieldName.equalsIgnoreCase("severity")) {
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
-                    } else if (field.getFieldName().toLowerCase().contains("descr")) {
+                    } else if (fieldName.toLowerCase().contains("descr")) {
                         alarm.setDescription(e.getEventDescr());
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
                     } else {
-                        LOG.warn("reduceEvent: The specified field: {}, is not supported.", field.getFieldName());
+                        LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                     }
 
                     /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
                     try {
                         final BeanWrapper ew = PropertyAccessorFactory.forBeanPropertyAccess(e);
                         final BeanWrapper aw = PropertyAccessorFactory.forBeanPropertyAccess(alarm);
-                        aw.setPropertyValue(field.getFieldName(), ew.getPropertyValue(field.getFieldName()));
+                        aw.setPropertyValue(fieldName, ew.getPropertyValue(fieldName));
                     } catch (BeansException be) {                        
                         LOG.error("reduceEvent", be);
                         continue;
@@ -182,7 +214,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
             
         }
-        
+
         e.setAlarm(alarm);
     }
 
@@ -190,8 +222,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (e.getServiceType() != null) {
             e.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
         }
-        OnmsAlarm alarm;
-        alarm = new OnmsAlarm();
+        OnmsAlarm alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
@@ -220,23 +251,37 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
     
     private static boolean checkEventSanityAndDoWeProcess(final Event event) {
-        Assert.notNull(event, "event argument must not be null");
-        
-        //Events that are marked donotpersist have a dbid of 0
-        //Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");//TODO: figure out what happens when this exception is thrown
-        
-        if (event.getLogmsg() != null && event.getLogmsg().getDest() != null && "donotpersist".equals(event.getLogmsg().getDest())) {
-            LOG.debug("checkEventSanity: uei '{}' marked as 'donotpersist'; not processing event.", event.getUei());
+        // 2009-01-07 pbrane: TODO: Understand why we use Assert
+        Assert.notNull(event, "Incoming event was null, aborting"); 
+
+        if (event.getLogmsg() != null && "donotpersist".equals(event.getLogmsg().getDest())) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("checkEventSanity: uei '{}' marked as 'donotpersist'; not processing event.", event.getUei());
+            }
             return false;
         }
         
         if (event.getAlarmData() == null) {
-            LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
+            }
             return false;
         }
+
+        // 2009-01-07 pbrane: TODO: Understand why we use Assert
+        Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+
         return true;
     }
-    
+
+    public TransactionOperations getTransactionOperations() {
+        return m_transactionOperations;
+    }
+
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+        m_transactionOperations = transactionOperations;
+    }
+
     /**
      * <p>setAlarmDao</p>
      *

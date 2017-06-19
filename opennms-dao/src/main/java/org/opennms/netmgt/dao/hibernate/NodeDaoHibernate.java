@@ -56,6 +56,8 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -95,6 +97,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public String getLabelForId(Integer id) {
         List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
         return list == null || list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public String getLocationForId(Integer id) {
+        List<OnmsMonitoringLocation> list = findObjects(OnmsMonitoringLocation.class, "select n.location from OnmsNode as n where n.id = ?", id);
+        return list == null || list.isEmpty() ? null : list.get(0).getLocationName();
     }
 
     /** {@inheritDoc} */
@@ -229,7 +237,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where c.name in ("+categoryListToNameList(categories)+")"
-                + "and n.type != 'D'");
+                + "and n.type != '" + NodeType.DELETED.value()+ "'");
     }
 
     /** {@inheritDoc} */
@@ -253,7 +261,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                         + "left join fetch monSvc.currentOutages "
                         + "where c1 in (:rowCategories) "
                         + "and c2 in (:colCategories) "
-                        + "and n.type != 'D'")
+                        + "and n.type != '" + NodeType.DELETED.value()+ "'")
                         .setParameterList("rowCategories", rowCategories)
                         .setParameterList("colCategories", columnCategories)
                         .list();
@@ -319,7 +327,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                         " left outer join ipinterface ip using (nodeid)" +
                         " left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id)" +
                         " left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null)" +
-                        " where nodeType <> 'D'" +
+                        " where nodeType <> '" + NodeType.DELETED.value()+ "'" +
                         " and cn1.categoryid in (:rowCategories)" +
                         " and cn2.categoryid in (:columnCategories)"
                         )
@@ -461,7 +469,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      */
     @Override
     public Collection<Integer> getNodeIds() {
-        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
+        return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != '" + NodeType.DELETED.value()+ "'");
     }
 
     /** {@inheritDoc} */
@@ -479,14 +487,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public Integer getNextNodeId (Integer nodeId) {
         Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != 'D' order by n.id asc limit 1", nodeId).get(0);
+        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != ? order by n.id asc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
 
     @Override
     public Integer getPreviousNodeId (Integer nodeId) {
         Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);
+        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
 }

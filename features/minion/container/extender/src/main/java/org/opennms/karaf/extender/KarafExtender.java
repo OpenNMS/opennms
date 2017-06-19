@@ -38,13 +38,20 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.features.FeaturesService;
+import org.apache.karaf.features.FeaturesService.Option;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -101,6 +108,9 @@ public class KarafExtender {
             return;
         }
 
+        // Filter the list of features
+        filterFeatures(featuresBoot);
+
         // Build a comma separated list of our Maven repositories
         StringBuilder mavenReposSb = new StringBuilder();
         for (Repository repository : repositories) {
@@ -148,18 +158,29 @@ public class KarafExtender {
             }
         }
 
-        for (Feature feature : featuresBoot) {
-            LOG.info("Installing feature: {}", feature);
-            try {
-                if (feature.getVersion() == null) {
-                    m_featuresService.installFeature(feature.getName());
-                } else {
-                    m_featuresService.installFeature(feature.getName(), feature.getVersion());
+        final Set<String> featuresToInstall = featuresBoot.stream()
+            .map(f -> f.getVersion() != null ? f.getName() + "/" + f.getVersion() : f.getName())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        // Because of the fix for the following issue, we need to call the
+        // feature installation in another thread since this method is invoked
+        // during a feature installation itself and feature installations are
+        // now single-threaded.
+        //
+        // https://issues.apache.org/jira/browse/KARAF-3798
+        // https://github.com/apache/karaf/pull/138
+        //
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LOG.info("Installing features: {}", featuresToInstall);
+                    m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
+                } catch (Exception e) {
+                    LOG.error("Failed to install one or more features.", e);
                 }
-            } catch (Exception e) {
-                LOG.error("Failed to install feature '{}'. Skipping.", feature, e);
             }
-        }
+        });
     }
 
     private boolean canResolveAllFeatureUris(List<Repository> repositories) {
@@ -230,6 +251,41 @@ public class KarafExtender {
             features.addAll(getFeaturesIn(featuresBootFile));
         }
         return features;
+    }
+
+    /**
+     * Any feature that starts with '!' will be removed
+     * from the list, and will remove all other features
+     * with the same name and version.
+     *
+     * i.e. if the feature list contains:
+     * <pre>
+     *   feature-a
+     *   feature-b
+     *   !feature-b
+     *   !feature-c
+     * </pre>
+     *
+     * after calling this function, the list will contain:
+     * <pre>
+     *   feature-a
+     * </pre>
+     *
+     * @param features
+     */
+    public void filterFeatures(List<Feature> features) {
+        // Determine the set of features to remove
+        final Set<Feature> featuresToExclude = new HashSet<>();
+        final Iterator<Feature> it = features.iterator();
+        while (it.hasNext()) {
+            final Feature feature = it.next();
+            if (feature.getName().startsWith("!") && feature.getName().length() > 1) {
+                featuresToExclude.add(new Feature(feature.getName().substring(1), feature.getVersion()));
+                it.remove();
+            }
+        }
+        // Remove all matching features
+        features.removeAll(featuresToExclude);
     }
 
     private static List<Path> getFilesIn(Path folder) throws IOException {

@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -94,6 +94,15 @@ public interface BusinessServiceStateMachine {
      * Updates the states of the Business Services.
      */
     void handleNewOrUpdatedAlarm(AlarmWrapper alarm);
+
+    /**
+     * Updates the states of the Business Services using the given list of alarms.
+     *
+     * The given list of alarms is expected to be the complete set of current alarms,
+     * and any alarms missing from this list will be treated as not being present.
+     *
+     */
+    void handleAllAlarms(List<AlarmWrapper> alarms);
 
     /**
      * Registers a state change handler.

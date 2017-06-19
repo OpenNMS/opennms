@@ -33,9 +33,10 @@ import java.util.HashMap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -118,12 +119,12 @@ public class EvaluateStatsIT {
         builder.withStringAttribute(eth1, "mib2-X-interfaces", "ifHighSpeed", "1000");
         builder.build().visit(persister);
         stats.dumpCache();
-        // The following numbers are associated with how CollectionSetBuilder generates resources and attributes, which doesn't match the actual implementations.
+
         Assert.assertEquals(1, registry.getGauges().get("evaluate.nodes").getValue());
-        Assert.assertEquals(1, registry.getGauges().get("evaluate.resources").getValue());
-        Assert.assertEquals(2, registry.getGauges().get("evaluate.groups").getValue());
-        Assert.assertEquals(4, registry.getGauges().get("evaluate.numeric-attributes").getValue());
-        Assert.assertEquals(1, registry.getGauges().get("evaluate.string-attributes").getValue());
+        Assert.assertEquals(2, registry.getGauges().get("evaluate.resources").getValue());
+        Assert.assertEquals(4, registry.getGauges().get("evaluate.groups").getValue());
+        Assert.assertEquals(8, registry.getGauges().get("evaluate.numeric-attributes").getValue());
+        Assert.assertEquals(2, registry.getGauges().get("evaluate.string-attributes").getValue());
         Assert.assertEquals(8, registry.getMeters().get("evaluate.samples").getCount());
     }
 

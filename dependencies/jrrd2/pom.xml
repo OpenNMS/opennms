@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jrrd2-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JRrd2</name>
+  <name>OpenNMS :: Dependencies :: JRrd2</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

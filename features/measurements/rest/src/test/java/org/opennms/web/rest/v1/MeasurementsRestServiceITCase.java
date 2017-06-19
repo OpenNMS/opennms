@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -76,6 +78,9 @@ public abstract class MeasurementsRestServiceITCase {
     protected MeasurementsRestService m_svc;
 
     @Autowired
+    protected MonitoringLocationDao m_locationDao;
+
+    @Autowired
     protected NodeDao m_nodeDao;
 
     @Rule
@@ -87,9 +92,8 @@ public abstract class MeasurementsRestServiceITCase {
     public void setUp() {
         BeanUtils.assertAutowiring(this);
 
-        OnmsNode node = new OnmsNode();
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         m_nodeDao.flush();
     }
@@ -267,6 +271,33 @@ public abstract class MeasurementsRestServiceITCase {
 
         // Perform the query - this must fail
         m_svc.query(request);
+    }
+
+    @Test
+    public void canRetrieveNoMeasurementsInRelaxedMode() throws Exception {
+        // Enable relaxed mode
+        QueryRequest request = new QueryRequest();
+        request.setRelaxed(true);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        // Query for some attribute that doesn't exist, on an existing resource
+        Source notIfInOctetsAvg = new Source();
+        notIfInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        notIfInOctetsAvg.setAttribute("notIfInOctets");
+        notIfInOctetsAvg.setAggregation("AVERAGE");
+        notIfInOctetsAvg.setLabel("notIfInOctets");
+        request.setSources(Lists.newArrayList(notIfInOctetsAvg));
+
+        // Perform the query
+        try {
+            m_svc.query(request);
+            fail("HTTP 204 exception expected.");
+        } catch (WebApplicationException ex) {
+            assertEquals(204, ex.getResponse().getStatus());
+        }
     }
 
     protected static String findRrdtool() {

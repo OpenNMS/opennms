@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<http-datacollection-config 
+                xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+                rrdRepository="%rrdRepository%" > 
+                <http-collection name="default">
+                   <rrd step="1"> 
+                     <rra>RRA:AVERAGE:0.5:1:8928</rra> 
+                   </rrd> 
+                   <uris>
+                     <uri name="test-document-count">
+                       <url port="10342"  path="/HttpCollector_UnitTest_${ipaddr}.txt"
+                            user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
+                            dotall="true" case-insensitive="true" unicode-case="true"
+                            matches=".*Document Count:\s+([0-9,]+(\.[0-9]*)?).*Document Type:\s+(blah).*Some Number:\s+([0-9,]+).*"
+                            response-range="100-399">
+                       </url>
+                       <attributes>
+                         <attrib alias="documentCount" match-group="1" type="gauge32"/>
+                         <attrib alias="documentType" match-group="3" type="string"/>
+                         <attrib alias="someNumber" match-group="4" type="gauge32"/>
+                       </attributes>
+                     </uri>
+                     <uri name="test-second-uri">
+                       <url port="10342" path="/HttpCollector_UnitTest2_${ipaddr}.txt"
+                            user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
+                            dotall="true"
+                            matches=".*Answer.*everything:\s+([0-9,]+(\.[0-9]*)?).*Favorite interjection:\s+(.00.).*"
+                            response-range="100-399">
+                       </url>
+                       <attributes>
+                         <attrib alias="greatAnswer" match-group="1" type="integer32"/>
+                         <attrib alias="favInterjection" match-group="3" type="string"/>
+                       </attributes>
+                     </uri>
+                   </uris>
+                 </http-collection>
+</http-datacollection-config>

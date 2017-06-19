@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,6 +54,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets" })
 @XmlRootElement(name = "node")
 public class RequisitionNode {
+
+    @XmlAttribute(name = "location")
+    protected String m_location;
 
     @XmlElement(name = "interface")
     protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
@@ -370,6 +374,24 @@ public class RequisitionNode {
     }
 
     /**
+     * <p>Getter for the field <code>location</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * <p>Setter for the field <code>location</code>.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
+    public void setLocation(String value) {
+        m_location = value;
+    }
+
+    /**
      * <p>Getter for the field <code>building</code>.</p>
      *
      * @return a {@link java.lang.String} object.
@@ -497,19 +519,9 @@ public class RequisitionNode {
 
     @Override
     public int hashCode() {
-        final int prime = 17;
-        int result = 1;
-        result = prime * result + ((m_building == null) ? 0 : m_building.hashCode());
-        result = prime * result + ((m_city == null) ? 0 : m_city.hashCode());
-        result = prime * result + ((m_foreignId == null) ? 0 : m_foreignId.hashCode());
-        result = prime * result + ((m_assets == null) ? 0 : m_assets.hashCode());
-        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
-        result = prime * result + ((m_interfaces == null) ? 0 : m_interfaces.hashCode());
-        result = prime * result + ((m_nodeLabel == null) ? 0 : m_nodeLabel.hashCode());
-        result = prime * result + ((m_parentForeignId == null) ? 0 : m_parentForeignId.hashCode());
-        result = prime * result + ((m_parentForeignSource == null) ? 0 : m_parentForeignSource.hashCode());
-        result = prime * result + ((m_parentNodeLabel == null) ? 0 : m_parentNodeLabel.hashCode());
-        return result;
+        return Objects.hash(m_building, m_city, m_foreignId, m_assets,
+                m_categories, m_interfaces, m_nodeLabel, m_nodeLabel,
+                m_parentForeignId, m_parentForeignSource, m_parentNodeLabel, m_location);
     }
 
     @Override
@@ -518,57 +530,17 @@ public class RequisitionNode {
         if (obj == null) return false;
         if (!(obj instanceof RequisitionNode)) return false;
         final RequisitionNode other = (RequisitionNode) obj;
-        if (m_building == null) {
-            if (other.m_building != null) return false;
-        } else if (!m_building.equals(other.m_building)) {
-            return false;
-        }
-        if (m_city == null) {
-            if (other.m_city != null) return false;
-        } else if (!m_city.equals(other.m_city)) {
-            return false;
-        }
-        if (m_foreignId == null) {
-            if (other.m_foreignId != null) return false;
-        } else if (!m_foreignId.equals(other.m_foreignId)) {
-            return false;
-        }
-        if (m_assets == null) {
-            if (other.m_assets != null) return false;
-        } else if (!m_assets.equals(other.m_assets)) {
-            return false;
-        }
-        if (m_categories == null) {
-            if (other.m_categories != null) return false;
-        } else if (!m_categories.equals(other.m_categories)) {
-            return false;
-        }
-        if (m_interfaces == null) {
-            if (other.m_interfaces != null) return false;
-        } else if (!m_interfaces.equals(other.m_interfaces)) {
-            return false;
-        }
-        if (m_nodeLabel == null) {
-            if (other.m_nodeLabel != null) return false;
-        } else if (!m_nodeLabel.equals(other.m_nodeLabel)) {
-            return false;
-        }
-        if (m_parentForeignId == null) {
-            if (other.m_parentForeignId != null) return false;
-        } else if (!m_parentForeignId.equals(other.m_parentForeignId)) {
-            return false;
-        }
-        if (m_parentForeignSource == null) {
-            if (other.m_parentForeignSource != null) return false;
-        } else if (!m_parentForeignSource.equals(other.m_parentForeignSource)) {
-            return false;
-        }
-        if (m_parentNodeLabel == null) {
-            if (other.m_parentNodeLabel != null) return false;
-        } else if (!m_parentNodeLabel.equals(other.m_parentNodeLabel)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.m_building, other.m_building) &&
+                Objects.equals(this.m_city, other.m_city) &&
+                Objects.equals(this.m_foreignId, other.m_foreignId) &&
+                Objects.equals(this.m_assets, other.m_assets) &&
+                Objects.equals(this.m_categories, other.m_categories) &&
+                Objects.equals(this.m_interfaces, other.m_interfaces) &&
+                Objects.equals(this.m_nodeLabel, other.m_nodeLabel) &&
+                Objects.equals(this.m_parentForeignId, other.m_parentForeignId) &&
+                Objects.equals(this.m_parentForeignSource, other.m_parentForeignSource) &&
+                Objects.equals(this.m_parentNodeLabel, other.m_parentNodeLabel) &&
+                Objects.equals(this.m_location, other.m_location);
     }
 
     @Override
@@ -579,7 +551,8 @@ public class RequisitionNode {
                 + ", foreignId=" + m_foreignId + ", nodeLabel=" + m_nodeLabel
                 + ", parentForeignSource=" + m_parentForeignSource
                 + ", parentForeignId=" + m_parentForeignId
-                + ", parentNodeLabel=" + m_parentNodeLabel + "]";
+                + ", parentNodeLabel=" + m_parentNodeLabel
+                + ", location=" + m_location + "]";
     }
 
 }

@@ -31,13 +31,14 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.FileSystemResource;
+
+import junit.framework.TestCase;
 
 /**
  * 
@@ -45,13 +46,13 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class EventconfFactorySaveTest extends TestCase {
-    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+    private static final String knownUEI1="uei.opennms.org/opennmsConfig/eventconf";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     
     private static final String newUEI="uei.opennms.org/custom/addedUEI";
     private static final String newEventLabel="A New Event which is added to the eventconf";
     private static final String newDescr="A slightly longer descriptive bit of text";
-    private static final String newDest="logndisplay";
+    private static final LogDestType newDest=LogDestType.LOGNDISPLAY;
     private static final String newContent="Test message";
     private static final String newSeverity="Warning";
     

@@ -28,61 +28,33 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.BoundingBox;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultLayout implements Layout {
 	
-	private GraphContainer m_graphContainer;
-	
-	private final Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
-
-	public DefaultLayout(GraphContainer graphContainer) {
-		m_graphContainer = graphContainer;
-	}
+	private final Map<VertexRef, Point> m_locations = new HashMap<>();
 
 	@Override
 	public Point getLocation(VertexRef v) {
 		if (v == null) {
 			throw new IllegalArgumentException("Cannot fetch location of null vertex");
 		}
-		// Try to find an existing location
 		Point p = m_locations.get(v);
 		if (p == null) {
-			// If there isn't one, then try to find a neighboring vertex and use it
-			// as the initial location
-			for (Edge edge : m_graphContainer.getGraph().getDisplayEdges()){
-				if (v.equals(edge.getSource().getVertex())) {
-					Point neighbor = m_locations.get(edge.getTarget().getVertex());
-					if (neighbor != null) {
-						return neighbor;
-					}
-				} else if (v.equals(edge.getTarget().getVertex())) {
-					Point neighbor = m_locations.get(edge.getSource().getVertex());
-					if (neighbor != null) {
-						return neighbor;
-					}
-				}
-			}
-			// If there are no neighbors, return the center of the layout
-			//return getBounds().getCenter();
 			return new Point(0, 0);
-		} else {
-			return p;
 		}
+		return p;
 	}
-	
+
 	@Override
 	public Map<VertexRef,Point> getLocations() {
 		return Collections.unmodifiableMap(new HashMap<>(m_locations));
@@ -101,20 +73,22 @@ public class DefaultLayout implements Layout {
 		if (v == null) {
 			throw new IllegalArgumentException("Cannot get initial location of null vertex");
 		}
-		Vertex parent = m_graphContainer.getBaseTopology().getParent(v);
-		return parent == null ? getLocation(v) : getLocation(parent);
+		return getLocation(v);
 	}
-	
-    @Override
+
+	@Override
+	public void updateLocations(Collection<VertexRef> displayVertices) {
+		final Map<VertexRef, Point> collect = m_locations.entrySet().stream()
+				.filter(eachEntry -> displayVertices.contains(eachEntry.getKey()))
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+		m_locations.clear();
+		m_locations.putAll(collect);
+	}
+
+	@Override
     public BoundingBox getBounds() {
-        Collection<? extends Vertex> vertices = m_graphContainer.getGraph().getDisplayVertices();
-        if(vertices.size() > 0) {
-            Collection<VertexRef> vRefs = new ArrayList<>();
-            for(Vertex v : vertices) {
-                vRefs.add(v);
-            }
-        
-            return computeBoundingBox(vRefs);
+        if(m_locations.size() > 0) {
+            return computeBoundingBox(m_locations.keySet());
         } else {
             BoundingBox bBox = new BoundingBox();
             bBox.addPoint(new Point(0, 0));
@@ -134,10 +108,8 @@ public class DefaultLayout implements Layout {
                 boundingBox.addBoundingbox( computeBoundingBox(this, vertRef) );
             }
             return boundingBox;
-        }else {
+        } else {
             return getBounds();
         }
-        
     }
-
 }

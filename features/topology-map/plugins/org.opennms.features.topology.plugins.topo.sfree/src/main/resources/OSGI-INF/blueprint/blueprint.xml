@@ -8,33 +8,15 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
 					http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
 
-    <bean id="sfreeMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+    <bean id="sfreeTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="SFree Topology Provider"/>
         <property name="description" value="This Topology Provider implements the graphing algorithms Erdos-Reniy and Barabasi-Albert."/>
     </bean>
 
    <bean id="sfreeTopologyProvider"  class="org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider">
-       <property name="metaInfo" ref="sfreeMetaInfo"/>
+       <property name="topologyProviderInfo" ref="sfreeTopologyProviderInfo"/>
    </bean>
     
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="sfreeTopologyProvider">
-        <service-properties>
-            <entry key="label" value="ScaleFree"/>
-        </service-properties>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="sfreeTopologyProvider">
-        <service-properties>
-            <entry key="label" value="ScaleFree"/>
-        </service-properties>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="sfreeTopologyProvider">
-      	<service-properties>
-            <entry key="label" value="ScaleFree"/>
-        </service-properties>
-    </service>
-        
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -55,7 +37,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service>
         <interfaces>
-            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
             <value>org.osgi.service.cm.ManagedService</value>
         </interfaces>
         <service-properties>

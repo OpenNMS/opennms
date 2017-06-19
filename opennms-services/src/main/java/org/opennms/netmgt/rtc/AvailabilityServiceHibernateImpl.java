@@ -135,7 +135,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 
         // category specifics
         final List<Integer> nodeIds = getNodes(category);
-        final List<String> serviceNames = category.getServiceCollection();
+        final List<String> serviceNames = category.getServices();
 
         // retrieve the outages associated with the given nodes, only retrieving those that affect our window
         final Map<Integer, List<OnmsOutage>> outagesByNode = getOutages(nodeIds, serviceNames, windowStart, windowEnd);
@@ -171,7 +171,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
             levelNode.setNodesvcdowncount(numServicesDown);
 
             // add the node
-            levelCat.addNode(levelNode);
+            levelCat.getNode().add(levelNode);
 
             // update the category statistics
             numServicesInCategory += numServices;
@@ -182,7 +182,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         levelCat.setCatvalue(RTCUtils.getOutagePercentage(outageTimeInCategory, rWindow, numServicesInCategory));
 
         // add category
-        level.addCategory(levelCat);
+        level.getCategory().add(levelCat);
 
         LOG.debug("Done retrieving availability statistics for {} with {} services.", category.getLabel(), numServicesInCategory);
 

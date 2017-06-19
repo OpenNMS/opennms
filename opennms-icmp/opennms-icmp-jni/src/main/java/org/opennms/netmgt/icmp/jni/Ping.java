@@ -69,7 +69,7 @@ public abstract class Ping {
                     if (reply.isEchoReply()
                         && reply.getThreadId() == m_icmpId) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
-                        System.out.println(ICMPEchoPacket.getNetworkSize()
+                        System.out.println(pkt.getData().length
                                            + " bytes from "
                                            + InetAddressUtils.str(pkt.getAddress())
                                            + ": icmp_seq="
@@ -100,10 +100,12 @@ public abstract class Ping {
     
         String host = argv[0];
     
+        short m_icmpId = 2;
+        
         IcmpSocket m_socket = null;
     
         try {
-            m_socket = new IcmpSocket();
+            m_socket = new IcmpSocket(m_icmpId);
     } catch (UnsatisfiedLinkError e) {
             System.err.println("UnsatisfiedLinkError while creating an "
                                + "IcmpSocket.  Most likely failed to load "
@@ -138,8 +140,6 @@ public abstract class Ping {
         }
     
         System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
-    
-    short m_icmpId = 2;
     
         Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
         Thread t = new Thread(s, Ping.class.getSimpleName());

@@ -34,10 +34,10 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.util.Date;
 import java.util.stream.StreamSupport;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -49,7 +49,6 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -75,7 +74,9 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DiscoveryIntegrationIT implements InitializingBean {
+public class DiscoveryIntegrationIT {
+
+    private static final String CUSTOM_LOCATION = "my-custom-location";
 
     @Autowired
     private Discovery m_discovery;
@@ -89,14 +90,12 @@ public class DiscoveryIntegrationIT implements InitializingBean {
     @Autowired
     private DiscoveryTaskExecutor m_taskExecutor;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "INFO");
+
+        // Replace the default event forwarder with our mock
+        m_discovery.setEventForwarder(m_eventIpcManager);
     }
 
     @Test
@@ -105,21 +104,19 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         IncludeRange range = new IncludeRange();
         range.setBegin("127.0.5.1");
         range.setEnd("127.0.5.254");
-        range.setTimeout(5000);
+        range.setTimeout(5000l);
         range.setRetries(0);
+        range.setLocation(CUSTOM_LOCATION);
 
         DiscoveryConfiguration config = m_discoveryConfig.getConfiguration();
         // Start immediately
-        // TODO: This doesn't work because the value gets filled in when the
-        // Spring context is parsed, not after the Camel context is started
-        // because it is a property placeholder.
-        config.setInitialSleepTime(0);
+        config.setInitialSleepTime(0l);
 
         // Discover 255 address ~= 10 seconds
         config.setPacketsPerSecond(25.5);
 
         // Add a discovery range to the config
-        config.removeAllIncludeRange();
+        config.clearIncludeRanges();
         config.addIncludeRange(range);
 
         // Don't actually save the config or we'll overwrite the 
@@ -141,13 +138,14 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         // DiscoveryConfigFactory and erase our changes to 
         // the config
         //m_discovery.init();
-
         m_discovery.start();
 
-        // TODO: We need to wait more than 30 seconds to account for the discovery
-        // startup delay
         anticipator.waitForAnticipated(120000);
         anticipator.verifyAnticipated();
+        anticipator.getAnticipatedEventsReceived().stream().forEach(eachEvent -> {
+            Assert.assertNotNull(eachEvent.getParm("location"));
+            Assert.assertEquals(CUSTOM_LOCATION, eachEvent.getParm("location").getValue().getContent());
+        });
 
         m_discovery.stop();
     }
@@ -160,14 +158,14 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         //range.setEnd("127.0.5.254");
         range.setBegin("192.168.99.1");
         range.setEnd("192.168.99.100");
-        range.setTimeout(5000);
+        range.setTimeout(5000l);
         range.setRetries(0);
 
         DiscoveryConfiguration config = new DiscoveryConfiguration();
-        config.setInitialSleepTime(0);
+        config.setInitialSleepTime(0l);
         // 100 addresses at 10 per second should take at least 10 seconds
-        config.setPacketsPerSecond(10);
-        config.removeAllIncludeRange();
+        config.setPacketsPerSecond(10d);
+        config.clearIncludeRanges();
         config.addIncludeRange(range);
 
         // Anticipate newSuspect events for all of the addresses
@@ -180,22 +178,16 @@ public class DiscoveryIntegrationIT implements InitializingBean {
             anticipator.anticipateEvent(event);
         });
 
-        m_discovery.start();
-
         Date beforeTime = new Date();
         // Invoke a one-time scan via the DiscoveryTaskExecutor service
         m_taskExecutor.handleDiscoveryTask(config);
         Date afterTime = new Date();
-        // Make sure that this call returns quickly as an async InOnly call
+        // Make sure that this call returns quickly as an async. call
         long timespan = (afterTime.getTime() - beforeTime.getTime());
         System.out.println("Task executor invocation took " + timespan + "ms");
         assertTrue("Timespan was not less than 8 seconds: " + timespan, timespan < 8000L);
 
-        // TODO: We need to wait more than 30 seconds to account for the discovery
-        // startup delay
         anticipator.waitForAnticipated(60000);
         anticipator.verifyAnticipated();
-
-        m_discovery.stop();
     }
 }

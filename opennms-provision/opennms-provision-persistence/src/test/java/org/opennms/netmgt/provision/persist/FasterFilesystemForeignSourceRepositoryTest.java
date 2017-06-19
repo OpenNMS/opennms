@@ -49,7 +49,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:org/opennms/netmgt/provision/persist/emptyContext.xml")
+@ContextConfiguration(locations="classpath:/org/opennms/netmgt/provision/persist/emptyContext.xml")
 public class FasterFilesystemForeignSourceRepositoryTest {
 
     @Test

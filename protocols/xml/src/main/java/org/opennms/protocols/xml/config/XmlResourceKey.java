@@ -47,7 +47,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @XmlRootElement(name="resource-key")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> {
+public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey>, Cloneable {
 
 
     /** The Constant serialVersionUID. */
@@ -60,8 +60,10 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> 
     /**
      * Instantiates a new XML object.
      */
-    public XmlResourceKey() {
-        super();
+    public XmlResourceKey() { }
+
+    public XmlResourceKey(XmlResourceKey copy) {
+        m_keyXpathList.addAll(copy.m_keyXpathList);
     }
 
     /**
@@ -122,5 +124,10 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> 
             .isEquals();
         }
         return false;
+    }
+
+    @Override
+    public XmlResourceKey clone() {
+        return new XmlResourceKey(this);
     }
 }

@@ -5,7 +5,7 @@
 [[ga-notifications-concepts]]
 === Concepts
 
-_Notifications_ are how {opennms-product-name} informs users about an event that happened in the network, without the users having to log in and look at the UI.
+_Notifications_ are how _{opennms-product-name}_ informs users about an event that happened in the network, without the users having to log in and look at the UI.
 The core concepts required to understand notifications are:
 
 * Events and UEIs
@@ -19,7 +19,7 @@ Also related, but presently only loosely coupled to notifications, are _Alarms_ 
 
 ==== Events and UEIs
 
-As discussed in the chapter on <<ga-events>>, events are central to the operation of {opennms-product-name}.
+As discussed in the chapter on <<ga-events>>, events are central to the operation of _{opennms-product-name}_.
 Almost everything that happens in the system is the result of, or the cause of, one or more events; Every notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 
@@ -29,16 +29,51 @@ Most notifications are triggered by an exact UEI match (though they may also be 
 
 ==== Users, Groups, and On-Call Roles
 
-_Users_ are entities with login accounts in the {opennms-product-name} system.
+_Users_ are entities with login accounts in the _{opennms-product-name}_ system.
 Ideally each user corresponds to a person.
 They are used to control access to the web UI, but also carry contact information (e-mail addresses, phone numbers, etc.) for the people they represent.
 A user may receive a notification either individually or as part of a _Group_ or _On-Call Role_.
 Each user has several technology-specific contact fields, which must be filled if the user is to receive notifications by the associated method.
 
 _Groups_ are lists of users.
+In large systems with many users it is helpful to organize them into _Groups_.
 A group may receive a notification, which is often a more convenient way to operate than on individual user.
+_Groups_ allow to assign a set of users to _On Call Roles_ to build more complex notification workflows.
 
-_On-Call Roles_ are an overlay on top of groups, designed to enable {opennms-product-name} to target the appropriate user or users according to a calendar configuration.
+.How to create or modify membership of _Users_ in a _Group_
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Groups*
+. Create a new *Group* with *Add new group* or modify an existing *Group* by clicking the *Modify* icon next to the *Group*
+. Select *User* from *Available Users* and use the *>>* to add them to the *Currently in Group* or select the users in the *Currently in Group* list and use *<<* to remove them from the list.
+. Click *Finish* to persist and apply the changes
+
+NOTE: The order of the _Users_ in the group is relevant and is used as the order for _Notifications_ when this group is used as _Target_ in a _Destination Path_.
+
+.How to delete a _Group_
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Groups*
+. Use the trash bin icon next to the _Group_ to delete
+. Confirm delete request with *OK*
+
+_On-Call Roles_ are an overlay on top of groups, designed to enable _{opennms-product-name}_ to target the appropriate user or users according to a calendar configuration.
+A common use case is to have System Engineers in _On-Call_ rotations with a given schedule.
+The _On-Call Roles_ allow to assign a predefined _Duty Schedule_ to an existing _Group_ with _Users_.
+For each _On-Call Role_ a _User_ is assigned as a _Supervisor_ to be responsible for the group of people in this _On-Call Role_.
+
+.How to assign a _Group_ to an _On-Call Role_
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure On-Call Roles*
+. Use *Add New On-Call Role* and set a *Name* for this _On-Call Role_, assign an existing *Group* and give a meaningful description
+. Click *Save* to persist
+. Define a _Duty Schedule_ in the calendar for the given date by click on the *Plus (+)* icon of the day and provide a notification time for a specific _User_ from the associated _Group_
+. Click *Save* to persist the _Schedule_
+. Click *Done* to apply the changes
 
 ==== Duty Schedules
 
@@ -59,7 +94,7 @@ Each step in a destination path has an associated delay which defaults to zero s
 Each step has one or more _targets_.
 A target may be a user, a group, an on-call role, or a one-off e-mail address.
 
-NOTE: While it may be tempting to use one-off e-mail addresses any time an individual user is to be targeted, it's a good idea to reserve one-off e-mail addresses for special cases. 
+NOTE: While it may be tempting to use one-off e-mail addresses any time an individual user is to be targeted, it's a good idea to reserve one-off e-mail addresses for special cases.
 If a user changes her e-mail address, for instance, you'll need to update in every destination path where it appears.
 The use of one-off e-mail addresses is meant for situations where a vendor or other external entity is assisting with troubleshooting in the short term.
 
@@ -110,6 +145,6 @@ The following notification commands are included in the default configuration:
 
 Notification commands are customizable and extensible by editing the `notificationCommands.xml` file.
 
-NOTE: Use external binary notification commands sparingly to avoid fork-bombing your {opennms-product-name} system.
+NOTE: Use external binary notification commands sparingly to avoid fork-bombing your _{opennms-product-name}_ system.
 Originally, all notification commands were external.
-Today only the `numericPage` and `textPage` commands use external programs to do their work. 
+Today only the `numericPage` and `textPage` commands use external programs to do their work.

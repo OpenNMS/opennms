@@ -31,51 +31,10 @@
     border-collapse: collapse;
 }
 
-.toolbar-button{
-	
-}
-
-.v-toolbar-button .v-button-wrap{
-    padding: 4px 4px 0 1px;
-}
-
-/**
- * SPC-506: Get rid of P tag margins to tighten up tooltip display
- */
-.v-tooltip P {
-    margin: 0px;
-}
-
-/**
-* Button Styles
-*/
-div.v-button.v-button-toolbar-button.toolbar-button > span {
-	padding: 4px 4px 0 1px;
-}
-
-div.v-button-down{
-	background-image: url(../reindeer/button/img/button-sprites.png);
-	background-position: left -208px;
-}
-
-div.v-button-down .v-button-wrap{
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: 100% -234px;
-    background-image: url(../reindeer/button/img/button-sprites.png);
-}
-
 div.v-table-header-wrap {
     text-transform: none;
 }
 
-.semantic-zoom-button .v-button-wrap{
-	padding: 7px 4px 0 1px;
-}
-
-.v-slot-slider-tool{
-    padding: 0px 0 2px 6px;
-}
 /**
 * End Button styles
 */
@@ -140,17 +99,37 @@ div.v-table-header-wrap {
     stroke:#CC0000;
 }
 
-.map-controls {
+.map-layout {
+    overflow: hidden;
+}
+
+.map-content {
 	background-color: #ffffff;
 	border-left: 1px solid #dddddd;
     width: 100%;
     height: 100%;
 }
 
+/** Ionicons */
+.v-icon.Ionicons {
+    font-family: Ionicons;
+}
 
 /** Vertex Styles **/
 .vertex .icon-container {
     pointer-events: none;
+}
+
+.vertex .navigate-to {
+    opacity: 1;
+    fill: black;
+}
+
+.vertex .navigate-to .text {
+    font-family: Ionicons;
+    font-size: 10px;
+    fill: #505154;
+    stroke: white;
 }
 
 .vertex-label {
@@ -285,6 +264,26 @@ div.v-table-header-wrap {
     padding-right: 5px;
     max-width: 180px;
     word-wrap: break-word;
+}
+
+.search-token-ctrls .icon-remove:before  {
+    font-family: FontAwesome;
+    content: "\f00d";
+}
+
+.search-token-ctrls .icon-location-arrow:before  {
+    font-family: FontAwesome;
+    content: "\f124";
+}
+
+.search-token-ctrls .icon-minus:before {
+    content:"\f068";
+    font-family: FontAwesome;
+}
+
+.search-token-ctrls .icon-plus:before {
+    content:"\f067";
+    font-family: FontAwesome;
 }
 
 .gwt-SuggestBox {
@@ -441,7 +440,9 @@ div.v-table-header-wrap {
 
 .info-panel-component {
     background-color: #f9f9f9;
-    border: 1px solid black;
+    height: 100%;
+    max-width: 350px;
+    overflow-y: auto;
 }
 
 .info-panel-item {
@@ -459,15 +460,15 @@ div.v-table-header-wrap {
 }
 
 /** Simulation Info Panel Styling */
-.info-panel-area .v-slot-simulation .v-slot-warning {
+.info-panel-component .v-slot-simulation .v-slot-warning {
     color: orange;
 }
 
-.info-panel-area .v-slot-simulation .v-slot-warning .v-caption-warning {
+.info-panel-component .v-slot-simulation .v-slot-warning .v-caption-warning {
     display: inline;
 }
 
-.info-panel-area .v-slot-simulation .v-label-warning {
+.info-panel-component .v-slot-simulation .v-label-warning {
     vertical-align: top;
     padding-left: 8px;
 }
@@ -476,4 +477,59 @@ div.v-table-header-wrap {
 .threshold .v-table-cell-content-selected {
     background-color: #B2DFFF;
     /*color: white;*/
+}
+
+/** Toolbar */
+.toolbar {
+    background-color: #f9f9f9;
+    height: 100%;
+    max-width: 250px;
+    overflow-y: auto;
+    z-index: 10000;
+    border-left: 1px solid #323336;
+}
+
+.toolbar .layout.selected {
+    background-color: #4d9c29;
+    color: #fff;
+}
+
+.toolbar .layout:hover {
+    cursor: pointer;
+}
+
+.toolbar .toolbar-component {
+    position: absolute;
+    width: 50px;
+    right: 100%;
+    top: 25px;
+}
+
+.toolbar .toolbar-component-group {
+    width: 50px;
+    background-color: #323336;
+    color: #d1d3d6;
+    border-radius: 8px 0 0 8px;
+    margin: 8px;
+}
+
+.toolbar .toolbar-group-item {
+    border-style: none;
+    background-image: none !important;
+    text-align: center;
+    padding: 8px;
+    width: 100%;
+    height: 100%;
+    font-size: 150%;
+}
+
+.toolbar .toolbar-group-item.selected,
+.toolbar .toolbar-group-item.selected:hover {
+    background-color: #4d9c29;
+    color: #fff;
+}
+
+.toolbar .toolbar-group-item:hover {
+    color: #4d9c29;
+    cursor: pointer;
 }

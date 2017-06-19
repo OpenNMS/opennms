@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -151,6 +153,21 @@ public abstract class AbstractSpringJerseyRestTestCase {
                     @Override
                     public int read() throws IOException {
                         return -1;
+                    }
+
+                    @Override
+                    public boolean isFinished() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isReady() {
+                        return false;
+                    }
+
+                    @Override
+                    public void setReadListener(ReadListener readListener) {
+                        // pass
                     }
                 };
             } else {
@@ -324,8 +341,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
             assertNotNull("Location header is null", header);
-            final String location = URLDecoder.decode(header.toString(), "UTF-8");
-            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
+            final String location = URLDecoder.decode(header.toString(), StandardCharsets.UTF_8.name());
+            final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, StandardCharsets.UTF_8.name());
             assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
         }
         return response;
@@ -411,7 +428,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         for (String item : data.split("&")) {
             int idx = item.indexOf("=");
             if (idx > 0) {
-                retVal.put(URLDecoder.decode(item.substring(0, idx), "UTF-8"), URLDecoder.decode(item.substring(idx + 1), "UTF-8"));
+                retVal.put(URLDecoder.decode(item.substring(0, idx), StandardCharsets.UTF_8.name()), URLDecoder.decode(item.substring(idx + 1), StandardCharsets.UTF_8.name()));
             }
         }
         return retVal;
@@ -448,7 +465,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                     }
 
                     for (final String valueEntry : valueEntries) {
-                        sb.append(URLEncoder.encode((String)key, "UTF-8")).append("=").append(URLEncoder.encode((String)valueEntry, "UTF-8")).append("&");
+                        sb.append(URLEncoder.encode((String)key, StandardCharsets.UTF_8.name())).append("=").append(URLEncoder.encode((String)valueEntry, StandardCharsets.UTF_8.name())).append("&");
                     }
                 } else {
                     LOG.warn("key was not a string! ({})", key);
@@ -545,6 +562,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected void createNode(int statusCode) throws Exception {
         String node = "<node type=\"A\" label=\"TestMachine" + nodeCounter + "\">" +
+                "<location>Default</location>" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
                 "<sysDescription>" +

@@ -45,7 +45,7 @@ import com.sun.jna.Platform;
 public class Dumper {
     
     public void dump() throws Exception {
-        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, AbstractPinger.getSocketType(), NativeDatagramSocket.IPPROTO_ICMPV6);
+        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
         
         if (Platform.isWindows()) {
             ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);

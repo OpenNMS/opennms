@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnPartnerReject</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapTConnPartnerReject</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a transport connection
+            is rejected by a partner DLSw during Capabilities
+            Exchanges. The emission of this trap is controlled
+            by dlswTrapCntlTConnPartnerReject.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperTDomain&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Rejected by Partner:
+            %parm[#2]%.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnProtViolation</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapTConnProtViolation</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a protocol violation is
+            detected for a transport connection. The emission of this
+            trap is controlled by dlswTrapCntlTConnProtViolation.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperTDomain&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Protocol Violation.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnUp</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapTConnUp</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a transport connection
+            enters `connected' state. The emission of this trap
+            is controlled by dlswTrapCntlTConn.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperTDomain&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Up.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true"
+                    clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapTConnDown</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a transport connection
+            enters `disconnected' state. The emission of this trap
+            is controlled by dlswTrapCntlTConn.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperTDomain&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Down.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapCircuitUp</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapCircuitUp</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a circuit enters `connected'
+            state. The emission of this trap is controlled by
+            dlswTrapCntlCircuit.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS1Mac&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS1Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS2Mac&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Up.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2"
+                    auto-clean="true"
+                    clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapcircuitDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    </event>
+
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.2.1.46.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/IETF/DLSW/traps/dlswTrapCircuitDown</uei>
+        <event-label>DLSW-MIB defined trap event: dlswTrapCircuitDown</event-label>
+        <descr>&lt;p&gt;This trap is sent each time a circuit enters `disconnected'
+            state. The emission of this trap is controlled by
+            dlswTrapCntlCircuit.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS1Mac&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS1Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS2Mac&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+            &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Down.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1"
+                    auto-clean="true"/>
+    </event>
+</events>

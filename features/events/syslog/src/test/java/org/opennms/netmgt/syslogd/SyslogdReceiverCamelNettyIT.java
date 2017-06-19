@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,72 +28,167 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.util.Dictionary;
-import java.util.Map;
-import java.util.Properties;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
-import org.apache.camel.util.KeyValueHolder;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
+import org.mockito.Mockito;
+import org.opennms.core.ipc.sink.common.ThreadLockingDispatcherFactory;
+import org.opennms.core.ipc.sink.common.ThreadLockingSyncDispatcher;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.syslogd.api.SyslogConnection;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class SyslogdReceiverCamelNettyIT extends CamelBlueprintTestSupport {
+import com.google.common.util.concurrent.RateLimiter;
 
-	private static final Logger LOG = LoggerFactory.getLogger(SyslogdReceiverCamelNettyIT.class);
+import io.netty.util.ResourceLeakDetector;
 
-	/**
-	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-	 * 
-	 * @see https://issues.apache.org/jira/browse/ARIES-1051
-	 * @see https://access.redhat.com/site/solutions/640943
-	 */
-	@Override
-	public void doPreSetup() throws Exception {
-		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
-		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
-	}
+public class SyslogdReceiverCamelNettyIT {
 
-	@Override
-	public boolean isUseAdviceWith() {
-		return true;
-	}
+    public static final String NETTY_LEAK_DETECTION_LEVEL = "io.netty.leakDetectionLevel";
 
-	@Override
-	public boolean isUseDebugger() {
-		// must enable debugger
-		return true;
-	}
+    private static String s_oldLeakLevel;
 
-	@Override
-	public String isMockEndpoints() {
-		return "*";
-	}
+    @BeforeClass
+    public static void setSerializablePackages() {
+        s_oldLeakLevel = System.getProperty(NETTY_LEAK_DETECTION_LEVEL);
+        System.setProperty(NETTY_LEAK_DETECTION_LEVEL, ResourceLeakDetector.Level.PARANOID.toString());
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
-		services.put(SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandler() {
-			@Override
-			public void handleSyslogConnection(SyslogConnection message) {
-			}
-		}, new Properties()));
-	}
+    @AfterClass
+    public static void resetSerializablePackages() {
+        if (s_oldLeakLevel == null) {
+            System.clearProperty(NETTY_LEAK_DETECTION_LEVEL);
+        } else {
+            System.setProperty(NETTY_LEAK_DETECTION_LEVEL, s_oldLeakLevel);
+        }
+    }
 
-	// The location of our Blueprint XML files to be used for testing
-	@Override
-	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-listener-camel-netty.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
-	}
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+    }
 
-	@Test
-	public void testSyslogd() throws Exception {
-		// TODO: Perform integration testing
-	}
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
+    }
+
+    @Test(timeout=3 * 60 * 1000)
+    public void testParallelismAndQueueing() throws UnknownHostException, InterruptedException, ExecutionException {
+        final int NUM_GENERATORS = 3;
+        final double MESSAGE_RATE_PER_GENERATOR = 1000.0;
+        final int NUM_CONSUMER_THREADS = 8;
+        final int MESSAGE_QUEUE_SIZE = 529;
+
+        ThreadLockingDispatcherFactory<SyslogConnection> threadLockingDispatcherFactory = new ThreadLockingDispatcherFactory<>();
+        ThreadLockingSyncDispatcher<SyslogConnection> syncDispatcher = threadLockingDispatcherFactory.getThreadLockingSyncDispatcher();
+        CompletableFuture<Integer> future = syncDispatcher.waitForThreads(NUM_CONSUMER_THREADS);
+
+        SyslogdConfig syslogdConfig = mock(SyslogdConfig.class);
+        when(syslogdConfig.getSyslogPort()).thenReturn(SyslogClient.PORT);
+        when(syslogdConfig.getNumThreads()).thenReturn(NUM_CONSUMER_THREADS);
+        when(syslogdConfig.getQueueSize()).thenReturn(MESSAGE_QUEUE_SIZE);
+
+        DistPollerDao distPollerDao = mock(DistPollerDao.class, Mockito.RETURNS_DEEP_STUBS);
+        when(distPollerDao.whoami().getId()).thenReturn("");
+        when(distPollerDao.whoami().getLocation()).thenReturn("");
+
+        SyslogReceiverCamelNettyImpl syslogReceiver = new SyslogReceiverCamelNettyImpl(syslogdConfig);
+        syslogReceiver.setMessageDispatcherFactory(threadLockingDispatcherFactory);
+        syslogReceiver.setDistPollerDao(distPollerDao);
+        syslogReceiver.run();
+
+        // Fire up the syslog generators
+        List<SyslogGenerator> generators = new ArrayList<>(NUM_GENERATORS);
+        for (int k = 0; k < NUM_GENERATORS; k++) {
+            SyslogGenerator generator = new SyslogGenerator(addr("127.0.0.1"), k, MESSAGE_RATE_PER_GENERATOR);
+            generator.start();
+            generators.add(generator);
+        }
+
+        // Wait until we have NUM_CONSUMER_THREADS locked
+        future.get();
+
+        // Now all of the threads are locked, and the queue is full
+        // Let's continue generating traffic for a few seconds
+        Thread.sleep(SECONDS.toMillis(10));
+
+        // Verify that there aren't more than NUM_CONSUMER_THREADS waiting
+        assertEquals(0, syncDispatcher.getNumExtraThreadsWaiting());
+
+        // Release the producer threads
+        syncDispatcher.release();
+
+        // Stop the receiver
+        syslogReceiver.stop();
+
+        // Stop the generators
+        for (int k = 0; k < NUM_GENERATORS; k++) {
+            generators.get(k).stop();
+        }
+    }
+
+    /**
+     * Used to generate and sends syslog messages at a given rate.
+     *
+     * @author jwhite
+     */
+    public static class SyslogGenerator {
+        Thread thread;
+        
+        final InetAddress targetHost;
+        final double rate;
+        final int id;
+        final AtomicBoolean stopped = new AtomicBoolean(false);
+
+        public SyslogGenerator(InetAddress targetHost, int id, double rate) {
+            this.targetHost = targetHost;
+            this.id = id;
+            this.rate = rate;
+        }
+
+        public synchronized void start() {
+            stopped.set(false);
+            final RateLimiter rateLimiter = RateLimiter.create(rate);
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final String testPduFormat = "2016-12-08 localhost gen%d: load test %d on tty1";
+                    final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG, targetHost);
+                    int k = 0;
+                    while(!stopped.get()) {
+                        k++;
+                        rateLimiter.acquire();
+                        sc.syslog(SyslogClient.LOG_DEBUG, String.format(testPduFormat, id, k));
+                    }
+                }
+            });
+            thread.start();
+        }
+
+        public synchronized void stop() throws InterruptedException {
+            stopped.set(true);
+            if (thread != null) {
+                thread.join();
+                thread = null;
+            }
+        }
+    }
 }

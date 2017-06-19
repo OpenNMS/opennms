@@ -6,8 +6,10 @@
 export DH_VERBOSE=1
 export SHELL=/bin/bash
 
-# Maven requires JAVA_HOME to be set properly
-export JAVA_HOME=$(shell debian/getjava)
+export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 1.8.9999)
+
+export OPTS_ASSEMBLIES=-Passemblies
+export OPTS_PROFILES=-Prun-expensive-tasks
 
 export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
@@ -26,7 +28,7 @@ export BUILDDEFINES=\
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
-	-Prun-expensive-tasks
+	$(OPTS_PROFILES)
 
 configure:
 
@@ -39,33 +41,33 @@ $(STAMP_BUILD):
 		echo "using $$OPENNMS_SETTINGS_XML"; \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./compile.pl -DupdatePolicy=always -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install && \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	else \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./compile.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -Denable.snapshots=true -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			else \
-				./compile.pl -Dbuild=all -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+				./compile.pl -DupdatePolicy=always -Duser.home=$(HOME) $(BUILDDEFINES) install && \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			fi; \
 		else \
 			if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then \
-				./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
+				./assemble.pl -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			else \
-				./assemble.pl -Dbuild=all -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
+				./assemble.pl -DupdatePolicy=always -Dbuild.profile=fulldir $(BUILDDEFINES) install; \
 			fi; \
 		fi; \
 	fi
@@ -76,8 +78,7 @@ $(STAMP_BUILD):
 clean:
 	dh_testdir
 	dh_testroot
-	./compile.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
-	./assemble.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./compile.pl $(OPTS_PROFILES) $(OPTS_ASSEMBLIES) -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
@@ -104,10 +105,11 @@ install: build
 	##
 	## Setup the provision adapter packages
 	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,reverse-dns,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/etc/opennms
 	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/var/lib/opennms/etc-pristine
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
@@ -122,13 +124,11 @@ install: build
 	##
 	## Setup the protocol packages
 	##
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/usr/share/opennms/contrib
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/etc-pristine
-	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
-	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/xml-datacollection
-	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/{datacollection,xml-datacollection,snmp-graph.properties.d}
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/usr/share/opennms/contrib
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xmp}/var/lib/opennms/xsds
 	
 	# Setup Juniper TCA collector
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/usr/share/java/opennms
@@ -175,17 +175,6 @@ install: build
 	mv debian/temp/lib/gnu-crypto*.jar                                                         debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
 	mv debian/temp/lib/*radius*.jar                                                            debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
 	
-	# XML
-	install -d -m 755 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/xml-datacollection
-	mv debian/temp/lib/org.opennms.protocols.xml-*.jar                                         debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
-	mv debian/temp/etc/xml-datacollection-config.xml                                           debian/opennms-plugin-protocol-xml/etc/opennms/
-	mv debian/temp/etc/examples/3gpp-juniper/xml-datacollection-config.xml                     debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/
-	mv debian/temp/etc/examples/3gpp-juniper/datacollection/3gpp*                              debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/datacollection/
-	mv debian/temp/etc/examples/3gpp-juniper/xml-datacollection/3gpp*                          debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/xml-datacollection/
-	mv debian/temp/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*                     debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/snmp-graph.properties.d/
-	mv debian/temp/contrib/xml-collector/3gpp*                                                 debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection-config.xml        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/
-	
 	# VTD-XML
 	install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
 	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
@@ -227,11 +216,11 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
 	
 	# NCS
-	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/
+	mv debian/temp/lib/org.opennms.features.ncs.ncs-*.jar                                      debian/opennms-ncs/usr/share/java/opennms/
 	mv debian/temp/etc/drools-engine.d/ncs                                                     debian/opennms-ncs/etc/opennms/drools-engine.d/
 	mv debian/temp/etc/ncs-northbounder-configuration.xml                                      debian/opennms-ncs/etc/opennms/
 	mv debian/temp/share/xsds/ncs-*.xsd                                                        debian/opennms-ncs/var/lib/opennms/xsds/
-	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/ncs-*.jar                                 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
+	mv debian/temp/jetty-webapps/opennms/WEB-INF/lib/org.opennms.features.ncs.ncs-*.jar        debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/ncs*.xml                                      debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/alarm/ncs-*                               debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm/
 	mv debian/temp/jetty-webapps/opennms/WEB-INF/jsp/ncs                                       debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/
@@ -284,7 +273,6 @@ install: build
 	chmod 640 \
 		debian/opennms-common/etc/opennms/users.xml \
 		debian/opennms-common/etc/opennms/groups.xml \
-		debian/opennms-common/etc/opennms/magic-users.properties \
 		debian/opennms-common/etc/opennms/opennms.properties \
 		debian/opennms-common/etc/opennms/opennms-datasources.xml \
 		debian/opennms-common/etc/opennms/snmp-config.xml
@@ -316,14 +304,28 @@ install: build
 	rm -rf debian/temp/contrib/remote-poller
 
 	##
+	## Setup the opennms-source package
+	##
+	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
+	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/usr/share/opennms/jetty-webapps/opennms/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting,ROOT}
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,ROOT}
 	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
-	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
 	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
+	## Setup the opennms-webapp-remoting package
+	##
+	install -m 644 debian/opennms-webapp-remoting.overrides debian/opennms-webapp-remoting/usr/share/lintian/overrides/opennms-webapp-remoting
+	install -d -m 755 debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting
+	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting/
+	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-doc package

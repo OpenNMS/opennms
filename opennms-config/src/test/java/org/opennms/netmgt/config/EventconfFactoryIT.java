@@ -55,12 +55,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -71,6 +70,8 @@ import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -85,8 +86,8 @@ import org.springframework.util.StringUtils;
 public class EventconfFactoryIT {
     private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryIT.class);
 
-    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-    private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
+    private static final String knownUEI1="uei.opennms.org/nodes/nodeDown";
+    private static final String knownLabel1="OpenNMS-defined node event: nodeDown";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
@@ -137,7 +138,12 @@ public class EventconfFactoryIT {
     public void testFindByEventUeiKnown1000Times() throws Exception {
     	
     	final int ATTEMPTS = 10000;
-    	
+
+        // knownUEI1 is currently set to 'uei.opennms.org/internal/capsd/snmpConflictsWithDb'
+        // and is defined in the root of the eventconf that is loaded bellow.
+        // Prior to this commit, this test would produce very different results
+        // when running against another UEI i.e. 'uei.opennms.org/default/event'
+        // that happens to be the last event defined in the last included file
         EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
 
     	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
@@ -427,10 +433,11 @@ public class EventconfFactoryIT {
         data.setReductionKey("reduceme");
         event.setAlarmData(data);
         
-        int i = event.getAlarmData().getAlarmType();
+        final AlarmData alarmData = event.getAlarmData();
+        int i = alarmData.getAlarmType();
         assertEquals(2, i);
-        assertTrue("uei.opennms.org.testUei:localhost:1".equals(event.getAlarmData().getClearKey()));
-        assertTrue("reduceme".equals(event.getAlarmData().getReductionKey()));
+        assertTrue("uei.opennms.org.testUei:localhost:1".equals(alarmData.getClearKey()));
+        assertTrue("reduceme".equals(alarmData.getReductionKey()));
     }
     
     //Ensure reload does indeed reload fresh data
@@ -605,8 +612,8 @@ public class EventconfFactoryIT {
         Reader r = new FileReader(eventConfFile);
         Events events = JaxbUtils.unmarshal(Events.class, r);
         r.close();
-        Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFileCollection().size());
-        for (String eventFile : events.getEventFileCollection()) {
+        Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFiles().size());
+        for (String eventFile : events.getEventFiles()) {
             eventFilesIncluded.add(new File(eventConfFile.getParentFile(), eventFile));
         }
         

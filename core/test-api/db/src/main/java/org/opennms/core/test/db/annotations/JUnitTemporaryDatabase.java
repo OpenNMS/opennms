@@ -85,5 +85,10 @@ public @interface JUnitTemporaryDatabase {
      * @return
      */
     boolean dirtiesContext() default true;
+
+    /**
+     * Whether to use a connection pool or not. Defaults to true.
+     * @return
+     */
     boolean poolConnections() default true;
 }

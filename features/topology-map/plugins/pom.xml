@@ -3,31 +3,31 @@
 
   <parent>
     <groupId>org.opennms.features</groupId>
-    <artifactId>topology</artifactId>
-    <version>18.0.4</version>
+    <artifactId>org.opennms.features.topology</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>plugins</artifactId>
+  <artifactId>org.opennms.features.topology.plugins</artifactId>
 
-  <name>OpenNMS Features :: Topology :: Plugins</name>
+  <name>OpenNMS :: Features :: Topology :: Plugins</name>
 
   <packaging>pom</packaging>
 
   <modules>
     <module>org.opennms.features.topology.plugins.browsers</module>
-    <module>org.opennms.features.topology.plugins.devutils</module>
     <module>org.opennms.features.topology.plugins.layout</module>
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>
     <!-- <module>org.opennms.features.topology.plugins.ssh</module> -->
     <module>org.opennms.features.topology.plugins.topo.application</module>
+    <module>org.opennms.features.topology.plugins.topo.asset</module>
     <module>org.opennms.features.topology.plugins.topo.bsm</module>
+    <module>org.opennms.features.topology.plugins.topo.graphml</module>
     <module>org.opennms.features.topology.plugins.topo.history</module>
     <module>org.opennms.features.topology.plugins.topo.linkd</module>
     <module>org.opennms.features.topology.plugins.topo.sfree</module>
-    <module>org.opennms.features.topology.plugins.topo.simple</module>
     <module>org.opennms.features.topology.plugins.topo.vmware</module>
   </modules>
 

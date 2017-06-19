@@ -41,6 +41,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -69,7 +70,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -728,7 +729,7 @@ public class Installer {
             return;
         }
 
-        Reader fr = new InputStreamReader(new FileInputStream(f), "UTF-8");
+        Reader fr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
         BufferedReader r = new BufferedReader(fr);
         String line;
 
@@ -886,7 +887,7 @@ public class Installer {
 
         System.out.print("- setting tomcat4 user to 'root'... ");
 
-        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
         StringBuffer b = new StringBuffer();
         String line;
 
@@ -1024,7 +1025,7 @@ public class Installer {
             return null;
         }
         Pattern p = Pattern.compile("The Tomcat (\\S+) Servlet/JSP Container");
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
         for (int i = 0; i < 5; i++) {
             String line = in.readLine();
             if (line == null) { // EOF
@@ -1223,7 +1224,7 @@ public class Installer {
         Pinger pinger;
         try {
        
-            pinger = PingerFactory.getInstance();
+            pinger = new BestMatchPingerFactory().getInstance();
         
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
@@ -1238,7 +1239,7 @@ public class Installer {
             		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
-            System.out.println("Exception while creating an Pinger.");
+            System.out.println("Exception while creating Pinger.");
             throw e;
         }
         

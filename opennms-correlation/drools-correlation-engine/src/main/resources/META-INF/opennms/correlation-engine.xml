@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="
-	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
     ">
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -30,9 +30,26 @@
     
     <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
     	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="metricRegistry" ref="metricRegistry" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
     	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
     	<property name="configurationDirectory" ref="droolsCorrelationEngineBuilderConfigurationDirectory"/>
     </bean>
-        
+
+	<bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+	<bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+		<constructor-arg ref="metricRegistry"/>
+	</bean>
+
+	<bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+		<constructor-arg value="org.opennms.drools"/>
+	</bean>
+
+	<bean id="metricRegistryJmxReporter"
+        factory-bean="metricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
 </beans>

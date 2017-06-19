@@ -37,8 +37,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 import org.slf4j.Logger;
@@ -55,7 +53,7 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
 	private ComboPooledDataSource m_pool;
 
-	public C3P0ConnectionFactory(final JdbcDataSource dataSource) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+	public C3P0ConnectionFactory(final JdbcDataSource dataSource) throws PropertyVetoException, SQLException {
 		super(dataSource);
 	}
 

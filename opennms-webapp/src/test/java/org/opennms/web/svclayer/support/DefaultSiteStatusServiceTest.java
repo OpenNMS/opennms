@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
-import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -111,12 +110,12 @@ public class DefaultSiteStatusServiceTest {
         expect(m_categoryDao.findByName("servers")).andReturn(catServers);
         replay(m_categoryDao);
         
-        Rows rows = new Rows();
+        List<RowDef> rows = new ArrayList<>();
         RowDef rowDef = new RowDef();
         Category category = new Category();
         category.setName("servers");
         rowDef.addCategory(category);
-        rows.addRowDef(rowDef);
+        rows.add(rowDef);
         
         rowDef = new RowDef();
         category = new Category();
@@ -125,7 +124,7 @@ public class DefaultSiteStatusServiceTest {
         category = new Category();
         category.setName("routers");
         rowDef.addCategory(category);
-        rows.addRowDef(rowDef);
+        rows.add(rowDef);
 
         View view = new View();
         view.setRows(rows);

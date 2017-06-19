@@ -55,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -91,6 +90,20 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         assertEquals(1, svc.getIfIndex().intValue());
         assertEquals(m_databasePopulator.getNode1().getId(), svc.getIpInterface().getNode().getId());
         assertEquals("M", svc.getIpInterface().getIsManaged());
+    }
+
+    @Test
+    public void testFindAllServices() {
+        final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAllServices();
+        assertTrue(allSvcs.size() > 1);
+        for (OnmsMonitoredService ifservice: allSvcs) {
+            assertNotNull(ifservice.getIpInterface());
+            assertNotNull(ifservice.getIpInterface().getNode());
+            assertNotNull(ifservice.getIpAddress());
+            assertNotNull(ifservice.getNodeId());
+            assertNotNull(ifservice.getServiceType());
+        }
+        
     }
 
     @Test

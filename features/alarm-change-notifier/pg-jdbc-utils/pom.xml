@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>alarm-change-notifier.parent</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>alarm-change-notifier.rewrap-pgjdbc-ng</artifactId>
-      <version>18.0.4</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
       <type>pom</type>
     </dependency>
@@ -118,37 +118,37 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-common</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-buffer</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-handler</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
     <!-- <dependency> -->
     <!-- <groupId>io.netty</groupId> -->
     <!-- <artifactId>netty-resolver</artifactId> -->
-    <!-- <version>${nettyVersion}</version> -->
+    <!-- <version>${netty4Version}</version> -->
     <!-- <scope>provided</scope> -->
     <!-- </dependency> -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec</artifactId>
-      <version>${nettyVersion}</version>
+      <version>${netty4Version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -181,12 +181,6 @@
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

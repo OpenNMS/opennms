@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
+        <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
+        <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
+        <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
+        <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
+        <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
+        <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/linkDiscoveryStarted</uei>
+        <event-label>OpenNMS-defined Linkd Event: linkDiscoveryStarted</event-label>
+        <descr>&lt;p&gt;The Linkd process has started its attempt to discover links.&lt;/p&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/linkDiscoveryCompleted</uei>
+        <event-label>OpenNMS-defined Linkd Event: linkDiscoveryCompleted</event-label>
+        <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links.&lt;/p&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/linkd/linkDiscoverySuspended</uei>
+        <event-label>OpenNMS-defined Linkd Event: linkDiscoverySuspended</event-label>
+        <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links.&lt;/p&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/topology/linkDown</uei>
+        <event-label>OpenNMS-defined topology event: linkDown</event-label>
+        <descr>
+            &lt;p&gt;node: %nodeid% with ifindex: %ifindex% is down &lt;/p&gt;
+        </descr>
+        <logmsg dest='donotpersist'>
+            node: %nodeid% with ifindex: %ifindex% is down
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%:%ifindex%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/topology/linkUp</uei>
+        <event-label>OpenNMS-defined topology event: linkUp</event-label>
+        <descr>
+            &lt;p&gt;node: %nodeid% with ifindex: %ifindex% is up &lt;/p&gt;
+        </descr>
+        <logmsg dest='donotpersist'>
+            node: %nodeid% with ifindex: %ifindex% is up
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%:%ifindex%"
+                    alarm-type="2"
+                    clear-key="uei.opennms.org/internal/topology/linkDown:%nodeid%:%ifindex%"
+                    auto-clean="false"/>
+    </event>
+</events>

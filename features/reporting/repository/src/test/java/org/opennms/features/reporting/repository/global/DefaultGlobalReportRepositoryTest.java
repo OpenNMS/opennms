@@ -59,7 +59,7 @@ import static org.junit.Assert.assertEquals;
  */
 //TODO Tak: check this test and handle remote-repository connections
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
 public class DefaultGlobalReportRepositoryTest {
 
     Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepositoryTest.class);

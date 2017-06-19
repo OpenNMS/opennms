@@ -28,14 +28,12 @@
 
 package org.opennms.core.test;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import junit.framework.AssertionFailedError;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>MockLogAppender class. If you do not specify the log level specifically, the level
@@ -76,7 +74,7 @@ public class MockLogAppender {
      * <p>resetEvents</p>
      */
     public static void resetEvents() {
-        s_events = Collections.synchronizedList(new LinkedList<LoggingEvent>());
+        s_events = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -184,6 +182,7 @@ public class MockLogAppender {
         resetEvents();
 
         setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
+        setProperty(MockLogger.LOG_KEY_PREFIX + "com.jcraft.jsch", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
@@ -191,7 +190,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
-        setProperty(MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.apache.http", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.gwtwidgets", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.hibernate", "INFO");
         // One of these is probably unused...
@@ -202,6 +201,7 @@ public class MockLogAppender {
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.quartz", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j", "ERROR");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.agent", "ERROR");
+        setProperty(MockLogger.LOG_KEY_PREFIX + "org.snmp4j.transport", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework", "INFO");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.beans.factory.support", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "org.springframework.context.support", "WARN");
@@ -367,5 +367,13 @@ public class MockLogAppender {
             }
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
+    }
+
+    public static void assertNoLogMatched(final Level level, final String message) {
+        for (final LoggingEvent event : s_events) {
+            if (event.getLevel().eq(level) && event.getMessage().contains(message)) {
+                throw new AssertionFailedError("A log message matched for log level " + level + ", message '" + message + "'");
+            }
+        }
     }
 }

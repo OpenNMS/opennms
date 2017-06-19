@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.geo.GeoAssetProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.server.VaadinServlet;

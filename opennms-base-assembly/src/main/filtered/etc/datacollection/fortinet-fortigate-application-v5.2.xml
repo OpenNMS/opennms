@@ -160,15 +160,15 @@
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.3.1.1" instance="fgApFTPStatsEntry" alias="fgApFTPReqProcessed" type="Counter32" />
   </group>
   <group name="fgApFTPConnections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.4" instance="0" alias="fgApFTPConnections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.5" instance="0" alias="fgApFTPMaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.4" instance="0" alias="fgApFTPConns" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.5" instance="0" alias="fgApFTPMaxConns" type="Integer32" />
   </group>
   <group name="fgWebCacheDiskStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.1" instance="fgWebChDskStsEntry" alias="fgWebCacheDisk" type="String" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.2" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskLimit" type="Gauge64" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.3" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskUsage" type="Gauge64" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.4" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskHits" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.5" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskMisses" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.5" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskMiss" type="Counter32" />
   </group>
   <systemDef name="Fortinet-Fortigate-Application-v5.2">
     <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>

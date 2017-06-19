@@ -121,7 +121,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /**
-     * <p>getInterfacesForNodes</p>
+     * TODO: This function should filter out deleted interfaces
      *
      * @return a {@link java.util.Map} object.
      */

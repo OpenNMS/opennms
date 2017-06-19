@@ -35,8 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -48,23 +46,31 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ProxySnmpAgentConfigFactory.class);
 
-    public ProxySnmpAgentConfigFactory(final InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+    public ProxySnmpAgentConfigFactory(final InputStream config) throws FileNotFoundException, IOException {
         super(new InputStreamResource(config));
     }
 
     @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
-    	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
-    	final SnmpAgentAddress agentAddress = mapper.getAddress(address);
-    	
-    	final String addressString = str(address);
-		if (agentAddress == null) {
-			LOG.debug("No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...", addressString, addressString);
-    		return super.getAgentConfig(address);
-    		// throw new IllegalArgumentException("No agent address mapping found for " + addressString);
-    	}
+        return getAgentConfig(address, null);
+    }
 
-		final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
+    @Override
+    public SnmpAgentConfig getAgentConfig(final InetAddress address, String location) {
+        final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
+        final SnmpAgentAddress agentAddress = mapper.getAddress(address);
+
+        final String addressString = str(address);
+        if (agentAddress == null) {
+            LOG.debug(
+                    "No agent address mapping found for {}!  Try adding a @JUnitSnmpAgent(host=\"{}\", resource=\"...\" entry...",
+                    addressString, addressString);
+
+            return super.getAgentConfig(address, location);
+
+        }
+
+        final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
         config.setProxyFor(address);
         config.setPort(agentAddress.getPort());
 

@@ -28,8 +28,6 @@ In the BSM, you define a Business Service that encompasses a set of entities (no
 +
 For details on using the BSM, see link:https://docs.opennms.org/opennms/releases/18.0.0/guide-admin/guide-admin.html#ga-bsm[the OpenNMS Administrators Guide].
 * *ElasticSearch 1.x Event Forwarder*: Support for forwarding events to ElasticSearch 1.x.
-+
-For more details on the ElasticSearch integration, see link:https://docs.opennms.org/opennms/releases/18.0.0/guide-admin/guide-admin.html#ga-events-forwarding-elastic[the OpenNMS Administrators Guide].
 * *Modular Configuration Updates*: Now most properties set in the `opennms.properties` file can be instead overriden by creating a file in the `${OPENNMS_HOME}/etc/opennms.properties.d` directory.
 * *Notifications*: New notification strategies for Slack and Mattermost have been added.
 * *OpenNMS Plugin Manager*: An API for adding 3rd-party "plugins" to OpenNMS.

@@ -39,6 +39,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +72,17 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         final Map<Source, String> rrdsBySource = Maps.newHashMap();
         
         for (final Source source : sources) {
+            final ResourceId resourceId;
+            try {
+                resourceId = ResourceId.fromString(source.getResourceId());
+            } catch (final IllegalArgumentException ex) {
+                if (relaxed) continue;
+                LOG.error("Ill-formed resource id: {}", source.getResourceId(), ex);
+                return null;
+            }
+
             // Grab the resource
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
+            final OnmsResource resource = m_resourceDao.getResourceById(resourceId);
             if (resource == null) {
                 if (relaxed) continue;
                 LOG.error("No resource with id: {}", source.getResourceId());
@@ -112,12 +121,21 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
 
     /**
      *  Performs the actual retrieval of the values from the RRD/JRB files.
-     *  If relaxed is <code>true</code> the {@link FetchResults} is populated with {@link Double#NaN} for all missing
-     *  entries.
+     *
+     *  If relaxed is <code>true</code> an empty response will be generated if there
+     *  are no RRD/JRB files to query.
+     *
+     *  If relaxed is <code>true</code> and one or more RRD/JRB files are present,
+     *  then {@link FetchResults} will be populated with {@link Double#NaN} for all missing entries.
      */
     private FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
                                            Map<Source, String> rrdsBySource, Map<String, Object> constants,
                                            List<Source> sources, boolean relaxed) throws RrdException {
+        // NMS-8665: Avoid making calls to XPORT with no definitions
+        if (relaxed && rrdsBySource.isEmpty()) {
+            return Utils.createEmtpyFetchResults(step, constants);
+        }
+
         FetchResults fetchResults = fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants);
         if (relaxed) {
             Utils.fillMissingValues(fetchResults, sources);

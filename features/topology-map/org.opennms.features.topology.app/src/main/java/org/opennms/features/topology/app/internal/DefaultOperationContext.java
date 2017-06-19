@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,12 +33,14 @@ import org.opennms.features.topology.api.OperationContext;
 
 import com.vaadin.ui.UI;
 
+/**
+ * Default implementation.
+ */
 public class DefaultOperationContext implements OperationContext {
 
     private final UI m_mainWindow;
     private final GraphContainer m_graphContainer;
     private final DisplayLocation m_displayLocation;
-    private boolean m_checked = false;
 
     public DefaultOperationContext(UI mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
         m_mainWindow = mainWindow;
@@ -60,14 +62,4 @@ public class DefaultOperationContext implements OperationContext {
     public DisplayLocation getDisplayLocation() {
         return m_displayLocation;
     }
-
-    public void setChecked(boolean checked) {
-        m_checked = checked;
-    }
-
-    @Override
-    public boolean isChecked() {
-        return m_checked;
-    }
-
 }

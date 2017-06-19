@@ -4,12 +4,12 @@
 ~~~~
 project groupId: org.opennms.plugins
 project name:    opennms-es-rest
-version:         18.0.3-SNAPSHOT
+version:         21.0.0-SNAPSHOT
 ~~~~
 
 ### Description
 
-This project sends opennms data to elastic search using the Jest ReST library
+This project sends opennms data to Elasticsearch using the Jest ReST library
 (https://github.com/searchbox-io/Jest)
 
 Three indexes are created; one for alarms, one for alarm change events and one for raw events.
@@ -30,10 +30,10 @@ To install the feature in karaf use
 
 ~~~~
 
-karaf@root> features:addurl mvn:org.opennms.plugins/opennms-es-rest/18.0.3-SNAPSHOT/xml/features
-karaf@root> features:install opennms-es-rest
+karaf@root> feature:addurl mvn:org.opennms.plugins/opennms-es-rest/21.0.0-SNAPSHOT/xml/features
+karaf@root> feature:install opennms-es-rest
 
-(or features:install opennms-es-rest/18.0.3-SNAPSHOT for a specific version of the feature)
+(or feature:install opennms-es-rest/21.0.0-SNAPSHOT for a specific version of the feature)
 ~~~~
 
 Example searches to use in Kibana Sense

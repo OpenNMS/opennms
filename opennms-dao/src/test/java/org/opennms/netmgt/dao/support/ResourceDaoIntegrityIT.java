@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -75,6 +76,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceVisitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
@@ -108,7 +110,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -123,6 +124,9 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -202,7 +206,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         }
 
         // We must be able to retrieve the same resource by id
-        for (Entry<String, OnmsResource> entry : visitor.resourcesById.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             OnmsResource resourceRetrievedById = m_resourceDao.getResourceById(entry.getKey());
             assertNotNull(String.format("Failed to retrieve resource with id '%s'.", entry.getKey()), resourceRetrievedById);
             assertEquals(String.format("Result mismatch for resource with id '%s'. Retrieved id is '%s'.", entry.getKey(), resourceRetrievedById.getId()),
@@ -213,7 +217,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         // and compare it to the known results
         int k = 0;
         String[] expectedResults = loadExpectedResults();
-        for (Entry<String, OnmsResource> entry : visitor.resourcesById.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : visitor.resourcesById.entrySet()) {
             // Convert the attributes to strings and order them lexicographically
             Set<String> attributeNames = new TreeSet<String>();
             for (OnmsAttribute attribute : entry.getValue().getAttributes()) {
@@ -234,7 +238,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     }
 
     private static class ResourceCollector implements ResourceVisitor {
-        private Map<String, OnmsResource> resourcesById = new TreeMap<String, OnmsResource>();
+        private Map<ResourceId, OnmsResource> resourcesById = new TreeMap<>();
 
         private Set<OnmsResourceType> resourceTypes = new HashSet<OnmsResourceType>();
 
@@ -280,8 +284,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         assertTrue(resourceTreeIps.length < NUM_NODES);
 
         for (int i = 1; i <= NUM_NODES; i++) {
-            OnmsNode node = new OnmsNode();
-            node.setLabel("node" + i);
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node" + i);
             node.setForeignSource("NODES");
             node.setForeignId(Integer.toString(i));
             m_nodeDao.save(node);

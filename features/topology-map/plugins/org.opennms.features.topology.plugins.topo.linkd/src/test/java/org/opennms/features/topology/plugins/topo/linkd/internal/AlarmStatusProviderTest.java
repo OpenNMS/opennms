@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.topology.api.topo.AbstractRef;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -50,86 +50,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Item;
 
 public class AlarmStatusProviderTest {
 
-    private class TestVertex extends AbstractRef implements Vertex {
-
-        public TestVertex(String nodeId) {
-            super("nodes", nodeId, null);
-        }
-
-        @Override
-        public String getKey() {
-            return null;
-        }
-
-        @Override
-        public Item getItem() {
-            return null;
-        }
-
-        @Override
-        public String getTooltipText() {
-            return null;
-        }
-
-        @Override
-        public String getIconKey() {
-            return null;
-        }
-
-        @Override
-        public String getStyleName() {
-            return null;
-        }
-
-        @Override
-        public boolean isGroup() {
-            return false;
-        }
-
-        @Override
-        public void setParent(VertexRef parent) {}
-
-        @Override
-        public VertexRef getParent() {
-            return null;
-        }
-
-        @Override
-        public Integer getX() {
-            return null;
-        }
-
-        @Override
-        public Integer getY() {
-            return null;
-        }
-
-        @Override
-        public boolean isLocked() {
-            return false;
-        }
-
-        @Override
-        public boolean isSelected() {
-            return false;
-        }
-
-        @Override
-        public String getIpAddress() {
-            return null;
-        }
-
-        @Override
-        public Integer getNodeID() {
-            return 1;
-        }
-        
-    }
-    
     private AlarmDao m_alarmDao;
     private AlarmStatusProvider m_statusProvider;
     private VertexProvider m_vertexProvider;
@@ -147,9 +70,9 @@ public class AlarmStatusProviderTest {
     
     @Test
     public void testGetAlarmStatus() {
-        Vertex vertex = new TestVertex("1");
-        Vertex vertex2 = new TestVertex("2");
-        Vertex vertex3 = new TestVertex("3");
+        Vertex vertex = createVertex(1);
+        Vertex vertex2 = createVertex(2);
+        Vertex vertex3 = createVertex(3);
         List<VertexRef> vertexList = Lists.newArrayList(vertex, vertex2, vertex3);
 
         EasyMock.expect(
@@ -175,4 +98,9 @@ public class AlarmStatusProviderTest {
         return alarms;
     }
 
+    private static Vertex createVertex(int nodeId) {
+        AbstractVertex v = new AbstractVertex("nodes", Integer.toString(nodeId), Integer.toString(nodeId));
+        v.setNodeID(nodeId);
+        return v;
+    }
 }

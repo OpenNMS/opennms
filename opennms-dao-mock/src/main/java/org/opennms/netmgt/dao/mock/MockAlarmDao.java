@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements AlarmDao {
     private AtomicInteger m_id = new AtomicInteger(0);
@@ -54,7 +55,9 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     }
 
     private void updateSubObjects(final OnmsAlarm alarm) {
-        getDistPollerDao().save(alarm.getDistPoller());
+        // Assume that the system ID is the ID of an OpenNMS system
+        // instead of a Minion or Remote Poller
+        getDistPollerDao().save((OnmsDistPoller)alarm.getDistPoller());
         getEventDao().save(alarm.getLastEvent());
         getNodeDao().save(alarm.getNode());
         getServiceTypeDao().save(alarm.getServiceType());

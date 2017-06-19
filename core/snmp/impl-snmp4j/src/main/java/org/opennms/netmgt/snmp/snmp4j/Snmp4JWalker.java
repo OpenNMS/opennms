@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -191,7 +191,7 @@ public class Snmp4JWalker extends SnmpWalker {
     private final Snmp4JAgentConfig m_agentConfig;
 
     public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
+        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), agentConfig.getRetries(), tracker);
         
         m_agentConfig = agentConfig;
         
@@ -231,9 +231,13 @@ public class Snmp4JWalker extends SnmpWalker {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (m_session != null) {
-            m_session.close();
+            try {
+                m_session.close();
+            } catch (IOException e) {
+                LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_agentConfig, e);
+            }
             m_session = null;
         }
     }

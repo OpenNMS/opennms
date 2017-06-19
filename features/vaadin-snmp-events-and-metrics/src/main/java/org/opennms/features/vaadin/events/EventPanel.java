@@ -114,7 +114,7 @@ public abstract class EventPanel extends Panel {
         addStyleName("light");
 
         baseEventsObject.setGlobal(events.getGlobal());
-        baseEventsObject.setEventFileCollection(events.getEventFileCollection());
+        baseEventsObject.setEventFiles(events.getEventFiles());
 
         final HorizontalLayout topToolbar = new HorizontalLayout();
         topToolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
@@ -131,7 +131,7 @@ public abstract class EventPanel extends Panel {
             }
         }));
 
-        eventTable = new EventTable(events.getEventCollection());
+        eventTable = new EventTable(events.getEvents());
 
         final EventForm eventForm = new EventForm();
         eventForm.setVisible(false);
@@ -312,17 +312,17 @@ public abstract class EventPanel extends Panel {
     private void saveFile(final File file, final Logger logger) {
         try {
             // Updating the base events object with the new events set.
-            baseEventsObject.setEventCollection(eventTable.getOnmsEvents());
+            baseEventsObject.setEvents(eventTable.getOnmsEvents());
             // Normalize the Event Content (required to avoid marshaling problems)
             // TODO Are other normalizations required ?
-            for (org.opennms.netmgt.xml.eventconf.Event event : baseEventsObject.getEventCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Event event : baseEventsObject.getEvents()) {
                 logger.debug("Normalizing event " + event.getUei());
-                AlarmData ad = event.getAlarmData();
+                final AlarmData ad = event.getAlarmData();
                 if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty())) {
                     event.setAlarmData(null);
                 }
-                Mask m = event.getMask();
-                if (m != null && m.getMaskelementCollection().isEmpty()) {
+                final Mask m = event.getMask();
+                if (m != null && m.getMaskelements().isEmpty()) {
                     event.setMask(null);
                 }
             }
@@ -332,17 +332,17 @@ public abstract class EventPanel extends Panel {
             String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
             final Events rootEvents = eventConfDao.getRootEvents();
             final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            if (baseEventsObject.getEventCount() > 0) {
-                if (!rootEvents.getEventFileCollection().contains(fileName)) {
+            if (baseEventsObject.getEvents().size() > 0) {
+                if (!rootEvents.getEventFiles().contains(fileName)) {
                     logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
-                    rootEvents.getEventFileCollection().add(0, fileName);
+                    rootEvents.getEventFiles().add(0, fileName);
                     saveEvents(rootEvents, rootFile, logger);
                 }
             } else {
                 // If a reference to an empty events file exist, it should be removed.
-                if (rootEvents.getEventFileCollection().contains(fileName)) {
+                if (rootEvents.getEventFiles().contains(fileName)) {
                     logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
-                    rootEvents.getEventFileCollection().remove(fileName);
+                    rootEvents.getEventFiles().remove(fileName);
                     saveEvents(rootEvents, rootFile, logger);
                 }
             }

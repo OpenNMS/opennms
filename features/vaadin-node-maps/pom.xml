@@ -6,12 +6,12 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>18.0.4</version>
+		<version>21.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
 	<packaging>bundle</packaging>
-	<name>OpenNMS Features Node Maps</name>
+	<name>OpenNMS :: Features :: Node Maps</name>
 	<description>
     OpenNMS Vaadin UI for displaying nodes on geographical maps using assets records.
   </description>
@@ -106,10 +106,12 @@
 						<bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
+						<bundle>mvn:org.opennms.features.geolocation/org.opennms.features.geolocation.api/${project.version}</bundle>
 					</bundles>
 					<features>
 						<feature>opennms-core-web</feature>
 						<feature>vaadin</feature>
+                        <feature>geolocation</feature>
 					</features>
 					<!--
 					<repositories>
@@ -181,19 +183,20 @@
 
 		<dependency>
 			<groupId>org.opennms.features.topology</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>org.opennms.features.topology.api</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.topology.plugins</groupId>
-			<artifactId>browsers</artifactId>
+			<artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms.features.geocoder</groupId>
-			<artifactId>org.opennms.features.geocoder.api</artifactId>
+			<groupId>org.opennms.features.geolocation</groupId>
+			<artifactId>org.opennms.features.geolocation.api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>
@@ -275,6 +278,12 @@
 		    <version>0.47</version>
 		    <scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+			<version>${gwtVersion}</version>
+			<scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>

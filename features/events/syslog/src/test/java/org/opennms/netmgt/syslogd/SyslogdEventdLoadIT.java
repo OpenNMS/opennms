@@ -38,17 +38,17 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -56,12 +56,15 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.syslogd.api.SyslogConnection;
+import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -74,6 +77,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -81,12 +86,11 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
+        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdEventdLoadIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
@@ -98,11 +102,21 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     private EventIpcManager m_eventIpcManager;
 
     @Autowired
+    private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
+
+    @Autowired
     private Eventd m_eventd;
     
     private Syslogd m_syslogd;
 
     private SyslogdConfigFactory m_config;
+
+    private SyslogSinkConsumer m_syslogSinkConsumer;
+
+    private SyslogSinkModule m_syslogSinkModule;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -116,7 +130,15 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
         m_eventCounter = new EventCounter();
-        this.m_eventIpcManager.addEventListener(m_eventCounter);
+        m_eventIpcManager.addEventListener(m_eventCounter);
+
+        m_syslogSinkConsumer = new SyslogSinkConsumer(new MetricRegistry());
+        m_syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
+        m_syslogSinkConsumer.setSyslogdConfig(m_config);
+        m_syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        m_syslogSinkModule = m_syslogSinkConsumer.getModule();
+
+        m_messageDispatcherFactory.setConsumer(m_syslogSinkConsumer);
     }
 
     @After
@@ -127,7 +149,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         MockLogAppender.assertNoErrorOrGreater();
     }
 
-    private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
+    private void loadSyslogConfiguration(final String configuration) throws IOException {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);
@@ -137,12 +159,23 @@ public class SyslogdEventdLoadIT implements InitializingBean {
                 IOUtils.closeQuietly(stream);
             }
         }
+        // Update the beans with the new config.
+        if (m_syslogSinkConsumer != null) {
+            m_syslogSinkConsumer.setSyslogdConfig(m_config);
+            m_syslogSinkModule = m_syslogSinkConsumer.getModule();
+        }
     }
 
     private void startSyslogdGracefully() throws SocketException {
         m_syslogd = new Syslogd();
-        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+
+        SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setDistPollerDao(m_distPollerDao);
+        receiver.setMessageDispatcherFactory(m_messageDispatcherFactory);
+
+        m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
+
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
@@ -168,7 +201,8 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+            SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+            m_syslogSinkConsumer.handleMessage(messageLog);
         }
 
         long mid = System.currentTimeMillis();
@@ -192,14 +226,16 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         InetAddress address = InetAddress.getLocalHost();
 
         // handle an invalid packet
-        byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
+        byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - \uFEFFfoo0: load test 0 on tty1\0".getBytes(StandardCharsets.UTF_8);
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         m_eventCounter.waitForFinish(120000);
         
@@ -220,22 +256,24 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        SyslogMessageLogDTO messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
+        messageLog = m_syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        m_syslogSinkConsumer.handleMessage(messageLog);
 
         m_eventCounter.waitForFinish(120000);
-        
+
         assertEquals(1, m_eventCounter.getCount());
     }
 
     @Test(timeout=120000)
     @Transactional
     public void testEventd() throws Exception {
-    	m_eventd.start();
+        m_eventd.start();
 
         EventProxy ep = createEventProxy();
 

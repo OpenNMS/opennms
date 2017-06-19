@@ -35,37 +35,31 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.ProviderManager;
-import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class FRLayoutTest {
+public class FRLayoutTest extends AbstractLayoutTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(FRLayoutTest.class);
     
     private static final double ELBOW_ROOM = 50.0;
-    private GraphContainer m_graphContainer;
-    private GraphProvider m_graphProvider;
 
-    @Before
-    public void setUp(){
-
-        m_graphProvider = new SimpleGraphBuilder("nodes")
+    @Override
+    protected GraphProvider getGraphProvider() {
+        return new SimpleGraphBuilder("nodes")
                 .vertex("v1").vLabel("vertex1").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
                 .vertex("v2").vLabel("vertex2").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
                 .vertex("v3").vLabel("vertex3").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
@@ -90,17 +84,13 @@ public class FRLayoutTest {
                 .edge("e13", "v6", "v8").eStyleName("edge")
                 .edge("e14", "v7", "v8").eStyleName("edge")
                 .get();
-
-        ProviderManager providerManager = new ProviderManager();
-        m_graphContainer = new VEProviderGraphContainer(providerManager);
-        m_graphContainer.setBaseTopology(m_graphProvider);
     }
 
     @Test
     public void testFRLayout() {
         Graph g = m_graphContainer.getGraph();
 
-        List<Vertex> vertices = new ArrayList<Vertex>(g.getDisplayVertices());
+        List<Vertex> vertices = new ArrayList<>(g.getDisplayVertices());
 
         TopoFRLayout<VertexRef, EdgeRef> layout = runFRLayout(g, g.getLayout(), vertices);
 

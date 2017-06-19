@@ -43,7 +43,7 @@ public class ReverseDnsRecord {
     String m_zone;
     InetAddress m_ip;
     
-    public ReverseDnsRecord(OnmsIpInterface ipInterface) {
+    public ReverseDnsRecord(OnmsIpInterface ipInterface, int level) {
 
         OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
 
@@ -65,7 +65,12 @@ public class ReverseDnsRecord {
         m_ip = ipInterface.getIpAddress();
         LOG.debug("Constructor: set ip address: {}", m_ip);
 
-        m_zone=ReverseDnsRecord.thirdLevelZonefromInet4Address(m_ip.getAddress());
+        if (level == 1)
+        	m_zone = ReverseDnsRecord.firstLevelZonefromInet4Address(m_ip.getAddress());
+        else if (level == 2)
+        	m_zone = ReverseDnsRecord.secondLevelZonefromInet4Address(m_ip.getAddress());
+    	else
+    		m_zone=ReverseDnsRecord.thirdLevelZonefromInet4Address(m_ip.getAddress());
         LOG.debug("Constructor: set zone: {}", m_zone);
     }
 
@@ -97,4 +102,40 @@ public class ReverseDnsRecord {
       sb.append(".in-addr.arpa.");
       return sb.toString();
     }
+    
+    public static String secondLevelZonefromInet4Address(byte[] addr ) {
+        if (addr.length != 4 && addr.length != 16)
+            throw new IllegalArgumentException("array must contain " +
+                                         "4 or 16 elements");
+              
+      StringBuffer sb = new StringBuffer();
+      if (addr.length == 4) {
+          for (int i = addr.length - 3; i >= 0; i--) {
+              sb.append(addr[i] & 0xFF);
+              if (i > 0)
+                  sb.append(".");
+              }
+          }
+      sb.append(".in-addr.arpa.");
+      return sb.toString();
+    }
+    
+    public static String firstLevelZonefromInet4Address(byte[] addr ) {
+        if (addr.length != 4 && addr.length != 16)
+            throw new IllegalArgumentException("array must contain " +
+                                         "4 or 16 elements");
+              
+      StringBuffer sb = new StringBuffer();
+      if (addr.length == 4) {
+          for (int i = addr.length - 4; i >= 0; i--) {
+              sb.append(addr[i] & 0xFF);
+              if (i > 0)
+                  sb.append(".");
+              }
+          }
+      sb.append(".in-addr.arpa.");
+      return sb.toString();
+    }
+
+
 }

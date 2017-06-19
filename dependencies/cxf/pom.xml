@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>cxf-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies CXF</name>
+  <name>OpenNMS :: Dependencies :: CXF</name>
   <dependencies>
     <!-- JAX-RS front end -->
     <dependency>
@@ -104,6 +104,10 @@
       <artifactId>cxf-rt-frontend-jaxws</artifactId>
       <version>${cxfVersion}</version>
       <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>

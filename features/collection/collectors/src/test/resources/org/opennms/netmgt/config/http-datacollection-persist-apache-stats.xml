@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<http-datacollection-config 
+	xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+	rrdRepository="%rrdRepository%"
+>
+	<http-collection name="default">
+		<!--
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:8928</rra>
+			<rra>RRA:AVERAGE:0.5:12:8784</rra>
+			<rra>RRA:MIN:0.5:12:8784</rra>
+			<rra>RRA:MAX:0.5:12:8784</rra>
+		</rrd>
+		-->
+		<rrd step="1"> 
+			<rra>RRA:AVERAGE:0.5:1:8928</rra> 
+		</rrd> 
+		<uris>
+			<uri name="apache">
+				<url 
+					port="10342"
+					path="/server-status/index.html"
+					query="auto"
+					user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
+					matches="(?s).*?Total\sAccesses:\s([0-9]+).*?Total\skBytes:\s([0-9]+).*?CPULoad:\s([0-9\.]+).*?Uptime:\s([0-9]+).*?ReqPerSec:\s([0-9\.]+).*?BytesPerSec:\s([0-9\.]+).*?BytesPerReq:\s([0-9\.]+).*?BusyWorkers:\s([0-9]+).*?IdleWorkers:\s([0-9]+).*"
+					response-range="100-399"/>
+				<attributes>
+					<attrib alias="TotalAccesses" match-group="1" type="gauge32"/>
+					<attrib alias="TotalkBytes" match-group="2" type="gauge32"/>
+					<attrib alias="CPULoad" match-group="3" type="gauge32"/>
+					<attrib alias="Uptime" match-group="4" type="gauge32"/>
+					<attrib alias="ReqPerSec" match-group="5" type="gauge32"/>
+					<attrib alias="BytesPerSec" match-group="6" type="gauge32"/>
+					<attrib alias="BytesPerReq" match-group="7" type="gauge32"/>
+					<attrib alias="BusyWorkers" match-group="8" type="gauge32"/>
+					<attrib alias="IdleWorkers" match-group="9" type="gauge32"/>
+				</attributes>
+			</uri>
+		</uris>
+	</http-collection>
+</http-datacollection-config>

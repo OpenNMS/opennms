@@ -45,4 +45,5 @@ public interface SnmpConfigVisitor {
     
     void visitIpMatches(List<String> ipMatches);
     void visitIpMatchesFinished();
+
 }

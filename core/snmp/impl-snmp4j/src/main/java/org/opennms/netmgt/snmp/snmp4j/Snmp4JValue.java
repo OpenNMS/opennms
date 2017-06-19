@@ -48,10 +48,10 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
 
-class Snmp4JValue extends AbstractSnmpValue {
-    Variable m_value;
+public class Snmp4JValue extends AbstractSnmpValue {
+    private final Variable m_value;
     
-    Snmp4JValue(final Variable value) {
+    public Snmp4JValue(final Variable value) {
         if (value == null) {
             throw new NullPointerException("value attribute cannot be null");
         }

@@ -43,6 +43,7 @@ import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ExponentialPropagation;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReduceFunctionVisitor;
@@ -99,6 +100,11 @@ public class BusinessServiceEditWindow extends Window {
      * the threshold textfield
      */
     private TextField m_thresholdTextField;
+
+    /**
+     * the exponential propagation base textfield
+     */
+    private TextField m_exponentialPropagationBaseTextField;
     /**
      * list of edges
      */
@@ -164,7 +170,9 @@ public class BusinessServiceEditWindow extends Window {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (!m_thresholdTextField.isValid() || !m_nameTextField.isValid()) {
+                if (!m_thresholdTextField.isValid() ||
+                    !m_nameTextField.isValid() ||
+                    !m_exponentialPropagationBaseTextField.isValid()) {
                     return;
                 }
 
@@ -193,6 +201,12 @@ public class BusinessServiceEditWindow extends Window {
                         @Override
                         public Void visit(Threshold threshold) {
                             threshold.setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(ExponentialPropagation exponentialPropagation) {
+                            exponentialPropagation.setBase(Double.parseDouble(m_exponentialPropagationBaseTextField.getValue()));
                             return null;
                         }
                     });
@@ -253,6 +267,7 @@ public class BusinessServiceEditWindow extends Window {
                 .add(HighestSeverity.class)
                 .add(Threshold.class)
                 .add(HighestSeverityAbove.class)
+                .add(ExponentialPropagation.class)
                 .build());
         m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
         m_reduceFunctionNativeSelect.setWidth(100.0f, Unit.PERCENTAGE);
@@ -290,6 +305,28 @@ public class BusinessServiceEditWindow extends Window {
 
         verticalLayout.addComponent(m_thresholdTextField);
 
+        m_exponentialPropagationBaseTextField = new TextField("Base");
+        m_exponentialPropagationBaseTextField.setId("exponentialPropagationBaseTextField");
+        m_exponentialPropagationBaseTextField.setRequired(false);
+        m_exponentialPropagationBaseTextField.setEnabled(false);
+        m_exponentialPropagationBaseTextField.setImmediate(true);
+        m_exponentialPropagationBaseTextField.setWidth(100.0f, Unit.PERCENTAGE);
+        m_exponentialPropagationBaseTextField.setValue("2.0");
+        m_exponentialPropagationBaseTextField.addValidator(v -> {
+            if (m_exponentialPropagationBaseTextField.isEnabled()) {
+                try {
+                    final double value = Double.parseDouble(m_exponentialPropagationBaseTextField.getValue());
+                    if (value <= 1.0) {
+                        throw new NumberFormatException();
+                    }
+                } catch (final NumberFormatException e) {
+                    throw new Validator.InvalidValueException("Base must be greater than 1.0");
+                }
+            }
+        });
+
+        verticalLayout.addComponent(m_exponentialPropagationBaseTextField);
+
         /**
          * Status selection for "Highest Severity Above"
          */
@@ -312,6 +349,7 @@ public class BusinessServiceEditWindow extends Window {
         m_reduceFunctionNativeSelect.addValueChangeListener(ev -> {
             boolean thresholdFunction = m_reduceFunctionNativeSelect.getValue() == Threshold.class;
             boolean highestSeverityAboveFunction = m_reduceFunctionNativeSelect.getValue() == HighestSeverityAbove.class;
+            boolean exponentialPropagationFunction = m_reduceFunctionNativeSelect.getValue() == ExponentialPropagation.class;
 
             int height = 550;
 
@@ -327,6 +365,7 @@ public class BusinessServiceEditWindow extends Window {
 
             setVisible(m_thresholdTextField, thresholdFunction);
             setVisible(m_thresholdStatusSelect, highestSeverityAboveFunction);
+            setVisible(m_exponentialPropagationBaseTextField, exponentialPropagationFunction);
         });
 
         if (Objects.isNull(businessService.getReduceFunction())) {
@@ -349,6 +388,12 @@ public class BusinessServiceEditWindow extends Window {
                 @Override
                 public Void visit(Threshold threshold) {
                     m_thresholdTextField.setValue(String.valueOf(threshold.getThreshold()));
+                    return null;
+                }
+
+                @Override
+                public Void visit(ExponentialPropagation exponentialPropagation) {
+                    m_exponentialPropagationBaseTextField.setValue(String.valueOf(exponentialPropagation.getBase()));
                     return null;
                 }
             });

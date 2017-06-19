@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
@@ -100,20 +101,20 @@ public class DiscoveryScanServlet extends HttpServlet {
         	String foreignSource = request.getParameter("specificforeignsource");
         	String location = request.getParameter("specificlocation");
         	Specific newSpecific = new Specific();
-        	newSpecific.setContent(ipAddr);
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+        	newSpecific.setAddress(ipAddr);
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
         		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
         		newSpecific.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
         		newSpecific.setLocation(location);
         	}
 
@@ -125,7 +126,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Specific");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	Specific spec= config.getSpecific(index);
+            final int index1 = index;
+        	Specific spec= config.getSpecifics().get(index1);
         	boolean result = config.removeSpecific(spec);
         	LOG.debug("Removing Specific result = {}", result);
         } 
@@ -144,19 +146,19 @@ public class DiscoveryScanServlet extends HttpServlet {
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
 
-        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
         		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
         		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
 
-        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+        	if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
         		newIR.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
         		newIR.setLocation(location);
         	}
 
@@ -168,7 +170,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Include Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	IncludeRange ir= config.getIncludeRange(index);
+            final int index1 = index;
+        	IncludeRange ir= config.getIncludeRanges().get(index1);
         	boolean result = config.removeIncludeRange(ir);
         	LOG.debug("Removing Include Range result = {}", result);
         } 
@@ -183,20 +186,20 @@ public class DiscoveryScanServlet extends HttpServlet {
             String location = request.getParameter("iulocation");
 
             IncludeUrl iu = new IncludeUrl();
-            iu.setContent(url);
-            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout()))){
+            iu.setUrl(url);
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(String.valueOf(config.getTimeout().orElse(null)))){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
 
-            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries()))){
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(String.valueOf(config.getRetries().orElse(null)))){
                 iu.setRetries(WebSecurityUtils.safeParseInt(retries));
             }
 
-            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource())){
+            if(foreignSource!=null && !"".equals(foreignSource.trim()) && !foreignSource.equals(config.getForeignSource().orElse(null))){
                 iu.setForeignSource(foreignSource);
             }
 
-            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation())){
+            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
                 iu.setLocation(location);
             }
 
@@ -208,7 +211,8 @@ public class DiscoveryScanServlet extends HttpServlet {
             LOG.debug("Removing Include URL");
             String specificIndex = request.getParameter("index");
             int index = WebSecurityUtils.safeParseInt(specificIndex);
-            IncludeUrl iu = config.getIncludeUrl(index);
+            final int index1 = index;
+            IncludeUrl iu = config.getIncludeUrls().get(index1);
             boolean result = config.removeIncludeUrl(iu);
             LOG.debug("Removing Include URL result = {}", result);
         } 
@@ -229,7 +233,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Removing Exclude Range");
         	String specificIndex = request.getParameter("index");
         	int index = WebSecurityUtils.safeParseInt(specificIndex);
-        	ExcludeRange er= config.getExcludeRange(index);
+            final int index1 = index;
+        	ExcludeRange er= config.getExcludeRanges().get(index1);
         	boolean result = config.removeExcludeRange(er);
         	LOG.debug("Removing Exclude Range result = {}", result);
         }

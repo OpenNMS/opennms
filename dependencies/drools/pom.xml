@@ -3,19 +3,19 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>drools-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Drools</name>
+  <name>OpenNMS :: Dependencies :: Drools</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the drools library.
   </description>
   <properties>
-    <droolsVersion>6.0.1.Final</droolsVersion>
+    <droolsVersion>6.5.0.Final</droolsVersion>
   </properties>
   <dependencies>
     <dependency>

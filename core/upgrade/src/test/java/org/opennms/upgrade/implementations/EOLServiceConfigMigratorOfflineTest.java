@@ -122,7 +122,7 @@ public class EOLServiceConfigMigratorOfflineTest {
         ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
         // check the total and active services before doing the upgrade
-        assertEquals(m_totalBefore, cfg.getServiceCount());
+        assertEquals(m_totalBefore, cfg.getServices().size());
 
         // perform the upgrade
         final EOLServiceConfigMigratorOffline migrator = new EOLServiceConfigMigratorOffline();
@@ -131,10 +131,10 @@ public class EOLServiceConfigMigratorOfflineTest {
         // confirm the total and active services after the upgrade
         cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
         final ServiceConfigFactory factory = new ServiceConfigFactory();
-        Assert.assertEquals(m_totalAfter, cfg.getServiceCount());
+        Assert.assertEquals(m_totalAfter, cfg.getServices().size());
         Assert.assertEquals(m_enabledAfter, factory.getServices().length);
 
-        for (final Service svc : cfg.getServiceCollection()) {
+        for (final Service svc : cfg.getServices()) {
             final String serviceName = svc.getName();
             if (m_disabled.contains(serviceName)) {
                 assertFalse("Service " + serviceName + " should be disabled.", svc.isEnabled());

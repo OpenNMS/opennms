@@ -7,7 +7,7 @@ To build/compile OpenNMS it is necessary to run a *nix system.
 You do not need to run it physically, a virtual machine is sufficient, but the choice is yours.
 We recommend one of the following:
 
- * link:http://www.linuxmint.com/[Linux Minut] with Cinnamon Desktop environment
+ * link:http://www.linuxmint.com/[Linux Mint] with Cinnamon Desktop environment
  * link:http://ubuntu.com[Ubuntu Desktop]
  * Mac OS X
 
@@ -25,7 +25,7 @@ Simply follow these instructions, they may vary depending on your Operating Syst
 echo "deb http://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list
 echo "deb-src http://debian.opennms.org stable main" >> /etc/apt/sources.list.d/opennms.list
 # Add pgp key
-wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 
 # overall update
 apt-get update

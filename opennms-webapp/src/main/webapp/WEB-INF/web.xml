@@ -76,6 +76,14 @@
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
 
+  <!-- Used to set the Jetty specific user identity based on the current principal authenticated by Spring Security
+       NOTE: This filter is not mapped to anything by default and should be enabled when using NCSA request logging
+       by uncommenting the corresponding <filter-mapping> section bellow. -->
+  <filter>
+    <filter-name>jettyUserIdentityFilter</filter-name>
+    <filter-class>org.opennms.web.springframework.security.JettyUserIdentityFilter</filter-class>
+  </filter>
+
   <!-- filter out invalid file:// Origin: header to avoid CORS issues with Compass -->
   <filter>
     <description>Filter out invalid file:// Origin: header to avoid CORS issues with Compass</description>
@@ -208,6 +216,13 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <!-- Enable this filter mapping when using NCSA request logging
+  <filter-mapping>
+    <filter-name>jettyUserIdentityFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  -->
 
   <filter-mapping>
     <filter-name>StoreRequestProperties</filter-name>
@@ -483,13 +498,6 @@
      <url-pattern>/docs</url-pattern>
    </servlet-mapping>
 
-  <!--  servlet that gwt rpc requests get mapped to -->
-   <servlet>
-     <servlet-name>gwtDispatcher</servlet-name>
-     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-     <load-on-startup>1</load-on-startup>
-   </servlet>
-
    <!-- Serves static resource content from .jar files such as spring-js.jar -->
    <servlet>
 	<servlet-name>Resources Servlet</servlet-name>
@@ -649,11 +657,6 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>nodeLabelChange</servlet-name>
-    <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
-  </servlet>
-
-  <servlet>
     <!-- servlet for setting critical path -->
     <servlet-name>setCriticalPath</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SetCriticalPathServlet</servlet-class>
@@ -690,11 +693,6 @@
     <!-- servlet for grabbing SNMP node information -->
     <servlet-name>snmpGetNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for grabbing SNMP interface information -->
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetInterfacesServlet</servlet-class>
   </servlet>
   <servlet>
     <!-- servlet for grabbing node, interface and service information -->
@@ -893,11 +891,6 @@
 
   <!-- end of user groups configuration servlets -->
 
-  <servlet-mapping>
-    <servlet-name>nodeLabelChange</servlet-name>
-    <url-pattern>/admin/nodeLabelChange</url-pattern>
-  </servlet-mapping>
-
     <!--servlet mapping for restart discovery servlet-->
   <servlet-mapping>
     <servlet-name>actionDiscovery</servlet-name>
@@ -954,10 +947,6 @@
     <url-pattern>/admin/snmpGetNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>snmpGetInterfaces</servlet-name>
-    <url-pattern>/admin/snmpGetInterfaces</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
   </servlet-mapping>
@@ -1005,11 +994,6 @@
    <servlet-mapping>
     <servlet-name>ManageSnmpIntf</servlet-name>
     <url-pattern>/element/ManageSnmpIntf</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>gwtDispatcher</servlet-name>
-    <url-pattern>*.gwt</url-pattern>
   </servlet-mapping>
 
     <servlet-mapping>
@@ -1156,10 +1140,6 @@
   <error-page>
     <exception-type>org.opennms.web.admin.nodeManagement.NoManagedInterfacesException</exception-type>
     <location>/errors/nomanagedinterfaces.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>java.lang.Throwable</exception-type>
-    <location>/errors/unknownexception.jsp</location>
   </error-page>
   <error-page>
     <error-code>500</error-code>

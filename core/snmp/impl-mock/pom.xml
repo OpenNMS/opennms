@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.mock</artifactId>
-  <name>OpenNMS Core SNMP Mock Implementation</name>
+  <name>OpenNMS :: Core :: SNMP :: Mock Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -33,15 +33,6 @@
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.tests</groupId>
-      <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

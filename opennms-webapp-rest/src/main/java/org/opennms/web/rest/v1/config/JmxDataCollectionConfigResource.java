@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.slf4j.Logger;
@@ -60,7 +59,6 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_jmxDataCollectionConfigDao, "JmxDataCollectionConfigDao must be set!");
-        Assert.isTrue(m_jmxDataCollectionConfigDao instanceof AbstractJaxbConfigDao<?, ?>);
     }
 
     @GET
@@ -68,7 +66,7 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     public Response getJmxDataCollectionConfig() throws ConfigurationResourceException {
         LOG.debug("getJmxDataCollectionConfigurationForLocation()");
 
-        final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getContainer().getObject();
+        final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getConfig();
 
         if (jmxDataCollectionConfig == null) {
             return Response.status(Status.NOT_FOUND).build();

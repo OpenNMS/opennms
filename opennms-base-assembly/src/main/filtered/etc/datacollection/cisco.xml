@@ -1046,6 +1046,16 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco ASA 5585-X Security Services Processor-60">
+        <sysoid>.1.3.6.1.4.1.9.1.1201</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco Routers">
         <sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
         <collect>

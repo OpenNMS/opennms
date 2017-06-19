@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>18.0.4</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashlets</artifactId>
 
-    <name>OpenNMS Features Vaadin Dashlets</name>
+    <name>OpenNMS :: Features :: Dashlets</name>
 
     <packaging>pom</packaging>
 
@@ -28,5 +28,6 @@
         <module>dashlet-surveillance</module>
         <module>dashlet-features</module>
         <module>dashlet-url</module>
+        <module>dashlet-grafana</module>
     </modules>
 </project>

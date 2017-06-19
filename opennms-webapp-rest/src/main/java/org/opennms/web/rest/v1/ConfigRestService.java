@@ -43,6 +43,7 @@ import org.opennms.web.rest.v1.config.PollerConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpTrapNorthbounderConfigurationResource;
 import org.opennms.web.rest.v1.config.SyslogNorthbounderConfigurationResource;
+import org.opennms.web.rest.v1.config.TrapdConfigurationResource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -77,7 +78,12 @@ public class ConfigRestService extends OnmsRestService {
     public SnmpConfigurationResource getSnmpConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
         return context.getResource(SnmpConfigurationResource.class);
     }
-
+    
+    @Path("trapd")
+    public TrapdConfigurationResource getTrapdConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(TrapdConfigurationResource.class);
+    }
+    
     @Path("jmx")
     public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource(@Context final ResourceContext context) throws ConfigurationResourceException {
         return context.getResource(JmxDataCollectionConfigResource.class);

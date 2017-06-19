@@ -3,7 +3,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,9 @@
 <%@page import="org.opennms.web.outage.filter.LostServiceDateBeforeFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateAfterFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter"%>
+<%@page import="org.opennms.web.outage.filter.LocationFilter" %>
+<%@page import="org.opennms.web.outage.filter.NegativeLocationFilter" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -117,6 +120,7 @@
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Foreign Source" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.NODE,              SortStyle.REVERSE_NODE,              "node",                      "Node")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.LOCATION,          SortStyle.REVERSE_LOCATION,          "location",                  "Node Location")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.INTERFACE,         SortStyle.REVERSE_INTERFACE,         "interface",                 "Interface")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.SERVICE,           SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.IFLOSTSERVICE,     SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></th>
@@ -155,7 +159,7 @@
           <!-- node -->
           <td class="noWrap">
             <% if(outages[i].getNodeId() != 0 ) { %>             
-              <% String longLabel  = outages[i].getNodeLabel(); %>
+              <% String longLabel  = WebSecurityUtils.sanitizeString(outages[i].getNodeLabel()); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
               <a href="element/node.jsp?node=<%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
               <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId(), getServletContext()); %>
@@ -165,7 +169,21 @@
               <% } %>                          
             <% } %>
           </td>
-          
+
+          <!-- location -->
+          <td class="noWrap">
+            <% if(outages[i].getNodeId() != 0 ) { %>
+              <% String location = outages[i].getLocation(); %>
+              <%=location%></a>
+              <% Filter locationFilter = new LocationFilter(location); %>
+              <% if( !parms.filters.contains(locationFilter) ) { %>
+                <a href="<%=OutageUtil.makeLink( request, parms, locationFilter, true)%>" title="Show only outages for this node location"><%=ZOOM_IN_ICON%></a>
+                <a href="<%=OutageUtil.makeLink( request, parms, new NegativeLocationFilter(location), true)%>" title="Do not show outages for this node location"><%=DISCARD_ICON%></a>
+              <% } %>
+            <% } %>
+          </td>
+
+
           <!-- interface -->
           <td class="noWrap">
             <% if(outages[i].getIpAddress() != null ) { %>

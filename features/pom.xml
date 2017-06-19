@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features</name>
+  <name>OpenNMS :: Features</name>
   <modules>
 
     <!-- ActiveMQ broker -->
@@ -25,6 +25,9 @@
 
     <!-- Events -->
     <module>events</module>
+
+    <!-- Graphml -->
+    <module>graphml</module>
 
     <!-- Executor factories -->
     <module>executor-factory</module>
@@ -84,17 +87,6 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
-    <!-- GWT UI plugins -->
-    <module>node-page-list</module>
-    <module>opennms-gwt-theme</module>
-    <module>gwt-bootstrap</module>
-    <module>gwt-suggestion-combobox</module>
-    <module>gwt-ksc-combobox</module>
-    <module>gwt-ksc-add</module>
-    <module>gwt-graph-resource-list</module>
-    <module>gwt-snmpselect-list</module>
-    <module>gwt-tableresources</module>
-
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
@@ -119,15 +111,13 @@
 
     <!-- Other projects -->
     <module>geocoder</module>
+    <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
     <module>timeseries-evaluate</module>
-
-    <!-- Elasticsearch event-forwarder-->
-    <module>elasticsearch</module>
 
     <!-- Business Service Monitor -->
     <module>bsm</module>
@@ -139,7 +129,7 @@
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
     
-    <!-- ReST Elastic Search Integration -->
+    <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
     
     <!-- Alarm Change Notifier -->
@@ -147,6 +137,8 @@
     
     <!-- Internal Plugins Descriptor -->
     <module>internal-plugins-descriptor</module>
-    
+
+    <!-- Event Integration Facility Adapter -->
+    <module>eif-adapter</module>
   </modules>
 </project>

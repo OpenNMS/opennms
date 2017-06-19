@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.svclayer.api.KscReportService;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public Report buildDomainReport(String domain) {
-        String resourceId = OnmsResource.createResourceId("domain", domain);
+        ResourceId resourceId = ResourceId.get("domain", domain);
         OnmsResource res = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), res, "Domain Report for Domain " + domain);
     }
@@ -72,7 +73,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public Report buildNodeReport(int node_id) {
-        String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
+        ResourceId resourceId = ResourceId.get("node", Integer.toString(node_id));
         OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
     }
@@ -80,7 +81,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public Report buildNodeSourceReport(String nodeSource) {
-        String resourceId = OnmsResource.createResourceId("nodeSource", nodeSource);
+        ResourceId resourceId = ResourceId.get("nodeSource", nodeSource);
         OnmsResource res = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), res, "Node Report for Foreign Source:Id " + nodeSource);
     }
@@ -88,8 +89,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
         Report report = new Report();
         report.setTitle(title);
-        report.setShow_timespan_button(true);
-        report.setShow_graphtype_button(true);
+        report.setShowTimespanButton(true);
+        report.setShowGraphtypeButton(true);
 
         List<OnmsResource> resources = service.findChildResources(parentResource, "interfaceSnmp");
         for (OnmsResource resource : resources) {
@@ -100,7 +101,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
             Graph graph = new Graph();
             graph.setTitle("");
-            graph.setResourceId(resource.getId());
+            graph.setResourceId(resource.getId().toString());
             graph.setTimespan("7_day");
             graph.setGraphtype(graphs[0].getName());
 
@@ -109,32 +110,32 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return report;
     }
 
-    private static String getResourceIdForGraph(Graph graph) {
+    private static ResourceId getResourceIdForGraph(Graph graph) {
         Assert.notNull(graph, "graph argument cannot be null");
 
-        String resourceId;
-        if (graph.getResourceId() != null) {
-            resourceId = graph.getResourceId();
+        ResourceId resourceId;
+        if (graph.getResourceId().isPresent()) {
+            resourceId = ResourceId.fromString(graph.getResourceId().get());
         } else {
             String parentResourceTypeName;
             String parentResourceName;
             String resourceTypeName;
             String resourceName;
 
-            if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
+            if (graph.getNodeId().isPresent() && !graph.getNodeId().get().equals("null")) {
                 parentResourceTypeName = "node";
-                parentResourceName = graph.getNodeId();
-            } else if (graph.getNodeSource() != null && !graph.getNodeSource().equals("null")) {
+                parentResourceName = graph.getNodeId().get();
+            } else if (graph.getNodeSource().isPresent() && !graph.getNodeSource().get().equals("null")) {
                 parentResourceTypeName = "nodeSource";
-                parentResourceName = graph.getNodeSource();
-            } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
+                parentResourceName = graph.getNodeSource().get();
+            } else if (graph.getDomain().isPresent() && !graph.getDomain().get().equals("null")) {
                 parentResourceTypeName = "domain";
-                parentResourceName = graph.getDomain();
+                parentResourceName = graph.getDomain().get();
             } else {
                 throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
             }
 
-            String intf = graph.getInterfaceId();
+            String intf = graph.getInterfaceId().orElse(null);
             if (intf == null || "".equals(intf)) {
                 resourceTypeName = "nodeSnmp";
                 resourceName = "";
@@ -143,7 +144,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                 resourceName = intf;
             }
 
-            resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
+            resourceId = ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceTypeName, resourceName);
         }
 
         return resourceId;

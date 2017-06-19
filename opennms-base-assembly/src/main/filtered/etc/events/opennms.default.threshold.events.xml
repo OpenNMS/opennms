@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+        <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+        <descr>
+            &lt;p&gt;High threshold exceeded for %service% datasource
+            %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+            &lt;p&gt;By default, OpenNMS watches some key parameters
+            on devices in your network and will alert you with
+            an event if certain conditions arise. For example, if
+            the CPU utilization on your Cisco router maintains an
+            inordinately high percentage of utilization for an extended
+            period, an event will be generated. These thresholds are
+            determined and configured based on vendor recommendations,
+            tempered with real-world experience in working
+            deployments.&lt;/p&gt; &lt;p&gt;This specific event
+            indicates that a high threshold was exceeded.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            High threshold exceeded for %service% datasource %parm[ds]% on interface
+            %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data
+                reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                alarm-type="1" auto-clean="false"/>
+    </event>
+
+    <event>
+        <uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
+        <event-label>OpenNMS-defined threshold event: lowThresholdExceeded</event-label>
+        <descr>
+            &lt;p&gt;Low threshold exceeded for %service% datasource
+            %parm[ds]% on interface %interface%, parms: %parm[all]%.&lt;/p&gt;
+            &lt;p&gt;By default, OpenNMS watches some key parameters
+            on devices in your network and will alert you with
+            an event if certain conditions arise. For example, if
+            the CPU utilization on your Cisco router maintains an
+            inordinately high percentage of utilization for an extended
+            period, an event will be generated. These thresholds are
+            determined and configured based on working experience with
+            real deployments, not vendor recommendation alone.&lt;/p&gt;
+            &lt;p&gt;This specific event indicates that a low threshold
+            was exceeded.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            Low threshold exceeded for %service% datasource %parm[ds]% on interface
+            %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data
+                reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
+        <event-label>OpenNMS-defined threshold event: highThresholdRearmed</event-label>
+        <descr>
+            &lt;p&gt;High threshold has been rearmed for %service% datasource
+            %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+            &lt;p&gt;By default, OpenNMS watches some key parameters
+            on devices in your network and will alert you with
+            an event if certain conditions arise. For example, if
+            the CPU utilization on your Cisco router maintains an
+            inordinately high percentage of utilization for an extended
+            period, an event will be generated. These thresholds are
+            determined and configured based on vendor recommendations,
+            tempered with real-world experience in working
+            deployments.&lt;/p&gt; &lt;p&gt;This specific event
+            indicates that a high threshold was exceeded but then dropped
+            below the rearm threshold..&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            High threshold rearmed for %service% datasource %parm[ds]% on interface
+            %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data
+                reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                alarm-type="2"
+                clear-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
+        <event-label>OpenNMS-defined threshold event: lowThresholdRearmed</event-label>
+        <descr>
+            &lt;p&gt;Low threshold has been rearmed for %service% datasource
+            %parm[ds]% on interface %interface%, parms: %parm[all]%.&lt;/p&gt;
+            &lt;p&gt;By default, OpenNMS watches some key parameters
+            on devices in your network and will alert you with
+            an event if certain conditions arise. For example, if
+            the CPU utilization on your Cisco router maintains an
+            inordinately high percentage of utilization for an extended
+            period, an event will be generated. These thresholds are
+            determined and configured based on working experience with
+            real deployments, not vendor recommendation alone.&lt;/p&gt;
+            &lt;p&gt;This specific event indicates that a low threshold
+            was exceeded but then dropped below the rearm threshold.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            Low threshold rearmed for %service% datasource %parm[ds]% on interface
+            %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data
+                reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                alarm-type="2"
+                clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"
+                auto-clean="false"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
+        <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
+        <descr>
+            &lt;p&gt;Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms:
+            %parm[all]%&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/threshold/absoluteChangeExceeded</uei>
+        <event-label>OpenNMS-defined threshold event: absoluteChangeExceeded</event-label>
+        <descr>
+            &lt;p&gt;Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms:
+            %parm[all]%&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>

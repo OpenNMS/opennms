@@ -37,7 +37,7 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.features.topology.api.IconRepository;
+import org.opennms.features.topology.api.ConfigurableIconRepository;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
-public class DefaultIconRepository implements IconRepository, ManagedService {
+public class DefaultIconRepository implements ConfigurableIconRepository, ManagedService {
 
 	private final Map<String, String> m_iconMap = Maps.newHashMap();
 

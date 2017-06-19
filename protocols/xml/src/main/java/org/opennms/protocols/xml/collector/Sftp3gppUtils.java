@@ -38,11 +38,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
-import org.opennms.protocols.xml.config.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,11 +128,10 @@ public abstract class Sftp3gppUtils {
      * @param resource the resource
      * @param attribGroupType the attrib group type
      */
-    public static void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
-        Map<String,String> properties = get3gppProperties(get3gppFormat(resource.getResourceTypeName()), resource.getInstance());
+    public static void processXmlResource(CollectionSetBuilder builder, Resource resource, String resourceTypeName, String group) {
+        Map<String,String> properties = get3gppProperties(get3gppFormat(resourceTypeName), resource.getInstance());
         for (Entry<String,String> entry : properties.entrySet()) {
-            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), "string"), attribGroupType);
-            resource.setAttributeValue(attribType, entry.getValue());
+            builder.withStringAttribute(resource, group, entry.getKey(), entry.getValue());
         }
     }
 

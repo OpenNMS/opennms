@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -175,6 +176,11 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
     public void testLoadSnmpGraphProperties() throws Exception {
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
         dao.loadProperties("foo", new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("snmp-graph.properties")));
+        for (PrefabGraph graph : dao.getAllPrefabGraphs()) {
+            if (!graph.getCommand().trim().equals(graph.getCommand())) {
+                fail("Prefab graph contains extra whitespace: " + graph.getCommand());
+            }
+        }
     }
 
     @Test
@@ -314,20 +320,20 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         File graphHCbits = m_fileAnticipator.tempFile(graphDirectory, "mib2.HCbits.properties");
                     
         m_outputStream = new FileOutputStream(rootFile);
-		m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+		m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_baseIncludePrefab);
         m_writer.close();
         m_outputStream.close();
                     
         graphDirectory.mkdir();
         m_outputStream = new FileOutputStream(graphBits);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_separateBitsGraph);
         m_writer.close();
         m_outputStream.close();
         
         m_outputStream = new FileOutputStream(graphHCbits);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_separateHCBitsGraph);
         m_writer.close();
         m_outputStream.close();
@@ -365,20 +371,20 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         File multiFile2 = m_fileAnticipator.tempFile(graphDirectory, "mib2.bits2.properties");
                     
         m_outputStream = new FileOutputStream(rootFile);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_baseIncludePrefab);
         m_writer.close();
         m_outputStream.close();
                     
         graphDirectory.mkdir();
         m_outputStream = new FileOutputStream(multiFile1);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_includedMultiGraph1);
         m_writer.close();
         m_outputStream.close();
         
         m_outputStream = new FileOutputStream(multiFile2);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_includedMultiGraph2);
         m_writer.close();
         m_outputStream.close();
@@ -435,27 +441,27 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         File graphHCbits = m_fileAnticipator.tempFile(graphDirectory, "mib2.HCbits.properties");
 
         m_outputStream = new FileOutputStream(rootFile);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_baseIncludePrefab);
         m_writer.close();
         m_outputStream.close();
                     
         graphDirectory.mkdir();
         m_outputStream = new FileOutputStream(graphBits);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_separateBitsGraph);
         m_writer.close();
         m_outputStream.close();
         
         m_outputStream = new FileOutputStream(graphHCbits);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_separateHCBitsGraph);
         m_writer.close();
         m_outputStream.close();
                     
         graphDirectory.mkdir();
         m_outputStream = new FileOutputStream(multiFile);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_includedMultiGraph1);
         m_writer.close();
         m_outputStream.close();
@@ -514,7 +520,7 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         m_testSpecificLoggingTest = true;
         
         PropertiesGraphDao dao = createPropertiesGraphDao(s_emptyMap, s_emptyMap);
-        dao.loadProperties("foo", new ByteArrayInputStream(s_partlyBorkedPrefab.getBytes("UTF-8")));
+        dao.loadProperties("foo", new ByteArrayInputStream(s_partlyBorkedPrefab.getBytes(StandardCharsets.UTF_8)));
         
         //We expect to be able to get a mib2.HCbits, and a mib2.discards, but no mib2.bits 
         try {
@@ -542,14 +548,14 @@ public class PropertiesGraphDaoIT extends PropertiesGraphDaoITCase {
         File graphBits = m_fileAnticipator.tempFile(graphDirectory, "mib2.bits.properties");
 
         m_outputStream = new FileOutputStream(rootFile);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_baseIncludePrefab);
         m_writer.close();
         m_outputStream.close();
 
         graphDirectory.mkdir();
         m_outputStream = new FileOutputStream(graphBits);
-        m_writer = new OutputStreamWriter(m_outputStream, "UTF-8");
+        m_writer = new OutputStreamWriter(m_outputStream, StandardCharsets.UTF_8);
         m_writer.write(s_separateBitsGraph.replace("report.id", "report.noid"));
         m_writer.close();
         m_outputStream.close();

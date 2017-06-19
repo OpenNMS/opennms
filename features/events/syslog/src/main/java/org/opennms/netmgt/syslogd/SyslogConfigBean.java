@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.UeiMatch;
 
 /**
  * This is a bean container that can be used as a {@link SyslogConfig}
@@ -38,14 +41,18 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  */
 public final class SyslogConfigBean implements SyslogdConfig {
 
-	private int m_syslogPort;
+	private Integer m_syslogPort;
 	private String m_listenAddress;
 	private String m_forwardingRegexp;
-	private int m_matchingGroupHost;
-	private int m_matchingGroupMessage;
+	private Integer m_matchingGroupHost;
+	private Integer m_matchingGroupMessage;
 	private String m_parser;
 	private String m_discardUei;
 	private boolean m_newSuspectOnMessage;
+	private int m_numThreads;
+	private int m_queueSize;
+	private int m_batchSize;
+	private int m_batchIntervalMs;
 
 	@Override
 	public int getSyslogPort() {
@@ -84,7 +91,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	}
 
 	@Override
-	public int getMatchingGroupHost() {
+	public Integer getMatchingGroupHost() {
 		return m_matchingGroupHost;
 	}
 
@@ -93,7 +100,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	}
 
 	@Override
-	public int getMatchingGroupMessage() {
+	public Integer getMatchingGroupMessage() {
 		return m_matchingGroupMessage;
 	}
 
@@ -111,13 +118,13 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	}
 
 	@Override
-	public UeiList getUeiList() {
-		return null;
+	public List<UeiMatch> getUeiList() {
+		return Collections.emptyList();
 	}
 
 	@Override
-	public HideMessage getHideMessages() {
-		return null;
+	public List<HideMatch> getHideMessages() {
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -129,4 +136,42 @@ public final class SyslogConfigBean implements SyslogdConfig {
 		m_discardUei = discardUei;
 	}
 
+    @Override
+    public int getNumThreads() {
+        if (m_numThreads <= 0) {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+        return m_numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        m_numThreads = numThreads;
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_queueSize;
+    }
+
+    public void setQueueSize(int queueSize) {
+        m_queueSize = queueSize;
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        m_batchSize = batchSize;
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_batchIntervalMs;
+    }
+
+    public void setBatchIntervalMs(int batchIntervalMs) {
+        m_batchIntervalMs = batchIntervalMs;
+    }
 }

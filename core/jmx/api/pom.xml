@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.jmx</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.jmx</groupId>
   <artifactId>org.opennms.core.jmx.api</artifactId>
-  <name>OpenNMS Core JMX API</name>
+  <name>OpenNMS :: Core :: JMX :: API</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -31,16 +31,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-jaxb</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.xml</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -27,9 +27,13 @@
  *******************************************************************************/
 package org.opennms.minion.core.impl;
 
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Objects;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -43,56 +47,111 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.minion.core.api.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public class ScvEnabledRestClientImpl implements RestClient {
     public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledRestClientImpl.class);
 
+    /**
+     * Name of the key at which the server's version can be found
+     * in the info map returned by '/rest/info'
+     */
+    private static final String VERSION_KEY = "version";
+
     private final URL url;
-    private final String username;
-    private final String password;
+    private final SecureCredentialsVault scv;
+    private final String scvAlias;
 
     public ScvEnabledRestClientImpl(String url, SecureCredentialsVault scv, String scvAlias) throws MalformedURLException {
         this.url = new URL(url);
-        final Credentials amqCredentials = scv.getCredentials(scvAlias);
-        if (amqCredentials == null) {
+        this.scv = Objects.requireNonNull(scv);
+        this.scvAlias = Objects.requireNonNull(scvAlias);
+    }
+
+    private UsernamePasswordCredentials getCredentials() {
+        // Perform the lookup in SVC on every call, so that the client
+        // does not need to be reloaded when the credentials are changed
+        final Credentials credentials = scv.getCredentials(scvAlias);
+        if (credentials == null) {
             LOG.warn("No credentials found in SCV for alias '{}'. Using default credentials.", scvAlias);
-            username = "admin";
-            password = "admin";
-        } else {
-            username = amqCredentials.getUsername();
-            password = amqCredentials.getPassword();
+            return new UsernamePasswordCredentials("admin", "admin");
+        }
+        return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
+    }
+
+	// Setup a client with pre-emptive authentication
+    private CloseableHttpResponse getResponse(HttpGet httpget)
+            throws Exception {
+        CloseableHttpResponse response = null;
+        HttpHost target = new HttpHost(url.getHost(), url.getPort(),
+                                       url.getProtocol());
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope(target.getHostName(),
+                                                   target.getPort()),
+                                                   getCredentials());
+        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(target, basicAuth);
+
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache(authCache);
+
+        response = httpclient.execute(target, httpget, localContext);
+        return response;
+    }
+
+    @Override
+    public String getVersion() throws Exception {
+        // Issue a simple GET against the Info endpoint
+        final HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
+        try (CloseableHttpResponse response = getResponse(httpget)) {
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new IllegalStateException(String.format("Oups. We were expecting a status code of 200, but got %d instead.",
+                        response.getStatusLine().getStatusCode()));
+            }
+
+            final HttpEntity entity = response.getEntity();
+            final String json = EntityUtils.toString(entity);
+            final Gson g = new Gson();
+            final Type type = new TypeToken<Map<String, String>>(){}.getType();
+            try {
+                final Map<String, String> info = g.fromJson(json, type);
+                return info.get(VERSION_KEY);
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException("Failed to parse JSON: " + json, e);
+            }
         }
     }
 
     @Override
-    public void ping() throws Exception {
-        // Setup a client with pre-emptive authentication
-        HttpHost target = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(target.getHostName(), target.getPort()),
-                new UsernamePasswordCredentials(username, password));
-        CloseableHttpClient httpclient = HttpClients.custom()
-                .setDefaultCredentialsProvider(credsProvider).build();
-        try {
-            AuthCache authCache = new BasicAuthCache();
-            BasicScheme basicAuth = new BasicScheme();
-            authCache.put(target, basicAuth);
-
-            HttpClientContext localContext = HttpClientContext.create();
-            localContext.setAuthCache(authCache);
-
-            // Issue a simple GET against the Info endpoint
-            HttpGet httpget = new HttpGet(url.toExternalForm() + "/rest/info");
-            CloseableHttpResponse response = httpclient.execute(target, httpget, localContext);
-            response.close();
-        } finally {
-            httpclient.close();
+	public void ping() throws Exception {
+        if (getVersion() == null) {
+            throw new Exception("Server did not return a version.");
         }
+        // We were able to successfully retrieve's the server's version!
+	}
+
+    @Override
+    public String getSnmpV3Users() throws Exception {
+        String responseString = null;
+        CloseableHttpResponse response = null;
+        HttpGet httpget = new HttpGet(url.toExternalForm()
+                + "/rest/config/trapd");
+
+        response = getResponse(httpget);
+        HttpEntity entity = response.getEntity();
+        responseString = EntityUtils.toString(entity);
+        response.close();
+        return responseString;
     }
+
 }

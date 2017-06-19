@@ -29,7 +29,6 @@
 package org.opennms.netmgt.syslogd;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
@@ -63,8 +62,6 @@ public class Syslogd extends AbstractServiceDaemon {
     @Autowired
     private SyslogReceiver m_udpEventReceiver;
 
-    private BroadcastEventProcessor m_broadcastEventProcessor;
-
     /**
      * <p>Constructor for Syslogd.</p>
      */
@@ -85,15 +82,7 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     @Override
     protected void onInit() {
-
-        try {
-            // clear out the known nodes
-            SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
-        } catch (SQLException e) {
-            LOG.error("Failed to load known IP address list", e);
-            throw new UndeclaredThrowableException(e);
-        }
-
+        // Nothing to do
     }
 
     /**
@@ -110,14 +99,6 @@ public class Syslogd extends AbstractServiceDaemon {
             rThread.interrupt();
             throw e;
         }
-
-        try {
-            m_broadcastEventProcessor = new BroadcastEventProcessor();
-            m_broadcastEventProcessor.setSyslogdIPMgr(SyslogdIPMgrJDBCImpl.getInstance());
-        } catch (Throwable e) {
-            LOG.error("Failed to setup event reader", e);
-            throw new UndeclaredThrowableException(e);
-        }
     }
 
     /**
@@ -125,12 +106,6 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStop() {
-        if (m_broadcastEventProcessor != null) {
-            LOG.debug("stop: Stopping the Syslogd event receiver");
-            m_broadcastEventProcessor.close();
-            LOG.debug("stop: Stopped the Syslogd event receiver");
-        }
-
         if (m_udpEventReceiver != null) {
             LOG.debug("stop: Stopping the Syslogd UDP receiver");
             try {

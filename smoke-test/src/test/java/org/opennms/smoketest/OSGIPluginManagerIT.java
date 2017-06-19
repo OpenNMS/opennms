@@ -28,6 +28,7 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 
@@ -51,5 +52,25 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canListFeatures() throws ClientProtocolException, IOException, InterruptedException {
         assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/featuremgr/rest/v1-0/features-list")));
+    }
+
+    @Test
+    public void canListPluginManifests() throws ClientProtocolException, IOException, InterruptedException {
+        assertNotEquals(Integer.valueOf(404), doRequest(new HttpGet(getBaseUrl() + "/opennms/pluginmgr/rest/v1-0/manifest-list")));
+    }
+
+    @Test
+    public void canAccessLicenseDiagnostics() throws ClientProtocolException, IOException, InterruptedException {
+        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/licencemgr/diagnostics/licence-mgr-rest-diagnostics.html")));
+    }
+
+    @Test
+    public void canAccessFeatureDiagnostics() throws ClientProtocolException, IOException, InterruptedException {
+        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/featuremgr/diagnostics/feature-mgr-rest-diagnostics.html")));
+    }
+
+    @Test
+    public void canAccessPluginDiagnostics() throws ClientProtocolException, IOException, InterruptedException {
+        assertEquals(Integer.valueOf(200), doRequest(new HttpGet(getBaseUrl() + "/opennms/pluginmgr/diagnostics/plugin-mgr-rest-diagnostics.html")));
     }
 }

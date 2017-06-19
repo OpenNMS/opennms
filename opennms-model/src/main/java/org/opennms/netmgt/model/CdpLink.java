@@ -375,12 +375,19 @@ public class CdpLink implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
+    	Integer nodeid = null;
+    	if (m_node != null)
+    		nodeid = m_node.getId();
+    	String cdpCacheAddressTypeString = null;
+    	if (m_cdpCacheAddressType != null)
+    		cdpCacheAddressTypeString = 
+    		CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()); 
         return new ToStringBuilder(this)
-        .append("NodeId", m_node.getId())
+        .append("NodeId", nodeid)
         .append("cdpCacheIfIndex", m_cdpCacheIfIndex)
         .append("cdpCacheDeviceIndex", m_cdpCacheDeviceIndex)
         .append("cdpInterfaceName", m_cdpInterfaceName)
-        .append("cdpCacheAddressType", CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()))
+        .append("cdpCacheAddressType", cdpCacheAddressTypeString)
         .append("cdpCacheAddress", m_cdpCacheAddress)
         .append("cdpCacheVersion", m_cdpCacheVersion)
         .append("cdpCachedeviceId", m_cdpCacheDeviceId)

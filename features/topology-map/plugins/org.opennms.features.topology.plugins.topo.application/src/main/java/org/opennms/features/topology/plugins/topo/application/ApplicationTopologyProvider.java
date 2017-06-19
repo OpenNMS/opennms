@@ -28,19 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
@@ -52,6 +49,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
@@ -68,11 +66,6 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
-    @Override
-    public void save() {
-       // we do not support save at the moment
-    }
-    
     private void load() {
         resetContainer();
         for (OnmsApplication application : applicationDao.findAll()) {
@@ -86,7 +79,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
                 // connect with application
                 String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
+                Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
                 addEdges(edge);
             }
         }
@@ -98,18 +91,17 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     @Override
-    public Criteria getDefaultCriteria() {
-        // Only show the first application by default
-        List<OnmsApplication> applications = applicationDao.findAll();
-        if (!applications.isEmpty()) {
-            return new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0)));
-        }
-        return null;
-    }
-
-    @Override
-    public void load(String filename) throws MalformedURLException, JAXBException {
-      load();
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withPreferredLayout("Hierarchy Layout")
+                .withCriteria(() -> {
+                    // Only show the first application by default
+                    List<OnmsApplication> applications = applicationDao.findAll();
+                    if (!applications.isEmpty()) {
+                        return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0))));
+                    }
+                    return null;
+                });
     }
 
     @Override

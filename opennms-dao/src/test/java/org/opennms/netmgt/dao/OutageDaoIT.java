@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -81,7 +82,6 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -91,7 +91,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class OutageDaoIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
-    
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
+
     @Autowired
     private NodeDao m_nodeDao;
 
@@ -134,7 +137,7 @@ public class OutageDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
-        OnmsNode node = new OnmsNode("localhost");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         m_nodeDao.save(node);
 
         OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
@@ -163,7 +166,7 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                OnmsNode node = new OnmsNode("localhost");
+                OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -192,7 +195,7 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                OnmsNode node = new OnmsNode("localhost");
+                OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -220,18 +223,18 @@ public class OutageDaoIT implements InitializingBean {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
         }
-        OnmsNode node = new OnmsNode("shoes");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
-        node = new OnmsNode("megaphone");
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "megaphone");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
-        node = new OnmsNode("grunties");
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "grunties");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
@@ -246,18 +249,18 @@ public class OutageDaoIT implements InitializingBean {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
         }
-        OnmsNode node = new OnmsNode("shoes");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
-        node = new OnmsNode("megaphone");
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "megaphone");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
-        node = new OnmsNode("grunties");
+        node = new OnmsNode(m_locationDao.getDefaultLocation(), "grunties");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 

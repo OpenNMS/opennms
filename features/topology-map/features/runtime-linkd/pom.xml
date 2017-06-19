@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-linkd</artifactId>
 
-  <name>OpenNMS :: Features :: Topology :: Runtime (Linkd)</name>
+  <name>OpenNMS :: Features :: Topology :: Features :: Linkd</name>
 
   <description>Linkd-based runtime and plugins for the OpenNMS topology web app.</description>
 
@@ -29,15 +29,6 @@
           <features>
             <feature>opennms-topology-runtime-base</feature>
           </features>
-          <configs>
-            <config>
-                <name>org.opennms.features.topology.plugins.topo.linkd</name>
-                <contents>
-                    configurationFile=${karaf.home}/etc/saved-linkd-graph.xml
-                </contents>
-            </config>
-          </configs>
-
         </configuration>
       </plugin>
     </plugins>
@@ -55,7 +46,7 @@
 
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>linkd</artifactId>
+      <artifactId>org.opennms.features.topology.plugins.topo.linkd</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

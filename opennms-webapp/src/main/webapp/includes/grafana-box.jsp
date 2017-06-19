@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,20 +39,25 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.apache.commons.io.IOUtils,
-                org.apache.http.HttpHost,
-                org.apache.http.HttpResponse,
+        import="java.net.URI,
+                org.apache.commons.io.IOUtils,
+                org.apache.http.client.config.RequestConfig,
+                org.apache.http.client.utils.URIBuilder,
                 org.apache.http.client.methods.HttpGet,
-                org.apache.http.conn.ConnectTimeoutException,
-                org.apache.http.impl.client.DefaultHttpClient,
-                org.apache.http.params.HttpConnectionParams,
-                org.apache.http.params.HttpParams,
-                java.net.UnknownHostException,
-                java.net.ConnectException" %>
+                org.apache.http.client.methods.CloseableHttpResponse,
+                org.apache.http.HttpEntity,
+                org.apache.http.impl.client.CloseableHttpClient,
+                org.apache.http.impl.client.HttpClients" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+    int grafanaDashboadLimit = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.dashboardLimit", "0"));
+%>
 
+<c:if test="${param.useLimit != 'true'}">
+<% grafanaDashboadLimit = 0; %>
+</c:if>
 <%
     String grafanaApiKey = System.getProperty("org.opennms.grafanaBox.apiKey", "");
     String grafanaProtocol = System.getProperty("org.opennms.grafanaBox.protocol", "http");
@@ -68,20 +73,32 @@
             && !"".equals(grafanaHostname)
             && !"".equals(grafanaProtocol)
             && ("http".equals(grafanaProtocol) || "https".equals(grafanaProtocol))) {
-        try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpParams httpParams = httpClient.getParams();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();) {
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(grafanaConnectionTimeout)
+                    .setSocketTimeout(grafanaSoTimeout)
+                    .build()
+                    ;
+            URI uri = new URIBuilder()
+                    .setScheme(grafanaProtocol)
+                    .setHost(grafanaHostname)
+                    .setPort(grafanaPort)
+                    .setPath("/api/search/")
+                    .build();
+
             /**
              * Setting the timeouts to assure that the landing page will be loaded. Making the
              * call via JS isn't possible due to CORS-related problems with the Grafana server.
              */
-            HttpConnectionParams.setConnectionTimeout(httpParams, grafanaConnectionTimeout);
-            HttpConnectionParams.setSoTimeout(httpParams, grafanaSoTimeout);
-            HttpHost httpHost = new HttpHost(grafanaHostname, grafanaPort, grafanaProtocol);
-            HttpGet httpGet = new HttpGet("/api/search/");
+            HttpGet httpGet = new HttpGet(uri);
+            httpGet.setConfig(requestConfig);
             httpGet.setHeader("Authorization", "Bearer " + grafanaApiKey);
-            HttpResponse httpResponse = httpClient.execute(httpHost, httpGet);
-            responseString = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
+            try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet);) {
+                HttpEntity httpEntity = httpResponse.getEntity();
+                if (httpEntity != null) {
+                    responseString = IOUtils.toString(httpEntity.getContent(), "UTF-8");
+                }
+            }
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
@@ -102,6 +119,8 @@
         <script type="text/javascript">
             var grafanaTag = '<%=grafanaTag%>';
             var obj = <%=responseString%>;
+            var limit = <%=grafanaDashboadLimit%>;
+            var count = 0;
 
             for (var val of obj) {
                 var showDashboard = true;
@@ -117,9 +136,14 @@
                     }
                 }
                 if (showDashboard) {
-                    $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                    if (limit < 1 || count++ < limit) {
+                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                    }
                 }
             };
+            if (limit > 0 && count > limit) {
+                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
+            }
         </script>
         <%
             } else {

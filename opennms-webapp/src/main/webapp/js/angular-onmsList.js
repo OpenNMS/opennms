@@ -167,6 +167,28 @@ function parseContentRange(contentRange) {
 	};
 }
 
+function normalizeOffset(offset, maxOffset, limit) {
+	var newOffset = offset;
+
+	// Offset of the last page
+	var lastPageOffset;
+	if (maxOffset < 0) {
+		newOffset = 0;
+		lastPageOffset = 0;
+	} else {
+		lastPageOffset = Math.floor(maxOffset / limit) * limit; 
+	}
+
+	// Bounds checking
+	newOffset = ((newOffset < 0) ? 0 : newOffset);
+	newOffset = ((newOffset > lastPageOffset) ? lastPageOffset : newOffset);
+
+	// Make sure that offset is a multiple of limit
+	newOffset = Math.floor(newOffset / limit) * limit;
+
+	return newOffset;
+}
+
 
 (function() {
 	'use strict';
@@ -207,7 +229,7 @@ function parseContentRange(contentRange) {
 			if (
 				typeof input !== 'undefined' &&
 				input !== null &&
-				input.trim() !== ''
+				(typeof input === 'String' ? input.trim() !== '' : true)
 			) {
 				return true;
 			} else {
@@ -409,17 +431,19 @@ function parseContentRange(contentRange) {
 			order: 'asc'
 		}
 
+		var initialLimit = typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit);
+
 		// Restore any query parameters that you can from the 
 		// query string, blank out the rest
 		$scope.query = {
-			searchParam: typeof $location.search()._s === 'undefined' ? $scope.defaults._s : $location.search()._s,
-			searchClauses: typeof $location.search()._s === 'undefined' ? $scope.defaults.searchClauses : fromFiql($location.search()._s),
-			limit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
-			newLimit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
-			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.defaults.offset),
-
 			lastOffset: 0,
 			maxOffset: 0,
+
+			searchParam: typeof $location.search()._s === 'undefined' ? $scope.defaults._s : $location.search()._s,
+			searchClauses: typeof $location.search()._s === 'undefined' ? $scope.defaults.searchClauses : fromFiql($location.search()._s),
+			limit: initialLimit,
+			newLimit: initialLimit,
+			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? normalizeOffset(Number($location.search().offset), Number.MAX_VALUE, initialLimit) : $scope.defaults.offset),
 
 			// TODO: Validate that the orderBy is in a list of supported properties
 			orderBy: typeof $location.search().orderBy === 'undefined' ? $scope.defaults.orderBy : $location.search().orderBy,
@@ -464,7 +488,7 @@ function parseContentRange(contentRange) {
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
-			if ($scope.containsSearchClause(clause)) {
+			if ($scope.getSearchClause(clause) != null) {
 				return;
 			}
 
@@ -474,13 +498,13 @@ function parseContentRange(contentRange) {
 			$scope.refresh();
 		}
 
-		$scope.containsSearchClause = function(clause) {
+		$scope.getSearchClause = function(clause) {
 			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
 				if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
-					return true;
+					return $scope.query.searchClauses[i];
 				}
 			}
-			return false;
+			return null;
 		}
 
 		$scope.clauseEquals = function(a, b) {
@@ -509,6 +533,58 @@ function parseContentRange(contentRange) {
 			$scope.refresh();
 		}
 
+		$scope.removeSearchClauses = function(clauses) {
+			for (var i = 0; i < clauses.length; i++) {
+				var index = $scope.query.searchClauses.indexOf(clauses[i]);
+				if (index >= 0) {
+					$scope.query.searchClauses.splice(index, 1);
+				}
+			}
+			$scope.query.searchParam = toFiql($scope.query.searchClauses);
+			$scope.refresh();
+		}
+
+		// Replace a search clause with a new clause
+		$scope.replaceSearchClause = function(oldClause, newClause) {
+			if(angular.isDate(newClause.value)) {
+				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
+				// Unfortunately, I don't think CXF will like this because
+				// it includes the millisecond portion of the date.
+				//clause.value = new Date(clause.value).toISOString();
+
+				newClause.value = $filter('date')(new Date(newClause.value), ISO_8601_DATE_FORMAT);
+			}
+
+			// TODO: Add validation?
+			var scopeOldClause = $scope.getSearchClause(oldClause);
+			var scopeNewClause = $scope.getSearchClause(newClause);
+			if (scopeOldClause == null) {
+				if (scopeNewClause == null) {
+					// If the old clause is not present, simply add the new clause
+					$scope.addSearchClause(newClause);
+				} else {
+					// If the old clause is not present and the new clause is already
+					// present, then do nothing
+				}
+			} else {
+				if (scopeNewClause == null) {
+					// If the old clause is present and the new clause is not, replace
+					// the values inside the old clause and then refresh
+					scopeOldClause.property = newClause.property;
+					scopeOldClause.operator = newClause.operator;
+					scopeOldClause.value = newClause.value;
+
+					$scope.query.searchParam = toFiql($scope.query.searchClauses);
+					$scope.refresh();
+				} else {
+					// If the old clause is present and the new clause is present,
+					// then just remove the old clause (as if it had been replaced by
+					// the already-existing new clause)
+					$scope.removeSearchClause(oldClause);
+				}
+			}
+		}
+
 		// Clear the current search
 		$scope.clearSearch = function() {
 			if ($scope.query.searchClauses.length > 0) {
@@ -533,18 +609,7 @@ function parseContentRange(contentRange) {
 		}
 
 		$scope.setOffset = function(offset) {
-			// Offset of the last page
-			var lastPageOffset;
-			if ($scope.query.maxOffset < 0) { 
-				offset = 0;
-				lastPageOffset = 0; 
-			} else {
-				lastPageOffset = Math.floor($scope.query.maxOffset / $scope.query.limit) * $scope.query.limit; 
-			}
-
-			// Bounds checking
-			offset = ((offset < 0) ? 0 : offset);
-			offset = ((offset > lastPageOffset) ? lastPageOffset : offset);
+			offset = normalizeOffset(offset, $scope.query.maxOffset, $scope.query.limit);
 
 			if ($scope.query.offset !== offset) {
 				$scope.query.offset = offset;
@@ -560,7 +625,7 @@ function parseContentRange(contentRange) {
 			}
 			if ($scope.query.limit !== limit) {
 				$scope.query.limit = limit;
-				$scope.query.offset = Math.floor($scope.query.offset / limit) * limit;
+				$scope.query.offset = normalizeOffset($scope.query.offset, $scope.query.maxOffset, $scope.query.limit);
 				$scope.refresh();
 			}
 		}

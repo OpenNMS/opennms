@@ -53,23 +53,18 @@
 package org.opennms.netmgt.protocols.xmp.collector;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 public class XmpCollectionFactory {
 
     /* class variables and methods *********************** */
@@ -86,10 +81,8 @@ public class XmpCollectionFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void init() throws IOException, FileNotFoundException, MarshalException, ValidationException 
+    public static void init() throws IOException, FileNotFoundException 
     {
 
         if (instance == null) {
@@ -106,6 +99,10 @@ public class XmpCollectionFactory {
      */
     public static XmpCollectionFactory getInstance() { return instance; }
 
+    public static void setInstance(XmpCollectionFactory instance) {
+        XmpCollectionFactory.instance = instance;
+    }
+
     /* instance variables ******************************** */
     private String rrdPath;
 
@@ -114,18 +111,12 @@ public class XmpCollectionFactory {
      * <p>Constructor for XmpCollectionFactory.</p>
      *
      * @param configFile a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public XmpCollectionFactory(String configFile) 
-    throws MarshalException, ValidationException, IOException { 
+    throws IOException { 
 
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        config = (XmpDatacollectionConfig)Unmarshaller.unmarshal(XmpDatacollectionConfig.class,new InputStreamReader(cfgIn, "UTF-8"));
-
-        cfgIn.close();
+        config =  JaxbUtils.unmarshal(XmpDatacollectionConfig.class, configFile);
 
         rrdPath = null;
 
@@ -144,14 +135,12 @@ public class XmpCollectionFactory {
      * <p>Constructor for XmpCollectionFactory.</p>
      *
      * @param rdr a {@link java.io.Reader} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
     public XmpCollectionFactory(Reader rdr)
-    throws MarshalException, ValidationException, IOException { 
+    throws IOException { 
 
-        config = (XmpDatacollectionConfig)Unmarshaller.unmarshal(XmpDatacollectionConfig.class,rdr);
+        config =  JaxbUtils.unmarshal(XmpDatacollectionConfig.class,rdr);
 
         rrdPath = null;
 

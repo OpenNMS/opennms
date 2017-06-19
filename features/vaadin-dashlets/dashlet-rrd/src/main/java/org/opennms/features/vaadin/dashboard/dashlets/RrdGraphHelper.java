@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.api.Util;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,6 +43,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -79,7 +81,7 @@ public class RrdGraphHelper {
      * @param resourceId the resourceId
      * @return a map of names/titles found
      */
-    public Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId) {
+    public Map<String, String> getGraphNameTitleMappingForResourceId(final ResourceId resourceId) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
@@ -103,7 +105,7 @@ public class RrdGraphHelper {
      * @param resourceId the resourceId
      * @return a map of titles/names found
      */
-    public Map<String, String> getGraphTitleNameMappingForResourceId(final String resourceId) {
+    public Map<String, String> getGraphTitleNameMappingForResourceId(final ResourceId resourceId) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
@@ -127,7 +129,7 @@ public class RrdGraphHelper {
      * @param resourceId the resourceId
      * @return a map of graphs found
      */
-    public Map<String, String> getGraphResultsForResourceId(final String resourceId) {
+    public Map<String, String> getGraphResultsForResourceId(final ResourceId resourceId) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
@@ -165,7 +167,7 @@ public class RrdGraphHelper {
         return m_transactionOperations.execute(new TransactionCallback<Map<OnmsResourceType, List<OnmsResource>>>() {
             @Override
             public Map<OnmsResourceType, List<OnmsResource>> doInTransaction(TransactionStatus transactionStatus) {
-                OnmsResource resource = m_resourceDao.getResourceById("node[" + nodeId + "]");
+                OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", nodeId));
 
                 Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
                 for (OnmsResource childResource : resource.getChildResources()) {
@@ -191,7 +193,7 @@ public class RrdGraphHelper {
             public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
                 List<OnmsNode> onmsNodeList = m_nodeDao.findAll();
                 for (int i = onmsNodeList.size() - 1; i >= 0; i--) {
-                    OnmsResource resource = m_resourceDao.getResourceById("node[" + onmsNodeList.get(i).getId() + "]");
+                    OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", Integer.toString(onmsNodeList.get(i).getId())));
                     if (resource.getChildResources().size() == 0) {
                         onmsNodeList.remove(i);
                     }
@@ -222,8 +224,8 @@ public class RrdGraphHelper {
             String key;
             String value;
             try {
-                key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
-                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.name());
+                value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 continue;
             }

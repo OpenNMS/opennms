@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
+import java.util.ArrayList;
 import java.util.Date;
 
 
 
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +43,9 @@ import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
 import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -70,80 +72,76 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     protected void runCollection() {
 
     	final Date now = new Date(); 
-
-    	String trackerName = "cdpGlobalGroup";
-
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
 
-		LOG.debug("run: collecting : {}", getPeer());
-
-        SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, cdpGlobalGroup);
-
-        walker.start();
-
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
-        } catch (final InterruptedException e) {
-            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpGlobalGroup).
+            withDescription("cdpGlobalGroup").
+            withLocation(getLocation()).
+            execute().
+            get();
+       } catch (ExecutionException e) {
+           LOG.info("run: node [{}]: Agent error while scanning the cdpGlobalGroup table",
+                    getNodeId(),
+                    e);
+           return;
+       } catch (final InterruptedException e) {
+           LOG.info("run: node [{}]: Cdp cdpGlobalGroup collection interrupted, exiting",
+                    getNodeId(),
+                    e);
+           return;
+       }
+       if (cdpGlobalGroup.getCdpDeviceId() == null ) {
+            LOG.info("run: node [{}]: CDP_MIB not supported", 
+                     getNodeId());
             return;
-        }
+       } 
+       CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
+       m_linkd.getQueryManager().store(getNodeId(), cdpElement);
+       if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
+           LOG.info("run: node [{}]. CDP disabled.",
+                    getNodeId());
+           return;
+       }
         
-        if (cdpGlobalGroup.getCdpDeviceId() == null ) {
-            LOG.info("run: cdp mib not supported on: {}", str(getPeer().getAddress()));
-            return;
-        } 
-        CdpElement cdpElement = cdpGlobalGroup.getCdpElement();
-        m_linkd.getQueryManager().store(getNodeId(), cdpElement);
-        if (cdpElement.getCdpGlobalRun() == TruthValue.FALSE) {
-            LOG.info("run: cdp disabled on: {}", str(getPeer().getAddress()));
-            return;
-        }
-
-        final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(getPeer());
-        trackerName = "cdpCacheTable";
+       List<CdpLink> links = new ArrayList<CdpLink>();
         CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
 
-        	public void processCdpCacheRow(final CdpCacheRow row) {
-	    		m_linkd.getQueryManager().store(getNodeId(),row.getLink(cdpInterfacePortNameGetter));
-        	}
-        };
-
-        walker = SnmpUtils.createWalker(getPeer(), trackerName, cdpCacheTable);
-        walker.start();
-        
-        try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
+            public void processCdpCacheRow(final CdpCacheRow row) {
+                links.add(row.getLink());
             }
+       };
+
+        try {
+            m_linkd.getLocationAwareSnmpClient().walk(peer, cdpCacheTable).
+            withDescription("cdpCacheTable").
+            withLocation(getLocation()).
+            execute().
+            get();
+        } catch (ExecutionException e) {
+            LOG.error("run: node [{}]: collection execution failed, exiting",
+                      getNodeId(),
+                      e);
+            return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            LOG.error("run: node [{}]: Cdp Linkd collection interrupted, exiting",
+                      getNodeId(),
+                      e);
             return;
         }
+        final CdpInterfacePortNameGetter cdpInterfacePortNameGetter = new CdpInterfacePortNameGetter(peer, 
+                                                                                                     m_linkd.getLocationAwareSnmpClient(),
+                                                                                                     getLocation());
+        for (CdpLink link: links)
+            m_linkd.getQueryManager().store(getNodeId(),cdpInterfacePortNameGetter.get(link));
+        
         m_linkd.getQueryManager().reconcileCdp(getNodeId(),now);
     }
 
 	@Override
-	public String getInfo() {
-        return "ReadyRunnable CdpLinkNodeDiscovery" + " ip=" + str(getTarget())
-                + " port=" + getPort() + " community=" + getReadCommunity()
-                + " package=" + getPackageName();
-	}
-
-	@Override
 	public String getName() {
-		return "CdpLinksDiscovery";
+		return "CdpLinkDiscovery";
 	}
 
 }

@@ -2,6 +2,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[webui-grafana-dashboard-box]]
+
 link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _{opennms-product-name}_.
 The _Grafana Dashboard Box_ on the start page shows dashboards related to _{opennms-product-name}_.
 To filter relevant dashboards, you can use a _tag_ for dashboards and make them accessible.
@@ -30,7 +32,8 @@ image:webui/startpage/01_grafana-box.png[]
 | `org.opennms.grafanaBox.protocol`          | _String_  | The protocol for the ReST call can also be specified         | `http`
 | `org.opennms.grafanaBox.connectionTimeout` | _Integer_ | Timeout in milliseconds for getting information from the
                                                            _Grafana_ server                                             | `500`
-| `org.opennms.grafanaBox.soTimeout`         | _Integer_ |                                                              | `500`
+| `org.opennms.grafanaBox.soTimeout`         | _Integer_ | Socket timeout                                               | `500`
+| `org.opennms.grafanaBox.dashboardLimit`    | _Integer_ | Maximum number of entries to be displayed (0 for unlimited)  | `0`
 |===
 
 TIP: If you have _Grafana_ behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.

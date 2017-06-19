@@ -40,7 +40,7 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("disabling until the karaf 2.4.3 upgrade and tests can be stabilized")
+@Ignore("Disabling until the tests can be stabilized")
 public class FeatureInstallKarafIT extends KarafTestCase {
 
     /**
@@ -50,13 +50,12 @@ public class FeatureInstallKarafIT extends KarafTestCase {
     @Test
     public void testInstallAllOpenNMSFeatures() {
         final String version = getOpenNMSVersion();
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version(version).type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version(version).type("xml").classifier("features").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
         installFeature("atomikos");
         installFeature("batik");
         installFeature("c3p0");
-        installFeature("castor");
         installFeature("commons-beanutils");
         installFeature("commons-cli");
         installFeature("commons-codec");
@@ -75,6 +74,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("guava");
         installFeature("hibernate36");
         installFeature("hibernate-validator41");
+        installFeature("java-native-access");
         installFeature("jaxb");
         installFeature("jfreechart");
         installFeature("jicmp");
@@ -83,9 +83,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("jrobin");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
-        installFeature("net.java.dev.jna");
-        // Causes the test to die?
-        //installFeature("onms-camel-elasticsearch");
         //installFeature("opennms-activemq-config");
         //installFeature("opennms-activemq");
         //installFeature("opennms-activemq-dispatcher-config");
@@ -115,14 +112,13 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-discovery");
         // Minion-only feature
         //installFeature("opennms-discovery-distPollerDaoMinion");
-        //installFeature("opennms-elasticsearch-event-forwarder");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
-        installFeature("opennms-events-traps");
         installFeature("opennms-icmp-api");
         installFeature("opennms-icmp-jna");
         installFeature("opennms-icmp-jni");
         installFeature("opennms-icmp-jni6");
+        installFeature("opennms-icmp-best");
         installFeature("opennms-javamail");
         installFeature("opennms-model");
         installFeature("opennms-poller-api");
@@ -133,14 +129,19 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-rrd-api");
         installFeature("opennms-rrd-jrobin");
         installFeature("opennms-snmp");
+
         installFeature("opennms-syslogd");
-        //installFeature("opennms-syslogd-handler-default");
-        installFeature("opennms-syslogd-handler-kafka");
-        installFeature("opennms-syslogd-handler-minion");
         // Syslog listeners can only be installed one at a time
-        //installFeature("opennms-syslogd-listener-camel-netty");
         //installFeature("opennms-syslogd-listener-javanet");
+        //installFeature("opennms-syslogd-listener-camel-netty");
         //installFeature("opennms-syslogd-listener-nio");
+        installFeature("opennms-syslogd-handler-default");
+
+        installFeature("opennms-trapd");
+        installFeature("opennms-trapd-listener");
+        installFeature("opennms-trapd-handler-default");
+        installFeature("opennms-trapd-handler-kafka-default");
+
         // OSGi dependency problems
         //installFeature("opennms-webapp");
         installFeature("org.json");
@@ -148,6 +149,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("spring-security32");
         installFeature("spring-webflow");
 
-        System.out.println(executeCommand("features:list -i"));
+        System.out.println(executeCommand("feature:list -i"));
     }
 }

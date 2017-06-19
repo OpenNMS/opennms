@@ -6,6 +6,7 @@
 :toc: left
 :toclevels: 3
 :numbered:
+:stem:
 
 [[ga]]
 = Administrators Guide
@@ -17,6 +18,11 @@
 [[ga-admin-datachoices]]
 == Data Choices
 include::text/datachoices.adoc[]
+
+[[ga-role-user-management]]
+== User Management
+include::text/user-management/users.adoc[]
+include::text/user-management/security-roles.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
@@ -33,6 +39,7 @@ include::text/webui/opsboard/introduction.adoc[]
 include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
 include::text/webui/opsboard/dashlet/alarms.adoc[]
 include::text/webui/opsboard/dashlet/charts.adoc[]
+include::text/webui/opsboard/dashlet/grafana.adoc[]
 include::text/webui/opsboard/dashlet/image.adoc[]
 include::text/webui/opsboard/dashlet/ksc.adoc[]
 include::text/webui/opsboard/dashlet/map.adoc[]
@@ -56,6 +63,10 @@ include::text/webui/jmx-config-generator/cli.adoc[]
 [[ga-admin-ui-heatmap]]
 === Heatmap
 include::text/webui/heatmap/introduction.adoc[]
+
+[[ga-admin-ui-trend]]
+=== Trend
+include::text/webui/trend/introduction.adoc[]
 
 [[ga-service-assurance]]
 == Service Assurance
@@ -87,10 +98,12 @@ include::text/service-assurance/monitors/HttpPostMonitor.adoc[]
 include::text/service-assurance/monitors/HttpsMonitor.adoc[]
 include::text/service-assurance/monitors/IcmpMonitor.adoc[]
 include::text/service-assurance/monitors/ImapMonitor.adoc[]
+include::text/service-assurance/monitors/ImapsMonitor.adoc[]
 include::text/service-assurance/monitors/JCifsMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCQueryMonitor.adoc[]
+include::text/service-assurance/monitors/JmxMonitor.adoc[]
 include::text/service-assurance/monitors/JolokiaBeanMonitor.adoc[]
 include::text/service-assurance/monitors/LdapMonitor.adoc[]
 include::text/service-assurance/monitors/LdapsMonitor.adoc[]
@@ -100,6 +113,7 @@ include::text/service-assurance/monitors/NrpeMonitor.adoc[]
 include::text/service-assurance/monitors/NtpMonitor.adoc[]
 include::text/service-assurance/monitors/OmsaStorageMonitor.adoc[]
 include::text/service-assurance/monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-assurance/monitors/PageSequenceMonitor.adoc[]
 include::text/service-assurance/monitors/PercMonitor.adoc[]
 include::text/service-assurance/monitors/Pop3Monitor.adoc[]
 include::text/service-assurance/monitors/PrTableMonitor.adoc[]
@@ -120,18 +134,46 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
-include::text/performance-data-collection/stress-testing.adoc[]
+include::text/performance-data-collection/configuration.adoc[]
+include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
-include::text/performance-data-collection/collectors/introduction.adoc[]
-include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
-include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
+include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
+include::text/performance-data-collection/collectors/http.adoc[]
+include::text/performance-data-collection/collectors/jdbc.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
+include::text/performance-data-collection/collectors/nsclient.adoc[]
+include::text/performance-data-collection/collectors/tca.adoc[]
+include::text/performance-data-collection/collectors/vmware-cim.adoc[]
+include::text/performance-data-collection/collectors/vmware.adoc[]
+include::text/performance-data-collection/collectors/wmi.adoc[]
+include::text/performance-data-collection/collectors/wsman.adoc[]
+include::text/performance-data-collection/collectors/xml.adoc[]
+include::text/performance-data-collection/collectors/xmp.adoc[]
+
+[[ga-performance-mgmt-shell]]
+=== Shell Commands
+include::text/performance-data-collection/shell/introduction.adoc[]
+include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/stress-testing.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events/events.adoc[]
-include::text/events/forward-elasticsearch.adoc[]
+include::text/events/anatomy-events.adoc[]
+include::text/events/event-sources.adoc[]
+include::text/events/sources/snmp-traps.adoc[]
+include::text/events/sources/syslog.adoc[]
+include::text/events/sources/rest.adoc[]
+include::text/events/sources/xml-tcp.adoc[]
+include::text/events/sources/eif-adapter.adoc[]
+include::text/events/sources/tl1.adoc[]
+include::text/events/eventbus.adoc[]
+
+[[ga-alarms]]
+== Alarms
+include::text/alarms/alarm-sound-flash.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -160,6 +202,10 @@ include::text/provisioning/api-examples.adoc[]
 [[ga-provisioning-detectors]]
 === Service Detectors
 include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/wsman.adoc[]
+
+include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+
 
 [[ga-bsm]]
 == Business Service Monitoring
@@ -173,6 +219,9 @@ include::text/bsm/bsmd.adoc[]
 [[ga-topology]]
 == Topology Map
 include::text/topology/topology.adoc[]
+
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
 
 [[ga-database-reports]]
 == Database Reports
@@ -196,6 +245,8 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
+include::text/operation/request-logging.adoc[]
+include::text/operation/geocoder.adoc[]
 include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
 
@@ -229,6 +280,10 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
+[[ga-minion]]
+== Minion
+include::text/minion/kafka.adoc[]
+
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
 include::text/plugin-manager/introduction.adoc[]
@@ -241,6 +296,8 @@ include::text/plugin-manager/internal-plugins-repository.adoc[]
 include::text/plugins/introduction.adoc[]
 include::text/plugins/alarm-change-notifier.adoc[]
 include::text/plugins/opennms-es-rest.adoc[]
+include::text/plugins/opennms-es-rest-mapping.adoc[]
+include::text/plugins/opennms-es-rest-mapping-table.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds

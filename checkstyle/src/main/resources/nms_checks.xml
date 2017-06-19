@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+
+    <module name="TreeWalker">
+        <module name="com.github.sevntu.checkstyle.checks.coding.ForbidCertainImportsCheck">
+            <property name="packageNameRegexp" value=".*" />
+            <property name="forbiddenImportsRegexp" value="com.google.common.base.Charsets" />
+            <property name="forbiddenImportsExcludesRegexp" value="" />
+            <message key="forbid.certain.imports" value="Use ''java.nio.charset.StandardCharsets'' instead of ''{0}''" />
+        </module>
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL"/>
+            <property name="format" value="^UTF-8$"/>
+            <message key="forbid.UTF8.string.literal" value="Use ''java.nio.charset.StandardCharsets.UTF_8.name()'' instead of ''{0}''" />
+        </module>
+    </module>
+</module>

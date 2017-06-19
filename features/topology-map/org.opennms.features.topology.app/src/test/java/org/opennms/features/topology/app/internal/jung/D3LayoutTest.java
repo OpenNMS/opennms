@@ -38,60 +38,46 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.ProviderManager;
-import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import edu.uci.ics.jung.graph.SparseGraph;
 
-public class D3LayoutTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(D3LayoutTest.class);
+public class D3LayoutTest extends AbstractLayoutTest {
 
     private static final double ELBOW_ROOM = 50.0;
-    private GraphContainer m_graphContainer;
-    private GraphProvider m_graphProvider;
 
-    @Before
-    public void setUp(){
-        SimpleGraphBuilder bldr = new SimpleGraphBuilder("nodes");
-        
+    @Override
+    protected GraphProvider getGraphProvider() {
+        final SimpleGraphBuilder bldr = new SimpleGraphBuilder("nodes");
         for(int i = 0; i < 100; i++) {
             bldr.vertex("v"+i).vLabel("vertex"+i).vIconKey("server").vTooltip("tooltip").vStyleName("vertex");
         }
-      
         bldr.edge("e1", "v1", "v2").eStyleName("edge")
-            .edge("e2", "v1", "v3").eStyleName("edge")
-            .edge("e3", "v1", "v4").eStyleName("edge")
-            .edge("e4", "v1", "v5").eStyleName("edge")
-            .edge("e5", "v1", "v6").eStyleName("edge")
-            .edge("e6", "v1", "v7").eStyleName("edge")
-            .edge("e7", "v1", "v8").eStyleName("edge")
-            .edge("e8", "v1", "v8").eStyleName("edge")
-            .edge("e9", "v2", "v8").eStyleName("edge")
-            .edge("e10", "v2", "v7").eStyleName("edge")
-            .edge("e11", "v3", "v8").eStyleName("edge")
-            .edge("e12", "v5", "v8").eStyleName("edge")
-            .edge("e13", "v6", "v8").eStyleName("edge")
-            .edge("e14", "v7", "v8").eStyleName("edge");
+                .edge("e2", "v1", "v3").eStyleName("edge")
+                .edge("e3", "v1", "v4").eStyleName("edge")
+                .edge("e4", "v1", "v5").eStyleName("edge")
+                .edge("e5", "v1", "v6").eStyleName("edge")
+                .edge("e6", "v1", "v7").eStyleName("edge")
+                .edge("e7", "v1", "v8").eStyleName("edge")
+                .edge("e8", "v1", "v8").eStyleName("edge")
+                .edge("e9", "v2", "v8").eStyleName("edge")
+                .edge("e10", "v2", "v7").eStyleName("edge")
+                .edge("e11", "v3", "v8").eStyleName("edge")
+                .edge("e12", "v5", "v8").eStyleName("edge")
+                .edge("e13", "v6", "v8").eStyleName("edge")
+                .edge("e14", "v7", "v8").eStyleName("edge");
 
-        m_graphProvider = bldr.get();
-        ProviderManager providerManager = new ProviderManager();
-        m_graphContainer = new VEProviderGraphContainer(providerManager);
-        m_graphContainer.setBaseTopology(m_graphProvider);
+        return bldr.get();
     }
 
     @Test

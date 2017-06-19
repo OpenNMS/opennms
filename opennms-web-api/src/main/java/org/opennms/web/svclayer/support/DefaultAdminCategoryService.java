@@ -43,6 +43,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
@@ -305,7 +306,7 @@ public class DefaultAdminCategoryService implements
         OnmsCategory category = findCategory(categoryIdString);
         CategoryAndMemberNodes cat = getCategory(categoryIdString);
         for (OnmsNode adriftNode : cat.getMemberNodes()) {
-        	notifyCategoryChange(adriftNode);
+            notifyCategoryChange(adriftNode, new String[0], new String[] { category.getName() });
         }
         m_categoryDao.delete(category);
     }
@@ -392,7 +393,7 @@ public class DefaultAdminCategoryService implements
             }
             
             getNodeDao().save(node);
-            notifyCategoryChange(node);
+            notifyCategoryChange(node, toAdd, new String[0]);
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
@@ -424,7 +425,7 @@ public class DefaultAdminCategoryService implements
             }
 
             getNodeDao().save(node);
-            notifyCategoryChange(node);
+            notifyCategoryChange(node, new String[0], toDelete);
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -444,13 +445,10 @@ public class DefaultAdminCategoryService implements
         return getNodeDao().get(nodeId);
     }
 
-    private void notifyCategoryChange(final OnmsNode node) {
-        EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
-        bldr.setNode(node);
-        bldr.setParam(EventConstants.PARM_NODE_LABEL, node.getLabel());
-        send(bldr.getEvent());
+    private void notifyCategoryChange(final OnmsNode node, final String[] categoriesAdded, final String[] categoriesDeleted) {
+        send(EventUtils.createNodeCategoryMembershipChangedEvent("CategoryUI", node.getId(), node.getLabel(), categoriesAdded, categoriesDeleted));
     }
-    
+
     private void send(final Event e) {
         try {
             m_eventProxy.send(e);

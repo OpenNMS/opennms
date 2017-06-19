@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
@@ -50,6 +52,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
 import com.google.common.collect.Lists;
@@ -90,6 +93,22 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
 
     @Test
     public void canPersistsLatencySamples() throws Exception {
+        // No location - the path in the response time folder should be the IP address
+        persistAndVerifyLatencySamples(null, Paths.get("192.168.1.5"));
+
+        // Default location - the path in the response time folder should be the IP address
+        persistAndVerifyLatencySamples(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, Paths.get("192.168.1.5"));
+
+        // Non-default location - the path in the response time folder should be the location name, and then the IP address
+        final String nonDefaultLocation = "not_" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+        persistAndVerifyLatencySamples(nonDefaultLocation, Paths.get(nonDefaultLocation, "192.168.1.5"));
+
+        // Location with special characters
+        final String someLocation = "TOG @ Pittsboro, NC";
+        persistAndVerifyLatencySamples(someLocation, Paths.get("TOG___Pittsboro__NC", "192.168.1.5"));
+    }
+
+    private void persistAndVerifyLatencySamples(String locationName, Path pathToResourceInResponseTime) throws Exception {
         PollStatus pollStatus = PollStatus.get(PollStatus.SERVICE_AVAILABLE, 42.1);
         // For the purposes of this test, it's important the attributes are not added in lexicographical order
         Map<String, Number> props = new LinkedHashMap<String,Number>(pollStatus.getProperties());
@@ -107,9 +126,9 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         pollerConfig.setRRAList(pkg, Lists.newArrayList("RRA:AVERAGE:0.5:1:2016"));
 
         LatencyStoringServiceMonitorAdaptor lssma = new LatencyStoringServiceMonitorAdaptor(
-                serviceMonitor, pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
+                pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
 
-        MonitoredService monitoredService = new MockMonitoredService(3, "Firewall",
+        MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", locationName,
                 InetAddress.getByName("192.168.1.5"), "SMTP");
 
         Map<String, Object> params = Maps.newHashMap();
@@ -119,19 +138,18 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         EasyMock.expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".jrb").atLeastOnce();
 
         m_rrdStrategy.createDefinition(EasyMock.eq("192.168.1.5"),
-                EasyMock.eq(getResponseTimeRoot().toPath()
-                .resolve(Paths.get("192.168.1.5")).toString()),
+                EasyMock.eq(getResponseTimeRoot().toPath().resolve(pathToResourceInResponseTime).toString()),
                 EasyMock.eq("smtp-base"),
                 EasyMock.anyInt(),
                 EasyMock.anyObject(),
                 EasyMock.anyObject());
         EasyMock.expectLastCall().andReturn(null).once();
 
-        m_rrdStrategy.createFile(EasyMock.anyObject(), EasyMock.anyObject());
+        m_rrdStrategy.createFile(EasyMock.anyObject());
         EasyMock.expectLastCall().once();
 
         m_rrdStrategy.openFile(EasyMock.eq(getResponseTimeRoot().toPath()
-                .resolve(Paths.get("192.168.1.5", "smtp-base.jrb")).toString()));
+                .resolve(pathToResourceInResponseTime.resolve("smtp-base.jrb")).toString()));
         EasyMock.expectLastCall().andReturn(null).once();
 
         // This is the important bit, the order of the values should match the order there were inserted above
@@ -141,34 +159,25 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         EasyMock.replay(m_rrdStrategy);
 
         // Trigger the poll
-        lssma.poll(monitoredService, params);
+        lssma.handlePollResult(monitoredService, params, serviceMonitor.poll(monitoredService, params));
 
         // Verify
         EasyMock.verify(m_rrdStrategy);
+
+        // Reset
+        EasyMock.reset(m_rrdStrategy);
     }
 
     public File getResponseTimeRoot() {
         return new File(m_tempFolder.getRoot(), "response");
     }
 
-    private static class FixedServiceMonitor implements ServiceMonitor {
+    private static class FixedServiceMonitor extends AbstractServiceMonitor {
         private final PollStatus m_pollStatus;
 
         public FixedServiceMonitor(PollStatus pollStatus) {
             m_pollStatus = pollStatus;
         }
-
-        @Override
-        public void initialize(Map<String, Object> parameters) {}
-
-        @Override
-        public void release() {}
-
-        @Override
-        public void initialize(MonitoredService svc) {}
-
-        @Override
-        public void release(MonitoredService svc) {}
 
         @Override
         public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {

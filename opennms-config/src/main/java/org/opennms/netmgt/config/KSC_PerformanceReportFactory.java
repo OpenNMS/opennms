@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,10 +38,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.springframework.core.io.FileSystemResource;
@@ -115,10 +113,8 @@ public class KSC_PerformanceReportFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
         if (isInitialized()) {
             return;
         }
@@ -143,17 +139,15 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * Parses the KSC_PerformanceReport.xml via the Castor classes.
+     * Parses the KSC_PerformanceReport.xml
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException {
         if (s_configFile == null) s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
 
-        m_config = CastorUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
+        m_config = JaxbUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
 
         setIdsOnAllReports();
 
@@ -168,15 +162,15 @@ public class KSC_PerformanceReportFactory {
         int i = 0;
 
         // Make sure that i is larger than the highest report ID
-        for (Report report : m_config.getReportCollection()) {
-            if (report.hasId() && report.getId() >= i) {
-                i = report.getId() + 1;
+        for (Report report : m_config.getReports()) {
+            if (report.getId() != null && report.getId().get() >= i) {
+                i = report.getId().get() + 1;
             }
         }
 
         // Set IDs for any report lacking one.
-        for (Report report : m_config.getReportCollection()) {
-            if (!report.hasId()) {
+        for (Report report : m_config.getReports()) {
+            if (!(report.getId() != null)) {
                 report.setId(i);
                 i++;
             }
@@ -188,15 +182,12 @@ public class KSC_PerformanceReportFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void saveCurrent() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void saveCurrent() throws IOException, FileNotFoundException {
         assertInitialized();
 
-        sortByTitle();
-
-        CastorUtils.marshalViaString(m_config, s_configFile);
+        m_config.sort();
+        JaxbUtils.marshal(m_config, s_configFile);
 
         reload();
     }
@@ -210,18 +201,6 @@ public class KSC_PerformanceReportFactory {
     }
 
     /**
-     * Sorts the Reports List by their title.
-     */
-    public void sortByTitle() {
-        Arrays.sort(m_config.getReport(), new Comparator<Report>() {
-            @Override
-            public int compare(Report o1, Report o2) {
-                return o1.getTitle().compareTo(o2.getTitle());
-            }
-        });
-    }
-
-    /**
      * <p>getReportByIndex</p>
      *
      * @param index a int.
@@ -232,13 +211,13 @@ public class KSC_PerformanceReportFactory {
     }
 
     private Map<Integer, Report> createReportList() {
-        Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
+        Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReports().size());
 
-        for (Report report : m_config.getReportCollection()) {
+        for (Report report : m_config.getReports()) {
             if (reports.containsKey(report.getId())) {
                 throw new IllegalArgumentException("Report id " + report.getId() + " is used by multiple reports in configuration file");
             }
-            reports.put(report.getId(), report);
+            reports.put(report.getId().get(), report);
         }
 
         return reports;
@@ -250,9 +229,9 @@ public class KSC_PerformanceReportFactory {
      * @return a {@link java.util.Map} object.
      */
     public Map<Integer, String> getReportList() {
-        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReportCount());
+        LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getReports().size());
 
-        List<Report> reportList = m_config.getReportCollection();
+        List<Report> reportList = m_config.getReports();
         Collections.sort(reportList, new Comparator<Report>() {
             @Override
             public int compare(Report o1, Report o2) {
@@ -261,7 +240,7 @@ public class KSC_PerformanceReportFactory {
         });
 
         for (Report report : reportList) {
-            reports.put(report.getId(), report.getTitle());
+            reports.put(report.getId().get(), report.getTitle());
         }
 
         return Collections.unmodifiableMap(reports);
@@ -273,10 +252,10 @@ public class KSC_PerformanceReportFactory {
      * @return a {@link java.util.Map} object.
      */
     public Map<Integer, Report> getReportMap() {
-        Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReportCount());
+        Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReports().size());
 
-        for (Report report : m_config.getReportCollection()) {
-            reports.put(report.getId(), report);
+        for (Report report : m_config.getReports()) {
+            reports.put(report.getId().get(), report);
         }
 
         return Collections.unmodifiableMap(reports);
@@ -289,10 +268,8 @@ public class KSC_PerformanceReportFactory {
      * @throws java.lang.ArrayIndexOutOfBoundsException if any.
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void deleteReportAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void deleteReportAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
         Report report = getReportByIndex(index);
         if (report == null) {
             throw new ArrayIndexOutOfBoundsException("Reports List index to be deleted is out of bounds: " + index);
@@ -312,10 +289,12 @@ public class KSC_PerformanceReportFactory {
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);
         }
+        final int index1 = arrayIndex;
 
         // Make sure we preserve the existing ID, if it exists (which it should)
-        if (m_config.getReport(arrayIndex).hasId()) {
-            report.setId(m_config.getReport(arrayIndex).getId());
+        if (m_config.getReports().get(index1).getId() != null) {
+            final int index2 = arrayIndex;
+            report.setId(m_config.getReports().get(index2).getId().orElse(null));
         }
 
         m_config.setReport(arrayIndex, report);
@@ -324,8 +303,8 @@ public class KSC_PerformanceReportFactory {
 
     private int getArrayIndex(int index) {
         int i = 0;
-        for (Report report : m_config.getReportCollection()) {
-            if (report.getId() == index) {
+        for (Report report : m_config.getReports()) {
+            if (report.getId().isPresent() && report.getId().get() == index) {
                 return i;
             }
 
@@ -397,8 +376,9 @@ public class KSC_PerformanceReportFactory {
                 end_time.add(Calendar.DATE, -1);
                 end_time.set(Calendar.HOUR_OF_DAY, 22);
             } else if (interval.equals("This Week") || interval.equals("Last Week")) {
-                begin_time.set(Calendar.DAY_OF_WEEK, 1);
-                end_time.set(Calendar.DAY_OF_WEEK, 7);
+                begin_time.set(Calendar.DAY_OF_WEEK, begin_time.getFirstDayOfWeek());
+                end_time.set(Calendar.DAY_OF_WEEK, end_time.getFirstDayOfWeek());
+                end_time.add(Calendar.DATE, 6);
                 end_time.set(Calendar.HOUR_OF_DAY, 23);
                 end_time.set(Calendar.MINUTE, 59);
                 if (interval.equals("Last Week")) {

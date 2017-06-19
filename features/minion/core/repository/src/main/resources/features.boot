@@ -1,3 +1,3 @@
 # Minion Core Features
 minion-core
-minion-shell
+minion-core-shell

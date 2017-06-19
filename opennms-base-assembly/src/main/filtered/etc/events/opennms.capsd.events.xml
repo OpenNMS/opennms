@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/discPause</uei>
+        <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
+        <descr>
+            &lt;p&gt;The services scanning engine has asked discovery to
+            pause due to a backlog of interfaces yet to be scanned.
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            Capsd has asked Discovery to pause momentarily.
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/discResume</uei>
+        <event-label>OpenNMS-defined internal event: capsd discResume</event-label>
+        <descr>
+            &lt;p&gt;Capsd is approving discovery to resume adding nodes
+            to the Capsd queue.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logonly">
+            Capsd is ready for Discovery to resume scheduling nodes.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/forceRescan</uei>
+        <event-label>OpenNMS-defined internal event: capsd forceRescan</event-label>
+        <descr>
+            &lt;p&gt;A services scan has been forced.&lt;/p&gt;
+            &lt;p&gt;The administrator has forced a services scan on
+            this node to update the list of supported
+            services.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A services scan has been forced on this
+            node.&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/rescanCompleted</uei>
+        <event-label>OpenNMS-defined internal event: capsd rescanCompleted</event-label>
+        <descr>
+            &lt;p&gt;A services scan has been completed.&lt;/p&gt;
+            &lt;p&gt;The list of services on this node has been
+            updated.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A services scan has been completed on this
+            node.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/addNode</uei>
+        <event-label>OpenNMS-defined internal event: capsd addNode</event-label>
+        <descr>
+            &lt;p&gt;This event is an external command to add a node
+            to the database. The required paramater is the IP
+            address for the main interface: %interface%, and
+            the optional parameter of a node label: %nodelabel%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to add a node with interface:
+            %interface% and node label: %nodelabel%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/deleteNode</uei>
+        <event-label>OpenNMS-defined internal event: capsd deleteNode</event-label>
+        <descr>
+            &lt;p&gt;This event is an external command to delete a node
+            from the database. The required paramater is the IP
+            address for one interface: %interface%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to delete a node with interface:
+            %interface%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/deleteInterface</uei>
+        <event-label>OpenNMS-defined internal event: capsd deleteInterface</event-label>
+        <descr>
+            &lt;p&gt;This event is an external command to delete an interface
+            from the database. The required paramater is the IP
+            address for the interface: %interface%, or the nodeid %nodeid%
+            and ifIndex %ifindex%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to delete an interface:
+            %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/internal/capsd/changeService</uei>
+        <event-label>OpenNMS-defined internal event: capsd changeService</event-label>
+        <descr>
+            &lt;p&gt;This event will add or remove a service from an interface.
+            The paramters include the interface, %interface%, the service,
+            %service%, and any required qualifiers, %parm[#2]%. The action
+            taken will be: %parm[#1]%.&lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;A request has been made to %parm[#1]% the %service% service
+            on interface: %interface%.&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+</events>

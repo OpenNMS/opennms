@@ -112,6 +112,11 @@ public class TestPinger implements Pinger {
 		return null;
 	}
 
+	    @Override
+	    public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval, int size) throws Exception {
+	        return null;
+	    }
+
 	@Override
 	public void initialize4() throws Exception {
 	}
@@ -129,4 +134,12 @@ public class TestPinger implements Pinger {
 	public boolean isV6Available() {
 		return true;
 	}
+
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+    }
+
+    @Override
+    public void setTrafficClass(int tc) throws Exception {
+    }
 }

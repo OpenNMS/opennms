@@ -32,8 +32,8 @@ import java.util.Map;
 
 public interface NodeCache {
 
-	public Map getEntry(Long key);
+	Map<String,String> getEntry(Long key);
 
-	public void refreshEntry(Long key);
+	void refreshEntry(Long key);
 
 }

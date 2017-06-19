@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.snmp;
 
 import java.io.Serializable;
@@ -42,6 +35,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -76,6 +70,9 @@ public class Definition extends Configuration implements Serializable {
      */
     @XmlElement(name="ip-match")
     private List<String> m_ipMatches = new ArrayList<String>();
+
+    @XmlAttribute(name="location")
+    private String m_location;
 
     public Definition() {
         super();
@@ -141,6 +138,14 @@ public class Definition extends Configuration implements Serializable {
         return m_ipMatches.remove(ipMatch);
     }
 
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -148,6 +153,7 @@ public class Definition extends Configuration implements Serializable {
         result = prime * result + ((m_ipMatches == null) ? 0 : m_ipMatches.hashCode());
         result = prime * result + ((m_ranges == null) ? 0 : m_ranges.hashCode());
         result = prime * result + ((m_specifics == null) ? 0 : m_specifics.hashCode());
+        result = prime * result + ((m_location == null) ? 0 : m_location.hashCode());
         return result;
     }
 
@@ -184,6 +190,14 @@ public class Definition extends Configuration implements Serializable {
         } else if (!m_specifics.equals(other.m_specifics)) {
             return false;
         }
+        if (m_location == null) {
+            if (other.m_location != null) {
+                return false;
+            }
+        } else if (!m_location.equals(other.m_location)) {
+            return false;
+        }
+
         return true;
     }
 

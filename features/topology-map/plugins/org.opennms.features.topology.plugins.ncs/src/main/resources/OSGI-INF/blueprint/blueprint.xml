@@ -3,6 +3,7 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
     xsi:schemaLocation="
     http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
     http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+    http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.18.4.xsd
 ">
     
    <cm:property-placeholder id="ncsPlugin" persistent-id="org.opennms.features.topology.plugin.ncs" update-strategy="reload">
@@ -74,9 +75,6 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	</bean>
 	
 	<bean id="ncsPathEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider"/>
-
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsPathEdgeProvider" />
 
     <!--NCS Edge Status Provider-->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />

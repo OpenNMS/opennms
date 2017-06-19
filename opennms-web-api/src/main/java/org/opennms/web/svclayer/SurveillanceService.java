@@ -63,7 +63,7 @@ public interface SurveillanceService {
      * @param viewName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getHeaderRefreshSeconds(String viewName);
+    public Integer getHeaderRefreshSeconds(String viewName);
 
     /**
      * <p>isViewName</p>

@@ -49,9 +49,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.quartz.Scheduler;
@@ -145,10 +146,12 @@ public class Main implements Runnable {
     }
 
     public void initializePinger() {
+        final AbstractPingerFactory pingerFactory = new BestMatchPingerFactory();
+
         if (m_disableIcmp) {
             LOG.info("Disabling ICMP by user request.");
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
-            PingerFactory.setInstance(new NullPinger());
+            pingerFactory.setInstance(0, true, new NullPinger());
             return;
         }
 
@@ -159,12 +162,12 @@ public class Main implements Runnable {
         }
         LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
         try {
-            final Pinger pinger = PingerFactory.getInstance();
+            final Pinger pinger = pingerFactory.getInstance();
             pinger.ping(InetAddress.getLoopbackAddress());
         } catch (final Throwable t) {
             LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.  For details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized");
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
-            PingerFactory.setInstance(new NullPinger());
+            pingerFactory.setInstance(0, true, new NullPinger());
             if (m_gui) {
                 final String message = "ICMP (ping) could not be initialized: " + t.getMessage()
                 + "\nDisabling ICMP and using the NullPinger instead."

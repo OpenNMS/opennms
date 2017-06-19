@@ -59,7 +59,7 @@ import org.springframework.core.io.Resource;
 public class CoreImportActivities {
     private static final Logger LOG = LoggerFactory.getLogger(CoreImportActivities.class);
     
-    ProvisionService m_provisionService;
+    private final ProvisionService m_provisionService;
     
     public CoreImportActivities(final ProvisionService provisionService) {
         m_provisionService = provisionService;
@@ -106,7 +106,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
-    public void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri) {
+    public static void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase import.");
             return;
@@ -131,7 +131,7 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final String rescanExisting) {
+    public static void scanNode(final ImportOperation operation, final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase nodeImport.");
             return;
@@ -148,7 +148,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
-    public void persistNode(final ImportOperation operation, final RequisitionImport ri) {
+    public static void persistNode(final ImportOperation operation, final RequisitionImport ri) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping persist phase.");
             return;
@@ -213,15 +213,15 @@ public class CoreImportActivities {
         }; 
     }
 
-    protected void info(String format, Object... args) {
+    protected static void info(String format, Object... args) {
     	LOG.info(format, args);
     }
 
-    protected void debug(String format, Object... args) {
+    protected static void debug(String format, Object... args) {
         LOG.debug(format, args);
     }
 
-    protected void warn(String format, Object... args) {
+    protected static void warn(String format, Object... args) {
         LOG.warn(format, args);
     }
 }

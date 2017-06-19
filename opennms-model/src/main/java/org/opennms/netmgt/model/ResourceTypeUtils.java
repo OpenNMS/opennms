@@ -59,24 +59,6 @@ public abstract class ResourceTypeUtils {
      */
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
-    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
-
-    /**
-     * <p>isNumericType</p>
-     *
-     * @param rawType a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public static boolean isNumericType(String rawType) {
-        String type = rawType.toLowerCase();
-        for (int i = 0; i < s_numericTypes.length; i++) {
-            String supportedType = s_numericTypes[i];
-            if (type.startsWith(supportedType))
-                return true;
-        }
-        return false;
-    }
-
     /**
      * <p>isStoreByGroup</p>
      *
@@ -153,9 +135,9 @@ public abstract class ResourceTypeUtils {
     /**
      * Retrieves the ResourcePath relative to rrd.base.dir.
      */
-    public static ResourcePath getResourcePathWithRepository(RrdRepository repository, Path resource) {
+    public static ResourcePath getResourcePathWithRepository(RrdRepository repository, ResourcePath resource) {
         // Here we just assume that the repository dir is of the form ${rrd.base.dir}/snmp or ${rrd.base.dir}/response
         // since all of operations in the ResourceDao assume that the resources are stored in these paths
-        return ResourcePath.get(repository.getRrdBaseDir().getName(), resource);
+        return ResourcePath.get(ResourcePath.get(repository.getRrdBaseDir().getName()), resource);
     }
 }

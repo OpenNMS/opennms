@@ -1,0 +1,56 @@
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
+  <id>minion</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/classes</directory>
+      <outputDirectory>minion-${project.version}</outputDirectory>
+      <includes>
+        <include>debian/opennms-minion.minion.init</include>
+        <include>debian/rules</include>
+        <include>etc/minion.init</include>
+        <include>bin/scvcli</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/classes</directory>
+      <outputDirectory>minion-${project.version}</outputDirectory>
+      <excludes>
+        <exclude>debian/opennms-minion.minion.init</exclude>
+        <exclude>debian/rules</exclude>
+        <exclude>etc/minion.init</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/karaf-${project.version}</directory>
+      <outputDirectory>minion-${project.version}</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/repositories</directory>
+      <outputDirectory>minion-${project.version}/repositories</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/base-assembly/bin</directory>
+      <outputDirectory>minion-${project.version}/bin</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>minion-${project.version}</outputDirectory>
+    </file>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>minion-${project.version}/debian</outputDirectory>
+      <destName>copyright</destName>
+    </file>
+  </files>
+</assembly>

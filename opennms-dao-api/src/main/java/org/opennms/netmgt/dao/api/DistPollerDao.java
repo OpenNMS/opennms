@@ -42,6 +42,8 @@ public interface DistPollerDao extends OnmsDao<OnmsDistPoller, String> {
      * local system so that events and other objects can be associated with
      * the local system.
      * 
+     * @see https://en.wikipedia.org/wiki/Whoami
+     * 
      * @return
      */
     OnmsDistPoller whoami();

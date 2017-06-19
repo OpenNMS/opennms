@@ -49,11 +49,14 @@ import org.opennms.web.event.filter.BeforeDateFilter;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
+import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
 
@@ -131,6 +134,24 @@ public class EventQueryServlet extends HttpServlet {
         String exactUEI = WebSecurityUtils.sanitizeString(request.getParameter("exactuei"));
         if (exactUEI != null && exactUEI.length() > 0) {
             filterArray.add(new ExactUEIFilter(exactUEI));
+        }
+
+        // convenient syntax for LocationFilter
+        String location = WebSecurityUtils.sanitizeString(request.getParameter("location"));
+        if (location != null && !location.equalsIgnoreCase("any")) {
+            filterArray.add(new LocationFilter(WebSecurityUtils.sanitizeString(location)));
+        }
+
+        // convenient syntax for NodeLocationFilter
+        String nodeLocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
+        if (nodeLocation != null && !nodeLocation.equalsIgnoreCase("any")) {
+            filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodeLocation)));
+        }
+
+        // convenient syntax for SystemIdFilter
+        String systemId = WebSecurityUtils.sanitizeString(request.getParameter("systemId"));
+        if (systemId != null && !systemId.equalsIgnoreCase("any")) {
+            filterArray.add(new SystemIdFilter(WebSecurityUtils.sanitizeString(systemId)));
         }
 
         // convenient syntax for ServiceFilter
@@ -325,5 +346,4 @@ public class EventQueryServlet extends HttpServlet {
     protected String[] getRequiredDateFields(String prefix) {
         return new String[] { prefix + "hour", prefix + "minute", prefix + "ampm", prefix + "date", prefix + "month", prefix + "year" };
     }
-
 }

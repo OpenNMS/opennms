@@ -4,9 +4,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:tx="http://www.springframework.org/schema/tx" 
 xmlns:context="http://www.springframework.org/schema/context"
 xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
   <tx:annotation-driven/>
@@ -47,7 +47,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="surveillanceConfigDao" ref="surveillanceViewConfigDao"/>
   </bean>
   <!-- Site Status beans -->
-  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
+  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSiteStatusViewConfigDao"/>
   <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
@@ -119,18 +119,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--  Manual Provisioning -->
-  <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="${importer.requisition.dir}"/>
-  </bean>
-  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-    <property name="pollerConfig" ref="pollerConfig"/>
-  </bean>
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
       <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
       <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
@@ -140,9 +128,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
-    <property name="resourceDao" ref="resourceDao"/>
   </bean>
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
     <property name="resourceDao" ref="resourceDao"/>
@@ -215,7 +200,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
       </props>
     </property>
   </bean>
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
     <property name="jobClass">
       <value>org.opennms.reporting.core.BatchReportJob</value>
     </property>

@@ -28,9 +28,13 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
@@ -43,11 +47,17 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.data.Property;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class is used to create a configuration window for the {@link RrdDashlet}.
@@ -420,10 +430,10 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
     private void setRrdGraphEntryFromKscReportGraph(RrdGraphEntry rrdGraphEntry, Graph graph) {
 
-        String graphLabel, graphId, graphUrl, nodeId, nodeLabel, resourceId, resourceLabel, resourceTypeId, resourceTypeLabel;
+        String graphLabel, graphId, graphUrl, nodeId, nodeLabel, resourceLabel, resourceTypeId, resourceTypeLabel;
 
         String[] graphTypeArr = graph.getGraphtype().split("\\.");
-        String[] resourceIdArr = graph.getResourceId().split("\\.");
+        String[] resourceIdArr = graph.getResourceId().orElse("").split("\\.");
 
         nodeId = resourceIdArr[0].split("[\\[\\]]")[1];
         String resourceTypeName = resourceIdArr[1].split("[\\[\\]]")[0];
@@ -443,20 +453,13 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
                 for (OnmsResource onmsResource : onmsResourceList) {
 
-                    String onmsResourceId = null;
-
-                    try {
-                        onmsResourceId = URLDecoder.decode(onmsResource.getId(), "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
+                    String onmsResourceId = onmsResource.getId().toString();
 
                     if (onmsResourceId.equals(graph.getResourceId())) {
-                        resourceId = onmsResourceId;
                         resourceLabel = onmsResource.getLabel();
 
-                        Map<String, String> resultsMap = m_rrdGraphHelper.getGraphResultsForResourceId(resourceId);
-                        Map<String, String> nameTitleMapping = m_rrdGraphHelper.getGraphNameTitleMappingForResourceId(resourceId);
+                        Map<String, String> resultsMap = m_rrdGraphHelper.getGraphResultsForResourceId(onmsResource.getId());
+                        Map<String, String> nameTitleMapping = m_rrdGraphHelper.getGraphNameTitleMappingForResourceId(onmsResource.getId());
 
                         graphId = onmsResourceId + "." + nameTitleMapping.get(graph.getGraphtype());
 
@@ -467,7 +470,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                         rrdGraphEntry.setNodeLabel(nodeLabel);
                         rrdGraphEntry.setResourceTypeId(resourceTypeId);
                         rrdGraphEntry.setResourceTypeLabel(resourceTypeLabel);
-                        rrdGraphEntry.setResourceId(resourceId);
+                        rrdGraphEntry.setResourceId(onmsResourceId);
                         rrdGraphEntry.setResourceLabel(resourceLabel);
                         rrdGraphEntry.setGraphId(graphId);
                         rrdGraphEntry.setGraphLabel(graphLabel);
@@ -487,19 +490,15 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
     private void importKscReport(int reportId) {
         Report report = kscPerformanceReportFactory.getReportByIndex(reportId);
 
-        int columns = report.getGraphs_per_line();
+        int columns = report.getGraphsPerLine().orElse(1);
 
-        if (columns == 0) {
-            columns = 1;
-        }
-
-        int rows = report.getGraphCount() / columns;
+        int rows = report.getGraphs().size() / columns;
 
         if (rows == 0) {
             rows = 1;
         }
 
-        if (report.getGraphCount() % columns > 0) {
+        if (report.getGraphs().size() % columns > 0) {
             rows++;
         }
 
@@ -536,8 +535,9 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
                 /**
                  * setting the values if defined in the KSC report
                  */
-                if (i < report.getGraphCount()) {
-                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraph(i));
+                if (i < report.getGraphs().size()) {
+                    final int index = i;
+                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraphs().get(index));
                 }
 
                 rrdGraphEntry.update();

@@ -248,7 +248,7 @@ VIAddVersionKey FileDescription  "${PROJECT_NAME} Installer"
 VIAddVersionKey FileVersion      1
 VIAddVersionKey ProductName      "${PROJECT_NAME}"
 VIAddVersionKey ProductVersion   "${PROJECT_VERSION}"
-VIAddVersionKey LegalCopyright   "© 2008-2015 The OpenNMS Group, Inc."
+VIAddVersionKey LegalCopyright   "Copyright 2008-2017 The OpenNMS Group, Inc."
 VIAddVersionKey Comments         ""
 VIAddVersionKey CompanyName      "The OpenNMS Group, Inc."
 
@@ -264,7 +264,7 @@ RequestExecutionLevel admin
 # Include an XP manifest
 XPStyle On
 
-BrandingText "© 2008-2015 The OpenNMS Group, Inc.  Installer made with NSIS."
+BrandingText "Copyright 2008-2017 The OpenNMS Group, Inc.  Installer made with NSIS."
 
 #AddBrandingImage top 110
 
@@ -1180,7 +1180,6 @@ Function WriteCustomLogPropsFile
   FileWrite $0 "    <logger name=$\"org.apache.commons$\" additivity=$\"false$\" level=$\"WARN$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
   FileWrite $0 "    <logger name=$\"org.asteriskjava$\" additivity=$\"false$\" level=$\"WARN$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
   FileWrite $0 "    <logger name=$\"org.eclipse.jetty.webapp$\" additivity=$\"false$\" level=$\"INFO$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
-  FileWrite $0 "    <logger name=$\"org.exolab.castor$\" additivity=$\"false$\" level=$\"INFO$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
   FileWrite $0 "    <logger name=$\"org.quartz$\" additivity=$\"false$\" level=$\"INFO$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
   FileWrite $0 "    <logger name=$\"org.springframework$\" additivity=$\"false$\" level=$\"INFO$\"><appender-ref ref=$\"ConsoleAppender$\"/><appender-ref ref=$\"RoutingAppender$\"/></logger>$\r$\n"
   FileWrite $0 "    <!-- Allow any message to pass through the root logger -->$\r$\n"

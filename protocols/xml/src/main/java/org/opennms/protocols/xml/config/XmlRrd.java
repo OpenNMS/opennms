@@ -48,7 +48,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @XmlRootElement(name="rrd")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlRrd implements Serializable, Comparable<XmlRrd> {
+public class XmlRrd implements Serializable, Comparable<XmlRrd>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 143526958273169546L;
@@ -66,6 +66,11 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd> {
      */
     public XmlRrd() {
 
+    }
+
+    public XmlRrd(XmlRrd copy) {
+        m_step = copy.m_step;
+        m_xmlRras.addAll(copy.m_xmlRras);
     }
 
     /**
@@ -146,5 +151,10 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd> {
             .isEquals();
         }
         return false;
+    }
+
+    @Override
+    public XmlRrd clone() {
+        return new XmlRrd(this);
     }
 }

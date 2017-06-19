@@ -3,13 +3,13 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.core</artifactId>
-        <version>18.0.4</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.profiler</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Core Profiler</name>
+    <name>OpenNMS :: Core :: Profiler</name>
     <build>
         <plugins>
             <plugin>

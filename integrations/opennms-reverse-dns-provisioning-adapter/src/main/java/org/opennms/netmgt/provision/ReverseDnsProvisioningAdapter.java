@@ -31,16 +31,13 @@ package org.opennms.netmgt.provision;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-
 import org.springframework.beans.factory.InitializingBean;
-
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.ReverseMap;
@@ -69,7 +66,6 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
     
     private static final String MESSAGE_PREFIX = "Dynamic Reverse DNS provisioning failed: ";
     private static final String ADAPTER_NAME="Reverse DNS Provisioning Adapter";
-    
     
     /**
      * <p>afterPropertiesSet</p>

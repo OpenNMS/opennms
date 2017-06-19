@@ -49,6 +49,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetector;
+import org.opennms.netmgt.provision.detector.jdbc.JdbcStoredProcedureDetectorFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class JdbcStoredProcedureDetectorIT implements InitializingBean {
     @Autowired
+    public JdbcStoredProcedureDetectorFactory m_detectorFactory;
+    
     public JdbcStoredProcedureDetector m_detector;
 
     @Autowired
@@ -81,7 +84,7 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
     @Before
     public void setUp() throws SQLException{
         MockLogAppender.setupLogging();
-
+        m_detector = m_detectorFactory.createDetector();
         String createSchema = "CREATE SCHEMA test";
         String createProcedure = "CREATE FUNCTION test.isRunning () RETURNS bit AS 'BEGIN RETURN 1; END;' LANGUAGE 'plpgsql';";
 

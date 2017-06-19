@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 import org.opennms.test.FileAnticipator;
@@ -111,9 +112,9 @@ public class TcpRrdStrategyTest {
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 StringBuffer values = new StringBuffer();
                                 values.append("{ ");
-                                for (int i = 0; i < message.getValueCount(); i++) {
+                                for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }
-                                    values.append(message.getValue(i));
+                                    values.append(message.getDblValue(i));
                                 }
                                 values.append(" }");
                                 LOG.debug("Message received: { " + 
@@ -232,7 +233,7 @@ public class TcpRrdStrategyTest {
         // RrdConfig.getInstance().setProperties(properties);
 
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
-        dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
+        dataSources.add(new RrdDataSource("bar", RrdAttributeType.GAUGE, 3000, "U", "U"));
         List<String> rraList = new ArrayList<String>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         File tempDir = m_fileAnticipator.getTempDir(); 
@@ -240,7 +241,7 @@ public class TcpRrdStrategyTest {
         // RRDs created by the test will have a realistic path
         File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
         RrdDefinition def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
-        m_strategy.createFile(def, null);
+        m_strategy.createFile(def);
 
         return m_fileAnticipator.expecting(rrdDir, rrdFileBase + RRD_EXTENSION);
     }

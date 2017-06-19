@@ -29,16 +29,17 @@
 package org.opennms.netmgt.threshd;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.ThresholdType;
 
 /**
  * <p>Abstract BaseThresholdDefConfigWrapper class.</p>
@@ -81,7 +82,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      */
     public List<String> getFilterDatasources() {
         final List<String> dataSources = new ArrayList<String>();
-        for (ResourceFilter s : getBasethresholddef().getResourceFilterCollection()) {
+        for (ResourceFilter s : getBasethresholddef().getResourceFilters()) {
             dataSources.add(s.getField());
         }
         return dataSources;
@@ -124,7 +125,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getDsLabel() {
+    public Optional<String> getDsLabel() {
         return m_baseDef.getDsLabel();
     }
     
@@ -151,7 +152,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getType() {
+    public ThresholdType getType() {
         return m_baseDef.getType();
     }
     
@@ -170,7 +171,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasRearm() {
-        return m_baseDef.hasRearm();
+        return m_baseDef.getRearm() != null;
     }
     
     /**
@@ -179,7 +180,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasTrigger() {
-        return m_baseDef.hasTrigger();
+        return m_baseDef.getTrigger() != null;
     }
     
     /**
@@ -188,7 +189,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      * @return a boolean.
      */
     public boolean hasValue() {
-        return m_baseDef.hasValue();
+        return m_baseDef.getValue() != null;
     }
     
     /**
@@ -196,7 +197,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTriggeredUEI() {
+    public Optional<String> getTriggeredUEI() {
         return m_baseDef.getTriggeredUEI();
     }
     
@@ -205,7 +206,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getRearmedUEI() {
+    public Optional<String> getRearmedUEI() {
         return m_baseDef.getRearmedUEI();
     }
     
@@ -234,8 +235,8 @@ public abstract class BaseThresholdDefConfigWrapper {
         && getRearm() == o.getRearm()
         && getTrigger() == o.getTrigger()
         && getBasethresholddef().getFilterOperator().equals(o.getBasethresholddef().getFilterOperator())
-        && getBasethresholddef().isRelaxed() == o.getBasethresholddef().isRelaxed()
-        && Arrays.equals(getBasethresholddef().getResourceFilter(), o.getBasethresholddef().getResourceFilter());
+        && getBasethresholddef().getRelaxed() == o.getBasethresholddef().getRelaxed()
+        && getBasethresholddef().getResourceFilters().equals(o.getBasethresholddef().getResourceFilters());
     }
     
     /** {@inheritDoc} */

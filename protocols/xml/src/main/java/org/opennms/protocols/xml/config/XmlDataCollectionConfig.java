@@ -52,7 +52,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
  */
 @XmlRootElement(name="xml-datacollection-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlDataCollectionConfig implements Serializable, Comparable<XmlDataCollectionConfig> {
+public class XmlDataCollectionConfig implements Serializable, Comparable<XmlDataCollectionConfig>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7884808717236892997L;
@@ -77,6 +77,11 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
      */
     public XmlDataCollectionConfig() {
 
+    }
+
+    public XmlDataCollectionConfig(XmlDataCollectionConfig copy) {
+        m_rrdRepository = copy.m_rrdRepository;
+        copy.m_xmlDataCollections.stream().forEach(x -> m_xmlDataCollections.add(x));
     }
 
     /**
@@ -163,6 +168,16 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
         return null;
     }
 
+    public static RrdRepository buildRrdRepository(String rrdRepositoryPath, XmlDataCollection collection) {
+        XmlRrd rrd = collection.getXmlRrd();
+        RrdRepository repo = new RrdRepository();
+        repo.setRrdBaseDir(new File(rrdRepositoryPath));
+        repo.setRraList(rrd.getXmlRras());
+        repo.setStep(rrd.getStep());
+        repo.setHeartBeat((2 * rrd.getStep()));
+        return repo;
+    }
+
     /**
      * Builds the RRD repository.
      *
@@ -173,13 +188,7 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
         XmlDataCollection collection = getDataCollectionByName(collectionName);
         if (collection == null)
             return null;
-        XmlRrd rrd = collection.getXmlRrd();
-        RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(new File(getRrdRepository()));
-        repo.setRraList(rrd.getXmlRras());
-        repo.setStep(rrd.getStep());
-        repo.setHeartBeat((2 * rrd.getStep()));
-        return repo;
+        return buildRrdRepository(getRrdRepository(), collection);
     }
 
     /* (non-Javadoc)
@@ -206,5 +215,10 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
             .isEquals();
         }
         return false;
+    }
+ 
+    @Override
+    public XmlDataCollectionConfig clone() {
+        return new XmlDataCollectionConfig(this);
     }
 }

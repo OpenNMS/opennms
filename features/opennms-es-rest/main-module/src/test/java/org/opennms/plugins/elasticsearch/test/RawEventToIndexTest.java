@@ -28,35 +28,30 @@
 
 package org.opennms.plugins.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import org.opennms.plugins.elasticsearch.rest.EventToIndex;
-import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
-import org.opennms.plugins.elasticsearch.rest.NodeCache;
-import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.DocumentResult;
-import io.searchbox.core.Index;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-import io.searchbox.core.Update;
-import static org.junit.Assert.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.plugins.elasticsearch.rest.EventToIndex;
+import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
+import org.opennms.plugins.elasticsearch.rest.NodeCache;
+import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 
 public class RawEventToIndexTest {
@@ -149,7 +144,6 @@ public class RawEventToIndexTest {
 
 			//raw json="{"alarmid":806,"eventuei":"uei.opennms.org/nodes/nodeLostService","nodeid":36,"ipaddr":"142.34.5.19","serviceid":2,"reductionkey":"uei.opennms.org/nodes/nodeLostService::36:142.34.5.19:HTTP","alarmtype":1,"counter":1,"severity":5,"lasteventid":7003,"firsteventtime":"2016-07-27 22:20:52.282+01","lasteventtime":"2016-07-27 22:20:52.282+01","firstautomationtime":null,"lastautomationtime":null,"description":"<p>A HTTP outage was identified on interface\n      142.34.5.19.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>","logmsg":"HTTP outage identified on interface 142.34.5.19 with reason code: Unknown.","operinstruct":null,"tticketid":null,"tticketstate":null,"mouseovertext":null,"suppresseduntil":"2016-07-27 22:20:52.282+01","suppresseduser":null,"suppressedtime":"2016-07-27 22:20:52.282+01","alarmackuser":null,"alarmacktime":null,"managedobjectinstance":null,"managedobjecttype":null,"applicationdn":null,"ossprimarykey":null,"x733alarmtype":null,"x733probablecause":0,"qosalarmstate":null,"clearkey":null,"ifindex":null,"eventparms":"eventReason=Unknown(string,text)","stickymemo":null,"systemid":"00000000-0000-0000-0000-000000000000"}";
 
-			eb.setCreationTime(new Date());
 			eb.setUei("uei.opennms.org/nodes/nodeLostService");
 			eb.setNodeid(36);
 			InetAddress ipAddress = InetAddressUtils.getInetAddress("142.34.5.19");
@@ -167,13 +161,13 @@ public class RawEventToIndexTest {
 
 			LOG.debug("ecreated node lost service event:"+event.toString());
 
-			// forward event to elastic search
-			eventToIndex.forwardEvent(event);
-			
+			// forward event to Elasticsearch
+			eventToIndex.forwardEvents(Collections.singletonList(event));
+
 			// waiting 5 seconds for index 
-            try {
-            	TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) { }
+			try {
+				TimeUnit.SECONDS.sleep(5);
+			} catch (InterruptedException e) { }
 
 			// send query to check that event has been created
 			jestClient = restClientFactory.getJestClient();
@@ -235,7 +229,7 @@ public class RawEventToIndexTest {
 		} finally {
 			// shutdown client
 			if (jestClient !=null )   jestClient.shutdownClient();
-			if (eventToIndex !=null ) eventToIndex.destroy();
+			if (eventToIndex !=null ) eventToIndex.close();
 		}
 		LOG.debug("***************** end of test jestClientRawEventToESTest");
 	}

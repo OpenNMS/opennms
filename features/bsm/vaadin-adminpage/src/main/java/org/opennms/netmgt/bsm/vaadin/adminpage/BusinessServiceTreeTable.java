@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -45,8 +46,10 @@ import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ContainerHierarchicalWrapper;
 import com.vaadin.server.ExternalResource;
@@ -65,6 +68,7 @@ import com.vaadin.ui.TreeTable;
 public class BusinessServiceTreeTable extends TreeTable {
 
     private final BusinessServiceManager businessServiceManager;
+    private String businessServiceNameFilter = null;
 
     public BusinessServiceTreeTable(BusinessServiceManager businessServiceManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
@@ -83,18 +87,17 @@ public class BusinessServiceTreeTable extends TreeTable {
                 final BusinessService businessService = getItem(itemId).getBean().getBusinessService();
                 final Status status = stateMachine.getOperationalStatus(businessService);
                 if (status != null) {
-                    // Build the query string
-                    final List<BasicNameValuePair> urlParms = Lists.newArrayList(
-                            new BasicNameValuePair("focus-vertices", businessService.getId().toString()),
-                            new BasicNameValuePair("szl", "1"),
-                            new BasicNameValuePair("layout", "Hierarchy Layout"),
-                            new BasicNameValuePair("provider", "Business Services")
-                    );
-                    final String queryString = URLEncodedUtils.format(urlParms, Charset.forName("UTF-8"));
+                    final String topologyLink = new TopologyLinkBuilder()
+                            .focus(businessService.getId().toString())
+                            .szl(1)
+                            .layout(Layout.HIERARCHY)
+                            .provider(TopologyProvider.BUSINESS_SERVICE)
+                            .getLink();
 
                     // Generate the link
-                    final Link link = new Link("View in Topology UI", new ExternalResource(String.format("/opennms/topology?%s", queryString)));
+                    final Link link = new Link("View in Topology UI", new ExternalResource(topologyLink));
                     link.setIcon(FontAwesome.EXTERNAL_LINK_SQUARE);
+
                     // This app is typically access in an iframe, so we open the URL in a new window/tab
                     link.setTargetName("_blank");
                     layout.addComponent(link);
@@ -122,9 +125,8 @@ public class BusinessServiceTreeTable extends TreeTable {
                 editButton.setId("editButton-" + getItem(itemId).getBean().getName());
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
-                    final Long businessServiceId = getItem(itemId).getBean().getBusinessService().getId();
-                    BusinessService businessService = businessServiceManager.getBusinessServiceById(businessServiceId);
-                    final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, businessServiceManager);
+                    final BusinessServiceEditWindow window = new BusinessServiceEditWindow(getItem(itemId).getBean().getBusinessService(),
+                                                                                           businessServiceManager);
                     window.addCloseListener(e -> refresh());
 
                     getUI().addWindow(window);
@@ -135,11 +137,10 @@ public class BusinessServiceTreeTable extends TreeTable {
                 deleteButton.setId("deleteButton-" + getItem(itemId).getBean().getName());
 
                 deleteButton.addClickListener((Button.ClickListener)event -> {
-                    final Long businessServiceId = getItem(itemId).getBean().getBusinessService().getId();
-                    BusinessService businessService = businessServiceManager.getBusinessServiceById(businessServiceId);
+                    BusinessService businessService = getItem(itemId).getBean().getBusinessService();
                     if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
                         UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
-                            businessServiceManager.getBusinessServiceById(businessServiceId).delete();
+                            businessServiceManager.getBusinessServiceById(businessService.getId()).delete();
                             refresh();
                         });
                     } else {
@@ -147,7 +148,7 @@ public class BusinessServiceTreeTable extends TreeTable {
                                 .withOkAction((org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action) UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
                                     @Override
                                     public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                        businessServiceManager.getBusinessServiceById(businessServiceId).delete();
+                                        businessServiceManager.getBusinessServiceById(businessService.getId()).delete();
                                         refresh();
                                     }
                                 }))
@@ -167,11 +168,71 @@ public class BusinessServiceTreeTable extends TreeTable {
         setColumnExpandRatio("name", 5);
         setColumnExpandRatio("links", 1);
         setColumnExpandRatio("edit / delete", 1);
+
+        setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(Table source, Object itemId, Object propertyId) {
+                if (!Strings.isNullOrEmpty(BusinessServiceTreeTable.this.businessServiceNameFilter) &&
+                        source != null &&
+                        itemId != null &&
+                        BusinessServiceFilter.NAME_PROPERTY.equals(propertyId)) {
+                    Item item = source.getItem(itemId);
+                    if (item != null) {
+                        Property<?> property = item.getItemProperty(BusinessServiceFilter.NAME_PROPERTY);
+                        if (property != null) {
+                            if (property.getValue() != null) {
+                                String value = property.getValue().toString();
+                                if (!value.toLowerCase().contains(BusinessServiceTreeTable.this.businessServiceNameFilter)) {
+                                    return "grey";
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+        });
     }
 
     @Override
     public BeanItem<BusinessServiceRow> getItem(Object itemId) {
         return (BeanItem<BusinessServiceRow>) super.getItem(itemId);
+    }
+
+    public void setBusinessServiceNameFilter(String businessServiceNameFilter) {
+        this.businessServiceNameFilter = businessServiceNameFilter == null ? "" : businessServiceNameFilter.toLowerCase();
+        refresh();
+    }
+
+    public void expandForBusinessServiceNameFilter() {
+        if (Strings.isNullOrEmpty(businessServiceNameFilter)) {
+            return;
+        }
+
+        for (Object itemId : getItemIds()) {
+            expandSuccessorsForBusinessServiceNameFilter(itemId);
+        }
+    }
+
+    private void expandSuccessorsForBusinessServiceNameFilter(Object itemId) {
+        if (itemId == null) {
+            return;
+        }
+
+        if (getItem(itemId).getBean().getName().toLowerCase().contains(businessServiceNameFilter)) {
+            setCollapsed(itemId, true);
+            return;
+        }
+
+        setCollapsed(itemId, false);
+        Collection<?> children = getChildren(itemId);
+
+        if (children != null) {
+            for (Object childItemId : children) {
+                expandSuccessorsForBusinessServiceNameFilter(childItemId);
+            }
+        }
     }
 
     /**
@@ -180,6 +241,10 @@ public class BusinessServiceTreeTable extends TreeTable {
     public void refresh() {
         final com.google.common.collect.Table<Long, Optional<Long>, Boolean> expandState = getCurrentExpandState();
         final BusinessServiceContainer newContainer = new BusinessServiceContainer();
+
+        if (!Strings.isNullOrEmpty(businessServiceNameFilter)) {
+            newContainer.addContainerFilter(new BusinessServiceFilter(newContainer, businessServiceNameFilter));
+        }
 
         // Build a graph using all of the business services stored in the database
         // We don't use the existing graph, since it only contains the services know by the state machine

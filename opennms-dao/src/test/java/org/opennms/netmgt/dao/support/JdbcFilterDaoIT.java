@@ -50,9 +50,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -61,14 +63,12 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -81,8 +81,6 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
@@ -116,8 +114,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
 
         m_populator.populateDatabase();
 
@@ -125,7 +121,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
         // Give the filter DAO access to the same TemporaryDatabase data source
         // as the autowired DAOs
 
-        System.setProperty("opennms.home", "src/test/resources");
         DatabaseSchemaConfigFactory.init();
         m_dao = new JdbcFilterDao();
         m_dao.setDataSource(m_dataSource);
@@ -140,13 +135,11 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testInstantiate() {
         new JdbcFilterDao();
     }
 
     @Test
-    @Transactional
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_dataSource);
@@ -157,7 +150,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_dataSource);
@@ -170,7 +162,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testAfterPropertiesSetNoDataSource() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
@@ -189,7 +180,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
 
         // node1 has all the categories and an 192.168.1.1
@@ -206,7 +196,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testAfterPropertiesSetNoSchemaFactory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
@@ -223,31 +212,68 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
-    public void testGetNodeMap() throws Exception {
+    public void testGetNodeMapMatch() throws Exception {
+        Map<Integer, String> map = m_dao.getNodeMap("ipaddr == '192.168.1.1'");
+        assertNotNull("returned map should not be null", map);
+        assertEquals("map size", 1, map.size());
+    }
+
+    @Test
+    public void testGetNodeMapNoMatch() throws Exception {
         Map<Integer, String> map = m_dao.getNodeMap("ipaddr == '1.1.1.1'");
         assertNotNull("returned map should not be null", map);
         assertEquals("map size", 0, map.size());
     }
 
     @Test
-    @Transactional
-    public void testGetIPAddressServiceMap() throws Exception {
+    public void testGetIPAddressServiceMapMatch() throws Exception {
+        Map<InetAddress, Set<String>> map = m_dao.getIPAddressServiceMap("ipaddr == '192.168.1.1'");
+        assertNotNull("returned map should not be null", map);
+        // ICMP, SNMP
+        assertEquals("map size", 1, map.size());
+        Set<String> services = map.get(InetAddressUtils.addr("192.168.1.1"));
+        assertEquals("services size", 2, services.size());
+        assertTrue(services.contains("ICMP"));
+        assertTrue(services.contains("SNMP"));
+    }
+
+    @Test
+    public void testGetIPAddressServiceMapNoMatch() throws Exception {
         Map<InetAddress, Set<String>> map = m_dao.getIPAddressServiceMap("ipaddr == '1.1.1.1'");
         assertNotNull("returned map should not be null", map);
         assertEquals("map size", 0, map.size());
     }
 
     @Test
-    @Transactional
-    public void testGetIPAddressList() throws Exception {
+    public void testLocationFilterMatch() throws Exception {
+        Map<Integer, String> map = m_dao.getNodeMap(String.format("location == '%s'",
+                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        assertNotNull("returned map should not be null", map);
+        assertEquals("map size", 6, map.size());
+    }
+
+    @Test
+    public void testLocationFilterNoMatch() throws Exception {
+        Map<Integer, String> map = m_dao.getNodeMap("location == 'DOESN_T_EXIST'");
+        assertNotNull("returned map should not be null", map);
+        assertEquals("map size", 0, map.size());
+    }
+
+    @Test
+    public void testGetIPAddressListMatch() throws Exception {
+        List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '192.168.1.1'");
+        assertNotNull("returned list should not be null", list);
+        assertEquals("list size", 1, list.size());
+    }
+
+    @Test
+    public void testGetIPAddressListNoMatch() throws Exception {
         List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '1.1.1.1'");
         assertNotNull("returned list should not be null", list);
         assertEquals("list size", 0, list.size());
     }
 
     @Test
-    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -280,31 +306,26 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testIsValid() throws Exception {
         assertFalse("There is nothing in the database, so isValid shouldn't match non-empty rules", m_dao.isValid("1.1.1.1", "ipaddr == '1.1.1.1'"));
     }
 
     @Test
-    @Transactional
     public void testIsValidEmptyRule() throws Exception {
         assertTrue("isValid should return true for non-empty rules", m_dao.isValid("1.1.1.1", ""));
     }
 
     @Test
-    @Transactional
     public void testGetInterfaceWithServiceStatement() throws Exception {
         assertEquals("SQL from getInterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*.*.*.*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *.*.*.*"));
     }
 
     @Test
-    @Transactional
     public void testGetIpv6InterfaceWithServiceStatement() throws Exception {
         assertEquals("SQL from getIpv6InterfaceWithServiceStatement", "SELECT DISTINCT ipInterface.ipAddr, service.serviceName, node.nodeID FROM ipInterface JOIN ifServices ON (ipInterface.id = ifServices.ipInterfaceId) JOIN service ON (ifServices.serviceID = service.serviceID) JOIN node ON (ipInterface.nodeID = node.nodeID) WHERE IPLIKE(ipInterface.ipaddr, '*:*:*:*:*:*:*:*')", m_dao.getInterfaceWithServiceStatement("ipaddr IPLIKE *:*:*:*:*:*:*:*"));
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
     public void testWalkNodes() throws Exception {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
@@ -324,7 +345,6 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
-    @Transactional
     public void testVariousWaysToMatchServiceNames() {
         assertEquals("service statement", m_dao.getInterfaceWithServiceStatement("isFooService"), m_dao.getInterfaceWithServiceStatement("serviceName == 'FooService'"));
         assertEquals("ip service mapping statement", m_dao.getIPServiceMappingStatement("isFooService"), m_dao.getIPServiceMappingStatement("serviceName == 'FooService'"));

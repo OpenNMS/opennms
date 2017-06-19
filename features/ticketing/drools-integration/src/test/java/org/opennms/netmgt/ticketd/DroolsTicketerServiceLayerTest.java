@@ -77,7 +77,7 @@ public class DroolsTicketerServiceLayerTest {
         MockLogAppender.setupLogging();
         
         ResourceLoader loader = new DefaultResourceLoader();
-        Resource resource = loader.getResource("classpath:drools-ticketer-rules.drl");
+        Resource resource = loader.getResource("classpath:/drools-ticketer-rules.drl");
         
         m_easyMockUtils = new EasyMockUtils();
         m_configDao = m_easyMockUtils.createMock(DroolsTicketerConfigDao.class);

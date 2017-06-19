@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
+ * Wraps the XML created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
  *
  * @author ranger
@@ -123,7 +123,7 @@ public final class ThresholdEntity implements Cloneable {
      */
     public String getDatasourceLabel() {
         if (hasThresholds()) {
-            return getThresholdConfig().getDsLabel();
+            return getThresholdConfig().getDsLabel().orElse(null);
         } else {
             return null;
         }
@@ -149,7 +149,7 @@ public final class ThresholdEntity implements Cloneable {
      *
      * NOTE: The m_lowThreshold and m_highThreshold member variables are not
      * actually cloned...the returned ThresholdEntity object will simply contain
-     * references to the same castor Threshold objects as the original
+     * references to the same Threshold objects as the original
      * ThresholdEntity object.
      *
      * All state will be lost, particularly instances, so it's not a true clone by any stretch of the imagination
@@ -230,7 +230,15 @@ public final class ThresholdEntity implements Cloneable {
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
         double dsValue=0.0;
-        String instance = resource != null ? resource.getInstance() : null;
+
+        String instance = null;
+        if (resource != null) {
+            // NMS-9361: Use the instance label as the key for the thresholder's state. This allows us to uniquely
+            // identify resources that share the same instance, but whose path
+            // on disk may differ due to the use of a StorageStrategy implementation
+            // such as the SiblingColumnStorageStrategy
+            instance = resource.getInstanceLabel();
+        }
         try {
             if (getThresholdEvaluatorStates(instance).size() > 0) {
                 dsValue=getThresholdConfig().evaluate(values);

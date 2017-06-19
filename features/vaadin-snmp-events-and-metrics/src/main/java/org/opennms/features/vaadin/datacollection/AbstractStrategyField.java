@@ -29,8 +29,7 @@
 package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
-import org.opennms.netmgt.config.datacollection.Parameter;
-
+import org.opennms.netmgt.collection.api.Parameter;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Alignment;
@@ -167,7 +166,7 @@ public abstract class AbstractStrategyField<T> extends CustomField<T> implements
      * Adds the handler.
      */
     private void addHandler() {
-        Parameter p = new Parameter();
+        org.opennms.netmgt.config.datacollection.Parameter p = new org.opennms.netmgt.config.datacollection.Parameter();
         p.setKey("New Parameter");
         p.setValue("New Value");
         table.select(container.addOnmsBean(p));

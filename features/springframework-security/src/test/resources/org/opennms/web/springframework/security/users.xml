@@ -13,6 +13,14 @@
         Default administrator, do not delete
       </user-comments>
       <password>21232F297A57A5A743894A0E4A801FC3</password>
+      <role>ROLE_ADMIN</role>
+    </user>
+    <user>
+      <user-id>rtc</user-id>
+      <full-name>RTC</full-name>
+      <user-comments></user-comments>
+      <password salt="true">L5j2hiVX4B+LTHnY3Mwq5m5dBZzNdHhiBpvBjyCerBsBqqJcxRUsRAxaDQtjRkcn</password>
+      <role>ROLE_RTC</role>
     </user>
     <user>
       <user-id>tempuser</user-id>
@@ -29,6 +37,7 @@
       <full-name>Dashboard-only user</full-name>
       <user-comments></user-comments>
       <password>DC7161BE3DBF2250C8954E560CC35060</password>
+      <role>ROLE_DASHBOARD</role>
     </user>
   </users>
 </userinfo>

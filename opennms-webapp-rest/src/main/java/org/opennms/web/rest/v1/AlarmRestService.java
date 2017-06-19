@@ -44,6 +44,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
@@ -149,6 +152,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         writeLock();
 
         try {
+            boolean isProcessAck = true;
             if (alarmId == null) {
                 return getBadRequestResponse("Unable to determine alarm ID to update based on query path.");
             }
@@ -161,7 +165,10 @@ public class AlarmRestService extends AlarmRestServiceBase {
             formProperties.remove("clear");
             final String ackUserValue = formProperties.getFirst("ackUser");
             formProperties.remove("ackUser");
-
+            final String ticketIdValue = formProperties.getFirst("ticketId");
+            formProperties.remove("ticketId");
+            final String ticketStateValue = formProperties.getFirst("ticketState");
+            formProperties.remove("ticketState");
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             if (alarm == null) {
                 return getBadRequestResponse("Unable to locate alarm with ID '" + alarmId + "'");
@@ -186,10 +193,20 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 if (Boolean.parseBoolean(clearValue)) {
                     acknowledgement.setAckAction(AckAction.CLEAR);
                 }
+            } else if (StringUtils.isNotBlank(ticketIdValue)) {
+                isProcessAck = false;
+                alarm.setTTicketId(ticketIdValue);
+            } else if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
+                isProcessAck = false;
+                alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
             } else {
                 return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
-            m_ackDao.processAck(acknowledgement);
+            if (isProcessAck) {
+                m_ackDao.processAck(acknowledgement);
+            } else {
+                m_alarmDao.saveOrUpdate(alarm);
+            }
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -273,7 +290,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
     }
 
-    private static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
+    public static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
         final String currentUser = securityContext.getUserPrincipal().getName();
 
         if (securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {

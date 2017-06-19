@@ -35,10 +35,12 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.protocols.radius.utils.RadiusUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,6 @@ import net.jradius.packet.attribute.AttributeList;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-
 @Distributable
 public final class RadiusAuthMonitor extends AbstractServiceMonitor {
 	
@@ -170,8 +171,6 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-    	final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
     	// Assume that the service is down
         PollStatus status = PollStatus.unavailable();
 
@@ -191,6 +190,7 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
         String innerProtocol = ParameterMap.getKeyedString(parameters, "inner-protocol", DEFAULT_TTLS_INNER_AUTH_TYPE);
         String innerUser = ParameterMap.getKeyedString(parameters, "inner-user", DEFAULT_INNER_USER);
         String certFile = ParameterMap.getKeyedString(parameters, "certificate", null);
+
         InetAddress addr = svc.getAddress();
 
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");

@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Objects;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.InterfaceLevelResourceAdapter;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourcePath;
 
-public class InterfaceLevelResource implements Resource {
+@XmlJavaTypeAdapter(InterfaceLevelResourceAdapter.class)
+public class InterfaceLevelResource extends AbstractResource {
 
     private NodeLevelResource m_node;
     private String m_ifName;
@@ -58,8 +62,13 @@ public class InterfaceLevelResource implements Resource {
     }
 
     @Override
-    public Path getPath(CollectionResource resource) {
-        return Paths.get(getIfName());
+    public String getLabel(CollectionResource resource) {
+        return m_ifName;
+    }
+
+    @Override
+    public ResourcePath getPath(CollectionResource resource) {
+        return ResourcePath.get(getIfName());
     }
 
     @Override
@@ -70,5 +79,25 @@ public class InterfaceLevelResource implements Resource {
     @Override
     public String toString() {
         return String.format("InterfaceLevelResource[node=%s, ifName=%s]", m_node, m_ifName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_node, m_ifName, getTimestamp());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!(obj instanceof InterfaceLevelResource)) {
+            return false;
+        }
+        InterfaceLevelResource other = (InterfaceLevelResource) obj;
+        return Objects.equals(this.m_node, other.m_node)
+                && Objects.equals(this.m_ifName, other.m_ifName)
+                && Objects.equals(this.getTimestamp(), other.getTimestamp());
     }
 }

@@ -42,9 +42,9 @@ import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
-import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Coordinates;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMapState;
@@ -340,7 +340,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                         LOG.log(Level.WARNING, "NodeMapWidget.addNewMarkers(): no coordinates found for marker! " + marker);
                         return true;
                     }
-                    if (m_groupByState && StatesData.inUs(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble(), StatesData.getUsShape())) {
+                    if (m_groupByState && StatesData.inUs(coordinates.latitude, coordinates.longitude, StatesData.getUsShape())) {
                         final int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
                         if (!m_stateClusterGroups[stateId].hasLayer(marker)) {
                             m_stateClusterGroups[stateId].addLayer(marker);

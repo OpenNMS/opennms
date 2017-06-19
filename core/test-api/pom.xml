@@ -3,17 +3,21 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.test-api</artifactId>
-  <name>OpenNMS Core Test APIs</name>
+  <name>OpenNMS :: Core :: Test APIs</name>
   <packaging>pom</packaging>
   <modules>
+    <module>activemq</module>
+    <module>camel</module>
+    <module>collection</module>
     <module>db</module>
     <module>dns</module>
     <module>http</module>
+    <module>kafka</module>
     <module>karaf</module>
     <module>lib</module>
     <module>rest</module>

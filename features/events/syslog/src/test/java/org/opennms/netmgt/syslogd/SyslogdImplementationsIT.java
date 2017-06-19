@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.syslogd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -41,11 +39,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -54,8 +52,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.syslogd.api.SyslogConnection;
+import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -66,6 +65,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -73,14 +74,14 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
         "classpath:/applicationContext-syslogImplementations.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
 public class SyslogdImplementationsIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdImplementationsIT.class);
@@ -91,22 +92,10 @@ public class SyslogdImplementationsIT implements InitializingBean {
     private MockEventIpcManager m_eventIpcManager;
 
     @Autowired
-    private Eventd m_eventd;
+    private MockMessageDispatcherFactory<SyslogConnection, SyslogMessageLogDTO> m_messageDispatcherFactory;
 
     @Autowired
     private SyslogdConfigFactory m_config;
-
-    @Autowired
-    @Qualifier("syslogReceiverNio")
-    private SyslogReceiver m_nio;
-
-    @Autowired
-    @Qualifier("syslogReceiverNioDisruptor")
-    private SyslogReceiver m_nioDisruptor;
-
-    @Autowired
-    @Qualifier("syslogReceiverNioDisruptorSEP")
-    private SyslogReceiver m_nioDisruptorSEP;
 
     @Autowired
     @Qualifier("syslogReceiverJavaNet")
@@ -129,9 +118,19 @@ public class SyslogdImplementationsIT implements InitializingBean {
 
         m_eventCounter = new EventCounter();
         this.m_eventIpcManager.addEventListener(m_eventCounter);
+
+        SyslogSinkConsumer consumer = new SyslogSinkConsumer(new MetricRegistry());
+        consumer.setSyslogdConfig(m_config);
+        consumer.setEventForwarder(m_eventIpcManager);
+        m_messageDispatcherFactory.setConsumer(consumer);
     }
 
-    private void loadSyslogConfiguration(final String configuration) throws IOException, MarshalException, ValidationException {
+    @After
+    public void tearDown() throws Exception {
+        MockLogAppender.assertNoErrorOrGreater();
+    }
+
+    private void loadSyslogConfiguration(final String configuration) throws IOException {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);
@@ -143,10 +142,20 @@ public class SyslogdImplementationsIT implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=3*60*1000)
     @Transactional
-    public void testDefaultSyslogd() throws Exception {
-        Thread listener = new Thread(m_nio);
+    public void testCamelNettyReceiver() throws Exception {
+        doTestSyslogd(m_netty);
+    }
+
+    @Test(timeout=3*60*1000)
+    @Transactional
+    public void testJavaNetReceiver() throws Exception {
+        doTestSyslogd(m_java);
+    }
+
+    private void doTestSyslogd(SyslogReceiver receiver) throws Exception {
+        Thread listener = new Thread(receiver);
         listener.start();
         Thread.sleep(3000);
 
@@ -162,9 +171,8 @@ public class SyslogdImplementationsIT implements InitializingBean {
         m_eventCounter.setAnticipated(eventCount);
 
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER, addr("127.0.0.1"));
-
         /*
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER, addr("127.0.0.1"));
         // Test by directly invoking the SyslogConnection task
         System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
@@ -189,7 +197,7 @@ public class SyslogdImplementationsIT implements InitializingBean {
         // Test by sending over an NIO channel
         SocketAddress address = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), SyslogClient.PORT);
         final DatagramChannel channel = DatagramChannel.open();
-        final ByteBuffer buffer = ByteBuffer.allocate(SyslogReceiverNioThreadPoolImpl.MAX_PACKET_SIZE);
+        final ByteBuffer buffer = ByteBuffer.allocate(SyslogConnection.MAX_PACKET_SIZE);
         buffer.clear();
         System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
@@ -201,8 +209,6 @@ public class SyslogdImplementationsIT implements InitializingBean {
             buffer.clear();
         }
         channel.close();
-        /*
-        */
 
         long mid = System.currentTimeMillis();
         System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));

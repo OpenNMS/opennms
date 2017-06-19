@@ -106,14 +106,17 @@ drop index filternamesidx;
 
 --# Begin quartz persistence 
 
+--# Legacy quartz 1.X tables
 drop table qrtz_job_listeners;
 drop table qrtz_trigger_listeners;
+
 drop table qrtz_fired_triggers;
 drop table qrtz_paused_trigger_grps;
 drop table qrtz_scheduler_state;
 drop table qrtz_locks;
 drop table qrtz_simple_triggers;
 drop table qrtz_cron_triggers;
+drop table qrtz_simprop_triggers;
 drop table qrtz_blob_triggers;
 drop table qrtz_triggers;
 drop table qrtz_job_details;
@@ -246,7 +249,7 @@ CREATE TABLE monitoringlocationspollingpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
@@ -257,7 +260,7 @@ CREATE TABLE monitoringlocationscollectionpackages (
     monitoringlocationid TEXT NOT NULL,
     packagename TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
@@ -268,11 +271,17 @@ CREATE TABLE monitoringlocationstags (
     monitoringlocationid TEXT NOT NULL,
     tag TEXT NOT NULL,
 
-    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
 CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+
+--##################################################################
+--# The following command adds the initial 'Default' entry to
+--# the 'monitoringlocations' table.
+--##################################################################
+INSERT INTO monitoringlocations (id, monitoringarea) values ('Default', 'Default');
 
 
 --#####################################################
@@ -317,7 +326,7 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
 
 
 --#####################################################
@@ -339,7 +348,7 @@ CREATE TABLE scanreports (
     timestamp TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT scanreports_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
@@ -484,8 +493,10 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
+	location        text not null,
 
-	constraint pk_nodeID primary key (nodeID)
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);
@@ -2058,168 +2069,176 @@ create table bridgeStpLink (
 --# End enlinkd table
 
 --# Begin Quartz persistence tables
+--# See https://github.com/quartz-scheduler/quartz, file tables_postgres.sql
+--# See http://www.quartz-scheduler.org/documentation/quartz-2.x/migration-guide.html
 
 CREATE TABLE qrtz_job_details
   (
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    DESCRIPTION VARCHAR(120) NULL,
-    JOB_CLASS_NAME   VARCHAR(128) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    JOB_NAME  VARCHAR(200) NOT NULL,
+    JOB_GROUP VARCHAR(200) NOT NULL,
+    DESCRIPTION VARCHAR(250) NULL,
+    JOB_CLASS_NAME   VARCHAR(250) NOT NULL, 
     IS_DURABLE BOOL NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    IS_STATEFUL BOOL NOT NULL,
+    IS_NONCONCURRENT BOOL NOT NULL,
+    IS_UPDATE_DATA BOOL NOT NULL,
     REQUESTS_RECOVERY BOOL NOT NULL,
-    JOB_DATA BYTEA NOT NULL,
-
-    constraint qrtz_job_details_pkey PRIMARY KEY (JOB_NAME,JOB_GROUP)
+    JOB_DATA BYTEA,
+    CONSTRAINT pk_qrtz_job_details PRIMARY KEY (SCHED_NAME,JOB_NAME,JOB_GROUP)
 );
-
-CREATE TABLE qrtz_job_listeners
-  (
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    JOB_LISTENER VARCHAR(80) NOT NULL,
-
-    constraint pk_qrtz_job_listeners PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
-    constraint fk_qrtz_job_listeners FOREIGN KEY (JOB_NAME,JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
-);
-
 
 CREATE TABLE qrtz_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    JOB_NAME  VARCHAR(80) NOT NULL,
-    JOB_GROUP VARCHAR(80) NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    DESCRIPTION VARCHAR(120),
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    JOB_NAME  VARCHAR(200) NOT NULL, 
+    JOB_GROUP VARCHAR(200) NOT NULL,
+    DESCRIPTION VARCHAR(250) NULL,
     NEXT_FIRE_TIME BIGINT,
     PREV_FIRE_TIME BIGINT,
+    PRIORITY INTEGER,
     TRIGGER_STATE VARCHAR(16) NOT NULL,
     TRIGGER_TYPE VARCHAR(8) NOT NULL,
     START_TIME BIGINT NOT NULL,
     END_TIME BIGINT,
-    CALENDAR_NAME VARCHAR(80),
+    CALENDAR_NAME VARCHAR(200) NULL,
     MISFIRE_INSTR SMALLINT,
     JOB_DATA BYTEA,
-    PRIORITY INTEGER,
-
-    constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
+    CONSTRAINT pk_qrtz_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_triggers_job_details FOREIGN KEY (SCHED_NAME,JOB_NAME,JOB_GROUP) 
+	REFERENCES QRTZ_JOB_DETAILS (SCHED_NAME,JOB_NAME,JOB_GROUP) 
 );
 
 CREATE TABLE qrtz_simple_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
     REPEAT_COUNT BIGINT NOT NULL,
     REPEAT_INTERVAL BIGINT NOT NULL,
     TIMES_TRIGGERED BIGINT NOT NULL,
-
-    constraint pk_qrtz_simple_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_simple_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_simple_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_simple_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+	REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
-
 
 CREATE TABLE qrtz_cron_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    CRON_EXPRESSION VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    CRON_EXPRESSION VARCHAR(120) NOT NULL,
     TIME_ZONE_ID VARCHAR(80),
-
-    constraint pk_qrtz_cron_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_cron_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_cron_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_cron_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+	REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
+CREATE TABLE qrtz_simprop_triggers
+  (          
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    STR_PROP_1 VARCHAR(512) NULL,
+    STR_PROP_2 VARCHAR(512) NULL,
+    STR_PROP_3 VARCHAR(512) NULL,
+    INT_PROP_1 INTEGER,
+    INT_PROP_2 INTEGER,
+    LONG_PROP_1 BIGINT,
+    LONG_PROP_2 BIGINT,
+    DEC_PROP_1 NUMERIC(13,4) NULL,
+    DEC_PROP_2 NUMERIC(13,4) NULL,
+    BOOL_PROP_1 BOOL,
+    BOOL_PROP_2 BOOL,
+    CONSTRAINT pk_qrtz_simprop_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_simprop_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+    REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
+);
 
 CREATE TABLE qrtz_blob_triggers
   (
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
     BLOB_DATA BYTEA,
-
-    constraint pk_qrtz_blob_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-    constraint fk_qrtz_blob_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+    CONSTRAINT pk_qrtz_blob_triggers PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+    CONSTRAINT fk_qrtz_blob_triggers_triggers FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+        REFERENCES QRTZ_TRIGGERS (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
-
-CREATE TABLE qrtz_trigger_listeners
-  (
-    TRIGGER_NAME  VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    TRIGGER_LISTENER VARCHAR(80) NOT NULL,
-
-    constraint pk_qrtz_trigger_listeners PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
-    constraint fk_qrtz_trigger_listeners FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
-);
-
 
 CREATE TABLE qrtz_calendars
   (
-    CALENDAR_NAME  VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    CALENDAR_NAME  VARCHAR(200) NOT NULL, 
     CALENDAR BYTEA NOT NULL,
-    constraint pk_qrtz_calendars PRIMARY KEY (CALENDAR_NAME)
+    CONSTRAINT pk_qrtz_calendars PRIMARY KEY (SCHED_NAME,CALENDAR_NAME)
 );
 
 
 CREATE TABLE qrtz_paused_trigger_grps
   (
-    TRIGGER_GROUP  VARCHAR(80) NOT NULL,
-    constraint pk_qrtz_paused_trigger_grps PRIMARY KEY (TRIGGER_GROUP)
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    TRIGGER_GROUP  VARCHAR(200) NOT NULL, 
+    CONSTRAINT pk_qrtz_paused_trigger_grps PRIMARY KEY (SCHED_NAME,TRIGGER_GROUP)
 );
 
-CREATE TABLE qrtz_fired_triggers
+CREATE TABLE qrtz_fired_triggers 
   (
+    SCHED_NAME VARCHAR(120) NOT NULL,
     ENTRY_ID VARCHAR(95) NOT NULL,
-    TRIGGER_NAME VARCHAR(80) NOT NULL,
-    TRIGGER_GROUP VARCHAR(80) NOT NULL,
-    IS_VOLATILE BOOL NOT NULL,
-    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_NAME VARCHAR(200) NOT NULL,
+    TRIGGER_GROUP VARCHAR(200) NOT NULL,
+    INSTANCE_NAME VARCHAR(200) NOT NULL,
     FIRED_TIME BIGINT NOT NULL,
+    SCHED_TIME BIGINT NOT NULL,
+    PRIORITY INTEGER NOT NULL,
     STATE VARCHAR(16) NOT NULL,
-    JOB_NAME VARCHAR(80),
-    JOB_GROUP VARCHAR(80),
-    IS_STATEFUL BOOL,
+    JOB_NAME VARCHAR(200) NULL,
+    JOB_GROUP VARCHAR(200) NULL,
+    IS_NONCONCURRENT BOOL,
     REQUESTS_RECOVERY BOOL,
-    PRIORITY INTEGER,
-    constraint pk_qrtz_fired_triggers PRIMARY KEY (ENTRY_ID)
+    CONSTRAINT pk_qrtz_fired_triggers PRIMARY KEY (SCHED_NAME,ENTRY_ID)
 );
 
-CREATE TABLE qrtz_scheduler_state
+CREATE TABLE qrtz_scheduler_state 
   (
-    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    INSTANCE_NAME VARCHAR(200) NOT NULL,
     LAST_CHECKIN_TIME BIGINT NOT NULL,
     CHECKIN_INTERVAL BIGINT NOT NULL,
-    RECOVERER VARCHAR(80),
-    constraint pk_qrtz_scheduler_state PRIMARY KEY (INSTANCE_NAME)
+    CONSTRAINT pk_qrtz_scheduler_state PRIMARY KEY (SCHED_NAME,INSTANCE_NAME)
 );
 
 CREATE TABLE qrtz_locks
   (
-    LOCK_NAME  VARCHAR(40) NOT NULL,
-    constraint pk_qrtz_locks PRIMARY KEY (LOCK_NAME)
+    SCHED_NAME VARCHAR(120) NOT NULL,
+    LOCK_NAME  VARCHAR(40) NOT NULL, 
+    CONSTRAINT pk_qrtz_locks PRIMARY KEY (SCHED_NAME,LOCK_NAME)
 );
 
---##################################################################
---# The following command should populate the qrtz_locks table
---# are no categories in the category table
---##################################################################
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('TRIGGER_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('JOB_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('CALENDAR_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('STATE_ACCESS');
---# criteria: SELECT count(*) = 0 from qrtz_locks
-insert into qrtz_locks values('MISFIRE_ACCESS');
+create index idx_qrtz_j_req_recovery on qrtz_job_details(SCHED_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_j_grp on qrtz_job_details(SCHED_NAME,JOB_GROUP);
+
+create index idx_qrtz_t_j on qrtz_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_t_jg on qrtz_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_t_c on qrtz_triggers(SCHED_NAME,CALENDAR_NAME);
+create index idx_qrtz_t_g on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP);
+create index idx_qrtz_t_state on qrtz_triggers(SCHED_NAME,TRIGGER_STATE);
+create index idx_qrtz_t_n_state on qrtz_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_n_g_state on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_next_fire_time on qrtz_triggers(SCHED_NAME,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st on qrtz_triggers(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);
+create index idx_qrtz_t_nft_st_misfire_grp on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);
+
+create index idx_qrtz_ft_trig_inst_name on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME);
+create index idx_qrtz_ft_inst_job_req_rcvry on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_ft_j_g on qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_ft_jg on qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_ft_t_g on qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
+create index idx_qrtz_ft_tg on qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
 
 --# End Quartz persistence tables
 
@@ -2350,6 +2369,7 @@ CREATE TABLE bsm_reduce (
     type character varying(32) NOT NULL,
     threshold float,
     threshold_severity integer,
+    base float,
     CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
 );
 
@@ -2418,4 +2438,39 @@ CREATE TABLE bsm_service_children (
       REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
       CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child_id)
       REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+--##################################################################
+--# Topology tables
+--##################################################################
+
+-- Layout table
+CREATE TABLE topo_layout (
+	id varchar(255) NOT NULL,
+	created timestamp NOT NULL,
+	creator varchar(255) NOT NULL,
+	updated timestamp NOT NULL,
+	updator varchar(255) NOT NULL,
+	last_used timestamp,
+	CONSTRAINT topo_layout_pkey PRIMARY KEY (id)
+);
+
+-- Layout coordinates of vertex
+CREATE TABLE topo_vertex_position (
+	id integer NOT NULL,
+	x integer NOT NULL,
+	y integer NOT NULL,
+	vertex_namespace varchar(255) NULL,
+	vertex_id varchar(255) NULL,
+	CONSTRAINT topo_vertex_position_pkey PRIMARY KEY (id)
+);
+
+-- Relation table (layout -> vertex positions)
+CREATE TABLE topo_layout_vertex_positions (
+  vertex_position_id integer NOT NULL,
+	layout_id varchar(255) NOT NULL,
+	CONSTRAINT fk_topo_layout_vertex_positions_layout_id FOREIGN KEY (layout_id)
+	REFERENCES topo_layout (id) ON DELETE CASCADE,
+	CONSTRAINT fk_topo_layout_vertex_positions_vertex_position_id FOREIGN KEY (vertex_position_id)
+	REFERENCES topo_vertex_position (id) ON DELETE CASCADE
 );

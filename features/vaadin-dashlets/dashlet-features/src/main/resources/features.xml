@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features 
   name="dashlet-features"
-  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
 
   <feature name="dashlet-alarms" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Alarms">
@@ -45,6 +45,7 @@
   <feature name="dashlet-topology" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
+    <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${pom.version}</bundle>
   </feature>
   <feature name="dashlet-surveillance" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Surveillance">
     <feature>opennms-core</feature>
@@ -53,6 +54,10 @@
   <feature name="dashlet-url" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: URL">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-url/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-grafana" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Grafana">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-grafana/${pom.version}</bundle>
   </feature>
 
 </features>

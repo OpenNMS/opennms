@@ -33,7 +33,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>MonitoringLocationListCellRenderer class.</p>
@@ -51,7 +51,7 @@ public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer 
     /** {@inheritDoc} */
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        LocationDef location = (LocationDef)value;
+        OnmsMonitoringLocation location = (OnmsMonitoringLocation)value;
 
         StringBuffer stringValue = new StringBuffer();
         if (location != null) {

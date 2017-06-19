@@ -3,13 +3,13 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.mib-compiler</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features MIB-Compiler</name>
+  <name>OpenNMS :: Features :: MIB-Compiler</name>
 
   <description>Standalong MIB-Compiler based on JSMILib</description>
   <properties>

@@ -14,9 +14,9 @@
 # Description
 %{!?_name:%define _name "opennms"}
 %{!?_descr:%define _descr "OpenNMS"}
-%{!?packagedir:%define packagedir %{_name}-minion-%version-%{releasenumber}}
+%{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-1.8.0}
+%{!?_java:%define _java jre-1.8.0}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -65,10 +65,16 @@ http://www.opennms.org/wiki/Minion
 %package container
 Summary:       Minion Container
 Group:         Applications/System
-Requires(pre): %{jdk}
-Requires:      %{jdk}
-Requires(pre): openssh
 Requires:      openssh
+Requires(pre): %{_java}
+Requires:      %{_java}
+Requires(pre): /usr/bin/getent
+Requires(pre): /usr/sbin/groupadd
+Requires(pre): /usr/sbin/useradd
+Requires(pre): /sbin/nologin
+Requires:      /sbin/nologin
+Requires:      /usr/bin/id
+Requires:      /usr/bin/sudo
 
 %description container
 Minion Container
@@ -77,12 +83,16 @@ Minion Container
 %{extrainfo2}
 
 %package features-core
-Summary:       Minion Core Features
-Group:         Applications/System
-Requires(pre): %{name}-container = %{version}-%{release}
-Requires:      %{name}-container = %{version}-%{release}
-Requires(pre): util-linux
-Requires:      util-linux
+Summary:        Minion Core Features
+Group:          Applications/System
+Requires(pre):  %{name}-container = %{version}-%{release}
+Requires:       %{name}-container = %{version}-%{release}
+Requires(post): util-linux
+Requires:       util-linux
+Requires:       jicmp >= 2.0.0
+Requires(pre):  jicmp >= 2.0.0
+Requires:       jicmp6 >= 2.0.0
+Requires(pre):  jicmp6 >= 2.0.0
 
 %description features-core
 Minion Core Features
@@ -104,87 +114,133 @@ Minion Default Features
 
 %prep
 
+tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+%define setupdir %{packagedir}
+
+%setup -D -T -n %setupdir
+
 %build
 
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %install
 
-# Extract the container
-mkdir -p $RPM_BUILD_ROOT%{minioninstprefix}
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C $RPM_BUILD_ROOT%{minioninstprefix} --strip-components=1
+export EXTRA_ARGS=""
+if [ "%{enable_snapshots}" = 1 ]; then
+	EXTRA_ARGS="-s"
+fi
+
+tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
+
+# Extract the minion assembly
+mkdir -p %{buildroot}%{minioninstprefix}
+tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+
 # Remove the data directory
-rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/data
+rm -rf %{buildroot}%{minioninstprefix}/data
 # Remove the demos directory
-rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/demos
+rm -rf %{buildroot}%{minioninstprefix}/demos
 
-# Copy over the run script
-mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/tools/packages/minion/minion.init > "$RPM_BUILD_ROOT%{_initrddir}"/minion
-chmod 755 "$RPM_BUILD_ROOT%{_initrddir}"/minion
+# Create a default org.opennms.minion.controller.cfg file
+echo "location = MINION" > %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
+echo "id = 00000000-0000-0000-0000-000000ddba11" >> %{buildroot}%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
-# Extract the core repository
-mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/core
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/core
-echo "location = MINION" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "id = 00000000-0000-0000-0000-000000ddba11" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
+# fix the init script for RedHat/CentOS layout
+mkdir -p "%{buildroot}%{_initrddir}"
+sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^MINION_HOME[ \t]*=.*$,MINION_HOME=%{minioninstprefix},g" "%{buildroot}%{minioninstprefix}/etc/minion.init" > "%{buildroot}%{_initrddir}"/minion
+chmod 755 "%{buildroot}%{_initrddir}"/minion
+rm -f '%{buildroot}%{minioninstprefix}/etc/minion.init'
 
-# Extract the default repository
-mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/default
-tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/default
+# move minion.conf to the sysconfig dir
+install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
+mv "%{buildroot}%{minioninstprefix}/etc/minion.conf" "%{buildroot}%{_sysconfdir}/sysconfig/minion"
 
 # container package files
-find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \
+find %{buildroot}%{minioninstprefix} ! -type d | \
     grep -v %{minioninstprefix}/bin | \
     grep -v %{minionrepoprefix} | \
     grep -v %{minioninstprefix}/etc/featuresBoot.d | \
     grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
+    sed -e "s|^%{buildroot}|%attr(644,minion,minion) |" | \
     sort > %{_tmppath}/files.container
-find $RPM_BUILD_ROOT%{minioninstprefix}/bin ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{minioninstprefix}/bin ! -type d | \
+    sed -e "s|^%{buildroot}|%attr(755,minion,minion) |" | \
     sort >> %{_tmppath}/files.container
 # Exclude subdirs of the repository directory
-find $RPM_BUILD_ROOT%{minioninstprefix} -type d | \
+find %{buildroot}%{minioninstprefix} -type d | \
     grep -v %{minionrepoprefix}/ | \
-    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.container
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(664 root root 775)
 
 %files container -f %{_tmppath}/files.container
-%defattr(664 root root 775)
-%attr(755,root,root) %{_initrddir}/minion
-%attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
+%defattr(664 minion minion 775)
+%attr(755,minion,minion) %{_initrddir}/minion
+%attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
+%attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
+
+%pre container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+getent group minion >/dev/null || groupadd -r minion
+getent passwd minion >/dev/null || \
+	useradd -r -g minion -d "${ROOT_INST}" -s /sbin/nologin \
+	-c "OpenNMS Minion" minion
+exit 0
 
 %post container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 # Clean out the data directory
-rm -rf %{minioninstprefix}/data
+rm -rf "${ROOT_INST}/data"
 # Generate an SSH key if necessary
-if [ ! -f %{minioninstprefix}/etc/host.key ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
+    chown minion:minion "${ROOT_INST}/etc/"host.key*
 fi
 
 %files features-core
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/core
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 %post features-core
-# Generate a new UUID
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+# Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
-sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
 # Remove the directory used as the local Maven repo cache
-rm -rf %{minionrepoprefix}/.local
+rm -rf "${ROOT_INST}/repositories/.local"
 
 %files features-default
-%defattr(644 root root 755)
+%defattr(644 minion minion 755)
 %{minionrepoprefix}/default
 
 %post features-default
 # Remove the directory used as the local Maven repo cache
 rm -rf %{minionrepoprefix}/.local
+
+%preun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -x "%{_initrddir}/minion" ]; then
+	%{_initrddir}/minion stop || :
+fi
+
+%postun -p /bin/bash container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
+if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
+	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
+fi

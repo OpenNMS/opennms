@@ -29,7 +29,9 @@
 package org.opennms.netmgt.statsd;
 
 import com.google.common.collect.Iterables;
-import junit.framework.Assert;
+
+import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +39,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
@@ -58,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
@@ -69,6 +73,10 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitTemporaryDatabase
 public class StatsdValuesIT implements InitializingBean {
+
+    @Autowired
+    protected MonitoringLocationDao m_locationDao;
+
     @Autowired
     protected NodeDao m_nodeDao;
 
@@ -94,9 +102,8 @@ public class StatsdValuesIT implements InitializingBean {
     @Test
     @Transactional
     public void testValue() throws Exception {
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         m_nodeDao.flush();
 

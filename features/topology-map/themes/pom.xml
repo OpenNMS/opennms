@@ -3,15 +3,15 @@
 
   <parent>
     <groupId>org.opennms.features</groupId>
-    <artifactId>topology</artifactId>
-    <version>18.0.4</version>
+    <artifactId>org.opennms.features.topology</artifactId>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>themes</artifactId>
+  <artifactId>org.opennms.features.topology.themes</artifactId>
 
-  <name>OpenNMS Features :: Topology :: Themes</name>
+  <name>OpenNMS :: Features :: Topology :: Themes</name>
 
   <packaging>pom</packaging>
 

@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>18.0.4</version>
+		<version>21.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-tsrm</artifactId>
@@ -23,7 +23,7 @@
 							<wsdlOptions>
 								<wsdlOption>
 									<wsdl>src/main/resources/SHSIMPINC.wsdl</wsdl>
-									<wsdlLocation>classpath:SHSIMPINC.wsdl</wsdlLocation>
+									<wsdlLocation>classpath:/SHSIMPINC.wsdl</wsdlLocation>
 									<frontEnd>jaxws21</frontEnd>
 									<faultSerialVersionUID>1</faultSerialVersionUID>
 								</wsdlOption>
@@ -68,6 +68,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>org.opennms.core</groupId>
+			<artifactId>org.opennms.core.lib</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.ticketing</groupId>
 			<artifactId>org.opennms.features.ticketing.api</artifactId>

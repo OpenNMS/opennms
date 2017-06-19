@@ -3,15 +3,11 @@
 :imagesdir: ../../images
 
 [[gi-install-minion-rhel]]
-=== RHEL
+==== RHEL
 
 NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
 
-==== Install Minion
-
-Start by <<gi-install-opennms-yum-repo,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
-
-NOTE: OpenNMS Minion currently requires a JDK. See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
+Start by <<gi-install-opennms-repo-releases,setting up the OpenNMS Yum repository>> and <<gi-install-oracle-java,installing Java>>.
 
 Once the _Yum_ repository has been configured:
 
@@ -42,8 +38,13 @@ The _Minion_ packages setup the following directory structure:
 └── system
 ----
 
-[[gi-install-minion-rhel-init]]
-==== Initialize Minion
+===== Configuring Startup
+
+The Minion's startup configuration can be changed by editing the `/etc/sysconfig/minion` file.  It allows you to override many of the defaults used at startup including the location of your JDK, how much memory to use, and what user to run as.
+
+===== Starting the Minion
+
+After successful installation a `minion` service can be started and enabled using _systemd_ commands.
 
 .System startup configuration for _Minion_
 [source, shell]

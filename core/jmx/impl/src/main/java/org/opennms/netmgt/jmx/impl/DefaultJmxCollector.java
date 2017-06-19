@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,7 +50,6 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -58,7 +57,6 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.config.jmx.MBeanServer;
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxCollector;
 import org.opennms.netmgt.jmx.JmxCollectorConfig;
 import org.opennms.netmgt.jmx.JmxSampleProcessor;
@@ -81,23 +79,12 @@ public class DefaultJmxCollector implements JmxCollector {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected JmxConfigDao m_jmxConfigDao = null;
-
     @Override
-    public void collect(JmxCollectorConfig config, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException {
-        if (m_jmxConfigDao == null) {
-            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
-        }
-
+    public void collect(JmxCollectorConfig config, MBeanServer mBeanServer, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException {
         Map<String, String> mergedStringMap = new HashMap<>(config.getServiceProperties());
-
-        if (mergedStringMap.containsKey("port")) {
-            MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(config.getAgentAddress(), mergedStringMap.get("port"));
-            if (mBeanServer != null) {
-                mergedStringMap.putAll(mBeanServer.getParameterMap());
-            }
+        if (mBeanServer != null) {
+            mergedStringMap.putAll(mBeanServer.getParameterMap());
         }
-
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
         try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), InetAddressUtils.addr(config.getAgentAddress()), mergedStringMap, null)) {
             Objects.requireNonNull(connectionWrapper, "connectionWrapper should never be null");
@@ -294,12 +281,4 @@ public class DefaultJmxCollector implements JmxCollector {
         return Collections.unmodifiableSet(objectNames);
     }
 
-    /**
-     * Method for setting the config dao to use. Required for the tests to work properly.
-     *
-     * @param jmxConfigDao the dao instance
-     */
-    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
-        this.m_jmxConfigDao = jmxConfigDao;
-    }
 }

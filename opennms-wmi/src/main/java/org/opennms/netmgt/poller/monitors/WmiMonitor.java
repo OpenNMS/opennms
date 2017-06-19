@@ -39,9 +39,8 @@ import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
@@ -96,16 +95,9 @@ public class WmiMonitor extends AbstractServiceMonitor {
 		WmiResult response = null;
 		// Used to track how long the request took.
 		Double responseTime = null;
-		final NetworkInterface<InetAddress> iface = svc.getNetInterface();
-		// Get the address we're going to poll.
-		final InetAddress ipv4Addr = iface.getAddress();
-		
-		// Validate the interface type.
-		if (iface.getType() != NetworkInterface.TYPE_INET) {
-			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-		}
+		final InetAddress ipAddr = svc.getAddress();
 
-		final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(ipv4Addr);
+		final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(ipAddr);
 		String matchType = DEFAULT_WMI_MATCH_TYPE;
 		String compVal = DEFAULT_WMI_COMP_VAL;
 		String compOp = DEFAULT_WMI_COMP_OP;
@@ -154,9 +146,9 @@ public class WmiMonitor extends AbstractServiceMonitor {
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
 
-        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
 		LOG.debug("poll: address = {}, user = {}, {}", hostAddress, agentConfig.getUsername(), tracker);
-        
+
         WmiManager mgr = null;
         
         for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {

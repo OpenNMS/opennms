@@ -73,7 +73,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name="content")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Content {
+public class Content implements Cloneable {
 
     /** The type. */
     @XmlAttribute(required=true)
@@ -99,6 +99,11 @@ public class Content {
     public Content(String type, String data) {
         this.type = type;
         this.data = data;
+    }
+
+    public Content(Content copy) {
+        type = copy.type;
+        data = copy.data;
     }
 
     /**
@@ -145,4 +150,8 @@ public class Content {
         return "Content [type=" + type + ", data=" + data + "]";
     }
 
+    @Override
+    public Content clone() {
+        return new Content(this);
+    }
 }

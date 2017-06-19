@@ -28,23 +28,24 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-import junit.framework.TestCase;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.junit.Test;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class HttpCollectionConfigFactoryTest extends TestCase {
+public class HttpCollectionConfigFactoryTest {
 
-    public void testHttpCollectionConfigFactoryReader() throws MarshalException, ValidationException, UnsupportedEncodingException {
+    @Test
+    public void testHttpCollectionConfigFactoryReader() throws IOException {
         InputStream rdr = new ByteArrayInputStream(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<http-datacollection-config  \n" + 
                 "    xmlns:http-dc=\"http://xmlns.opennms.org/xsd/config/http-datacollection\" \n" + 
@@ -70,7 +71,7 @@ public class HttpCollectionConfigFactoryTest extends TestCase {
                 "      </uri>\n" + 
                 "    </uris>\n" + 
                 "  </http-collection>\n" + 
-                "</http-datacollection-config>").getBytes("UTF-8"));
+                "</http-datacollection-config>").getBytes(StandardCharsets.UTF_8));
         new HttpCollectionConfigFactory(rdr);
         assertNotNull(HttpCollectionConfigFactory.getConfig());
     }

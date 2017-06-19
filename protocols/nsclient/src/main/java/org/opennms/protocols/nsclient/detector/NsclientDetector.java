@@ -36,17 +36,14 @@ import org.opennms.protocols.nsclient.NsclientManager;
 import org.opennms.protocols.nsclient.NsclientPacket;
 import org.opennms.protocols.nsclient.detector.client.NsclientClient;
 import org.opennms.protocols.nsclient.detector.request.NsclientRequest;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>NsclientDetector class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class NsclientDetector extends BasicDetector<NsclientRequest, NsclientPacket> {
 
     private static final String DEFAULT_SERVICE_NAME = "NSClient";

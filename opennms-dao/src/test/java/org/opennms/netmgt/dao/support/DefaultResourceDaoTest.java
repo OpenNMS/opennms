@@ -46,8 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,6 +64,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
@@ -141,7 +140,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tearDown();
     }
     
-    private void setUpCollectdConfigFactory() throws MarshalException, ValidationException, IOException {
+    private void setUpCollectdConfigFactory() throws IOException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
         m_collectdConfig = new CollectdConfigFactory(stream, "localhost", false);
         stream.close();
@@ -150,7 +149,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetResourceByIdNewEmpty() {
         m_easyMockUtils.replayAll();
-        m_resourceDao.getResourceById("");
+        m_resourceDao.getResourceById(null);
         m_easyMockUtils.verifyAll();
     }
 
@@ -164,7 +163,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(nodeDir, "foo" + m_rrdFileExtension);
         
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById("node[1]");
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", "1"));
         m_easyMockUtils.verifyAll();
         
         assertNotNull("resource should not be null", resource);
@@ -182,7 +181,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById("node[1].responseTime[192.168.1.1]");
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", "1").resolve("responseTime", "192.168.1.1"));
         m_easyMockUtils.verifyAll();
         
         assertNotNull("resource should not be null", resource);
@@ -198,7 +197,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(nodeDir, "foo" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("node[%d]", node.getId()));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", Integer.toString(node.getId())));
         m_easyMockUtils.verifyAll();
 
         assertNotNull("Resource should not be null", resource);
@@ -216,7 +215,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(idDir, "foo" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("nodeSource[source1:123]", node.getId()));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("nodeSource", "source1:123"));
         m_easyMockUtils.verifyAll();
 
         assertNotNull("Resource should not be null", resource);
@@ -227,7 +226,7 @@ public class DefaultResourceDaoTest {
         expect(m_nodeDao.get("2")).andReturn(null);
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("node[%d]", 2));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", "2"));
         m_easyMockUtils.verifyAll();
 
         assertNull("Resource should be null", resource);
@@ -240,7 +239,7 @@ public class DefaultResourceDaoTest {
         expect(m_nodeDao.get(node.getId().toString())).andReturn(node).times(1);
         
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("node[%d]", 2));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("node", "2"));
         m_easyMockUtils.verifyAll();
 
         assertNotNull("Resource should not be null", resource);
@@ -254,7 +253,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(intf, "ifInOctects" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("domain[%s]", "example1"));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("domain", "example1"));
         m_easyMockUtils.verifyAll();
 
         assertNotNull("Resource should not be null", resource);
@@ -263,7 +262,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetTopLevelResourceDomainDoesNotExistInCollectdConfig() {
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("domain[%s]", "bogus"));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("domain", "bogus"));
         m_easyMockUtils.verifyAll();
 
         assertNull("Resource should be null", resource);
@@ -275,7 +274,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempDir(snmp, "example1");
 
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById(String.format("domain[%s]", "example1"));
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("domain", "example1"));
         m_easyMockUtils.verifyAll();
 
         assertNull("Resource should be null", resource);
@@ -284,7 +283,7 @@ public class DefaultResourceDaoTest {
     @Test
     public void testGetTopLevelResourceWithInvalidResourceType() {
         m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceById("bogus");
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.get("bogus", null));
         m_easyMockUtils.verifyAll();
 
         assertNull("Resource should be null", resource);
@@ -298,7 +297,7 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(intf, "ifInOctects" + m_rrdFileExtension);
         
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
-        String resourceId = OnmsResource.createResourceId("domain", "example1", "interfaceSnmp", "server1");
+        ResourceId resourceId = ResourceId.get("domain", "example1").resolve("interfaceSnmp", "server1");
         
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceById(resourceId);
@@ -309,7 +308,7 @@ public class DefaultResourceDaoTest {
 
     @Test
     public void testGetResourceNoNode() throws Exception {
-        String resourceId = OnmsResource.createResourceId("node", "1", "nodeSnmp", "");
+        ResourceId resourceId = ResourceId.get("node", "1").resolve("nodeSnmp", "");
         
         expect(m_nodeDao.get("1")).andReturn(null);
 

@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -56,7 +59,6 @@ import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -88,9 +90,7 @@ import com.google.common.collect.Lists;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-bsmd.xml"
 })
@@ -127,8 +127,6 @@ public class BsmdIT {
     @Autowired
     private TransactionOperations template;
 
-    private EventAnticipator m_anticipator;
-
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -140,9 +138,6 @@ public class BsmdIT {
         m_bsmd.setEventIpcManager(m_eventMgr);
 
         m_databasePopulator.populateDatabase();
-
-        m_anticipator = new EventAnticipator();
-        m_eventMgr.setEventAnticipator(m_anticipator);
     }
 
     @After
@@ -170,11 +165,11 @@ public class BsmdIT {
 
         // Expect a statusChanged event
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblem event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Create the alarm
         OnmsAlarm alarm = createAlarm();
@@ -186,17 +181,17 @@ public class BsmdIT {
         m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
 
         // Verify expectations
-        Collection<Event> stillWaitingFor = m_anticipator.waitForAnticipated(5000);
+        Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
+        verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
 
         // Expect a statusChanged event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Expect a serviceProblemResolved event
         ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, "test");
-        m_anticipator.anticipateEvent(ebldr.getEvent());
+        m_eventMgr.getEventAnticipator().anticipateEvent(ebldr.getEvent());
 
         // Clear the alarm
         alarm.setSeverity(OnmsSeverity.CLEARED);
@@ -207,13 +202,13 @@ public class BsmdIT {
         m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
 
         // Verify expectations
-        stillWaitingFor = m_anticipator.waitForAnticipated(5000);
+        stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
-        verifyParametersOnAnticipatedEventsReceived(m_anticipator, simpleBs.getId());
+        verifyParametersOnAnticipatedEventsReceived(m_eventMgr.getEventAnticipator(), simpleBs.getId());
     }
 
     private static void verifyParametersOnAnticipatedEventsReceived(EventAnticipator anticipator, Long businessServiceId) {
-        for (Event e : anticipator.getAnticipatedEventsRecieved()) {
+        for (Event e : anticipator.getAnticipatedEventsReceived()) {
             // The service id should always be set
             assertEquals(e.getParm(EventConstants.PARM_BUSINESS_SERVICE_ID).getValue().getContent(), businessServiceId.toString());
             // Services parameters should also be included
@@ -251,21 +246,34 @@ public class BsmdIT {
         BusinessServiceEntity simpleBs = createSimpleBusinessService();
         m_bsmd.start();
 
-        // Create an alarm and do NOT send the alarm
+        // Create an alarm, but do NOT send any lifecyle events
+        final AtomicReference<OnmsAlarm> alarmRef = new AtomicReference<>();
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                 Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
                 OnmsAlarm alarm = createAlarm();
                 m_alarmDao.save(alarm);
+                alarmRef.set(alarm);
                 m_alarmDao.flush();
                 Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
             }
         });
 
-        // wait n seconds and try again
-        Thread.sleep(20*1000);
-        Assert.assertEquals(Status.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+        // Wait for the business service status to be updated
+        await().atMost(20, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)), equalTo(Status.CRITICAL));
+
+        // Now delete alarm, and again, do NOT send any lifecyle events
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                m_alarmDao.delete(alarmRef.get());
+                m_alarmDao.flush();
+            }
+        });
+
+        // Wait for the business service status to be updated
+        await().atMost(20, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)), equalTo(Status.NORMAL));
     }
 
     /**

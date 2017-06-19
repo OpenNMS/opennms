@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmCreated</uei>
+        <event-label>OpenNMS-defined internal event: alarmCreated</event-label>
+        <descr>
+            &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+            was created.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was created.</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmEscalated</uei>
+        <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
+        <descr>
+            &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+            was determined to require an escalation of its severity.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was escalated.</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmCleared</uei>
+        <event-label>OpenNMS-defined internal event: alarmCleared</event-label>
+        <descr>
+            &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+            was cleared.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was cleared.</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmUncleared</uei>
+        <event-label>OpenNMS-defined internal event: alarmUncleared</event-label>
+        <descr>
+            &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+            was un-cleared.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was un-cleared</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmUpdatedWithReducedEvent</uei>
+        <event-label>OpenNMS-defined internal event: alarmUpdatedWithReducedEvent</event-label>
+        <descr>
+            &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+            was updated.&lt;/p&gt;</descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was updated by a reduced event.</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/alarmDeleted</uei>
+        <event-label>OpenNMS-defined internal event: alarmDeleted</event-label>
+        <descr>
+            &lt;p&gt;Alarm with reduction key %param[reductionkey] and id: %parm[alarmId]% was deleted.&lt;/p&gt;
+        </descr>
+        <logmsg dest="donotpersist">Alarm with id %parm[alarmId]% was deleted.</logmsg>
+        <severity>Normal</severity>
+    </event>
+
+
+    <event>
+        <uei>uei.opennms.org/alarms/trigger</uei>
+        <event-label>Alarm: Generic Trigger</event-label>
+        <descr>A problem has been triggered.</descr>
+        <logmsg dest='logndisplay'>A problem has been triggered on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+    <event>
+        <uei>uei.opennms.org/alarms/clear</uei>
+        <event-label>Alarm: Generic Clear</event-label>
+        <descr>A problem has been cleared.</descr>
+        <logmsg dest='logndisplay'>A problem has been cleared on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="uei.opennms.org/alarms/trigger:%parm[node]%:%parm[ip]%:%parm[service]%"
+                    alarm-type="2" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+</events>

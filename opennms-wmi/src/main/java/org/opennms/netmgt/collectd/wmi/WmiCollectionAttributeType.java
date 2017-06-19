@@ -29,58 +29,36 @@
 package org.opennms.netmgt.collectd.wmi;
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.netmgt.config.wmi.Attrib;
 
-/**
- * <p>WmiCollectionAttributeType class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class WmiCollectionAttributeType extends AbstractCollectionAttributeType {
         Attrib m_attribute;
 
-        /**
-         * <p>Constructor for WmiCollectionAttributeType.</p>
-         *
-         * @param attribute a {@link org.opennms.netmgt.config.wmi.Attrib} object.
-         * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
-         */
         public WmiCollectionAttributeType(final Attrib attribute, final AttributeGroupType groupType) {
             super(groupType);
             m_attribute = attribute;
         }
 
-        /** {@inheritDoc} */
         @Override
         public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
-            if ("string".equalsIgnoreCase(m_attribute.getType())) {
+            if (m_attribute.getType() == AttributeType.STRING) {
                 persister.persistStringAttribute(attribute);
             } else {
                 persister.persistNumericAttribute(attribute);
             }
         }
 
-        /**
-         * <p>getName</p>
-         *
-         * @return a {@link java.lang.String} object.
-         */
         @Override
         public String getName() {
             return m_attribute.getAlias();
         }
 
-        /**
-         * <p>getType</p>
-         *
-         * @return a {@link java.lang.String} object.
-         */
         @Override
-        public String getType() {
+        public AttributeType getType() {
             return m_attribute.getType();
         }
 

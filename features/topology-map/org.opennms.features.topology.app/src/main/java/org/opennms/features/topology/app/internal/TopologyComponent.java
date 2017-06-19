@@ -50,6 +50,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
+import org.opennms.features.topology.app.internal.menu.MenuUpdateListener;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.AbstractComponent;
 
-@JavaScript({"theme://js/d3.v3.4.13.js"})
+@JavaScript({"theme://js/d3.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
@@ -159,7 +160,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     private final GraphContainer m_graphContainer;
     private Graph m_graph;
-    private final List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
+    private final List<MenuUpdateListener> m_menuItemStateListener = new ArrayList<MenuUpdateListener>();
     private final ContextMenuHandler m_contextMenuHandler;
     private final IconRepositoryManager m_iconRepoManager;
     private String m_activeTool = "pan";
@@ -219,8 +220,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getState().setActiveTool(m_activeTool);
 
         Graph graph = getGraph();
-        //Set Status provider from the graph container because I may move it later
-        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getVertexStatusProvider(), getState());
+        GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, getState());
         try {
             graph.visit(painter);
         } catch (Exception e) {
@@ -298,17 +298,17 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getViewManager().setMapBounds(graph.getLayout().getBounds());
     }
 
-    public void addMenuItemStateListener(MenuItemUpdateListener listener) {
+    public void addMenuItemStateListener(MenuUpdateListener listener) {
         m_menuItemStateListener.add(listener);
     }
 
-    public void removeMenuItemStateListener(MenuItemUpdateListener listener) {
+    public void removeMenuItemStateListener(MenuUpdateListener listener) {
         m_menuItemStateListener.remove(listener);
     }
 
     private void updateMenuItems() {
-        for(MenuItemUpdateListener listener : m_menuItemStateListener) {
-            listener.updateMenuItems();
+        for(MenuUpdateListener listener : m_menuItemStateListener) {
+            listener.updateMenu();
         }
     }
 
@@ -364,7 +364,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
 
-        }else {
+        } else {
             getViewManager().setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
     }

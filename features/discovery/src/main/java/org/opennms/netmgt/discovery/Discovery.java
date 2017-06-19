@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,26 +29,15 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import org.apache.camel.CamelContext;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -57,7 +46,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This class is the main interface to the OpenNMS discovery service. The service 
@@ -66,81 +55,26 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name="OpenNMS.Discovery", logPrefix="discovery")
+@EventListener(name=Discovery.DAEMON_NAME, logPrefix=Discovery.LOG4J_CATEGORY)
 public class Discovery extends AbstractServiceDaemon {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
-    
-    /**
-     * The callback that sends newSuspect events upon successful ping response.
-     */
-    private static final DiscoveryPingResponseCallback cb = new DiscoveryPingResponseCallback();
 
-    private static final String LOG4J_CATEGORY = "discovery";
+    protected static final String DAEMON_NAME = "Discovery";
 
-    /**
-     * The SQL query used to get the list of managed IP addresses from the database
-     */
-    private static final String ALL_IP_ADDRS_SQL = "SELECT DISTINCT ipAddr FROM ipInterface WHERE isManaged <> 'D'";
-
-    private DiscoveryConfigFactory m_discoveryFactory;
-
-    private EventForwarder m_eventForwarder;
-
-    private UnmanagedInterfaceFilter m_interfaceFilter= null;
+    protected static final String LOG4J_CATEGORY = "discovery";
 
     @Autowired
-    private CamelContext m_camelContext;
+    private DiscoveryConfigFactory m_discoveryFactory;
 
-    /**
-     * <p>setEventForwarder</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
-    }
+    @Autowired
+    private DiscoveryTaskExecutor m_discoveryTaskExecutor;
 
-    /**
-     * <p>getEventForwarder</p>
-     *
-     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-    
-    /**
-     * <p>setDiscoveryFactory</p>
-     *
-     * @param discoveryFactory a {@link org.opennms.netmgt.config.DiscoveryConfigFactory} object.
-     */
-    public void setDiscoveryFactory(DiscoveryConfigFactory discoveryFactory) {
-        m_discoveryFactory = discoveryFactory;
-    }
+    @Autowired
+    @Qualifier("eventIpcManager")
+    private EventForwarder m_eventForwarder;
 
-    /**
-     * <p>getDiscoveryFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.DiscoveryConfigFactory} object.
-     */
-    public DiscoveryConfigFactory getDiscoveryFactory() {
-        return m_discoveryFactory;
-    }
-
-    /**
-     * <p>setUnmanagedInterfaceFilter</p>
-     */
-    public void setUnmanagedInterfaceFilter(UnmanagedInterfaceFilter filter) {
-    	m_interfaceFilter = filter;
-    }
-
-    /**
-     * <p>getUnmanagedInterfaceFilter</p>
-     */
-    public UnmanagedInterfaceFilter getUnmanagedInterfaceFilter() {
-        return m_interfaceFilter;
-    }
+    private Timer discoveryTimer;
 
     /**
      * Constructs a new discovery instance.
@@ -156,52 +90,57 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onInit() throws IllegalStateException {
+        Objects.requireNonNull(m_eventForwarder, "must set the eventForwarder property");
+        Objects.requireNonNull(m_discoveryTaskExecutor, "must set the discoveryTaskExecutor property");
+        Objects.requireNonNull(m_discoveryFactory, "must set the discoveryFactory property");
 
-        Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
-        
-        //Wiring doesn't seem to be working.
-        Assert.state(m_discoveryFactory != null, "must set the Discovery Factory property");
-        cb.setDiscoveryFactory(m_discoveryFactory);
-        
         try {
         	LOG.debug("Initializing configuration...");
         	m_discoveryFactory.reload();
-        	LOG.debug("Configuration initialized.  Init the factory...");
-            EventIpcManagerFactory.init();
-        	LOG.debug("Factory init'd.");
         } catch (Throwable e) {
             LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
-
-        // Reduce the shutdown timeout for the Camel context
-        m_camelContext.getShutdownStrategy().setTimeout(5);
-        m_camelContext.getShutdownStrategy().setTimeUnit(TimeUnit.SECONDS);
     }
 
     /**
      * <p>onStart</p>
      */
     @Override
-    protected void onStart() {
-        syncAlreadyDiscovered();
-        try {
-            m_camelContext.start();
-        } catch (Exception e) {
-            LOG.error("Discovery startup failed: " + e.getMessage(), e);
+    protected synchronized void onStart() {
+        if (discoveryTimer != null) {
+            LOG.warn("Discovery is already started.");
+            return;
         }
+
+        discoveryTimer = new Timer(DAEMON_NAME);
+        discoveryTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                LOG.info("Discovery triggered by timer.");
+                try {
+                    m_discoveryTaskExecutor.handleDiscoveryTask(m_discoveryFactory.getConfiguration()).whenComplete((result, ex) -> {
+                        LOG.info("Discovery completed succesfully.");
+                    }).join();
+                } catch (Throwable t) {
+                    LOG.error("Discovery failed. Will try again in {} ms", m_discoveryFactory.getRestartSleepTime(), t);
+                }
+            }
+        }, m_discoveryFactory.getInitialSleepTime(), m_discoveryFactory.getRestartSleepTime());
     }
 
     /**
      * <p>onStop</p>
      */
     @Override
-    protected void onStop() {
-        try {
-            m_camelContext.stop();
-        } catch (Exception e) {
-            LOG.error("Discovery shutdown failed: " + e.getMessage(), e);
+    protected synchronized void onStop() {
+        if (discoveryTimer == null) {
+            LOG.warn("Discovery is already stopped.");
+            return;
         }
+
+        discoveryTimer.cancel();
+        discoveryTimer = null;
     }
 
     /**
@@ -209,11 +148,7 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onPause() {
-        try {
-            m_camelContext.stop();
-        } catch (Exception e) {
-            LOG.error("Discovery pause failed: " + e.getMessage(), e);
-        }
+        onStop();
     }
 
     /**
@@ -221,47 +156,7 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onResume() {
-        try {
-            m_camelContext.start();
-        } catch (Exception e) {
-            LOG.error("Discovery resume failed: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * <p>syncAlreadyDiscovered</p>
-     */
-    protected void syncAlreadyDiscovered() {
-    	/**
-    	 * Make a new list with which we'll replace the existing one, that way
-    	 * if something goes wrong with the DB we won't lose whatever was already
-    	 * in there
-    	 */
-    	Set<String> newAlreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
-    	Connection conn = null;
-        final DBUtils d = new DBUtils(getClass());
-
-    	try {
-    		conn = DataSourceFactory.getInstance().getConnection();
-    		d.watch(conn);
-    		PreparedStatement stmt = conn.prepareStatement(ALL_IP_ADDRS_SQL);
-    		d.watch(stmt);
-    		ResultSet rs = stmt.executeQuery();
-    		d.watch(rs);
-    		if (rs != null) {
-    			while (rs.next()) {
-    				newAlreadyDiscovered.add(rs.getString(1));
-    			}
-    		} else {
-    			LOG.warn("Got null ResultSet from query for all IP addresses");
-    		}
-    		m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
-    	} catch (SQLException sqle) {
-		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
-    	} finally {
-    	    d.cleanUp();
-    	}
-    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
+        onStart();
     }
 
     /**
@@ -280,28 +175,18 @@ public class Discovery extends AbstractServiceDaemon {
         try {
             m_discoveryFactory.reload();
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             this.stop();
             this.start();
-        } catch (MarshalException e) {
-            LOG.error("Unable to initialize the discovery configuration factory", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
-            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-        } catch (ValidationException e) {
-            LOG.error("Unable to initialize the discovery configuration factory", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
-            ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
             LOG.error("Unable to initialize the discovery configuration factory", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         }
         m_eventForwarder.sendNow(ebldr.getEvent());
     }
-    
+
     /**
      * <p>reloadDaemonConfig</p>
      *
@@ -322,7 +207,7 @@ public class Discovery extends AbstractServiceDaemon {
         final List<Parm> parmCollection = event.getParmCollection();
 
         for (final Parm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Discovery".equalsIgnoreCase(parm.getValue().getContent())) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && DAEMON_NAME.equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
             }
@@ -333,32 +218,13 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     /**
-     * <p>handleInterfaceDeleted</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
-    public void handleInterfaceDeleted(final Event event) {
-        if(event.getInterface() != null) {
-            // remove from known nodes
-            final String iface = event.getInterface();
-            m_interfaceFilter.removeManagedAddress(iface);
-
-            LOG.debug("Removed {} from known interface list", iface);
-        }
-    }
-
-    /**
      * <p>handleDiscoveryResume</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
     public void handleDiscoveryResume(Event event) {
-        try {
-            resume();
-        } catch (IllegalStateException ex) {
-        }
+        resume();
     }
 
     /**
@@ -368,27 +234,22 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
     public void handleDiscoveryPause(Event event) {
-        try {
-            pause();
-        } catch (IllegalStateException ex) {
-        }
-    }
-
-    /**
-     * <p>handleNodeGainedInterface</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
-    public void handleNodeGainedInterface(Event event) {
-        // add to known nodes
-        final String iface = event.getInterface();
-        m_interfaceFilter.addManagedAddress(iface);
-
-        LOG.debug("Added interface {} as discovered", iface);
+        pause();
     }
 
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public void setDiscoveryFactory(DiscoveryConfigFactory discoveryFactory) {
+        m_discoveryFactory = discoveryFactory;
+    }
+
+    public void setDiscoveryTaskExecutor(DiscoveryTaskExecutor discoveryTaskExecutor) {
+        m_discoveryTaskExecutor = discoveryTaskExecutor;
     }
 }

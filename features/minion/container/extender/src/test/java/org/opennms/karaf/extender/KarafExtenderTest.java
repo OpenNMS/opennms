@@ -35,14 +35,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
@@ -70,7 +71,7 @@ public class KarafExtenderTest {
 
         // Add a file that starts with '.' in the directory, it's contents should be ignored
         Files.write("should-not-be-installed",
-                new File(featuresBootDotD, ".ignored.boot"), Charsets.UTF_8);
+                new File(featuresBootDotD, ".ignored.boot"), StandardCharsets.UTF_8);
 
         // Add a file with features and comments
         Files.write("#this is a comment\n" +
@@ -79,10 +80,10 @@ public class KarafExtenderTest {
                 "\t#that was a line that only contained whitespace\n" +
                 "feature-1\n" +
                 "feature-2/18.0.0\n" +
-                "feature-3", new File(featuresBootDotD, "core.boot"), Charsets.UTF_8);
+                "feature-3", new File(featuresBootDotD, "core.boot"), StandardCharsets.UTF_8);
 
         // Add another file with a name that should be sorted after the previous file
-        Files.write("feature-4", new File(featuresBootDotD, "features.boot"), Charsets.UTF_8);
+        Files.write("feature-4", new File(featuresBootDotD, "features.boot"), StandardCharsets.UTF_8);
 
         // Read and verify
         assertEquals(Lists.newArrayList(new Feature("feature-1"),
@@ -90,6 +91,20 @@ public class KarafExtenderTest {
                 new Feature("feature-3"),
                 new Feature("feature-4")),
                 karafExtender.getFeaturesBoot());
+        
+        // Now add another file that disables features-1 and feature-2 above
+        Files.write("!feature-1\n" +
+                "!feature-2/18.0.0\n", new File(featuresBootDotD, "core2.boot"), StandardCharsets.UTF_8);
+
+        // Read and filter
+        List<Feature> features = karafExtender.getFeaturesBoot();
+        karafExtender.filterFeatures(features);
+
+        // Verify
+        assertEquals(Lists.newArrayList(
+                new Feature("feature-3"),
+                new Feature("feature-4")),
+                features);
     }
 
     @Test
@@ -106,18 +121,18 @@ public class KarafExtenderTest {
         File releaseRepository = new File(repositories, "release");
         releaseRepository.mkdirs();
         Files.write("mvn:group.id/artifact.id/2.0.0/xml",
-                new File(releaseRepository, "features.uri"), Charsets.UTF_8);
+                new File(releaseRepository, "features.uri"), StandardCharsets.UTF_8);
         Files.write("  # comment\n" + "released-feature",
-                new File(releaseRepository, "features.boot"), Charsets.UTF_8);
+                new File(releaseRepository, "features.boot"), StandardCharsets.UTF_8);
 
         // Create a snapshot repository
         File snapshotRepository = new File(repositories, "snapshot");
         snapshotRepository.mkdirs();
         Files.write("#feature uris\n" +
                 "mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml",
-                new File(snapshotRepository, "features.uri"), Charsets.UTF_8);
+                new File(snapshotRepository, "features.uri"), StandardCharsets.UTF_8);
         Files.write("snapshot-feature",
-                new File(snapshotRepository, "features.boot"), Charsets.UTF_8);
+                new File(snapshotRepository, "features.boot"), StandardCharsets.UTF_8);
 
         // Read and verify
         assertEquals(Lists.newArrayList(

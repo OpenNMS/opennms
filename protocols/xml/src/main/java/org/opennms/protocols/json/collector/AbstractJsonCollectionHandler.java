@@ -38,25 +38,25 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.jxpath.JXPathException;
+import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
-import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -84,8 +84,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * @throws ParseException the parse exception
      */
     @SuppressWarnings("unchecked")
-    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, JSONObject json) throws ParseException {
-        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
+    protected void fillCollectionSet(CollectionAgent agent, CollectionSetBuilder builder, XmlSource source, JSONObject json) throws ParseException {
         JXPathContext context = JXPathContext.newContext(json);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
@@ -95,28 +94,19 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
                 JXPathContext relativeContext = context.getRelativeContext(itr.next());
                 String resourceName = getResourceName(relativeContext, group);
                 LOG.debug("fillCollectionSet: processing XML resource {} of type {}", resourceName, group.getResourceType());
-                XmlCollectionResource collectionResource;
-                if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
-                    collectionResource = nodeResource;
-                } else {
-                    collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
-                }
+                final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
                     try {
                         Object obj = relativeContext.getValue(object.getXpath());
                         if (obj != null) {
-                            String value = obj.toString();
-                            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                            collectionResource.setAttributeValue(attribType, value);
+                            builder.withAttribute(collectionResource, group.getName(), object.getName(), obj.toString(), object.getDataType());
                         }
                     } catch (JXPathException ex) {
                         LOG.warn("Unable to get value for {}: {}", object.getXpath(), ex.getMessage());
                     }
                 }
-                processXmlResource(collectionResource, attribGroupType);
-                collectionSet.getCollectionResources().add(collectionResource);
+                processXmlResource(builder, collectionResource, resourceName, group.getName());
             }
         }
     }
@@ -190,12 +180,23 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             is = c.getInputStream();
             StringWriter writer = new StringWriter();
             IOUtils.copy(is, writer);
-            final JSONObject jsonObject = JSONObject.fromObject(writer.toString());
-            return jsonObject;
+
+            return wrapArray(JSONSerializer.toJSON(writer.toString()));
+
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);
         }
     }
 
+    protected static JSONObject wrapArray(final JSON json) {
+        if (json.isArray()) {
+            final JSONObject wrapper = new JSONObject();
+            wrapper.put("elements", json);
+            return wrapper;
+
+        } else {
+            return (JSONObject) json;
+        }
+    }
 }

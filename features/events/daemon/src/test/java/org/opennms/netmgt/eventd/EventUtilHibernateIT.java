@@ -42,6 +42,8 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,7 +57,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -78,6 +79,30 @@ public class EventUtilHibernateIT {
     @Before
     public void setUp() throws Exception {
     	m_populator.populateDatabase();
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testExpandParms() {
+        String testString = "%uei%:%nodeid%:%nodelabel%:%nodelocation%";
+
+        /*
+         * Checking default location
+         */
+        Event event1 = new EventBuilder("testUei", "testSource").setNodeid(1).getEvent();
+        String string1 = eventUtilDaoImpl.expandParms(testString, event1);
+        assertEquals("testUei:1:node1:Default", string1);
+
+        /*
+         * Checking custom location
+         */
+        OnmsNode onmsNode = m_populator.getNodeDao().get(2);
+        onmsNode.setLocation(m_populator.getMonitoringLocationDao().get("RDU"));
+        m_populator.getNodeDao().update(onmsNode);
+
+        Event event2 = new EventBuilder("testUei", "testSource").setNodeid(2).getEvent();
+        String string2 = eventUtilDaoImpl.expandParms(testString, event2);
+        assertEquals("testUei:2:node2:RDU", string2);
     }
 
     @Test

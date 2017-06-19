@@ -35,10 +35,24 @@ package org.opennms.minion.core.api;
 public interface RestClient {
 
     /**
+     * Retrieves the OpenNMS version.
+     *
+     * @throws Exception on failure
+     */
+    public String getVersion() throws Exception;
+
+    /**
      * Used to verify connectivity with the REST endpoint.
      *
      * @throws Exception on failure
      */
     public void ping() throws Exception;
+    
+    /**
+     * Used to fetch snmpV3users from REST endpoint.
+     * 
+     *  @throws Exception on failure
+     */
+    public String getSnmpV3Users() throws Exception;
 
 }

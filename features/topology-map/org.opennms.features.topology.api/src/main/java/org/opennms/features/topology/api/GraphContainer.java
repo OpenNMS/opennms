@@ -32,10 +32,9 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.VaadinApplicationContext;
 
 import com.vaadin.data.Property;
 
@@ -45,9 +44,26 @@ public interface GraphContainer extends DisplayState {
         void graphChanged(GraphContainer graphContainer);
     }
 
-    GraphProvider getBaseTopology();
+    /**
+     * Callback which is invoked after the {@link GraphProvider} has been changed.
+     *
+     * @see #selectTopologyProvider(GraphProvider, Callback...)
+     */
+    interface Callback {
+        /**
+         * is invoked after the {@link GraphProvider} has changed.
+         *
+         * @param graphContainer The container
+         * @param graphProvider The new graph provider
+         */
+        void callback(GraphContainer graphContainer, GraphProvider graphProvider);
+    }
 
-    void setBaseTopology(GraphProvider graphProvider);
+    void setMetaTopologyId(String metaTopologyId);
+
+    String getMetaTopologyId();
+
+    TopologyServiceClient getTopologyServiceClient();
 
     Criteria[] getCriteria();
 
@@ -57,6 +73,14 @@ public interface GraphContainer extends DisplayState {
 
     // clears all criteria which are currently sets
     void clearCriteria();
+
+    /**
+     * Selects the specified {@link GraphProvider}.
+     *
+     * @param graphProvider the provider to select.
+     * @param callbacks callbacks to invoke after the provider has been selected (e.g. apply semantic zoom level, etc)
+     */
+    void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks);
 
     void addChangeListener(ChangeListener listener);
 
@@ -68,29 +92,24 @@ public interface GraphContainer extends DisplayState {
 
     Graph getGraph();
 
+    void setApplicationContext(VaadinApplicationContext applicationContext);
+
     AutoRefreshSupport getAutoRefreshSupport();
 
     boolean hasAutoRefreshSupport();
 
     Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
-    
+
+    void setSelectedNamespace(String namespace);
+
     MapViewManager getMapViewManager();
 
     Property<Double> getScaleProperty();
 
-    StatusProvider getVertexStatusProvider();
-
-    void setVertexStatusProvider(StatusProvider statusProvider);
-
-    EdgeStatusProvider getEdgeStatusProvider();
-
-    void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider);
-
     // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
     String getSessionId();
 
-    // TODO move to another location. This should not be stored here! (maybe VaadinApplicationContext is the right place)
-    void setSessionId(String sessionId);
+    VaadinApplicationContext getApplicationContext();
 
     void setDirty(boolean dirty);
     
@@ -118,4 +137,6 @@ public interface GraphContainer extends DisplayState {
     IconManager getIconManager();
 
     void setIconManager(IconManager iconManager);
+
+    void saveLayout();
 }

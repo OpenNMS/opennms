@@ -151,6 +151,12 @@ public class UnimplementedMonitoredServiceDao implements MonitoredServiceDao {
     }
 
     @Override
+    public List<OnmsMonitoredService> findAllServices() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+
+    @Override
     public Set<OnmsMonitoredService> findByApplication(OnmsApplication application) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }

@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,8 +129,8 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
 
                     for (OnmsResourceType onmsResourceType : map.keySet()) {
                         for (OnmsResource onmsResource : map.get(onmsResourceType)) {
-                            m_resourceSelect.addItem(onmsResource.getId());
-                            m_resourceSelect.setItemCaption(onmsResource.getId(), onmsResourceType.getLabel() + ": " + onmsResource.getLabel());
+                            m_resourceSelect.addItem(onmsResource.getId().toString());
+                            m_resourceSelect.setItemCaption(onmsResource.getId().toString(), onmsResourceType.getLabel() + ": " + onmsResource.getLabel());
                         }
                     }
 
@@ -151,7 +152,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_resourceSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                String onmsResourceId = (String) m_resourceSelect.getValue();
+                ResourceId onmsResourceId = ResourceId.fromString((String) m_resourceSelect.getValue());
 
                 m_graphSelect.removeAllItems();
 
@@ -207,6 +208,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_graphLayout = new VerticalLayout();
         m_graphLayout.setSizeUndefined();
         m_graphLayout.setWidth(100, Unit.PERCENTAGE);
+        m_graphLayout.setMargin(true);
 
         /**
          * create layout for selection boxes

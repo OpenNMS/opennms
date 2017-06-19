@@ -35,6 +35,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
@@ -194,7 +195,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             Writer writer = null;
             try {
                 outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                 JaxbUtils.marshal(foreignSource, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -314,7 +315,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             OutputStream outputStream = null;
             try {
                 outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                 JaxbUtils.marshal(requisition, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);

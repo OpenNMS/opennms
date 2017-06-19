@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>core-parent</artifactId>
-        <version>18.0.4</version>
+        <version>21.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core-repository</artifactId>
@@ -40,9 +40,9 @@
                             <features>
                                 <!-- Minion Core Features -->
                                 <feature>minion-core</feature>
-                                <feature>minion-shell</feature>
+                                <feature>minion-core-shell</feature>
                             </features>
-                            <repository>target/maven-repo</repository>
+                            <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
                     </execution>
                 </executions>
@@ -58,7 +58,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/maven-repo</outputDirectory>
+                            <outputDirectory>${project.build.directory}/maven-repo</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>
@@ -68,6 +68,31 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>files</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <algorithms><algorithm>SHA-1</algorithm></algorithms>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}/maven-repo</directory>
+                            <includes>
+                                <include>**/*.cfg</include>
+                                <include>**/*.jar</include>
+                                <include>**/*.pom</include>
+                                <include>**/*.war</include>
+                                <include>**/*.xml</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

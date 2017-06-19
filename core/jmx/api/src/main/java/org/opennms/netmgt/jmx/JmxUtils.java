@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,14 +28,25 @@
 
 package org.opennms.netmgt.jmx;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.management.remote.JMXServiceURL;
+
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.config.jmx.MBeanServer;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class JmxUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmxUtils.class);
 
     /**
      * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
@@ -100,6 +111,30 @@ public final class JmxUtils {
         final boolean useMbeanForRrds = Boolean.valueOf(map.get(ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString()));
         final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
         return groupName;
+    }
+
+    public static MBeanServer getMBeanServer(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
+        Objects.requireNonNull(address);
+        Objects.requireNonNull(parameters);
+        if (jmxConfigDao != null && jmxConfigDao.getConfig() != null) {
+            try {
+                final JmxConnectionConfig config = JmxConnectionConfigBuilder.buildFrom(address, parameters).build();
+                final int port = new JMXServiceURL(config.getUrl()).getPort();
+                final MBeanServer mBeanServer = jmxConfigDao.getConfig().lookupMBeanServer(address, port);
+                return mBeanServer;
+            } catch (MalformedURLException e) {
+                LOG.warn("Unexpected exception: {}", e.getMessage(), e);
+            }
+        }
+        return null; // not found or exception
+    }
+
+    public static Map<String, String> getRuntimeAttributes(JmxConfigDao jmxConfigDao, String address, Map<String, String> parameters) {
+        MBeanServer mBeanServer = getMBeanServer(jmxConfigDao, address, parameters);
+        if (mBeanServer != null) {
+            return new HashMap<>(mBeanServer.getParameterMap());
+        }
+        return Collections.emptyMap();
     }
 
     private JmxUtils() {

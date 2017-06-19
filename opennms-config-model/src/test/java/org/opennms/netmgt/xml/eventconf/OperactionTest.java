@@ -48,7 +48,7 @@ public class OperactionTest extends XmlTestNoCastor<Operaction> {
 		Operaction operaction1 = new Operaction();
 		operaction1.setMenutext("Test");
 		operaction1.setContent("This is a test");
-		operaction1.setState("on");
+		operaction1.setState(StateType.ON);
 		return Arrays.asList(new Object[][] {
 				{operaction0,
 				"<operaction menutext=\"Test\"></operaction>",

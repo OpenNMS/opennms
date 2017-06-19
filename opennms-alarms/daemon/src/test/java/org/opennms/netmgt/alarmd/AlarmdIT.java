@@ -53,6 +53,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -136,6 +137,9 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     private Alarmd m_alarmd;
 
     @Autowired
+    private MonitoringLocationDao m_locationDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -168,9 +172,8 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         m_eventdIpcMgr.setEventWriter(m_database);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        final OnmsNode node = new OnmsNode();
+        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
-        node.setLabel("node1");
         m_nodeDao.save(node);
         
         m_northbounder = new MockNorthbounder();
@@ -308,7 +311,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Test
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("event argument must not be null"));
+        ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
         try {
             m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {

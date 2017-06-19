@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SSLCertMonitor
 
 This monitor is used to test if a SSL certificate presented by a remote network server are
@@ -32,11 +35,25 @@ You can configure a threshold in days applied on the `notAfter` date.
 .Monitor specific parameters for the SSLCertMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                                                       | Required | Default value
-| `port`    | TCP port for the service with SSL certificate.                                    | required | `-1`
-| `retry`   | Number of attempts to get the certificate state                                   | optional | `0`
-| `timeout` | Time in milliseconds to wait before next attempt.                                 | optional | `3000`
-| `days`    | Number of days before the certificate expires that we mark the service as failed. | optional | `7`
+| Parameter     | Description                                                                       | Required | Default value
+| `port`        | TCP port for the service with SSL certificate.                                    | required | `-1`
+| `retry`       | Number of attempts to get the certificate state                                   | optional | `0`
+| `days`        | Number of days before the certificate expires that we mark the service as failed. | optional | `7`
+| `server-name` | This is the DNS hostname to send as part of the _TLS_ negotiation, known as
+                  server name indication (_SNI_)
+                  (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)             | optional | `-`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Variables which can be passed in the configuration for `server-name`
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${ipaddr}`     | The node's IP-Address
+| `${nodeid}`     | The node ID
+| `${nodelabel}`  | Label of the node the monitor is associated to.
+| `${svcname}`    | The service name
 |===
 
 WARNING: The monitor has no support for communicating on other protocol layers above the SSL session layer. It
@@ -69,6 +86,7 @@ Configuration in `poller-configuration.xml` is as the following:
     <parameter key="timeout" value="3000"/>
     <parameter key="port" value="443"/>
     <parameter key="days" value="30"/>
+    <parameter key="server-name" value="${nodelabel}.example.com"/>
 </service>
 
 <monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />

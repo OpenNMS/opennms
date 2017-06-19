@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
- * <p>LocationMonitorDao interface.</p>
+ * <p>MonitoringLocationDao interface.</p>
  *
  * @author Seth
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public interface MonitoringLocationDao extends OnmsDao<LocationDef, String> {
+public interface MonitoringLocationDao extends OnmsDao<OnmsMonitoringLocation, String> {
 
-	public static final String DEFAULT_MONITORING_LOCATION_ID = "localhost";
+	String DEFAULT_MONITORING_LOCATION_ID = "Default";
 
+	OnmsMonitoringLocation getDefaultLocation();
 }

@@ -229,11 +229,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testMagicUsers() {
-        testConfigFile("magic-users.properties");
-    }
-
-    @Test
     /**
      * FIXME: Database access.
      */
@@ -320,11 +315,6 @@ public class ConfigTesterTest {
     @Test
     public void testPollOutages() {
         testConfigFile("poll-outages.xml");
-    }
-
-    @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
     }
 
     @Test
@@ -474,6 +464,11 @@ public class ConfigTesterTest {
     @Test
     public void testTrapdConfiguration() {
         testConfigFile("trapd-configuration.xml");
+    }
+
+    @Test
+    public void testTrendConfiguration() {
+        ignoreConfigFile("trend-configuration.xml");
     }
 
     @Test

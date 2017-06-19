@@ -54,13 +54,12 @@ import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -80,6 +79,7 @@ import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -324,7 +324,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      */
     @Transactional(readOnly=true)
     @Override
-    public Collection<LocationDef> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         return m_monitoringLocationDao.findAll();
     }
 
@@ -359,7 +359,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /**
-     * @deprecated Use {@link #getPoller(LocationDef)} instead.
+     * @deprecated Use {@link #getPoller(OnmsMonitoringLocation)} instead.
      * 
      * @see http://issues.opennms.org/browse/PB-36
      */
@@ -465,7 +465,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     /**
-     * @deprecated Use {@link #getPackageName(LocationDef)} instead.
+     * @deprecated Use {@link #getPackageName(OnmsMonitoringLocation)} instead.
      * 
      * @see http://issues.opennms.org/browse/PB-36
      */
@@ -474,7 +474,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private List<String> getPackageNameForLocation(final String location) {
-        final LocationDef def = m_monitoringLocationDao.get(location);
+        final OnmsMonitoringLocation def = m_monitoringLocationDao.get(location);
         if (def == null) {
             throw new IllegalStateException("Location definition '" + location + "' could not be found");
         }
@@ -626,9 +626,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /** {@inheritDoc} */
     @Override
     public String registerLocationMonitor(final String monitoringLocationId) {
-        final LocationDef def = m_monitoringLocationDao.get(monitoringLocationId);
+        final OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitoringLocationId);
         if (def == null) {
-            throw new ObjectRetrievalFailureException(LocationDef.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
+            throw new ObjectRetrievalFailureException(OnmsMonitoringLocation.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }
         final OnmsLocationMonitor mon = new OnmsLocationMonitor();
         mon.setId(UUID.randomUUID().toString());
@@ -734,7 +734,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         CollectionSetVisitor persister = m_persisterFactory.createPersister(params, repository, false, true, true);
 
         SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(distributedLatencyResource, new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
         collectionSet.visit(persister);
     }
 

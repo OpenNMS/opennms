@@ -49,5 +49,4 @@ public interface Ref extends Comparable<Ref> {
 	 * A human-readable label for the reference.
 	 */
 	String getLabel();
-
 }

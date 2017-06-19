@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.joesnmp</artifactId>
-  <name>OpenNMS Core SNMP JoeSNMP library</name>
+  <name>OpenNMS :: Core :: SNMP :: JoeSNMP</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

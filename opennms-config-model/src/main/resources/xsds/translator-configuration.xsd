@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/translator-configuration"
+	xmlns:this="http://xmlns.opennms.org/xsd/translator-configuration"
+	elementFormDefault="qualified">
+
+		<element name="value">
+			<annotation>
+				<documentation>
+					An element representing a value to be used in a
+					translation. 
+				</documentation>
+			</annotation>
+			<complexType>
+ 				<sequence>
+					<element ref="this:value" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute name="result" type="string" use="required" />
+				<attribute name="matches" type="string" use="optional" />
+				<attribute name="type" type="string" use="required" />
+				<attribute name="name" type="string" use="optional" />
+			</complexType>
+
+		</element>
+		
+		<element name="assignment">
+			<annotation>
+				<documentation>
+					An element representing an assignement to an attribute of the event
+				</documentation>
+			</annotation>
+			<complexType>
+				<sequence>
+					<element ref="this:value" minOccurs="1" maxOccurs="1"/>
+				</sequence>
+				<attribute name="type" type="string" use="required" />
+				<attribute name="name" type="string" use="required" />
+			</complexType>
+		</element>
+
+	<!--  elements defining this xsd -->
+	<element name="event-translator-configuration">
+		<complexType>
+			<sequence>
+				<element ref="this:translation" minOccurs="0"
+					maxOccurs="1" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="translation">
+		<annotation>
+			<documentation>
+				List of OpenNMS events for which the Event Translator 
+				will subscribe for translation.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:event-translation-spec" minOccurs="0"
+					maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="event-translation-spec">
+		<annotation>
+			<documentation>
+				This defines the allowable translations for a given
+				event uei
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:mappings" minOccurs="1"
+					maxOccurs="1" />
+			</sequence>
+			<attribute name="uei" type="string" use="required" />
+		</complexType>
+	</element>
+	<element name="mappings">
+		<annotation>
+			<documentation>
+				The list of event mappings for this event. The first
+				mapping that matches the event is used to translate the
+				event into a new event.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:mapping" minOccurs="0"
+					maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="mapping">
+		<annotation>
+			<documentation>
+				A mapping for a given event. This translation is only
+				applied if it is the first that matches
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:assignment" minOccurs="0" maxOccurs="unbounded" />
+			</sequence>
+			<attribute name="preserve-snmp-data" type="boolean" use="optional" default="false"/>
+		</complexType>
+	</element>
+</schema>

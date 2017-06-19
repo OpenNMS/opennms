@@ -45,7 +45,6 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -85,9 +84,6 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     @Autowired
     private NodeDao m_nodeDao;
 
-    @Autowired
-    private MockEventIpcManager m_eventSubscriber;
-    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -106,8 +102,8 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:snmpTestData-null.properties"),
-        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:snmpTestData-null.properties")
+        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:/snmpTestData-null.properties"),
+        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:/snmpTestData-null.properties")
     })
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
@@ -120,7 +116,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
         
         eventRecieved.await();
         
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation());
         runScan(scan);
         
         //Verify ipinterface count
@@ -129,7 +125,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
     }
     
     public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-    	final Task t = scan.createTask();
+        final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
         waitForEverything();

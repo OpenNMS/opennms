@@ -3,11 +3,11 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>18.0.4</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-northbounder-syslog</artifactId>
-  <name>OpenNMS Alarms Northbounder Syslog</name>
+  <name>OpenNMS :: Alarms :: Northbounder :: Syslog</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -69,11 +69,6 @@
       <artifactId>commons-pool</artifactId>
     </dependency>
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>

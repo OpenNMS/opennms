@@ -7,11 +7,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 					http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
 					http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
-    <cm:property-placeholder id="linkdConfig" persistent-id="org.opennms.features.topology.plugins.topo.linkd" update-strategy="reload">
-        <cm:default-properties>
-            <cm:property name="configurationFile" value="/opt/opennms/etc/saved-linkd-graph.xml"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
@@ -33,7 +28,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
     <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
 
-    <bean id="enlinkdMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
         <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
     </bean>
@@ -63,7 +58,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
         <argument ref="metricRegistry" />
-        <property name="configurationFile" value="${configurationFile}"/>
         <property name="transactionOperations" ref="transactionOperations"/>
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
@@ -81,7 +75,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
-        <property name="metaInfo" ref="enlinkdMetaInfo"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
@@ -99,17 +93,15 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument ref="topologyHopProvider" />
         <argument ref="nodeDao" />
     </bean>
-    
-    <!-- Linkd Topology Provider Services -->
-    <service ref="topologyACLProvider">
-    	<interfaces>
-    		<value>org.opennms.features.topology.api.topo.VertexProvider</value>
-    		<value>org.opennms.features.topology.api.topo.EdgeProvider</value>
-    		<value>org.opennms.features.topology.api.topo.GraphProvider</value>
-    	</interfaces>
+
+    <!-- Meta topology provider -->
+    <bean id="enhancedLinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="topologyACLProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enhancedLinkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
-            <entry key="preferredLayout" value="D3 Layout" />
         </service-properties>
     </service>
 
@@ -136,7 +128,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Icon definition -->
     <service>
         <interfaces>
-            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
             <value>org.osgi.service.cm.ManagedService</value>
         </interfaces>
         <service-properties>

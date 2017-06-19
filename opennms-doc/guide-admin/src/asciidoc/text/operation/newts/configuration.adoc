@@ -54,6 +54,7 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.query.parallelism`           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
 | `org.opennms.newts.config.cache.strategy`       | See bellow           | Canonical name of the class used for resource level caching. See the table bellow for all of the available options.
 | `org.opennms.newts.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
+| `org.opennms.newts.nan_on_counter_wrap`         | `false`              | Disables the processing of counter wraps, replacing these with NaNs instead.
 |===
 
 Available caching strategies include:

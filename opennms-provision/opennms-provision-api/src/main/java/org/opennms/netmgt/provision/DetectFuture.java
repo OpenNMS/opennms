@@ -35,22 +35,8 @@ package org.opennms.netmgt.provision;
  * @author thedesloge
  * @version $Id: $
  */
-public interface DetectFuture {
-    
-    /**
-     * <p>getServiceDetector</p>
-     *
-     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
-     */
-    AsyncServiceDetector getServiceDetector();
-    
-    /**
-     * <p>isServiceDetected</p>
-     *
-     * @return a boolean.
-     */
-    boolean isServiceDetected();
-    
+public interface DetectFuture extends DetectResults {
+
     /**
      * <p>getException</p>
      *

@@ -7,28 +7,19 @@
 		<relativePath>../../poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>18.0.4</version>
+		<version>21.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
-	<artifactId>netutils</artifactId>
+	<artifactId>org.opennms.features.topology.netutils</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>OpenNMS Features Topology NetUtils</name>
+	<name>OpenNMS :: Features :: Topology :: Plugins :: Net Utils</name>
 
 	<properties>
 		<packaging.type>bundle</packaging.type>
 		<bundle.symbolicName>org.opennms.features.topology.netutils</bundle.symbolicName>
 		<bundle.namespace>org.opennms.features.topology.netutils</bundle.namespace>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.opennms.features</groupId>
@@ -37,13 +28,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.features.topology</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>org.opennms.features.topology.api</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.orbit</groupId>
-			<artifactId>javax.servlet</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -83,6 +69,12 @@
 		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-icmp-jni6</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-icmp-best</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
