@@ -99,7 +99,7 @@ public class RrdOutputSocket {
         m_messages.addMessage(PerformanceDataReading.newBuilder()
                 .setPath(filename)
                 .setOwner(owner)
-                .setTimestamp(timestamp)
+                .setTimestamp(timestamp * 1000)
                 .addAllDblValue(dblValues)
                 .addAllStrValue(strValues)
         );
