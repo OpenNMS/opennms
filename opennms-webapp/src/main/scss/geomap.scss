@@ -31,6 +31,10 @@
   color: white;
 }
 
+.geomap .svg {
+  stroke-width: 0px;
+}
+
 /* Styles for SVG elements */
 .geomap .svg .Cleared {
   fill: $severity-alarm-cleared-border;
