@@ -96,16 +96,16 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        installFeature("spring", "4.1.9.RELEASE_1");
-        installFeature("spring-aspects", "4.1.9.RELEASE_1");
-        installFeature("spring-instrument", "4.1.9.RELEASE_1");
-        installFeature("spring-jdbc", "4.1.9.RELEASE_1");
-        installFeature("spring-jms", "4.1.9.RELEASE_1");
-        //installFeature("spring-test", "4.1.9.RELEASE_1");
-        installFeature("spring-orm", "4.1.9.RELEASE_1");
-        installFeature("spring-oxm", "4.1.9.RELEASE_1");
-        installFeature("spring-tx", "4.1.9.RELEASE_1");
-        installFeature("spring-web", "4.1.9.RELEASE_1");
+        installFeature("spring", "4.2.8.RELEASE_1");
+        installFeature("spring-aspects", "4.2.8.RELEASE_1");
+        installFeature("spring-instrument", "4.2.8.RELEASE_1");
+        installFeature("spring-jdbc", "4.2.8.RELEASE_1");
+        installFeature("spring-jms", "4.2.8.RELEASE_1");
+        //installFeature("spring-test", "4.2.8.RELEASE_1");
+        installFeature("spring-orm", "4.2.8.RELEASE_1");
+        installFeature("spring-oxm", "4.2.8.RELEASE_1");
+        installFeature("spring-tx", "4.2.8.RELEASE_1");
+        installFeature("spring-web", "4.2.8.RELEASE_1");
         //installFeature("spring-web-portlet");
         //installFeature("spring-websocket");
         //installFeature("spring-security");
