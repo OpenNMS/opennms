@@ -284,6 +284,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 m_yxPort.setBridgePortIfIndex(yxlink.getBridgePortIfIndex());
                 m_yxPort.setBridgePortIfName(yxlink.getBridgePortIfName());
                 m_yxPort.setVlan(yxlink.getVlan());
+                m_yxPort.setCreateTime(yxlink.getBridgeMacLinkCreateTime());
             }
             
             if (xylink != null) {
@@ -294,6 +295,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 m_xyPort.setBridgePortIfIndex(xylink.getBridgePortIfIndex());
                 m_xyPort.setBridgePortIfName(xylink.getBridgePortIfName());
                 m_xyPort.setVlan(xylink.getVlan());
+                m_xyPort.setCreateTime(xylink.getBridgeMacLinkCreateTime());
 
             }
         }
