@@ -226,9 +226,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals("Routers", topologyUIPage.getVisibleVertices().get(0).getLabel());
 
         // Expand and verify that vertices are visible again (and not duplicated)
-        for (TopologyIT.FocusedVertex vertex : topologyUIPage.getFocusedVertices()) {
-            vertex.expand();
-        }
+        topologyUIPage.getFocusedVertices().get(0).expand();
         Assert.assertEquals(2, topologyUIPage.getVisibleVertices().size());
         Assert.assertEquals("North 2", topologyUIPage.getVisibleVertices().get(0).getLabel());
         Assert.assertEquals("North 3", topologyUIPage.getVisibleVertices().get(1).getLabel());

@@ -109,33 +109,30 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+                waitForTransition();
             } finally {
                 ui.testCase.setImplicitWait();
             }
-            waitForTransition();
         }
 
-        public void expand() {
+        public void expand() throws NoSuchElementException {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
-            } catch (NoSuchElementException e) {
+                waitForTransition();
             } finally {
                 ui.testCase.setImplicitWait();
             }
-            waitForTransition();
         }
 
-        public void collapse() {
+        public void collapse() throws NoSuchElementException {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
-            } catch (NoSuchElementException e) {
-
+                waitForTransition();
             } finally {
                 ui.testCase.setImplicitWait();
             }
-            waitForTransition();
         }
 
         private WebElement getElement() {
