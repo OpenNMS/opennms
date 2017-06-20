@@ -90,4 +90,9 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
         });
         return false;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s[module=%s]", super.toString(), module.toString());
+    }
 }

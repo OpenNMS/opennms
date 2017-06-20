@@ -31,11 +31,12 @@ package org.opennms.netmgt.dao.jaxb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.reporting.DateParm;
 import org.opennms.netmgt.config.reporting.IntParm;
-import org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -78,21 +79,23 @@ public class DefaultOnmsReportDaoTest {
     @Test
     public void testGetReportParms() throws Exception {
         
-        DateParm[] dates = m_dao.getDateParms(ID);
-        assertEquals(1, dates.length);
-        assertEquals(DATE_NAME,dates[0].getName());
-        assertEquals(DATE_DISPLAY_NAME,dates[0].getDisplayName());
-        assertEquals(false,dates[0].getUseAbsoluteDate());
-        assertEquals(Integer.valueOf(1),dates[0].getDefaultCount());
-        assertEquals("day",dates[0].getDefaultInterval());
-        assertEquals(Integer.valueOf(23),dates[0].getDefaultTime().getHours());
-        assertEquals(Integer.valueOf(59),dates[0].getDefaultTime().getMinutes());
+        List<DateParm> dates = m_dao.getDateParms(ID);
+        assertEquals(1, dates.size());
+        final DateParm firstDate = dates.get(0);
+        assertEquals(DATE_NAME,firstDate.getName());
+        assertEquals(DATE_DISPLAY_NAME,firstDate.getDisplayName());
+        assertEquals(false,firstDate.getUseAbsoluteDate().get());
+        assertEquals(Integer.valueOf(1),firstDate.getDefaultCount());
+        assertEquals("day",firstDate.getDefaultInterval());
+        assertEquals(Integer.valueOf(23),firstDate.getDefaultTime().get().getHours());
+        assertEquals(Integer.valueOf(59),firstDate.getDefaultTime().get().getMinutes());
         
-        IntParm[] integers = m_dao.getIntParms(ID);
-        assertEquals(1,integers.length);
-        assertEquals(STRING_NAME,integers[0].getName());
-        assertEquals(STRING_DISPLAY_NAME,integers[0].getDisplayName());
-        assertEquals(Integer.valueOf(20),integers[0].getDefault());
+        List<IntParm> integers = m_dao.getIntParms(ID);
+        assertEquals(1,integers.size());
+        final IntParm firstInt = integers.get(0);
+        assertEquals(STRING_NAME,firstInt.getName());
+        assertEquals(STRING_DISPLAY_NAME,firstInt.getDisplayName());
+        assertEquals(Integer.valueOf(20),firstInt.getDefault());
         
     }
 

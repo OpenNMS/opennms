@@ -28,13 +28,15 @@
 
 package org.opennms.features.topology.api.support;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.zip.CRC32;
 
@@ -54,6 +56,9 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.SearchCriteria;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
@@ -98,6 +103,10 @@ public class SavedHistory {
     @XmlJavaTypeAdapter(StringMapAdapter.class)
     private final Map<String,String> m_settings = new HashMap<>();
 
+    @XmlElementWrapper(name="searches")
+    @XmlElement(name="search-criteria")
+    private final List<SearchResult> m_searchQueries = new ArrayList<>();
+
     protected SavedHistory() {
         // Here for JAXB support
     }
@@ -109,7 +118,8 @@ public class SavedHistory {
             saveLocations(graphContainer.getGraph()),
             getUnmodifiableSet(graphContainer.getSelectionManager().getSelectedVertexRefs()),
             getFocusVertices(graphContainer),
-            getOperationSettings(graphContainer, operations));
+            getOperationSettings(graphContainer, operations),
+            getSearchQueries(graphContainer.getCriteria()));
     }
 
     SavedHistory(
@@ -118,13 +128,15 @@ public class SavedHistory {
             Map<VertexRef,Point> locations,
             Set<VertexRef> selectedVertices,
             Set<VertexRef> focusVertices,
-            Map<String,String> operationSettings) {
+            Map<String,String> operationSettings,
+            Collection<SearchResult> searchQueries) {
         m_szl = szl;
         m_boundBox = box;
         m_locations = locations;
         m_selectedVertices = selectedVertices;
         m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
+        m_searchQueries.addAll(Objects.requireNonNull(searchQueries));
         LOG.debug("Created " + toString());
     }
 
@@ -168,11 +180,20 @@ public class SavedHistory {
             focusCrc.update(entry.getId().getBytes(StandardCharsets.UTF_8));
         }
         retval.append(String.format(",(%X)", focusCrc.getValue()));
+
+        CRC32 historyCrc = new CRC32();
+        for (SearchResult query : m_searchQueries) {
+            historyCrc.update(query.toString().getBytes(StandardCharsets.UTF_8));
+        }
+        retval.append(String.format(",(%X)", historyCrc.getValue()));
+
         return retval.toString();
     }
 
-    public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+    public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations, ServiceLocator serviceLocator) {
         LOG.debug("Applying " + toString());
+
+        graphContainer.clearCriteria();
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
@@ -182,6 +203,22 @@ public class SavedHistory {
                 LOG.warn("Failed to perform applyHistory() operation", e);
             }
         }
+
+        // Browse through all available search providers that have a "history" functionality
+        List<SearchProvider> searchProviders = serviceLocator.findServices(SearchProvider.class,null);
+        for (SearchProvider searchProvider : searchProviders) {
+            if (searchProvider instanceof HistoryAwareSearchProvider) {
+                // For each of these search providers generate Criteria for all search queries from history
+                // Add resulting Criteria to the graph container
+                for (SearchResult searchQuery : m_searchQueries) {
+                    if (searchProvider.getSearchProviderNamespace().equals(searchQuery.getNamespace()) || searchProvider.contributesTo(searchQuery.getNamespace())) {
+                        Criteria searchCriteria = ((HistoryAwareSearchProvider)searchProvider).buildCriteriaFromQuery(searchQuery);
+                        graphContainer.addCriteria(searchCriteria);
+                    }
+                }
+            }
+        }
+
         // Set Vertices in Focus after all other operations are applied, otherwise the topology provider may have changed
         // which results in a graphContainer.clearCriteria()
         applyVerticesInFocus(m_focusVertices, graphContainer);
@@ -220,6 +257,13 @@ public class SavedHistory {
         return retval.toString();
     }
 
+    private static Set<String> getSavedHistory(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+        Set<String> retval = new HashSet<>();
+
+        Map<String, String> settings = getOperationSettings(graphContainer, operations);
+        return retval;
+    }
+
     private static Set<VertexRef> getUnmodifiableSet(Collection<VertexRef> vertices) {
         HashSet<VertexRef> selectedVertices = new HashSet<>();
         selectedVertices.addAll(vertices);
@@ -256,10 +300,6 @@ public class SavedHistory {
     }
 
     private static void applyVerticesInFocus(Set<VertexRef> focusVertices, GraphContainer graphContainer) {
-        Set<VertexHopGraphProvider.VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class);
-        for (VertexHopGraphProvider.VertexHopCriteria eachCriteria : vertexHopCriterias) {
-            graphContainer.removeCriteria(eachCriteria);
-        }
         focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
     }
 
@@ -267,5 +307,15 @@ public class SavedHistory {
         for(VertexRef ref : locations.keySet()) {
             layout.setLocation(ref, locations.get(ref));
         }
+    }
+
+    private static Collection<SearchResult> getSearchQueries(Criteria[] criteria) {
+        Collection<SearchResult> queryHistories = new ArrayList<>();
+        for (Criteria c : criteria) {
+            if (c instanceof SearchCriteria) {
+                queryHistories.add(new SearchResult((SearchCriteria)c));
+            }
+        }
+        return queryHistories;
     }
 }

@@ -1,0 +1,13 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="rpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" availability="mandatory"/>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="rpc/stress">
+            <action class="org.opennms.core.rpc.commands.StressCommand">
+                <property name="rpcClientFactory" ref="rpcClientFactory"/>
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>

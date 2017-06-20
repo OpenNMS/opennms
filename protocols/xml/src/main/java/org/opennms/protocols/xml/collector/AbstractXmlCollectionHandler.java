@@ -339,14 +339,15 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param unformattedUrl the unformatted URL
      * @param agent the collection agent
      * @param collectionStep the collection step (in seconds)
+     * @param parameters the service parameters
      * @return the string
      * 
      * @throws IllegalArgumentException the illegal argument exception
      */
     @Override
-    public String parseUrl(final NodeDao nodeDao, final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
+    public String parseUrl(final NodeDao nodeDao, final String unformattedUrl, final CollectionAgent agent, final Integer collectionStep, final Map<String,String> parameters) throws IllegalArgumentException {
         final OnmsNode node = nodeDao.get(agent.getNodeId());
-        return parseString("URL", unformattedUrl, node, agent.getHostAddress(), collectionStep);
+        return parseString("URL", unformattedUrl, node, agent.getHostAddress(), collectionStep, parameters);
     }
 
     /**
@@ -355,25 +356,26 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param unformattedRequest the unformatted request
      * @param agent the agent
      * @param collectionStep the collection step
+     * @param parameters the service parameters
      * @return the request
      * @throws IllegalArgumentException the illegal argument exception
      */
     @Override
-    public Request parseRequest(final NodeDao nodeDao, final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep) throws IllegalArgumentException {
+    public Request parseRequest(final NodeDao nodeDao, final Request unformattedRequest, final CollectionAgent agent, final Integer collectionStep, final Map<String,String> parameters) throws IllegalArgumentException {
         if (unformattedRequest == null)
             return null;
         final OnmsNode node = nodeDao.get(agent.getNodeId());
         final Request request = new Request();
         request.setMethod(unformattedRequest.getMethod());
         for (Header header : unformattedRequest.getHeaders()) {
-            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep));
+            request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep, parameters));
         }
         for (Parameter param : unformattedRequest.getParameters()) {
-            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress(), collectionStep));
+            request.addParameter(param.getName(), parseString(param.getName(), param.getValue(), node, agent.getHostAddress(), collectionStep, parameters));
         }
         final Content cnt = unformattedRequest.getContent();
         if (cnt != null)
-            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress(), collectionStep)));
+            request.setContent(new Content(cnt.getType(), parseString("Content", cnt.getData(), node, agent.getHostAddress(), collectionStep, parameters)));
         return request;
     }
 
@@ -396,10 +398,11 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param node the node
      * @param ipAddress the IP address
      * @param collectionStep the collection step
+     * @param parameters the service parameters
      * @return the string
      * @throws IllegalArgumentException the illegal argument exception
      */
-    protected static String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep) throws IllegalArgumentException {
+    protected static String parseString(final String reference, final String unformattedString, final OnmsNode node, final String ipAddress, final Integer collectionStep, final Map<String, String> parameters) throws IllegalArgumentException {
         if (unformattedString == null || node == null)
             return null;
         String formattedString = unformattedString.replaceAll("[{](?i)(ipAddr|ipAddress)[}]", ipAddress);
@@ -411,6 +414,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             formattedString = formattedString.replaceAll("[{](?i)foreignId[}]", node.getForeignId());
         if (node.getForeignSource() != null)
             formattedString = formattedString.replaceAll("[{](?i)foreignSource[}]", node.getForeignSource());
+        for(Map.Entry<String, String> entry : parameters.entrySet()) {
+            formattedString = formattedString.replaceAll("[{]parameter:"+entry.getKey()+"[}]", entry.getValue());
+        }
         if (node.getAssetRecord() != null) {
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {

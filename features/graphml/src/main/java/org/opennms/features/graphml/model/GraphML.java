@@ -35,6 +35,13 @@ import java.util.Objects;
 public class GraphML extends GraphMLElement {
     private List<GraphMLGraph> graphs = new ArrayList<>();
 
+    public GraphMLGraph getGraph(String id) {
+        return graphs.stream()
+                .filter(g -> g.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     @Override
     public <T> T accept(GraphMLElementVisitor<T> visitor) {
         return visitor.visit(this);

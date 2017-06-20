@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import org.opennms.core.xml.ValidateUsing;
 
 
 /**
@@ -76,12 +81,22 @@ import java.util.Objects;
     "rra"
 })
 @XmlRootElement(name = "rrd")
-public class Rrd {
+@ValidateUsing("http-datacollection-config.xsd")
+public class Rrd implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    @XmlElement(required = true)
-    protected List<String> rra;
+    @XmlElement(name = "rra", required = true)
+    protected List<String> rra = new ArrayList<>();
+
     @XmlAttribute(name = "step", required = true)
     protected int step;
+
+    public Rrd() {}
+
+    public Rrd(final Integer step, final String... rras) {
+        setStep(step);
+        rra = Arrays.asList(rras);
+    }
 
     /**
      * Gets the value of the rra property.
@@ -106,9 +121,6 @@ public class Rrd {
      * 
      */
     public List<String> getRra() {
-        if (rra == null) {
-            rra = new ArrayList<String>();
-        }
         return this.rra;
     }
 

@@ -74,6 +74,7 @@ import org.snmp4j.mp.PduHandle;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
@@ -87,7 +88,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JStrategy.class);
 
-    private static final ExecutorService REAPER_EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private static final ExecutorService REAPER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "SNMP4J-Session-Reaper");
@@ -127,7 +128,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         SNMP4JSettings.setAllowSNMPv2InV1(Boolean.getBoolean("org.opennms.snmp.snmp4j.allowSNMPv2InV1"));
         SNMP4JSettings.setNoGetBulk(Boolean.getBoolean("org.opennms.snmp.snmp4j.noGetBulk"));
-        
+
+        // NMS-9223: This call can be expensive, and is synchronized
+        // so we perform it only once during initialization
+        SecurityProtocols.getInstance().addDefaultProtocols();
+
         s_initialized = true;
     }
     

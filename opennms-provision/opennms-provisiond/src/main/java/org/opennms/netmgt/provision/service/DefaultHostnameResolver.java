@@ -33,8 +33,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
-import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public final class DefaultHostnameResolver implements HostnameResolver {
             return result;
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Reverse lookup failed for {} at location {}. Using IP address as hostname.", addr, location);
-            return InetAddrUtils.str(addr);
+            return InetAddressUtils.str(addr);
         }
     }
 }

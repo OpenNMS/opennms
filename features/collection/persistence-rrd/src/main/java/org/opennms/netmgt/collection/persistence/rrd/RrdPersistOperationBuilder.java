@@ -56,6 +56,7 @@ import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.slf4j.Logger;
@@ -153,7 +154,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
      * supports integer data so MIB objects of type 'octetstring' are not
      * supported.
      *
-     * @param objectType -
+     * @param type -
      *            MIB object type to be mapped.
      * @return RRD type string or NULL object type is not supported.
      */
@@ -199,9 +200,12 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
         try {
             final String ownerName = m_resource.getOwnerName();
             final String absolutePath = getResourceDir(m_resource);
+
+            RrdMetaDataUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
+
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
-                createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
+                createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList());
                 updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
             }
         } catch (FileNotFoundException e) {
@@ -260,11 +264,10 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
      * @param step a int.
      * @param dataSources a {@link java.util.List} object.
      * @param rraList a {@link java.util.List} object.
-     * @param attributeMappings a {@link Map<String, String>} that represents the mapping of attributeId to rrd track names
      * @return a boolean.
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
-    private static boolean createRRD(RrdStrategy<?, ?> rrdStrategy, String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList, Map<String, String> attributeMappings) throws RrdException {
+    private static boolean createRRD(RrdStrategy<?, ?> rrdStrategy, String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws RrdException {
         Object def = null;
 
         try {
@@ -272,7 +275,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
 
             def = strategy.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
             // def can be null if the rrd-db exists already, but doesn't have to be (see MultiOutput/QueuingRrdStrategy
-            strategy.createFile(def, attributeMappings);
+            strategy.createFile(def);
 
             return true;
         } catch (Throwable e) {

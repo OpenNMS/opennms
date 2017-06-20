@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,18 +30,20 @@ package org.opennms.netmgt.config.notificationCommands;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+
 /**
  * Class Header.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "header")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("notificationCommands.xsd")
 public class Header implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 

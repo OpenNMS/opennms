@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,7 +65,9 @@ import org.opennms.netmgt.xml.event.Parm;
 @XmlRootElement(name="northbound-alarm")
 @ValidateUsing("northbound-alarm.xsd")
 @XmlAccessorType(XmlAccessType.NONE)
-public class NorthboundAlarm implements Preservable {
+public class NorthboundAlarm implements Preservable, Serializable {
+
+    private static final long serialVersionUID = -9207587487002564273L;
 
     /** The Constant SYNC_LOST_ALARM. */
     public static final NorthboundAlarm SYNC_LOST_ALARM = new NorthboundAlarm(-1, "uei.opennms.org/alarmd/northbounderSyncLost");

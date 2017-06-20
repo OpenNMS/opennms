@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,91 +29,80 @@
 package org.opennms.netmgt.xml.eventconf;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.NullStringAdapter;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The forwarding information for this event - state determines
  * if event is forwarded, mechanism determines how event is forwarded
  */
 @XmlRootElement(name="forward")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 public class Forward implements Serializable {
-	private static final long serialVersionUID = 3228625263305682743L;
+    private static final long serialVersionUID = 2L;
 
-	@XmlValue
-    private String m_content = "";
+    @XmlValue
+    @XmlJavaTypeAdapter(NullStringAdapter.class)
+    private String m_content;
 
-	@XmlAttribute(name="state", required=false)
-    private String m_state;
+    @XmlAttribute(name="state", required=false)
+    private StateType m_state;
 
-	// @Pattern(regexp="(snmpudp|snmptcp|xmltcp|xmludp)")
-	@XmlAttribute(name="mechanism", required=false)
-    private String m_mechanism;
+    @XmlAttribute(name="mechanism", required=false)
+    private MechanismType m_mechanism;
 
     public String getContent() {
         return m_content;
     }
 
-    public String getMechanism() {
-        return m_mechanism == null? "snmpudp" : m_mechanism; // Defaults to snmpudp in the XSD
+    public MechanismType getMechanism() {
+        return m_mechanism == null? MechanismType.SNMPUDP : m_mechanism; // Defaults to snmpudp in the XSD
     }
 
-    public String getState() {
-        return m_state == null? "off" : m_state; // Defaults to off in the XSD
+    public StateType getState() {
+        return m_state == null? StateType.OFF : m_state; // Defaults to off in the XSD
     }
 
     public void setContent(final String content) {
-        m_content = content.intern();
+        m_content = ConfigUtils.normalizeAndInternString(content);
     }
 
-    public void setMechanism(final String mechanism) {
-        m_mechanism = mechanism.intern();
+    public void setMechanism(final MechanismType mechanism) {
+        m_mechanism = mechanism;
     }
 
-    public void setState(final String state) {
-        m_state = state.intern();
+    public void setState(final StateType state) {
+        m_state = state;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_content == null) ? 0 : m_content.hashCode());
-		result = prime * result + ((m_mechanism == null) ? 0 : m_mechanism.hashCode());
-		result = prime * result + ((m_state == null) ? 0 : m_state.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_content, m_state, m_mechanism);
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Forward)) return false;
-		final Forward other = (Forward) obj;
-		if (m_content == null) {
-			if (other.m_content != null) return false;
-		} else if (!m_content.equals(other.m_content)) {
-			return false;
-		}
-		if (m_mechanism == null) {
-			if (other.m_mechanism != null) return false;
-		} else if (!m_mechanism.equals(other.m_mechanism)) {
-			return false;
-		}
-		if (m_state == null) {
-			if (other.m_state != null) return false;
-		} else if (!m_state.equals(other.m_state)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Forward) {
+            final Forward that = (Forward) obj;
+            return Objects.equals(this.m_content, that.m_content) &&
+                    Objects.equals(this.m_state, that.m_state) &&
+                    Objects.equals(this.m_mechanism, that.m_mechanism);
+        }
+        return false;
+    }
 
 }

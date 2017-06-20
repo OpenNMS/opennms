@@ -37,8 +37,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.surveillanceViews.Columns;
-import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -68,13 +66,6 @@ public class DefaultSurveillanceServiceTest {
     public void testCreateSurveillanceTable() {
         
         View view = new View();
-        Rows rows = new Rows();
-        
-        view.setRows(rows);
-        
-        Columns columns = new Columns();
-        
-        view.setColumns(columns);
         
         expect(m_surveillanceViewConfigDao.getView(eq("default"))).andReturn(view).atLeastOnce();
         

@@ -55,7 +55,6 @@ import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.groups.Header;
 import org.opennms.netmgt.config.groups.Role;
-import org.opennms.netmgt.config.groups.Roles;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -89,7 +88,7 @@ public abstract class GroupManager implements GroupConfig {
         public OnmsGroup map(Group inputGroup) {
             if (inputGroup == null) return null;
             final OnmsGroup xmlGroup = new OnmsGroup(inputGroup.getName());
-            xmlGroup.setComments(inputGroup.getComments());
+            xmlGroup.setComments(inputGroup.getComments().orElse(null));
             xmlGroup.setUsers(inputGroup.getUsers());
             return xmlGroup;
         }
@@ -118,13 +117,13 @@ public abstract class GroupManager implements GroupConfig {
     /**
      * The duty schedules for each group
      */
-    protected static Map<String, List<DutySchedule>> m_dutySchedules;
+    protected static Map<String, List<DutySchedule>> m_dutySchedules = new HashMap<>();
 
     /**
      * A mapping of Group object by name
      */
-    private Map<String, Group> m_groups;
-    private Map<String, Role> m_roles;
+    private Map<String, Group> m_groups = new HashMap<>();
+    private Map<String, Role> m_roles = new HashMap<>();
     private Header m_oldHeader;
 
     /**
@@ -149,10 +148,9 @@ public abstract class GroupManager implements GroupConfig {
         }
         buildDutySchedules(m_groups);
         
-        Roles roles = groupinfo.getRoles();
-        m_roles = new LinkedHashMap<String, Role>();
-        if (roles != null) {
-        	for (Role role : roles.getRoles()) {
+        if (groupinfo.getRoles().size() > 0) {
+            m_roles = new LinkedHashMap<String, Role>();
+            for (final Role role : groupinfo.getRoles()) {
                 m_roles.put(role.getName(), role);
             }
         }
@@ -265,16 +263,14 @@ public abstract class GroupManager implements GroupConfig {
             groups.add(grp);
         }
         
-        
-        Roles roles = new Roles();
-        for (Role role : m_roles.values()) {
-            roles.addRole(role);
+        final List<Role> roles = new ArrayList<>();
+        for (final Role role : m_roles.values()) {
+            roles.add(role);
         }
     
         Groupinfo groupinfo = new Groupinfo();
         groupinfo.setGroups(groups);
-        if (roles.getRoles().size() > 0)
-            groupinfo.setRoles(roles);
+        groupinfo.setRoles(roles);
         groupinfo.setHeader(header);
     
         m_oldHeader = header;

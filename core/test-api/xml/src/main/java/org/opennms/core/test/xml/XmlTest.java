@@ -209,6 +209,7 @@ abstract public class XmlTest<T> {
     public void marshalJaxbUnmarshalJaxb() throws Exception {
         final String xml = marshalToXmlWithJaxb();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
+        LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
         assertDepthEquals(getSampleObject(), obj);
     }
 

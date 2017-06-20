@@ -32,12 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-
-import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdGraphDetails;
-import org.opennms.netmgt.rrd.RrdStrategy;
 
 /**
  * A {@link org.opennms.netmgt.rrd.RrdStrategy} implementation that does nothing.
@@ -65,7 +60,7 @@ public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 	}
 
     @Override
-	public void createFile(Object rrdDef, Map<String, String> attrMapping) {
+	public void createFile(Object rrdDef) {
         // pass
 	}
 

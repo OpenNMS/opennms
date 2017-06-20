@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -77,6 +77,26 @@
           <webappDirectory>${project.build.directory}/warmerge-temp</webappDirectory>
           <primaryWar>org.opennms:opennms-webapp</primaryWar>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                    <directory>${project.build.directory}/warmerge-temp</directory>
+                </fileset>
+              </filesets>
+          </configuration>
+        </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

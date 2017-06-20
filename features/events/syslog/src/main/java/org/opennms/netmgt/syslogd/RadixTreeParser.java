@@ -97,6 +97,13 @@ public class RadixTreeParser implements ByteBufferParser<SyslogMessage> {
 //	private final ExecutorService m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 	/**
+	 * @return The number of nodes in the underlying radix tree.
+	 */
+	public int size() {
+		return tree.size();
+	}
+
+	/**
 	 * Teach a new {@link ParserStage} sequence to this parser.
 	 * 
 	 * @param stages

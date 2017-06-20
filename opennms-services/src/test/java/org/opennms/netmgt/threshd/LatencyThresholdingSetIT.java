@@ -110,7 +110,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
     private static final Logger LOG = LoggerFactory.getLogger(LatencyThresholdingSetIT.class);
 
     private FileAnticipator m_fileAnticipator;
-    private List<Event> m_anticipatedEvents;
+    private List<Event> m_anticipatedEvents = new ArrayList<>();
     private MockDatabase m_db;
 
     @Autowired

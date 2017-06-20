@@ -31,7 +31,7 @@ package org.opennms.netmgt.icmp;
 public class PingerFactoryImpl extends AbstractPingerFactory {
     @Override
     public Class<? extends Pinger> getPingerClass() {
-        final String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger");
+        final String pingerClassName = System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.best.BestMatchPinger");
 
         // If the default (0) DSCP pinger has already been initialized, use the
         // same class in case it's been manually overridden with a setInstance()

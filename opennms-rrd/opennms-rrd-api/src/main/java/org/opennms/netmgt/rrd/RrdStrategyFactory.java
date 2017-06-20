@@ -44,8 +44,6 @@ public class RrdStrategyFactory implements ApplicationContextAware {
     private ApplicationContext m_context;
 
     private static enum StrategyName {
-        tcpRrdStrategy,
-        queuingTcpRrdStrategy,
         basicRrdStrategy,
         queuingRrdStrategy,
         tcpAndBasicRrdStrategy,
@@ -65,36 +63,25 @@ public class RrdStrategyFactory implements ApplicationContextAware {
     @SuppressWarnings("unchecked")
     public <D, F> RrdStrategy<D, F> getStrategy() {
         RrdStrategy<D, F> rrdStrategy = null;
-        Boolean useRrd = (Boolean) m_context.getBean("useRrd");
         Boolean useQueue = (Boolean) m_context.getBean("useQueue");
         Boolean useTcp = (Boolean) m_context.getBean("useTcp");
 
-        if (useRrd) {
-            if (useQueue) {
-                if (useTcp) {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
-                } else {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingRrdStrategy.toString());
-                }
+        if (useQueue) {
+            if (useTcp) {
+                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
             } else {
-                if (useTcp) {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
-                } else {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
-                }
+                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingRrdStrategy.toString());
             }
         } else {
             if (useTcp) {
-                if (useQueue) {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingTcpRrdStrategy.toString());
-                } else {
-                    rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpRrdStrategy.toString());
-                }
+                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
+            } else {
+                rrdStrategy = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
             }
         }
 
         if (rrdStrategy == null) {
-            throw new IllegalStateException(String.format("Invalid RRD configuration useRrd %s, useQueue: %s, useTcp: %s", useRrd, useQueue, useTcp));
+            throw new IllegalStateException(String.format("Invalid RRD configuration useQueue: %s, useTcp: %s", useQueue, useTcp));
         }
 
         return rrdStrategy;

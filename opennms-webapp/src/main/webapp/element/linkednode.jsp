@@ -431,10 +431,10 @@
 		<thead>
 			<tr>
 			<th>Local Ip Address</th> 
-            <th>Local Address Less Index</th>
+            <th>Local AddressLessIfIndex</th>
 			<th>Nbr Router Id</th>
 			<th>Nbr Ip Address</th>
-			<th>Nbr Address Kess Index</th> 
+			<th>Nbr AddressLessIfIndex</th> 
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>

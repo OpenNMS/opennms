@@ -29,17 +29,11 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.util.Map;
 
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
-import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
-
 
 import com.google.common.collect.Maps;
 
@@ -61,6 +55,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     private String m_urlPath = "/jmxrmi";
     private String m_username = "opennms";
     private String m_password = "OPENNMS";
+    private String m_url;
 
     
     /**
@@ -71,14 +66,13 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      */
     protected AbstractJsr160Detector(String serviceName, int port) {
         super(serviceName, port);
-        // TODO Auto-generated constructor stub
     }
 
     /** 
      * @throws IOException 
      */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws MalformedURLException, IOException {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout, final Map<String, String> runtimeAttributes) throws IOException {
 
         Map<String, String> props = Maps.newHashMap();
         props.put("port", String.valueOf(port));
@@ -90,35 +84,9 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         props.put("urlPath", getUrlPath());
         props.put("type", getType());
         props.put("protocol", getProtocol());
+        props.put("url", getUrl());
         // The runtime attributes contain the agent details pull from the JmxConfigDao
         props.putAll(runtimeAttributes);
-
-        // TODO: Refactor this to use the same code as 
-        // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
-
-        // If remote JMX access is enabled, this will return a non-null value
-        String jmxPort = System.getProperty(JmxServerConnector.JMX_PORT_SYSTEM_PROPERTY);
-
-        if (
-            address != null && 
-            // If we're trying to create a connection to a localhost address...
-            address.isLoopbackAddress() &&
-            (
-                // If the port matches the port of the current JVM...
-                String.valueOf(port).equals(jmxPort) ||
-                // Or if remote JMX RMI is disabled and we're attempting to connect
-                // to the default OpenNMS JMX port...
-                (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(String.valueOf(port)))
-            )
-        ) {
-            // ...then use the {@link PlatformMBeanServerConnector} to connect to 
-            // this JVM's MBeanServer directly.
-            try {
-                return new PlatformMBeanServerConnector().createConnection(address, props);
-            } catch (JmxServerConnectionException e) {
-                throw new ConnectException(e.getMessage());
-            }
-        }
 
         return Jsr160ConnectionFactory.getMBeanServerConnection(props, address);
     }
@@ -247,5 +215,13 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      */
     public String getPassword() {
         return m_password;
+    }
+
+    public String getUrl() {
+        return m_url;
+    }
+
+    public void setUrl(String url) {
+        m_url = url;
     }
 }

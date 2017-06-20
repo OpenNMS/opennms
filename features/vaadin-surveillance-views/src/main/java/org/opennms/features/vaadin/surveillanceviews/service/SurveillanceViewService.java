@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
 import java.text.DecimalFormat;
@@ -124,7 +125,7 @@ public interface SurveillanceViewService {
      * @param resourceId the resource id to search graphs for
      * @return the map of graphs
      */
-    Map<String, String> getGraphResultsForResourceId(final String resourceId);
+    Map<String, String> getGraphResultsForResourceId(final ResourceId resourceId);
 
     /**
      * Returns a map of OpenNMS resource type/resource mappings for a given node id.

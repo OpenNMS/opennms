@@ -256,6 +256,10 @@ public abstract class StringUtils {
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
+    public static String stripExtraQuotes(String string) {
+        return string.replaceAll("^\"(.*)\"$", "$1");
+    }
+
     /**
      * This is an optimized version of:
      *    return a != null && a.trim().equals(b)
@@ -315,6 +319,27 @@ public abstract class StringUtils {
 
         // There are extra characters at the tail of A, that don't show up in B
         return false;
+    }
+
+    /**
+     * <p>NMS-9091: This method calls {@link Date#toString()} but then calls
+     * {@link Date#setTime(long)} so that internally, the {@link Date#cdate}
+     * field is deallocated. This saves significant heap space for {@link Date} 
+     * instances that are stored in long-lived collections.</p>
+     * 
+     * <ul>
+     * <li>java.util.Date with only fastTime: 24 bytes</li>
+     * <li>java.util.Date with fastTime and cdate: 120 bytes</li>
+     * </ul>
+     * 
+     * @param date
+     * @return Value of date.toString()
+     */
+    public static String toStringEfficiently(final Date date) {
+        final long time = date.getTime();
+        final String retval = date.toString();
+        date.setTime(time);
+        return retval;
     }
 
     public static Integer parseDecimalInt(String value) {

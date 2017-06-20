@@ -19,7 +19,7 @@ A more specific _Collection Package_ can be used to overwrite the default settin
 .Collection Package Attributes
 [source, xml]
 ----
-<package name="package1"<1>
+<package name="package1"><1>
   <filter>IPADDR != '0.0.0.0'</filter><2>
   <include-range begin="1.1.1.1" end="254.254.254.254"/><3>
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/><4>
@@ -41,7 +41,7 @@ _Service Configurations_ contains common _Service Attributes_ as well as _Collec
 <service name="SNMP"<1>
          interval="300000"<2>
          user-defined="false"<3>
-         status="on"<4>
+         status="on"><4>
   <parameter key="collection" value="default"/><5>
   <parameter key="thresholding-enabled" value="true"/><6>
 </service>

@@ -64,78 +64,78 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureMinionCoreApi() {
 		installFeature("minion-core-api");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsDaoMinion() {
 		installFeature("opennms-dao-minion");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsDiscoverer() {
 		installFeature("opennms-discoverer");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsSyslogdHandlerMinion() {
 		installFeature("opennms-syslogd-handler-minion");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsSyslogdHandlerKafka() {
 		installFeature("opennms-syslogd-handler-kafka");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsTrapdListener() {
 		installFeature("opennms-trapd-listener");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureOpennmsTrapdHandlerKafka() {
 		installFeature("opennms-trapd-handler-kafka");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionHeartbeatProducer() {
 		installFeature("minion-heartbeat-producer");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionProvisiondDetectors() {
 		installFeature("minion-provisiond-detectors");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionRpcServer() {
 		installFeature("minion-rpc-server");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionShellProvision() {
 		installFeature("minion-shell-provision");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionShell() {
 		installFeature("minion-shell");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 
 	@Test
 	public void testInstallFeatureMinionSnmpProxy() {
 		installFeature("minion-snmp-proxy");
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 }

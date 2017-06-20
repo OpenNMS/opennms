@@ -33,7 +33,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -190,10 +189,10 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      */
     public void optimize() throws UnknownHostException {
         // First pass: Remove empty definition elements
-        for (Iterator<Definition> definitionsIterator = getConfig().getDefinitionCollection().iterator();
+        for (Iterator<Definition> definitionsIterator = getConfig().getDefinitions().iterator();
         definitionsIterator.hasNext();) {
-            Definition definition = definitionsIterator.next();
-            if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
+            final Definition definition = definitionsIterator.next();
+            if (definition.getSpecifics().size() == 0 && definition.getRanges().size() == 0) {
 
                 LOG.debug("optimize: Removing empty definition element");
                 definitionsIterator.remove();
@@ -201,9 +200,9 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         }
 
         // Second pass: Replace single IP range elements with specific elements
-        for (Definition definition : getConfig().getDefinitionCollection()) {
+        for (Definition definition : getConfig().getDefinitions()) {
             synchronized(definition) {
-                for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+                for (Iterator<Range> rangesIterator = definition.getRanges().iterator(); rangesIterator.hasNext();) {
                     Range range = rangesIterator.next();
                     if (range.getBegin().equals(range.getEnd())) {
                         definition.addSpecific(range.getBegin());
@@ -215,18 +214,18 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
         // Third pass: Sort specific and range elements for improved XML
         // readability and then combine them into fewer elements where possible
-        for (Iterator<Definition> defIterator = getConfig().getDefinitionCollection().iterator(); defIterator.hasNext(); ) {
+        for (Iterator<Definition> defIterator = getConfig().getDefinitions().iterator(); defIterator.hasNext(); ) {
             Definition definition = defIterator.next();
 
             // Sort specifics
             final TreeMap<InetAddress,String> specificsMap = new TreeMap<InetAddress,String>(new InetAddressComparator());
-            for (String specific : definition.getSpecificCollection()) {
+            for (String specific : definition.getSpecifics()) {
                 specificsMap.put(InetAddressUtils.getInetAddress(specific), specific.trim());
             }
 
             // Sort ranges
             final TreeMap<InetAddress,Range> rangesMap = new TreeMap<InetAddress,Range>(new InetAddressComparator());
-            for (Range range : definition.getRangeCollection()) {
+            for (Range range : definition.getRanges()) {
                 rangesMap.put(InetAddressUtils.getInetAddress(range.getBegin()), range);
             }
 
@@ -328,8 +327,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
             }
 
             // Update changes made to sorted maps
-            definition.setSpecific(specificsMap.values().toArray(new String[0]));
-            definition.setRange(rangesMap.values().toArray(new Range[0]));
+            definition.setSpecifics(new ArrayList<>(specificsMap.values()));
+            definition.setRanges(new ArrayList<>(rangesMap.values()));
         }
     }
 
@@ -352,12 +351,12 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
         // Attempt to locate the node
         //
-        Enumeration<Definition> edef = getConfig().enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = edef.nextElement();
+        Iterator<Definition> edef = getConfig().getDefinitions().iterator();
+        DEFLOOP: while (edef.hasNext()) {
+            Definition def = edef.next();
 
             // check the specifics first
-            for (String saddr : def.getSpecificCollection()) {
+            for (String saddr : def.getSpecifics()) {
                 InetAddress addr = InetAddressUtils.addr(saddr);
                 if (addr.equals(agentConfig.getAddress())) {
                     setWmiAgentConfig(agentConfig, def);
@@ -366,7 +365,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
             }
 
             // check the ranges
-            for (Range rng : def.getRangeCollection()) {
+            for (Range rng : def.getRanges()) {
                 if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
                     setWmiAgentConfig(agentConfig, def );
                     break DEFLOOP;
@@ -375,7 +374,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
 
             // check the matching IP expressions
             //
-            for (String ipMatch : def.getIpMatchCollection()) {
+            for (String ipMatch : def.getIpMatches()) {
                 if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
                     setWmiAgentConfig(agentConfig, def);
                     break DEFLOOP;
@@ -418,8 +417,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @param def
      * @return a string containing the username. will return the default if none is set.
      */
-    private String determineUsername(Definition def) {
-        return (def.getUsername() == null ? (getConfig().getUsername() == null ? WmiAgentConfig.DEFAULT_USERNAME :getConfig().getUsername()) : def.getUsername());
+    private String determineUsername(final Definition def) {
+        return def.getUsername().orElse(getConfig().getUsername().orElse(WmiAgentConfig.DEFAULT_USERNAME));
     }
 
     /**
@@ -427,8 +426,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @param def
      * @return a string containing the domain. will return the default if none is set.
      */
-    private String determineDomain(Definition def) {
-        return (def.getDomain() == null ? (getConfig().getDomain() == null ? WmiAgentConfig.DEFAULT_DOMAIN :getConfig().getDomain()) : def.getDomain());
+    private String determineDomain(final Definition def) {
+        return def.getDomain().orElse(getConfig().getDomain().orElse(WmiAgentConfig.DEFAULT_DOMAIN));
     }
 
     /**
@@ -436,8 +435,8 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @param def
      * @return a string containing the password. will return the default if none is set.
      */
-    private String determinePassword(Definition def) {
-        String literalPass = (def.getPassword() == null ? (getConfig().getPassword() == null ? WmiAgentConfig.DEFAULT_PASSWORD :getConfig().getPassword()) : def.getPassword());
+    private String determinePassword(final Definition def) {
+        String literalPass = def.getPassword().orElse(getConfig().getPassword().orElse(WmiAgentConfig.DEFAULT_PASSWORD));
         if (literalPass.endsWith("===")) {
             return new String(Base64.decodeBase64(literalPass));
         }
@@ -449,14 +448,12 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @param def
      * @return a long containing the timeout, WmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
-    private long determineTimeout(Definition def) {
-        long timeout = WmiAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (getConfig().getTimeout() == 0 ? timeout : getConfig().getTimeout()) : def.getTimeout());
+    private long determineTimeout(final Definition def) {
+        return (long)(def.getTimeout() == 0 ? getConfig().getTimeout().orElse(WmiAgentConfig.DEFAULT_TIMEOUT) : def.getTimeout());
     }
 
-    private int determineRetries(Definition def) {        
-        int retries = WmiAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (getConfig().getRetry() == 0 ? retries : getConfig().getRetry()) : def.getRetry());
+    private int determineRetries(final Definition def) {        
+        return (def.getRetry() == 0 ? getConfig().getRetry().orElse(WmiAgentConfig.DEFAULT_RETRIES) : def.getRetry());
     }
 
 }

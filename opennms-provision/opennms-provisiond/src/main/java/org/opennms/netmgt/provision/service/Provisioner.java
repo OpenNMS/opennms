@@ -249,9 +249,6 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
-    public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
-    }
-
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
         LOG.info("createNodeScan called");
         return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
@@ -584,22 +581,6 @@ public class Provisioner implements SpringServiceDaemon {
         return isTarget;
     }
 
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
-    public void handleAddInterface(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doAddInterface(event.getNodeid(), event.getInterface());
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doAddInterface(long nodeId, String ipAddr) {
-        // FIXME: Handle Rackspace ADD_INTERFACE event
-        throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
-    }
-
     @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
     public void handleAddNode(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -622,22 +603,6 @@ public class Provisioner implements SpringServiceDaemon {
 
         m_provisionService.insertNode(node);
 
-    }
-
-    @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
-    public void handleChangeService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doChangeService(event.getInterface(), event.getService(), EventUtils.getParm(event, EventConstants.PARM_ACTION));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doChangeService(String ipAddr, String service, String action) {
-        // FIXME: Handle Rackspace CHANGE_SERVICE event
-        throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
     }
 
     @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
@@ -678,44 +643,12 @@ public class Provisioner implements SpringServiceDaemon {
     private void doDeleteService(long nodeId, InetAddress addr, String service) {
         m_provisionService.deleteService((int)nodeId, addr, service);
     }
-
-    @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
-    public void handleUpdateServer(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateServer(event.getInterface(), event.getHost(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
-    private void doUpdateServer(String ipAddr, String host, String action, String nodeLabel) {
-        // FIXME: Handle Rackspace UPDATE_SERVER event
-        throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
-    }
-
-    @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
-    public void handleUpdateService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doUpdateService(event.getInterface(), event.getService(), 
-                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
-                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
-            }
-        }
-    }
-    
     
     private void doUpdateService(String ipAddr, String service, String action, String nodeLabel) {
         // FIXME: Handle Rackspace UPDATE_SERVICE event
         throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
     }
-    
+
     private Event importSuccessEvent(final ImportRequest importRequest) {
         return importRequest.addEventParameters(new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )).getEvent();
     }

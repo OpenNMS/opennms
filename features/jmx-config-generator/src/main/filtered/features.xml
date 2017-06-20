@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features name="jmxconfiggenerator" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+<features name="jmxconfiggenerator" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
     <feature name="jmxconfiggenerator" version="${project.version}" description="OpenNMS JMX Configuration Generator">
         <feature>guava</feature>
         <feature>commons-io</feature>

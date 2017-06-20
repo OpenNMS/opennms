@@ -81,11 +81,6 @@ public class SimulationAwareStateMachineFactory {
                 public Status getStatus() {
                     return entry.getValue();
                 }
-
-                @Override
-                public Integer getId() {
-                    return 0;
-                }
             });
         }
 

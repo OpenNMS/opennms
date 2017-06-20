@@ -47,6 +47,11 @@ public abstract class AbstractServiceCollector implements ServiceCollector {
     }
 
     @Override
+    public void validateAgent(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
+        // pass
+    }
+
+    @Override
     public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
         return Collections.emptyMap();
     }

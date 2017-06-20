@@ -41,11 +41,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.WebCalendar;
 import org.opennms.netmgt.config.WebGroupManager;
 import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.WebRoleManager;
 import org.opennms.netmgt.config.WebSchedEntry;
 import org.opennms.netmgt.config.WebUserManager;
@@ -162,7 +162,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 
             request.setAttribute("scheduledUser", schedule.getName());
 
-            final org.opennms.netmgt.config.Time basicTime = new org.opennms.netmgt.config.Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds());
+            final org.opennms.netmgt.config.Time basicTime = new org.opennms.netmgt.config.Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds());
 			if (BasicScheduleUtils.isWeekly(basicTime))
                 return EDIT_WEEKLY;
             else if (BasicScheduleUtils.isMonthly(basicTime))

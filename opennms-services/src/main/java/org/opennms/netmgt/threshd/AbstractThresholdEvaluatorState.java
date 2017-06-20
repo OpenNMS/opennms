@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -108,8 +109,8 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
 
         // Add threshold description
-        String descr = getThresholdConfig().getBasethresholddef().getDescription();
-        bldr.addParam("description", descr != null && !descr.trim().equals("") ? descr : getThresholdConfig().getDatasourceExpression());
+        final String descr = getThresholdConfig().getBasethresholddef().getDescription().orElse(getThresholdConfig().getDatasourceExpression());
+        bldr.addParam("description", descr);
 
         // Add last known value of the datasource fetched from its RRD file
         bldr.addParam("value", formatValue(dsValue));
@@ -123,7 +124,8 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? defaultInstance : resource.getInstanceLabel());
 
         // Add the resource ID required to call the Graph API.
-        bldr.addParam("resourceId",resource.getResourceId());
+        final ResourceId resourceId = resource.getResourceId();
+        bldr.addParam("resourceId", resourceId != null ? resourceId.toString() : null);
 
         // Add additional parameters
         if (additionalParams != null) {

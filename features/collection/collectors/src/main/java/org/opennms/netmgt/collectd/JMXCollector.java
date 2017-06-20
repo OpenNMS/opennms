@@ -48,7 +48,6 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.collection.support.NumericAttributeUtils;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
@@ -183,12 +182,15 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
         runtimeAttributes.put(JMX_COLLECTION_KEY, jmxCollection);
 
         // Retrieve the agent config.
-        final String port = ParameterMap.getKeyedString(parameters, ParameterName.PORT.toString(), null);
-        if (port != null) {
-            final MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(agent.getHostAddress(), port);
-            if (mBeanServer != null) {
-                runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, mBeanServer);
+        final Map<String, String> parameterStringMap = new HashMap<String, String>();
+        for (Map.Entry<String, Object> eachEntry : parameters.entrySet()) {
+            if (eachEntry.getValue() instanceof String) {
+                parameterStringMap.put(eachEntry.getKey(), (String) eachEntry.getValue());
             }
+        }
+        final MBeanServer mBeanServer = JmxUtils.getMBeanServer(m_jmxConfigDao, agent.getHostAddress(), parameterStringMap);
+        if (mBeanServer != null) {
+            runtimeAttributes.put(JMX_MBEAN_SERVER_KEY, mBeanServer);
         }
 
         return runtimeAttributes;
@@ -233,10 +235,9 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
         nodeInfo.setDsMap(dsList);
         nodeInfo.setMBeans(JMXDataCollectionConfigDao.getMBeanInfo(jmxCollection));
 
-        // Metrics collected from JMX are currently modeled as "interface" resources with
-        // the interface name set to the service name
-        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-        final InterfaceLevelResource ifResource = new InterfaceLevelResource(nodeResource, collDir);
+        // Metrics collected from JMX are currently modeled as node level resources,
+        // but live in a sub-directory set to the service name
+        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId(), collDir);
 
         // Used to gather the results
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
@@ -297,7 +298,7 @@ public abstract class JMXCollector extends AbstractRemoteServiceCollector {
                     metricId = metricId.concat(ds.getName());
                     metricId = "JMX_".concat(metricId);
 
-                    collectionSetBuilder.withIdentifiedNumericAttribute(ifResource, groupName, ds.getName(), value, ds.getType(), metricId);
+                    collectionSetBuilder.withIdentifiedNumericAttribute(nodeResource, groupName, ds.getName(), value, ds.getType(), metricId);
                 }
             });
         } catch (final Exception e) {

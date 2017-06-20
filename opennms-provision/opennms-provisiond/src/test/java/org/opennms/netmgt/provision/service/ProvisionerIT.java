@@ -281,7 +281,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
-    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:/no-ipaddrtable.properties")
     public void testNoIPAddrTable() throws Exception {
         importFromResource("classpath:/no-ipaddrtable.xml", Boolean.TRUE.toString());
 
@@ -319,7 +319,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     // 192.0.2.0/24 reserved by IANA for testing purposes
-    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:lameForce10.properties")
+    @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:/lameForce10.properties")
     public void testLameForce10Agent() throws Exception {
         importFromResource("classpath:/lameForce10.xml", Boolean.TRUE.toString());
 
@@ -459,7 +459,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test(timeout=300000)
-    @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:/snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
 
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
@@ -487,9 +487,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
         // for discovering the "SNMP" service on the second interface
-        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
@@ -542,9 +542,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
         // for discovering the "SNMP" service on the second interface
-        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", Boolean.TRUE.toString());
@@ -594,9 +594,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:snmpwalk-demo.properties"),
-        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:snmpwalk-demo.properties"),
-        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
+        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:/snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:/snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:/snmpwalk-demo.properties")
     })
     public void testPopulateWithIpv6SnmpAndNodeScan() throws Exception {
         final ForeignSourceEntity fs = new ForeignSourceEntity();
@@ -656,9 +656,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:snmpwalk-demo.properties"),
-        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:snmpwalk-demo.properties"),
-        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
+        @JUnitSnmpAgent(host="10.1.15.245", resource="classpath:/snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="10.3.20.23", resource="classpath:/snmpwalk-demo.properties"),
+        @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:/snmpwalk-demo.properties")
     })
     public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scanv6only.xml", Boolean.TRUE.toString());
@@ -705,9 +705,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="198.51.100.202", port=161, resource="classpath:snmpTestData4.properties"),
-        @JUnitSnmpAgent(host="198.51.100.204", port=161, resource="classpath:snmpTestData4.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:/snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.202", port=161, resource="classpath:/snmpTestData4.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", port=161, resource="classpath:/snmpTestData4.properties")
     })
     public void testImportAddrThenChangeAddr() throws Exception {
         // Node has 198.51.100.201 as a primary IP address
@@ -759,7 +759,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
-    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:/snmpTestData3.properties")
     public void testIfIndexChangeNms6567() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
 
@@ -804,7 +804,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     // fail if we take more than five minutes
     @Test(timeout=300000)
     // Start the test with an empty SNMP agent
-    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpwalk-empty.properties")
+    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:/snmpwalk-empty.properties")
     public void testProvisionerServiceRescanAfterAddingSnmpNms7838() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
 
@@ -827,7 +827,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         LOG.info("******************** ADDING SNMP DATA ********************");
 
         // Add some SNMP data to the agent
-        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr("198.51.100.201"), 161), new DefaultResourceLoader().getResource("classpath:snmpTestData3.properties"));
+        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr("198.51.100.201"), 161), new DefaultResourceLoader().getResource("classpath:/snmpTestData3.properties"));
 
         // Rescan
         m_mockEventIpcManager.sendEventToListeners(nodeUpdated(node.getId()));
@@ -847,10 +847,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test
     public void testDeleteService() throws Exception {
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
@@ -888,55 +884,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test
-    public void testDontDeleteRequisitionedService() throws Exception {
-
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        // This test assumes that discovery is disabled
-        assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-
-        //Verify ipinterface count
-        assertEquals(4, getInterfaceDao().countAll());
-
-        //Verify ifservices count
-        assertEquals(6, getMonitoredServiceDao().countAll());
-
-        //Verify service count
-        assertEquals(2, getServiceTypeDao().countAll());
-
-        // Locate the service to be deleted
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        assertNotNull(node);
-        final int nodeid = node.getId();
-
-
-        m_eventAnticipator.reset();
-
-        m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
-
-        // there is no event to wait for so make sure we don't get anything..
-        m_eventAnticipator.waitForAnticipated(5000);
-        m_eventAnticipator.verifyAnticipated();
-
-        // Make sure the service is still there
-        assertEquals(6, getMonitoredServiceDao().countAll());
-
-    }
-
-    @Test
     public void testDeleteInterface() throws Exception {
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
 
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
@@ -978,9 +926,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test
     public void testDeleteNode() throws Exception {
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
@@ -1032,68 +977,28 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test
-    public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionDisabled() throws Exception {
-        System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
-        assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        m_eventAnticipator.reset();
-
-        // no events should be fired
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
-        m_eventAnticipator.verifyAnticipated();
-    }
-
-    @Test
     public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionEnabled() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
         assertFalse(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
-        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
         final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
         m_eventAnticipator.reset();
 
         // only the service deletion should be fired
-        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "10.201.136.161", "ICMP"));
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
-        m_eventAnticipator.verifyAnticipated();
-    }
-
-    @Test
-    public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledRequisitionedNode() throws Exception {
-        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
-        assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
-
-        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
-        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
-        m_eventAnticipator.reset();
-
-        // no events should be fired
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "10.201.136.163", "ICMP"));
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.163", "ICMP"));
         m_eventAnticipator.verifyAnticipated();
     }
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
     })
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNode() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
@@ -1119,14 +1024,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpwalk-system.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpwalk-system.properties")
     })
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNodeSingleInterface() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         assertTrue(m_provisionService.isDiscoveryEnabled());
-
-        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
-        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, null);
         runScan(scan);
@@ -1592,10 +1494,10 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         node = nodeDao.findByForeignId("empty", "4243");
         geolocation = node.getAssetRecord().getGeolocation();
 
-        assertNotNull(geolocation.getLatitude());
-        assertNotNull(geolocation.getLongitude());
-        assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
-        assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+        // Ensure it is reset
+        assertNull(geolocation.asAddressString());
+        assertNull(geolocation.getLatitude());
+        assertNull(geolocation.getLongitude());
     }
 
     @Test(timeout=300000)

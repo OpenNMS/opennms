@@ -49,12 +49,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.api.Util;
@@ -95,7 +96,7 @@ public class CustomViewController extends AbstractController implements Initiali
     private int m_defaultGraphsPerLine = 0;
     private Executor m_executor;
     
-    private Set<String> m_resourcesPendingPromotion = Collections.synchronizedSet(new HashSet<String>());
+    private Set<ResourceId> m_resourcesPendingPromotion = Collections.synchronizedSet(new HashSet<>());
 
     /** {@inheritDoc} */
     @Override
@@ -156,14 +157,14 @@ public class CustomViewController extends AbstractController implements Initiali
             m_kscReportFactory.saveCurrent();
             EventBuilder eb = new EventBuilder(EventConstants.KSC_REPORT_UPDATED_UEI, "Web UI");
             eb.addParam(EventConstants.PARAM_REPORT_TITLE, report.getTitle() == null ? "Report #" + report.getId() : report.getTitle());
-            eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphCount());
+            eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphs().size());
             try {
                 Util.createEventProxy().send(eb.getEvent());
             } catch (Throwable e) {
                 LOG.error("Can't send event " + eb.getEvent(), e);
             }
         }
-        List<Graph> graphCollection = report.getGraphCollection();
+        List<Graph> graphCollection = report.getGraphs();
         if (!graphCollection.isEmpty()) {
             for (Graph graph : graphCollection) {
                 final OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
@@ -176,7 +177,7 @@ public class CustomViewController extends AbstractController implements Initiali
             }
         }
 
-        List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
+        List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphs().size());
         for (Graph graph : graphCollection) {
             OnmsResource resource = resourceMap.get(graph.toString());
             if (resource != null) {
@@ -238,7 +239,7 @@ public class CustomViewController extends AbstractController implements Initiali
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);
         
-        if (report.getShowTimespanButton()) {
+        if (report.getShowTimespanButton().orElse(false)) {
             if (overrideTimespan == null || !getKscReportService().getTimeSpans(true).containsKey(overrideTimespan)) {
                 modelAndView.addObject("timeSpan", "none");
             } else {
@@ -250,7 +251,7 @@ public class CustomViewController extends AbstractController implements Initiali
             modelAndView.addObject("timeSpan", null);
         }
 
-        if (report.getShowGraphtypeButton()) {
+        if (report.getShowGraphtypeButton().orElse(false)) {
             LinkedHashMap<String, String> graphTypes = new LinkedHashMap<String, String>();
             graphTypes.put("none", "none");
             for (PrefabGraph graphOption : prefabGraphs) {
@@ -270,7 +271,7 @@ public class CustomViewController extends AbstractController implements Initiali
         
         modelAndView.addObject("showCustomizeButton", ( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole(Authentication.ROLE_READONLY) ) && (request.getRemoteUser() != null));
 
-        if (report.getGraphsPerLine() > 0) {
+        if (report.getGraphsPerLine() != null && report.getGraphsPerLine().get() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphsPerLine());
         } else {
             modelAndView.addObject("graphsPerLine", getDefaultGraphsPerLine());
@@ -281,7 +282,7 @@ public class CustomViewController extends AbstractController implements Initiali
     
     // Returns true if the report was modified due to invalid resource IDs. 
     private boolean removeBrokenGraphsFromReport(Report report) {
-        for (Iterator<Graph> itr = report.getGraphCollection().iterator(); itr.hasNext();) {
+        for (Iterator<Graph> itr = report.getGraphs().iterator(); itr.hasNext();) {
             Graph graph = itr.next();
             try {
                 OnmsResource r = getKscReportService().getResourceFromGraph(graph);

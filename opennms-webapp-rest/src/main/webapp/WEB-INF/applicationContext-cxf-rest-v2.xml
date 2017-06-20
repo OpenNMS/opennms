@@ -6,10 +6,10 @@
         xmlns:util="http://www.springframework.org/schema/util"
         xmlns:cxf="http://cxf.apache.org/core"
         xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
                 http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
                 http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -19,8 +19,8 @@
     <!-- Automatically scan for @Component beans -->
     <context:component-scan base-package="org.opennms.web.rest.v2" />
 
-    <import resource="classpath:META-INF/cxf/cxf.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+    <import resource="classpath:/META-INF/cxf/cxf.xml" />
+    <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 
     <!--
       This ResourceContextProvider will manually tell CXF to use the Spring context to 

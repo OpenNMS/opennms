@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.opennms.features.topology.api.support.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

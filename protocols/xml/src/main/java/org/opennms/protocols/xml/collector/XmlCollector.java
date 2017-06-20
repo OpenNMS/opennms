@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 
 /**
  * The Class XmlCollector.
@@ -75,6 +77,8 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(XML_DATACOLLECTION_KEY, XmlDataCollection.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+
+    private static final Set<String> PROPERTY_BLACKLIST = Sets.newHashSet("SERVICE", "collection", "xml-collection", "handler-class");
 
     /** The XML Data Collection DAO. */
     private XmlDataCollectionConfigDao m_xmlCollectionDao;
@@ -210,22 +214,24 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
             throw new IllegalArgumentException("XML Collection " + collectionName +" does not exist.");
         }
         // Parse the collection attributes before adding it in the map
-        runtimeAttributes.put(XML_DATACOLLECTION_KEY, parseCollection(collection, handler, agent));
+        runtimeAttributes.put(XML_DATACOLLECTION_KEY, parseCollection(collection, handler, agent, parameters));
         runtimeAttributes.put(RRD_REPOSITORY_PATH_KEY, m_xmlCollectionDao.getConfig().getRrdRepository());
         return runtimeAttributes;
     }
 
-    public XmlDataCollection parseCollection(XmlDataCollection collection, XmlCollectionHandler handler, CollectionAgent agent) {
+    public XmlDataCollection parseCollection(XmlDataCollection collection, XmlCollectionHandler handler, CollectionAgent agent, Map<String, Object> parameters) {
         // Clone the collection and perform token replacement in the source url and request using the handler
         XmlDataCollection preparsedCollection = collection.clone();
+        // Remove blacklisted properties from the map
+        Map<String, String> filteredParameters = filterParameters(parameters);
         for (XmlSource source : preparsedCollection.getXmlSources()) {
             final String originalUrlStr = source.getUrl();
-            final String parsedUrlStr = handler.parseUrl(m_nodeDao, originalUrlStr, agent, collection.getXmlRrd().getStep());
+            final String parsedUrlStr = handler.parseUrl(m_nodeDao, originalUrlStr, agent, collection.getXmlRrd().getStep(), filteredParameters);
             LOG.debug("parseCollection: original url: '{}', parsed url: '{}' ", originalUrlStr, parsedUrlStr);
             source.setUrl(parsedUrlStr);
 
             final Request originalRequest = source.getRequest();
-            final Request parsedRequest = handler.parseRequest(m_nodeDao, originalRequest, agent, collection.getXmlRrd().getStep());
+            final Request parsedRequest = handler.parseRequest(m_nodeDao, originalRequest, agent, collection.getXmlRrd().getStep(), filteredParameters);
             LOG.debug("parseCollection: original request: '{}', parsed request: '{}' ", originalRequest, parsedRequest);
             source.setRequest(parsedRequest);
         }
@@ -264,5 +270,16 @@ public class XmlCollector extends AbstractRemoteServiceCollector {
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    /**
+     * Filter out blacklisted key/values out from an input Map.
+     * @param input the original parameters
+     * @return a new map containing the filtered parameters
+     */
+    protected static Map<String, String> filterParameters(Map<String, Object> input) {
+        return input.entrySet().stream()
+            .filter(e -> !PROPERTY_BLACKLIST.contains(e.getKey()))
+            .collect(Collectors.toMap(e -> e.getKey(), e -> ParameterMap.getKeyedString(input, e.getKey(), "")));
     }
 }

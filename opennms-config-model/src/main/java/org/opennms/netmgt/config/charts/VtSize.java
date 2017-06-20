@@ -30,20 +30,16 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class VtSize.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "vt-size")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VtSize implements java.io.Serializable {
-    private static final long serialVersionUID = -9127412965354524989L;
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "pixels", required = true)
     private Integer pixels;
@@ -113,6 +109,9 @@ public class VtSize implements java.io.Serializable {
      * @param pixels the value of field 'pixels'.
      */
     public void setPixels(final Integer pixels) {
+        if (pixels == null) {
+            throw new IllegalArgumentException("'pixels' is a required element!");
+        }
         this.pixels = pixels;
     }
 

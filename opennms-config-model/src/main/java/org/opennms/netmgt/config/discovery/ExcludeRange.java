@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "exclude-range")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -61,8 +62,8 @@ public class ExcludeRange implements Serializable {
     }
 
     public ExcludeRange(final String begin, final String end) {
-        m_begin = begin;
-        m_end = end;
+        setBegin(begin);
+        setEnd(end);
     }
 
     public String getBegin() {
@@ -70,10 +71,7 @@ public class ExcludeRange implements Serializable {
     }
 
     public void setBegin(final String begin) {
-        if (begin == null) {
-            throw new IllegalArgumentException("Exclude range 'begin' cannot be null!");
-        }
-        m_begin = begin;
+        m_begin = ConfigUtils.assertNotEmpty(begin, "begin");
     }
 
     public String getEnd() {
@@ -81,10 +79,7 @@ public class ExcludeRange implements Serializable {
     }
 
     public void setEnd(final String end) {
-        if (end == null) {
-            throw new IllegalArgumentException("Exclude range 'end' cannot be null!");
-        }
-        m_end = end;
+        m_end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
     @Override

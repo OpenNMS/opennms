@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,140 +29,68 @@
 package org.opennms.netmgt.config.reporting;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * 24 hour clock time
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "time")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Time implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reporting.xsd")
+public class Time implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * hours
-     */
     @XmlElement(name = "hours", required = true)
-    private Integer hours;
+    private Integer m_hours;
 
-    /**
-     * minutes
-     */
     @XmlElement(name = "minutes", required = true)
-    private Integer minutes;
+    private Integer m_minutes;
 
     public Time() {
     }
 
-    /**
-     */
-    public void deleteHours() {
-        this.hours= null;
+    public Integer getHours() {
+        return m_hours;
     }
 
-    /**
-     */
-    public void deleteMinutes() {
-        this.minutes= null;
+    public void setHours(final Integer hours) {
+        m_hours = ConfigUtils.assertNotNull(hours, "hours");
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Integer getMinutes() {
+        return m_minutes;
+    }
+
+    public void setMinutes(final Integer minutes) {
+        m_minutes = ConfigUtils.assertNotNull(minutes, "minutes");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_hours, m_minutes);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Time) {
-            Time temp = (Time)obj;
-            boolean equals = Objects.equals(temp.hours, hours)
-                && Objects.equals(temp.minutes, minutes);
-            return equals;
+            final Time that = (Time)obj;
+            return Objects.equals(this.m_hours, that.m_hours)
+                    && Objects.equals(this.m_minutes, that.m_minutes);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'hours'. The field 'hours' has the following
-     * description: hours
-     * 
-     * @return the value of field 'Hours'.
-     */
-    public Integer getHours() {
-        return this.hours;
-    }
-
-    /**
-     * Returns the value of field 'minutes'. The field 'minutes' has the following
-     * description: minutes
-     * 
-     * @return the value of field 'Minutes'.
-     */
-    public Integer getMinutes() {
-        return this.minutes;
-    }
-
-    /**
-     * Method hasHours.
-     * 
-     * @return true if at least one Hours has been added
-     */
-    public boolean hasHours() {
-        return this.hours != null;
-    }
-
-    /**
-     * Method hasMinutes.
-     * 
-     * @return true if at least one Minutes has been added
-     */
-    public boolean hasMinutes() {
-        return this.minutes != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            hours, 
-            minutes);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'hours'. The field 'hours' has the following
-     * description: hours
-     * 
-     * @param hours the value of field 'hours'.
-     */
-    public void setHours(final Integer hours) {
-        this.hours = hours;
-    }
-
-    /**
-     * Sets the value of field 'minutes'. The field 'minutes' has the following
-     * description: minutes
-     * 
-     * @param minutes the value of field 'minutes'.
-     */
-    public void setMinutes(final Integer minutes) {
-        this.minutes = minutes;
     }
 
 }

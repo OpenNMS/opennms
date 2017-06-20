@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmDeleted</uei>
+    <event-label>Alarm Change Notification Event : Alarm Deleted</event-label>
+    <descr>
+    &lt;p&gt;Alarm %parm[alarmid]% Deleted&lt;p&gt;
+    
+    &lt;p&gt;Deleted Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[oldalarmvalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm %parm[alarmid]% Deleted&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/NewAlarmCreated</uei>
+    <event-label>Alarm Change Notification Event : New Alarm Created</event-label>
+    <descr>
+    &lt;p&gt;New Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Created&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;New Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Created&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared</uei>
+    <event-label>Alarm Change Notification Event : Alarm Cleared</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Cleared&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+    
+    &lt;p&gt;Old Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[oldalarmvalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Cleared&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmChanged</uei>
+    <event-label>Alarm Change Notification Event : Alarm Changed</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Changed&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+    
+    &lt;p&gt;Old Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[oldalarmvalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Changed&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSeverityChanged</uei>
+    <event-label>Alarm Change Notification Event : Alarm Severity Changed</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Severity Changed to %parm[alarmseverity]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Severity %parm[alarmseverity]%&lt;p&gt;
+    
+    &lt;p&gt;Old Alarm Severity %parm[oldseverity]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+    
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Severity Changed to %parm[alarmseverity]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmAcknowledged</uei>
+    <event-label>Alarm Change Notification Event : Alarm Acknowledged by user</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Acknowledged &lt;p&gt;
+    
+    &lt;p&gt;Alarm Acknowledgement time %parm[alarmacktime]%&lt;p&gt;
+    
+    &lt;p&gt;Acknowledged by user %parm[alarmackuser]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Acknowledged by user %parm[alarmackuser]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnAcknowledged</uei>
+    <event-label>Alarm Change Notification Event : Alarm UnAcknowledged</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnAcknowledged&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnAcknowledged&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmSuppressed</uei>
+    <event-label>Alarm Change Notification Event : Alarm Suppressed</event-label>
+    <descr>
+
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Suppressed&lt;p&gt;
+    
+    &lt;p&gt;Alarm Suppressed time %parm[suppressedtime]%&lt;p&gt;
+    
+    &lt;p&gt;Alarm Suppressed until %parm[suppresseduntil]%&lt;p&gt;
+    
+    &lt;p&gt;Alarm Suppressed by user %parm[suppresseduser]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Suppressed by user %parm[suppresseduser]% until %parm[suppresseduntil]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmUnSuppressed</uei>
+    <event-label>Alarm Change Notification Event : Alarm UnSuppressed</event-label>
+    <descr>
+
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; UnSuppressed &lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/TroubleTicketStateChange</uei>
+    <event-label>Alarm Change Notification Event : Trouble Ticket State Change</event-label>
+    <descr>
+
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Trouble Ticket State Change&lt;p&gt;
+    
+    &lt;p&gt;Trouble Ticket ID %parm[tticketid]% State %parm[tticketstate]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Trouble Ticket State Change 
+    Trouble Ticket ID %parm[tticketid]% State %parm[tticketstate]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoAdded</uei>
+    <event-label>Alarm Change Notification Event : Sticky Memo Changed</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Added&lt;p&gt;
+    
+    &lt;p&gt;New Sticky Memo&lt;p&gt;
+    &lt;p&gt;%parm[stickymemo]%&lt;p&gt;
+    
+    &lt;p&gt;New Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[newalarmvalues]%&lt;p&gt;
+    
+    &lt;p&gt;Old Alarm Values&lt;p&gt;
+    &lt;p&gt;%parm[oldalarmvalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Added&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/StickyMemoUpdate</uei>
+    <event-label>Alarm Change Notification Event : Sticky Memo Update</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Update by %parm[author]%&lt;p&gt;
+    &lt;p&gt;Author          : %parm[author]%&lt;p&gt;
+    &lt;p&gt;Updated Memo    : %parm[body]%&lt;p&gt;
+    &lt;p&gt;All Memo Values : %parm[memovalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Sticky Memo Update by %parm[author]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationEvent/JournalMemoUpdate</uei>
+    <event-label>Alarm Change Notification Event : Journal Memo Update</event-label>
+    <descr>
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Journal Memo Update by %parm[author]%&lt;p&gt;
+    &lt;p&gt;Author          : %parm[author]%&lt;p&gt;
+    &lt;p&gt;Updated Memo    : %parm[body]%&lt;p&gt;
+    &lt;p&gt;Reduction Key   : %parm[reductionkey]%&lt;p&gt;
+    &lt;p&gt;All Memo Values : %parm[memovalues]%&lt;p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+    &lt;p&gt;Alarm &lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmid]%"&gt;%parm[alarmid]%&lt;/a&gt; Journal Memo Update by %parm[author]%&lt;p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <operinstruct></operinstruct>
+  </event>
+  
+  <!-- generic test events to generate test alarms for AlarmChangeNotifier -->
+  <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise localhost  -i 127.0.0.1 -p 'testParam 1' -->
+  <!-- sudo ./send-event.pl  uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmClear localhost  -i 127.0.0.1 -p 'testParam 1' -->
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise</uei>
+    <event-label>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</event-label>
+    <descr>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</descr>
+    <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Raise %parm[testParam]%</logmsg>
+    <severity>Minor</severity>
+    <operinstruct></operinstruct>
+    <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%" alarm-type="1" auto-clean="false" />
+  </event>
+
+  <event>
+    <uei>uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmClear</uei>
+    <event-label>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</event-label>
+    <descr>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</descr>
+    <logmsg dest='logndisplay'>Generic AlarmChangeNotifier Alarm Clear %parm[testParam]%</logmsg>
+    <severity>Cleared</severity>
+    <operinstruct></operinstruct>
+    <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[testParam]%"
+      clear-key="uei.opennms.org/plugin/AlarmChangeNotificationTest/TestAlarm/genericAlarmRaise:%parm[testParam]%"
+      alarm-type="2"
+      auto-clean="false" />
+  </event>
+
+</events>

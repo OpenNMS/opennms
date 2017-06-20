@@ -93,6 +93,16 @@
     $scope.availableCategories = [];
 
     /**
+    * @description The available configured locations
+    *
+    * @ngdoc property
+    * @name NodeController#availableLocations
+    * @propertyOf NodeController
+    * @returns {array} The locations
+    */
+    $scope.availableLocations = [];
+
+    /**
     * @description The list of black-listed foreign IDs.
     * The foreignId must be unique within the requisition.
     * For an existing node, the foreignId should not be changed.
@@ -157,7 +167,7 @@
     * @methodOf NodeController
     */
     $scope.goBack = function() {
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource));
     };
 
     /**
@@ -169,7 +179,7 @@
     */
     $scope.goVerticalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'true');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId) + '/vertical');
     };
 
     /**
@@ -181,7 +191,7 @@
     */
     $scope.goHorizontalLayout = function() {
       $cookies.put('use_requisitions_node_vertical_layout', 'false');
-      $scope.goTo(Configuration.baseHref + '#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
+      $scope.goTo(Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/' + encodeURIComponent($scope.foreignId));
     };
 
     /**
@@ -448,6 +458,14 @@
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
         $scope.availableCategories = categories;
+      },
+      $scope.errorHandler
+    );
+
+    // Initialize locations
+    RequisitionsService.getAvailableLocations().then(
+      function(locations) { // success
+        $scope.availableLocations = locations;
       },
       $scope.errorHandler
     );

@@ -81,14 +81,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Wpms }
-     * 
-     */
-    public Wpms createWpms() {
-        return new Wpms();
-    }
-
-    /**
      * Create an instance of {@link Wpm }
      * 
      */

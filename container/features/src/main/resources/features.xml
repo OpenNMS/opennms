@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features
   name="opennms-${project.version}"
-  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
     <!-- Apache Camel features -->
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
@@ -85,41 +85,6 @@
 
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.alarm-northbounder/${project.version}</bundle>
-    </feature>
-
-    <!-- need to override camel-elasticsearch because it pulls in an elasticsearch version that does not work -->
-    <feature name='onms-camel-elasticsearch' version='${camelVersion}' resolver='(obr)' start-level='50'>
-      <feature version='${camelVersion}'>camel-core</feature>
-      <feature version="${guavaVersion}">guava</feature>
-      <feature>http</feature>
-      <bundle dependency='true'>mvn:com.google.protobuf/protobuf-java/2.5.0</bundle>
-      <bundle dependency='true'>mvn:com.fasterxml.jackson.core/jackson-core/2.4.1</bundle>
-      <bundle dependency='true'>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-smile/2.4.1</bundle>
-      <bundle dependency='true'>mvn:joda-time/joda-time/1.6.2</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jakarta-regexp/1.4_1</bundle>
-      <bundle dependency='true'>mvn:org.mvel/mvel2/2.2.1.Final</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/4.6.1_1</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene-analyzers-common/4.6.1_1</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene-queryparser/4.6.1_1</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene-queries/4.6.1_1</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene-sandbox/4.6.1_1</bundle>
-      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.elasticsearch/1.0.0_4</bundle>
-      <bundle>mvn:org.apache.camel/camel-elasticsearch/${camelVersion}</bundle>
-    </feature>
-
-    <feature name="opennms-elasticsearch-event-forwarder" description="OpenNMS :: Features :: Elasticsearch :: Event Forwarder" version="${project.version}">
-      <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-http</feature>
-      <!-- NMS-8696: Elasticsearch needs an older version of Guava -->
-      <feature version="${guavaOldVersion}">guava</feature>
-
-      <feature>onms-camel-elasticsearch</feature>
-      <feature>opennms-core-camel</feature>
-      <!-- TODO -->
-      <!-- <feature>opennms-alarm-api</feature> -->
-
-      <bundle>mvn:org.opennms.features.elasticsearch/org.opennms.features.elasticsearch.event-forwarder/${project.version}</bundle>
     </feature>
 
     <!-- Dependency features -->
@@ -297,19 +262,6 @@
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
       <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
-
-      <!-- Old bundle configuration necessary to run with JDK 6 -->
-      <!--
-      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
-      <bundle dependency="true">wrap:mvn:org.eclipse.persistence/eclipselink/2.5.1</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/commonj.sdo/2.1.1</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
-      -->
     </feature>
 
     <feature name="jcifs" description="jcifs" version="${jcifsVersion}">
@@ -372,7 +324,7 @@
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
       <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[4.0,4.1)">spring-web</feature>
+      <feature version="[4.2,4.3)">spring-web</feature>
       <feature>commons-codec</feature>
 
       <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
@@ -402,6 +354,7 @@
     </feature>
     
     <feature name="quartz" description="quartz" version="${quartzVersion}">
+      <feature>c3p0</feature>
       <bundle>wrap:mvn:org.quartz-scheduler/quartz/${quartzVersion}</bundle>
     </feature>
     
@@ -418,14 +371,16 @@
     
     
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
-      <feature version="[4.0,4.1)">spring-orm</feature>
+      <feature version="[4.2,4.3)">spring</feature>
+      <feature version="[4.2,4.3)">spring-orm</feature>
 
       <feature>commons-io</feature>
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
       <feature>owasp-encoder</feature>
 
+      <!-- Used by org.opennms.core.spring -->
+      <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
       <!-- Used by org.opennms.core.xml -->
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -487,10 +442,10 @@
     </feature>
 
     <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
-      <feature version="[4.0,4.1)">spring-jdbc</feature>
-      <feature version="[4.0,4.1)">spring-orm</feature>
-      <feature version="[4.0,4.1)">spring-tx</feature>
+      <feature version="[4.2,4.3)">spring</feature>
+      <feature version="[4.2,4.3)">spring-jdbc</feature>
+      <feature version="[4.2,4.3)">spring-orm</feature>
+      <feature version="[4.2,4.3)">spring-tx</feature>
 
       <feature>commons-io</feature>
       <feature>commons-lang</feature>
@@ -508,7 +463,7 @@
     </feature>
 
     <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>opennms-config-api</feature>
       <feature>opennms-poller-api</feature>
@@ -613,6 +568,12 @@
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-rpc-commands" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands" version="${project.version}">
+      <!-- Other dependencies are available via the root classloader -->
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.commands/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dao-api" description="OpenNMS :: DAO :: API" version="${project.version}">
@@ -648,7 +609,7 @@
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>commons-lang</feature>
       <feature>jaxb</feature>
@@ -741,7 +702,7 @@
     </feature>
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>hibernate36</feature>
 
@@ -750,7 +711,7 @@
     </feature>
 
     <feature name="opennms-measurements-api" description="OpenNMS :: Measurements :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>commons-lang</feature>
       <feature version="${guavaVersion}">guava</feature>
@@ -783,14 +744,13 @@
       <feature>commons-beanutils</feature>
       <feature>commons-io</feature>
       <feature>fop</feature>
+      <feature>quartz</feature>
 
       <feature>opennms-config</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-javamail</feature>
-
-      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
 
       <bundle>mvn:org.opennms/opennms-reporting/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
@@ -806,7 +766,7 @@
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD :: API" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>opennms-core</feature>
 
@@ -814,7 +774,7 @@
     </feature>
 
     <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
 
       <feature>jrobin</feature>
       <feature>opennms-rrd-api</feature>
@@ -847,11 +807,11 @@
     </feature>
 
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
       <feature>activemq-camel</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
+      <feature>camel-netty4</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>dropwizard-metrics</feature>
@@ -883,10 +843,9 @@
 
     <!-- TrapD feature -->
     <feature name="opennms-trapd" description="OpenNMS :: Trapd" version="${project.version}">
-      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.2,4.3)">spring</feature>
       <feature>camel-core</feature>
       <feature>camel-http</feature>
-      <feature>camel-netty</feature>
       <feature version="${guavaVersion}">guava</feature>
 
       <feature>opennms-core</feature>
@@ -929,6 +888,7 @@
       <feature>jfreechart</feature>
       <feature>jrobin</feature>
       <feature>json-lib</feature>
+      <feature>quartz</feature>
       <feature>spring-webflow</feature>
 
       <feature>opennms-config</feature>
@@ -939,7 +899,6 @@
       <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
       <bundle>wrap:mvn:xalan/serializer/2.7.2</bundle>
       <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
       <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>
       <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
       <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>

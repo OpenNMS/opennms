@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,83 +29,61 @@
 package org.opennms.netmgt.config.syslogd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * List of substrings or regexes that, when matched, signal
  *  that the message has sensitive contents and should
  *  therefore be hidden
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "hideMatch")
-@XmlAccessorType(XmlAccessType.FIELD)public class HideMatch implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("syslog.xsd")
+public class HideMatch implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * The match expression
      */
     @XmlElement(name = "match", required = true)
-    private org.opennms.netmgt.config.syslogd.Match match;
+    private Match m_match;
 
     public HideMatch() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public Match getMatch() {
+        return m_match;
+    }
+
+    public void setMatch(final Match match) {
+        m_match = ConfigUtils.assertNotEmpty(match, "match");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_match);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof HideMatch) {
-            HideMatch temp = (HideMatch)obj;
-            boolean equals = Objects.equals(temp.match, match);
-            return equals;
+            final HideMatch that = (HideMatch)obj;
+            return Objects.equals(this.m_match, that.m_match);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'match'. The field 'match' has the following
-     * description: The match expression
-     * 
-     * @return the value of field 'Match'.
-     */
-    public org.opennms.netmgt.config.syslogd.Match getMatch() {
-        return this.match;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            match);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'match'. The field 'match' has the following
-     * description: The match expression
-     * 
-     * @param match the value of field 'match'.
-     */
-    public void setMatch(final org.opennms.netmgt.config.syslogd.Match match) {
-        this.match = match;
     }
 
 }

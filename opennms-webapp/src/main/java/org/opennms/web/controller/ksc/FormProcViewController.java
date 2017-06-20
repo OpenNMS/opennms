@@ -125,8 +125,9 @@ public class FormProcViewController extends AbstractController implements Initia
                 
                 // Now inject any override characteristics into the working report model
                 Report working_report = editor.getWorkingReport();
-                for (int i=0; i<working_report.getGraphCount(); i++) {
-                    Graph working_graph = working_report.getGraph(i);
+                for (int i=0; i<working_report.getGraphs().size(); i++) {
+                    final int index = i;
+                    Graph working_graph = working_report.getGraphs().get(index);
                     if (!overrideTimespan.equals("none")) { 
                         working_graph.setTimespan(overrideTimespan); 
                     }

@@ -69,7 +69,9 @@ import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,8 +283,10 @@ public class NodeRestService extends OnmsRestService {
             if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
     
             LOG.debug("deleteNode: deleting node {}", nodeCriteria);
-            m_nodeDao.delete(node);
-            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
+
+            Event e = EventUtils.createDeleteNodeEvent("OpenNMS.REST", node.getId(), -1L);
+            sendEvent(e);
+
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -459,6 +463,14 @@ public class NodeRestService extends OnmsRestService {
         return null;
     }
 
+    private void sendEvent(Event event) {
+        try {
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
+        }
+    }
+
     private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
         try {
             final EventBuilder bldr = new EventBuilder(uei, "ReST");
@@ -476,6 +488,7 @@ public class NodeRestService extends OnmsRestService {
         builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         builder.alias("categories", "category", JoinType.LEFT_JOIN);
         builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("location", "location", JoinType.LEFT_JOIN);
         builder.alias("ipInterfaces.monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
         applyQueryFilters(params, builder);

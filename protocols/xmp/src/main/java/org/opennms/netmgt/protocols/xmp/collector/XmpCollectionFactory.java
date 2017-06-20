@@ -99,6 +99,10 @@ public class XmpCollectionFactory {
      */
     public static XmpCollectionFactory getInstance() { return instance; }
 
+    public static void setInstance(XmpCollectionFactory instance) {
+        XmpCollectionFactory.instance = instance;
+    }
+
     /* instance variables ******************************** */
     private String rrdPath;
 

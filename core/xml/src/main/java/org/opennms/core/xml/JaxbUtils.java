@@ -88,9 +88,9 @@ public abstract class JaxbUtils {
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
 
-    private static final class LoggingValidationEventHandler implements ValidationEventHandler {
+    protected static final class LoggingValidationEventHandler implements ValidationEventHandler {
 
-        private LoggingValidationEventHandler() {
+        protected LoggingValidationEventHandler() {
         }
 
         @Override
@@ -139,7 +139,7 @@ public abstract class JaxbUtils {
         final Class<?> existing = m_elementClasses.get(elementName);
         if (existing != null) return existing;
 
-        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(true);
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(XmlRootElement.class));
         for (final BeanDefinition bd : scanner.findCandidateComponents("org.opennms")) {
             final String className = bd.getBeanClassName();

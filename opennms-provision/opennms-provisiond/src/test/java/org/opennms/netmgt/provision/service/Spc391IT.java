@@ -105,8 +105,8 @@ public class Spc391IT extends ProvisioningITCase {
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:snmpwalk-space.properties"),
-        @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:snmpwalk-space.properties")
+        @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:/snmpwalk-space.properties"),
+        @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:/snmpwalk-space.properties")
     })
     public void testScanSpaceDevice() throws Exception {
         final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI };

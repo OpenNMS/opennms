@@ -50,8 +50,8 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 	 */
 	@Test
 	public void testInstallAllOpenNMSFeatures() {
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version("20.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("20.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("org.opennms.container.karaf").version("21.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("21.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
 
 		for (String feature : new String[] {
 			"karaf-framework",
@@ -81,6 +81,7 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			"dashlet-map",
 			"dashlet-image",
 			"dashlet-charts",
+			"dashlet-grafana",
 			"dashlet-rtc",
 			"dashlet-rrd",
 			"dashlet-ksc",
@@ -98,6 +99,6 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 			System.out.println("Installed feature: " + feature);
 		}
 
-		System.out.println(executeCommand("features:list -i"));
+		System.out.println(executeCommand("feature:list -i"));
 	}
 }

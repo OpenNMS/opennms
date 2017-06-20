@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=PercDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/percDetector.properties")
+@JUnitSnmpAgent(host=PercDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/percDetector.properties")
 public class PercDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.168.0.1";
 
@@ -77,7 +78,7 @@ public class PercDetectorTest implements InitializingBean {
         m_detector.setArrayNumber("0.0"); // the default
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
-        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
     }
 
     @Test(timeout=20000)

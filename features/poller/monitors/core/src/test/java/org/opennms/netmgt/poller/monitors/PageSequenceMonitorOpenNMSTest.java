@@ -58,7 +58,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Seth
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@ContextConfiguration(locations="classpath:/META-INF/opennms/emptyContext.xml")
 public class PageSequenceMonitorOpenNMSTest {
 
     AbstractServiceMonitor m_monitor;

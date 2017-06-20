@@ -62,7 +62,7 @@ public class DefaultTl1ConfigurationDao extends AbstractJaxbConfigDao<Tl1dConfig
      */
     @Override
     public List<Tl1Element> getElements() {
-        return Collections.unmodifiableList(getContainer().getObject().getTl1ElementCollection());
+        return Collections.unmodifiableList(getContainer().getObject().getTl1Elements());
     }
 
     /**

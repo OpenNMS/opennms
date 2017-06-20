@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * A specific addresses to be polled
@@ -101,7 +102,7 @@ public class Specific implements Serializable {
     }
 
     public void setLocation(final String location) {
-        m_location = location;
+        m_location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
@@ -128,7 +129,7 @@ public class Specific implements Serializable {
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = foreignSource;
+        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     @Override

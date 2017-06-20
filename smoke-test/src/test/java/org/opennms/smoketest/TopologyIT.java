@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXB;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.link.Layout;
@@ -49,6 +51,7 @@ import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -72,6 +75,8 @@ import com.google.common.collect.Lists;
 public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
+
+    private static final int DEFAULT_MENU_RETRIES = 3;
 
     private TopologyUIPage topologyUiPage;
 
@@ -321,6 +326,10 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
  
         public TopologyUIPage clickOnMenuItemsWithLabels(String... labels) {
+            return clickOnMenuItemsWithLabelsWithRetries(DEFAULT_MENU_RETRIES, labels);
+        }
+
+        private TopologyUIPage clickOnMenuItemsWithLabelsWithRetries(int retries, String... labels) {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
@@ -330,6 +339,14 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
+                } catch (NoSuchElementException e) {
+                    if (retries > 0) {
+                        LOG.info("Failed to click on menu bar element with label: {} in path: {}. Retrying.",
+                                label, Arrays.toString(labels));
+                        clickOnMenuItemsWithLabelsWithRetries(retries-1, label);
+                    } else {
+                        throw e;
+                    }
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception while clicking on menu item {}", label, e);
                     throw e;
@@ -554,22 +571,37 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         private boolean isMenuItemChecked(String itemName, String... path) {
-            clickOnMenuItemsWithLabels(path);
+            return isMenuItemCheckedWithRetries(DEFAULT_MENU_RETRIES, itemName, path);
+        }
 
-            final WebElement automaticRefresh = getMenubarElement(itemName);
-            final String cssClasses = automaticRefresh.getAttribute("class");
-            if (cssClasses != null) {
-                if (cssClasses.contains("-unchecked")) {
-                    return false;
-                } else if (cssClasses.contains("-checked")) {
-                    return true;
+        private boolean isMenuItemCheckedWithRetries(int retries, String itemName, String... path) {
+            try {
+                // Disable retries, since we're already in a retry loop
+                clickOnMenuItemsWithLabelsWithRetries(0, path);
+
+                final WebElement automaticRefresh = getMenubarElement(itemName);
+                final String cssClasses = automaticRefresh.getAttribute("class");
+                if (cssClasses != null) {
+                    if (cssClasses.contains("-unchecked")) {
+                        return false;
+                    } else if (cssClasses.contains("-checked")) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Unknown CSS classes '" + cssClasses + "'."
+                                    + " Unable to determine if the item is checked or unchecked.");
+                    }
                 } else {
-                    throw new RuntimeException("Unknown CSS classes '" + cssClasses + "'."
-                                + " Unable to determine if the item is checked or unchecked.");
+                    throw new RuntimeException("Element has no CSS classes!"
+                            + " Unable to determine if the item is checked or unchecked.");
                 }
-            } else {
-                throw new RuntimeException("Element has no CSS classes!"
-                        + " Unable to determine if the item is checked or unchecked.");
+            } catch (NoSuchElementException e) {
+                if (retries > 0) {
+                    LOG.info("Failed to find one or more elements in menu path: {} for item: {}. Retrying.",
+                            Arrays.toString(path), itemName);
+                    return isMenuItemCheckedWithRetries(retries-1, itemName, path);
+                } else {
+                    throw e;
+                }
             }
         }
 
@@ -593,7 +625,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 testCase.findElementByXpath("//*[@id='info-panel-component']//div[text() = 'Simulation Mode Enabled']");
                 return true;
-            } catch (org.openqa.selenium.NoSuchElementException e) {
+            } catch (NoSuchElementException e) {
                 return false;
             } finally {
                 testCase.setImplicitWait();
@@ -649,6 +681,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     public void setUp() {
         topologyUiPage = new TopologyUIPage(this, getBaseUrl());
         topologyUiPage.open();
+        topologyUiPage.setAutomaticRefresh(false);
+        topologyUiPage.defaultFocus();
     }
 
     @Test
@@ -692,6 +726,52 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     // Verifies that the ping operation is available. See NMS-9019
     @Test
     public void verifyPingOperation() throws InterruptedException, IOException {
+        createDummyNode();
+
+        // Find Node and try select ping from context menu
+        topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
+        topologyUiPage.clearFocus();
+        topologyUiPage.refreshNow();
+        topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
+        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").contextMenu().ping();
+        pingWindow.close();
+    }
+
+    @Test
+    public void verifyCollapsibleCriteriaPersistence() throws IOException, InterruptedException {
+        createDummyNode();
+
+        // Search for category and select
+        topologyUiPage.search("Routers").selectItemThatContains("Routers");
+        List<FocusedVertex> focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+
+        logout();
+        login();
+
+        topologyUiPage.open();
+        focusedVertices = topologyUiPage.getFocusedVertices();
+        Assert.assertNotNull(focusedVertices);
+        Assert.assertEquals(1, focusedVertices.size());
+        Assert.assertEquals("Routers", focusedVertices.get(0).getLabel());
+
+        topologyUiPage.clearFocus();
+    }
+
+    /**
+     * Verifies that the ip-like search produces no duplicates
+     * (issue NMS-9265 - by typing a complete ip address in the search box IpLikeSearchProvider returned 2 identical items)
+     */
+    @Test
+    public void verifyIpLikeSearchNoDuplicates() throws IOException, InterruptedException {
+        createDummyNode();
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.1").countItemsThatContain("127.0.0.1"));
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.*").countItemsThatContain("127.0.0.*"));
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.*").countItemsThatContain("127.0.0.1"));
+    }
+
+    private void createDummyNode() throws InterruptedException, IOException {
         // Create Dummy Node
         final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
                 "<scan-interval>1d</scan-interval>\n" +
@@ -704,6 +784,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"ICMP\"/>" +
                 "       </interface>" +
+                "       <category name=\"Routers\" />" +
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
@@ -717,14 +798,6 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             sendPost("/rest/events", new String(outputStream.toByteArray()), 204);
         }
         Thread.sleep(5000); // Wait to allow the event to be processed
-
-        // Find Node and try select ping from context menu
-        topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
-        topologyUiPage.clearFocus();
-        topologyUiPage.refreshNow();
-        topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
-        PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").contextMenu().ping();
-        pingWindow.close();
     }
 
     /**

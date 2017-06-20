@@ -52,7 +52,7 @@ import org.opennms.netmgt.poller.monitors.SeleniumMonitor.BaseUrlUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@ContextConfiguration(locations="classpath:/META-INF/opennms/emptyContext.xml")
 @JUnitHttpServer(port=10342)
 public class SeleniumMonitorTest {
 

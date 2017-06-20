@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -257,7 +257,7 @@ public class MockSnmpStrategyTest {
     public void testCallbackOnTrackerTimeout() throws Exception {
         // Expect an exception on get
         expectedEx.expect(Exception.class);
-        expectedEx.expectMessage("Timeout retrieving test for /127.0.0.1");
+        expectedEx.expectMessage("Timeout retrieving 'test' for 127.0.0.1");
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpAgentConfig sac = getAgentConfig();
         sac.setPort(12345);
@@ -295,6 +295,7 @@ public class MockSnmpStrategyTest {
         config.setVersion(SnmpAgentConfig.VERSION1);
         config.setMaxVarsPerPdu(20);
         config.setMaxRepetitions(20);
+        config.setRetries(3);
         return config;
     }
 
@@ -310,8 +311,8 @@ public class MockSnmpStrategyTest {
         public CountingColumnTracker(final SnmpObjId base) {
             super(base);
         }
-        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions) {
-            super(base, maxRepetitions);
+        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions, final int maxRetries) {
+            super(base, maxRepetitions, maxRetries);
         }
         public long getCount() {
             return m_count;

@@ -85,7 +85,6 @@ public class DefaultJmxCollector implements JmxCollector {
         if (mBeanServer != null) {
             mergedStringMap.putAll(mBeanServer.getParameterMap());
         }
-
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
         try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), InetAddressUtils.addr(config.getAgentAddress()), mergedStringMap, null)) {
             Objects.requireNonNull(connectionWrapper, "connectionWrapper should never be null");

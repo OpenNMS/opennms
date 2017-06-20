@@ -129,7 +129,8 @@ public class FormProcReportController extends AbstractController implements Init
                 editor.loadWorkingGraph(graph_index);
             } else {
                 if (Actions.DelGraph.toString().equals(action)) { 
-                    report.removeGraph(report.getGraph(graph_index));
+                    final int index = graph_index;
+                    report.removeGraph(report.getGraphs().get(index));
                 } else {
                     throw new ServletException("Invalid Argument for Customize Form Action.");
                 }
@@ -148,7 +149,7 @@ public class FormProcReportController extends AbstractController implements Init
             String graphType = graph.getGraphtype();
             
             Map<String,String> modelData = new HashMap<String,String>();
-            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId());
+            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId().toString());
             modelData.put(CustomGraphEditDetailsController.Parameters.graphtype.toString(), graphType);
             return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", modelData);
         } else {

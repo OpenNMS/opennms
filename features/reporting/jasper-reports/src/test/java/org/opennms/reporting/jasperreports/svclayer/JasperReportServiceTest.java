@@ -63,7 +63,7 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
-@ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
+@ContextConfiguration(locations = { "classpath:/org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
 public class JasperReportServiceTest implements InitializingBean {
 
     @Autowired

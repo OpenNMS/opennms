@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,191 +29,111 @@
 package org.opennms.netmgt.config.reporting;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * A string parameter passed to the report engine
- *  
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "int-parm")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class IntParm implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reporting.xsd")
+public class IntParm implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
-     * the name of this parameter as passed to the report
-     *  engine
+     * the name of this parameter as passed to the report engine
      */
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     /**
-     * the name of this parameter as displayed in the
-     *  webui
+     * the name of this parameter as displayed in the webui
      */
     @XmlAttribute(name = "display-name", required = true)
-    private String displayName;
+    private String m_displayName;
 
     /**
-     * the type of input field used. Currently freeText onlly
+     * the type of input field used. Currently freeText only
      */
     @XmlAttribute(name = "input-type", required = true)
-    private String inputType;
+    private String m_inputType;
 
     /**
      * value
      */
     @XmlElement(name = "default")
-    private Integer _default;
+    private Integer m_default;
 
     public IntParm() {
     }
 
-    /**
-     */
-    public void deleteDefault() {
-        this._default= null;
+    public String getName() {
+        return m_name;
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getDisplayName() {
+        return m_displayName;
+    }
+
+    public void setDisplayName(final String displayName) {
+        m_displayName = ConfigUtils.assertNotEmpty(displayName, "display-name");
+    }
+
+    public String getInputType() {
+        return m_inputType;
+    }
+
+    public void setInputType(final String inputType) {
+        if (!"inputType".equals(inputType)) {
+            throw new IllegalArgumentException("Currently only 'freeText' is supported for int-parm input-type!");
+        }
+        m_inputType = inputType;
+    }
+
+    public Integer getDefault() {
+        return m_default;
+    }
+
+    public void setDefault(final Integer defaultValue) {
+        m_default = defaultValue;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_displayName, 
+                            m_inputType, 
+                            m_default);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof IntParm) {
-            IntParm temp = (IntParm)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.displayName, displayName)
-                && Objects.equals(temp.inputType, inputType)
-                && Objects.equals(temp._default, _default);
-            return equals;
+            final IntParm that = (IntParm)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_displayName, that.m_displayName)
+                    && Objects.equals(this.m_inputType, that.m_inputType)
+                    && Objects.equals(this.m_default, that.m_default);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'default'. The field 'default' has the following
-     * description: value
-     * 
-     * @return the value of field 'Default'.
-     */
-    public Integer getDefault() {
-        return this._default;
-    }
-
-    /**
-     * Returns the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @return the value of field 'DisplayName'.
-     */
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    /**
-     * Returns the value of field 'inputType'. The field 'inputType' has the
-     * following description: the type of input field used. Currently freeText
-     * onlly
-     * 
-     * @return the value of field 'InputType'.
-     */
-    public String getInputType() {
-        return this.inputType;
-    }
-
-    /**
-     * Returns the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Method hasDefault.
-     * 
-     * @return true if at least one Default has been added
-     */
-    public boolean hasDefault() {
-        return this._default != null;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            displayName, 
-            inputType, 
-            _default);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'default'. The field 'default' has the following
-     * description: value
-     * 
-     * @param _default
-     * @param default the value of field 'default'.
-     */
-    public void setDefault(final Integer _default) {
-        this._default = _default;
-    }
-
-    /**
-     * Sets the value of field 'displayName'. The field 'displayName' has the
-     * following description: the name of this parameter as displayed in the
-     *  webui
-     * 
-     * @param displayName the value of field 'displayName'.
-     */
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
-    }
-
-    /**
-     * Sets the value of field 'inputType'. The field 'inputType' has the
-     * following description: the type of input field used. Currently freeText
-     * onlly
-     * 
-     * @param inputType the value of field 'inputType'.
-     */
-    public void setInputType(final String inputType) {
-        this.inputType = inputType;
-    }
-
-    /**
-     * Sets the value of field 'name'. The field 'name' has the following
-     * description: the name of this parameter as passed to the report
-     *  engine
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
 }

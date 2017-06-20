@@ -49,6 +49,9 @@ public class NotifdConfigurationTest extends XmlTestNoCastor<NotifdConfiguration
                 "<notifd-configuration \n" + 
                 "        status=\"off\"\n" + 
                 "        match-all=\"true\">\n" +
+                "        <auto-acknowledge-alarm resolution-prefix=\"BLAH!\" notify=\"false\">\n" +
+                "                <uei>yo</uei>\n" +
+                "        </auto-acknowledge-alarm>\n" +
                 "        <auto-acknowledge resolution-prefix=\"RESOLVED: \" \n" +
                 "                          uei=\"uei.opennms.org/nodes/nodeRegainedService\" \n" +
                 "                          acknowledge=\"uei.opennms.org/nodes/nodeLostService\">\n" +
@@ -72,6 +75,12 @@ public class NotifdConfigurationTest extends XmlTestNoCastor<NotifdConfiguration
         NotifdConfiguration config = new NotifdConfiguration();
         config.setStatus("off");
         config.setMatchAll(true);
+
+        final AutoAcknowledgeAlarm aaa = new AutoAcknowledgeAlarm();
+        aaa.setNotify(false);
+        aaa.setResolutionPrefix("BLAH!");
+        aaa.addUei("yo");
+        config.setAutoAcknowledgeAlarm(aaa);
 
         AutoAcknowledge autoAck = new AutoAcknowledge();
         autoAck.setResolutionPrefix("RESOLVED: ");

@@ -89,6 +89,10 @@ Requires(pre):  %{name}-container = %{version}-%{release}
 Requires:       %{name}-container = %{version}-%{release}
 Requires(post): util-linux
 Requires:       util-linux
+Requires:       jicmp >= 2.0.0
+Requires(pre):  jicmp >= 2.0.0
+Requires:       jicmp6 >= 2.0.0
+Requires(pre):  jicmp6 >= 2.0.0
 
 %description features-core
 Minion Core Features
@@ -121,37 +125,12 @@ rm -rf %{buildroot}
 
 %install
 
-export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
-export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
-export OPTS_ASSEMBLIES="-Passemblies"
-export OPTS_PROFILES="-Prun-expensive-tasks"
-export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
-export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
-
+export EXTRA_ARGS=""
 if [ "%{enable_snapshots}" = 1 ]; then
-	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+	EXTRA_ARGS="-s"
 fi
 
-# always build the root POM, just to be sure inherited properties/plugin/dependencies are right
-./compile.pl -N $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" -Dopennms.home="%{instprefix}" install
-if [ "%{skip_compile}" = 1 ]; then
-	echo "=== SKIPPING FULL COMPILE ==="
-	echo "Projects: ${ASSEMBLY_PROJECTS}"
-	./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_ASSEMBLIES -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
-		-Dopennms.home="%{instprefix}" \
-		--projects "${ASSEMBLY_PROJECTS}" \
-		install
-else
-	# get the full list of minion projects to build
-	echo "=== RUNNING COMPILE ==="
-	echo "Projects: ${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}"
-	./compile.pl $OPTS_MAVEN $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY $OPTS_PROFILES $OPTS_ASSEMBLIES -Dinstall.version="%{version}-%{release}" -Ddist.name="%{buildroot}" \
-		-Dopennms.home="%{instprefix}" \
-		--projects "${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}" --also-make \
-		install
-fi
+tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 
 # Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
@@ -206,19 +185,25 @@ rm -rf %{buildroot}
 %attr(644,minion,minion) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
 %pre container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 getent group minion >/dev/null || groupadd -r minion
 getent passwd minion >/dev/null || \
-	useradd -r -g minion -d "%{minioninstprefix}" -s /sbin/nologin \
+	useradd -r -g minion -d "${ROOT_INST}" -s /sbin/nologin \
 	-c "OpenNMS Minion" minion
 exit 0
 
 %post container
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 # Clean out the data directory
-rm -rf "%{minioninstprefix}/data"
+rm -rf "${ROOT_INST}/data"
 # Generate an SSH key if necessary
-if [ ! -f "%{minioninstprefix}/etc/host.key" ]; then
-    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "%{minioninstprefix}/etc/host.key"
-    chown minion:minion "%{minioninstprefix}/etc/"host.key*
+if [ ! -f "${ROOT_INST}/etc/host.key" ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f "${ROOT_INST}/etc/host.key"
+    chown minion:minion "${ROOT_INST}/etc/"host.key*
 fi
 
 %files features-core
@@ -227,11 +212,14 @@ fi
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 %post features-core
+ROOT_INST="${RPM_INSTALL_PREFIX0}"
+[ -z "${ROOT_INST}" ] && ROOT_INST="%{minioninstprefix}"
+
 # Generate a new UUID to replace the default UUID if it is still present
 UUID=$(/usr/bin/uuidgen -t)
-sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/etc/org.opennms.minion.controller.cfg"
 # Remove the directory used as the local Maven repo cache
-rm -rf %{minionrepoprefix}/.local
+rm -rf "${ROOT_INST}/repositories/.local"
 
 %files features-default
 %defattr(644 minion minion 755)

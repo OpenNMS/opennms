@@ -94,9 +94,7 @@ public class ApplicationSearchProvider extends AbstractSearchProvider implements
 
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
             final ApplicationVertex applicationVertex = new ApplicationVertex(application);
-            SearchResult searchResult = new SearchResult(applicationVertex);
-            searchResult.setCollapsed(false);
-            searchResult.setCollapsible(true);
+            SearchResult searchResult = new SearchResult(applicationVertex, true, false);
             results.add(searchResult);
         }
 

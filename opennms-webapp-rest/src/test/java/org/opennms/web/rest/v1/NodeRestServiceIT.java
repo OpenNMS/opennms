@@ -63,10 +63,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
@@ -103,6 +107,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private ServletContext m_context;
+
+    @Autowired
+    private MockEventIpcManager m_mockEventIpcManager;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -169,8 +176,15 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));
 
         // Testing DELETE
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test")
+                                                                            .setNodeid(1)
+                                                                            .getEvent());
+
         sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     
@@ -229,6 +243,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         jo = ja.getJSONObject(0);
         assertEquals("A", jo.getString("type"));
         assertEquals("TestMachine0", jo.getString("label"));
+        assertEquals("Default", jo.getString("location"));
     }
 
     @Test
@@ -273,8 +288,15 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));        
 
         // Testing DELETE
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test")
+                                                                            .setNodeid(1)
+                                                                            .getEvent());
+
         sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     @Test
@@ -343,8 +365,17 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPut(url, "isManaged=U", 204);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("isManaged=\"U\""));
+
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test")
+                                                                            .setNodeid(1)
+                                                                            .setInterface(InetAddressUtils.addr("10.10.10.10"))
+                                                                            .getEvent());
+
         sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
     
     @Test
@@ -372,16 +403,24 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testIpInterfaceLimit() throws Exception{
         createTwoIpInterface();
-        String url = "/nodes/1/ipinterfaces";
+        final String url = "/nodes/1/ipinterfaces";
         String xml = sendRequest(GET, url, parseParamData("limit=1"), 200);
         assertTrue(xml.contains("count=\"1\""));
         
-        url += "/10.10.10.10";
-        sendPut(url, "isManaged=U", 204);
-        xml = sendRequest(GET, url, 200);
+        sendPut(url + "/10.10.10.10", "isManaged=U", 204);
+        xml = sendRequest(GET, url + "/10.10.10.10", 200);
         assertTrue(xml.contains("isManaged=\"U\""));
-        sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
+
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test")
+                                                                            .setNodeid(1)
+                                                                            .setInterface(InetAddressUtils.addr("10.10.10.10"))
+                                                                            .getEvent());
+
+        sendRequest(DELETE, url + "/10.10.10.10", 204);
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
     
     @Test
@@ -452,8 +491,18 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendPut(url, "status=A", 204);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("status=\"A\""));
+
+        m_mockEventIpcManager.getEventAnticipator().reset();
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
+                                                                            .setNodeid(1)
+                                                                            .setInterface(InetAddressUtils.addr("10.10.10.10"))
+                                                                            .setService("ICMP")
+                                                                            .getEvent());
+
         sendRequest(DELETE, url, 204);
-        sendRequest(GET, url, 404);
+
+        m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
+        m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     @Test

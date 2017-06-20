@@ -130,7 +130,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         CollectionSetBuilder builder = new CollectionSetBuilder(agent)
                 .withStatus(CollectionStatus.FAILED);
 
-        if (collection.getWpms().getWpm().size() < 1) {
+        if (collection.getWpms().size() < 1) {
             LOG.info("No groups to collect.");
             return builder.withStatus(CollectionStatus.SUCCEEDED).build();
         }
@@ -138,7 +138,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
 
         // Iterate through the WMI collection groups.
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 if (!isGroupAvailable(agentState, wpm)) {
@@ -185,7 +185,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
                                 resource = nodeResource;
                             }
 
-                            for (final Attrib attrib : wpm.getAttrib()) {
+                            for (final Attrib attrib : wpm.getAttribs()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());
                                 final AttributeType type = attrib.getType();
                                 final String stringValue = prop.getWmiValue().toString();

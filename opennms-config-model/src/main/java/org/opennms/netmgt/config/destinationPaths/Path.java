@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "path")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -73,15 +75,15 @@ public class Path implements Serializable {
     }
 
     public void setName(final String name) {
-        m_name = name;
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    public String getInitialDelay() {
-        return m_initialDelay;
+    public Optional<String> getInitialDelay() {
+        return Optional.ofNullable(m_initialDelay);
     }
 
     public void setInitialDelay(final String initialDelay) {
-        m_initialDelay = initialDelay;
+        m_initialDelay = ConfigUtils.normalizeString(initialDelay);
     }
 
     public List<Target> getTargets() {
@@ -89,8 +91,9 @@ public class Path implements Serializable {
     }
 
     public void setTargets(final List<Target> targets) {
+        if (targets == m_targets) return;
         m_targets.clear();
-        m_targets.addAll(targets);
+        if (targets != null) m_targets.addAll(targets);
     }
 
     public void addTarget(final Target target) {
@@ -110,8 +113,9 @@ public class Path implements Serializable {
     }
 
     public void setEscalates(final List<Escalate> escalates) {
+        if (escalates == m_escalates) return;
         m_escalates.clear();
-        m_escalates.addAll(escalates);
+        if (escalates != null) m_escalates.addAll(escalates);
     }
 
     public void addEscalate(final Escalate escalate) {

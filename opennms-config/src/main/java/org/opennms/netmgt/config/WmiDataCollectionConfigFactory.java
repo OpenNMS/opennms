@@ -199,7 +199,7 @@ public class WmiDataCollectionConfigFactory {
       */
      public WmiCollection getWmiCollection(String collectionName) {
          WmiCollection collection = null;
-         for (WmiCollection coll : m_config.getWmiCollection()) {
+         for (WmiCollection coll : m_config.getWmiCollections()) {
              if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
              break;
          }

@@ -112,9 +112,9 @@ public class TcpRrdStrategyTest {
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
                                 StringBuffer values = new StringBuffer();
                                 values.append("{ ");
-                                for (int i = 0; i < message.getValueCount(); i++) {
+                                for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }
-                                    values.append(message.getValue(i));
+                                    values.append(message.getDblValue(i));
                                 }
                                 values.append(" }");
                                 LOG.debug("Message received: { " + 
@@ -241,7 +241,7 @@ public class TcpRrdStrategyTest {
         // RRDs created by the test will have a realistic path
         File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
         RrdDefinition def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
-        m_strategy.createFile(def, null);
+        m_strategy.createFile(def);
 
         return m_fileAnticipator.expecting(rrdDir, rrdFileBase + RRD_EXTENSION);
     }

@@ -294,7 +294,7 @@ public class NodeDaoIT implements InitializingBean {
     public void testDeleteOnOrphanIpInterface() {
 
         @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+		int preCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
@@ -304,7 +304,7 @@ public class NodeDaoIT implements InitializingBean {
         getNodeDao().flush();
 
         @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForInt("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId());
+		int postCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         assertEquals(preCount-1, postCount);
 
@@ -315,14 +315,14 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testDeleteNode() {
         @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForInt("select count(*) from node");
+		int preCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
 
         @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForInt("select count(*) from node");
+		int postCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         assertEquals(preCount-1, postCount);
     }

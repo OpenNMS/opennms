@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.SnmpAssetAdapterConfig;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObj;
-import org.opennms.netmgt.config.snmpAsset.adapter.MibObjs;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -173,11 +172,11 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	}
 
 	private static String fetchSnmpAssetString(final LocationAwareSnmpClient locationAwareSnmpClient, final SnmpAgentConfig agentConfig,
-	        final String location, final MibObjs mibObjs, final String formatString) {
+	        final String location, final List<MibObj> mibObjs, final String formatString) {
 
 	    final List<String> aliases = new ArrayList<String>();
 		final List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
-		for (final MibObj mibobj : mibObjs.getMibObj()) {
+		for (final MibObj mibobj : mibObjs) {
 			aliases.add(mibobj.getAlias());
 			objs.add(SnmpObjId.get(mibobj.getOid()));
 		}

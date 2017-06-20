@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.config.mailtransporttest;
 
-  import java.io.Serializable;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Configure user based authentication.
@@ -41,132 +45,56 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="user-auth")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("mail-transport-test.xsd")
 public class UserAuth implements Serializable {
-    private static final long serialVersionUID = 2159704058514250131L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field m_userName.
-     */
     @XmlAttribute(name="user-name")
     private String m_userName;
 
-    /**
-     * Field m_password.
-     */
     @XmlAttribute(name="password")
     private String m_password;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
     public UserAuth() {
-        super();
     }
 
-
-      //-----------/
-     //- Methods -/
-    //-----------/
 
     public UserAuth(final String username, final String password) {
-        super();
-        m_userName = username;
-        m_password = password;
+        setUserName(username);
+        setPassword(password);
     }
 
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
     @Override()
     public boolean equals(final Object obj) {
         if ( this == obj ) return true;
-        
+
         if (obj instanceof UserAuth) {
-            final UserAuth temp = (UserAuth)obj;
-            if (m_userName != null) {
-                if (temp.m_userName == null) {
-                    return false;
-                } else if (!(m_userName.equals(temp.m_userName))) {
-                    return false;
-                }
-            } else if (temp.m_userName != null) {
-                return false;
-            }
-            if (m_password != null) {
-                if (temp.m_password == null) {
-                    return false;
-                } else if (!(m_password.equals(temp.m_password))) {
-                    return false;
-                }
-            } else if (temp.m_password != null) {
-                return false;
-            }
-            return true;
+            final UserAuth that = (UserAuth)obj;
+            return Objects.equals(this.m_userName, that.m_userName) &&
+                    Objects.equals(this.m_password, that.m_password);
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'password'.
-     * 
-     * @return the value of field 'Password'.
-     */
     public String getPassword() {
         return m_password == null? "opennms" : m_password;
     }
 
-    /**
-     * Returns the value of field 'userName'.
-     * 
-     * @return the value of field 'UserName'.
-     */
     public String getUserName() {
         return m_userName == null? "opennms" : m_userName;
     }
 
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
     public int hashCode() {
-        int result = 17;
-        
-        if (m_userName != null) {
-           result = 37 * result + m_userName.hashCode();
-        }
-        if (m_password != null) {
-           result = 37 * result + m_password.hashCode();
-        }
-        
-        return result;
+        return Objects.hash(m_userName, m_password);
     }
 
-    /**
-     * Sets the value of field 'password'.
-     * 
-     * @param password the value of field 'password'.
-     */
     public void setPassword(final String password) {
-        m_password = password;
+        m_password = ConfigUtils.normalizeString(password);
     }
 
-    /**
-     * Sets the value of field 'userName'.
-     * 
-     * @param userName the value of field 'userName'.
-     */
     public void setUserName(final String userName) {
-        m_userName = userName;
+        m_userName = ConfigUtils.normalizeString(userName);
     }
 
 }

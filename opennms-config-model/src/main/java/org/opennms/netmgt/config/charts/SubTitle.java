@@ -30,21 +30,18 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class SubTitle.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "sub-title")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SubTitle implements java.io.Serializable {
-    private static final long serialVersionUID = -339509538925291315L;
+    private static final long serialVersionUID = 1L;
 
     @XmlAttribute(name = "position")
     private String position;
@@ -85,8 +82,8 @@ public class SubTitle implements java.io.Serializable {
      * 
      * @return the value of field 'HorizontalAlignment'.
      */
-    public String getHorizontalAlignment() {
-        return this.horizontalAlignment;
+    public Optional<String> getHorizontalAlignment() {
+        return Optional.ofNullable(this.horizontalAlignment);
     }
 
     /**
@@ -94,8 +91,8 @@ public class SubTitle implements java.io.Serializable {
      * 
      * @return the value of field 'Position'.
      */
-    public String getPosition() {
-        return this.position;
+    public Optional<String> getPosition() {
+        return Optional.ofNullable(this.position);
     }
 
     /**
@@ -145,6 +142,9 @@ public class SubTitle implements java.io.Serializable {
      * @param title the value of field 'title'.
      */
     public void setTitle(final Title title) {
+        if (title == null) {
+            throw new IllegalArgumentException("'title' is a required element!");
+        }
         this.title = title;
     }
 

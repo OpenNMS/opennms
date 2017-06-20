@@ -38,16 +38,13 @@ package org.opennms.features.vaadin.jmxconfiggenerator.data;
 public class ServiceConfig {
 
     private String serviceName = "anyservice";
-    private boolean jmxmp = false;
-    private String host = "localhost";
-    private String port = "7199";
     private String outFile = "JmxConfig.xml";
     private String user = null;
     private String password = null;
-    private boolean ssl = false;
     private boolean skipDefaultVM = true;
     private boolean skipNonNumber = false;
     private boolean authenticate = false;
+    private String connection = "service:jmx:rmi://localhost:18980";
 
     public boolean isAuthenticate() {
         return authenticate;
@@ -81,36 +78,12 @@ public class ServiceConfig {
         this.password = password;
     }
 
-    public boolean isSsl() {
-        return ssl;
-    }
-
-    public void setSsl(boolean ssl) {
-        this.ssl = ssl;
-    }
-
     public String getUser() {
         return user;
     }
 
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public boolean isJmxmp() {
-        return jmxmp;
-    }
-
-    public void setJmxmp(boolean jmx) {
-        this.jmxmp = jmx;
     }
 
     public String getOutFile() {
@@ -121,19 +94,19 @@ public class ServiceConfig {
         this.outFile = outFile;
     }
 
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
     public String getServiceName() {
         return serviceName;
     }
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getConnection() {
+        return connection;
+    }
+
+    public void setConnection(String connection) {
+        this.connection = connection;
     }
 }

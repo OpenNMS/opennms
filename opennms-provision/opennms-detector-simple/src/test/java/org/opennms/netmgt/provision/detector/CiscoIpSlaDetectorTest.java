@@ -32,6 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
+@JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:/org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
 public class CiscoIpSlaDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.1";
 
@@ -77,7 +78,7 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
         m_detector.setAdminTag("to_detect");
-        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null);
+        m_request = m_detectorFactory.buildRequest(null, InetAddressUtils.addr(TEST_IP_ADDRESS), null, Collections.emptyMap());
     }
 
     @Test(timeout=20000)

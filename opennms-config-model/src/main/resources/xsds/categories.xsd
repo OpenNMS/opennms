@@ -83,7 +83,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="1" name="comment" type="string">
+        <element maxOccurs="1" minOccurs="0" name="comment" type="string">
           <annotation>
             <documentation>A comment describing the category group. This is
             seemingly unused.</documentation>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -118,9 +118,6 @@
     <module>springframework-security</module>
     <module>system-report</module>
     <module>timeseries-evaluate</module>
-
-    <!-- Elasticsearch event-forwarder-->
-    <module>elasticsearch</module>
 
     <!-- Business Service Monitor -->
     <module>bsm</module>

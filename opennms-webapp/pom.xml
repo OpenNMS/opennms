@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>21.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -11,8 +11,8 @@
   <name>OpenNMS Web Application</name>
   <properties>
     <frontendPluginVersion>1.0</frontendPluginVersion>
-    <nodeVersion>v5.8.0</nodeVersion>
-    <npmVersion>3.7.1</npmVersion>
+    <nodeVersion>v6.10.2</nodeVersion>
+    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>

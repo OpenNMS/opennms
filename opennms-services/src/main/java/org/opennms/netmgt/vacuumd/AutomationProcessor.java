@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
@@ -441,8 +442,8 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         String getUei() {
-            if (hasEvent()) {
-                return getAutoEvent().getUei().getContent();
+            if (hasEvent() && getAutoEvent().getUei().getContent().isPresent()) {
+                return getAutoEvent().getUei().getContent().get();
             } else {
                 return null;
             }
@@ -545,12 +546,9 @@ public class AutomationProcessor implements ReadyRunnable {
             m_actionEvent = actionEvent;
             
             if (actionEvent != null) {
-        
-                m_assignments = new ArrayList<EventAssignment>(actionEvent.getAssignmentCount());
-                for(Assignment assignment : actionEvent.getAssignment()) {
-                    m_assignments.add(new EventAssignment(assignment));
-                }
-            
+                m_assignments = actionEvent.getAssignments().parallelStream().map(a -> {
+                    return new EventAssignment(a);
+                }).collect(Collectors.toList());
             } else {
                 m_assignments = null;
             }
@@ -598,7 +596,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
-                    if (m_actionEvent.isAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
+                    if (m_actionEvent.getAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
                         bldr.setParms(EventParameterUtils.decode(triggerResultSet.getString("eventParms")));
                     }
                     buildEvent(bldr, symbols);
@@ -647,10 +645,10 @@ public class AutomationProcessor implements ReadyRunnable {
 	public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
-        m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));
+        m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
         m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
-        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName()));
-        m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent()));
+        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
+        m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
     
     /**

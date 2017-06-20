@@ -29,27 +29,23 @@
 package org.opennms.netmgt.config.charts;
 
 
+import java.util.ArrayList;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class ChartConfiguration.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "chart-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ChartConfiguration implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "bar-chart")
-    private java.util.List<BarChart> barChartList;
+    private java.util.List<BarChart> barChartList = new ArrayList<>();
 
     public ChartConfiguration() {
-        this.barChartList = new java.util.ArrayList<BarChart>();
     }
 
     /**
@@ -256,7 +252,7 @@ public class ChartConfiguration implements java.io.Serializable {
      * @param barChartList the Vector to set.
      */
     public void setBarChartCollection(final java.util.List<BarChart> barChartList) {
-        this.barChartList = barChartList;
+        this.barChartList = barChartList == null? new ArrayList<>() : barChartList;
     }
 
 }

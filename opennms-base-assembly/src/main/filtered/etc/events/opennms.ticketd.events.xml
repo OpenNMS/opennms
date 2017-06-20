@@ -57,11 +57,10 @@
         <event-label>OpenNMS-defined trouble ticket event: A communication error occurred</event-label>
         <descr>
             This event is generated when OpenNMS is unable to retrive, save or update a ticket
-            via the Trouble Ticket API.
+            via the Trouble Ticket API. Communications failed with reason: %parm[reason]%.
         </descr>
         <logmsg dest="logndisplay">
             A communication error occurred between OpenNMS and the Trouble Ticket system.
-            Communications failed with reason: %parm[reason]%.
         </logmsg>
         <severity>Warning</severity>
     </event>

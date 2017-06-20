@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,7 +55,6 @@ import org.opennms.netmgt.ackd.Ackd;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.ackd.Reader;
-import org.opennms.netmgt.config.ackd.Readers;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -111,7 +111,7 @@ public class HypericAckProcessorIT implements InitializingBean {
                 config.setNotifyidMatchExpression("~(?i).*RE:.*Notice #([0-9]+).*");
                 config.setUnackExpression("~(?i)^unAck$");
 
-                Readers readers = new Readers();
+                final List<Reader> readers = new ArrayList<>();
                 {
                     Reader reader = new Reader();
                     reader.setEnabled(false);
@@ -126,7 +126,7 @@ public class HypericAckProcessorIT implements InitializingBean {
                     hypericSchedule.setInterval(60);
                     hypericSchedule.setUnit("s");
 
-                    readers.addReader(reader);
+                    readers.add(reader);
                 }
 
                 {
@@ -149,7 +149,7 @@ public class HypericAckProcessorIT implements InitializingBean {
                     hypericSchedule.setUnit("s");
                     reader.setReaderSchedule(hypericSchedule);
 
-                    readers.addReader(reader);
+                    readers.add(reader);
                 }
 
                 config.setReaders(readers);

@@ -1321,7 +1321,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         for(Vertex vertex : vertices){
             if(searchQuery.matches(vertex.getLabel())) {
-                searchResults.add(new SearchResult(vertex));
+                searchResults.add(new SearchResult(vertex, false, false));
             }
         }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,15 @@
 package org.opennms.netmgt.config.javamail;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The Class End2endMailConfig.
@@ -42,147 +46,64 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="end2end-mail-config", namespace="http://xmlns.opennms.org/xsd/config/javamail-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("javamail-configuration.xsd")
 public class End2endMailConfig implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    //--------------------------/
-    //- Class/Member Variables -/
-    //--------------------------/
+    @XmlAttribute(name="name", required=true)
+    private String m_name;
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 7455703918730317290L;
+    @XmlAttribute(name="sendmail-config-name", required=true)
+    private String m_sendmailConfigName;
 
-    /** The name. */
-    @XmlAttribute(name="name")
-    private String _name;
+    @XmlAttribute(name="readmail-config-name", required=true)
+    private String m_readmailConfigName;
 
-    /** The sendmail configuration name. */
-    @XmlAttribute(name="sendmail-config-name")
-    private String _sendmailConfigName;
-
-    /** The readmail configuration name. */
-    @XmlAttribute(name="readmail-config-name")
-    private String _readmailConfigName;
-
-    //----------------/
-    //- Constructors -/
-    //----------------/
-
-    /**
-     * Instantiates a new end2end mail configuration.
-     */
     public End2endMailConfig() {
-        super();
     }
 
-    //-----------/
-    //- Methods -/
-    //-----------/
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override()
-    public boolean equals(final Object obj) {
-        if ( this == obj )
-            return true;
-        if (obj instanceof End2endMailConfig) {
-            End2endMailConfig temp = (End2endMailConfig)obj;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._sendmailConfigName != null) {
-                if (temp._sendmailConfigName == null) return false;
-                else if (!(this._sendmailConfigName.equals(temp._sendmailConfigName))) 
-                    return false;
-            }
-            else if (temp._sendmailConfigName != null)
-                return false;
-            if (this._readmailConfigName != null) {
-                if (temp._readmailConfigName == null) return false;
-                else if (!(this._readmailConfigName.equals(temp._readmailConfigName))) 
-                    return false;
-            }
-            else if (temp._readmailConfigName != null)
-                return false;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
     public String getName() {
-        return this._name;
+        return m_name;
     }
 
-    /**
-     * Returns the value of field 'readmailConfigName'.
-     * 
-     * @return the value of field 'ReadmailConfigName'.
-     */
-    public String getReadmailConfigName() {
-        return this._readmailConfigName;
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
     }
 
-    /**
-     * Returns the value of field 'sendmailConfigName'.
-     * 
-     * @return the value of field 'SendmailConfigName'.
-     */
     public String getSendmailConfigName() {
-        return this._sendmailConfigName;
+        return m_sendmailConfigName;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    public void setSendmailConfigName(final String sendmailConfigName) {
+        m_sendmailConfigName = ConfigUtils.assertNotEmpty(sendmailConfigName, "sendmail-config-name");
+    }
+
+    public String getReadmailConfigName() {
+        return m_readmailConfigName;
+    }
+
+    public void setReadmailConfigName(final String readmailConfigName) {
+        m_readmailConfigName = ConfigUtils.assertNotEmpty(readmailConfigName, "readmail-config-name");
+    }
+
     @Override()
     public int hashCode() {
-        int result = 17;
-        if (_name != null) {
-            result = 37 * result + _name.hashCode();
-        }
-        if (_sendmailConfigName != null) {
-            result = 37 * result + _sendmailConfigName.hashCode();
-        }
-        if (_readmailConfigName != null) {
-            result = 37 * result + _readmailConfigName.hashCode();
-        }
-        return result;
+        return Objects.hash(m_name, m_sendmailConfigName, m_readmailConfigName);
     }
 
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this._name = name;
-    }
+    @Override()
+    public boolean equals(final Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
 
-    /**
-     * Sets the value of field 'readmailConfigName'.
-     * 
-     * @param readmailConfigName the value of field 'readmailConfigName'.
-     */
-    public void setReadmailConfigName(final String readmailConfigName) {
-        this._readmailConfigName = readmailConfigName;
-    }
-
-    /**
-     * Sets the value of field 'sendmailConfigName'.
-     * 
-     * @param sendmailConfigName the value of field 'sendmailConfigName'.
-     */
-    public void setSendmailConfigName(final String sendmailConfigName) {
-        this._sendmailConfigName = sendmailConfigName;
+        if (obj instanceof End2endMailConfig) {
+            final End2endMailConfig that = (End2endMailConfig)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_sendmailConfigName, that.m_sendmailConfigName)
+                    && Objects.equals(this.m_readmailConfigName, that.m_readmailConfigName);
+        }
+        return false;
     }
 
 }

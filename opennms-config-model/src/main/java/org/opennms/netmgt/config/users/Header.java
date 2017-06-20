@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -98,9 +98,9 @@ public class Header implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-            m_rev, 
-            m_created, 
-            m_mstation);
+                            m_rev, 
+                            m_created, 
+                            m_mstation);
     }
 
     @Override
@@ -108,12 +108,12 @@ public class Header implements Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Header) {
             final Header temp = (Header)obj;
             return Objects.equals(temp.m_rev, m_rev)
-                && Objects.equals(temp.m_created, m_created)
-                && Objects.equals(temp.m_mstation, m_mstation);
+                    && Objects.equals(temp.m_created, m_created)
+                    && Objects.equals(temp.m_mstation, m_mstation);
         }
         return false;
     }

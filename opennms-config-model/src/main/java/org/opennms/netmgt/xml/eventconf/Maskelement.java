@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,10 +35,8 @@ import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueStartsWithMatc
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,17 +45,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The mask element
  */
 @XmlRootElement(name="maskelement")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={"m_name", "m_values"})
 public class Maskelement implements Serializable {
-	private static final long serialVersionUID = -3932312038903008806L;
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final long serialVersionUID = 2L;
 
     /**
      * The UEI xml tag
@@ -114,25 +112,14 @@ public class Maskelement implements Serializable {
      */
     public static final String TAG_SNMP_COMMUNITY = "community";
 
-    // @NotNull
-	@XmlElement(name="mename", required=true)
+    @XmlElement(name="mename", required=true)
     private String m_name;
 
-	// @NotNull
-	// @Size(min=1)
-	@XmlElement(name="mevalue", required=true)
+    @XmlElement(name="mevalue", required=true)
     private List<String> m_values = new ArrayList<String>();
 
-    public void addMevalue(final String value) throws IndexOutOfBoundsException {
+    public void addMevalue(final String value) {
         m_values.add(value.intern());
-    }
-
-    public void addMevalue(final int index, final String value) throws IndexOutOfBoundsException {
-        m_values.add(index, value.intern());
-    }
-
-    public Enumeration<String> enumerateMevalue() {
-        return Collections.enumeration(m_values);
     }
 
     /**
@@ -163,128 +150,66 @@ public class Maskelement implements Serializable {
         return m_name;
     }
 
-    /**
-     * The mask element value. A case-sensitive, exact match is performed.
-     * If the mask value has a "%" as the last character, it will match zero
-     * or more characters at the end of the string being matched.
-     */
-    public String getMevalue(final int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_values.size()) {
-            throw new IndexOutOfBoundsException("getMevalue: Index value '" + index + "' not in range [0.." + (m_values.size() - 1) + "]");
-        }
-        return m_values.get(index);
-    }
-
-    public String[] getMevalue() {
-        return m_values.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public List<String> getMevalueCollection() {
+    public List<String> getMevalues() {
         return m_values;
-    }
-
-    public int getMevalueCount() {
-        return m_values.size();
-    }
-
-    public Iterator<String> iterateMevalue() {
-        return m_values.iterator();
-    }
-
-    public void removeAllMevalue() {
-        m_values.clear();
     }
 
     public boolean removeMevalue(final String value) {
         return m_values.remove(value);
     }
 
-    public String removeMevalueAt(final int index) {
-        return m_values.remove(index);
-    }
-
     public void setMename(final String mename) {
-        m_name = mename.intern();
+        m_name = ConfigUtils.assertNotEmpty(mename, "mename").intern();
     }
 
-    public void setMevalue(final int index, final String value) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= m_values.size()) {
-            throw new IndexOutOfBoundsException("setMevalue: Index value '" + index + "' not in range [0.." + (m_values.size() - 1) + "]");
-        }
-        m_values.set(index, value.intern());
-    }
-
-    public void setMevalue(final String[] values) {
-        m_values.clear();
-        for (final String value : values) {
-        	m_values.add(value.intern());
-        }
-    }
-
-    public void setMevalue(final List<String> values) {
+    public void setMevalues(final List<String> values) {
+        if (values == m_values) return;
         m_values.clear();
         for (final String value : values) {
             m_values.add(value.intern());
         }
     }
 
-    public void setMevalueCollection(final List<String> values) {
-        m_values.clear();
-        for (final String value : values) {
-            m_values.add(value.intern());
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, m_values);
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-		result = prime * result + ((m_values == null) ? 0 : m_values.hashCode());
-		return result;
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Maskelement) {
+            final Maskelement that = (Maskelement) obj;
+            return Objects.equals(this.m_name, that.m_name) &&
+                    Objects.equals(this.m_values, that.m_values);
+        }
+        return false;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (!(obj instanceof Maskelement)) return false;
-		final Maskelement other = (Maskelement) obj;
-		if (m_name == null) {
-			if (other.m_name != null) return false;
-		} else if (!m_name.equals(other.m_name)) {
-			return false;
-		}
-		if (m_values == null) {
-			if (other.m_values != null) return false;
-		} else if (!m_values.equals(other.m_values)) {
-			return false;
-		}
-		return true;
-	}
-	
-	
 
-	public EventMatcher constructMatcher() {
-		List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
-		for(String value : m_values) {
-			if (value == null) continue;
-			if (value.startsWith("~")) {
-				valueMatchers.add(valueMatchesRegexMatcher(field(m_name), value));
-			} else if (value.endsWith("%")) {
-				valueMatchers.add(valueStartsWithMatcher(field(m_name), value));
-			} else {
-				valueMatchers.add(valueEqualsMatcher(field(m_name), value));
-			}
-		}
-		
-		if (valueMatchers.size() == 1) {
-			return valueMatchers.get(0);
-		} else {
-			EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
-			return EventMatchers.or(matchers);
-		}
 
-	}	
+    public EventMatcher constructMatcher() {
+        List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
+        for(String value : m_values) {
+            if (value == null) continue;
+            if (value.startsWith("~")) {
+                valueMatchers.add(valueMatchesRegexMatcher(field(m_name), value));
+            } else if (value.endsWith("%")) {
+                valueMatchers.add(valueStartsWithMatcher(field(m_name), value));
+            } else {
+                valueMatchers.add(valueEqualsMatcher(field(m_name), value));
+            }
+        }
+
+        if (valueMatchers.size() == 1) {
+            return valueMatchers.get(0);
+        } else {
+            EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
+            return EventMatchers.or(matchers);
+        }
+
+    }	
 
 }

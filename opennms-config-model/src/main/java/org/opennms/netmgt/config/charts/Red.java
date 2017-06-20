@@ -30,20 +30,16 @@ package org.opennms.netmgt.config.charts;
 
 
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Red.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "red")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Red implements java.io.Serializable {
-    private static final long serialVersionUID = -7603325061314787072L;
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(name = "rgb-color", required = true)
     private Integer rgbColor;
@@ -113,6 +109,9 @@ public class Red implements java.io.Serializable {
      * @param rgbColor the value of field 'rgbColor'.
      */
     public void setRgbColor(final Integer rgbColor) {
+        if (rgbColor == null) {
+            throw new IllegalArgumentException("'rgb-color' is a required element!");
+        }
         this.rgbColor = rgbColor;
     }
 

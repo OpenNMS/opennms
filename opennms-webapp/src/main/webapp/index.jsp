@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
-	<jsp:param name="usegeomap" value="true" />
+	<jsp:param name="useionicons" value="true" />
 </jsp:include>
 
 <div class="row">
@@ -84,7 +84,9 @@
 
 		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>
-		<jsp:include page="/includes/grafana-box.jsp" flush="false" />
+		<jsp:include page="/includes/grafana-box.jsp" flush="false">
+                    <jsp:param name="useLimit" value="true" />
+                </jsp:include>
 		<% } %>
 
 		<!-- Quick Search box -->

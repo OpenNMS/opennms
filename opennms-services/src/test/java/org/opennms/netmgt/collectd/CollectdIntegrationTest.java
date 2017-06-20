@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
@@ -40,6 +43,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -72,16 +80,14 @@ import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import junit.framework.TestCase;
-
 /**
  * CollectdIntegrationTest
  *
  * @author brozow
  */
-public class CollectdIntegrationTest extends TestCase {
+public class CollectdIntegrationTest {
     
-    public static final String TEST_KEY_PARM_NAME = "key";
+    protected static final String TEST_KEY_PARM_NAME = "key";
 
     private static Map<String, CollectdIntegrationTest> m_tests = new HashMap<String, CollectdIntegrationTest>();
 
@@ -99,8 +105,11 @@ public class CollectdIntegrationTest extends TestCase {
 
     private FilterDao m_filterDao;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Rule
+    public TestName m_testName = new TestName();
+
+    @Before
+    public void setUp() throws Exception {
 
         m_eventIpcManager = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
@@ -125,9 +134,9 @@ public class CollectdIntegrationTest extends TestCase {
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(resource.getInputStream()));
 
         // set up test using a string key
-        m_key = getName()+System.nanoTime();
+        m_key = m_testName.getMethodName()+System.nanoTime();
         m_tests.put(m_key, this);
-        
+
         //create a collector definition
         Collector collector = new Collector();
         collector.setService("SNMP");
@@ -208,11 +217,12 @@ public class CollectdIntegrationTest extends TestCase {
         m_serviceCollector = collector;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         m_tests.remove(m_key);
     }
-    
+
+    @Test
     public void testIt() throws InterruptedException {
 
         m_collectd.start();
@@ -259,4 +269,5 @@ public class CollectdIntegrationTest extends TestCase {
         EasyMock.expect(m_collectdConfiguration.getPackages()).andReturn(Collections.singletonList(pkg));
         EasyMock.expect(m_collectdConfigFactory.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
     }
+
 }

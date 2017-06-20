@@ -75,13 +75,10 @@ public class SnmpAssetAdapterConfigurationTest extends XmlTestNoCastor<SnmpAsset
         field.setFormatString("OS Type: ${osType}");
         pkg.addAssetField(field);
 
-        MibObjs objs = new MibObjs();
-        field.setMibObjs(objs);
-
         MibObj obj = new MibObj();
         obj.setOid(".1.3.6.1.4.1.33347.255.1");
         obj.setAlias("osType");
-        objs.addMibObj(obj);
+        field.addMibObj(obj);
 
         return config;
     }

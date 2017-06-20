@@ -6,8 +6,8 @@
     xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
 
@@ -70,7 +70,7 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
     <bean id="eventConfDao" class="org.opennms.netmgt.dao.mock.MockEventConfDao">
-        <property name="resource" value="classpath:minimal-eventconf.xml" />
+        <property name="resource" value="classpath:/minimal-eventconf.xml" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 

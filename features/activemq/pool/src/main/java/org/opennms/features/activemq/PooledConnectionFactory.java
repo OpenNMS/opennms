@@ -30,6 +30,7 @@ package org.opennms.features.activemq;
 
 import javax.jms.Connection;
 
+import org.apache.activemq.jms.pool.ConnectionPool;
 import org.opennms.core.logging.Logging;
 
 /**
@@ -45,7 +46,7 @@ public class PooledConnectionFactory extends org.apache.activemq.pool.PooledConn
         // The threads that request and use connections from this pool
         // are related to the IPC modules, so we set the prefix accordingly
         Logging.putPrefix("ipc");
-        return new ConnectionPool(connection);
+        return super.createConnectionPool(connection);
     }
 
 }

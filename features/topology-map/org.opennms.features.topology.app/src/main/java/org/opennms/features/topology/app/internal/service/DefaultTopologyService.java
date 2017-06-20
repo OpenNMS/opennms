@@ -40,6 +40,7 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyService;
+import org.opennms.features.topology.api.support.ServiceLocator;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;

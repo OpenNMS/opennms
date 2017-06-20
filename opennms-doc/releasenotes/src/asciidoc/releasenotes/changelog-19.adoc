@@ -1,11 +1,128 @@
 [[release-19-changelog]]
 === Changelog
 
+[[releasenotes-changelog-19.1.0]]
+==== Release 19.1.0
+
+Release 19.1.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and a few new features.
+For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
+
+The codename for 19.1.0 is _link:https://en.wikipedia.org/wiki/Octopush[Octopush]_.
+
+===== Bug
+
+* HTTPS modules fail because of algorithm constraints (Issue http://issues.opennms.org/browse/NMS-6500[NMS-6500])
+* None of the out-of-the-box syslogd regex ueiMatch statements work (Issue http://issues.opennms.org/browse/NMS-6539[NMS-6539])
+* CustomSyslogParser fails to parse process name when brackets appear in the message text (Issue http://issues.opennms.org/browse/NMS-6730[NMS-6730])
+* Geo-Maps running on a server without internet connection breaks the UI for valid nodes. (Issue http://issues.opennms.org/browse/NMS-7148[NMS-7148])
+* scrollbars displayed for RrdDashlet title box (Issue http://issues.opennms.org/browse/NMS-7562[NMS-7562])
+* Refresh loop possible in setOffset() -> refresh() ->setOffset() in onmsList code (Issue http://issues.opennms.org/browse/NMS-7829[NMS-7829])
+* Delete a service from the WebUI is not working (Issue http://issues.opennms.org/browse/NMS-8135[NMS-8135])
+* The Topology Map does not support persisting collapsible search criteria (Issue http://issues.opennms.org/browse/NMS-8142[NMS-8142])
+* Renaming a root business services does not work anymore (Issue http://issues.opennms.org/browse/NMS-8370[NMS-8370])
+* Simulation mode is ended when clicking on "Set as focal point" (Issue http://issues.opennms.org/browse/NMS-8542[NMS-8542])
+* opennms-ackd shouldn't load component-service.xml Spring contexts (Issue http://issues.opennms.org/browse/NMS-8610[NMS-8610])
+* Null ospfrouterid in NodeDiscoveryOspf (Issue http://issues.opennms.org/browse/NMS-8667[NMS-8667])
+* Monitoring location just integer as longitude and latitude (Issue http://issues.opennms.org/browse/NMS-8713[NMS-8713])
+* Deleting monitoring locations does not refresh the view (Issue http://issues.opennms.org/browse/NMS-8715[NMS-8715])
+* Incoming syslog/trap flood can overwhelm new handler code (Issue http://issues.opennms.org/browse/NMS-8777[NMS-8777])
+* Modify the JMX Connection Factory to allow fully customized URLs. (Issue https://issues.opennms.org/browse/NMS-8801[NMS-8801])
+* DB installer tries to class-load every file under OPENNMS_HOME as a JAR (Issue http://issues.opennms.org/browse/NMS-8860[NMS-8860])
+* NPE in CdpLink.toString() (Issue http://issues.opennms.org/browse/NMS-8897[NMS-8897])
+* Near Real-Time Graphing unable to graph Cisco BDI interfaces (Issue http://issues.opennms.org/browse/NMS-8908[NMS-8908])
+* Enlinkd fails to discovery Bridge Topology (Issue http://issues.opennms.org/browse/NMS-8973[NMS-8973])
+* Monitoring Location parameter not saved using mouse (Issue http://issues.opennms.org/browse/NMS-9028[NMS-9028])
+* opennms.conf can break the snmp-request command (Issue http://issues.opennms.org/browse/NMS-9068[NMS-9068])
+* Standalone HTTPS with Jetty doesn't work with certificate alias (Issue http://issues.opennms.org/browse/NMS-9084[NMS-9084])
+* Collection timing enhancements (Issue http://issues.opennms.org/browse/NMS-9090[NMS-9090])
+* java.util.Date uses lots of heap space after toString() is called (Issue http://issues.opennms.org/browse/NMS-9091[NMS-9091])
+* The poller-test command doesn't work due to Spring initialization conflicts (Issue http://issues.opennms.org/browse/NMS-9095[NMS-9095])
+* The ReST API is not location aware (Issue http://issues.opennms.org/browse/NMS-9110[NMS-9110])
+* Selection of non-disk RRD strategies (Issue http://issues.opennms.org/browse/NMS-9120[NMS-9120])
+* It is possible to perform alarms/notifications actions through the Acks ReST end point without permissions (Issue http://issues.opennms.org/browse/NMS-9140[NMS-9140])
+* Blank Location vs. Default Location (Issue http://issues.opennms.org/browse/NMS-9146[NMS-9146])
+* Enhanced Linkd NPE: vlanmap is null (Issue http://issues.opennms.org/browse/NMS-9156[NMS-9156])
+* minion:ping command gives 403 errors  (Issue http://issues.opennms.org/browse/NMS-9157[NMS-9157])
+* SNMP client code can get stuck in infinite retry loops (Issue http://issues.opennms.org/browse/NMS-9164[NMS-9164])
+* log entry in uncategorized.log (Issue http://issues.opennms.org/browse/NMS-9165[NMS-9165])
+* incorrect permissions on opennms.service (Issue http://issues.opennms.org/browse/NMS-9166[NMS-9166])
+* Monitoring location creation dialog fails to validate required fields (Issue http://issues.opennms.org/browse/NMS-9167[NMS-9167])
+* Fix the execution of Drools rules when using streaming (CEP, Temporal Reasoning) (Issue http://issues.opennms.org/browse/NMS-9172[NMS-9172])
+* Drools examples fails to load with exception (Issue http://issues.opennms.org/browse/NMS-9186[NMS-9186])
+* CustomSyslogParser adds misleading blank process values to events (Issue http://issues.opennms.org/browse/NMS-9188[NMS-9188])
+* OpenNMS Loses Events if Elasticsearch is down (Issue http://issues.opennms.org/browse/NMS-9197[NMS-9197])
+* SyslogParser should not assume UTC timestamps (Issue http://issues.opennms.org/browse/NMS-9201[NMS-9201])
+* ActiveMQ dead letter queue fills up all the available storage (Issue http://issues.opennms.org/browse/NMS-9203[NMS-9203])
+* New resource types are not available in the Web UI until it is restarted (Issue http://issues.opennms.org/browse/NMS-9205[NMS-9205])
+* JMS Northbounder ignores first-occurrance-only and sending as object message doesn't work (Issue http://issues.opennms.org/browse/NMS-9215[NMS-9215])
+* OSPF Router Id not properly updated (Issue http://issues.opennms.org/browse/NMS-9218[NMS-9218])
+* DNS Adapter on Delete Node does not delete DNS record (Issue http://issues.opennms.org/browse/NMS-9219[NMS-9219])
+* Problems associated with SNMP4J affects OpenNMS performance (contention issues) (Issue http://issues.opennms.org/browse/NMS-9223[NMS-9223])
+* OpenNMS False nodeLostService events for Minion-Heartbeat (Issue http://issues.opennms.org/browse/NMS-9225[NMS-9225])
+* Randomize ES1 cluster names so tests don't join each others' clusters (Issue http://issues.opennms.org/browse/NMS-9230[NMS-9230])
+* Possible thread leak in SnmpUtils (Issue http://issues.opennms.org/browse/NMS-9233[NMS-9233])
+* SNMP timeouts generate Unexpected exception warnings (Issue http://issues.opennms.org/browse/NMS-9234[NMS-9234])
+* DnsResolutionMonitor should not use cache for lookups (Issue http://issues.opennms.org/browse/NMS-9238[NMS-9238])
+* Pollerd takes too much time scheduling polling when OpenNMS starts (Issue http://issues.opennms.org/browse/NMS-9247[NMS-9247])
+* Make the location field on the requisition UI to be a "select" instead of an "input" field. (Issue http://issues.opennms.org/browse/NMS-9248[NMS-9248])
+* Requisition UI breaks when percentage sign is used inside Foreign ID input field (Issue http://issues.opennms.org/browse/NMS-9269[NMS-9269])
+* Exception in OspfNodeDiscovery (Issue http://issues.opennms.org/browse/NMS-9272[NMS-9272])
+* NodeTopologyBridge fails on Cisco Switch ME36/ME34/ME35  (Issue http://issues.opennms.org/browse/NMS-9274[NMS-9274])
+* Make TCP output queue parameters configurable (Issue http://issues.opennms.org/browse/NMS-9282[NMS-9282])
+* datachoices bundle missing quartz dependency (Issue http://issues.opennms.org/browse/NMS-9283[NMS-9283])
+* GraphML JAXB classes are missing package-info.java (Issue http://issues.opennms.org/browse/NMS-9286[NMS-9286])
+* syslogd logs "No hideMessage configured" though it is really not needed (Issue http://issues.opennms.org/browse/NMS-9289[NMS-9289])
+* XmlHandler doesn't always fail on unmarshaling errors (Issue http://issues.opennms.org/browse/NMS-9323[NMS-9323])
+
+===== Configuration
+
+* Remove "delete" flag from default downtime model (Issue http://issues.opennms.org/browse/NMS-9257[NMS-9257])
+
+===== Enhancement
+
+* allow multiple syslogd configuration elements to support multiple syslogd listeners and forwarding-regexp patterns (Issue http://issues.opennms.org/browse/NMS-6330[NMS-6330])
+* Update Quartz to current version (Issue http://issues.opennms.org/browse/NMS-6584[NMS-6584])
+* Use JAXB in Enlinkd config factory (Issue http://issues.opennms.org/browse/NMS-7932[NMS-7932])
+* Simple usability improvement to the provisioning UI (Issue http://issues.opennms.org/browse/NMS-8601[NMS-8601])
+* Write Syslog Parser to handle all message types (Cisco, syslog-ng, etc) (Issue http://issues.opennms.org/browse/NMS-8725[NMS-8725])
+* Create unit test to profile Syslogd's ConvertToEvent performance (Issue http://issues.opennms.org/browse/NMS-8726[NMS-8726])
+* Save syslog hostname in an event parameter (Issue http://issues.opennms.org/browse/NMS-8928[NMS-8928])
+* Supply R in our YUM repository (Issue http://issues.opennms.org/browse/NMS-8960[NMS-8960])
+* Tooltips for heatmap rectangles (Issue http://issues.opennms.org/browse/NMS-8961[NMS-8961])
+* Let the XmlCollector use parameters defined in the service definition in xml-source url (Issue http://issues.opennms.org/browse/NMS-9072[NMS-9072])
+* VMware collector support for units and value modifier (Issue http://issues.opennms.org/browse/NMS-9092[NMS-9092])
+* SNMP data collection definitions for Cisco ASA5585-SSP-60 devices (Issue http://issues.opennms.org/browse/NMS-9094[NMS-9094])
+* Upgrade to Camel 2.14.4 (Issue http://issues.opennms.org/browse/NMS-9113[NMS-9113])
+* Fix RPC integration tests (Issue http://issues.opennms.org/browse/NMS-9116[NMS-9116])
+* no iplike for postgresql 9.6 on debian (Issue http://issues.opennms.org/browse/NMS-9118[NMS-9118])
+* Persist string attributes over the TCP stream (Issue http://issues.opennms.org/browse/NMS-9126[NMS-9126])
+* Migrate remaining XSDs from Castor to JAXB (Issue http://issues.opennms.org/browse/NMS-9134[NMS-9134])
+* Cleanup and remove Castor related dependencies (Issue http://issues.opennms.org/browse/NMS-9135[NMS-9135])
+* Persist Drools working memory to disk when stopping and starting OpenNMS (Issue http://issues.opennms.org/browse/NMS-9143[NMS-9143])
+* Add JMX instrumentation for the Drools Correlator to understand the the working memory of each rule-set (a.k.a. engine) (Issue http://issues.opennms.org/browse/NMS-9145[NMS-9145])
+* Elasticsearch alarms integration improvements (Issue http://issues.opennms.org/browse/NMS-9159[NMS-9159])
+* Expose task queue size for ExecutorService runners. (Issue http://issues.opennms.org/browse/NMS-9161[NMS-9161])
+* Upgrade snmp4j to 2.5.5 (Issue http://issues.opennms.org/browse/NMS-9162[NMS-9162])
+* Enhance to MockSnmpAgent to support returning arbitrary SNMP error codes (Issue http://issues.opennms.org/browse/NMS-9163[NMS-9163])
+* Add Checkstyle to the build (Issue http://issues.opennms.org/browse/NMS-9174[NMS-9174])
+* interface.jsp could display the list of services for each polling package (Issue http://issues.opennms.org/browse/NMS-9206[NMS-9206])
+* es-rest: Allow a comma-separated list of Elasticsearch URIs (Issue http://issues.opennms.org/browse/NMS-9210[NMS-9210])
+* Set domain level for DNS adapter (Issue http://issues.opennms.org/browse/NMS-9222[NMS-9222])
+* Ops Board Grafana Dashlet (Issue http://issues.opennms.org/browse/NMS-9224[NMS-9224])
+* Allow for choosing ifDescr over ifName for interface directory name (Issue http://issues.opennms.org/browse/NMS-9240[NMS-9240])
+* Improve handling of counter wraps/reset when using Newts (Issue http://issues.opennms.org/browse/NMS-9252[NMS-9252])
+* Upgrade Spring from 4.0 to 4.1 (Issue http://issues.opennms.org/browse/NMS-9259[NMS-9259])
+* Upgrade Drools to 6.5.0 (Issue http://issues.opennms.org/browse/NMS-9279[NMS-9279])
+* Redefine the start ordering of the OpenNMS daemons during bootstrap. (Issue http://issues.opennms.org/browse/NMS-9280[NMS-9280])
+* Placeholder for port number in xml-datacollection-config.xml (Issue http://issues.opennms.org/browse/NMS-9285[NMS-9285])
+* Upgrade Apache CXF to 3.1.9 (Issue http://issues.opennms.org/browse/NMS-9296[NMS-9296])
+
+
 [[releasenotes-changelog-19.0.1]]
 ==== Release 19.0.1
 
 Release 19.0.1 is the latest stable release of OpenNMS.  It contains a number of important fixes for folks who have hit upgrade issues, and a few other small bug fixes.
-For a high-level overview of what's changed in OpenNMS 19, see _link:http://docs.opennms.org/opennms/releases/19.0.1/releasenotes/#releasenotes-19[What's New in OpenNMS 19]_.
+For a high-level overview of what's changed in OpenNMS 19, see <<whatsnew-19.adoc#releasenotes-19,What's New in OpenNMS 19>>.
 
 The codename for 19.0.1 is _link:https://en.wikipedia.org/wiki/Ferret-legging[Ferret-Legging]_.
 

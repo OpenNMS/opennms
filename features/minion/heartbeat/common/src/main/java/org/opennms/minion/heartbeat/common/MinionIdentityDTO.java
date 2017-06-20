@@ -28,6 +28,7 @@
 
 package org.opennms.minion.heartbeat.common;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,6 +47,8 @@ public class MinionIdentityDTO implements Message {
     private String id;
     @XmlElement(name = "location")
     private String location;
+    @XmlElement(name = "timestamp")
+    private Date timestamp;
 
     public MinionIdentityDTO() {
 
@@ -54,6 +57,7 @@ public class MinionIdentityDTO implements Message {
     public MinionIdentityDTO(MinionIdentity minion) {
         id = minion.getId();
         location = minion.getLocation();
+        timestamp = new Date();
     }
 
     public String getId() {
@@ -72,9 +76,17 @@ public class MinionIdentityDTO implements Message {
         this.location = location;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, location);
+        return Objects.hash(id, location, timestamp);
     }
 
     @Override
@@ -87,11 +99,12 @@ public class MinionIdentityDTO implements Message {
             return false;
         MinionIdentityDTO other = (MinionIdentityDTO) obj;
         return Objects.equals(this.id, other.id)
-                && Objects.equals(this.location, other.location);
+                && Objects.equals(this.location, other.location)
+                && Objects.equals(this.timestamp, other.timestamp);
     }
 
     @Override
     public String toString() {
-        return String.format("MinionIdentityDTO[id=%s, location=%s]", id, location);
+        return String.format("MinionIdentityDTO[id=%s, location=%s, timestamp=%s]", id, location, timestamp);
     }
 }

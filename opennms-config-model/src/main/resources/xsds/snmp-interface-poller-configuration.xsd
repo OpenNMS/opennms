@@ -55,33 +55,21 @@
         </annotation>
       </attribute>
 
-      <attribute default="true" name="suppressAdminDownEvent" use="optional">
+      <attribute type="boolean" default="true" name="suppressAdminDownEvent" use="optional">
         <annotation>
           <documentation>Flag which indicates to suppress Admin Status events at all.
           This is deprecated and will be ignored in the code!
           </documentation>
         </annotation>
- 
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(true|false)"/>
-          </restriction>
-        </simpleType>
       </attribute>    
 
-      <attribute default="false" name="useCriteriaFilters" use="optional">
+      <attribute type="boolean" default="false" name="useCriteriaFilters" use="optional">
         <annotation>
           <documentation>Flag which indicates if the filters defined on packages and interface
           criterias must be used to select the SNMP interfaces to be tracked by the poller
           instead of do this selection through requisition policies.
           </documentation>
         </annotation>
- 
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(true|false)"/>
-          </restriction>
-        </simpleType>
       </attribute>    
     </complexType>
   </element>
@@ -268,17 +256,11 @@
         </annotation>
       </attribute>
 
-      <attribute name="user-defined" use="optional" default="false">
+      <attribute type="boolean" name="user-defined" use="optional" default="false">
         <annotation>
           <documentation>Specifies if the service is user defined. Used
           specifically for UI purposes.</documentation>
         </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(true|false)"/>
-          </restriction>
-        </simpleType>
       </attribute>
       
       

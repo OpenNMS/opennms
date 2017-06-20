@@ -80,10 +80,10 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
     public MaskElementField(String caption) {
         setCaption(caption);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"mename", "mevalueCollection"});
+        table.setVisibleColumns(new Object[]{"mename", "mevalues"});
         table.setColumnHeader("mename", "Element Name");
-        table.setColumnHeader("mevalueCollection", "Element Values");
-        table.setColumnExpandRatio("mevalueCollection", 1);
+        table.setColumnHeader("mevalues", "Element Values");
+        table.setColumnExpandRatio("mevalues", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
@@ -111,7 +111,7 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
                     field.addItem(Maskelement.TAG_SNMP_COMMUNITY);
                     return field;
                 }
-                if (propertyId.equals("mevalueCollection")) {
+                if (propertyId.equals("mevalues")) {
                     final TextField field = new TextField();
                     field.setConverter(new CsvListConverter());
                     return field;

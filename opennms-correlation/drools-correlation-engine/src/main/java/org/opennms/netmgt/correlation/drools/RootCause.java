@@ -37,6 +37,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class RootCause extends Cause {
+    private static final long serialVersionUID = 4827846707785757651L;
 
     /**
      * <p>Constructor for RootCause.</p>

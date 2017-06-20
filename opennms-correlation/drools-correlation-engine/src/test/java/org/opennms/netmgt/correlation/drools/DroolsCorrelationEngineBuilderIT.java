@@ -50,14 +50,14 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:META-INF/opennms/applicationContext-soa.xml",
-        "classpath:META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:META-INF/opennms/applicationContext-correlator.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-correlator.xml",
         "classpath*:META-INF/opennms/correlation-engine.xml",
-        "classpath:test-context.xml"
+        "classpath:/test-context.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={"org.opennms.activemq.broker.disable=true"})
 @JUnitTemporaryDatabase
@@ -77,7 +77,7 @@ public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
     public void testIt() throws Exception {
         Collection<CorrelationEngine> engines = m_mockCorrelator.getEngines();
         assertNotNull(engines);
-        assertEquals(5, m_mockCorrelator.getEngines().size());
+        assertEquals(6, m_mockCorrelator.getEngines().size());
         assertTrue(engines.iterator().next() instanceof DroolsCorrelationEngine);
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");

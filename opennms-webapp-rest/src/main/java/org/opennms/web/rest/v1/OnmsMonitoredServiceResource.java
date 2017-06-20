@@ -277,10 +277,10 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             OnmsMonitoredService service = intf.getMonitoredServiceByServiceType(serviceName);
             if (service == null) throw getException(Status.CONFLICT, "Monitored Service {} was not found on IP Interface {} and node {}.", serviceName, ipAddress, nodeCriteria);
             LOG.debug("deleteService: deleting service {} from node {}", serviceName, nodeCriteria);
-            intf.getMonitoredServices().remove(service);
-            m_ipInterfaceDao.saveOrUpdate(intf);
-            
-            sendEvent(EventConstants.SERVICE_DELETED_EVENT_UEI, service);
+
+            Event e = EventUtils.createDeleteServiceEvent("OpenNMS.REST", node.getId(), ipAddress, serviceName, -1L);
+            sendEvent(e);
+
             return Response.noContent().build();
         } finally {
             writeUnlock();

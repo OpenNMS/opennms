@@ -19,8 +19,8 @@ ssh -p 8101 admin@localhost
 ----
 To install or remove a feature in _Karaf_ use
 ----
-karaf@root> features:install <feature name>
-karaf@root> features:uninstall <feature name>
+karaf@root> feature:install <feature name>
+karaf@root> feature:uninstall <feature name>
 ----
 You can see which plugins are installed using
 ----

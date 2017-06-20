@@ -120,9 +120,11 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
                 // Make sure they don't match the .meta files though
                 m_fileAnticipator.expectingFileWithPrefix(m_snmpRrdDirectory, rrdFile, ".meta");
 
-                //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
-                //this .meta files are expected
-                m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
+                if (config.anticipateMetaFiles()) {
+                    //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
+                    //this .meta files are expected
+                    m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
+                }
             }
         }
 

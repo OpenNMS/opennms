@@ -73,7 +73,7 @@
       </documentation>
     </annotation>
     <restriction base="string" >
-      <pattern value="(dns|file|http|https|vmware)://.*">
+      <pattern value="(dns|file|http|https|vmware|requisition)://.*">
       </pattern>
     </restriction>
   </simpleType>

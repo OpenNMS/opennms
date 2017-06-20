@@ -55,7 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
-        "classpath:org/opennms/web/svclayer/applicationContext-svclayer.xml",
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml"
 })
 @JUnitConfigurationEnvironment

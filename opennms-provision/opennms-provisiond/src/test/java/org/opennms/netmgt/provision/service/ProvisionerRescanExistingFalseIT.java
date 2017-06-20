@@ -132,9 +132,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         
-        // ensure this property is unset for tests and set it only in tests that need it
-        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
-
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
         //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
@@ -158,12 +155,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         m_scheduledExecutor.pause();
     }
     
-    @After
-    public void tearDown() {
-    	// remove property set during tests
-        System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
-    }
-
     private void setupLogging(final String logLevel) {
         final Properties config = new Properties();
         config.setProperty("log4j.logger.org.hibernate", "ERROR");
@@ -177,9 +168,9 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
-        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
-        @JUnitSnmpAgent(host="10.1.15.245", port=161, resource="classpath:testNoRescanOnImport-part2.properties")
+        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:/testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:/testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="10.1.15.245", port=161, resource="classpath:/testNoRescanOnImport-part2.properties")
     })
     public void testNoRescanOnImport() throws Exception {
         executeTest(Boolean.FALSE.toString());

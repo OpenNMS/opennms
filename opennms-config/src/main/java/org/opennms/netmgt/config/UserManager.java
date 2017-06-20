@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -61,7 +62,6 @@ import org.opennms.netmgt.config.users.Header;
 import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
-import org.opennms.netmgt.config.users.Users;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
@@ -115,12 +115,10 @@ public abstract class UserManager implements UserConfig {
         try {
             isr = new InputStreamReader(in);
             final Userinfo userinfo = JaxbUtils.unmarshal(Userinfo.class, isr);
-            final Users users = userinfo.getUsers();
             oldHeader = userinfo.getHeader();
-            final List<User> usersList = users.getUsers();
             m_users = new TreeMap<String, User>();
         
-            for (final User curUser : usersList) {
+            for (final User curUser : userinfo.getUsers()) {
                 m_users.put(curUser.getUserId(), curUser);
             }
         
@@ -317,8 +315,8 @@ public abstract class UserManager implements UserConfig {
         return user;
     }
     
-    private String trim(final String text) {
-        return text == null? null : text.trim();
+    private String trim(final Optional<String> text) {
+        return (text == null || !text.isPresent())? null : text.get().trim();
     }
 
     private Contact _getContact(final String userId, final ContactType contactType) {
@@ -411,7 +409,7 @@ public abstract class UserManager implements UserConfig {
 
         m_readLock.lock();
         try {
-            return m_users.get(name).getTuiPin();
+            return m_users.get(name).getTuiPin().orElse(null);
         } finally {
             m_readLock.unlock();
         }
@@ -430,7 +428,7 @@ public abstract class UserManager implements UserConfig {
     
         m_readLock.lock();
         try {
-            return m_users.get(user.getUserId()).getTuiPin();
+            return m_users.get(user.getUserId()).getTuiPin().orElse(null);
         } finally {
             m_readLock.unlock();
         }
@@ -548,7 +546,7 @@ public abstract class UserManager implements UserConfig {
         
         for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(command)) {
-        		return contact.getInfo();
+        		return contact.getInfo().orElse("");
         	}
         }
         return "";
@@ -600,7 +598,7 @@ public abstract class UserManager implements UserConfig {
 
         for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(command)) {
-        		return contact.getServiceProvider();
+        		return contact.getServiceProvider().orElse("");
         	}
         }
         
@@ -720,7 +718,7 @@ public abstract class UserManager implements UserConfig {
         
         for (final Contact contact : user.getContacts()) {
         	if (contact != null && contact.getType().equals(ContactType.xmppAddress.toString())) {
-        		return contact.getInfo();
+        		return contact.getInfo().orElse("");
         	}
         }
         
@@ -926,11 +924,7 @@ public abstract class UserManager implements UserConfig {
      * Saves into "users.xml" file
      */
     private void _saveCurrent() throws Exception {
-        final Users users = new Users();
-        
-        for (final User user : m_users.values()) {
-            users.addUser(user);
-        }
+        final List<User> users = new ArrayList<>(m_users.values());
     
         final Userinfo userinfo = new Userinfo();
         userinfo.setUsers(users);

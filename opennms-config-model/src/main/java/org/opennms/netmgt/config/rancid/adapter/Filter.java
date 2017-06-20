@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,84 +29,61 @@
 package org.opennms.netmgt.config.rancid.adapter;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
  * A rule which addresses belonging to this package must
  *  pass. This package is applied only to addresses that pass this
  *  filter
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "filter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Filter implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("rancid-adapter-configuration.xsd")
+public class Filter implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * internal content storage
      */
     @XmlValue
-    private String _content;
+    private String m_content;
 
     public Filter() {
-        setContent("");
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getContent() {
+        return m_content;
+    }
+
+    public void setContent(final String content) {
+        m_content = ConfigUtils.assertNotNull(content, "content");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_content);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Filter) {
-            Filter temp = (Filter)obj;
-            boolean equals = Objects.equals(temp._content, _content);
-            return equals;
+            final Filter that = (Filter)obj;
+            return Objects.equals(this.m_content, that.m_content);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'content'. The field 'content' has the following
-     * description: internal content storage
-     * 
-     * @return the value of field 'Content'.
-     */
-    public String getContent() {
-        return this._content;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            _content);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'content'. The field 'content' has the following
-     * description: internal content storage
-     * 
-     * @param content the value of field 'content'.
-     */
-    public void setContent(final String content) {
-        this._content = content;
     }
 
 }

@@ -39,6 +39,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +72,17 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         final Map<Source, String> rrdsBySource = Maps.newHashMap();
         
         for (final Source source : sources) {
+            final ResourceId resourceId;
+            try {
+                resourceId = ResourceId.fromString(source.getResourceId());
+            } catch (final IllegalArgumentException ex) {
+                if (relaxed) continue;
+                LOG.error("Ill-formed resource id: {}", source.getResourceId(), ex);
+                return null;
+            }
+
             // Grab the resource
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
+            final OnmsResource resource = m_resourceDao.getResourceById(resourceId);
             if (resource == null) {
                 if (relaxed) continue;
                 LOG.error("No resource with id: {}", source.getResourceId());

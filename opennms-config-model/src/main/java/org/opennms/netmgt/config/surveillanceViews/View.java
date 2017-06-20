@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,145 +29,127 @@
 package org.opennms.netmgt.config.surveillanceViews;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class View.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "view")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class View implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("surveillance-views.xsd")
+public class View implements Serializable {
+    private static final long serialVersionUID = 2L;
 
-    private static final String DEFAULT_REFRESH_SECONDS = "300";
+    private static final int DEFAULT_REFRESH_SECONDS = 300;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     @XmlAttribute(name = "refresh-seconds")
-    private String refreshSeconds;
+    private Integer m_refreshSeconds;
 
-    @XmlElement(name = "rows", required = true)
-    private Rows rows;
+    @XmlElementWrapper(name = "rows", required = true)
+    @XmlElement(name = "row-def", required = true)
+    private List<RowDef> m_rows = new ArrayList<>();
 
-    @XmlElement(name = "columns", required = true)
-    private Columns columns;
+    @XmlElementWrapper(name = "columns", required = true)
+    @XmlElement(name = "column-def", required = true)
+    private List<ColumnDef> m_columns = new ArrayList<>();
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public Integer getRefreshSeconds() {
+        return m_refreshSeconds != null ? m_refreshSeconds : DEFAULT_REFRESH_SECONDS;
+    }
+
+    public void setRefreshSeconds(final Integer refreshSeconds) {
+        m_refreshSeconds = refreshSeconds;
+    }
+
+    public List<RowDef> getRows() {
+        return m_rows;
+    }
+
+    public void setRows(final List<RowDef> rows) {
+        ConfigUtils.assertMinimumSize(rows, 1, "row-def");
+        if (rows == m_rows) return;
+        m_rows.clear();
+        if (rows != null) m_rows.addAll(rows);
+    }
+
+    public void addRow(final RowDef row) {
+        m_rows.add(row);
+    }
+
+    public void addRow(final String label, final String... categories) {
+        m_rows.add(new RowDef(label, categories));
+    }
+
+    public boolean removeRow(final RowDef row) {
+        return m_rows.remove(row);
+    }
+
+    public List<ColumnDef> getColumns() {
+        return m_columns;
+    }
+
+    public void setColumns(final List<ColumnDef> columns) {
+        ConfigUtils.assertMinimumSize(columns, 1, "column-def");
+        if (columns == m_columns) return;
+        m_columns.clear();
+        if (columns != null) m_columns.addAll(columns);
+    }
+
+    public void addColumn(final ColumnDef column) {
+        m_columns.add(column);
+    }
+
+    public void addColumn(final String label, final String... categories) {
+        m_columns.add(new ColumnDef(label, categories));
+    }
+
+    public boolean removeColumn(final ColumnDef column) {
+        return m_columns.remove(column);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, 
+                            m_refreshSeconds, 
+                            m_rows, 
+                            m_columns);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof View) {
-            View temp = (View)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.refreshSeconds, refreshSeconds)
-                && Objects.equals(temp.rows, rows)
-                && Objects.equals(temp.columns, columns);
-            return equals;
+            final View that = (View)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_refreshSeconds, that.m_refreshSeconds)
+                    && Objects.equals(this.m_rows, that.m_rows)
+                    && Objects.equals(this.m_columns, that.m_columns);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'columns'.
-     * 
-     * @return the value of field 'Columns'.
-     */
-    public Columns getColumns() {
-        return this.columns;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'refreshSeconds'.
-     * 
-     * @return the value of field 'RefreshSeconds'.
-     */
-    public String getRefreshSeconds() {
-        return this.refreshSeconds != null ? this.refreshSeconds : DEFAULT_REFRESH_SECONDS;
-    }
-
-    /**
-     * Returns the value of field 'rows'.
-     * 
-     * @return the value of field 'Rows'.
-     */
-    public Rows getRows() {
-        return this.rows;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            refreshSeconds, 
-            rows, 
-            columns);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'columns'.
-     * 
-     * @param columns the value of field 'columns'.
-     */
-    public void setColumns(final Columns columns) {
-        this.columns = columns;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'refreshSeconds'.
-     * 
-     * @param refreshSeconds the value of field 'refreshSeconds'.
-     */
-    public void setRefreshSeconds(final String refreshSeconds) {
-        this.refreshSeconds = refreshSeconds;
-    }
-
-    /**
-     * Sets the value of field 'rows'.
-     * 
-     * @param rows the value of field 'rows'.
-     */
-    public void setRows(final Rows rows) {
-        this.rows = rows;
     }
 
 }

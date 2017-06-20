@@ -29,18 +29,16 @@
 package org.opennms.netmgt.config.charts;
 
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class BarChart.
- * 
- * @version $Revision$ $Date$
- */
 @XmlRootElement(name = "bar-chart")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BarChart implements java.io.Serializable {
@@ -235,8 +233,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'ChartBackgroundColor'.
      */
-    public ChartBackgroundColor getChartBackgroundColor() {
-        return this.chartBackgroundColor;
+    public Optional<ChartBackgroundColor> getChartBackgroundColor() {
+        return Optional.ofNullable(this.chartBackgroundColor);
     }
 
     /**
@@ -262,8 +260,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'GridLines'.
      */
-    public GridLines getGridLines() {
-        return this.gridLines;
+    public Optional<GridLines> getGridLines() {
+        return Optional.ofNullable(this.gridLines);
     }
 
     /**
@@ -289,8 +287,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'PlotBackgroundColor'.
      */
-    public PlotBackgroundColor getPlotBackgroundColor() {
-        return this.plotBackgroundColor;
+    public Optional<PlotBackgroundColor> getPlotBackgroundColor() {
+        return Optional.ofNullable(this.plotBackgroundColor);
     }
 
     /**
@@ -298,8 +296,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'PlotOrientation'.
      */
-    public String getPlotOrientation() {
-        return this.plotOrientation;
+    public Optional<String> getPlotOrientation() {
+        return Optional.ofNullable(this.plotOrientation);
     }
 
     /**
@@ -316,8 +314,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'SeriesColorClass'.
      */
-    public String getSeriesColorClass() {
-        return this.seriesColorClass;
+    public Optional<String> getSeriesColorClass() {
+        return Optional.ofNullable(this.seriesColorClass);
     }
 
     /**
@@ -403,8 +401,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'SubLabelClass'.
      */
-    public String getSubLabelClass() {
-        return this.subLabelClass;
+    public Optional<String> getSubLabelClass() {
+        return Optional.ofNullable(this.subLabelClass);
     }
 
     /**
@@ -472,8 +470,8 @@ public class BarChart implements java.io.Serializable {
      * 
      * @return the value of field 'Variation'.
      */
-    public String getVariation() {
-        return this.variation;
+    public Optional<String> getVariation() {
+        return Optional.ofNullable(this.variation);
     }
 
     /**
@@ -793,7 +791,7 @@ public class BarChart implements java.io.Serializable {
      * @param seriesDefList the Vector to set.
      */
     public void setSeriesDefCollection(final java.util.List<SeriesDef> seriesDefList) {
-        this.seriesDefList = seriesDefList;
+        this.seriesDefList = seriesDefList == null? new ArrayList<>() : seriesDefList;
     }
 
     /**
@@ -884,7 +882,7 @@ public class BarChart implements java.io.Serializable {
      * @param subTitleList the Vector to set.
      */
     public void setSubTitleCollection(final java.util.List<SubTitle> subTitleList) {
-        this.subTitleList = subTitleList;
+        this.subTitleList = subTitleList == null? new ArrayList<>() : subTitleList;
     }
 
     /**

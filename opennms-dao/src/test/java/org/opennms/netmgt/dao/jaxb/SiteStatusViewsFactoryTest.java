@@ -30,10 +30,9 @@ package org.opennms.netmgt.dao.jaxb;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.jaxb.SiteStatusViewsFactory;
+
+import junit.framework.TestCase;
 
 public class SiteStatusViewsFactoryTest extends TestCase {
 	
@@ -57,7 +56,7 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 		assertNotNull(view);
 		assertEquals(viewName, view.getName());
         
-        assertEquals(5, view.getRows().getRowDefCount());
+        assertEquals(5, view.getRows().size());
 	}
 
 }

@@ -56,9 +56,6 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
         wmiCollection.setName("not-default");
         wmiCollection.setRrd(rrd);
 
-        Wpms wpms = new Wpms();
-        wmiCollection.setWpms(wpms);
-
         Wpm wpm = new Wpm();
         wpm.setName("wmiOSMemory");
         wpm.setWmiClass("Win32_PerfFormattedData_PerfOS_Memory");
@@ -67,16 +64,16 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
         wpm.setRecheckInterval(3600000);
         wpm.setIfType("all");
         wpm.setResourceType("node");
-        wpms.getWpm().add(wpm);
+        wmiCollection.addWpm(wpm);
 
         Attrib attrib = new Attrib();
         attrib.setName("AvailableBytes");
         attrib.setAlias("wmiOSMemAvailBytes");
         attrib.setWmiObject("AvailableBytes");
         attrib.setType(AttributeType.GAUGE);
-        wpm.getAttrib().add(attrib);
+        wpm.getAttribs().add(attrib);
 
-        config.getWmiCollection().add(wmiCollection);
+        config.getWmiCollections().add(wmiCollection);
 
         return Arrays.asList(new Object[][] { {
             config,
@@ -88,7 +85,7 @@ public class WmiDatacollectionConfigTest extends XmlTestNoCastor<WmiDatacollecti
                      "<wpms>" +
                          "<wpm name=\"wmiOSMemory\" wmiClass=\"Win32_PerfFormattedData_PerfOS_Memory\" wmiNamespace=\"root/cimv2\" " +
                              " keyvalue=\"Name\" recheckInterval=\"3600000\" ifType=\"all\" resourceType=\"node\">" +
-                             "<attrib name=\"AvailableBytes\" alias=\"wmiOSMemAvailBytes\" wmiObject=\"AvailableBytes\" type=\"gauge\"/>" +
+                             "<attrib name=\"AvailableBytes\" alias=\"wmiOSMemAvailBytes\" wmiObject=\"AvailableBytes\" type=\"GAUGE\"/>" +
                          "</wpm>" +
                      "</wpms>" +
                  "</wmi-collection>" +

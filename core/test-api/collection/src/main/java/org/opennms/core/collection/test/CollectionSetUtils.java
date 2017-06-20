@@ -78,6 +78,17 @@ public class CollectionSetUtils {
         return attributesByName;
     }
 
+    public static Map<String, CollectionResource> getResourcesByLabel(CollectionSet collectionSet) {
+        final Map<String, CollectionResource> resourcesByLabel = Maps.newLinkedHashMap();
+        collectionSet.visit(new AbstractCollectionSetVisitor() {
+            @Override
+            public void visitResource(CollectionResource resource) {
+                resourcesByLabel.put(resource.getInterfaceLabel(), resource);
+            }
+        });
+        return resourcesByLabel;
+    }
+
     public static List<String> flatten(CollectionSet collectionSet) {
         final List<String> strings = new ArrayList<>();
         collectionSet.visit(new AbstractCollectionSetVisitor() {

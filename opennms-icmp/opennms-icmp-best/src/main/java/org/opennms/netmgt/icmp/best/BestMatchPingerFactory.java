@@ -58,24 +58,29 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         try {
             pinger = pingerClass.newInstance();
         } catch (final Throwable t) {
-            LOG.info("Failed to get instance of {}.", pingerClass, t);
+            LOG.info("Failed to get instance of {}: {}", pingerClass, t.getMessage());
+            LOG.trace("Failed to get instance of {}.", pingerClass, t);
             return PingerMatch.NONE;
         }
 
         try {
             if (pinger.isV4Available()) {
+                pinger.initialize4();
                 v4 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4.", pingerClass, t);
+            LOG.info("Failed to initialize {} for IPv4: ", pingerClass, t.getMessage());
+            LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
         }
 
         try {
             if (pinger.isV6Available()) {
+                pinger.initialize6();
                 v6 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4.", pingerClass, t);
+            LOG.info("Failed to initialize {} for IPv4: {}", pingerClass, t.getMessage());
+            LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
         }
 
         try {
@@ -85,7 +90,8 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 throw new IllegalStateException("No result pinging localhost.");
             }
         } catch (final Throwable t) {
-            LOG.info("Found pinger {}, but it was unable to ping localhost.", pingerClass, t);
+            LOG.info("Found pinger {}, but it was unable to ping localhost: {}", pingerClass, t.getMessage());
+            LOG.trace("Found pinger {}, but it was unable to ping localhost.", pingerClass, t);
             return PingerMatch.NONE;
         }
 
@@ -117,7 +123,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         Class<? extends Pinger> pinger = NullPinger.class;
 
         LOG.info("Searching for best available pinger...");
-        for (final Class<? extends Pinger> pingerClass : Arrays.asList(Jni6Pinger.class, JniPinger.class, JnaPinger.class)) {
+        for (final Class<? extends Pinger> pingerClass : Arrays.asList(JniPinger.class, Jni6Pinger.class, JnaPinger.class)) {
             final PingerMatch tried = tryPinger(pingerClass);
             if (tried.compareTo(match) > 0) {
                 match = tried;

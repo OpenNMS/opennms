@@ -31,6 +31,7 @@ package org.opennms.netmgt.activemq.auth;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -166,23 +167,28 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
         ClassLoader original = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(JaasAuthenticationBroker.class.getClassLoader());
         try {
-            // Do the login.
-            try {
-                JassCredentialCallbackHandler callback = new JassCredentialCallbackHandler(info
-                    .getUserName(), info.getPassword());
-                LoginContext lc = new LoginContext(JAAS_CONTEXT_NAME, callback);
-                lc.login();
-                Subject subject = lc.getSubject();
-
-                SecurityContext s = new JaasSecurityContext(info.getUserName(), subject);
-                context.setSecurityContext(s);
-                securityContexts.add(s);
-            } catch (Exception e) {
-                throw (SecurityException)new SecurityException("User name [" + info.getUserName() + "] or password is invalid.")
-                    .initCause(e);
-            }
+            SecurityContext s = authenticate(info.getUserName(), info.getPassword(), null);
+            context.setSecurityContext(s);
+            securityContexts.add(s);
         } finally {
             Thread.currentThread().setContextClassLoader(original);
         }
+    }
+
+    @Override
+    public SecurityContext authenticate(String username, String password, X509Certificate[] certificates) throws SecurityException {
+        SecurityContext result = null;
+        JassCredentialCallbackHandler callback = new JassCredentialCallbackHandler(username, password);
+        try {
+            LoginContext lc = new LoginContext(JAAS_CONTEXT_NAME, callback);
+            lc.login();
+            Subject subject = lc.getSubject();
+
+            result = new JaasSecurityContext(username, subject);
+        } catch (Exception ex) {
+            throw new SecurityException("User name [" + username + "] or password is invalid.", ex);
+        }
+
+        return result;
     }
 }

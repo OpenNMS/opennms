@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,123 +29,82 @@
 package org.opennms.netmgt.config.reportd;
 
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Class Parameter.
- * 
- * @version $Revision$ $Date$
- */
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 @XmlRootElement(name = "parameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Parameter implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
+@ValidateUsing("reportd-configuration.xsd")
+public class Parameter implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "name", required = true)
-    private String name;
+    private String m_name;
 
     @XmlAttribute(name = "value", required = true)
-    private String value;
+    private String m_value;
 
-    @XmlElement(name = "null")
-    private Object _anyObject;
+    @XmlAnyElement(lax=true)
+    private Object m_anyObject;
 
     public Parameter() {
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(final String name) {
+        m_name = ConfigUtils.assertNotEmpty(name, "name");
+    }
+
+    public String getValue() {
+        return m_value;
+    }
+
+    public void setValue(final String value) {
+        m_value = ConfigUtils.assertNotNull(value, "value");
+    }
+
+    public Optional<Object> getAnyObject() {
+        return Optional.ofNullable(m_anyObject);
+    }
+
+    public void setAnyObject(final Object anyObject) {
+        m_anyObject = anyObject;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                            m_name, 
+                            m_value, 
+                            m_anyObject);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof Parameter) {
-            Parameter temp = (Parameter)obj;
-            boolean equals = Objects.equals(temp.name, name)
-                && Objects.equals(temp.value, value)
-                && Objects.equals(temp._anyObject, _anyObject);
-            return equals;
+            final Parameter that = (Parameter)obj;
+            return Objects.equals(this.m_name, that.m_name)
+                    && Objects.equals(this.m_value, that.m_value)
+                    && Objects.equals(this.m_anyObject, that.m_anyObject);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'anyObject'.
-     * 
-     * @return the value of field 'AnyObject'.
-     */
-    public Object getAnyObject() {
-        return this._anyObject;
-    }
-
-    /**
-     * Returns the value of field 'name'.
-     * 
-     * @return the value of field 'Name'.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Returns the value of field 'value'.
-     * 
-     * @return the value of field 'Value'.
-     */
-    public String getValue() {
-        return this.value;
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            name, 
-            value, 
-            _anyObject);
-        return hash;
-    }
-
-    /**
-     * Sets the value of field 'anyObject'.
-     * 
-     * @param anyObject the value of field 'anyObject'.
-     */
-    public void setAnyObject(final Object anyObject) {
-        this._anyObject = anyObject;
-    }
-
-    /**
-     * Sets the value of field 'name'.
-     * 
-     * @param name the value of field 'name'.
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the value of field 'value'.
-     * 
-     * @param value the value of field 'value'.
-     */
-    public void setValue(final String value) {
-        this.value = value;
     }
 
 }

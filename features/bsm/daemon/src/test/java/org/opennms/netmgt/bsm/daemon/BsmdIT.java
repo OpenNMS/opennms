@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.bsm.daemon;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -56,7 +59,6 @@ import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -244,21 +246,34 @@ public class BsmdIT {
         BusinessServiceEntity simpleBs = createSimpleBusinessService();
         m_bsmd.start();
 
-        // Create an alarm and do NOT send the alarm
+        // Create an alarm, but do NOT send any lifecyle events
+        final AtomicReference<OnmsAlarm> alarmRef = new AtomicReference<>();
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                 Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
                 OnmsAlarm alarm = createAlarm();
                 m_alarmDao.save(alarm);
+                alarmRef.set(alarm);
                 m_alarmDao.flush();
                 Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
             }
         });
 
-        // wait n seconds and try again
-        Thread.sleep(20*1000);
-        Assert.assertEquals(Status.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+        // Wait for the business service status to be updated
+        await().atMost(20, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)), equalTo(Status.CRITICAL));
+
+        // Now delete alarm, and again, do NOT send any lifecyle events
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                m_alarmDao.delete(alarmRef.get());
+                m_alarmDao.flush();
+            }
+        });
+
+        // Wait for the business service status to be updated
+        await().atMost(20, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)), equalTo(Status.NORMAL));
     }
 
     /**

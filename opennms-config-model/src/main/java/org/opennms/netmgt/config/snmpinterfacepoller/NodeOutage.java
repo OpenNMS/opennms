@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,23 +29,27 @@
 package org.opennms.netmgt.config.snmpinterfacepoller;
 
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
+
 /**
- * Configuration of node-outage
- *  functionality
- * 
- * @version $Revision$ $Date$
+ * Configuration of node-outage functionality
  */
 @XmlRootElement(name = "node-outage")
 @XmlAccessorType(XmlAccessType.FIELD)
-
-@SuppressWarnings("all") public class NodeOutage implements java.io.Serializable {
-
+@ValidateUsing("snmp-interface-poller-configuration.xsd")
+public class NodeOutage implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Critical service. Defining a critical service greatly
@@ -55,219 +59,46 @@ import javax.xml.bind.annotation.XmlRootElement;
      *  SNMP primary node interface.
      */
     @XmlElement(name = "critical-service", required = true)
-    private java.util.List<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> criticalServiceList;
+    private List<CriticalService> m_criticalServices = new ArrayList<>();
 
     public NodeOutage() {
-        this.criticalServiceList = new java.util.ArrayList<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService>();
     }
 
-    /**
-     * 
-     * 
-     * @param vCriticalService
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addCriticalService(final org.opennms.netmgt.config.snmpinterfacepoller.CriticalService vCriticalService) throws IndexOutOfBoundsException {
-        this.criticalServiceList.add(vCriticalService);
+    public List<CriticalService> getCriticalServices() {
+        return m_criticalServices;
     }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vCriticalService
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void addCriticalService(final int index, final org.opennms.netmgt.config.snmpinterfacepoller.CriticalService vCriticalService) throws IndexOutOfBoundsException {
-        this.criticalServiceList.add(index, vCriticalService);
+    public void setCriticalServices(final List<CriticalService> criticalServices) {
+        ConfigUtils.assertMinimumSize(criticalServices, 1, "critical-service");
+        if (criticalServices == m_criticalServices) return;
+        m_criticalServices.clear();
+        if (criticalServices != null) m_criticalServices.addAll(criticalServices);
     }
 
-    /**
-     * Method enumerateCriticalService.
-     * 
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public java.util.Enumeration<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> enumerateCriticalService() {
-        return java.util.Collections.enumeration(this.criticalServiceList);
+    public void addCriticalService(final CriticalService criticalService) {
+        m_criticalServices.add(criticalService);
     }
 
-    /**
-     * Overrides the Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public boolean removeCriticalService(final CriticalService criticalService) {
+        return m_criticalServices.remove(criticalService);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_criticalServices);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof NodeOutage) {
-            NodeOutage temp = (NodeOutage)obj;
-            boolean equals = Objects.equals(temp.criticalServiceList, criticalServiceList);
-            return equals;
+            final NodeOutage that = (NodeOutage)obj;
+            return Objects.equals(this.m_criticalServices, that.m_criticalServices);
         }
         return false;
-    }
-
-    /**
-     * Method getCriticalService.
-     * 
-     * @param index
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.config.snmpinterfacepoller.CriticalService at the given
-     * index
-     */
-    public org.opennms.netmgt.config.snmpinterfacepoller.CriticalService getCriticalService(final int index) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.criticalServiceList.size()) {
-            throw new IndexOutOfBoundsException("getCriticalService: Index value '" + index + "' not in range [0.." + (this.criticalServiceList.size() - 1) + "]");
-        }
-        
-        return (org.opennms.netmgt.config.snmpinterfacepoller.CriticalService) criticalServiceList.get(index);
-    }
-
-    /**
-     * Method getCriticalService.Returns the contents of the collection in an
-     * Array.  <p>Note:  Just in case the collection contents are changing in
-     * another thread, we pass a 0-length Array of the correct type into the API
-     * call.  This way we <i>know</i> that the Array returned is of exactly the
-     * correct length.
-     * 
-     * @return this collection as an Array
-     */
-    public org.opennms.netmgt.config.snmpinterfacepoller.CriticalService[] getCriticalService() {
-        org.opennms.netmgt.config.snmpinterfacepoller.CriticalService[] array = new org.opennms.netmgt.config.snmpinterfacepoller.CriticalService[0];
-        return (org.opennms.netmgt.config.snmpinterfacepoller.CriticalService[]) this.criticalServiceList.toArray(array);
-    }
-
-    /**
-     * Method getCriticalServiceCollection.Returns a reference to
-     * 'criticalServiceList'. No type checking is performed on any modifications
-     * to the Vector.
-     * 
-     * @return a reference to the Vector backing this class
-     */
-    public java.util.List<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> getCriticalServiceCollection() {
-        return this.criticalServiceList;
-    }
-
-    /**
-     * Method getCriticalServiceCount.
-     * 
-     * @return the size of this collection
-     */
-    public int getCriticalServiceCount() {
-        return this.criticalServiceList.size();
-    }
-
-    /**
-     * Method hashCode.
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = Objects.hash(
-            criticalServiceList);
-        return hash;
-    }
-
-    /**
-     * Method iterateCriticalService.
-     * 
-     * @return an Iterator over all possible elements in this collection
-     */
-    public java.util.Iterator<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> iterateCriticalService() {
-        return this.criticalServiceList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllCriticalService() {
-        this.criticalServiceList.clear();
-    }
-
-    /**
-     * Method removeCriticalService.
-     * 
-     * @param vCriticalService
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeCriticalService(final org.opennms.netmgt.config.snmpinterfacepoller.CriticalService vCriticalService) {
-        boolean removed = criticalServiceList.remove(vCriticalService);
-        return removed;
-    }
-
-    /**
-     * Method removeCriticalServiceAt.
-     * 
-     * @param index
-     * @return the element removed from the collection
-     */
-    public org.opennms.netmgt.config.snmpinterfacepoller.CriticalService removeCriticalServiceAt(final int index) {
-        Object obj = this.criticalServiceList.remove(index);
-        return (org.opennms.netmgt.config.snmpinterfacepoller.CriticalService) obj;
-    }
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vCriticalService
-     * @throws IndexOutOfBoundsException if the index given is outside
-     * the bounds of the collection
-     */
-    public void setCriticalService(final int index, final org.opennms.netmgt.config.snmpinterfacepoller.CriticalService vCriticalService) throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this.criticalServiceList.size()) {
-            throw new IndexOutOfBoundsException("setCriticalService: Index value '" + index + "' not in range [0.." + (this.criticalServiceList.size() - 1) + "]");
-        }
-        
-        this.criticalServiceList.set(index, vCriticalService);
-    }
-
-    /**
-     * 
-     * 
-     * @param vCriticalServiceArray
-     */
-    public void setCriticalService(final org.opennms.netmgt.config.snmpinterfacepoller.CriticalService[] vCriticalServiceArray) {
-        //-- copy array
-        criticalServiceList.clear();
-        
-        for (int i = 0; i < vCriticalServiceArray.length; i++) {
-                this.criticalServiceList.add(vCriticalServiceArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of 'criticalServiceList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     * 
-     * @param vCriticalServiceList the Vector to copy.
-     */
-    public void setCriticalService(final java.util.List<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> vCriticalServiceList) {
-        // copy vector
-        this.criticalServiceList.clear();
-        
-        this.criticalServiceList.addAll(vCriticalServiceList);
-    }
-
-    /**
-     * Sets the value of 'criticalServiceList' by setting it to the given Vector.
-     * No type checking is performed.
-     * @deprecated
-     * 
-     * @param criticalServiceList the Vector to set.
-     */
-    public void setCriticalServiceCollection(final java.util.List<org.opennms.netmgt.config.snmpinterfacepoller.CriticalService> criticalServiceList) {
-        this.criticalServiceList = criticalServiceList;
     }
 
 }

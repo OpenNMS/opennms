@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * 
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  * 
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -51,7 +51,7 @@ public class Catinfo implements Serializable {
     private Header m_header;
 
     @XmlElement(name = "categorygroup", required = true)
-    private List<CategoryGroup> m_categoryGroup = new ArrayList<>();
+    private List<CategoryGroup> m_categoryGroups = new ArrayList<>();
 
     public Catinfo() {
     }
@@ -69,36 +69,35 @@ public class Catinfo implements Serializable {
     }
 
     public List<CategoryGroup> getCategoryGroups() {
-        return m_categoryGroup;
+        return m_categoryGroups;
     }
 
     public void setCategoryGroups(final List<CategoryGroup> groups) {
-        m_categoryGroup.clear();
-        m_categoryGroup.addAll(groups);
+        if (groups == m_categoryGroups) return;
+        m_categoryGroups.clear();
+        if (groups != null) m_categoryGroups.addAll(groups);
     }
 
     public void addCategoryGroup(final CategoryGroup group) throws IndexOutOfBoundsException {
-        m_categoryGroup.add(group);
+        m_categoryGroups.add(group);
     }
 
     public boolean removeCategoryGroup(final CategoryGroup vCategorygroup) {
-        return m_categoryGroup.remove(vCategorygroup);
+        return m_categoryGroups.remove(vCategorygroup);
     }
 
     public boolean removeCategoryGroup(final String groupname) {
-        return m_categoryGroup.removeIf(cg -> {
+        return m_categoryGroups.removeIf(cg -> {
             return cg.getName().equals(groupname);
         });
     }
 
-    /**
-     */
     public void clearCategoryGroups() {
-        m_categoryGroup.clear();
+        m_categoryGroups.clear();
     }
 
     public void replaceCategoryInGroup(final String groupname, final Category cat) {
-        m_categoryGroup.forEach(cg -> {
+        m_categoryGroups.forEach(cg -> {
             if (cg.getName().equals(groupname)) {
                 cg.getCategories().replaceAll(c -> {
                     if (c.getLabel().equals(cat.getLabel())) {
@@ -112,9 +111,8 @@ public class Catinfo implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                            m_header, 
-                            m_categoryGroup);
+        return Objects.hash(m_header, 
+                            m_categoryGroups);
     }
 
     @Override
@@ -126,7 +124,7 @@ public class Catinfo implements Serializable {
         if (obj instanceof Catinfo) {
             final Catinfo temp = (Catinfo)obj;
             return Objects.equals(temp.m_header, m_header)
-                    && Objects.equals(temp.m_categoryGroup, m_categoryGroup);
+                    && Objects.equals(temp.m_categoryGroups, m_categoryGroups);
         }
         return false;
     }
@@ -134,7 +132,7 @@ public class Catinfo implements Serializable {
     @Override
     public String toString() {
         return "Catinfo [header=" + m_header + ", categoryGroup="
-                + m_categoryGroup + "]";
+                + m_categoryGroups + "]";
     }
 
 }

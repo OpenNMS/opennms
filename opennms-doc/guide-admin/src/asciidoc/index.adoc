@@ -39,6 +39,7 @@ include::text/webui/opsboard/introduction.adoc[]
 include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
 include::text/webui/opsboard/dashlet/alarms.adoc[]
 include::text/webui/opsboard/dashlet/charts.adoc[]
+include::text/webui/opsboard/dashlet/grafana.adoc[]
 include::text/webui/opsboard/dashlet/image.adoc[]
 include::text/webui/opsboard/dashlet/ksc.adoc[]
 include::text/webui/opsboard/dashlet/map.adoc[]
@@ -102,6 +103,7 @@ include::text/service-assurance/monitors/JCifsMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
 include::text/service-assurance/monitors/JDBCQueryMonitor.adoc[]
+include::text/service-assurance/monitors/JmxMonitor.adoc[]
 include::text/service-assurance/monitors/JolokiaBeanMonitor.adoc[]
 include::text/service-assurance/monitors/LdapMonitor.adoc[]
 include::text/service-assurance/monitors/LdapsMonitor.adoc[]
@@ -137,6 +139,7 @@ include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
+include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
@@ -148,6 +151,7 @@ include::text/performance-data-collection/collectors/vmware.adoc[]
 include::text/performance-data-collection/collectors/wmi.adoc[]
 include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
+include::text/performance-data-collection/collectors/xmp.adoc[]
 
 [[ga-performance-mgmt-shell]]
 === Shell Commands
@@ -166,6 +170,10 @@ include::text/events/sources/xml-tcp.adoc[]
 include::text/events/sources/eif-adapter.adoc[]
 include::text/events/sources/tl1.adoc[]
 include::text/events/eventbus.adoc[]
+
+[[ga-alarms]]
+== Alarms
+include::text/alarms/alarm-sound-flash.adoc[]
 
 [[ga-notifications]]
 == Notifications
@@ -212,6 +220,9 @@ include::text/bsm/bsmd.adoc[]
 == Topology Map
 include::text/topology/topology.adoc[]
 
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
+
 [[ga-database-reports]]
 == Database Reports
 include::text/database-reports/database.adoc[]
@@ -234,6 +245,7 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
+include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
 include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]

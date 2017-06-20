@@ -32,7 +32,7 @@
 			</attribute>
 
 			<attribute name="initial_sleep_time" type="long"
-				use="required">
+				use="optional" default="1800000">
 				<annotation>
 					<documentation>
 						The initial sleep time in mill seconds before starting
@@ -42,7 +42,7 @@
 			</attribute>
 
 			<attribute name="rescan_interval" type="long"
-				use="required">
+				use="optional" default="86400000">
 				<annotation>
 					<documentation>
 						Node Link Discovery Rescan Time interval in mill seconds.

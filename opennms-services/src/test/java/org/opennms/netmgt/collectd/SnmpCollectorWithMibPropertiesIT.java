@@ -80,6 +80,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
@@ -140,6 +141,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
      */
     @Before
     public void setUp() throws Exception {
+        MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
         m_rrdStrategy = new JRobinRrdStrategy();
@@ -173,7 +175,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         SnmpCollector collector = new SnmpCollector();
-        collector.initialize(null);
+        collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);

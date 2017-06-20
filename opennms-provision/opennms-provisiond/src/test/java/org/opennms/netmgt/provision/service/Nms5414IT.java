@@ -108,10 +108,10 @@ public class Nms5414IT extends ProvisioningITCase {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-        @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-        @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:snmpwalk-NMS-5414.properties"),
-        @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:snmpwalk-NMS-5414.properties")
+        @JUnitSnmpAgent(host="10.7.15.240", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+        @JUnitSnmpAgent(host="10.7.15.241", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+        @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
+        @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:/snmpwalk-NMS-5414.properties")
     })
     public void testScanIPV6z() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();

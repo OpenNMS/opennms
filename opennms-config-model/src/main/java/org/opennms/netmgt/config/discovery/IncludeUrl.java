@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * A file URL holding specific addresses to be polled. Each
@@ -99,10 +100,7 @@ public class IncludeUrl implements Serializable {
     }
 
     public void setUrl(final String url) {
-        if (url == null) {
-            throw new IllegalArgumentException("URL cannot be null!");
-        }
-        m_url = url;
+        m_url = ConfigUtils.assertNotEmpty(url, "URL");
     }
 
     public Optional<String> getLocation() {
@@ -110,7 +108,7 @@ public class IncludeUrl implements Serializable {
     }
 
     public void setLocation(final String location) {
-        m_location = location;
+        m_location = ConfigUtils.normalizeString(location);
     }
 
     public Optional<Integer> getRetries() {
@@ -137,7 +135,7 @@ public class IncludeUrl implements Serializable {
     }
 
     public void setForeignSource(final String foreignSource) {
-        m_foreignSource = foreignSource;
+        m_foreignSource = ConfigUtils.normalizeString(foreignSource);
     }
 
     @Override

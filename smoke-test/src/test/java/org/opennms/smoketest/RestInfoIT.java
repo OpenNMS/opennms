@@ -36,11 +36,11 @@ import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.elasticsearch.common.base.Strings;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 /**
  * Used to validate the /rest/info endpoint
@@ -61,7 +61,7 @@ public class RestInfoIT extends OpenNMSSeleniumTestCase {
         final String json = response.getResponseText();
 
         // The expected payload looks like:
-        //  {"packageDescription":"OpenNMS","displayVersion":"19.0.0-SNAPSHOT","packageName":"opennms","version":"19.0.0"}
+        //  {"packageDescription":"OpenNMS","displayVersion":"21.0.0-SNAPSHOT","packageName":"opennms","version":"21.0.0"}
         final ObjectMapper mapper = new ObjectMapper();
         final Map<String, String> infoMap = mapper.readValue(json, new TypeReference<Map<String, String>>(){});
 
