@@ -67,7 +67,24 @@ public class BroadcastDomain {
             m_forwarding.put(bridgeId, new ArrayList<BridgeMacLink>());
         return m_forwarding.get(bridgeId);
     }
-
+    
+    public void cleanForwarders(Set<String> macs) {
+        Map<Integer, List<BridgeMacLink>> forwadingMap=new HashMap<Integer, List<BridgeMacLink>>();
+        for (Integer bridgeId: m_forwarding.keySet()) {
+            List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
+            for (BridgeMacLink forward: m_forwarding.get(bridgeId)) {
+                if (macs.contains(forward.getMacAddress()))
+                    continue;
+                forwarders.add(forward);
+            }
+            if (forwarders.isEmpty())
+                continue;
+            forwadingMap.put(bridgeId, forwarders);
+        }
+        m_forwarding = forwadingMap;
+        
+    }
+    
     public Set<String> getBridgeMacAddresses(Integer bridgeid) {
 		Set<String> bridgemacaddresses = new HashSet<String>();
 		Bridge bridge = getBridge(bridgeid);
@@ -469,6 +486,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     public void clear() {
         m_topology.clear();
         m_bridges.clear();
+        m_forwarding.clear();
     }
     
     public String printTopology() {

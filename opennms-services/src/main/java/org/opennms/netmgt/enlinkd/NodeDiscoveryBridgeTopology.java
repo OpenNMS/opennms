@@ -829,6 +829,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             addForwarding(m_domain, xBft);
             
         }
+        m_domain.cleanForwarders(m_domain.getMacsOnDomain());
         LOG.debug("calculate: node: [{}], Print Topology {}", 
         		getNodeId(),
         		m_domain.printTopology());
