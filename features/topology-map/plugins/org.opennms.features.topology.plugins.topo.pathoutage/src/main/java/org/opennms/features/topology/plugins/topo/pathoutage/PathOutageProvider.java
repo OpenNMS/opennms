@@ -30,7 +30,10 @@ package org.opennms.features.topology.plugins.topo.pathoutage;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -39,9 +42,9 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -78,22 +81,21 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 
 	@Override
 	public Defaults getDefaults() {
-		// Current implementation of default focus strategy includes all "problematic" (state not NORMAL) nodes, semantic zoom level is 0
+		// Current implementation of default focus strategy either creates a DefaultVertexHopCriteria for
+		// semantic zoom level 0 and the node with the worst state; or for the first node (if all nodes have state NORMAL)
 		return new Defaults()
 				.withSemanticZoomLevel(0)
 				.withPreferredLayout("Hierarchy Layout")
 				.withCriteria(() -> {
-					OnmsSeverity worstSeverity = OnmsSeverity.NORMAL;
-					Vertex worstSeverityVertex = null;
-					for (Vertex vertex : this.getVertices()) {
-						Status status = statusProvider.getStatusForSingleVertex(PathOutageProvider.this, vertex);
-						if (worstSeverityVertex == null || worstSeverity.isLessThan(OnmsSeverity.get(status.computeStatus()))) {
-							worstSeverityVertex = vertex;
-							worstSeverity = OnmsSeverity.get(status.computeStatus());
-						}
+					Map<VertexRef, Status> resultMap = statusProvider.getStatusForVertices(this, Lists.newArrayList(this.getVertices()), new Criteria[0]);
+					Optional<Map.Entry<VertexRef, Status>> max = resultMap.entrySet().stream().max(Comparator.comparing(e -> OnmsSeverity.get(e.getValue().computeStatus())));
+					if (max.isPresent()) {
+						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(max.get().getKey()));
+					} else if (this.getVertexTotalCount() > 0) {
+						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(this.getVertices().get(0)));
+					} else {
+						return Lists.newArrayList();
 					}
-					VertexHopGraphProvider.DefaultVertexHopCriteria criteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(worstSeverityVertex);
-					return Lists.newArrayList(criteria);
 				});
 	}
 
