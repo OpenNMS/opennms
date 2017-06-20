@@ -56,30 +56,6 @@ public class SharedSegment {
         return bp;
     }
 
-    private BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
-        BridgePort bp = new BridgePort();
-        bp.setNode(link.getNode());
-        bp.setBridgePort(link.getBridgePort());
-        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setBridgePortIfName(link.getBridgePortIfName());
-        bp.setVlan(link.getVlan());
-        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
-        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
-        return bp;
-    }
-
-    private BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
-        BridgePort bp = new BridgePort();
-        bp.setNode(link.getDesignatedNode());
-        bp.setBridgePort(link.getDesignatedPort());
-        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
-        bp.setBridgePortIfName(link.getDesignatedPortIfName());
-        bp.setVlan(link.getDesignatedVlan());
-        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
-        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
-        return bp;
-    }
-
     private BridgeMacLink getBridgeMacLink(BridgePort bp, String mac) {
     	BridgeMacLink maclink = new BridgeMacLink();
         maclink.setNode(bp.getNode());
@@ -93,6 +69,7 @@ public class SharedSegment {
         maclink.setBridgeMacLinkLastPollTime(bp.getPollTime());
         return maclink;
     }
+    
     private BridgeBridgeLink getBridgeBridgeLink(BridgePort bp) {
         BridgeBridgeLink link = new BridgeBridgeLink();
         link.setNode(bp.getNode());
@@ -109,6 +86,7 @@ public class SharedSegment {
         link.setBridgeBridgeLinkLastPollTime(m_designatedBridge.getPollTime());
         return link;
     }
+
     public SharedSegment(){};
     
     public SharedSegment(BroadcastDomain domain) {
@@ -140,10 +118,9 @@ public class SharedSegment {
 
     }
 
-    public SharedSegment(BroadcastDomain domain, BridgeBridgeLink link, Set<String> macs) {
+    public SharedSegment(BroadcastDomain domain, Set<BridgePort> ports, Set<String> macs) {
         m_domain =domain;
-        m_portsOnSegment.add(getFromDesignatedBridgeBridgeLink(link));
-        m_portsOnSegment.add(getFromBridgeBridgeLink(link));
+        m_portsOnSegment.addAll(ports);
         m_macsOnSegment = macs;
     }
         
@@ -208,11 +185,9 @@ public class SharedSegment {
         m_portsOnSegment.add(getBridgeFromBridgeMacLink(link));
     }
 
-    public void add(BridgeBridgeLink dlink) {
-        final BridgePort designated = getFromDesignatedBridgeBridgeLink(dlink);
-        final BridgePort bridge = getFromBridgeBridgeLink(dlink);
-        m_portsOnSegment.add(designated);
-        m_portsOnSegment.add(bridge);
+    public void add(BridgeBridgeLink link) {
+        m_portsOnSegment.add(BridgePort.getFromBridgeBridgeLink(link));
+        m_portsOnSegment.add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
     }
 
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
@@ -240,14 +215,14 @@ public class SharedSegment {
     	m_macsOnSegment.addAll(shared.getMacsOnSegment());    	
     }
 
-    public void assign(Set<String> macs, BridgeBridgeLink dlink) {
-    	if (isEmpty() ) {
-     		add(dlink);
-    		m_macsOnSegment = macs;
-    		return;
-    	}
- 	    add(dlink);          
- 	    m_macsOnSegment.retainAll(macs);
+    public void retain(Set<String> macs, BridgePort dlink) {
+        m_portsOnSegment.add(dlink);
+        m_macsOnSegment.retainAll(macs);
+    }
+    
+    public void assign(Set<String> macs, BridgePort dlink) {
+        m_portsOnSegment.add(dlink);
+        m_macsOnSegment = macs;
     }
 
     public void removeBridge(int bridgeId) {
