@@ -485,6 +485,7 @@ public class PollStatus implements Serializable {
      * @return a {@link java.util.Map} object.
      */
     @XmlElement(name="properties")
+    @XmlJavaTypeAdapter(PollStatusPropertyXmlAdapter.class)
     @Transient
     public Map<String, Number> getProperties() {
         return Collections.unmodifiableMap(m_properties);
