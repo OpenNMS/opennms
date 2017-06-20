@@ -35,7 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
-
+import org.opennms.web.rest.support.Aliases;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -43,13 +43,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
-public abstract class AbstractNodeDependentRestService<T,K extends Serializable,I extends Serializable> extends AbstractDaoRestService<T,K,I> {
+public abstract class AbstractNodeDependentRestService<T,Q,K extends Serializable,I extends Serializable> extends AbstractDaoRestService<T,Q,K,I> {
 
     @Autowired
     protected NodeDao m_nodeDao;
 
     protected void updateCriteria(final UriInfo uriInfo, final CriteriaBuilder builder) {
-        builder.alias("node", "node");
+        builder.alias("node", Aliases.node.toString());
         final String nodeCriteria = getNodeCriteria(uriInfo);
         if (nodeCriteria.contains(":")) {
             String[] parts = nodeCriteria.split(":");

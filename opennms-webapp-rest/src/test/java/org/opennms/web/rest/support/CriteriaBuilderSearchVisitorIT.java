@@ -67,7 +67,7 @@ public class CriteriaBuilderSearchVisitorIT {
 	@Test
 	public void testScanReportAndCondition() {
 		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder(null);
-		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+		CriteriaBuilderSearchVisitor<ScanReport,ScanReport> visitor = new CriteriaBuilderSearchVisitor<>(builder, ScanReport.class);
 
 		// Simulates /opennms/api/v2/scanreports?_s=applications%3D%3DLocal+Access;timestamp%3Dle%3D2016-02-01T15:07:14.340-0500&limit=20&offset=0&order=desc&orderBy=timestamp
 		
@@ -86,7 +86,7 @@ public class CriteriaBuilderSearchVisitorIT {
 	@Test
 	public void testScanReportTwoConditions() {
 		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder(null);
-		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+		CriteriaBuilderSearchVisitor<ScanReport,ScanReport> visitor = new CriteriaBuilderSearchVisitor<>(builder, ScanReport.class);
 
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", "blah", String.class, ConditionType.EQUALS, new ScanReport()));
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
@@ -100,7 +100,7 @@ public class CriteriaBuilderSearchVisitorIT {
 	@Test
 	public void testScanReportTwoConditionsWithIsNull() {
 		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder(null);
-		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+		CriteriaBuilderSearchVisitor<ScanReport,ScanReport> visitor = new CriteriaBuilderSearchVisitor<>(builder, ScanReport.class);
 
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.EQUALS, new ScanReport()));
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
@@ -113,7 +113,7 @@ public class CriteriaBuilderSearchVisitorIT {
 	@Test
 	public void testScanReportTwoConditionsWithIsNotNull() {
 		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder(null);
-		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+		CriteriaBuilderSearchVisitor<ScanReport,ScanReport> visitor = new CriteriaBuilderSearchVisitor<>(builder, ScanReport.class);
 
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", CriteriaBuilderSearchVisitor.NULL_VALUE, String.class, ConditionType.NOT_EQUALS, new ScanReport()));
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));

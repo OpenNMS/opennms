@@ -51,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("applications")
 @Transactional
-public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,Integer,Integer> {
+public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,OnmsApplication,Integer,Integer> {
 
     @Autowired
     private ApplicationDao m_dao;
@@ -63,6 +63,11 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
 
     @Override
     protected Class<OnmsApplication> getDaoClass() {
+        return OnmsApplication.class;
+    }
+
+    @Override
+    protected Class<OnmsApplication> getQueryBeanClass() {
         return OnmsApplication.class;
     }
 

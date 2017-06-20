@@ -101,7 +101,7 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
     public void testFiql() throws Exception {
         String url = "/notifications";
 
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=answeredBy==\u0000"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=notification.answeredBy==\u0000"), 200));
     }
 
 }

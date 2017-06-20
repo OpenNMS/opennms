@@ -113,16 +113,16 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         JSONObject object = new JSONObject(sendRequest(GET, url, 200));
         Assert.assertEquals(6, object.getInt("totalCount"));
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=nodeLabel==server01"), 200));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=node.label==server01"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=uei==*somethingWentWrong"), 200));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=event.uei==*somethingWentWrong"), 200));
         Assert.assertEquals(2, object.getInt("totalCount"));
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=categoryName==Linux"), 200));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=category.name==Linux"), 200));
         Assert.assertEquals(3, object.getInt("totalCount"));
 
-        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=categoryName==Linux;uei==*somethingWentWrong"), 200));
+        object = new JSONObject(sendRequest(GET, url, parseParamData("_s=category.name==Linux;event.uei==*somethingWentWrong"), 200));
         Assert.assertEquals(1, object.getInt("totalCount"));
     }
 

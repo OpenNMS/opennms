@@ -57,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestService<OnmsSnmpInterface,Integer,Integer> {
+public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestService<OnmsSnmpInterface,OnmsSnmpInterface,Integer,Integer> {
 
     @Autowired
     private SnmpInterfaceDao m_ipInterfaceDao;
@@ -69,6 +69,11 @@ public class NodeSnmpInterfacesRestService extends AbstractNodeDependentRestServ
 
     @Override
     protected Class<OnmsSnmpInterface> getDaoClass() {
+        return OnmsSnmpInterface.class;
+    }
+
+    @Override
+    protected Class<OnmsSnmpInterface> getQueryBeanClass() {
         return OnmsSnmpInterface.class;
     }
 

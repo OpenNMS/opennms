@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
@@ -62,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeIpInterfacesRestService extends AbstractNodeDependentRestService<OnmsIpInterface,Integer,String> {
+public class NodeIpInterfacesRestService extends AbstractNodeDependentRestService<OnmsIpInterface,OnmsIpInterface,Integer,String> {
 
     @Autowired
     private IpInterfaceDao m_dao;
@@ -78,16 +79,21 @@ public class NodeIpInterfacesRestService extends AbstractNodeDependentRestServic
     }
 
     @Override
+    protected Class<OnmsIpInterface> getQueryBeanClass() {
+        return OnmsIpInterface.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
 
         // 1st level JOINs
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("monitoredServices", "monitoredServices", JoinType.LEFT_JOIN);
+        builder.alias("monitoredServices", Aliases.monitoredService.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // TODO: Remove this once the join conditions are in place
         builder.distinct();

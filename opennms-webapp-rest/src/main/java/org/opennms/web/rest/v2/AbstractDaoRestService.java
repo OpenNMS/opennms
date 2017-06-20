@@ -48,15 +48,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.PropertyNotFoundException;
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
-
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -66,13 +66,12 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,15 +82,18 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 /**
  * Abstract class for easily implemented V2 endpoints.
  * 
- *  T ~ Object (ex. OnmsNode)
- *  K ~ Type of the PK of the entity on the database (ex. Integer)
- *  I ~ Object Index (typically equal to the PK, but can be different in some cases)
+ * @param <T> Entity object (eg. OnmsNode)
+ * @param <Q> Query bean. This can be the same as the entity object if the object is a simple
+ *   bean but for types with more than one level of bean properties, it makes sense to use a
+ *   custom query bean or Apache CXF's {@link SearchBean}.
+ * @param <K> Type of the primary key of the entity in the database (eg. Integer).
+ * @param <I> Object Index (typically the same as the primary key, but can be different in some cases).
  *
  * @author <a href="seth@opennms.org">Seth Leger</a>
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Transactional
-public abstract class AbstractDaoRestService<T,K extends Serializable,I extends Serializable> {
+public abstract class AbstractDaoRestService<T,Q,K extends Serializable,I extends Serializable> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
@@ -106,6 +108,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I extends 
 
     protected abstract OnmsDao<T,K> getDao();
     protected abstract Class<T> getDaoClass();
+    protected abstract Class<Q> getQueryBeanClass();
     protected abstract CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo);
     protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
     protected abstract T doGet(UriInfo uriInfo, I id); // Abstracted to be able to retrieve the object on different ways 
@@ -134,26 +137,34 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I extends 
     }
 
     /**
-     * <p>To add filter aliases to simplify API queries.</p>
+     * <p>Map properties in the search expression to bean properties
+     * in the query capture bean. This is identical to using the
+     * {@code search.bean.property.map} context property but allows us
+     * to specify a different set of mappings for each service endpoint.</p>
      * <ul>
-     * <li>Key: User-friendly value</li>
-     * <li>Value: CXF property name</li>
+     * <li>Key: Query property name</li>
+     * <li>Value: Bean property path</li>
      * </ul>
+     * 
+     * @see http://cxf.apache.org/docs/jax-rs-search.html#JAX-RSSearch-Mappingofquerypropertiestobeanproperties
+     * 
      * @return
      */
-    protected Map<String,String> getBeanPropertiesMapping() {
+    protected Map<String,String> getSearchBeanPropertyMap() {
         return null;
     }
 
     /**
-     * <p>To translate CXF mappings to HQL/Criteria mappings.</p>
+     * <p>Map CXF query bean properties to Criteria property names, conversions,
+     * and actions. In the absence of a mapping, the query bean property will be
+     * specified directly as a Criteria property with the same name.</p>
      * <ul>
-     * <li>Key: CXF property name</li>
-     * <li>Value: HQL property name</li>
+     * <li>Key: CXF query property name</li>
+     * <li>Value: {@link CriteriaBehavior} to execute when this search term is specified</li>
      * </ul>
      * @return
      */
-    protected Map<String,String> getCriteriaPropertiesMapping() {
+    protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
         return null;
     }
 
@@ -161,9 +172,9 @@ public abstract class AbstractDaoRestService<T,K extends Serializable,I extends 
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
         if (searchContext != null) {
             try {
-                SearchCondition<T> condition = searchContext.getCondition(getDaoClass(), getBeanPropertiesMapping());
+                SearchCondition<Q> condition = searchContext.getCondition(getQueryBeanClass(), getSearchBeanPropertyMap());
                 if (condition != null) {
-                    SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass(), getCriteriaPropertiesMapping());
+                    SearchConditionVisitor<Q,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T,Q>(builder, getDaoClass(), getCriteriaBehaviors());
                     condition.accept(visitor);
                 }
             } catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {

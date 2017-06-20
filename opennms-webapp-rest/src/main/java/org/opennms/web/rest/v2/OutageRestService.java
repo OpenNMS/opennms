@@ -41,7 +41,9 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
-
+import org.opennms.web.rest.support.Aliases;
+import org.opennms.web.rest.support.CriteriaBehavior;
+import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("outages")
 @Transactional
-public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer,Integer> {
+public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOutage,Integer,Integer> {
 
     @Autowired
     private OutageDao m_dao;
@@ -70,6 +72,11 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
     }
 
     @Override
+    protected Class<OnmsOutage> getQueryBeanClass() {
+        return OnmsOutage.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
         // 1st level JOINs
@@ -78,17 +85,17 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
         builder.alias("serviceRegainedEvent", "serviceRegainedEvent", JoinType.LEFT_JOIN); 
 
         // 2nd level JOINs
-        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
-        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node", Aliases.node.toString(), JoinType.LEFT_JOIN);
 
         // 4th level JOINs
-        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("node.assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
+        builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
 
         // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
 
@@ -104,16 +111,30 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,Integer
     }
 
     @Override
-    protected Map<String, String> getBeanPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("categoryName", "ipInterface.node.categories.name");
-        return map;
-    }
+    protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
+        final Map<String,CriteriaBehavior<?>> map = new HashMap<>();
 
-    @Override
-    protected Map<String, String> getCriteriaPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("ipInterface.node.categories.name", "categories.name");
+        // Root alias
+        map.putAll(CriteriaBehaviors.OUTAGE_BEHAVIORS);
+
+        // 1st level JOINs
+        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
+
+        // 2nd level JOINs
+        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+
+        // 3rd level JOINs
+        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+
+        // 4th level JOINs
+        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+
+        // TODO: Figure out how to join in the snmpInterface fields
+        //map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+
         return map;
     }
 

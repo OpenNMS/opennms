@@ -56,7 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("scanreports")
 @Transactional
-public class ScanReportRestService extends AbstractDaoRestService<ScanReport,String,String> {
+public class ScanReportRestService extends AbstractDaoRestService<ScanReport,ScanReport,String,String> {
 
     @Autowired
     private ScanReportDao m_dao;
@@ -68,6 +68,11 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 
     @Override
     protected Class<ScanReport> getDaoClass() {
+        return ScanReport.class;
+    }
+
+    @Override
+    protected Class<ScanReport> getQueryBeanClass() {
         return ScanReport.class;
     }
 

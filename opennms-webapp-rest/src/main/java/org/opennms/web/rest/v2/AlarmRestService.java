@@ -47,8 +47,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -63,9 +64,14 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.web.rest.support.Aliases;
+import org.opennms.web.rest.support.CriteriaBehavior;
+import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.support.StringCriteriaBehavior;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -79,7 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("alarms")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,Integer> {
+public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBean,Integer,Integer> {
 
     @Autowired
     private AlarmDao m_dao;
@@ -104,25 +110,32 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     }
 
     @Override
+    protected Class<SearchBean> getQueryBeanClass() {
+        return SearchBean.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), "alarm");
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
 
         builder.fetch("firstEvent", FetchType.EAGER);
         builder.fetch("lastEvent", FetchType.EAGER);
 
         // 1st level JOINs
-        builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("serviceType", "service", JoinType.LEFT_JOIN);
+        builder.alias("distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
+        builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
+        builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterfaces.ipAddress", "alarm.ipAddr"), Restrictions.isNull("ipInterfaces.ipAddress")));
+        builder.alias(Aliases.node.prop("ipInterfaces"), Aliases.ipInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.ipInterface.prop("ipAddress"), Aliases.alarm.prop("ipAddr")), Restrictions.isNull(Aliases.ipInterface.prop("ipAddress"))));
+        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.alarm.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
+
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
-        // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterfaces.ifIndex", "alarm.ifIndex"), Restrictions.isNull("snmpInterfaces.ifIndex")));
+        builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
 
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
 
@@ -135,21 +148,23 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,Integer,I
     }
 
     @Override
-    protected Map<String, String> getBeanPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("categoryName", "node.categories.name");
-        map.put("service", "serviceType.name");
-        return map;
-    }
+    protected Map<String, CriteriaBehavior<?>> getCriteriaBehaviors() {
+        final Map<String, CriteriaBehavior<?>> map = new HashMap<>();
+        // Root alias
+        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
 
-    @Override
-    protected Map<String, String> getCriteriaPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("node.assetRecord.description", "assetRecord.description");
-        map.put("node.categories.name", "categories.name");
-        map.put("node.ipInterfaces.ipAddress", "ipInterfaces.ipAddress");
-        map.put("node.snmpInterfaces.netMask", "snmpInterfaces.netMask");
-        map.put("serviceType.name", "service.name");
+        // 1st level JOINs
+        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+
+        // 2nd level JOINs
+        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+
         return map;
     }
 

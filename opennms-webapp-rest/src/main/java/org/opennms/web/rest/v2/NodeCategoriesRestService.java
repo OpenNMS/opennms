@@ -70,7 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeCategoriesRestService extends AbstractNodeDependentRestService<OnmsCategory,Integer,String> {
+public class NodeCategoriesRestService extends AbstractNodeDependentRestService<OnmsCategory,OnmsCategory,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeCategoriesRestService.class);
 
@@ -87,6 +87,11 @@ public class NodeCategoriesRestService extends AbstractNodeDependentRestService<
 
     @Override
     protected Class<OnmsCategory> getDaoClass() {
+        return OnmsCategory.class;
+    }
+
+    @Override
+    protected Class<OnmsCategory> getQueryBeanClass() {
         return OnmsCategory.class;
     }
 

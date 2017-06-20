@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("monitoringLocations")
 @Transactional
-public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,String,String> {
+public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,OnmsMonitoringLocation,String,String> {
 
     @Autowired
     private MonitoringLocationDao m_dao;
@@ -66,6 +66,11 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected Class<OnmsMonitoringLocation> getDaoClass() {
+        return OnmsMonitoringLocation.class;
+    }
+
+    @Override
+    protected Class<OnmsMonitoringLocation> getQueryBeanClass() {
         return OnmsMonitoringLocation.class;
     }
 

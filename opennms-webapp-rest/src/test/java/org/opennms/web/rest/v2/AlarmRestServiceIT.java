@@ -99,7 +99,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         MockLogAppender.setupLogging(true, "DEBUG");
 
         final OnmsCategory linux = createCategory("Linux");
-//        final OnmsCategory servers = createCategory("LinuxServers");
+        final OnmsCategory servers = createCategory("LinuxServers");
         final OnmsCategory macOS = createCategory("macOS");
 
         final OnmsServiceType icmp = new OnmsServiceType("ICMP");
@@ -108,8 +108,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final NetworkBuilder builder = new NetworkBuilder();
 
-        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux });
 //        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux, servers });
+        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux });
         node2 = createNode(builder, "server02", "192.168.1.2", new OnmsCategory[] { macOS });
 
         createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR);
@@ -128,52 +128,46 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         executeQueryAndVerify("limit=0", 7);
 
-        executeQueryAndVerify("limit=0&_s=severity==NORMAL", 3);
+        executeQueryAndVerify("limit=0&_s=alarm.severity==NORMAL", 3);
 
-        executeQueryAndVerify("limit=0&_s=severity==WARNING", 2);
+        executeQueryAndVerify("limit=0&_s=alarm.severity==WARNING", 2);
 
-        sendRequest(GET, url, parseParamData("limit=0&_s=severity==CRITICAL"), 204);
+        sendRequest(GET, url, parseParamData("limit=0&_s=alarm.severity==CRITICAL"), 204);
 
-        executeQueryAndVerify("limit=0&_s=severity=gt=NORMAL", 4);
+        executeQueryAndVerify("limit=0&_s=alarm.severity=gt=NORMAL", 4);
 
-        executeQueryAndVerify("limit=0&_s=severity=gt=NORMAL;node.label==server01", 2);
+        executeQueryAndVerify("limit=0&_s=alarm.severity=gt=NORMAL;node.label==server01", 2);
     }
 
     @Test
     public void testCollectionsAndMappings() throws Exception {
-        executeQueryAndVerify("_s=node.categories.name==Linux", 3);
-        executeQueryAndVerify("_s=node.categories.name!=Linux", 4);
-//        executeQueryAndVerify("_s=node.categories.name==LinuxServers", 3);
-//        executeQueryAndVerify("_s=node.categories.name!=LinuxServers", 4);
-        executeQueryAndVerify("_s=uei==*somethingWentWrong", 2);
-        executeQueryAndVerify("_s=uei==*somethingWentWrong;node.categories.name==Linux", 1);
+        executeQueryAndVerify("_s=category.name==Linux", 3);
+        executeQueryAndVerify("_s=category.name!=Linux", 4);
+//        executeQueryAndVerify("_s=category.name==LinuxServers", 3);
+//        executeQueryAndVerify("_s=category.name!=LinuxServers", 4);
+        executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong", 2);
+        executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong;category.name==Linux", 1);
 
-        // Test AlarmRestService.getBeanPropertiesMapping() mappings
-        executeQueryAndVerify("_s=categoryName==Linux", 3);
-        executeQueryAndVerify("_s=categoryName!=Linux", 4);
-        executeQueryAndVerify("_s=uei==*somethingWentWrong;categoryName==Linux", 1);
-
-        executeQueryAndVerify("_s=uei==*something*", 7);
-        executeQueryAndVerify("_s=uei==*somethingIs*", 5);
-        executeQueryAndVerify("_s=uei!=*somethingIs*", 2);
+        executeQueryAndVerify("_s=alarm.uei==*something*", 7);
+        executeQueryAndVerify("_s=alarm.uei==*somethingIs*", 5);
+        executeQueryAndVerify("_s=alarm.uei!=*somethingIs*", 2);
 
         // Verify service queries
-        executeQueryAndVerify("_s=service==ICMP", 7);
-        executeQueryAndVerify("_s=service!=ICMP", 0);
-        executeQueryAndVerify("_s=service==SNMP", 0);
-        executeQueryAndVerify("_s=service==*MP", 7);
+        executeQueryAndVerify("_s=serviceType.name==ICMP", 7);
+        executeQueryAndVerify("_s=serviceType.name!=ICMP", 0);
+        executeQueryAndVerify("_s=serviceType.name==SNMP", 0);
+        executeQueryAndVerify("_s=serviceType.name==*MP", 7);
 
         // Verify IP address queries
-        executeQueryAndVerify("_s=ipAddr==192.168.1.1", 3);
-        executeQueryAndVerify("_s=ipAddr==192.168.1.2", 4);
-        executeQueryAndVerify("_s=ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 7);
+        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1", 3);
+        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.2", 4);
+        executeQueryAndVerify("_s=alarm.ipAddr==127.0.0.1", 0);
+        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 7);
 
-        // TODO: These should also work
-        //executeQueryAndVerify("_s=node.ipInterfaces.ipAddress==192.168.1.1", 3);
-        //executeQueryAndVerify("_s=node.ipInterfaces.ipAddress==192.168.1.2", 3);
-        //executeQueryAndVerify("_s=node.ipInterfaces.ipAddress==127.0.0.1", 0);
-        //executeQueryAndVerify("_s=node.ipInterfaces.ipAddress!=127.0.0.1", 6);
+        executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.1", 3);
+        executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.2", 4);
+        executeQueryAndVerify("_s=ipInterface.ipAddress==127.0.0.1", 0);
+        executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 7);
 
         executeQueryAndVerify("_s=node.id==" + node1.getId(), 3);
         executeQueryAndVerify("_s=node.id==" + node2.getId(), 4);
@@ -185,15 +179,15 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=(node.label==server01,node.label==server02)", 7);
         executeQueryAndVerify("_s=node.label!=\u0000", 7);
 
-        executeQueryAndVerify("_s=node.assetRecord.description==lolol", 0);
+        executeQueryAndVerify("_s=assetRecord.description==lolol", 0);
 
-        // TODO: These are not working correctly
-        //executeQueryAndVerify("_s=node.snmpInterfaces.netMask==255.255.255.0", 7);
-        //executeQueryAndVerify("_s=node.snmpInterfaces.netMask!=255.255.255.0", 0);
-        //executeQueryAndVerify("_s=node.snmpInterfaces.netMask==255.255.127.0", 7);
+        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.255.0", 0);
+        executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 7);
+        executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 7);
+        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.127.0", 0);
 
-        executeQueryAndVerify("_s=node.location.locationName==Default", 7);
-        executeQueryAndVerify("_s=node.location.locationName!=Default", 0);
+        executeQueryAndVerify("_s=location.locationName==Default", 7);
+        executeQueryAndVerify("_s=location.locationName!=Default", 0);
     }
 
     @Test

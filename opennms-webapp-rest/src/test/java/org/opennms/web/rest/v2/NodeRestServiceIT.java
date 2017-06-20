@@ -91,20 +91,20 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         String url = "/nodes";
 
-        LOG.warn(sendRequest(GET, url, parseParamData("limit=2&offset=2&_s=label==*Test*"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*1"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*2"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("limit=2&offset=2&_s=node.label==*Test*"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*1"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*2"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=assetRecord.id==2"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==*2;assetRecord.id==2"), 200));
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=(label==*2;assetRecord.id==2),(label==*1)"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*2;assetRecord.id==2"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=(node.label==*2;assetRecord.id==2),(node.label==*1)"), 200));
 
         // Use "Hello, Handsome" as a value to test CXF 'search.decode.values' property which will
         // URL-decode FIQL search values
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==Hello%252C+Handsome"), 204));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==Hello%252C+Handsome"), 204));
 
         // Put all of the FIQL reserved characters into a string which should equal:
         // !$'()+,;=
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 204));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 204));
     }
 
     @Test

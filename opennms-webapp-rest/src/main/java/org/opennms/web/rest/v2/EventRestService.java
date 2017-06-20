@@ -42,15 +42,18 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.xml.event.Event;
-
+import org.opennms.web.rest.support.Aliases;
+import org.opennms.web.rest.support.CriteriaBehavior;
+import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,Integer> {
+public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBean,Integer,Integer> {
 
     @Autowired
     private EventDao m_dao;
@@ -79,23 +82,30 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     }
 
     @Override
+    protected Class<SearchBean> getQueryBeanClass() {
+        return SearchBean.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), "event");
+        final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.event.toString());
 
         // 1st level JOINs
-        builder.alias("alarm", "alarm", JoinType.LEFT_JOIN);
-        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        builder.alias("alarm", Aliases.alarm.toString(), JoinType.LEFT_JOIN);
+        builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("ipInterfaces.ipAddress", "event.ipAddr"), Restrictions.isNull("ipInterfaces.ipAddress")));
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("ipInterfaces"), Aliases.ipInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.ipInterface.prop("ipAddress"), Aliases.event.prop("ipAddr")), Restrictions.isNull(Aliases.ipInterface.prop("ipAddress"))));
+        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty("snmpInterfaces.ifIndex", "event.ifIndex"), Restrictions.isNull("snmpInterfaces.ifIndex")));
+        builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.event.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
+
+        // TODO: Only add this alias when filtering so that we can specify a join condition
+        builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
 
         builder.orderBy("eventTime").desc(); // order by event time by default
 
@@ -108,18 +118,31 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,Integer,I
     }
 
     @Override
-    protected Map<String, String> getBeanPropertiesMapping() {
+    protected Map<String, String> getSearchBeanPropertyMap() {
         final Map<String, String> map = new HashMap<>();
-        map.put("uei", "eventUei");
-        map.put("nodeLabel", "node.label");
-        map.put("categoryName", "node.categories.name");
+        map.put("event.uei", "event.eventUei");
         return map;
     }
 
     @Override
-    protected Map<String, String> getCriteriaPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("node.categories.name", "categories.name");
+    protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
+        final Map<String,CriteriaBehavior<?>> map = new HashMap<>();
+
+        // Root alias
+        map.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
+
+        // 1st level JOINs
+        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+
+        // 2nd level JOINs
+        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+
         return map;
     }
 

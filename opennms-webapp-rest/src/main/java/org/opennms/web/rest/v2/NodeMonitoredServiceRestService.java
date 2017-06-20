@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 
@@ -69,7 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestService<OnmsMonitoredService,Integer,String> {
+public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestService<OnmsMonitoredService,OnmsMonitoredService,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeMonitoredServiceRestService.class);
 
@@ -96,22 +97,27 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
     }
 
     @Override
+    protected Class<OnmsMonitoredService> getQueryBeanClass() {
+        return OnmsMonitoredService.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(final UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass());
 
         // 1st level JOINs
-        builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
+        builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node", Aliases.node.toString(), JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
-        builder.alias("node.assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("node.assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", "categories", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
+        builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
+        builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
 
         builder.orderBy("id");
 

@@ -36,10 +36,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -52,12 +53,13 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.RestUtils;
+import org.opennms.web.rest.support.Aliases;
+import org.opennms.web.rest.support.CriteriaBehavior;
+import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -72,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("nodes")
 @Transactional
-public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,String> {
+public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
 
@@ -97,26 +99,31 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
+    protected Class<SearchBean> getQueryBeanClass() {
+        return SearchBean.class;
+    }
+
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class, Aliases.node.toString());
 
         // 1st level JOINs
-        builder.alias("assetRecord", "assetRecord", JoinType.LEFT_JOIN);
+        builder.alias("assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("categories", "categories", JoinType.LEFT_JOIN);
+        builder.alias("categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("ipInterfaces", "ipInterfaces", JoinType.LEFT_JOIN);
-        builder.alias("location", "location", JoinType.LEFT_JOIN);
+        builder.alias("ipInterfaces", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
+        builder.alias("location", Aliases.location.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("snmpInterfaces", "snmpInterfaces", JoinType.LEFT_JOIN);
+        builder.alias("snmpInterfaces", Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("ipInterfaces.monitoredServices", "monitoredServices", JoinType.LEFT_JOIN);
+        builder.alias(Aliases.ipInterface.prop("monitoredServices"), Aliases.monitoredService.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.alias(Aliases.monitoredService.prop("serviceType"), Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // Order by label by default
         builder.orderBy("label").desc();
@@ -128,15 +135,28 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer,Str
     }
 
     @Override
-    protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
-        return new OnmsNodeList(list);
+    protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
+        Map<String,CriteriaBehavior<?>> map = new HashMap<>();
+
+        // 1st level JOINs
+        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+
+        // 2nd level JOINs
+        map.putAll(CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS);
+
+        // 3rd level JOINs
+        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+
+        return map;
     }
 
     @Override
-    protected Map<String, String> getBeanPropertiesMapping() {
-        final Map<String, String> map = new HashMap<>();
-        map.put("categoryName", "categories.name");
-        return map;
+    protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
+        return new OnmsNodeList(list);
     }
 
     @Override

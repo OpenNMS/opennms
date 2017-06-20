@@ -61,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("minions")
 @Transactional
-public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,String> {
+public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMinion,String,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);
 
@@ -79,6 +79,11 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String,
 
     @Override
     protected Class<OnmsMinion> getDaoClass() {
+        return OnmsMinion.class;
+    }
+
+    @Override
+    protected Class<OnmsMinion> getQueryBeanClass() {
         return OnmsMinion.class;
     }
 
