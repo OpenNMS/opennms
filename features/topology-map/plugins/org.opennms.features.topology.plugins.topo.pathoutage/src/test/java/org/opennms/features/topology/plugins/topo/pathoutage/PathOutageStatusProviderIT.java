@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -42,7 +43,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.support.FocusStrategy;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -144,9 +147,9 @@ public class PathOutageStatusProviderIT {
 	 * This method tests if the {@link PathOutageStatusProvider} retrieves alarm data correctly
 	 */
 	public void verify() throws UnknownHostException {
-		this.pathOutageProvider = new PathOutageProvider(this.nodeDao, pathOutageStatusProvider);
-		this.pathOutageProvider.refresh();
 		this.pathOutageStatusProvider = new PathOutageStatusProvider(this.genericPersistenceAccessor);
+		this.pathOutageProvider = new PathOutageProvider(this.nodeDao, this.pathOutageStatusProvider);
+		this.pathOutageProvider.refresh();
 
 		// Very basic test - check that PathOutageStatusProvider finds a Status for each vertex
 		// and that all these statuses are at the moment NORMAL
@@ -155,6 +158,12 @@ public class PathOutageStatusProviderIT {
 			Assert.assertNotNull(stats.get(vertex));
 			Assert.assertEquals(OnmsSeverity.NORMAL.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 		}
+
+		// Also check that the PathOutageProvider calculates the default focus strategy correctly
+		// the list of criteria should always contain exactly 1 vertex (with the worst status)
+		List<Criteria> criteria = this.pathOutageProvider.getDefaults().getCriteria();
+		Assert.assertNotNull(criteria);
+		Assert.assertEquals(1, criteria.size());
 
 		// Adding a single path outage with MINOR severity.
 		// PathOutageStatusProvider should be able to find this outage + all other nodes should have a state NORMAL
@@ -169,6 +178,13 @@ public class PathOutageStatusProviderIT {
 			}
 		}
 
+		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should be 1)
+		criteria = this.pathOutageProvider.getDefaults().getCriteria();
+		Assert.assertNotNull(criteria);
+		Assert.assertEquals(1, criteria.size());
+		VertexHopGraphProvider.DefaultVertexHopCriteria criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		Assert.assertEquals("1", criterion.getId());
+
 		// Adding a MAJOR path outage to the same node.
 		// PathOutageStatusProvider should display the alarm with a MAJOR severity level
 		this.outageDao.save(createOutage(EventConstants.NODE_DOWN_EVENT_UEI, address_1, this.nodeDao.get(1), OnmsSeverity.MAJOR));
@@ -180,6 +196,13 @@ public class PathOutageStatusProviderIT {
 				break;
 			}
 		}
+
+		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should still be 1)
+		criteria = this.pathOutageProvider.getDefaults().getCriteria();
+		Assert.assertNotNull(criteria);
+		Assert.assertEquals(1, criteria.size());
+		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		Assert.assertEquals("1", criterion.getId());
 
 		// Adding several more path outages of different types
 		// PathOutageStatusProvider should display them all, plus the one from the previous test
@@ -199,6 +222,13 @@ public class PathOutageStatusProviderIT {
 				Assert.assertEquals(OnmsSeverity.MAJOR.getLabel().toLowerCase(), stats.get(vertex).computeStatus().toLowerCase());
 			}
 		}
+
+		// List of criteria should contain exactly 1 vertex (with the worst status, meaning that its id should be either 1 or 4)
+		criteria = this.pathOutageProvider.getDefaults().getCriteria();
+		Assert.assertNotNull(criteria);
+		Assert.assertEquals(1, criteria.size());
+		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		Assert.assertTrue(criterion.getId().equalsIgnoreCase("1") || criterion.getId().equalsIgnoreCase("4"));
 	}
 
 	/**

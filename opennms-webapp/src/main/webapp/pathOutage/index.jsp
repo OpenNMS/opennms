@@ -71,7 +71,7 @@
 				<th>Critical Path IP</th>
 				<th>Critical Path Service</th>
 				<th>Number of Nodes</th>
-				<th>Focus Strategy</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<% for (String[] pth : testPaths) {
@@ -90,7 +90,7 @@
 			<%
 				final String topologyLink = new TopologyLinkBuilder()
 						.focus(pthData[1])
-						.szl(1)
+						.szl(0)
 						.layout(Layout.HIERARCHY)
 						.provider(TopologyProvider.PATHOUTAGE)
 						.getLink();

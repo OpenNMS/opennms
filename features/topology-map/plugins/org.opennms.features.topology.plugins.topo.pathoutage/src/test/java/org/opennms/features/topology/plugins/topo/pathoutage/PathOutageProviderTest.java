@@ -46,7 +46,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -111,22 +111,7 @@ public class PathOutageProviderTest {
 
 	private void setBehaviour(PathOutageStatusProvider statusProvider) {
 		Mockito.when(statusProvider.getStatusForSingleVertex(Matchers.any(PathOutageProvider.class), Matchers.any(VertexRef.class))).
-				thenReturn(new Status() {
-					@Override
-					public String computeStatus() {
-						return OnmsSeverity.NORMAL.getLabel();
-					}
-
-					@Override
-					public Map<String, String> getStatusProperties() {
-						return null;
-					}
-
-					@Override
-					public Map<String, String> getStyleProperties() {
-						return null;
-					}
-				});
+				thenReturn(new DefaultStatus(OnmsSeverity.NORMAL.getLabel(), 1));
 	}
 
 	/**

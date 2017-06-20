@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.FocusStrategy;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
@@ -84,14 +83,17 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 				.withSemanticZoomLevel(0)
 				.withPreferredLayout("Hierarchy Layout")
 				.withCriteria(() -> {
-					List<VertexHopGraphProvider.VertexHopCriteria> focusCriteria = new ArrayList<>();
+					OnmsSeverity worstSeverity = OnmsSeverity.NORMAL;
+					Vertex worstSeverityVertex = null;
 					for (Vertex vertex : this.getVertices()) {
-						Status status = statusProvider.getStatusForSingleVertex(this, vertex);
-						if (!status.computeStatus().equalsIgnoreCase(OnmsSeverity.NORMAL.getLabel())) {
-							focusCriteria.addAll(FocusStrategy.SPECIFIC.getFocusCriteria(PathOutageProvider.this, vertex.getId()));
+						Status status = statusProvider.getStatusForSingleVertex(PathOutageProvider.this, vertex);
+						if (worstSeverityVertex == null || worstSeverity.isLessThan(OnmsSeverity.get(status.computeStatus()))) {
+							worstSeverityVertex = vertex;
+							worstSeverity = OnmsSeverity.get(status.computeStatus());
 						}
 					}
-					return Lists.newArrayList(focusCriteria);
+					VertexHopGraphProvider.DefaultVertexHopCriteria criteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(worstSeverityVertex);
+					return Lists.newArrayList(criteria);
 				});
 	}
 
