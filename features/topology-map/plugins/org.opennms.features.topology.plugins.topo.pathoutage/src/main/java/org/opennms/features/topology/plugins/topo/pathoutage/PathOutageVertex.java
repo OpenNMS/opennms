@@ -43,6 +43,7 @@ class PathOutageVertex extends AbstractVertex implements LevelAware {
 		super(PathOutageProvider.NAMESPACE, String.valueOf(node.getId()), node.getLabel());
 		setNodeID(node.getId());
 		this.level = 0;
+		this.setIconKey("pathoutage.default");
 	}
 
 	@Override

@@ -39,4 +39,16 @@
         <property name="hierarchical" value="true" />
     </bean>
 
+    <!-- Icon definition -->
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.pathoutage"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
+    </service>
+
 </blueprint>
