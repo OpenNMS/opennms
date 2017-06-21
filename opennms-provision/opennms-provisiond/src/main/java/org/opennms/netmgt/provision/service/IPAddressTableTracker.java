@@ -100,6 +100,11 @@ public class IPAddressTableTracker extends TableTracker {
         
         public String getIpAddress() {
             final SnmpResult result = getResult(IP_ADDRESS_IF_INDEX);
+            if (result == null) {
+                LOG.warn("BAD AGENT: Device is missing IP-MIB::ipAddressIfIndex. Skipping.");
+                return null;
+            }
+
             SnmpInstId instance = result.getInstance();
             final int[] instanceIds = instance.getIds();
 
