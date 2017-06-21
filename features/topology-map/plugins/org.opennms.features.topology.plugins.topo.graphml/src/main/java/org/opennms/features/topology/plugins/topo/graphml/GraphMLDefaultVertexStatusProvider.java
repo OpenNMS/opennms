@@ -92,7 +92,7 @@ public class GraphMLDefaultVertexStatusProvider implements StatusProvider {
         for (GraphMLVertex eachVertex : graphMLVertices) {
             AlarmSummary alarmSummary = nodeIdToAlarmSummaryMap.get(eachVertex.getNodeID());
             GraphMLVertexStatus status = alarmSummary == null
-                                   ? new GraphMLVertexStatus(OnmsSeverity.NORMAL, 0)
+                                   ? new GraphMLVertexStatus()
                                    : new GraphMLVertexStatus(alarmSummary.getMaxSeverity(), alarmSummary.getAlarmCount());
             resultMap.put(eachVertex, status);
         }

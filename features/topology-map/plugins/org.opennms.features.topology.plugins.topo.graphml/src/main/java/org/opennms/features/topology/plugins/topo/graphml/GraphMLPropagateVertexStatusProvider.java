@@ -28,10 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.opennms.features.topology.api.info.MeasurementsWrapper;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
@@ -40,19 +37,14 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-import javax.script.SimpleBindings;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
 

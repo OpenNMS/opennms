@@ -70,7 +70,10 @@ public class GraphMLScriptVertexStatusProvider implements StatusProvider {
 
         this.serviceAccessor = Objects.requireNonNull(serviceAccessor);
 
-        this.scripting = new Scripting<>(scriptPath, scriptEngineManager, GraphMLVertexStatus::merge);
+        this.scripting = new Scripting<>(scriptPath,
+                                         scriptEngineManager,
+                                         GraphMLVertexStatus::new,
+                                         GraphMLVertexStatus::merge);
     }
 
     public GraphMLScriptVertexStatusProvider(final GraphMLTopologyProvider provider,

@@ -56,6 +56,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,13 +101,16 @@ public class Scripting<E extends Ref, S extends Status> {
     private final Path scriptPath;
     private final ScriptEngineManager scriptEngineManager;
 
+    private final Supplier<S> statusDefault;
     private final BinaryOperator<S> statusAccumulator;
 
     public Scripting(final Path scriptPath,
                      final ScriptEngineManager scriptEngineManager,
+                     final Supplier<S> statusDefault,
                      final BinaryOperator<S> statusAccumulator) {
         this.scriptPath = Objects.requireNonNull(scriptPath);
         this.scriptEngineManager = Objects.requireNonNull(scriptEngineManager);
+        this.statusDefault = Objects.requireNonNull(statusDefault);
         this.statusAccumulator = Objects.requireNonNull(statusAccumulator);
     }
 
@@ -159,8 +163,9 @@ public class Scripting<E extends Ref, S extends Status> {
                               LOG.info(writer.toString());
                           }
                       })
+                      .filter(Objects::nonNull)
                       .reduce(this.statusAccumulator)
-                      .orElse(null);
+                      .orElseGet(this.statusDefault);
     }
 
     public Map<E, S> compute(final Stream<E> elements,
@@ -168,7 +173,6 @@ public class Scripting<E extends Ref, S extends Status> {
         final List<StatusScript<S>> scripts = this.loadScripts();
 
         return elements.map(element -> new HashMap.SimpleEntry<>(element, this.computeStatus(scripts, element, refBindingMapper)))
-                       .filter(e -> e.getValue() != null)
                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

@@ -52,8 +52,6 @@ import java.util.Objects;
 
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
-    private final static Logger LOG = LoggerFactory.getLogger(GraphMLEdgeStatusProvider.class);
-
     private final GraphMLTopologyProvider provider;
     private final GraphMLServiceAccessor serviceAccessor;
 
@@ -66,7 +64,10 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
         this.provider = Objects.requireNonNull(provider);
         this.serviceAccessor = Objects.requireNonNull(serviceAccessor);
 
-        this.scripting = new Scripting<>(scriptPath, scriptEngineManager, GraphMLEdgeStatus::merge);
+        this.scripting = new Scripting<>(scriptPath,
+                                         scriptEngineManager,
+                                         GraphMLEdgeStatus::new,
+                                         GraphMLEdgeStatus::merge);
     }
 
     public GraphMLEdgeStatusProvider(final GraphMLTopologyProvider provider,
