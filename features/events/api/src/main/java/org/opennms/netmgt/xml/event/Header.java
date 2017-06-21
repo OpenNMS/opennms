@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * Class Header.
  * 
@@ -193,11 +191,6 @@ public class Header implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("ver", _ver)
-    		.append("dpName", _dpName)
-    		.append("created", _created)
-    		.append("mstation", _mstation)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

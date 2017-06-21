@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
@@ -272,6 +271,7 @@ public class Event implements Serializable {
 
 	public Event() {
 		super();
+
 		_autoactionList = new ArrayList<Autoaction>();
 		_operactionList = new ArrayList<Operaction>();
 		_loggroupList = new ArrayList<String>();
@@ -1852,41 +1852,7 @@ public class Event implements Serializable {
 
     @Override
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("uuid", _uuid)
-			.append("dbid", _dbid)
-			.append("dist-poller", _distPoller)
-			.append("creation-time", _creationTime)
-			.append("master-station", _masterStation)
-			.append("mask", _mask)
-			.append("uei", _uei)
-			.append("source", _source)
-			.append("nodeid", _nodeid)
-			.append("time", _time)
-			.append("host", _host)
-			.append("interface", getInterface())
-			.append("snmphost", _snmphost)
-			.append("service", _service)
-			.append("snmp", _snmp)
-			.append("parms", _parms)
-			.append("descr", _descr)
-			.append("logmsg", _logmsg)
-			.append("severity", _severity)
-			.append("pathoutage", _pathoutage)
-			.append("correlation", _correlation)
-			.append("operinstruct", _operinstruct)
-			.append("autoaction", _autoactionList)
-			.append("operaction", _operactionList)
-			.append("autoacknowledge", _autoacknowledge)
-			.append("loggroup", _loggroupList)
-			.append("tticket", _tticket)
-			.append("forward", _forwardList)
-			.append("script", _scriptList)
-			.append("ifIndex", _ifIndex)
-			.append("ifAlias", _ifAlias)
-			.append("mouseovertext", _mouseovertext)
-			.append("alarm-data", _alarmData)
-			.toString();
+		return new OnmsStringBuilder(this).toString();
 	}
 
 }
