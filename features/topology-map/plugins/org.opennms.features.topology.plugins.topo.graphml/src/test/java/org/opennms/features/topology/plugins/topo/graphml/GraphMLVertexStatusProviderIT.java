@@ -28,27 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.nio.file.Paths;
-import java.util.Map;
-
-import javax.script.ScriptEngineManager;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.graphml.model.GraphMLGraph;
+import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLReader;
+import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
@@ -57,12 +50,18 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.collect.ImmutableList;
+import javax.script.ScriptEngineManager;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -77,7 +76,7 @@ import com.google.common.collect.ImmutableList;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class GraphMLEdgeStatusProviderIT {
+public class GraphMLVertexStatusProviderIT {
 
     @Autowired
     private DatabasePopulator databasePopulator;
@@ -98,38 +97,49 @@ public class GraphMLEdgeStatusProviderIT {
     }
 
     @Test
-    public void verify() throws Exception {
+    public void testStatusProvider() throws InvalidGraphException {
         final GraphMLServiceAccessor serviceAccessor = new GraphMLServiceAccessor();
         serviceAccessor.setTransactionOperations(transactionOperations);
         serviceAccessor.setNodeDao(nodeDao);
         serviceAccessor.setSnmpInterfaceDao(snmpInterfaceDao);
         serviceAccessor.setMeasurementsService(request -> new QueryResponse());
 
-        final GraphMLGraph graph = GraphMLReader.read(getClass().getResourceAsStream("/test-graph2.xml")).getGraphs().get(0);
-        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graph, serviceAccessor);
-        final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(
+        final GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
+        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graphML.getGraphs().get(0), new GraphMLServiceAccessor());
+        final GraphMLScriptVertexStatusProvider statusProvider = new GraphMLScriptVertexStatusProvider(
                 topologyProvider,
+                nodeIds -> Lists.newArrayList(
+                        createSummary(1, "North", OnmsSeverity.WARNING, 1),
+                        createSummary(2, "West", OnmsSeverity.MINOR, 2),
+                        createSummary(3, "South", OnmsSeverity.MAJOR, 3)
+                ),
                 new ScriptEngineManager(),
                 serviceAccessor,
-                Paths.get("src","test", "opennms-home", "etc", "graphml-edge-status"));
+                Paths.get("src", "test", "opennms-home", "etc", "graphml-vertex-status"));
 
-        assertThat(provider.contributesTo("acme:regions"), is(true));
-        assertThat(provider.getNamespace(), is("acme:regions"));
+        final List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
+        Assert.assertEquals(4, vertices.size());
+        Assert.assertEquals(topologyProvider.getVertexNamespace(), statusProvider.getNamespace());
+        Assert.assertEquals(Boolean.TRUE, statusProvider.contributesTo(topologyProvider.getVertexNamespace()));
 
-        // Calculating the status executes some tests defined int the according scripts as a side effect
-        final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
-        final Map<? extends EdgeRef, ? extends Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
+        final Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider, vertices, new Criteria[0]);
+        Assert.assertEquals(4, statusForVertices.size());
+        Assert.assertEquals(ImmutableMap.of(
+                createVertexRef(topologyProvider.getVertexNamespace(), "north"), createStatus(OnmsSeverity.WARNING, 1),
+                createVertexRef(topologyProvider.getVertexNamespace(), "west"), createStatus(OnmsSeverity.MINOR, 2),
+                createVertexRef(topologyProvider.getVertexNamespace(), "south"), createStatus(OnmsSeverity.MAJOR, 3),
+                createVertexRef(topologyProvider.getVertexNamespace(), "east"), createStatus(OnmsSeverity.NORMAL, 0)), statusForVertices);
+    }
 
-        // Checking nodeID creation for vertices with only foreignSource/foreignID set
-        final VertexRef vertexRef = topologyProvider.getVertex("acme:regions", "west");
-        assertThat(vertexRef, is(notNullValue()));
-        assertThat(vertexRef, is(instanceOf(GraphMLVertex.class)));
-        assertThat(((GraphMLVertex) vertexRef).getNodeID(), is(4));
+    private static Status createStatus(OnmsSeverity severity, long count) {
+        return new GraphMLVertexStatus(severity, count);
+    }
 
-        // Testing status merging from two scripts
-        assertThat(status, is(notNullValue()));
-        assertThat(status, is(hasEntry(edgeRef, new GraphMLEdgeStatus().severity(OnmsSeverity.WARNING)
-                                                    .style("stroke", "pink")
-                                                    .style("stroke-width", "3em"))));
+    private static DefaultVertexRef createVertexRef(String namespace, String id) {
+        return new DefaultVertexRef(namespace, id);
+    }
+
+    private static AlarmSummary createSummary(int nodeId, String label, OnmsSeverity maxSeverity, long count) {
+        return new AlarmSummary(nodeId, label, new Date(), maxSeverity, count);
     }
 }

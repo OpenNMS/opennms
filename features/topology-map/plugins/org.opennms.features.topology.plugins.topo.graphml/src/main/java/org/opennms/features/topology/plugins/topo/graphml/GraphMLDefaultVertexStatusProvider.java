@@ -50,25 +50,14 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import com.google.common.collect.Maps;
 
-public class GraphMLVertexStatusProvider implements StatusProvider {
+public class GraphMLDefaultVertexStatusProvider implements StatusProvider {
 
-    protected static class VertexStatus extends DefaultStatus {
-        public VertexStatus(OnmsSeverity severity, long count) {
-            super(severity.getLabel(), count);
-        }
-
-        public VertexStatus(OnmsSeverity severity) {
-            this(severity, 0);
-        }
-
-    }
-
-    private final String namespace;
-
+    private final GraphMLTopologyProvider provider;
     private final AlarmSummaryWrapper alarmSummaryWrapper;
 
-    public GraphMLVertexStatusProvider(String namespace, AlarmSummaryWrapper alarmSummaryWrapper) {
-        this.namespace = Objects.requireNonNull(namespace);
+    public GraphMLDefaultVertexStatusProvider(final GraphMLTopologyProvider provider,
+                                              final AlarmSummaryWrapper alarmSummaryWrapper) {
+        this.provider = Objects.requireNonNull(provider);
         this.alarmSummaryWrapper = Objects.requireNonNull(alarmSummaryWrapper);
     }
 
@@ -79,7 +68,7 @@ public class GraphMLVertexStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return namespace;
+        return provider.getVertexNamespace();
     }
 
     @Override
@@ -102,7 +91,9 @@ public class GraphMLVertexStatusProvider implements StatusProvider {
         Map<VertexRef, Status> resultMap = Maps.newHashMap();
         for (GraphMLVertex eachVertex : graphMLVertices) {
             AlarmSummary alarmSummary = nodeIdToAlarmSummaryMap.get(eachVertex.getNodeID());
-            DefaultStatus status = alarmSummary == null ? new VertexStatus(OnmsSeverity.NORMAL) : new VertexStatus(alarmSummary.getMaxSeverity(), alarmSummary.getAlarmCount());
+            GraphMLVertexStatus status = alarmSummary == null
+                                   ? new GraphMLVertexStatus(OnmsSeverity.NORMAL, 0)
+                                   : new GraphMLVertexStatus(alarmSummary.getMaxSeverity(), alarmSummary.getAlarmCount());
             resultMap.put(eachVertex, status);
         }
 

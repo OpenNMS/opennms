@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.net.MalformedURLException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,14 +69,25 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return new DefaultTopologyProviderInfo(name, description);
     }
 
+    public enum VertexStatusProviderType {
+        NO_STATUS_PROVIDER,
+        DEFAULT_STATUS_PROVIDER,
+        SCRIPT_STATUS_PROVIDER,
+        PROPAGATE_STATUS_PROVIDER,
+    }
+
+    private final GraphMLMetaTopologyProvider metaTopologyProvider;
     private final int defaultSzl;
     private final String preferredLayout;
     private final FocusStrategy focusStrategy;
     private final List<String> focusIds;
-    private final Boolean requiresStatusProvider;
+    private final Object vertexStatusProvider;
 
-    public GraphMLTopologyProvider(GraphMLGraph graph, GraphMLServiceAccessor serviceAccessor) {
+    public GraphMLTopologyProvider(final GraphMLMetaTopologyProvider metaTopologyProvider,
+                                   final GraphMLGraph graph,
+                                   final GraphMLServiceAccessor serviceAccessor) {
         super(graph.getProperty(GraphMLProperties.NAMESPACE));
+        this.metaTopologyProvider = metaTopologyProvider;
 
         m_serviceAccessor = serviceAccessor;
 
@@ -101,7 +111,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         focusStrategy = getFocusStrategy(graph);
         focusIds = getFocusIds(graph);
         preferredLayout = graph.getProperty(GraphMLProperties.PREFERRED_LAYOUT);
-        requiresStatusProvider = graph.getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
+        vertexStatusProvider = graph.<Object>getProperty(GraphMLProperties.VERTEX_STATUS_PROVIDER, Boolean.FALSE);
         if (focusStrategy != FocusStrategy.SPECIFIC && !focusIds.isEmpty()) {
             LOG.warn("Focus ids is defined, but strategy is {}. Did you mean to specify {}={}. Ignoring focusIds.", GraphMLProperties.FOCUS_STRATEGY, FocusStrategy.SPECIFIC.name());
         }
@@ -152,6 +162,10 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL;
     }
 
+    public GraphMLMetaTopologyProvider getMetaTopologyProvider() {
+        return this.metaTopologyProvider;
+    }
+
     @Override
     public void refresh() {
         // TODO: How to handle refresh()?
@@ -200,7 +214,26 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 
-    public boolean requiresStatusProvider() {
-        return requiresStatusProvider;
+    public VertexStatusProviderType vertexStatusProvider() {
+        if (this.vertexStatusProvider instanceof Boolean) {
+            if (this.vertexStatusProvider == Boolean.TRUE) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            } else {
+                return VertexStatusProviderType.NO_STATUS_PROVIDER;
+            }
+
+        } else if (this.vertexStatusProvider instanceof String) {
+            if ("default".equalsIgnoreCase((String)this.vertexStatusProvider)) {
+                return VertexStatusProviderType.DEFAULT_STATUS_PROVIDER;
+            }
+            if ("script".equalsIgnoreCase((String)this.vertexStatusProvider)) {
+                return VertexStatusProviderType.SCRIPT_STATUS_PROVIDER;
+            }
+            if ("propagate".equalsIgnoreCase((String)this.vertexStatusProvider)) {
+                return VertexStatusProviderType.PROPAGATE_STATUS_PROVIDER;
+            }
+        }
+
+        return VertexStatusProviderType.NO_STATUS_PROVIDER;
     }
 }

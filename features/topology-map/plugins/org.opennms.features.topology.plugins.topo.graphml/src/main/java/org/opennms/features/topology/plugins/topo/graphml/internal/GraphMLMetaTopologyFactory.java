@@ -44,13 +44,15 @@ import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLDefaultVertexStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLPropagateVertexStatusProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.internal.scripting.OSGiScriptEngineManager;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertexStatusProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLScriptVertexStatusProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -124,10 +126,39 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 					// Vertex Status Provider
 					// Only add status provider if explicitly set in GraphML document
-					if (rawTopologyProvider.requiresStatusProvider()) {
-						GraphMLVertexStatusProvider statusProvider = new GraphMLVertexStatusProvider(
-								rawTopologyProvider.getVertexNamespace(),
-								(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
+					final StatusProvider statusProvider;
+					switch (rawTopologyProvider.vertexStatusProvider()) {
+						case NO_STATUS_PROVIDER:
+							statusProvider = null;
+							break;
+
+						case DEFAULT_STATUS_PROVIDER:
+							statusProvider = new GraphMLDefaultVertexStatusProvider(
+									rawTopologyProvider,
+									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds));
+							break;
+
+						case SCRIPT_STATUS_PROVIDER:
+							statusProvider = new GraphMLScriptVertexStatusProvider(
+									rawTopologyProvider,
+									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds),
+									scriptEngineManager,
+									m_serviceAccessor);
+							break;
+
+						case PROPAGATE_STATUS_PROVIDER:
+							statusProvider = new GraphMLPropagateVertexStatusProvider(
+									rawTopologyProvider,
+									m_bundleContext,
+									(nodeIds) -> m_serviceAccessor.getAlarmDao().getNodeAlarmSummariesIncludeAcknowledgedOnes(nodeIds),
+									m_serviceAccessor);
+							break;
+
+						default:
+							throw null;
+					}
+
+					if (statusProvider != null) {
 						registerService(pid, StatusProvider.class, statusProvider);
 					}
 				});
