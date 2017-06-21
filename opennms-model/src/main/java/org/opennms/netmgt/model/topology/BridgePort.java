@@ -30,6 +30,7 @@ package org.opennms.netmgt.model.topology;
 
 import java.util.Date;
 
+import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class BridgePort {
@@ -41,6 +42,30 @@ public class BridgePort {
     private Integer m_vlan;
     private Date m_createTime;
     private Date m_pollTime;
+
+    public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getNode());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setBridgePortIfName(link.getBridgePortIfName());
+        bp.setVlan(link.getVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
+
+    public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getDesignatedNode());
+        bp.setBridgePort(link.getDesignatedPort());
+        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
+        bp.setBridgePortIfName(link.getDesignatedPortIfName());
+        bp.setVlan(link.getDesignatedVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
 
     @Override
     public int hashCode() {
