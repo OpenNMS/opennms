@@ -76,12 +76,10 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
             final Collection<ServiceReference<StatusProvider>> statusProviderReferences = this.bundleContext.getServiceReferences(StatusProvider.class, null);
 
             for (final VertexRef vertex : vertices) {
-                // TODO:
-                // .filter(eachVertex -> contributesTo(eachVertex.getNamespace()) && eachVertex instanceof GraphMLVertex)
-                // .map(eachVertex -> (GraphMLVertex) eachVertex)
+
 
                 GraphMLVertexStatus mergedStatus = new GraphMLVertexStatus();
-                for (Vertex childVertex : vertexProvider.getChildren(vertex, criteria)) {
+                for (VertexRef childVertex : this.provider.getMetaTopologyProvider().getOppositeVertices(vertex)) {
                     for (final ServiceReference<StatusProvider> statusProviderReference : statusProviderReferences) {
                         try {
                             final StatusProvider statusProvider = bundleContext.getService(statusProviderReference);
