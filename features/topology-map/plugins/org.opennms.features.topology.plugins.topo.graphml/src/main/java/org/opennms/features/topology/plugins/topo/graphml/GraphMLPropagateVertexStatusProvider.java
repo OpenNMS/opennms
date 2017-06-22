@@ -32,7 +32,6 @@ import com.google.common.collect.Maps;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
@@ -75,15 +74,13 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
         try {
             final Collection<ServiceReference<StatusProvider>> statusProviderReferences = this.bundleContext.getServiceReferences(StatusProvider.class, null);
 
-            for (final VertexRef vertex : vertices) {
+            for (final ServiceReference<StatusProvider> statusProviderReference : statusProviderReferences) {
+                try {
+                    final StatusProvider statusProvider = bundleContext.getService(statusProviderReference);
 
-
-                GraphMLVertexStatus mergedStatus = new GraphMLVertexStatus();
-                for (VertexRef childVertex : this.provider.getMetaTopologyProvider().getOppositeVertices(vertex)) {
-                    for (final ServiceReference<StatusProvider> statusProviderReference : statusProviderReferences) {
-                        try {
-                            final StatusProvider statusProvider = bundleContext.getService(statusProviderReference);
-
+                    for (final VertexRef vertex : vertices) {
+                        GraphMLVertexStatus mergedStatus = statuses.getOrDefault(vertex, new GraphMLVertexStatus());
+                        for (VertexRef childVertex : this.provider.getMetaTopologyProvider().getOppositeVertices(vertex)) {
                             if (statusProvider.contributesTo(childVertex.getNamespace())) {
                                 final GraphMLVertexStatus childStatus = (GraphMLVertexStatus) statusProvider.getStatusForVertices(
                                         this.provider.getMetaTopologyProvider().getGraphProviderBy(childVertex.getNamespace()),
@@ -91,18 +88,16 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                                         new Criteria[0]).get(childVertex);
                                 mergedStatus = GraphMLVertexStatus.merge(mergedStatus, childStatus);
                             }
-
-                        } finally {
-                            bundleContext.ungetService(statusProviderReference);
                         }
+                        statuses.put(vertex, mergedStatus);
                     }
-                }
 
-                statuses.put(vertex, mergedStatus);
+                } finally {
+                    bundleContext.ungetService(statusProviderReference);
+                }
             }
 
         } catch (final InvalidSyntaxException e) {
-
         }
 
         return statuses;
