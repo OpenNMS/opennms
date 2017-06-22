@@ -47,11 +47,45 @@ public class BroadcastDomain {
 
     volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
     
+    volatile Map<Integer,List<BridgeMacLink>> m_forwarding = new HashMap<Integer,List<BridgeMacLink>>();
+    
     boolean m_lock = false;
 
     Object m_locker;
+
+    public void addForwarding(BridgeMacLink forward) {
+        Integer bridgeid = forward.getNode().getId();
+        if (bridgeid == null)
+            return;
+        if (!m_forwarding.containsKey(bridgeid))
+            m_forwarding.put(bridgeid, new ArrayList<BridgeMacLink>());
+        m_forwarding.get(bridgeid).add(forward);
+    }
     
-	public Set<String> getBridgeMacAddresses(Integer bridgeid) {
+    public List<BridgeMacLink> getForwarders(Integer bridgeId) {
+        if (!m_forwarding.containsKey(bridgeId))
+            m_forwarding.put(bridgeId, new ArrayList<BridgeMacLink>());
+        return m_forwarding.get(bridgeId);
+    }
+    
+    public void cleanForwarders(Set<String> macs) {
+        Map<Integer, List<BridgeMacLink>> forwadingMap=new HashMap<Integer, List<BridgeMacLink>>();
+        for (Integer bridgeId: m_forwarding.keySet()) {
+            List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
+            for (BridgeMacLink forward: m_forwarding.get(bridgeId)) {
+                if (macs.contains(forward.getMacAddress()))
+                    continue;
+                forwarders.add(forward);
+            }
+            if (forwarders.isEmpty())
+                continue;
+            forwadingMap.put(bridgeId, forwarders);
+        }
+        m_forwarding = forwadingMap;
+        
+    }
+    
+    public Set<String> getBridgeMacAddresses(Integer bridgeid) {
 		Set<String> bridgemacaddresses = new HashSet<String>();
 		Bridge bridge = getBridge(bridgeid);
 		if ( bridge != null ) {
@@ -85,6 +119,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
 
     public void clearTopology() {
+        m_forwarding.clear();
         m_topology.clear();
     }
     
@@ -183,7 +218,34 @@ E:    	for (BridgeElement element: bridgeelements) {
         segment.setBroadcastDomain(this);
         m_topology.add(segment);
     }
-        
+    
+    public void loadTopologyRoot() {
+        if (m_bridges.size() == 1) {
+            hierarchySetUp(m_bridges.iterator().next());
+            return;
+        }
+
+        Integer designated = null;
+        for (SharedSegment segment: m_topology) {
+            Set<Integer> children = segment.getBridgeIdsOnSegment();
+            if (children.size() == 1)
+                continue;
+            designated = segment.getDesignatedBridge();
+            loadTopologyRoot(designated);
+            return;
+        }
+    }
+    
+    private void loadTopologyRoot(Integer bridgeId) {
+        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+            if (segment.getDesignatedBridge().intValue() != bridgeId.intValue()) {
+                loadTopologyRoot(segment.getDesignatedBridge());
+                return;
+            }
+        }
+        hierarchySetUp(getBridge(bridgeId));
+    }
+
     public boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
@@ -278,7 +340,7 @@ E:    	for (BridgeElement element: bridgeelements) {
         root.setRootPort(null);
         if (m_bridges.size() == 1)
             return;
-        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(root.getId())) {
+        for (SharedSegment segment : getSharedSegmentOnTopologyForBridge(root.getId())) {
             segment.setDesignatedBridge(root.getId());
             tier(segment, root.getId());
         }
@@ -301,6 +363,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     }
     
     public void clearTopologyForBridge(Integer bridgeId) {
+        m_forwarding.remove(bridgeId);
     	Bridge bridge = getBridge(bridgeId);
     	if (bridge == null)
     		return;
@@ -314,7 +377,6 @@ E:    	for (BridgeElement element: bridgeelements) {
                 for (Bridge curBridge: getBridges()) {
                     if (curBridge.getId().intValue() == newRootId.intValue()) {
                         newRootBridge=curBridge;
-                        System.out.println("root bridge" +newRootBridge.getId());
                         break;
                     }
                 }
@@ -346,10 +408,17 @@ E:    	for (BridgeElement element: bridgeelements) {
     
     public List<BridgeMacLink> calculateBFT(Bridge bridge) {
         Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
+        Map<Integer,BridgePort> portifindexmap = new HashMap<Integer, BridgePort>();
         Integer bridgeId = bridge.getId();
         List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
         OnmsNode node=new OnmsNode();
         node.setId(bridgeId);
+        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeId)) {
+            Integer bridgeport =segment.getPortForBridge(bridgeId);
+            BridgePort bridgeportifIndex = segment.getBridgePort(bridgeId);
+            portifindexmap.put(bridgeport, bridgeportifIndex);
+
+        }
         for (SharedSegment segment: getTopology()) {
             
             Set<String> macs = segment.getMacsOnSegment();
@@ -367,11 +436,16 @@ E:    	for (BridgeElement element: bridgeelements) {
                 BridgeMacLink link = new BridgeMacLink();
                 link.setNode(node);
                 link.setBridgePort(bridgePort);
+                link.setBridgePortIfIndex(portifindexmap.get(bridgePort).getBridgePortIfIndex());
+                link.setBridgePortIfName(portifindexmap.get(bridgePort).getBridgePortIfName());
+                link.setVlan(portifindexmap.get(bridgePort).getVlan());
                 link.setMacAddress(mac);
                 link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
                 links.add(link);
             }
         }
+        if (m_forwarding.containsKey(bridgeId))
+            links.addAll(m_forwarding.get(bridgeId));
         return links;
     }
     
@@ -412,6 +486,7 @@ E:    	for (BridgeElement element: bridgeelements) {
     public void clear() {
         m_topology.clear();
         m_bridges.clear();
+        m_forwarding.clear();
     }
     
     public String printTopology() {
@@ -476,8 +551,23 @@ E:    	for (BridgeElement element: bridgeelements) {
             strbfr.append(link.getMacAddress());
             strbfr.append(":bridgeport:");
             strbfr.append(link.getBridgePort());
+            strbfr.append(":ifindex:");
+            strbfr.append(link.getBridgePortIfIndex());
             strbfr.append("\n");
     	}
+        return strbfr.toString();
+    }
+
+    public static String printTopologyLink(BridgeMacLink link) {
+        StringBuffer strbfr = new StringBuffer();
+            strbfr.append("nodeid:[");
+            strbfr.append(link.getNode().getId());
+            strbfr.append("]:");
+            strbfr.append(link.getMacAddress());
+            strbfr.append(":bridgeport:");
+            strbfr.append(link.getBridgePort());
+            strbfr.append(":ifindex:");
+            strbfr.append(link.getBridgePortIfIndex());
         return strbfr.toString();
     }
 
