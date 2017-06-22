@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.model;
 
-import junit.framework.TestCase;
 import org.junit.Test;
+
+import junit.framework.TestCase;
 
 public class OnmsResourceIdTest extends TestCase {
 
@@ -42,6 +43,11 @@ public class OnmsResourceIdTest extends TestCase {
         final ResourceId id2 = ResourceId.get(id1, "http", "http://[fe80::%lo]/test.me");
         assertEquals("node[imported\\[ipam%europe+asia\\]:foo.bar\\\\x].http[http://\\[fe80::%lo\\]/test.me]",
                      id2.toString());
+    }
+
+    @Test
+    public void testNull() {
+        assertNull(ResourceId.fromString(null));
     }
 
     @Test
