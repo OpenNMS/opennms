@@ -92,6 +92,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         // 1st level JOINs
         builder.alias("alarm", Aliases.alarm.toString(), JoinType.LEFT_JOIN);
+        builder.alias("distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
         builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
         builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
@@ -133,6 +134,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
 
