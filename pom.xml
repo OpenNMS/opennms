@@ -1051,9 +1051,9 @@
       </plugin>
       -->
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-xjc-plugin</artifactId>
+        <version>${cxfXjcVersion}</version>
       </plugin>
     </plugins>
  </build>
@@ -1291,6 +1291,7 @@
     <c3p0Version>0.9.5.2</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
     <cxfVersion>3.1.11</cxfVersion>
+    <cxfXjcVersion>3.1.0</cxfXjcVersion>
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
