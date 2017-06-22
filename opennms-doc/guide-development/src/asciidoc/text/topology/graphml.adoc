@@ -89,7 +89,7 @@ ____
                                                                                 If multiple ids should be add to focus, they are separated by `,`.
                                                                                 Example: `node1,node2`
 | `semantic-zoom-level`     | no       | Graph        | `int`     | `1`       | Defines the default SZL.
-| `vertex-status-provider`  | no       | Graph        | `boolean` | `false`   | Defines if a <<gd-topology-graphml-vertex-status-provider>> should be used.
+| `vertex-status-provider`  | no       | Graph        | `string`  | -         | Defines which <<gd-topology-graphml-vertex-status-provider>> should be used.
 | `iconKey`                 | no       | Node         | `string`  | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
 | `label`                   | no       | Graph, Node  | `string`  | -         | Defines a custom label. If not defined, the `id` is used instead.
 | `nodeID`                  | no       | Node         | `int`     | -         | Allows referencing the Vertex to an OpenNMS node.
@@ -125,10 +125,27 @@ Instead if a custom icon should be used, each node must contain a `iconKey` prop
 [[gd-topology-graphml-vertex-status-provider]]
 ==== Vertex Status Provider
 
-The _Vertex Status Provider_ calculates the status of the Vertex based on the "worst" unacknowledged alarm associated with the Vertex's node.
-This means in order to have a status calculated a (OpenNMS) Node must be associated with the Vertex.
-This can be achieved by setting the GraphML attribute `nodeID` on the GraphML Node accordingly.
+The _Vertex Status Provider_ calculates the status of the Vertex.
+There are three implementations available which can be configured for each graph: `default`, `script` and `propagate`.
+If none is specified, there is no status provided at all.
 
+===== Default Vertex Status Provider
+The `default` status provider calculates the status based on the worst unacknowledged alarm associated with the Vertex's node.
+In order to have a status calculated a (OpenNMS) node must be associated with the Vertex.
+This can be achieved by setting the GraphML attribute `nodeID` on the GraphML node accordingly.
+
+===== Script Vertex Status Provider
+The `script` status provider uses scripts similar to the <<gd-topology-graphml-edge-status-provider>>.
+Just place Groovy scripts (with file extension .groovy) in the directory `$OPENNMS_HOME/etc/graphml-vertex-status`.
+All of the scripts will be evaluated and the most severe status will be used for the edge in the topology's visualization.
+
+If the script shouldn't contribute any status to a vertex just return `null`.
+
+===== Propagate Vertex Status Provider
+The `propagate` status provider follows all edges from a node to its connected nodes.
+It uses the status of these nodes to calculate the status by determining the worst one.
+
+[[gd-topology-graphml-edge-status-provider]]
 ==== Edge Status Provider
 
 It is also possible to compute a status for each edge in a given graph.
@@ -150,7 +167,7 @@ if ( sourceNode != null && sourceNode.isDown() ) {
 }
 ----
 
-If the script shouldn't contribute any status to an edge just return null.
+If the script shouldn't contribute any status to an edge just return `null`.
 
 [[gd-topology-graphml-layers]]
 ==== Layers
