@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -65,10 +66,6 @@ public class PathOutageStatusProvider implements StatusProvider {
 													   .map(v -> (PathOutageVertex)v)
 													   .map(v -> v.getNodeID())
 													   .collect(Collectors.toList());
-		List<String> paramNames = Lists.newArrayList("nodeIds");
-		List<Object> paramValues = new ArrayList();
-		paramValues.add(Lists.newArrayList(nodeIds));
-
 		if (nodeIds.isEmpty()) {
 			return new HashMap<>();
 		}
@@ -84,13 +81,19 @@ public class PathOutageStatusProvider implements StatusProvider {
 		hql.append("WHERE node.id in (:nodeIds) ");
 		hql.append("AND outage.serviceRegainedEvent is null ");
 		hql.append("GROUP BY node.id");
+
+		final List<String> paramNames = Lists.newArrayList("nodeIds");
+		final List<Object> paramValues = new ArrayList();
+		paramValues.add(Lists.newArrayList(nodeIds));
 		final List<Object[]> retvals = this.persistenceAccessor.findUsingNamedParameters(hql.toString(),
 																						 paramNames.toArray(new String[paramNames.size()]),
 																						 paramValues.toArray());
 		// Generating alarms map
-		Map<Integer, OnmsSeverity> mappedAlarms = new HashedMap();
+		final Map<Integer, OnmsSeverity> mappedAlarms = new HashedMap();
 		for (int i = 0; i < retvals.size(); i++) {
-			mappedAlarms.put((Integer)retvals.get(i)[0], OnmsSeverity.get((Integer)retvals.get(i)[1]));
+			final Integer nodeId = (Integer) retvals.get(i)[0];
+			final Integer severity = Optional.ofNullable((Integer) retvals.get(i)[1]).orElse(OnmsSeverity.NORMAL.ordinal());
+			mappedAlarms.put(nodeId, OnmsSeverity.get(severity));
 		}
 		final Map<VertexRef, Status> status = vertices.stream()
 				.map(v -> (PathOutageVertex)v)
