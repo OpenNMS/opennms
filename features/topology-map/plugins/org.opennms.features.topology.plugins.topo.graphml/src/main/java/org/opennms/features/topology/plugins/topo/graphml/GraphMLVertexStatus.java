@@ -52,7 +52,7 @@ class GraphMLVertexStatus extends GraphMLStatus {
     }
 
     public GraphMLVertexStatus() {
-        super(OnmsSeverity.INDETERMINATE);
+        super(OnmsSeverity.NORMAL);
     }
 
     @Override

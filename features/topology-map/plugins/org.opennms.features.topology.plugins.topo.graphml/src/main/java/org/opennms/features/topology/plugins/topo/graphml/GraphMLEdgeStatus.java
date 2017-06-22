@@ -44,7 +44,7 @@ public class GraphMLEdgeStatus extends GraphMLStatus {
     }
 
     public GraphMLEdgeStatus() {
-        super(OnmsSeverity.INDETERMINATE);
+        super(OnmsSeverity.NORMAL);
     }
 
     @Override
