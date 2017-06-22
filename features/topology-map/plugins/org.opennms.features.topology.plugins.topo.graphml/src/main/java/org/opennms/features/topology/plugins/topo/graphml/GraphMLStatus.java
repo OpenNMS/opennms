@@ -49,7 +49,7 @@ public abstract class GraphMLStatus implements Status {
 
     public GraphMLStatus(final OnmsSeverity severity) {
         this.severity = severity;
-        this.styleProperties = Maps.asMap(this.getAllowedStyleProperties(), key -> null);
+        this.styleProperties = Maps.newHashMap(Maps.asMap(this.getAllowedStyleProperties(), key -> null));
     }
 
     protected abstract Set<String> getAllowedStyleProperties();
