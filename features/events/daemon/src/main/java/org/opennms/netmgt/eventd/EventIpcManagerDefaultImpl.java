@@ -175,7 +175,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                 @Override
                 public void run() {
                     try {
-                        LOG.debug("run: calling onEvent on {} for event {}", m_listener.getName(), event);
+                        LOG.debug("run: calling onEvent on {} for event {}", m_listener.getName(), event.toStringSimple());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
                         Map<String,String> mdc = Logging.getCopyOfContextMap();
