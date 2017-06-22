@@ -143,6 +143,8 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
         map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
+        // TODO: distPoller
+
         return map;
     }
 

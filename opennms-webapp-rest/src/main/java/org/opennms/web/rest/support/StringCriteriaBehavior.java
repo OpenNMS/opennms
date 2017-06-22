@@ -28,10 +28,7 @@
 
 package org.opennms.web.rest.support;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
-
-import org.opennms.core.criteria.CriteriaBuilder;
 
 /**
  * Specific {@link CriteriaBehavior} for String values. In this class,
@@ -40,14 +37,14 @@ import org.opennms.core.criteria.CriteriaBuilder;
  */
 public class StringCriteriaBehavior extends CriteriaBehavior<String> {
     public StringCriteriaBehavior(String name) {
-        this(name, (b,v)-> {});
+        this(name, (b,v,c,w)-> {});
     }
 
-    public StringCriteriaBehavior(BiConsumer<CriteriaBuilder,Object> beforeVisit) {
+    public StringCriteriaBehavior(BeforeVisit beforeVisit) {
         super(null, Function.identity(), beforeVisit);
     }
 
-    public StringCriteriaBehavior(String name, BiConsumer<CriteriaBuilder,Object> beforeVisit) {
+    public StringCriteriaBehavior(String name, BeforeVisit beforeVisit) {
         super(name, Function.identity(), beforeVisit);
     }
 }

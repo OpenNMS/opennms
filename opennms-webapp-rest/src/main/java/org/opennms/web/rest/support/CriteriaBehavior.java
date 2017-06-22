@@ -28,9 +28,9 @@
 
 package org.opennms.web.rest.support;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.opennms.core.criteria.CriteriaBuilder;
 
 /**
@@ -44,27 +44,34 @@ import org.opennms.core.criteria.CriteriaBuilder;
  * @param <T>
  */
 public class CriteriaBehavior<T> {
+
+    @FunctionalInterface
+    public interface BeforeVisit {
+        public void accept(CriteriaBuilder b, Object v, ConditionType c, boolean isWildcard);
+    }
+
     private final String m_criteriaPropertyName;
-    private final BiConsumer<CriteriaBuilder,Object> m_beforeVisit;
+    private final BeforeVisit m_beforeVisit;
     private final Function<String,T> m_converter;
+    private boolean m_skipProperty = false;
 
     public CriteriaBehavior(String name) {
-        this(name, null, (b,v)-> {});
+        this(name, null, (b,v,c,w)-> {});
     }
 
     public CriteriaBehavior(Function<String,T> converter) {
-        this(null, converter, (b,v) -> {});
+        this(null, converter, (b,v,c,w) -> {});
     }
 
-    public CriteriaBehavior(String name, BiConsumer<CriteriaBuilder,Object> beforeVisit) {
+    public CriteriaBehavior(String name, BeforeVisit beforeVisit) {
         this(name, null, beforeVisit);
     }
 
     public CriteriaBehavior(String name, Function<String,T> converter) {
-        this(name, converter, (b,v) -> {});
+        this(name, converter, (b,v,c,w) -> {});
     }
 
-    public CriteriaBehavior(String name, Function<String,T> converter, BiConsumer<CriteriaBuilder,Object> beforeVisit) {
+    public CriteriaBehavior(String name, Function<String,T> converter, BeforeVisit beforeVisit) {
         m_criteriaPropertyName = name;
         m_converter = converter;
         m_beforeVisit = beforeVisit;
@@ -74,11 +81,19 @@ public class CriteriaBehavior<T> {
         return m_criteriaPropertyName;
     }
 
-    public void beforeVisit(CriteriaBuilder builder, Object value) {
-        m_beforeVisit.accept(builder, value);
+    public void beforeVisit(CriteriaBuilder builder, Object value, ConditionType c, boolean isWildcard) {
+        m_beforeVisit.accept(builder, value, c, isWildcard);
     }
 
     public T convert(String value) {
         return m_converter.apply(value);
+    }
+
+    public void setSkipProperty(boolean skip) {
+        m_skipProperty = skip;
+    }
+
+    public boolean shouldSkipProperty() {
+        return m_skipProperty;
     }
 }

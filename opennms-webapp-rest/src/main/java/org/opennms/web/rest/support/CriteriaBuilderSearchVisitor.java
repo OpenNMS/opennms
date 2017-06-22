@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.ext.search.PrimitiveStatement;
+import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchUtils;
@@ -147,7 +148,12 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 
 					// Execute any beforeVisit() actions for this query term such as adding
 					// additional JOIN aliases
-					behavior.beforeVisit(m_criteriaBuilder, value);
+					behavior.beforeVisit(m_criteriaBuilder, value, sc.getConditionType(), isWildcard);
+
+					// If the behavior indicates that we should skip this search term, then return
+					if (behavior.shouldSkipProperty()) {
+						return;
+					}
 				} else {
 					value = clsValue.getValue();
 				}

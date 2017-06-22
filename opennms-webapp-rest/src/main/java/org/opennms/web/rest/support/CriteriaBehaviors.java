@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
@@ -118,18 +116,75 @@ public abstract class CriteriaBehaviors {
         NODE_BEHAVIORS.put(Aliases.node.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
         NODE_BEHAVIORS.put(Aliases.node.prop("createTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
 
-        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("id"), new CriteriaBehavior<Integer>(Aliases.category.prop("id"), Integer::parseInt, (b,v) -> {}));
-        // TODO: Add aliases with join conditions when joining in the many-to-many node-to-category relationship
-//        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("id"), new CriteriaBehavior<Integer>(Aliases.category.prop("id"), Integer::parseInt, (b,v) -> {
-//            // Add a categories alias that only matches the specified value
-//            b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("id"), v), Restrictions.isNull(Aliases.category.prop("id")))); 
-//        }));
-//        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("name"), new StringCriteriaBehavior(Aliases.category.prop("name"), (b,v) -> {
-//            // Add a categories alias that only matches the specified value
-//            b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("name"), v), Restrictions.isNull(Aliases.category.prop("name")))); 
-//        }));
-        // This column is not unique so we can't reliably JOIN on it
-        //NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("description"), new StringCriteriaBehavior(Aliases.category.prop("description"), addCategoryAlias));
+        // Add aliases with join conditions when joining in the many-to-many node-to-category relationship
+        CriteriaBehavior<Integer> categoryId = new CriteriaBehavior<Integer>(Aliases.category.prop("id"), Integer::parseInt, (b,v,c,w) -> {
+            // Add a categories alias that only matches the specified value
+            // TODO: This should work but Hibernate is generating invalid SQL for this criteria
+            //b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("id"), v), Restrictions.isNull(Aliases.category.prop("id"))));
+
+            switch (c) {
+            case EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node where category_node.categoryid = '%d')", v));
+                break;
+            case NOT_EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node where category_node.categoryid = '%d')", v));
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering category.id: " + c.toString());
+            }
+        });
+        // Skip normal processing of the property since we're doing all of the filtering 
+        // in the beforeVisit() method
+        categoryId.setSkipProperty(true);
+        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("id"), categoryId);
+
+        CriteriaBehavior<String> categoryName = new StringCriteriaBehavior(Aliases.category.prop("name"), (b,v,c,w) -> {
+            // Add a categories alias that only matches the specified value
+            // TODO: This should work but Hibernate is generating invalid SQL for this criteria
+            //b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("name"), v), Restrictions.isNull(Aliases.category.prop("name")))); 
+
+            switch (c) {
+            case EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                break;
+            case NOT_EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering category.name: " + c.toString());
+            }
+        });
+        // Skip normal processing of the property since we're doing all of the filtering 
+        // in the beforeVisit() method
+        categoryName.setSkipProperty(true);
+        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("name"), categoryName);
+
+        CriteriaBehavior<String> categoryDescription = new StringCriteriaBehavior(Aliases.category.prop("description"), (b,v,c,w) -> {
+            // Add a categories alias that only matches the specified value
+            // TODO: This should work but Hibernate is generating invalid SQL for this criteria
+            //b.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.category.prop("description"), v), Restrictions.isNull(Aliases.category.prop("description")))); 
+
+            switch (c) {
+            case EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                break;
+            case NOT_EQUALS:
+                // TODO: Use parameterized statements to avoid SQL injection 
+                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering category.description: " + c.toString());
+            }
+        });
+        // Skip normal processing of the property since we're doing all of the filtering 
+        // in the beforeVisit() method
+        categoryDescription.setSkipProperty(true);
+        NODE_CATEGORY_BEHAVIORS.put(Aliases.category.prop("description"), categoryDescription);
 
         SERVICE_TYPE_BEHAVIORS.put(Aliases.serviceType.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
 

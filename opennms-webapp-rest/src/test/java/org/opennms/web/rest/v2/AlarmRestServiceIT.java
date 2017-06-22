@@ -108,8 +108,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final NetworkBuilder builder = new NetworkBuilder();
 
-//        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux, servers });
-        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux });
+        // Add a node with 2 categories, since this will really exercise the Criteria
+        // aliases since node-to-category is a many-to-many relationship
+        node1 = createNode(builder, "server01", "192.168.1.1", new OnmsCategory[] { linux, servers });
         node2 = createNode(builder, "server02", "192.168.1.2", new OnmsCategory[] { macOS });
 
         createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR);
@@ -141,10 +142,39 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testCollectionsAndMappings() throws Exception {
+        int categoryId;
+        categoryId = m_databasePopulator.getCategoryDao().findByName("Linux").getId();
+        executeQueryAndVerify("_s=category.id==" + categoryId, 3);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 4);
+
+        categoryId = m_databasePopulator.getCategoryDao().findByName("LinuxServers").getId();
+        executeQueryAndVerify("_s=category.id==" + categoryId, 3);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 4);
+
+        categoryId = m_databasePopulator.getCategoryDao().findByName("macOS").getId();
+        executeQueryAndVerify("_s=category.id==" + categoryId, 4);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 3);
+
+        // Category that doesn't exist
+        categoryId = Integer.MAX_VALUE;
+        executeQueryAndVerify("_s=category.id==" + categoryId, 0);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 7);
+
         executeQueryAndVerify("_s=category.name==Linux", 3);
         executeQueryAndVerify("_s=category.name!=Linux", 4);
-//        executeQueryAndVerify("_s=category.name==LinuxServers", 3);
-//        executeQueryAndVerify("_s=category.name!=LinuxServers", 4);
+        executeQueryAndVerify("_s=category.name==LinuxServers", 3);
+        executeQueryAndVerify("_s=category.name!=LinuxServers", 4);
+        executeQueryAndVerify("_s=category.name==Linux*", 3);
+        executeQueryAndVerify("_s=category.name!=Linux*", 4);
+        executeQueryAndVerify("_s=category.name==macOS", 4);
+        executeQueryAndVerify("_s=category.name!=macOS", 3);
+        executeQueryAndVerify("_s=category.name==mac*", 4);
+        executeQueryAndVerify("_s=category.name!=mac*", 3);
+        executeQueryAndVerify("_s=category.name==ma*S", 4);
+        executeQueryAndVerify("_s=category.name!=ma*S", 3);
+        executeQueryAndVerify("_s=category.name==DoesntExist", 0);
+        executeQueryAndVerify("_s=category.name!=DoesntExist", 7);
+
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong;category.name==Linux", 1);
 

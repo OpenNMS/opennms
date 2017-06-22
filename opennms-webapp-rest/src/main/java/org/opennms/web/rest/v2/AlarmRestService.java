@@ -134,9 +134,6 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
         // Left joins on a toMany relationship need a join condition so that only one row is returned
         builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.alarm.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
 
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
-
         builder.orderBy("lastEventTime").desc(); // order by last event time by default
 
         return builder;
