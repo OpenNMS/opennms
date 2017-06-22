@@ -95,11 +95,11 @@ public class RrdOutputSocket {
      * @param dblValues a {@link java.util.List} object.
      * @param strValues a {@link java.util.List} object.
      */
-    public void addData(String filename, String owner, Long timestamp, List<Double> dblValues, List<String> strValues) {
+    public void addData(String filename, String owner, Long timestampInSec, List<Double> dblValues, List<String> strValues) {
         m_messages.addMessage(PerformanceDataReading.newBuilder()
                 .setPath(filename)
                 .setOwner(owner)
-                .setTimestamp(timestamp)
+                .setTimestamp(timestampInSec * 1000)
                 .addAllDblValue(dblValues)
                 .addAllStrValue(strValues)
         );
