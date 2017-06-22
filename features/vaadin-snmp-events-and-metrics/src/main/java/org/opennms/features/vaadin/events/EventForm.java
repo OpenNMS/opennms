@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.events;
 
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
@@ -153,6 +154,7 @@ public class EventForm extends CustomComponent {
         alarmDataAlarmType.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
         alarmDataAlarmType.setNullSelectionAllowed(false);
         alarmDataAlarmType.setVisible(false);
+        alarmDataAlarmType.setRequired(true);
         eventLayout.addComponent(alarmDataAlarmType);
 
         alarmDataAutoClean.setWidth("100%");
@@ -162,8 +164,10 @@ public class EventForm extends CustomComponent {
         alarmDataReductionKey.setWidth("100%");
         alarmDataReductionKey.setNullRepresentation("");
         alarmDataReductionKey.setVisible(false);
+        alarmDataReductionKey.setRequired(true);
         eventLayout.addComponent(alarmDataReductionKey);
 
+        // TODO the clear-key is required only when the alarm-type is 2
         alarmDataClearKey.setWidth("100%");
         alarmDataClearKey.setNullRepresentation("");
         alarmDataClearKey.setVisible(false);
@@ -221,6 +225,9 @@ public class EventForm extends CustomComponent {
         alarmDataReductionKey.setVisible(enable);
         alarmDataClearKey.setVisible(enable);
         if (enable) {
+            if (getEvent().getAlarmData() == null) {
+                getEvent().setAlarmData(new AlarmData());
+            }
             eventEditor.bind(alarmDataAlarmType, "alarmData.alarmType");
             eventEditor.bind(alarmDataAutoClean, "alarmData.autoClean");
             eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
