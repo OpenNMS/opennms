@@ -82,6 +82,7 @@
         <include-collection dataCollectionGroup="VMware3"/>
         <include-collection dataCollectionGroup="VMware4"/>
         <include-collection dataCollectionGroup="VMware5"/>
+        <include-collection dataCollectionGroup="VMware6"/>
         <include-collection dataCollectionGroup="VMware-Cim"/>
     </snmp-collection>
 

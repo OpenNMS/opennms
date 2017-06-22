@@ -7,9 +7,7 @@
 This monitor is used to test if a SSL certificate presented by a remote network server are
 valid. A certificate is invalid if its initial time is prior to the current time, or if the current time
 is prior to 7 days (configurable) before the expiration time. The monitor only supports SSL on
-the socket and does not support a higher level protocol above it. Additionally, it does not
-support Server Name Indication (SNI) and so is unable to validate different certificates if
-they would be presented on the same connection.
+the socket and does not support a higher level protocol above it.
 
 You can simulate the behavior by running a command like this:
 
