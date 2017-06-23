@@ -126,7 +126,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					if (SearchUtils.containsWildcard((String)clsValue.getValue())) {
 						// Then mark it as a wildcard and replace the * wildcards with % wildcards
 						isWildcard = true;
-						clsValue.setValue(SearchUtils.toSqlWildcardString((String)clsValue.getValue(), isWildcardStringMatch()));
+						clsValue.setValue(SearchUtils.toSqlWildcardString((String)clsValue.getValue(), false));
 					}
 				}
 
@@ -144,7 +144,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 
 					// If we're using CriteriaBehaviors, assume that the value is a String
 					// and convert it to the value that will be used in the Criteria
-					value = behavior.convert((String)clsValue.getValue());
+					value = behavior.convert(NULL_VALUE.equals((String)clsValue.getValue()) ? null : (String)clsValue.getValue());
 
 					// Execute any beforeVisit() actions for this query term such as adding
 					// additional JOIN aliases
@@ -174,8 +174,6 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 							NULL_DATE_VALUE.equals(value)
 						) {
 							m_criteriaBuilder.isNull(name);
-//						} else if (isIpAddrAttribute(name)) {
-//							applyIpLikeValue(m_criteriaBuilder, name, clsValue);
 						} else {
 							m_criteriaBuilder.eq(name, value);
 						}
@@ -191,9 +189,6 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 							NULL_DATE_VALUE.equals(value)
 						) {
 							m_criteriaBuilder.isNotNull(name);
-//						} else if (isIpAddrAttribute(name)) {
-//							m_criteriaBuilder.not();
-//							applyIpLikeValue(m_criteriaBuilder, name, clsValue);
 						} else {
 							// Match any rows that do not match the value or are null
 							m_criteriaBuilder.or(
@@ -278,24 +273,9 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 		}
 	}
 
-//	private static void applyIpLikeValue(CriteriaBuilder criteriaBuilder, String attribute, org.apache.cxf.jaxrs.ext.search.visitor.AbstractSearchConditionVisitor<?,?>.ClassValue clsValue) {
-//		if (clsValue != null && clsValue.getValue() != null) {
-//			if (clsValue.getValue() instanceof InetAddress) {
-//				InetAddress inetAddress = (InetAddress) clsValue.getValue();
-//				criteriaBuilder.eq(attribute, InetAddressUtils.str(inetAddress));
-//			} else {
-//				criteriaBuilder.eq(attribute, clsValue.getValue().toString());
-//			}
-//		}
-//	}
-
 	@Override
 	public CriteriaBuilder getQuery() {
 		return m_criteriaBuilder;
 	}
 
-//	private static boolean isIpAddrAttribute(String name) {
-//		List<String> ipAttributes = Lists.newArrayList("ipaddr", "ipaddress", "netmask");
-//		return ipAttributes.stream().filter(attribute -> attribute.equalsIgnoreCase(name)).findFirst().isPresent();
-//	}
 }

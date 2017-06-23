@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.support;
 
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
@@ -79,7 +81,7 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("firstAutomationTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("firstEventTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("ifIndex"), new CriteriaBehavior<Integer>(Integer::parseInt));
-        //ALARM_BEHAVIORS.put(Aliases.alarm.prop("ipAddr"), new CriteriaBehavior<InetAddress>(/* TODO */));
+        ALARM_BEHAVIORS.put(Aliases.alarm.prop("ipAddr"), new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("lastAutomationTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("lastEventTime"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         ALARM_BEHAVIORS.put(Aliases.alarm.prop("severity"), new CriteriaBehavior<OnmsSeverity>(OnmsSeverity::get));
@@ -102,11 +104,11 @@ public abstract class CriteriaBehaviors {
         EVENT_BEHAVIORS.put(Aliases.event.prop("eventTTicketState"), new CriteriaBehavior<Integer>(Integer::parseInt));
         EVENT_BEHAVIORS.put(Aliases.event.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
         EVENT_BEHAVIORS.put(Aliases.event.prop("ifIndex"), new CriteriaBehavior<Integer>(Integer::parseInt));
-        //EVENT_BEHAVIORS.put(Aliases.event.prop("ipAddr"), new CriteriaBehavior<InetAddress>(/* TODO */));
+        EVENT_BEHAVIORS.put(Aliases.event.prop("ipAddr"), new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
 
         IP_INTERFACE_BEHAVIORS.put(Aliases.ipInterface.prop("id"), new CriteriaBehavior<Integer>(Integer::parseInt));
         IP_INTERFACE_BEHAVIORS.put(Aliases.ipInterface.prop("lastCapsdPoll"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        //IP_INTERFACE_BEHAVIORS.put(Aliases.ipInterface.prop("ipAddress"), new CriteriaBehavior<InetAddress>(/* TODO */));
+        IP_INTERFACE_BEHAVIORS.put(Aliases.ipInterface.prop("ipAddress"), new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
 
         MONITORING_LOCATION_BEHAVIORS.put(Aliases.location.prop("latitude"), new CriteriaBehavior<Float>(Float::parseFloat));
         MONITORING_LOCATION_BEHAVIORS.put(Aliases.location.prop("longitude"), new CriteriaBehavior<Float>(Float::parseFloat));
@@ -195,6 +197,6 @@ public abstract class CriteriaBehaviors {
         SNMP_INTERFACE_BEHAVIORS.put(Aliases.snmpInterface.prop("ifSpeed"), new CriteriaBehavior<Long>(Long::parseLong));
         SNMP_INTERFACE_BEHAVIORS.put(Aliases.snmpInterface.prop("lastCapsdPoll"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
         SNMP_INTERFACE_BEHAVIORS.put(Aliases.snmpInterface.prop("lastSnmpPoll"), new CriteriaBehavior<Date>(CriteriaBehaviors::parseDate));
-        //SNMP_INTERFACE_BEHAVIORS.put(Aliases.snmpInterface.prop("netMask"), new CriteriaBehavior<InetAddress>(/* TODO */));
+        SNMP_INTERFACE_BEHAVIORS.put(Aliases.snmpInterface.prop("netMask"), new CriteriaBehavior<InetAddress>(InetAddressUtils::addr));
     }
 }

@@ -54,6 +54,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,7 +146,8 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
         map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
-        // TODO: distPoller
+        // Allow iplike queries on event.ipAddr
+        map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         return map;
     }

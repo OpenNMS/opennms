@@ -64,14 +64,13 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
-import org.opennms.web.rest.support.StringCriteriaBehavior;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -161,6 +160,9 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
         map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
         map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+
+        // Allow iplike queries on alarm.ipAddr
+        map.put(Aliases.alarm.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         return map;
     }

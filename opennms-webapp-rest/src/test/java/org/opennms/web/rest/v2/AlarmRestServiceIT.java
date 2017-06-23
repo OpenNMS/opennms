@@ -141,7 +141,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testCollectionsAndMappings() throws Exception {
+    public void testCategoryFiltering() throws Exception {
         int categoryId;
         categoryId = m_databasePopulator.getCategoryDao().findByName("Linux").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 3);
@@ -174,7 +174,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=category.name!=ma*S", 3);
         executeQueryAndVerify("_s=category.name==DoesntExist", 0);
         executeQueryAndVerify("_s=category.name!=DoesntExist", 7);
+    }
 
+    @Test
+    public void testRootAliasFiltering() throws Exception {
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong;category.name==Linux", 1);
 
@@ -182,23 +185,34 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.uei==*somethingIs*", 5);
         executeQueryAndVerify("_s=alarm.uei!=*somethingIs*", 2);
 
+        // Verify IP address queries including iplike queries
+        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1", 3);
+        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.2", 4);
+        executeQueryAndVerify("_s=alarm.ipAddr==192.*.*.2", 4);
+        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1-2", 7);
+        executeQueryAndVerify("_s=alarm.ipAddr==127.0.0.1", 0);
+        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 7);
+    }
+
+    @Test
+    public void testServiceFiltering() throws Exception {
         // Verify service queries
         executeQueryAndVerify("_s=serviceType.name==ICMP", 7);
         executeQueryAndVerify("_s=serviceType.name!=ICMP", 0);
         executeQueryAndVerify("_s=serviceType.name==SNMP", 0);
         executeQueryAndVerify("_s=serviceType.name==*MP", 7);
+    }
 
-        // Verify IP address queries
-        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1", 3);
-        executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.2", 4);
-        executeQueryAndVerify("_s=alarm.ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 7);
-
+    @Test
+    public void testIpInterfaceFiltering() throws Exception {
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.1", 3);
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.2", 4);
         executeQueryAndVerify("_s=ipInterface.ipAddress==127.0.0.1", 0);
         executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 7);
+    }
 
+    @Test
+    public void testNodeFiltering() throws Exception {
         executeQueryAndVerify("_s=node.id==" + node1.getId(), 3);
         executeQueryAndVerify("_s=node.id==" + node2.getId(), 4);
 
@@ -208,14 +222,23 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=node.label!=server02", 3);
         executeQueryAndVerify("_s=(node.label==server01,node.label==server02)", 7);
         executeQueryAndVerify("_s=node.label!=\u0000", 7);
+    }
 
+    @Test
+    public void testAssetFiltering() throws Exception {
         executeQueryAndVerify("_s=assetRecord.description==lolol", 0);
+    }
 
+    @Test
+    public void testSnmpFiltering() throws Exception {
         executeQueryAndVerify("_s=snmpInterface.netMask==255.255.255.0", 0);
         executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 7);
         executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 7);
         executeQueryAndVerify("_s=snmpInterface.netMask==255.255.127.0", 0);
+    }
 
+    @Test
+    public void testLocationFiltering() throws Exception {
         executeQueryAndVerify("_s=location.locationName==Default", 7);
         executeQueryAndVerify("_s=location.locationName!=Default", 0);
     }

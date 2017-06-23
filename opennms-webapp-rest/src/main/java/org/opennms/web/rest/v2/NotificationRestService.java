@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.OnmsNotificationCollection;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,22 +102,25 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
 
     @Override
     protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
-        Map<String,CriteriaBehavior<?>> criteriaPropertiesMapping = new HashMap<>();
+        Map<String,CriteriaBehavior<?>> map = new HashMap<>();
 
         // Root alias
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.NOTIFICATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NOTIFICATION_BEHAVIORS);
 
         // 1st level JOINs
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.EVENT_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
 
         // 2nd level JOINs
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
-        criteriaPropertiesMapping.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
 
-        return criteriaPropertiesMapping;
+        // Allow iplike queries on notification.ipAddr
+        map.put(Aliases.notification.prop("ipAddress"), new IpLikeCriteriaBehavior("ipAddress"));
+
+        return map;
     }
 
     @Override
