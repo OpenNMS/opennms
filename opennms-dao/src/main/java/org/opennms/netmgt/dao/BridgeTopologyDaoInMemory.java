@@ -29,8 +29,10 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
@@ -40,6 +42,7 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 
@@ -167,23 +170,63 @@ BRIDGELINK:        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findAll()) {
             segment.setDesignatedBridge(link.getDesignatedNode().getId());
             segments.add(segment);
         }
-
-MACLINK:  for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
+        
+        Map<String,List<BridgeMacLink>> mactobridgeportlist = new HashMap<String, List<BridgeMacLink>>();
+        for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-            for (SharedSegment segment : segments) {
-                if (segment.containsMac(link.getMacAddress())
-                        || segment.containsPort(link.getNode().getId(),
-                                                link.getBridgePort())) {
-                    segment.add(link);
-                    continue MACLINK;
-                }
-            }
-            SharedSegment segment = new SharedSegment();
-            segment.add(link);
-            segment.setDesignatedBridge(link.getNode().getId());
-            segments.add(segment);
+            if (!mactobridgeportlist.containsKey(link.getMacAddress()))
+                mactobridgeportlist.put(link.getMacAddress(), new ArrayList<BridgeMacLink>());
+            mactobridgeportlist.get(link.getMacAddress()).add(link);
         }
 
+        List<BridgeMacLink> forwarders = new ArrayList<BridgeMacLink>();
+MAC:        for (String macaddress: mactobridgeportlist.keySet()) {
+            System.err.println("parsing mac:" + macaddress);
+            List<BridgeMacLink> maclinks = mactobridgeportlist.get(macaddress); 
+            SharedSegment segmentfound = null;
+MACLINK:    for (BridgeMacLink link : maclinks) {
+                // check if I can found a segment
+                for (SharedSegment segment : segments) {
+                    if (segment.containsPort(link.getNode().getId(),
+                                                    link.getBridgePort())) {
+                        segmentfound = segment;
+                        System.err.println("found segment:" + segmentfound.printTopology());
+                        break MACLINK;
+                    }
+                }
+            }
+            if (segmentfound != null) {
+                boolean forwardermac = false;
+                for (BridgePort bp: segmentfound.getBridgePortsOnSegment()) {
+                    boolean found = false;
+                    for (BridgeMacLink link: maclinks) {
+                        if (link.getNode().getId().intValue() == bp.getNode().getId().intValue() &&
+                                link.getBridgePort().intValue() == bp.getBridgePort().intValue()) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        forwardermac = true;
+                        break;
+                    }
+                }
+                System.err.println("forwarder:" + forwardermac);
+                             if (forwardermac) {
+                    forwarders.addAll(maclinks);
+                    continue MAC;
+                }
+            } else {
+                segmentfound = new SharedSegment();
+                segments.add(segmentfound);
+            }
+            for (BridgeMacLink link: maclinks) {
+                segmentfound.add(link);
+                if (!segmentfound.hasDesignatedBridgeport())
+                    segmentfound.setDesignatedBridge(link.getNode().getId());
+            }
+        }
+                
         Set<Set<Integer>> nodelinked = new HashSet<Set<Integer>>();
 SHARED:        for (SharedSegment segment: segments) {
             Set<Integer> nodesOnSegment = new HashSet<Integer>(segment.getBridgeIdsOnSegment());
@@ -220,6 +263,15 @@ SHARED:        for (SharedSegment segment: segments) {
         }
         for (BroadcastDomain domain: domains)
             domain.loadTopologyRoot();
+        
+        for (BridgeMacLink forwarder : forwarders) {
+            for (BroadcastDomain domain: domains) {
+                if (domain.containBridgeId(forwarder.getNode().getId())) {
+                    domain.addForwarding(forwarder);
+                    break;
+                }
+            }
+        }
 
         return domains;
     }

@@ -763,7 +763,9 @@ public abstract class EnLinkdTestHelper {
         String mac2 = "000daaaa0202"; // port AB ---port B  ---port CB
         String mac3 = "000daaaa0303"; // port AB ---port BC ---port C
 
-
+        String macA = "aaaaaaaaaaaa";
+        String macB = "bbbbbbbbbbbb";
+        String macC = "cccccccccccc";
         /*
          *              -----------------
          *     mac1 --  ||portA|        |
@@ -791,17 +793,17 @@ public abstract class EnLinkdTestHelper {
         public ABCTopology() {
             nodeA.setId(nodeAId);
             elementA.setNode(nodeA);
-            elementA.setBaseBridgeAddress("aaaaaaaaaaaa");
+            elementA.setBaseBridgeAddress(macA);
             elemlist.add(elementA);
     
             nodeB.setId(nodeBId);
             elementB.setNode(nodeB);
-            elementB.setBaseBridgeAddress("bbbbbbbbbbbb");
+            elementB.setBaseBridgeAddress(macB);
             elemlist.add(elementB);
     
             nodeC.setId(nodeCId);
             elementC.setNode(nodeC);
-            elementC.setBaseBridgeAddress("cccccccccccc");
+            elementC.setBaseBridgeAddress(macC);
             elemlist.add(elementC);
 
             bftA.add(addBridgeForwardingTableEntry(nodeA,portA, mac1));
