@@ -183,6 +183,10 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             return m_criteria;
         }
 
+        /**
+         * If {@code rootAlias} is null, then Hibernate will use a default
+         * alias of {@code this}.
+         */
         @Override
         public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
             m_class = clazz;

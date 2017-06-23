@@ -106,9 +106,6 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
         // Left joins on a toMany relationship need a join condition so that only one row is returned
         builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.event.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
 
-        // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
-
         builder.orderBy("eventTime").desc(); // order by event time by default
 
         return builder;

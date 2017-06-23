@@ -47,7 +47,16 @@ public class CriteriaBehavior<T> {
 
     @FunctionalInterface
     public interface BeforeVisit {
-        public void accept(CriteriaBuilder b, Object v, ConditionType c, boolean isWildcard);
+        /**
+         * Interface that specifies the action to take for a given query term.
+         * 
+         * @param b {@link CriteriaBuilder} that is being used to construct the query
+         * @param v The value of the query term
+         * @param c The condition type of the query term
+         * @param w Boolean indicating whether the term is a wildcard (that should 
+         *   use {@code LIKE} instead of {@code =} in a query, for instance)
+         */
+        public void accept(CriteriaBuilder b, Object v, ConditionType c, boolean w);
     }
 
     private final String m_criteriaPropertyName;

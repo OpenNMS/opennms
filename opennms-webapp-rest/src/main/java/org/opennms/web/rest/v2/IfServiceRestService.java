@@ -105,7 +105,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
 
         // TODO: Only add this alias when filtering so that we can specify a join condition
-        builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
+        //builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
 
         builder.orderBy("id");
 
@@ -132,7 +132,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         // 3rd level JOINs
         map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
         map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        //map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
 
         return map;
     }

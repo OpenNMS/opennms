@@ -89,10 +89,13 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
         builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("node.assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.event.prop("distPoller"), Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // Left joins on a toMany relationship need a join condition so that only one row is returned
-        builder.alias("node.ipInterfaces", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop("ipAddress"), Aliases.notification.prop("ipAddress")), Restrictions.isNull(Aliases.ipInterface.prop("ipAddress"))));
-        builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("ipInterfaces"), Aliases.ipInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop("ipAddress"), Aliases.notification.prop("ipAddress")), Restrictions.isNull(Aliases.ipInterface.prop("ipAddress"))));
+        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
+        // Left joins on a toMany relationship need a join condition so that only one row is returned
+        builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.event.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
 
         // Order by ID by default
         builder.orderBy("notifyId").desc();
@@ -114,10 +117,13 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
 
         // 2nd level JOINs
         map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
         map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
         map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
-        // Allow iplike queries on notification.ipAddr
+        // Allow iplike queries on notification.ipAddress
         map.put(Aliases.notification.prop("ipAddress"), new IpLikeCriteriaBehavior("ipAddress"));
 
         return map;

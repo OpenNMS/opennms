@@ -87,15 +87,16 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
         // 2nd level JOINs
         builder.alias("monitoredService.ipInterface", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN);
         builder.alias("monitoredService.serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
+        builder.alias("serviceLostEvent.distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
-        builder.alias("ipInterface.node", Aliases.node.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.ipInterface.prop("node"), Aliases.node.toString(), JoinType.LEFT_JOIN);
 
         // 4th level JOINs
-        builder.alias("node.assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
         // TODO: Only add this alias when filtering by category so that we can specify a join condition
-        builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);
-        builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
+        //builder.alias(Aliases.node.prop("categories"), Aliases.category.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
 
         // NOTE: Left joins on a toMany relationship need a join condition so that only one row is returned
 
@@ -121,6 +122,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
         map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
 
         // 2nd level JOINs
+        map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
         map.putAll(CriteriaBehaviors.IP_INTERFACE_BEHAVIORS);
         map.putAll(CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS);
 

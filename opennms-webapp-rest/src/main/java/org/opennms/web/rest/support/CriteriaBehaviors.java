@@ -57,18 +57,24 @@ public abstract class CriteriaBehaviors {
     }
 
     public static final Map<String,CriteriaBehavior<?>> ALARM_BEHAVIORS = new HashMap<>();
+    // TODO
     //public static final Map<String,CriteriaBehavior<?>> ALARM_DETAILS_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> ASSET_RECORD_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> DIST_POLLER_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> EVENT_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> IP_INTERFACE_BEHAVIORS = new HashMap<>();
+    // TODO
     public static final Map<String,CriteriaBehavior<?>> MEMO_BEHAVIORS = new HashMap<>();
+    // TODO
     public static final Map<String,CriteriaBehavior<?>> MONITORED_SERVICE_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> MONITORING_LOCATION_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> NODE_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> NODE_CATEGORY_BEHAVIORS = new HashMap<>();
+    // TODO
     public static final Map<String,CriteriaBehavior<?>> NOTIFICATION_BEHAVIORS = new HashMap<>();
+    // TODO
     public static final Map<String,CriteriaBehavior<?>> OUTAGE_BEHAVIORS = new HashMap<>();
+    // TODO
     public static final Map<String,CriteriaBehavior<?>> REDUCTION_KEY_MEMO_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> SERVICE_TYPE_BEHAVIORS = new HashMap<>();
     public static final Map<String,CriteriaBehavior<?>> SNMP_INTERFACE_BEHAVIORS = new HashMap<>();
