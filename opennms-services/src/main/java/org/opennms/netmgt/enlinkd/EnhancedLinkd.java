@@ -233,7 +233,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      */
     protected synchronized void onStop() {
 
-        // Stop the scheduler
+        LOG.info("stop: persisting forwarders");
+        m_queryMgr.persistForwarders();
+        LOG.info("stop: persisted forwarders");
+              // Stop the scheduler
         LOG.info("stop: Stopping enhanced linkd scheduler");
         m_scheduler.stop();
         m_scheduler = null;

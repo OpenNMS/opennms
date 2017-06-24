@@ -171,6 +171,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         bclink.setDesignatedPort(topology.portBC);
         bclink.setBridgeBridgeLinkLastPollTime(ablink.getBridgeBridgeLinkCreateTime());
         m_bridgeBridgeLinkDao.save(bclink);
+        
+        BridgeMacLink forward = new BridgeMacLink();
+        forward.setNode(nodeB);
+        forward.setBridgePort(topology.portBA);
+        forward.setMacAddress(topology.macA);
+        forward.setBridgeMacLinkLastPollTime(forward.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(forward);
 
         BridgeMacLink mac1 = new BridgeMacLink();
         mac1.setNode(nodeA);
@@ -195,7 +202,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
         m_bridgeMacLinkDao.flush();
         m_bridgeBridgeLinkDao.flush();
-        assertEquals(3, m_bridgeMacLinkDao.countAll());
+        assertEquals(4, m_bridgeMacLinkDao.countAll());
         assertEquals(2, m_bridgeBridgeLinkDao.countAll());
         
         assertNotNull(m_bridgeTopologyDao);
@@ -209,13 +216,16 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(nodeAbd, nodeBbd);
         assertEquals(nodeAbd, nodeCbd);
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+
         topology.check(nodeAbd);
+        assertEquals(0, nodeAbd.getForwarders(topology.nodeAId).size());
+        assertEquals(1, nodeAbd.getForwarders(topology.nodeBId).size());
+        assertEquals(0, nodeAbd.getForwarders(topology.nodeCId).size());
         
         List<SharedSegment> nodeASegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeA.getId());
         assertEquals(2, nodeASegments.size());
-        for (SharedSegment segment: nodeASegments) {
-        	System.err.println(segment.printTopology());
-        }
+        
+        System.err.println(nodeAbd.printTopology());
     }    
     
     @Test
