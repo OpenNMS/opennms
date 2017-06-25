@@ -801,6 +801,55 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     /**
+     * This method allows to test whether the PathOutageProvider correctly reacts to changes of the SemanticZoomLevel
+     */
+    @Test
+    public void verifyPathOutageSemanticZoomLevel() {
+        topologyUiPage.selectTopologyProvider(() -> "Path Outage");
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests-1\" node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"8.8.8.8\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-2\" node-label=\"Node-2\" parent-node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"250.25.86.11\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-3\" node-label=\"Node-3\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"77.15.8.98\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-4\" node-label=\"Node-4\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"11.100.32.32\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-5\" node-label=\"Node-5\" parent-node-label=\"Node-3\">" +
+                "       <interface ip-addr=\"94.37.11.135\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 5);
+        topologyUiPage.setSzl(1);
+        topologyUiPage.clearFocus();
+        topologyUiPage.search("Node-3").selectItemThatContains("Node-3");
+        int numFocusVertices_szl1 = topologyUiPage.getVisibleVertices().size();
+        topologyUiPage.setSzl(2);
+        int numFocusVertices_szl2 = topologyUiPage.getVisibleVertices().size();
+        Assert.assertNotEquals(numFocusVertices_szl1, numFocusVertices_szl2);
+    }
+
+    /**
      * This method is used to block and wait for any transitions to occur.
      * This should be used after adding or removing vertices from focus and/or
      * changing the SZL.

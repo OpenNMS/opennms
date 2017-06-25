@@ -95,6 +95,7 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-pathoutage/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-graphml/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-asset/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.topology/org.opennms.features.topology.shell/${project.version}/xml/features</repository>
@@ -299,6 +300,7 @@
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
             <feature>opennms-topology-runtime-graphml</feature>
+            <feature>opennms-topology-runtime-pathoutage</feature>
             <feature>opennms-topology-runtime-asset</feature>
             <feature>org.opennms.features.topology.shell</feature>
             <feature>vaadin</feature>
@@ -473,6 +475,13 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>opennms-topology-runtime-pathoutage</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>

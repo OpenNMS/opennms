@@ -31,12 +31,15 @@
 
 <%@page language="java" contentType="text/html" session="true"
 	import="
-		java.util.List,
 		java.net.InetAddress,
+		java.util.List,
 		org.opennms.core.utils.InetAddressUtils,
-		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
+		org.opennms.features.topology.link.Layout,
+		org.opennms.features.topology.link.TopologyLinkBuilder"
 %>
+<%@ page import="org.opennms.features.topology.link.TopologyProvider" %>
+<%@ page import="org.opennms.netmgt.config.OpennmsServerConfigFactory" %>
+<%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Path Outages" />
@@ -68,6 +71,7 @@
 				<th>Critical Path IP</th>
 				<th>Critical Path Service</th>
 				<th>Number of Nodes</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<% for (String[] pth : testPaths) {
@@ -82,8 +86,16 @@
 			<% } %>
 			<td><%= pth[1] %></td>
 			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
-			<td><a
-				href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
+			<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
+			<%
+				final String topologyLink = new TopologyLinkBuilder()
+						.focus(pthData[1])
+						.szl(0)
+						.layout(Layout.HIERARCHY)
+						.provider(TopologyProvider.PATHOUTAGE)
+						.getLink();
+			%>
+			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i>View in Topology</a></td>
 		</tr>
 		<% } %>
 	</table>

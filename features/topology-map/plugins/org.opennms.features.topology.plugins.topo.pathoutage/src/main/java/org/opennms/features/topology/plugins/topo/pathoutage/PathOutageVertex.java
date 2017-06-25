@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.link;
+package org.opennms.features.topology.plugins.topo.pathoutage;
+
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.netmgt.model.OnmsNode;
+
 /**
- * All known topology providers.
- *
- * This is an interface and not an enum, as the GraphMLTopologyProvider defines its own label (there can be multiple).
+ * Vertex class for the {@link PathOutageProvider} object
  */
-public interface TopologyProvider {
+class PathOutageVertex extends AbstractVertex implements LevelAware {
 
-    TopologyProvider APPLICATION = () -> "Application";
-    TopologyProvider BUSINESS_SERVICE = () -> "Business Services";
-    TopologyProvider VMWARE = () -> "VMware";
-    TopologyProvider ENLINKD = () -> "Enhanced Linkd";
-    TopologyProvider PATHOUTAGE = () -> "Path Outage";
+	private int level;
 
-    String getLabel();
+	public PathOutageVertex(OnmsNode node) {
+		super(PathOutageProvider.NAMESPACE, String.valueOf(node.getId()), node.getLabel());
+		setNodeID(node.getId());
+		this.level = 0;
+		this.setIconKey("pathoutage.default");
+	}
+
+	@Override
+	public int getLevel() {
+		return this.level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
 }
