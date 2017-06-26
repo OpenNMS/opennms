@@ -144,6 +144,7 @@ public class EventRestService extends AbstractDaoRestService<OnmsEvent,SearchBea
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
         // Allow iplike queries on event.ipAddr
+        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
         map.put(Aliases.event.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         return map;

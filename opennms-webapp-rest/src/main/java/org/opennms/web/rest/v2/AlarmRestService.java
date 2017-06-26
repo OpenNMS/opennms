@@ -162,6 +162,7 @@ public class AlarmRestService extends AbstractDaoRestService<OnmsAlarm,SearchBea
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
         // Allow iplike queries on alarm.ipAddr
+        map.put("ipAddr", new IpLikeCriteriaBehavior("ipAddr"));
         map.put(Aliases.alarm.prop("ipAddr"), new IpLikeCriteriaBehavior("ipAddr"));
 
         return map;

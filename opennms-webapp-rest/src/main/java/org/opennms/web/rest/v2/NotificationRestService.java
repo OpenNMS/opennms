@@ -124,6 +124,7 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
         // Allow iplike queries on notification.ipAddress
+        map.put("ipAddress", new IpLikeCriteriaBehavior("ipAddress"));
         map.put(Aliases.notification.prop("ipAddress"), new IpLikeCriteriaBehavior("ipAddress"));
 
         return map;
