@@ -208,6 +208,16 @@ public class DefaultTopologyService implements TopologyService {
         return metaTopologyProvider;
     }
 
+    @Override
+    public boolean isCategoryAware(String namespace) {
+        final List<MetaTopologyProvider> providers = serviceLocator.findServices(MetaTopologyProvider.class, null);
+        final Optional<GraphProvider> provider = providers.stream().flatMap(meta -> meta.getGraphProviders().stream()).filter(p -> p.getNamespace().equals(namespace)).findFirst();
+        if (provider.isPresent()) {
+            return provider.get().getTopologyProviderInfo().isSupportsCategorySearch();
+        }
+        return false;
+    }
+
     public void setServiceLocator(ServiceLocator serviceLocator) {
         this.serviceLocator = Objects.requireNonNull(serviceLocator);
     }

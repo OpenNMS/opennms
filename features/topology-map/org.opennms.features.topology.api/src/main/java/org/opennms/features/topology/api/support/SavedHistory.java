@@ -212,7 +212,7 @@ public class SavedHistory {
                 // Add resulting Criteria to the graph container
                 for (SearchResult searchQuery : m_searchQueries) {
                     if (searchProvider.getSearchProviderNamespace().equals(searchQuery.getNamespace()) || searchProvider.contributesTo(searchQuery.getNamespace())) {
-                        Criteria searchCriteria = ((HistoryAwareSearchProvider)searchProvider).buildCriteriaFromQuery(searchQuery);
+                        Criteria searchCriteria = ((HistoryAwareSearchProvider)searchProvider).buildCriteriaFromQuery(searchQuery, graphContainer);
                         graphContainer.addCriteria(searchCriteria);
                     }
                 }
