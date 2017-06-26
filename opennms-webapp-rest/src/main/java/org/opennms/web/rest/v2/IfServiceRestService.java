@@ -97,12 +97,12 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
         // 2nd level JOINs
-        builder.alias("ipInterface.node", Aliases.node.toString(), JoinType.LEFT_JOIN);
-        builder.alias("ipInterface.snmpInterface", Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.ipInterface.prop("node"), Aliases.node.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.ipInterface.prop("snmpInterface"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
         // 3rd level JOINs
-        builder.alias("node.assetRecord", Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
-        builder.alias("node.location", Aliases.location.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
 
         // TODO: Only add this alias when filtering so that we can specify a join condition
         //builder.alias("node.categories", Aliases.category.toString(), JoinType.LEFT_JOIN);

@@ -1,0 +1,478 @@
+== OpenNMS RESTv2 Interface
+
+NOTE: This interface is experimental and the interface is subject to change.
+
+=== REST URL Querying
+
+All endpoints share a common set of query parameters that can be used to query for results:
+
+.URL Parameters
+[options="header",cols="1m,1,4"]
+|===
+| Parameter | Type | Description
+| limit | Integer | Number of entries to return
+| offset | Integer | Offset from the beginning of the list to return
+| orderBy | String | Name of the property that should be used for sorting the results
+| _s | String | FIQL search string containing properties that are valid for the endpoint
+|===
+
+=== Common Search Properties
+
+[[alarmProperties]]
+.Alarm Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| alarm.id | String | ID
+| alarm.alarmAckTime | Timestamp | Acknowledged time
+| alarm.alarmAckUser | String | User who acknowledged the alarm
+| alarm.alarmType | Integer | Alarm type (TODO: Enumerate values)
+| alarm.applicationDN | String | ?
+| alarm.clearKey | String | Clear key for the alarm in the event configuration 
+| alarm.counter | Integer | Number of events contributing to this alarm
+| alarm.description | String | Description
+| alarm.firstAutomationTime | Timestamp | First time an automation has run on this alarm
+| alarm.firstEventTime | Timestamp | Timestamp of first event in this alarm
+| alarm.ifIndex | Integer | SNMP interface index
+| alarm.ipAddr | IP Address | IP address
+| alarm.lastAutomationTime | Timestamp | Most recent time an automation has run on this alarm
+| alarm.lastEventTime | Timestamp | Timestamp of most recent event in this alarm
+| alarm.logMsg | String | Log message
+| alarm.managedObjectInstance | String | ?
+| alarm.managedObjectType | String | ?
+| alarm.mouseOverText | String | ?
+| alarm.operInstruct | String | Operator instructions
+| alarm.ossPrimaryKey | String | ?
+| alarm.qosAlarmState | String | ?
+| alarm.reductionKey | String | Reduction key
+| alarm.severity | ? | Severity (TODO: Enumerate values)
+| alarm.suppressedTime | Timestamp | Time that the alarm was suppressed
+| alarm.suppressedUntil | Timestamp | Time that the alarm will be suppressed until
+| alarm.suppressedUser | String | User who suppressed the alarm
+| alarm.uei | String | UEI of the event that triggered the alarm
+| alarm.x733AlarmType | String | ?
+| alarm.x733ProbableCause | Integer | ?
+|===
+
+[[applicationProperties]]
+.Application Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| id | Integer | ID
+| name | String | Application name
+|===
+
+[[assetProperties]]
+.Asset Properties
+[options="header",cols="3m,1,3"]
+|===
+| Name | Type | Description
+| assetRecord.id | Integer | ID
+| assetRecord.additionalhardware | String | 
+| assetRecord.address1 | String | 
+| assetRecord.address2 | String | 
+| assetRecord.admin | String | 
+| assetRecord.assetNumber | String | 
+| assetRecord.autoenable | String | 
+| assetRecord.building | String | 
+| assetRecord.category | String | 
+| assetRecord.circuitId | String | 
+| assetRecord.city | String | 
+| assetRecord.comment | String | 
+| assetRecord.connection | String | 
+| assetRecord.country | String | 
+| assetRecord.cpu | String | 
+| assetRecord.dateInstalled | String | 
+| assetRecord.department | String | 
+| assetRecord.description | String | 
+| assetRecord.displayCategory | String | 
+| assetRecord.division | String | 
+| assetRecord.enable | String | 
+| assetRecord.floor | String | 
+//| assetRecord.geolocation | ? | 
+| assetRecord.hdd1 | String | 
+| assetRecord.hdd2 | String | 
+| assetRecord.hdd3 | String | 
+| assetRecord.hdd4 | String | 
+| assetRecord.hdd5 | String | 
+| assetRecord.hdd6 | String | 
+| assetRecord.inputpower | String | 
+| assetRecord.lastModifiedBy | String | 
+| assetRecord.lastModifiedDate | Timestamp | 
+| assetRecord.latitude | Float | 
+| assetRecord.lease | String | 
+| assetRecord.leaseExpires | String | 
+| assetRecord.longitude | Float | 
+| assetRecord.maintcontract | String | 
+| assetRecord.maintContractExpiration | String | 
+| assetRecord.maintContractNumber | String | 
+| assetRecord.managedObjectInstance | String | 
+| assetRecord.managedObjectType | String | 
+| assetRecord.manufacturer | String | 
+| assetRecord.modelNumber | String | 
+| assetRecord.notifyCategory | String | 
+| assetRecord.numpowersupplies | String | 
+| assetRecord.operatingSystem | String | 
+| assetRecord.password | String | 
+| assetRecord.pollerCategory | String | 
+| assetRecord.port | String | 
+| assetRecord.rack | String | 
+| assetRecord.rackunitheight | String | 
+| assetRecord.ram | String | 
+| assetRecord.region | String | 
+| assetRecord.room | String | 
+| assetRecord.serialNumber | String | 
+| assetRecord.slot | String | 
+| assetRecord.snmpcommunity | String | 
+| assetRecord.state | String | 
+| assetRecord.storagectrl | String | 
+| assetRecord.supportPhone | String | 
+| assetRecord.thresholdCategory | String | 
+| assetRecord.username | String | 
+| assetRecord.vendor | String | 
+| assetRecord.vendorAssetNumber | String | 
+| assetRecord.vendorFax | String | 
+| assetRecord.vendorPhone | String | 
+| assetRecord.vmwareManagedEntityType | String | 
+| assetRecord.vmwareManagedObjectId | String | 
+| assetRecord.vmwareManagementServer | String | 
+| assetRecord.vmwareState | String | 
+| assetRecord.vmwareTopologyInfo | String | 
+| assetRecord.zip | String | 
+|===
+
+[[categoryProperties]]
+.Category Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| category.id | Integer | ID
+| category.description | String | Description
+| category.name | String | Name
+|===
+
+[[distPollerProperties]]
+.Distributed Poller Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| id | Integer | ID
+| label | String | Label for the system
+//| lastUpdated | Timestamp | 
+| location | String | ID of the monitoring location that this Minion is assigned to
+|===
+
+[[eventProperties]]
+.Event Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| event.id | Integer | ID
+| event.eventAckTime | Timestamp | 
+| event.eventAckUser | String | 
+| event.eventAutoAction | String | 
+| event.eventCorrelation | String | 
+| event.eventCreateTime | Timestamp | 
+| event.eventDescr | String | 
+| event.eventDisplay | String | 
+| event.eventForward | String | 
+| event.eventHost | String | 
+| event.eventLog | String | 
+| event.eventLogGroup | String | 
+| event.eventLogMsg | String | 
+| event.eventMouseOverText | String | 
+| event.eventNotification | String | 
+| event.eventOperAction | String | 
+| event.eventOperActionMenuText | String | 
+| event.eventOperInstruct | String | 
+| event.eventPathOutage | String | 
+| event.eventSeverity | Integer | Severity (TODO: Enumerate values) 
+| event.eventSnmp | String | 
+| event.eventSnmpHost | String | 
+| event.eventSource | String | 
+| event.eventSuppressedCount | Integer | 
+| event.eventTime | Timestamp | 
+| event.eventTTicket | String | 
+| event.eventTTicketState | Integer | ? (TODO: Enumerate values) 
+| event.eventUei | String | 
+| event.ifIndex | Integer | 
+| event.ipAddr | IP Address | 
+|===
+
+[[ifServiceProperties]]
+.Interface Service Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| ifService.id | Integer | ID
+| ifService.lastFail | Timestamp | ?
+| ifService.lastGood | Timestamp | ?
+| ifService.notify | String | ? (TODO: Enumerate values)
+| ifService.qualifier | String | ?
+| ifService.source | String | ? (TODO: Enumerate values)
+| ifService.status | String | Management status of the service (TODO: Enumerate values)
+|===
+
+[[ipInterfaceProperties]]
+.IP Interface Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| ipInterface.id | Integer | ID
+| ipInterface.ipAddress | IP Address | IPv4 or IPv6 address of the interface
+| ipInterface.ipHostName | String | Hostname
+| ipInterface.ipLastCapsdPoll | Timestamp | Time of last provisioning scan
+| ipInterface.isManaged | String | Management status
+|===
+
+[[locationProperties]]
+.Location Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| locationName | String | ID
+| geolocation | String | Geographic address of the location
+| latitude | Float | Latitude
+| longitude | Float | Longitude
+| monitoringArea | String | Monitoring area
+| priority | Integer | Display priority for location
+|===
+
+[[minionProperties]]
+.Minion Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| id | Integer | ID
+| label | String | Label for the system
+| lastUpdated | Timestamp | Timestamp of the last heartbeat communication with the system
+| location | String | ID of the monitoring location that this Minion is assigned to
+| status | String | Minion status
+|===
+
+[[nodeProperties]]
+.Node Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| node.id | Integer | ID
+| node.createTime | Timestamp | Creation time for the node
+| node.foreignId | String | Foreign ID
+| node.foreignSource | String | Foreign source
+| node.label | String | Node label
+| node.labelSource | String | Source for the label (TODO: Enumerate values)
+| node.lastCapsdPoll | Timestamp | Time of last provisioning scan
+| node.netBiosDomain | String | Windows domain of the node
+| node.netBiosName | String | Windows name for the node
+| node.operatingSystem | String | Operating system
+| node.parent | ? | ?
+| node.pathElement | ? | ?
+| node.sysContact | String | SNMP sysContact field
+| node.sysDescription | String | SNMP sysDescription field
+| node.sysLocation | String | SNMP sysLocation field
+| node.sysName | String | SNMP sysName field
+| node.sysObjectId | String | SNMP sysObjectId
+| node.type | ? | ?
+|===
+
+[[notificationProperties]]
+.Notification Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| notification.notifyId | Integer | ID
+| notification.answeredBy | String | 
+| notification.ipAddress | IP Address | 
+| notification.numericMsg | String | 
+| notification.pageTime | Timestamp | 
+| notification.queueId | String | 
+| notification.respondTime | Timestamp | 
+| notification.severityLabel | String | 
+| notification.subject | String | 
+| notification.textMsg | String | 
+//| notification.usersNotified | String | 
+|===
+
+[[outageProperties]]
+.Outage Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| outage.id | Integer | ID
+| outage.ifLostService | Timestamp | 
+| outage.ifRegainedService | Timestamp | 
+| outage.suppressedBy | String | 
+| outage.suppressTime | Timestamp | 
+|===
+
+[[scanReportProperties]]
+.Scan Report Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| id | String | ID
+| locale | String | Locale for the report
+| location | String | ID of the monitoring location that this report was generated for
+| timestamp | Timestamp | Timestamp of the report
+|===
+
+[[serviceTypeProperties]]
+.Service Type Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| serviceType.id | Integer | ID
+| serviceType.name | String | Service name
+|===
+
+[[snmpInterfaceProperties]]
+.SNMP Interface Properties
+[options="header",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| snmpInterface.id | Integer | ID
+| snmpInterface.ifAdminStatus | Integer | Admin status
+| snmpInterface.ifIndex | Integer | Interface index
+| snmpInterface.ifOperStatus | Integer | Operational status
+| snmpInterface.ifSpeed | Long | Bits-per-second speed for the interface
+| snmpInterface.lastCapsdPoll | Timestamp | Time of last provisioning scan
+| snmpInterface.lastSnmpPoll | Timestamp | ?
+| snmpInterface.netMask | IP Address | IP address representing the netmask of the interface
+|===
+
+=== Alarm Interface
+
+Interface: `/api/v2/alarms`
+
+Supported search/order properties:
+
+* <<alarmProperties,`alarm.*`>>
+** `alarm.ipAddr` can be an iplike expression
+* <<assetProperties,`assetRecord.*`>>
+* <<categoryProperties,`category.*`>>
+* <<distPollerProperties,`distPoller.*`>>
+* <<ipInterfaceProperties,`ipInterface.*`>>
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<serviceTypeProperties,`serviceType.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>>
+
+=== Applications Interface
+
+Interface: `/api/v2/applications`
+
+Supported search/order properties:
+
+* `id`
+* `name`
+
+=== Event Interface
+
+Interface: `/api/v2/events`
+
+Supported search/order properties:
+
+* <<alarmProperties,`alarm.*`>>
+* <<assetProperties,`assetRecord.*`>>
+* <<categoryProperties,`category.*`>>
+* <<distPollerProperties,`distPoller.*`>>
+* <<eventProperties,`event.*`>>
+** `event.ipAddr` can be an iplike expression
+* <<ipInterfaceProperties,`ipInterface.*`>>
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<serviceTypeProperties,`serviceType.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>>
+
+=== Interface Services Interface
+
+Interface: `/api/v2/ifservices`
+
+Supported search/order properties:
+
+* <<assetProperties,`assetRecord.*`>>
+* <<ifServiceProperties,`ifService.*`>>
+* <<ipInterfaceProperties,`ipInterface.*`>>
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<serviceTypeProperties,`serviceType.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>>
+
+=== Minions Interface
+
+Interface: `/api/v2/minions`
+
+Supported search/order properties:
+
+* `id`
+* `label`
+* `lastUpdated`
+* `location`
+* `status`
+
+=== Monitoring Locations Interface
+
+Interface: `/api/v2/monitoringLocations`
+
+Supported search/order properties:
+
+* `locationName`
+* `geolocation`
+* `latitude`
+* `longitude`
+* `monitoringArea`
+* `priority`
+
+=== Node Interface
+
+Interface: `/api/v2/nodes`
+
+WARNING: This interface is not complete.
+
+=== Notifications Interface
+
+Interface: `/api/v2/notifications`
+
+Supported search/order properties:
+
+* <<assetProperties,`assetRecord.*`>>
+* <<categoryProperties,`category.*`>>
+* <<distPollerProperties,`distPoller.*`>>
+* <<eventProperties,`event.*`>>
+* <<ipInterfaceProperties,`ipInterface.*`>>
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<notificationProperties,`notification.*`>>
+** `notification.ipAddress` can be an iplike expression
+* <<serviceTypeProperties,`serviceType.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>>
+
+=== Outages Interface
+
+Interface: `/api/v2/outages`
+
+Supported search/order properties:
+
+* <<assetProperties,`assetRecord.*`>>
+//* <<categoryProperties,`category.*`>>
+* <<distPollerProperties,`distPoller.*`>>
+* <<ipInterfaceProperties,`ipInterface.*`>>
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<outageProperties,`outage.*`>>
+//* `serviceLostEvent.*` (with <<eventProperties,`event.*`>> properties)
+//* `serviceRegainedEvent.*` (with <<eventProperties,`event.*`>> properties)
+* <<serviceTypeProperties,`serviceType.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>>
+
+=== Scan Reports Interface
+
+Interface: `/api/v2/scanreports`
+
+Supported search/order properties:
+
+* `id`
+* `locale`
+* `location`
+* `timestamp`

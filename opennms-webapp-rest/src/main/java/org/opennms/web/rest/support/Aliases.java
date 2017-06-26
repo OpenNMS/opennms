@@ -46,6 +46,7 @@ public enum Aliases {
     monitoredService,
     node,
     notification,
+    outage,
     reductionKeyMemo,
     serviceType,
     snmpInterface;

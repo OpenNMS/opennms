@@ -78,7 +78,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class, Aliases.outage.toString());
         // 1st level JOINs
         builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
         builder.alias("serviceLostEvent", "serviceLostEvent", JoinType.LEFT_JOIN);
@@ -91,6 +91,7 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
 
         // 3rd level JOINs
         builder.alias(Aliases.ipInterface.prop("node"), Aliases.node.toString(), JoinType.LEFT_JOIN);
+        builder.alias(Aliases.ipInterface.prop("snmpInterface"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN);
 
         // 4th level JOINs
         builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
@@ -119,7 +120,10 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
         map.putAll(CriteriaBehaviors.OUTAGE_BEHAVIORS);
 
         // 1st level JOINs
-        map.putAll(CriteriaBehaviors.ALARM_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.MONITORED_SERVICE_BEHAVIORS);
+        // TODO: Add event criteria behaviors for these aliases
+        // serviceLostEvent
+        // serviceRegainedEvent 
 
         // 2nd level JOINs
         map.putAll(CriteriaBehaviors.DIST_POLLER_BEHAVIORS);
@@ -128,14 +132,12 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,OnmsOut
 
         // 3rd level JOINs
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
+        map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
 
         // 4th level JOINs
         map.putAll(CriteriaBehaviors.ASSET_RECORD_BEHAVIORS);
         map.putAll(CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS);
-        map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
-
-        // TODO: Figure out how to join in the snmpInterface fields
-        //map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+        //map.putAll(CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS);
 
         return map;
     }
