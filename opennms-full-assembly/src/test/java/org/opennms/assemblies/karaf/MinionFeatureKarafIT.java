@@ -92,8 +92,38 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
+	public void testInstallFeatureMinionProvisiondRequisitions() {
+		installFeature("minion-provisiond-requisitions");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionCollection() {
+		installFeature("minion-collection");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionPoller() {
+		installFeature("minion-poller");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
 	public void testInstallFeatureMinionRpcServer() {
 		installFeature("minion-rpc-server");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellCollection() {
+		installFeature("minion-shell-collection");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionShellPoller() {
+		installFeature("minion-shell-poller");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 
@@ -106,6 +136,12 @@ public class MinionFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureMinionShell() {
 		installFeature("minion-shell");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+
+	@Test
+	public void testInstallFeatureMinionIcmpProxy() {
+		installFeature("minion-icmp-proxy");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 

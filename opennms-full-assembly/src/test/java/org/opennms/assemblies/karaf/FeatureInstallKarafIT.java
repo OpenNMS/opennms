@@ -86,7 +86,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-activemq");
         //installFeature("opennms-activemq-dispatcher-config");
         //installFeature("opennms-activemq-dispatcher");
-        // Causes the test to die?
+        // OSGi dependency problems: org.opennms.netmgt.alarmd.api
         //installFeature("opennms-amqp-alarm-northbounder");
         installFeature("opennms-amqp-event-forwarder");
         installFeature("opennms-amqp-event-receiver");
