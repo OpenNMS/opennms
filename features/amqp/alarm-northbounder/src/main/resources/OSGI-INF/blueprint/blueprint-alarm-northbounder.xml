@@ -21,7 +21,8 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="alarmNorthbounderProperties" persistent-id="org.opennms.features.amqp.alarmnorthbounder" update-strategy="reload">
     <cm:default-properties>
-        <!-- amqp://username:password@virtualhost?brokerlist='tcp://127.0.0.1:5672?options -->
+        <!-- amqp://[user:pass@][clientid]/virtualhost?brokerlist='tcp://host:port?option=\'value\',option=\'value\';tcp://host:port?option=\'value\'',failover='method?option=\'value\',option='value'' -->
+        <!-- The only required option is a single broker in the broker list -->
         <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672'"/>
         <!-- amqp:exchange/routingkey?options -->
         <cm:property name="destination" value="amqp:OpenNMS-Exchange/opennms-routing-key"/>
