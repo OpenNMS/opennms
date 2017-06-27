@@ -196,7 +196,8 @@
       <!-- @see https://developer.atlassian.com/docs/faq/plugin-framework-faq/using-jdom-in-osgi -->
       <!-- @see https://techotom.wordpress.com/2014/10/21/fixing-the-default-package-is-not-permitted-by-the-import-package-syntax-with-maven-bundle-plugin/ -->
       <!-- <bundle>wrap:mvn:jdom/jdom/1.0</bundle> -->
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
+      <bundle dependency="true">wrap:mvn:javax.servlet.jsp/jsp-api/2.2</bundle>
       <bundle>mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}</bundle>
     </feature>
 
@@ -473,8 +474,7 @@
     <feature name="opennms-collection-api" description="OpenNMS :: Collection :: API" version="${project.version}">
       <feature version="[4.2,4.3)">spring</feature>
 
-      <feature>opennms-config-api</feature>
-      <feature>opennms-poller-api</feature>
+      <feature>opennms-model</feature>
       <feature>opennms-rrd-api</feature>
 
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
@@ -499,6 +499,7 @@
     </feature>
 
     <feature name="opennms-config-api" description="OpenNMS :: Configuration :: API" version="${project.version}">
+      <feature>opennms-collection-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
 
@@ -512,6 +513,7 @@
       <feature>hibernate36</feature>
       <feature>commons-lang</feature>
 
+      <feature>opennms-collection-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-snmp</feature>
 
@@ -730,8 +732,11 @@
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
       <feature>commons-lang</feature>
       <feature>commons-beanutils</feature>
-      <bundle>wrap:mvn:javax.validation/validation-api/1.0.0.GA</bundle>
       <feature>opennms-provisioning-api</feature>
+
+      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA</bundle>
+      <bundle dependency="true">mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
+
       <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
 
       <!--

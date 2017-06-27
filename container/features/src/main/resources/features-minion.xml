@@ -36,6 +36,7 @@
     </feature>
 
     <feature name="minion-rpc-server" description="OpenNMS :: Minion :: RPC Server" version="${project.version}">
+      <feature version="${guavaVersion}">guava</feature>
       <feature>minion-core-api</feature>
       <feature>opennms-core-ipc-rpc</feature>
     </feature>
@@ -67,8 +68,9 @@
     </feature>
 
     <feature name="minion-provisiond-requisitions" description="Minion :: Provisond :: Requisitions" version="${project.version}">
-      <feature>opennms-provisioning</feature>
       <feature>opennms-core-web</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-provisioning</feature>
       <feature>minion-rpc-server</feature>
       <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
@@ -104,17 +106,25 @@
     </feature>
     
     <feature name="minion-collection" description="Minion :: Collection" version="${project.version}">
-      <feature>minion-rpc-server</feature>
+      <feature>commons-cli</feature>
+
+      <feature>opennms-config</feature>
       <feature>opennms-config-jaxb</feature>
+      <feature>opennms-core-web</feature>
+      <feature>opennms-vmware</feature>
+      <feature>opennms-xml-collector</feature>
+      <feature>wmi-integration</feature>
+      <feature>wsman-integration</feature>
+
+      <feature>minion-rpc-server</feature>
+
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.client-rpc/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.collectors/${project.version}</bundle>
       <bundle>mvn:org.opennms.features/org.opennms.features.jdbc-collector/${project.version}</bundle>
       <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
-      <feature>opennms-vmware</feature>
-      <feature>wmi-integration</feature>
-      <feature>wsman-integration</feature>
-      <feature>opennms-xml-collector</feature>
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
