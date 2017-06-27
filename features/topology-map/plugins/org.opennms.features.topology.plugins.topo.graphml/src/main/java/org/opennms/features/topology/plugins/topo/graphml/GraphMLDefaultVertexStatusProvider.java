@@ -72,7 +72,7 @@ public class GraphMLDefaultVertexStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
+    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         // All vertices for the current vertexProvider
         final List<GraphMLVertex> graphMLVertices = vertices.stream()
                 .filter(eachVertex -> contributesTo(eachVertex.getNamespace()) && eachVertex instanceof GraphMLVertex)

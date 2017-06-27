@@ -1,18 +1,11 @@
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertexStatus
+import org.opennms.netmgt.model.OnmsSeverity
 
-assert alarmSummary != null
 
-if (vertex.propagateStatus) {
-    GraphMLVertexStatus status = new GraphMLVertexStatus()
+if (vertex.label == 'East') {
+    return new GraphMLVertexStatus().severity(OnmsSeverity.CRITICAL).alarmCount(23)
+}
 
-    for (edge in vertex.edges) {
-        status = GraphMLVertexStatus.merge(status, statusService.getStatus(edge.target))
-    }
-
-    return status
-
-} else {
-    return new GraphMLVertexStatus() \
-        .severity(alarmSummary.maxSeverity)
-        .alarmCount(alarmSummary.alarmCount)
+if (vertex.label == 'South') {
+    return new GraphMLVertexStatus().severity(OnmsSeverity.WARNING).alarmCount(42)
 }
