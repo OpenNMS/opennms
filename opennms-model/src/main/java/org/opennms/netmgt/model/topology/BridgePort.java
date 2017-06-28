@@ -171,4 +171,16 @@ public class BridgePort {
         m_pollTime = time;
     }
     
+    public String printTopology() {
+        StringBuffer strbfr = new StringBuffer();
+
+        strbfr.append("bridge port:[nodeid:["); 
+        strbfr.append(getNode().getId());
+        strbfr.append("], bridgeport:");
+        strbfr.append(getBridgePort());
+        strbfr.append("]\n");
+
+        return strbfr.toString();
+        }
+
 }
