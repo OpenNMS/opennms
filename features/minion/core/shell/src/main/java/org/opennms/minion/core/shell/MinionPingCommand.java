@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,10 +27,18 @@
  *******************************************************************************/
 package org.opennms.minion.core.shell;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.minion.core.api.RestClient;
@@ -45,6 +53,9 @@ public class MinionPingCommand implements Action {
     @Reference
     public RestClient restClient;
 
+    @Option(name = "-j", description = "Maximum number of milliseconds to wait before failing when attempting to establish a JMS session.")
+    public long jmsTimeoutMillis = 20*1000;
+
     @Override
     public Object execute() throws Exception {
         System.out.println("Connecting to ReST...");
@@ -52,8 +63,48 @@ public class MinionPingCommand implements Action {
         System.out.println("OK");
 
         System.out.println("Connecting to Broker...");
-        brokerConnectionFactory.createConnection();
+        testJmsConnectivity(jmsTimeoutMillis);
         System.out.println("OK");
         return null;
+    }
+
+    private void testJmsConnectivity(long maxDurationMillis) throws InterruptedException, ExecutionException, TimeoutException {
+        final AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+        // Establishing the session in separate thread, allowing
+        // us to control how long we wait for.
+        final Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection jmsConnection = null;
+                    try {
+                        jmsConnection = brokerConnectionFactory.createConnection();
+                        // NMS-9445: Attempt to use the connection by creating a session
+                        // and immediately closing it.
+                        jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE).close();
+                    } finally{
+                        if (jmsConnection != null) {
+                            try {
+                                jmsConnection.close();
+                            } catch(JMSException ex) {
+                                System.out.println("Failed to close the JMS connection: " + ex.getMessage());
+                            }
+                        }
+                    }
+                } catch (Throwable t) {
+                    throwableRef.set(t);
+                }
+            }
+        });
+        t.setName("minion:ping");
+        t.start();
+        t.join(maxDurationMillis);
+        if (t.isAlive()) {
+            t.interrupt();
+            throw new TimeoutException(String.format("Failed to create a JMS session within %d milliseconds.", maxDurationMillis));
+        }
+        if (throwableRef.get() != null) {
+            throw new ExecutionException("Failed to create a JMS session.", throwableRef.get());
+        }
     }
 }
