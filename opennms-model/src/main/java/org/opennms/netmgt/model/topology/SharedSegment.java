@@ -296,20 +296,20 @@ public class SharedSegment {
 
     public String printTopology() {
     	StringBuffer strbfr = new StringBuffer();
-            strbfr.append("segment ->\n [bridges:");
+            strbfr.append("segment ->\nsegment bridges:");
             strbfr.append(getBridgeIdsOnSegment());
             strbfr.append(", designated bridge:[");
             strbfr.append(getDesignatedBridge());
             strbfr.append(", designated port:");
             strbfr.append(getDesignatedPort());
-            strbfr.append("]\nsegment macs:\n");
+            strbfr.append("]\n");
+            for (BridgePort blink:  m_portsOnSegment)
+                strbfr.append(blink.printTopology());
             for (String mac: getMacsOnSegment()) {
+                strbfr.append("segment mac:");
                 strbfr.append(mac);
                 strbfr.append("\n");
             }
-            strbfr.append("segment ports:\n");
-            for (BridgePort blink:  m_portsOnSegment)
-            	strbfr.append(blink.printTopology());
             
             return strbfr.toString();    	
     }

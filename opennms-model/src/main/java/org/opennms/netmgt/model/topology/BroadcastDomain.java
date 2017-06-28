@@ -495,9 +495,6 @@ E:    	for (BridgeElement element: bridgeelements) {
         strbfr.append("domain bridges:");
         strbfr.append(getBridgeNodesOnDomain());
         strbfr.append("\n");
-        strbfr.append("domain macs: ");
-        strbfr.append(getMacsOnDomain());
-        strbfr.append("\n");
     	if (hasRootBridge()) {
     		Set<Integer> rootids = new HashSet<Integer>();
     		rootids.add(getRootBridgeId());
