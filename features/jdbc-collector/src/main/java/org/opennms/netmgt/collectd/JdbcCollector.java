@@ -241,8 +241,11 @@ public class JdbcCollector implements ServiceCollector {
                             JdbcCollectionResource resource = null;
                             
                             // Create the appropriate resource container.
-                            if(singleInstance) {
-                                resource = nodeResource;
+                            if(null==query.getResourceType()) {
+                                if (!singleInstance){
+                                    LOG.warn("Multiple row results but there is no resourceType defined : only first row will be persisted");
+                                    resource = nodeResource;
+                                }
                             } else {
                                 // Retrieve the name of the column to use as the instance key for multi-row queries.
                                 String instance = results.getString(query.getInstanceColumn());
