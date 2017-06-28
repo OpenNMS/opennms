@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -132,12 +133,10 @@ public abstract class CriteriaBehaviors {
 
             switch (c) {
             case EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node where category_node.categoryid = '%d')", v));
+                b.sql("{alias}.nodeid in (select category_node.nodeid from category_node where category_node.categoryid = ?)", v, Type.INTEGER);
                 break;
             case NOT_EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node where category_node.categoryid = '%d')", v));
+                b.sql("{alias}.nodeid not in (select category_node.nodeid from category_node where category_node.categoryid = ?)", v, Type.INTEGER);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type when filtering category.id: " + c.toString());
@@ -155,12 +154,10 @@ public abstract class CriteriaBehaviors {
 
             switch (c) {
             case EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s ?)", w ? "like" : "="), v, Type.STRING);
                 break;
             case NOT_EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categoryname %s ?)", w ? "like" : "="), v, Type.STRING);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type when filtering category.name: " + c.toString());
@@ -178,12 +175,10 @@ public abstract class CriteriaBehaviors {
 
             switch (c) {
             case EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                b.sql(String.format("{alias}.nodeid in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s ?)", w ? "like" : "="), v, Type.STRING);
                 break;
             case NOT_EQUALS:
-                // TODO: Use parameterized statements to avoid SQL injection 
-                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s '%s')", w ? "like" : "=", ((String)v).replaceAll("'", "''")));
+                b.sql(String.format("{alias}.nodeid not in (select category_node.nodeid from category_node, categories where category_node.categoryid = categories.categoryid and categories.categorydescription %s ?)", w ? "like" : "="), v, Type.STRING);
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type when filtering category.description: " + c.toString());
