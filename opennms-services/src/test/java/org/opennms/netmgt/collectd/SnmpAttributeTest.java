@@ -147,7 +147,7 @@ public class SnmpAttributeTest {
         ipInterface.setNode(node);
         ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
 
-        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(7); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
+        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(5); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
 
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
