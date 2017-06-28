@@ -12,7 +12,7 @@
             <trend-attribute key="sparkChartRangeMin" value="0"/>
             <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
             <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
@@ -93,7 +93,7 @@
             <trend-attribute key="sparkChartRangeMin" value="0"/>
             <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
             <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
@@ -151,7 +151,7 @@
             <trend-attribute key="sparkChartRangeMin" value="0"/>
             <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
             <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
@@ -209,7 +209,7 @@
             <trend-attribute key="sparkChartRangeMin" value="0"/>
             <trend-attribute key="sparkLineColor" value="#4c9d29"/>
             <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#4c9d2977"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
             <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
             <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
