@@ -277,6 +277,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
             
         RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+        Assert.notNull(rLocalNode, "doUpdate: failed to get local node for given nodeId:"+nodeId);
         LOG.debug("doUpdate: found local map Node: {}", rLocalNode);
         
         final OnmsNode node = m_nodeDao.get(nodeId);
