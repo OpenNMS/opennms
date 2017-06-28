@@ -4062,13 +4062,6 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>java-net-repo</id>
-      <name>Java.net Repository</name>
-      <url>http://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
-    </pluginRepository>
-    <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
       <url>http://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
     </pluginRepository>
