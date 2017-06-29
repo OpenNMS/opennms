@@ -450,7 +450,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                     default: 
                         throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
                     }
-                }).collect(Collectors.toList()).toArray(new org.hibernate.type.Type[0]);
+                }).collect(Collectors.toList()).toArray(new org.hibernate.type.Type[restriction.getTypes().length]);
                 m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute(), restriction.getParameters(), types));
             } else {
                 m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
