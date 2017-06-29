@@ -262,10 +262,11 @@
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
             <feature>opennms-trapd</feature>
-
             <!-- <feature>opennms-webapp</feature> -->
+
             <feature>org.json</feature>
             <feature>postgresql</feature>
+            <feature>qpid</feature>
             <feature>spring-security32</feature>
             <feature>spring-webflow</feature>
 
