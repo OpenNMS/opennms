@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The operator action to be taken when this event occurs
  *  with state controlling if action takes place. The menutext gets
@@ -158,10 +156,6 @@ public class Operaction implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("state", _state)
-    		.append("menutext", _menutext)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

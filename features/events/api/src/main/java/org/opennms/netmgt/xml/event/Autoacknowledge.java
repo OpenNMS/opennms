@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The autoacknowledge information for the user with state
  *  controlling if event is marked acknoledged when inserted into
@@ -133,9 +131,6 @@ public class Autoacknowledge implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("state", _state)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }
