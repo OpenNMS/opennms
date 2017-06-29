@@ -43,8 +43,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * This element is used for converting events into alarms.
  * 
@@ -326,13 +324,6 @@ public class AlarmData implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("reduction-key", _reductionKey)
-    		.append("alarm-type", _alarmType)
-    		.append("clear-key", _clearKey)
-    		.append("auto-clean", _autoClean)
-    		.append("x733-alarm-type", _x733AlarmType)
-    		.append("x733-probable-cause", _x733ProbableCause)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

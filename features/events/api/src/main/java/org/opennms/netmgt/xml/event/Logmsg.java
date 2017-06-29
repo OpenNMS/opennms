@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The event logmsg with the destination attribute defining
  *  if event is for display only, logonly, log and display or
@@ -192,10 +190,6 @@ public class Logmsg implements Serializable {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("content", _content)
-    		.append("notify", _notify)
-    		.append("dest", _dest)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

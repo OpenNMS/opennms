@@ -179,7 +179,7 @@
                         <c:set var="selected" value=""/>
                       </c:otherwise>
                     </c:choose>
-                    <option value="${option.key}" ${selected}>${option.value}</option>
+                    <option value="${option.key}" ${selected}>${option.value.replaceAll("_", " ")}</option>
                   </c:forEach>
                 </select>
                 <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
