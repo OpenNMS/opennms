@@ -43,8 +43,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -320,5 +322,19 @@ public class AlarmDaoIT implements InitializingBean {
 				Order.asc("node.label")
 		}));
 		m_alarmDao.findMatching(criteria);
+	}
+
+	/**
+	 * @see https://issues.opennms.org/browse/NMS-9480
+	 */
+	@Test
+	public void testParameterizedSql() {
+		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.alarmid in (?)", 1, Type.INTEGER);
+		m_alarmDao.findMatching(cb.toCriteria());
+
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+		cb.sql("{alias}.alarmid = ? and {alias}.eventuei like ?", new Object[] { 1, "%uei.opennms.org%" }, new Type[] { Type.INTEGER, Type.STRING });
+		m_alarmDao.findMatching(cb.toCriteria());
 	}
 }
