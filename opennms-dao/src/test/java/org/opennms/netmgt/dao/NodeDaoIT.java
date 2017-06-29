@@ -46,10 +46,13 @@ import java.util.TreeSet;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -293,8 +296,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testDeleteOnOrphanIpInterface() {
 
-        @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
+        int preCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         Iterator<OnmsIpInterface> it = n.getIpInterfaces().iterator();
@@ -303,8 +305,7 @@ public class NodeDaoIT implements InitializingBean {
         getNodeDao().saveOrUpdate(n);
         getNodeDao().flush();
 
-        @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
+        int postCount = getJdbcTemplate().queryForObject("select count(*) from ipinterface where ipinterface.nodeId = " + getNode1().getId(), Integer.class);
 
         assertEquals(preCount-1, postCount);
 
@@ -314,15 +315,13 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testDeleteNode() {
-        @SuppressWarnings("deprecation")
-		int preCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
+        int preCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         OnmsNode n = getNodeDao().get(getNode1().getId());
         getNodeDao().delete(n);
         getNodeDao().flush();
 
-        @SuppressWarnings("deprecation")
-		int postCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
+        int postCount = getJdbcTemplate().queryForObject("select count(*) from node", Integer.class);
 
         assertEquals(preCount-1, postCount);
     }
@@ -629,6 +628,24 @@ public class NodeDaoIT implements InitializingBean {
         nodes = m_nodeDao.findMatching(cb.toCriteria());
         System.err.println("Nodes found: "+nodes.size());
         assertEquals(2, nodes.size());
+    }
+
+    /**
+     * This test exposes a bug in Hibernate: it is not applying join conditions
+     * correctly to the many-to-many node-to-category relationship.
+     * 
+     * This issue is documented in NMS-9470. If we upgrade Hibernate, we should
+     * recheck this issue to see if it is fixed.
+     * 
+     * @see https://issues.opennms.org/browse/NMS-9470
+     */
+    @Test
+    @Transactional
+    @Ignore("Ignore until Hibernate can be upgraded and this can be rechecked")
+    public void testCriteriaBuilderWithCategoryAlias() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("categories", "category", JoinType.LEFT_JOIN, Restrictions.eq("category.name", "Routers"));
+        m_nodeDao.findMatching(cb.toCriteria());
     }
 
     @Test

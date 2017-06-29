@@ -168,7 +168,7 @@
             <documentation>List of Strings to UEI matches</documentation>
         </annotation>
         <complexType>
-            <sequence>
+            <choice maxOccurs="unbounded">
                 <element minOccurs="0" maxOccurs="unbounded" name="facility">
                     <annotation>
                         <documentation>The name of a syslog facility. If present, the facility of
@@ -275,8 +275,7 @@
                     </complexType>
                 </element>
 
-                <element maxOccurs="1" minOccurs="1" name="uei"
-                         type="string">
+                <element maxOccurs="1" minOccurs="1" name="uei" type="string">
                     <annotation>
                         <documentation>UEI</documentation>
                     </annotation>
@@ -313,7 +312,7 @@
                     </attribute>
                   </complexType>
                 </element>
-            </sequence>
+            </choice>
         </complexType>
     </element>
 
