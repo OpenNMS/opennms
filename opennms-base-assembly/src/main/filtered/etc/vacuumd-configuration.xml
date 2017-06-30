@@ -69,7 +69,11 @@
     <automation name="purgeStatisticsReports" active="true"
                 interval="3600000" 
                 action-name="deletePurgeableStatisticsReports" />
-    
+
+    <automation name="clearPathOutages" interval="30000" active="true"
+                trigger-name="selectPathOutagesNodes"
+                action-name="clearPathOutages" />
+
     <!-- Enable these automation for automatic Trouble Ticketing -->
     <automation name="createTickets" interval="30000" active="false" 
                 trigger-name="selectNullTicketStateAlarms" 
@@ -281,6 +285,14 @@
       </statement>
     </trigger>
 
+    <trigger name="selectPathOutagesNodes" operator="&gt;=" row-count="1" >
+      <statement>
+        SELECT nodeId AS _nodeid, now() AS _ts
+          FROM alarms
+         WHERE eventuei='uei.opennms.org/nodes/nodeUp'
+      </statement>
+    </trigger>
+
     <!-- Find assets that have maintenance-contract that will expire in less then 30 days -->
     <!-- 
     <trigger name="selectExpirationMaintenance" operator="&gt;=" row-count="1" >
@@ -416,7 +428,16 @@
            AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
-    
+
+    <action name="clearPathOutages" >
+      <statement>
+        UPDATE alarms
+           SET severity = 2, lastautomationtime = ${_ts}
+         WHERE eventuei = 'uei.opennms.org/nodes/pathOutage'
+           AND nodeid = ${_nodeid}
+      </statement>
+    </action>
+
     <!-- Monitoring maintenance contracts -->
     <!--
     <action name="maintenanceExpirationWarning" >
