@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The snmp information from the trap
  * 
@@ -321,14 +319,6 @@ public class Snmp implements Serializable {
 
         @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("id", _id)
-    		.append("idtext", _idtext)
-    		.append("version", _version)
-    		.append("specific", _specific)
-    		.append("generic", _generic)
-    		.append("community", _community)
-    		.append("time-stamp", _timeStamp)
-    		.toString();
+    	return new OnmsStringBuilder(this).toString();
     }
 }

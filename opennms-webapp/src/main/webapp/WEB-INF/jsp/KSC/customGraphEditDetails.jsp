@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -166,7 +166,7 @@
                       <c:set var="timespanSelected" value=""/>
                     </c:otherwise>
                   </c:choose>
-                  <option value="${option.key}" ${timespanSelected}>${option.value}</option>
+                  <option value="${option.key}" ${timespanSelected}>${option.value.replaceAll("_", " ")}</option>
                 </c:forEach>
               </select>
               <span class="help-block">This selects the relative start and stop times for the report</span>

@@ -444,8 +444,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
                             LOG.debug("getType: matched type: {}",
                                             map.getType());
                             return map.getType();
-                        }
-                        if (map.getSysdescrMatch() == null && notMatched) {
+                        } else if (notMatched) {
                             LOG.debug("getType: null sysdescrmatch: first match: type: {} "
                                                     , map.getType());
                             type = map.getType();
