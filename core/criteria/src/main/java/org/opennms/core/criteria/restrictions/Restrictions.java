@@ -30,6 +30,8 @@ package org.opennms.core.criteria.restrictions;
 
 import java.util.Collection;
 
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+
 public abstract class Restrictions {
 
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
@@ -122,4 +124,11 @@ public abstract class Restrictions {
         return new SqlRestriction(sql);
     }
 
+    public static AttributeRestriction sql(final String sql, Object parameter, Type type) {
+        return new SqlRestriction(sql, parameter, type);
+    }
+
+    public static AttributeRestriction sql(final String sql, Object[] parameters, Type[] types) {
+        return new SqlRestriction(sql, parameters, types);
+    }
 }
