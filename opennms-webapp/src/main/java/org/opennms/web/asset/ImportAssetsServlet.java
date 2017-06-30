@@ -56,7 +56,7 @@ import org.opennms.web.servlet.MissingParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 /**
  * <p>ImportAssetsServlet class.</p>

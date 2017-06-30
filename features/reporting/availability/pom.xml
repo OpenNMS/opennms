@@ -156,7 +156,7 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
-      <version>1.0</version>
+      <version>${fopVersion}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
